@@ -1,0 +1,48 @@
+name: flutter_architecture
+description: Clean Architecture + Feature First + Bloc 的 Flutter Enterprise Template。
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  api_client:
+    path: ../../packages/api_client
+  auth:
+    path: ../../packages/auth
+  core:
+    path: ../../packages/core
+
+  auto_route: ^9.2.2
+  dio: ^5.7.0
+  flutter_bloc: ^9.1.1
+  flutter_hooks: ^0.21.0
+  freezed_annotation: ^2.4.4
+  get_it: ^7.7.0
+  hooked_bloc: ^1.7.0
+  injectable: ^2.5.0
+  json_annotation: ^4.9.0
+  path: ^1.9.0
+  path_provider: ^2.1.4
+  rxdart: ^0.28.0
+  shared_preferences: ^2.3.2
+  sqflite: ^2.3.3+1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  auto_route_generator: ^9.0.0
+  build_runner: ^2.4.13
+  flutter_lints: ^4.0.0
+  freezed: ^2.5.7
+  injectable_generator: ^2.6.2
+  json_serializable: ^6.8.0
+
+flutter:
+  uses-material-design: true

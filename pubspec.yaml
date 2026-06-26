@@ -1,0 +1,9 @@
+name: flutter_enterprise_architecture_template_workspace
+description: Flutter Enterprise Architecture Template 的 Melos workspace 設定。
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dev_dependencies:
+  melos: ^6.3.3

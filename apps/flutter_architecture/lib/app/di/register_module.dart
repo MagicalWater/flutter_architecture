@@ -1,4 +1,5 @@
-import 'package:api_client/api_client.dart';
+import 'package:api_client/api_client.dart' as api_client;
+import 'package:auth/auth.dart' as auth;
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
@@ -39,21 +40,72 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
-  AppDioFactory get appDioFactory => const AppDioFactory();
+  api_client.AppDioFactory get appDioFactory => const api_client.AppDioFactory();
 
   @lazySingleton
-  AuthApiClient get authApiClient => const AuthApiClient();
+  api_client.AuthApiClient get authApiClient => const api_client.AuthApiClient();
+
+  @lazySingleton
+  auth.AuthLocalDataSource authLocalDataSource(
+    SharedPreferences preferences,
+    Database database,
+  ) {
+    return auth.AuthLocalDataSource(
+      preferences,
+      database,
+    );
+  }
+
+  @lazySingleton
+  auth.AuthRemoteDataSource authRemoteDataSource(
+    api_client.AuthApiClient authApiClient,
+  ) {
+    return auth.AuthRemoteDataSource(authApiClient);
+  }
+
+  @lazySingleton
+  api_client.AuthTokenProvider authTokenProvider(
+    auth.AuthLocalDataSource localDataSource,
+  ) {
+    return auth.AuthTokenProviderImpl(localDataSource);
+  }
+
+  @lazySingleton
+  auth.AuthRepository authRepository(
+    auth.AuthRemoteDataSource remoteDataSource,
+    auth.AuthLocalDataSource localDataSource,
+  ) {
+    return auth.AuthRepositoryImpl(
+      remoteDataSource,
+      localDataSource,
+    );
+  }
+
+  @injectable
+  auth.LoginUseCase loginUseCase(auth.AuthRepository repository) {
+    return auth.LoginUseCase(repository);
+  }
+
+  @injectable
+  auth.LogoutUseCase logoutUseCase(auth.AuthRepository repository) {
+    return auth.LogoutUseCase(repository);
+  }
+
+  @injectable
+  auth.RestoreSessionUseCase restoreSessionUseCase(auth.AuthRepository repository) {
+    return auth.RestoreSessionUseCase(repository);
+  }
 
   @lazySingleton
   Dio dio(
-    AppDioFactory factory,
-    AuthTokenProvider tokenProvider,
+    api_client.AppDioFactory factory,
+    api_client.AuthTokenProvider tokenProvider,
   ) {
     return factory.create(tokenProvider: tokenProvider);
   }
 
   @lazySingleton
-  ProfileApiClient profileApiClient(Dio dio) {
-    return ProfileApiClient(dio);
+  api_client.ProfileApiClient profileApiClient(Dio dio) {
+    return api_client.ProfileApiClient(dio);
   }
 }

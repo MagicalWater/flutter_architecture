@@ -1,8 +1,5 @@
+import 'package:auth/auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_architecture/features/auth/domain/entities/auth_user.dart';
-import 'package:flutter_architecture/features/auth/domain/use_cases/login_use_case.dart';
-import 'package:flutter_architecture/features/auth/domain/use_cases/logout_use_case.dart';
-import 'package:flutter_architecture/features/auth/domain/use_cases/restore_session_use_case.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 

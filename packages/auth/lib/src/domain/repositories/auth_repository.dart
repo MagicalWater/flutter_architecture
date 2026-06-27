@@ -1,6 +1,6 @@
 import 'package:core/core.dart';
-import 'package:flutter_architecture/features/auth/domain/entities/auth_result.dart';
-import 'package:flutter_architecture/features/auth/domain/entities/auth_user.dart';
+import 'package:auth/src/domain/entities/auth_result.dart';
+import 'package:auth/src/domain/entities/auth_user.dart';
 
 /// Auth Repository 抽象。
 ///

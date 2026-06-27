@@ -69,24 +69,24 @@ flutter build bundle
 
 # Milestone 2A：Auth Package 邊界重構
 
-**狀態：** ⏳ Not Started
+**狀態：** 🟢 Completed
 
-## 預計完成項目
+## 完成項目
 
-- 將 Auth 的 domain / data 從 app feature 移動到 `packages/auth`
-- App 的 auth feature 只保留 presentation layer
-- AuthBloc 改依賴 `packages/auth` 的 UseCase
-- AuthRepository / UseCase / DataSource / Model 整理到 auth package
-- 保留 LoginPage / AuthBloc / AuthEvent / AuthState 在 app
+- [x] 將 Auth 的 domain / data 從 app feature 移動到 `packages/auth`
+- [x] App 的 auth feature 只保留 presentation layer
+- [x] AuthBloc 改依賴 `packages/auth` 的 UseCase
+- [x] AuthRepository / UseCase / DataSource / Model 整理到 auth package
+- [x] 保留 LoginPage / AuthBloc / AuthEvent / AuthState 在 app
 
 ## Definition of Done
 
-- [ ] Auth 的 domain / data 不再放在 app feature 內
-- [ ] app 只保留 Auth 的 presentation layer
-- [ ] AuthBloc 依賴 `packages/auth` 的 UseCase
-- [ ] package export 邊界清楚
-- [ ] `melos run analyze` 通過
-- [ ] `flutter test` 通過
+- [x] Auth 的 domain / data 不再放在 app feature 內
+- [x] app 只保留 Auth 的 presentation layer
+- [x] AuthBloc 依賴 `packages/auth` 的 UseCase
+- [x] package export 邊界清楚
+- [x] `melos run analyze` 通過
+- [x] `flutter test` 通過
 
 ---
 

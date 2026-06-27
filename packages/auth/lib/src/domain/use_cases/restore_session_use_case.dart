@@ -1,6 +1,6 @@
 import 'package:core/core.dart';
-import 'package:flutter_architecture/features/auth/domain/entities/auth_user.dart';
-import 'package:flutter_architecture/features/auth/domain/repositories/auth_repository.dart';
+import 'package:auth/src/domain/entities/auth_user.dart';
+import 'package:auth/src/domain/repositories/auth_repository.dart';
 import 'package:injectable/injectable.dart';
 
 /// 嘗試從本地資料恢復登入狀態。

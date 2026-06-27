@@ -1,4 +1,4 @@
-import 'package:flutter_architecture/features/auth/domain/entities/auth_user.dart';
+import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_user_model.freezed.dart';

@@ -1,10 +1,10 @@
+import 'package:auth/src/data/data_sources/auth_local_data_source.dart';
+import 'package:auth/src/data/data_sources/auth_remote_data_source.dart';
+import 'package:auth/src/data/models/auth_user_model.dart';
+import 'package:auth/src/domain/entities/auth_result.dart';
+import 'package:auth/src/domain/entities/auth_user.dart';
+import 'package:auth/src/domain/repositories/auth_repository.dart';
 import 'package:core/core.dart';
-import 'package:flutter_architecture/features/auth/data/data_sources/auth_local_data_source.dart';
-import 'package:flutter_architecture/features/auth/data/data_sources/auth_remote_data_source.dart';
-import 'package:flutter_architecture/features/auth/data/models/auth_user_model.dart';
-import 'package:flutter_architecture/features/auth/domain/entities/auth_result.dart';
-import 'package:flutter_architecture/features/auth/domain/entities/auth_user.dart';
-import 'package:flutter_architecture/features/auth/domain/repositories/auth_repository.dart';
 import 'package:injectable/injectable.dart';
 
 /// AuthRepository 的 Data Layer 實作。

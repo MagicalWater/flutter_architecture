@@ -1,5 +1,5 @@
 import 'package:api_client/api_client.dart';
-import 'package:flutter_architecture/features/auth/data/data_sources/auth_local_data_source.dart';
+import 'package:auth/src/data/data_sources/auth_local_data_source.dart';
 import 'package:injectable/injectable.dart';
 
 /// Dio interceptor 使用的 token provider 實作。

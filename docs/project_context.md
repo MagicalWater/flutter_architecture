@@ -128,7 +128,7 @@ Commit：
 
 ---
 
-## 目前進行中
+## 已完成狀態
 
 ### Milestone 2C：跨平台 SQLite 初始化
 
@@ -148,6 +148,24 @@ Commit：
 - 已確認 app 目前只有 sqflite web binary，尚未建立完整 Flutter Web 平台 scaffold；`flutter build web` 需待執行 `flutter create . --platforms web` 後再驗證。
 - 已完成 Commit。
 
+Commit：
+
+```txt
+f1e869b docs(progress): complete sqlite platform milestone
+```
+
+### Milestone 2A：Auth Package 邊界重構
+
+狀態：Completed。
+
+已完成：
+
+- Auth Entity / Result / Repository / UseCase / DataSource / RepositoryImpl 已移動到 packages/auth。
+- AuthBloc 已改為依賴 packages/auth 的 UseCase。
+- apps/flutter_architecture/lib/features/auth 只保留 presentation layer。
+- package export 邊界已整理。
+- analyze / test / build bundle 已通過。
+
 Web SQLite setup 指令：
 
 ```bash
@@ -157,28 +175,26 @@ dart run sqflite_common_ffi_web:setup
 
 ---
 
-## 下一步
+## 目前進行中
 
-完成 Milestone 2C 後，進入：
-
-### Milestone 2A：Auth Package 邊界重構
+### Milestone 2B：SessionManager 與跨 Feature 登入狀態
 
 目標：
 
 ```txt
-packages/auth
-  放 Auth domain / data / session
-
-apps/flutter_architecture/lib/features/auth
-  只保留 Auth presentation
+AuthGuard / Profile
+  ↓
+SessionManager / AuthSessionReader
 ```
 
 需要處理：
 
-- 將 Auth Entity / Result / Repository / UseCase / DataSource / RepositoryImpl 移動到 packages/auth。
-- AuthBloc 改為依賴 packages/auth 的 UseCase。
-- app feature auth 只保留 LoginPage / AuthBloc / AuthEvent / AuthState。
-- package export 邊界清楚。
+- 建立或整理 SessionManager / AuthSessionReader。
+- AuthGuard 改為依賴 SessionManager，不再依賴 AuthBloc。
+- ProfilePage 不再直接讀 AuthBloc。
+- ProfileBloc / ProfileUseCase 透過 SessionManager 或 Repository 判斷登入狀態。
+- 登入成功後更新 SessionManager。
+- 登出後清除 SessionManager。
 
 ---
 

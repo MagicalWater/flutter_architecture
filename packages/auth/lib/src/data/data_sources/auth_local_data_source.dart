@@ -1,5 +1,5 @@
 import 'package:api_client/api_client.dart';
-import 'package:flutter_architecture/features/auth/data/models/auth_user_model.dart';
+import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';

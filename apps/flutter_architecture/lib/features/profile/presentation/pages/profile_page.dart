@@ -32,7 +32,7 @@ class ProfilePage extends HookWidget {
 
     useBlocListener<ProfileBloc, ProfileState>(
       profileBloc,
-      (_, state, __) {
+      (_, state, _) {
         if (state.logoutSucceeded) {
           context.tabsRouter.setActiveIndex(0);
         }

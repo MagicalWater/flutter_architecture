@@ -266,10 +266,52 @@ dart run sqflite_common_ffi_web:setup
 - workspace package 清單已移到 root `pubspec.yaml` 的 `workspace:`。
 - Melos scripts 已移到 root `pubspec.yaml` 的 `melos:`。
 - 各 app / package 已加上 `resolution: workspace`。
-- SDK constraint 已升級為 `>=3.6.0 <4.0.0`。
+- SDK constraint 已升級為 `>=3.8.0 <4.0.0`。
 - 舊版 bootstrap 產生的 `pubspec_overrides.yaml` 已移除。
 - 純 Dart package 測試已改用 `flutter_test`，避免 workspace resolution 與 Flutter SDK pinned dependencies 衝突。
-- `build_runner` script 已加上 `--order-dependents --concurrency=1`，避免乾淨 workspace 下游 package 早於上游 generated files 完成。
+- `build_runner` script 使用 `dart run build_runner build`，並加上 `--order-dependents --concurrency=1`，避免乾淨 workspace 下游 package 早於上游 generated files 完成。
+- `dart run melos bootstrap`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
+
+---
+
+## 已完成狀態
+
+### Milestone 7：Dependency Upgrade
+
+狀態：Completed。
+
+已完成：
+
+- 重新執行 dependency audit，確認現有 constraints 下無可直接升級的 direct dependency。
+- 升級 generator / DI / router stack：`build_runner`、`freezed`、`json_serializable`、`get_it`、`injectable`、`auto_route`。
+- 升級 lint stack：`flutter_lints`、`lints`。
+- SDK constraint 升級為 `>=3.8.0 <4.0.0`。
+- `build_runner` script 改為 `dart run build_runner build`。
+- Freezed 3 相容性修正：`@freezed` class 改為 `abstract class`。
+- AutoRoute 11 相容性修正：router test 改為直接讀取 `children` list。
+- `dart run melos bootstrap`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
+
+未升級項目：
+
+- `meta`
+- `sqflite`
+- `sqflite_common_ffi`
+- `sqflite_common_ffi_web`
+- `auto_route_generator` 10.6.0
+- `injectable_generator` 3.1.0
+- 部分 transitive dependencies
+
+### Milestone 8：Modernization Review
+
+狀態：Completed。
+
+已完成：
+
+- 完成 Freezed / AutoRoute / GetIt / Injectable / Flutter / Dart Best Practice Review。
+- Bloc Event union type 已改為 `sealed class`，符合 Freezed 3 union 語意。
+- Data model / Entity / State 維持 `abstract class`，避免不必要的 sealed 限制。
+- GetIt / Injectable 註冊方式維持現狀，沒有需要立即處理的 deprecated API。
+- AutoRoute 沒有使用 11.0 移除的 named-route APIs 或舊 redirect API。
 - `dart run melos bootstrap`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
 
 ---

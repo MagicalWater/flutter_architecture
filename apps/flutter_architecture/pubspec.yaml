@@ -5,7 +5,7 @@ version: 0.1.0+1
 resolution: workspace
 
 environment:
-  sdk: ">=3.6.0 <4.0.0"
+  sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -18,15 +18,15 @@ dependencies:
   core:
     path: ../../packages/core
 
-  auto_route: ^9.2.2
+  auto_route: ^11.1.0
   dio: ^5.7.0
   flutter_bloc: ^9.1.1
   flutter_hooks: ^0.21.0
-  freezed_annotation: ^2.4.4
-  get_it: ^7.7.0
+  freezed_annotation: ^3.1.0
+  get_it: ^9.2.1
   hooked_bloc: ^1.7.0
-  injectable: ^2.5.0
-  json_annotation: ^4.9.0
+  injectable: ^3.0.0
+  json_annotation: ^4.12.0
   path: ^1.9.0
   path_provider: ^2.1.4
   rxdart: ^0.28.0
@@ -40,12 +40,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  auto_route_generator: ^9.0.0
-  build_runner: ^2.4.13
-  flutter_lints: ^4.0.0
-  freezed: ^2.5.7
-  injectable_generator: ^2.6.2
-  json_serializable: ^6.8.0
+  auto_route_generator: ^10.5.0
+  build_runner: ^2.15.0
+  flutter_lints: ^6.0.0
+  freezed: ^3.2.5
+  injectable_generator: ^3.0.2
+  json_serializable: ^6.14.0
 
 flutter:
   uses-material-design: true

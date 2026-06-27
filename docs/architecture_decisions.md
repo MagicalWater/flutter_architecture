@@ -96,7 +96,7 @@ dart run melos ...
 `build_runner` 需要依 dependency graph 順序執行，避免乾淨 workspace 下游 package 早於上游 generated files 完成：
 
 ```bash
-dart run melos exec --depends-on=build_runner --order-dependents --concurrency=1 -- flutter pub run build_runner build --delete-conflicting-outputs
+dart run melos exec --depends-on=build_runner --order-dependents --concurrency=1 -- dart run build_runner build
 ```
 
 ---

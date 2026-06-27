@@ -12,7 +12,7 @@ part 'auth_user_model.g.dart';
 ///
 /// Entity 則是 Domain Layer 真正需要的資料。
 @freezed
-class AuthUserModel with _$AuthUserModel {
+abstract class AuthUserModel with _$AuthUserModel {
   const factory AuthUserModel({
     required String id,
     required String name,

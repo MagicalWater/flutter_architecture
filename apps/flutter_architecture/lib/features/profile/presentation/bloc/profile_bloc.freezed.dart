@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,519 +9,523 @@ part of 'profile_bloc.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$ProfileEvent {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() requested,
-    required TResult Function() logoutRequested,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? requested,
-    TResult? Function()? logoutRequested,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? requested,
-    TResult Function()? logoutRequested,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ProfileRequested value) requested,
-    required TResult Function(ProfileLogoutRequested value) logoutRequested,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ProfileRequested value)? requested,
-    TResult? Function(ProfileLogoutRequested value)? logoutRequested,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ProfileRequested value)? requested,
-    TResult Function(ProfileLogoutRequested value)? logoutRequested,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileEvent);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ProfileEvent()';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ProfileEventCopyWith<$Res> {
-  factory $ProfileEventCopyWith(
-          ProfileEvent value, $Res Function(ProfileEvent) then) =
-      _$ProfileEventCopyWithImpl<$Res, ProfileEvent>;
+class $ProfileEventCopyWith<$Res>  {
+$ProfileEventCopyWith(ProfileEvent _, $Res Function(ProfileEvent) __);
 }
 
-/// @nodoc
-class _$ProfileEventCopyWithImpl<$Res, $Val extends ProfileEvent>
-    implements $ProfileEventCopyWith<$Res> {
-  _$ProfileEventCopyWithImpl(this._value, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+/// Adds pattern-matching-related methods to [ProfileEvent].
+extension ProfileEventPatterns on ProfileEvent {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
 
-  /// Create a copy of ProfileEvent
-  /// with the given fields replaced by the non-null parameter values.
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ProfileRequested value)?  requested,TResult Function( ProfileLogoutRequested value)?  logoutRequested,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case ProfileRequested() when requested != null:
+return requested(_that);case ProfileLogoutRequested() when logoutRequested != null:
+return logoutRequested(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ProfileRequested value)  requested,required TResult Function( ProfileLogoutRequested value)  logoutRequested,}){
+final _that = this;
+switch (_that) {
+case ProfileRequested():
+return requested(_that);case ProfileLogoutRequested():
+return logoutRequested(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ProfileRequested value)?  requested,TResult? Function( ProfileLogoutRequested value)?  logoutRequested,}){
+final _that = this;
+switch (_that) {
+case ProfileRequested() when requested != null:
+return requested(_that);case ProfileLogoutRequested() when logoutRequested != null:
+return logoutRequested(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  requested,TResult Function()?  logoutRequested,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case ProfileRequested() when requested != null:
+return requested();case ProfileLogoutRequested() when logoutRequested != null:
+return logoutRequested();case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  requested,required TResult Function()  logoutRequested,}) {final _that = this;
+switch (_that) {
+case ProfileRequested():
+return requested();case ProfileLogoutRequested():
+return logoutRequested();}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  requested,TResult? Function()?  logoutRequested,}) {final _that = this;
+switch (_that) {
+case ProfileRequested() when requested != null:
+return requested();case ProfileLogoutRequested() when logoutRequested != null:
+return logoutRequested();case _:
+  return null;
+
+}
 }
 
-/// @nodoc
-abstract class _$$ProfileRequestedImplCopyWith<$Res> {
-  factory _$$ProfileRequestedImplCopyWith(_$ProfileRequestedImpl value,
-          $Res Function(_$ProfileRequestedImpl) then) =
-      __$$ProfileRequestedImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$ProfileRequestedImplCopyWithImpl<$Res>
-    extends _$ProfileEventCopyWithImpl<$Res, _$ProfileRequestedImpl>
-    implements _$$ProfileRequestedImplCopyWith<$Res> {
-  __$$ProfileRequestedImplCopyWithImpl(_$ProfileRequestedImpl _value,
-      $Res Function(_$ProfileRequestedImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of ProfileEvent
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$ProfileRequestedImpl implements ProfileRequested {
-  const _$ProfileRequestedImpl();
-
-  @override
-  String toString() {
-    return 'ProfileEvent.requested()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$ProfileRequestedImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() requested,
-    required TResult Function() logoutRequested,
-  }) {
-    return requested();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? requested,
-    TResult? Function()? logoutRequested,
-  }) {
-    return requested?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? requested,
-    TResult Function()? logoutRequested,
-    required TResult orElse(),
-  }) {
-    if (requested != null) {
-      return requested();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ProfileRequested value) requested,
-    required TResult Function(ProfileLogoutRequested value) logoutRequested,
-  }) {
-    return requested(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ProfileRequested value)? requested,
-    TResult? Function(ProfileLogoutRequested value)? logoutRequested,
-  }) {
-    return requested?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ProfileRequested value)? requested,
-    TResult Function(ProfileLogoutRequested value)? logoutRequested,
-    required TResult orElse(),
-  }) {
-    if (requested != null) {
-      return requested(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class ProfileRequested implements ProfileEvent {
-  const factory ProfileRequested() = _$ProfileRequestedImpl;
-}
-
-/// @nodoc
-abstract class _$$ProfileLogoutRequestedImplCopyWith<$Res> {
-  factory _$$ProfileLogoutRequestedImplCopyWith(
-          _$ProfileLogoutRequestedImpl value,
-          $Res Function(_$ProfileLogoutRequestedImpl) then) =
-      __$$ProfileLogoutRequestedImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$ProfileLogoutRequestedImplCopyWithImpl<$Res>
-    extends _$ProfileEventCopyWithImpl<$Res, _$ProfileLogoutRequestedImpl>
-    implements _$$ProfileLogoutRequestedImplCopyWith<$Res> {
-  __$$ProfileLogoutRequestedImplCopyWithImpl(
-      _$ProfileLogoutRequestedImpl _value,
-      $Res Function(_$ProfileLogoutRequestedImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of ProfileEvent
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$ProfileLogoutRequestedImpl implements ProfileLogoutRequested {
-  const _$ProfileLogoutRequestedImpl();
 
-  @override
-  String toString() {
-    return 'ProfileEvent.logoutRequested()';
-  }
+class ProfileRequested implements ProfileEvent {
+  const ProfileRequested();
+  
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ProfileLogoutRequestedImpl);
-  }
 
-  @override
-  int get hashCode => runtimeType.hashCode;
 
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() requested,
-    required TResult Function() logoutRequested,
-  }) {
-    return logoutRequested();
-  }
 
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? requested,
-    TResult? Function()? logoutRequested,
-  }) {
-    return logoutRequested?.call();
-  }
 
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? requested,
-    TResult Function()? logoutRequested,
-    required TResult orElse(),
-  }) {
-    if (logoutRequested != null) {
-      return logoutRequested();
-    }
-    return orElse();
-  }
 
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ProfileRequested value) requested,
-    required TResult Function(ProfileLogoutRequested value) logoutRequested,
-  }) {
-    return logoutRequested(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ProfileRequested value)? requested,
-    TResult? Function(ProfileLogoutRequested value)? logoutRequested,
-  }) {
-    return logoutRequested?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ProfileRequested value)? requested,
-    TResult Function(ProfileLogoutRequested value)? logoutRequested,
-    required TResult orElse(),
-  }) {
-    if (logoutRequested != null) {
-      return logoutRequested(this);
-    }
-    return orElse();
-  }
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileRequested);
 }
 
-abstract class ProfileLogoutRequested implements ProfileEvent {
-  const factory ProfileLogoutRequested() = _$ProfileLogoutRequestedImpl;
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ProfileEvent.requested()';
 }
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ProfileLogoutRequested implements ProfileEvent {
+  const ProfileLogoutRequested();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileLogoutRequested);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ProfileEvent.logoutRequested()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 mixin _$ProfileState {
-  bool get isLoading => throw _privateConstructorUsedError;
-  bool get isAuthenticated => throw _privateConstructorUsedError;
-  bool get logoutSucceeded => throw _privateConstructorUsedError;
-  Profile? get profile => throw _privateConstructorUsedError;
-  String? get errorMessage => throw _privateConstructorUsedError;
 
-  /// Create a copy of ProfileState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ProfileStateCopyWith<ProfileState> get copyWith =>
-      throw _privateConstructorUsedError;
+ bool get isLoading; bool get isAuthenticated; bool get logoutSucceeded; Profile? get profile; String? get errorMessage;
+/// Create a copy of ProfileState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ProfileStateCopyWith<ProfileState> get copyWith => _$ProfileStateCopyWithImpl<ProfileState>(this as ProfileState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.logoutSucceeded, logoutSucceeded) || other.logoutSucceeded == logoutSucceeded)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,isLoading,isAuthenticated,logoutSucceeded,profile,errorMessage);
+
+@override
+String toString() {
+  return 'ProfileState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, logoutSucceeded: $logoutSucceeded, profile: $profile, errorMessage: $errorMessage)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ProfileStateCopyWith<$Res> {
-  factory $ProfileStateCopyWith(
-          ProfileState value, $Res Function(ProfileState) then) =
-      _$ProfileStateCopyWithImpl<$Res, ProfileState>;
-  @useResult
-  $Res call(
-      {bool isLoading,
-      bool isAuthenticated,
-      bool logoutSucceeded,
-      Profile? profile,
-      String? errorMessage});
+abstract mixin class $ProfileStateCopyWith<$Res>  {
+  factory $ProfileStateCopyWith(ProfileState value, $Res Function(ProfileState) _then) = _$ProfileStateCopyWithImpl;
+@useResult
+$Res call({
+ bool isLoading, bool isAuthenticated, bool logoutSucceeded, Profile? profile, String? errorMessage
+});
 
-  $ProfileCopyWith<$Res>? get profile;
+
+$ProfileCopyWith<$Res>? get profile;
+
 }
-
 /// @nodoc
-class _$ProfileStateCopyWithImpl<$Res, $Val extends ProfileState>
+class _$ProfileStateCopyWithImpl<$Res>
     implements $ProfileStateCopyWith<$Res> {
-  _$ProfileStateCopyWithImpl(this._value, this._then);
+  _$ProfileStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ProfileState _self;
+  final $Res Function(ProfileState) _then;
 
-  /// Create a copy of ProfileState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? isLoading = null,
-    Object? isAuthenticated = null,
-    Object? logoutSucceeded = null,
-    Object? profile = freezed,
-    Object? errorMessage = freezed,
-  }) {
-    return _then(_value.copyWith(
-      isLoading: null == isLoading
-          ? _value.isLoading
-          : isLoading // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isAuthenticated: null == isAuthenticated
-          ? _value.isAuthenticated
-          : isAuthenticated // ignore: cast_nullable_to_non_nullable
-              as bool,
-      logoutSucceeded: null == logoutSucceeded
-          ? _value.logoutSucceeded
-          : logoutSucceeded // ignore: cast_nullable_to_non_nullable
-              as bool,
-      profile: freezed == profile
-          ? _value.profile
-          : profile // ignore: cast_nullable_to_non_nullable
-              as Profile?,
-      errorMessage: freezed == errorMessage
-          ? _value.errorMessage
-          : errorMessage // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+/// Create a copy of ProfileState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? isAuthenticated = null,Object? logoutSucceeded = null,Object? profile = freezed,Object? errorMessage = freezed,}) {
+  return _then(_self.copyWith(
+isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,isAuthenticated: null == isAuthenticated ? _self.isAuthenticated : isAuthenticated // ignore: cast_nullable_to_non_nullable
+as bool,logoutSucceeded: null == logoutSucceeded ? _self.logoutSucceeded : logoutSucceeded // ignore: cast_nullable_to_non_nullable
+as bool,profile: freezed == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
+as Profile?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+/// Create a copy of ProfileState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ProfileCopyWith<$Res>? get profile {
+    if (_self.profile == null) {
+    return null;
   }
 
-  /// Create a copy of ProfileState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ProfileCopyWith<$Res>? get profile {
-    if (_value.profile == null) {
-      return null;
-    }
+  return $ProfileCopyWith<$Res>(_self.profile!, (value) {
+    return _then(_self.copyWith(profile: value));
+  });
+}
+}
 
-    return $ProfileCopyWith<$Res>(_value.profile!, (value) {
-      return _then(_value.copyWith(profile: value) as $Val);
-    });
-  }
+
+/// Adds pattern-matching-related methods to [ProfileState].
+extension ProfileStatePatterns on ProfileState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ProfileState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ProfileState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ProfileState value)  $default,){
+final _that = this;
+switch (_that) {
+case _ProfileState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ProfileState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ProfileState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ProfileState() when $default != null:
+return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.errorMessage);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  String? errorMessage)  $default,) {final _that = this;
+switch (_that) {
+case _ProfileState():
+return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.errorMessage);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  String? errorMessage)?  $default,) {final _that = this;
+switch (_that) {
+case _ProfileState() when $default != null:
+return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.errorMessage);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$ProfileStateImplCopyWith<$Res>
-    implements $ProfileStateCopyWith<$Res> {
-  factory _$$ProfileStateImplCopyWith(
-          _$ProfileStateImpl value, $Res Function(_$ProfileStateImpl) then) =
-      __$$ProfileStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {bool isLoading,
-      bool isAuthenticated,
-      bool logoutSucceeded,
-      Profile? profile,
-      String? errorMessage});
 
-  @override
-  $ProfileCopyWith<$Res>? get profile;
+
+class _ProfileState implements ProfileState {
+  const _ProfileState({required this.isLoading, required this.isAuthenticated, required this.logoutSucceeded, required this.profile, required this.errorMessage});
+  
+
+@override final  bool isLoading;
+@override final  bool isAuthenticated;
+@override final  bool logoutSucceeded;
+@override final  Profile? profile;
+@override final  String? errorMessage;
+
+/// Create a copy of ProfileState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ProfileStateCopyWith<_ProfileState> get copyWith => __$ProfileStateCopyWithImpl<_ProfileState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.logoutSucceeded, logoutSucceeded) || other.logoutSucceeded == logoutSucceeded)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,isLoading,isAuthenticated,logoutSucceeded,profile,errorMessage);
+
+@override
+String toString() {
+  return 'ProfileState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, logoutSucceeded: $logoutSucceeded, profile: $profile, errorMessage: $errorMessage)';
+}
+
+
 }
 
 /// @nodoc
-class __$$ProfileStateImplCopyWithImpl<$Res>
-    extends _$ProfileStateCopyWithImpl<$Res, _$ProfileStateImpl>
-    implements _$$ProfileStateImplCopyWith<$Res> {
-  __$$ProfileStateImplCopyWithImpl(
-      _$ProfileStateImpl _value, $Res Function(_$ProfileStateImpl) _then)
-      : super(_value, _then);
+abstract mixin class _$ProfileStateCopyWith<$Res> implements $ProfileStateCopyWith<$Res> {
+  factory _$ProfileStateCopyWith(_ProfileState value, $Res Function(_ProfileState) _then) = __$ProfileStateCopyWithImpl;
+@override @useResult
+$Res call({
+ bool isLoading, bool isAuthenticated, bool logoutSucceeded, Profile? profile, String? errorMessage
+});
 
-  /// Create a copy of ProfileState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? isLoading = null,
-    Object? isAuthenticated = null,
-    Object? logoutSucceeded = null,
-    Object? profile = freezed,
-    Object? errorMessage = freezed,
-  }) {
-    return _then(_$ProfileStateImpl(
-      isLoading: null == isLoading
-          ? _value.isLoading
-          : isLoading // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isAuthenticated: null == isAuthenticated
-          ? _value.isAuthenticated
-          : isAuthenticated // ignore: cast_nullable_to_non_nullable
-              as bool,
-      logoutSucceeded: null == logoutSucceeded
-          ? _value.logoutSucceeded
-          : logoutSucceeded // ignore: cast_nullable_to_non_nullable
-              as bool,
-      profile: freezed == profile
-          ? _value.profile
-          : profile // ignore: cast_nullable_to_non_nullable
-              as Profile?,
-      errorMessage: freezed == errorMessage
-          ? _value.errorMessage
-          : errorMessage // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
+
+@override $ProfileCopyWith<$Res>? get profile;
+
 }
-
 /// @nodoc
+class __$ProfileStateCopyWithImpl<$Res>
+    implements _$ProfileStateCopyWith<$Res> {
+  __$ProfileStateCopyWithImpl(this._self, this._then);
 
-class _$ProfileStateImpl implements _ProfileState {
-  const _$ProfileStateImpl(
-      {required this.isLoading,
-      required this.isAuthenticated,
-      required this.logoutSucceeded,
-      required this.profile,
-      required this.errorMessage});
+  final _ProfileState _self;
+  final $Res Function(_ProfileState) _then;
 
-  @override
-  final bool isLoading;
-  @override
-  final bool isAuthenticated;
-  @override
-  final bool logoutSucceeded;
-  @override
-  final Profile? profile;
-  @override
-  final String? errorMessage;
-
-  @override
-  String toString() {
-    return 'ProfileState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, logoutSucceeded: $logoutSucceeded, profile: $profile, errorMessage: $errorMessage)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ProfileStateImpl &&
-            (identical(other.isLoading, isLoading) ||
-                other.isLoading == isLoading) &&
-            (identical(other.isAuthenticated, isAuthenticated) ||
-                other.isAuthenticated == isAuthenticated) &&
-            (identical(other.logoutSucceeded, logoutSucceeded) ||
-                other.logoutSucceeded == logoutSucceeded) &&
-            (identical(other.profile, profile) || other.profile == profile) &&
-            (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, isLoading, isAuthenticated,
-      logoutSucceeded, profile, errorMessage);
-
-  /// Create a copy of ProfileState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ProfileStateImplCopyWith<_$ProfileStateImpl> get copyWith =>
-      __$$ProfileStateImplCopyWithImpl<_$ProfileStateImpl>(this, _$identity);
+/// Create a copy of ProfileState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? isAuthenticated = null,Object? logoutSucceeded = null,Object? profile = freezed,Object? errorMessage = freezed,}) {
+  return _then(_ProfileState(
+isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,isAuthenticated: null == isAuthenticated ? _self.isAuthenticated : isAuthenticated // ignore: cast_nullable_to_non_nullable
+as bool,logoutSucceeded: null == logoutSucceeded ? _self.logoutSucceeded : logoutSucceeded // ignore: cast_nullable_to_non_nullable
+as bool,profile: freezed == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
+as Profile?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
 }
 
-abstract class _ProfileState implements ProfileState {
-  const factory _ProfileState(
-      {required final bool isLoading,
-      required final bool isAuthenticated,
-      required final bool logoutSucceeded,
-      required final Profile? profile,
-      required final String? errorMessage}) = _$ProfileStateImpl;
+/// Create a copy of ProfileState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ProfileCopyWith<$Res>? get profile {
+    if (_self.profile == null) {
+    return null;
+  }
 
-  @override
-  bool get isLoading;
-  @override
-  bool get isAuthenticated;
-  @override
-  bool get logoutSucceeded;
-  @override
-  Profile? get profile;
-  @override
-  String? get errorMessage;
-
-  /// Create a copy of ProfileState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ProfileStateImplCopyWith<_$ProfileStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  return $ProfileCopyWith<$Res>(_self.profile!, (value) {
+    return _then(_self.copyWith(profile: value));
+  });
 }
+}
+
+// dart format on

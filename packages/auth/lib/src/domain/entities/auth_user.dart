@@ -10,7 +10,7 @@ part 'auth_user.freezed.dart';
 ///
 /// API Response 可能有很多後端欄位，但 UI / UseCase 不一定需要。
 @freezed
-class AuthUser with _$AuthUser {
+abstract class AuthUser with _$AuthUser {
   const factory AuthUser({
     required String id,
     required String name,

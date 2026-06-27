@@ -4,7 +4,7 @@ part of 'auth_bloc.dart';
 ///
 /// Event 代表「發生了什麼事」。
 @freezed
-class AuthEvent with _$AuthEvent {
+sealed class AuthEvent with _$AuthEvent {
   /// App 啟動後檢查本地是否已有登入資訊。
   const factory AuthEvent.started() = AuthStarted;
 

@@ -9,7 +9,7 @@ part 'profile_response.g.dart';
 ///
 /// Data Layer 會負責把它轉成 Domain Entity。
 @freezed
-class ProfileResponse with _$ProfileResponse {
+abstract class ProfileResponse with _$ProfileResponse {
   const factory ProfileResponse({
     required String id,
     required String name,

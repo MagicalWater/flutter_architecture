@@ -1,5 +1,3 @@
-library api_client;
-
 export 'src/api/auth_api_client.dart';
 export 'src/api/profile_api_client.dart';
 export 'src/dio/app_dio_factory.dart';

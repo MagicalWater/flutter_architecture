@@ -29,7 +29,7 @@ class LoginPage extends HookWidget {
 
     useBlocListener<AuthBloc, AuthState>(
       authBloc,
-      (_, state, __) {
+      (_, state, _) {
         if (state.isAuthenticated) {
           context.tabsRouter.setActiveIndex(1);
         }

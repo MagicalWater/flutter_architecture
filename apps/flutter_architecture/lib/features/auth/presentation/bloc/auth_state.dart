@@ -4,7 +4,7 @@ part of 'auth_bloc.dart';
 ///
 /// State 代表「畫面目前應該如何呈現」。
 @freezed
-class AuthState with _$AuthState {
+abstract class AuthState with _$AuthState {
   const factory AuthState({
     required bool isLoading,
     required AuthUser? user,

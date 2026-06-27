@@ -6,6 +6,18 @@
 
 ---
 
+## 專案狀態
+
+- Template Baseline Version：1.0.0
+- Phase 1 / MVP：Completed
+- Melos 8 / Dart Pub Workspaces Migration：Completed
+- Dependency Upgrade：Completed
+- Modernization Review：Completed
+
+版本變更請參考 `CHANGELOG.md`。
+
+---
+
 ## 專案定位
 
 本專案適合已經會寫 Flutter，但開始遇到下列問題的開發者：
@@ -207,6 +219,13 @@ ApiClient / SQLite / SharedPreferences
 
 本專案使用 Melos 8 + Dart Pub Workspaces。
 
+目前 workspace SDK constraint 為：
+
+```yaml
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+```
+
 Workspace 設定集中在 root `pubspec.yaml`：
 
 ```txt
@@ -248,7 +267,7 @@ dart run melos bootstrap
 dart run melos run build_runner
 ```
 
-`build_runner` script 會使用 `--order-dependents --concurrency=1`，確保上游 package 先產生 Freezed / JSON / Injectable / Auto Route 檔案，再產生下游 package。
+`build_runner` script 會使用 `dart run build_runner build`，並搭配 `--order-dependents --concurrency=1`，確保上游 package 先產生 Freezed / JSON / Injectable / Auto Route 檔案，再產生下游 package。
 
 ### 4. 分析與測試
 

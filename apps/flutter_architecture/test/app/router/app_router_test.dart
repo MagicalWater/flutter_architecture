@@ -15,7 +15,7 @@ void main() {
 
       expect(shellRoute.page.name, ShellRoute.name);
       expect(shellRoute.initial, isTrue);
-      final shellChildren = shellRoute.children!.routes.toList();
+      final shellChildren = shellRoute.children!.toList();
 
       expect(shellChildren, hasLength(2));
       expect(shellChildren[0].page.name, LoginRoute.name);

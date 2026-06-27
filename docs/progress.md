@@ -310,10 +310,10 @@ flutter build bundle
 - [x] workspace package 清單移到 root `pubspec.yaml` 的 `workspace:`
 - [x] Melos scripts 移到 root `pubspec.yaml` 的 `melos:`
 - [x] 各 app / package 加上 `resolution: workspace`
-- [x] SDK constraint 升級為 `>=3.6.0 <4.0.0`
+- [x] SDK constraint 升級為 `>=3.8.0 <4.0.0`
 - [x] 移除舊版 bootstrap 產生的 `pubspec_overrides.yaml`
 - [x] 純 Dart package 測試改用 `flutter_test`
-- [x] `build_runner` script 加上 `--order-dependents --concurrency=1`
+- [x] `build_runner` script 使用 `dart run build_runner build`，並加上 `--order-dependents --concurrency=1`
 - [x] `dart run melos bootstrap` 通過
 - [x] `dart run melos run build_runner` 通過
 - [x] `dart run melos run analyze` 通過
@@ -325,3 +325,203 @@ flutter build bundle
 - Melos 8 仍保留 `melos.yaml` 作為遷移提示，但實際設定來源是 root `pubspec.yaml`。
 - Pub Workspaces 使用單一 dependency resolution，測試依賴需要與 Flutter SDK pinned dependencies 相容。
 - 乾淨 workspace 下，多 package 同時跑 `build_runner` 可能造成下游找不到上游 generated files，因此需要依 dependency graph 順序執行。
+
+---
+
+# Milestone 7：Dependency Upgrade
+
+**狀態：** 🟢 Completed
+
+## 背景
+
+目前 `dart pub outdated` 顯示多個核心套件已有新版，但大多需要 major upgrade。
+
+這類升級可能影響：
+
+- generated code
+- AutoRoute route generation
+- Freezed generated models
+- Injectable generated DI
+- analyzer / lint 規則
+- build_runner 執行流程
+
+因此不應混在一般 code review 或單一模組小修中處理。
+
+## 目前已知升級候選
+
+- `auto_route` 9.x → 11.x
+- `auto_route_generator` 9.x → 10.x
+- `freezed_annotation` 2.x → 3.x
+- `freezed` 2.x → 3.x
+- `get_it` 7.x → 9.x
+- `injectable` 2.x → 3.x
+- `injectable_generator` 2.x → 3.x
+- `build_runner` 2.5.x → 2.15.x
+- `flutter_lints` 4.x → 6.x
+- `lints` 4.x → 6.x
+
+## 原則
+
+- 不更換架構。
+- 不更換 Bloc / AutoRoute / Injectable / GetIt。
+- 不藉升級做功能重構。
+- 優先保持 API 相容與行為相容。
+- 每次升級一組高度相關的套件。
+- 每組升級後都必須重新產生程式碼並驗證。
+
+## 建議拆分
+
+### Milestone 7-1：Dependency Audit
+
+- [x] 重新執行 `dart pub outdated`。
+- [x] 確認哪些套件只有 patch / minor 可升級。
+- [x] 確認哪些套件是 major upgrade。
+- [x] 閱讀 major upgrade migration notes。
+- [x] 決定升級順序。
+
+Audit 結論：
+
+- 現有 constraints 下，`dart pub upgrade` 不會升級任何 dependency。
+- 主要可升級項目都需要調整 major constraints。
+- `build_runner` 新版已改善 workspace / build cache 行為，適合作為第一組升級。
+- Freezed 3 有 breaking change，需搭配 generated code diff 檢查。
+- Injectable 3 移除部分 deprecated option，目前專案未使用這些 option，風險中等。
+- AutoRoute 10 有 guard / deep link 行為變更，Router stack 應晚於 code generation 與 DI stack。
+
+### Milestone 7-2：Code Generation Stack Upgrade
+
+範圍：
+
+- `build_runner`
+- `freezed`
+- `freezed_annotation`
+- `json_serializable`
+- `json_annotation`
+
+完成定義：
+
+- [x] `dart run melos run build_runner` 通過。
+- [x] generated files diff 合理。
+- [x] `dart run melos run analyze` 通過。
+- [x] `dart run melos exec -- flutter test` 通過。
+
+實作紀錄：
+
+- Freezed 3 要求 `@freezed` class 使用 `abstract class` / `sealed class`，本次以最小修改改為 `abstract class`。
+- json_serializable 新版要求 package SDK constraint 至少 `>=3.8.0`，因此 workspace SDK baseline 已同步升級。
+- build_runner 2.15 應使用 `dart run build_runner build`，舊的 `flutter pub run build_runner` 會產生舊 entrypoint 問題。
+
+### Milestone 7-3：Dependency Injection Stack Upgrade
+
+範圍：
+
+- `get_it`
+- `injectable`
+- `injectable_generator`
+
+完成定義：
+
+- [x] DI generated files diff 合理。
+- [x] App bootstrap 正常。
+- [x] `dart run melos run analyze` 通過。
+- [x] `dart run melos exec -- flutter test` 通過。
+- [x] `flutter build bundle` 通過。
+
+### Milestone 7-4：Router Stack Upgrade
+
+範圍：
+
+- `auto_route`
+- `auto_route_generator`
+
+完成定義：
+
+- [x] Route generated files diff 合理。
+- [x] AuthGuard 行為不變。
+- [x] Login / Profile / Protected flow 測試通過。
+- [x] `dart run melos run analyze` 通過。
+- [x] `dart run melos exec -- flutter test` 通過。
+- [x] `flutter build bundle` 通過。
+
+實作紀錄：
+
+- AutoRoute 新版 `children` API 在測試中已改為直接讀取 `children` list。
+
+### Milestone 7-5：Lint Rules Upgrade
+
+範圍：
+
+- `flutter_lints`
+- `lints`
+
+完成定義：
+
+- [x] 新 lint issue 逐一判斷是否合理。
+- [x] 只修正有明確收益的 lint。
+- [x] 不因 lint 大量改寫架構或命名。
+- [x] `dart run melos run analyze` 通過。
+
+實作紀錄：
+
+- 移除 package entrypoint 中不必要的 `library xxx;`。
+- 將不必要的多底線 callback 參數改為單底線。
+
+### Milestone 7-6：Final Verification
+
+- [x] `dart run melos bootstrap` 通過。
+- [x] `dart run melos run build_runner` 通過。
+- [x] `dart run melos run analyze` 通過。
+- [x] `dart run melos exec -- flutter test` 通過。
+- [x] `flutter build bundle` 通過。
+- [x] 更新 README / progress / roadmap。
+
+## Definition of Done
+
+- [x] 所有決定升級的 direct dependencies 已完成升級。
+- [x] generated files 已重新產生並檢查。
+- [x] MVP flow 行為不變。
+- [x] analyze / test / build 全部通過。
+- [x] 文件已同步。
+
+## 下一個 Milestone
+
+### Milestone 8：Modernization Review
+
+**狀態：** 🟢 Completed
+
+完成項目：
+
+- [x] Review 升級後是否仍保留舊版相容寫法。
+- [x] 評估是否值得採用新版 API / Best Practice。
+- [x] 不新增功能、不更換架構、不做大型重構。
+- [x] 所有修改都具備明確收益。
+
+Review 結論：
+
+- Freezed：Bloc Event 屬於 union type，已由 `abstract class` 調整為 `sealed class`。
+- Freezed：Data model / Entity / State 維持 `abstract class`，避免不必要的語意限制。
+- GetIt / Injectable：目前註冊方式可維持現狀，無 deprecated API 必須處理。
+- AutoRoute：目前沒有使用 11.0 移除的 named-route APIs 或舊 redirect API，維持現狀。
+- Flutter / Dart Best Practice：未發現需要為新版 lint 或官方建議再調整的項目。
+
+驗證結果：
+
+- [x] `dart run melos bootstrap` 通過。
+- [x] `dart run melos run build_runner` 通過。
+- [x] `dart run melos run analyze` 通過。
+- [x] `dart run melos exec -- flutter test` 通過。
+- [x] `flutter build bundle` 通過。
+
+---
+
+## 未升級項目
+
+以下項目仍因目前 constraints 或 Flutter SDK pinned dependencies 維持現狀，後續可獨立評估：
+
+- `meta`
+- `sqflite`
+- `sqflite_common_ffi`
+- `sqflite_common_ffi_web`
+- `auto_route_generator` 10.6.0
+- `injectable_generator` 3.1.0
+- 部分 transitive dependencies

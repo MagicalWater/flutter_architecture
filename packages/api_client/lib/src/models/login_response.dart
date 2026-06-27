@@ -11,7 +11,7 @@ part 'login_response.g.dart';
 ///
 /// Entity 屬於 Domain Layer，代表 App 業務真正需要的資料。
 @freezed
-class LoginResponse with _$LoginResponse {
+abstract class LoginResponse with _$LoginResponse {
   const factory LoginResponse({
     required String accessToken,
     required String userId,

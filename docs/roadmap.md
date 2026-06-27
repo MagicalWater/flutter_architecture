@@ -337,6 +337,161 @@ Milestone 5 不新增業務功能，而是把目前 MVP 整理到可交付、可
 
 ---
 
+## Milestone 7：Dependency Upgrade
+
+第一階段 MVP 已完成後，下一個獨立工作是整理 dependency upgrade。
+
+這不是功能開發，也不是架構重設計，而是確認 Template 的 dependency baseline 是否需要更新到更適合作為長期基礎的版本。
+
+### 背景
+
+目前 `dart pub outdated` 顯示多個核心套件已有新版，但大多是 major upgrade。
+
+例如：
+
+- `auto_route` 9.x → 11.x
+- `freezed` 2.x → 3.x
+- `get_it` 7.x → 9.x
+- `injectable` 2.x → 3.x
+- `build_runner` 2.5.x → 2.15.x
+- `flutter_lints` 4.x → 6.x
+
+這些升級可能影響 generated code、router、DI、analyzer 與 lint 規則，因此需要獨立處理。
+
+### 升級原則
+
+- 不更換架構。
+- 不更換 Bloc / AutoRoute / Injectable / GetIt。
+- 不藉升級做功能重構。
+- 每次只升級一組高度相關套件。
+- 每組升級後都要重新產生程式碼並驗證。
+- 若 generator 套件受到 `analyzer` / `source_gen` / `build_runner` constraints 牽動，允許合併為同一批升級。
+- 若 migration 成本過高，允許暫時維持現有版本。
+
+### 建議拆分
+
+#### Milestone 7-1：Dependency Audit
+
+- 重新執行 `dart pub outdated`。
+- 區分 patch / minor / major upgrade。
+- 閱讀 major upgrade migration notes。
+- 決定升級順序與暫緩項目。
+
+#### Milestone 7-2：Code Generation Stack Upgrade
+
+範圍：
+
+- `build_runner`
+- `freezed`
+- `freezed_annotation`
+- `json_serializable`
+- `json_annotation`
+
+注意：Freezed / Json Serializable 新版可能要求提高 Dart SDK constraint。
+
+#### Milestone 7-3：Dependency Injection Stack Upgrade
+
+範圍：
+
+- `get_it`
+- `injectable`
+- `injectable_generator`
+
+#### Milestone 7-4：Router Stack Upgrade
+
+範圍：
+
+- `auto_route`
+- `auto_route_generator`
+
+#### Milestone 7-5：Lint Rules Upgrade
+
+範圍：
+
+- `flutter_lints`
+- `lints`
+
+#### Milestone 7-6：Final Verification
+
+最終至少執行：
+
+```bash
+dart run melos bootstrap
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+cd apps/flutter_architecture
+flutter build bundle
+```
+
+### 完成定義
+
+- 決定升級的 direct dependencies 已完成升級。
+- generated files 已重新產生並檢查。
+- MVP flow 行為不變。
+- analyze / test / build 全部通過。
+- README / progress / roadmap 已同步。
+
+---
+
+## Milestone 8：Modernization Review
+
+在 Dependency Upgrade 完成後，進行一輪 Modernization Review。
+
+此 Milestone **不是再次升級套件**，而是確認升級後是否仍保留舊版相容寫法，並評估是否值得採用新版 API 或 Best Practice。
+
+### 原則
+
+- 不新增功能。
+- 不重構架構。
+- 不為了新而新。
+- 維持 Backward Compatible。
+- 只有在可讀性、維護性、穩定性有明確收益時才修改。
+
+### Review 範圍
+
+#### Milestone 8-1：Freezed Modernization
+
+- 評估 `abstract class` 是否適合改為 `sealed class`。
+- 檢查是否有可採用的新 annotation 或 generated API。
+- 確認 union / copyWith / JSON 使用方式符合最新版建議。
+
+#### Milestone 8-2：Dependency Injection Review
+
+- 檢查 GetIt / Injectable 是否仍使用舊版相容 API。
+- 移除已 deprecated 的用法（若有）。
+- 確認 generated DI 維持最小且清楚。
+
+#### Milestone 8-3：AutoRoute Review
+
+- 檢查 Router API 是否有新版建議寫法。
+- 檢查 Guard、Nested Route、Tabs Router 是否仍符合官方 Best Practice。
+- 不因 API 更新而改變既有導覽行為。
+
+#### Milestone 8-4：Flutter / Dart Best Practice Review
+
+- 檢查新版 lint 與官方建議。
+- 僅修正具有明確收益的項目。
+- 不做純風格性重寫。
+
+#### Milestone 8-5：Final Verification
+
+- `dart run melos bootstrap`
+- `dart run melos run build_runner`
+- `dart run melos run analyze`
+- `dart run melos exec -- flutter test`
+- `flutter build bundle`
+
+### Definition of Done
+
+- 已完成新版 API 與 Best Practice Review。
+- 無保留已知 deprecated API。
+- 所有修改皆有明確收益。
+- analyze / test / build 全部通過。
+- 文件同步完成。
+
+---
+
 ## 第一階段不做
 
 以下內容暫不實作：

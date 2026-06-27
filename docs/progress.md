@@ -164,12 +164,12 @@ flutter build bundle
 
 ### Milestone 3-2：Profile Flow
 
-- [ ] 未登入顯示尚未登入
-- [ ] 已登入時 ProfileBloc 呼叫 GetProfileUseCase
-- [ ] Profile 頁面顯示目前登入用戶名稱
-- [ ] Profile 錯誤與 loading 狀態正常
-- [ ] analyze / test 通過
-- [ ] Git Commit
+- [x] 未登入顯示尚未登入
+- [x] 已登入時 ProfileBloc 呼叫 GetProfileUseCase
+- [x] Profile 頁面顯示目前登入用戶名稱
+- [x] Profile 錯誤與 loading 狀態正常
+- [x] analyze / test 通過
+- [x] Git Commit
 
 ### Milestone 3-3：Navigation Flow
 

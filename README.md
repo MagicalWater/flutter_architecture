@@ -376,7 +376,7 @@ docs/conversation_rules.md
 
 ### AGENTS.md
 
-給 AI coding agent / assistant 使用的專案工作守則。
+給自動化協作者使用的 repo root 工作守則。
 
 ### docs/project_context.md
 

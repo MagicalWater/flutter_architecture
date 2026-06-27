@@ -24,30 +24,10 @@ docs/conversation_rules.md
 
 ---
 
-## 專案定位
-
-本專案是 Flutter Enterprise Architecture Template。
-
-它不是 Demo，也不是 Boilerplate，而是一份可以持續演進、可直接作為企業專案起點的 Flutter 架構模板。
-
-核心架構：
-
-- Clean Architecture
-- Feature First
-- Monorepo
-- Melos 8
-- Dart Pub Workspaces
-- flutter_bloc / flutter_hooks / hooked_bloc
-- auto_route
-- get_it / injectable
-- Dio
-- SQLite / SharedPreferences
-
----
-
 ## 語言與文件規範
 
-- 文件、README、註解預設使用繁體中文。
+- 文件、README、註解、commit message 預設使用繁體中文。
+- Commit message 使用 Conventional Commits，但描述文字必須使用繁體中文。
 - 技術名詞、套件名稱、類別名稱保留英文。
 - 不使用簡體中文。
 - 新增或改變架構規則時，必須同步更新文件。
@@ -243,8 +223,8 @@ Commit 前至少確認：
 使用 Conventional Commits，例如：
 
 ```txt
-feat(auth): add refresh token flow
-fix(router): correct guard redirect behavior
-refactor(di): centralize package registration in app module
-docs(agent): add repository agent instructions
+feat(auth): 新增 Refresh Token 流程
+fix(router): 修正 AuthGuard 導向邏輯
+refactor(di): 將 package 註冊集中到 app module
+docs(agent): 精簡 AGENTS 工作守則
 ```

@@ -86,17 +86,18 @@ extension GetItInjectableX on _i174.GetIt {
         () => registerModule.restoreSessionUseCase(gh<_i662.AuthRepository>()));
     gh.factory<_i474.GetProfileUseCase>(
         () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()));
+    gh.lazySingleton<_i1024.AuthBloc>(() => _i1024.AuthBloc(
+          gh<_i662.LoginUseCase>(),
+          gh<_i662.RestoreSessionUseCase>(),
+          gh<_i662.LogoutUseCase>(),
+          gh<_i662.SessionManager>(),
+        ));
     gh.lazySingleton<_i787.AppRouter>(
         () => _i787.AppRouter(gh<_i997.AuthGuard>()));
     gh.factory<_i173.ProfileBloc>(() => _i173.ProfileBloc(
           gh<_i474.GetProfileUseCase>(),
           gh<_i662.LogoutUseCase>(),
           gh<_i662.SessionManager>(),
-        ));
-    gh.lazySingleton<_i1024.AuthBloc>(() => _i1024.AuthBloc(
-          gh<_i662.LoginUseCase>(),
-          gh<_i662.RestoreSessionUseCase>(),
-          gh<_i662.LogoutUseCase>(),
         ));
     return this;
   }

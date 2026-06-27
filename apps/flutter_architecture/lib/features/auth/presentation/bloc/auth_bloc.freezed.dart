@@ -21,6 +21,7 @@ mixin _$AuthEvent {
     required TResult Function() started,
     required TResult Function(String account, String password) loginRequested,
     required TResult Function() logoutRequested,
+    required TResult Function() sessionCleared,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -28,6 +29,7 @@ mixin _$AuthEvent {
     TResult? Function()? started,
     TResult? Function(String account, String password)? loginRequested,
     TResult? Function()? logoutRequested,
+    TResult? Function()? sessionCleared,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -35,6 +37,7 @@ mixin _$AuthEvent {
     TResult Function()? started,
     TResult Function(String account, String password)? loginRequested,
     TResult Function()? logoutRequested,
+    TResult Function()? sessionCleared,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -43,6 +46,7 @@ mixin _$AuthEvent {
     required TResult Function(AuthStarted value) started,
     required TResult Function(AuthLoginRequested value) loginRequested,
     required TResult Function(AuthLogoutRequested value) logoutRequested,
+    required TResult Function(AuthSessionCleared value) sessionCleared,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -50,6 +54,7 @@ mixin _$AuthEvent {
     TResult? Function(AuthStarted value)? started,
     TResult? Function(AuthLoginRequested value)? loginRequested,
     TResult? Function(AuthLogoutRequested value)? logoutRequested,
+    TResult? Function(AuthSessionCleared value)? sessionCleared,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -57,6 +62,7 @@ mixin _$AuthEvent {
     TResult Function(AuthStarted value)? started,
     TResult Function(AuthLoginRequested value)? loginRequested,
     TResult Function(AuthLogoutRequested value)? logoutRequested,
+    TResult Function(AuthSessionCleared value)? sessionCleared,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -126,6 +132,7 @@ class _$AuthStartedImpl implements AuthStarted {
     required TResult Function() started,
     required TResult Function(String account, String password) loginRequested,
     required TResult Function() logoutRequested,
+    required TResult Function() sessionCleared,
   }) {
     return started();
   }
@@ -136,6 +143,7 @@ class _$AuthStartedImpl implements AuthStarted {
     TResult? Function()? started,
     TResult? Function(String account, String password)? loginRequested,
     TResult? Function()? logoutRequested,
+    TResult? Function()? sessionCleared,
   }) {
     return started?.call();
   }
@@ -146,6 +154,7 @@ class _$AuthStartedImpl implements AuthStarted {
     TResult Function()? started,
     TResult Function(String account, String password)? loginRequested,
     TResult Function()? logoutRequested,
+    TResult Function()? sessionCleared,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -160,6 +169,7 @@ class _$AuthStartedImpl implements AuthStarted {
     required TResult Function(AuthStarted value) started,
     required TResult Function(AuthLoginRequested value) loginRequested,
     required TResult Function(AuthLogoutRequested value) logoutRequested,
+    required TResult Function(AuthSessionCleared value) sessionCleared,
   }) {
     return started(this);
   }
@@ -170,6 +180,7 @@ class _$AuthStartedImpl implements AuthStarted {
     TResult? Function(AuthStarted value)? started,
     TResult? Function(AuthLoginRequested value)? loginRequested,
     TResult? Function(AuthLogoutRequested value)? logoutRequested,
+    TResult? Function(AuthSessionCleared value)? sessionCleared,
   }) {
     return started?.call(this);
   }
@@ -180,6 +191,7 @@ class _$AuthStartedImpl implements AuthStarted {
     TResult Function(AuthStarted value)? started,
     TResult Function(AuthLoginRequested value)? loginRequested,
     TResult Function(AuthLogoutRequested value)? logoutRequested,
+    TResult Function(AuthSessionCleared value)? sessionCleared,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -275,6 +287,7 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
     required TResult Function() started,
     required TResult Function(String account, String password) loginRequested,
     required TResult Function() logoutRequested,
+    required TResult Function() sessionCleared,
   }) {
     return loginRequested(account, password);
   }
@@ -285,6 +298,7 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
     TResult? Function()? started,
     TResult? Function(String account, String password)? loginRequested,
     TResult? Function()? logoutRequested,
+    TResult? Function()? sessionCleared,
   }) {
     return loginRequested?.call(account, password);
   }
@@ -295,6 +309,7 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
     TResult Function()? started,
     TResult Function(String account, String password)? loginRequested,
     TResult Function()? logoutRequested,
+    TResult Function()? sessionCleared,
     required TResult orElse(),
   }) {
     if (loginRequested != null) {
@@ -309,6 +324,7 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
     required TResult Function(AuthStarted value) started,
     required TResult Function(AuthLoginRequested value) loginRequested,
     required TResult Function(AuthLogoutRequested value) logoutRequested,
+    required TResult Function(AuthSessionCleared value) sessionCleared,
   }) {
     return loginRequested(this);
   }
@@ -319,6 +335,7 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
     TResult? Function(AuthStarted value)? started,
     TResult? Function(AuthLoginRequested value)? loginRequested,
     TResult? Function(AuthLogoutRequested value)? logoutRequested,
+    TResult? Function(AuthSessionCleared value)? sessionCleared,
   }) {
     return loginRequested?.call(this);
   }
@@ -329,6 +346,7 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
     TResult Function(AuthStarted value)? started,
     TResult Function(AuthLoginRequested value)? loginRequested,
     TResult Function(AuthLogoutRequested value)? logoutRequested,
+    TResult Function(AuthSessionCleared value)? sessionCleared,
     required TResult orElse(),
   }) {
     if (loginRequested != null) {
@@ -398,6 +416,7 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
     required TResult Function() started,
     required TResult Function(String account, String password) loginRequested,
     required TResult Function() logoutRequested,
+    required TResult Function() sessionCleared,
   }) {
     return logoutRequested();
   }
@@ -408,6 +427,7 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
     TResult? Function()? started,
     TResult? Function(String account, String password)? loginRequested,
     TResult? Function()? logoutRequested,
+    TResult? Function()? sessionCleared,
   }) {
     return logoutRequested?.call();
   }
@@ -418,6 +438,7 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
     TResult Function()? started,
     TResult Function(String account, String password)? loginRequested,
     TResult Function()? logoutRequested,
+    TResult Function()? sessionCleared,
     required TResult orElse(),
   }) {
     if (logoutRequested != null) {
@@ -432,6 +453,7 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
     required TResult Function(AuthStarted value) started,
     required TResult Function(AuthLoginRequested value) loginRequested,
     required TResult Function(AuthLogoutRequested value) logoutRequested,
+    required TResult Function(AuthSessionCleared value) sessionCleared,
   }) {
     return logoutRequested(this);
   }
@@ -442,6 +464,7 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
     TResult? Function(AuthStarted value)? started,
     TResult? Function(AuthLoginRequested value)? loginRequested,
     TResult? Function(AuthLogoutRequested value)? logoutRequested,
+    TResult? Function(AuthSessionCleared value)? sessionCleared,
   }) {
     return logoutRequested?.call(this);
   }
@@ -452,6 +475,7 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
     TResult Function(AuthStarted value)? started,
     TResult Function(AuthLoginRequested value)? loginRequested,
     TResult Function(AuthLogoutRequested value)? logoutRequested,
+    TResult Function(AuthSessionCleared value)? sessionCleared,
     required TResult orElse(),
   }) {
     if (logoutRequested != null) {
@@ -463,6 +487,123 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
 
 abstract class AuthLogoutRequested implements AuthEvent {
   const factory AuthLogoutRequested() = _$AuthLogoutRequestedImpl;
+}
+
+/// @nodoc
+abstract class _$$AuthSessionClearedImplCopyWith<$Res> {
+  factory _$$AuthSessionClearedImplCopyWith(_$AuthSessionClearedImpl value,
+          $Res Function(_$AuthSessionClearedImpl) then) =
+      __$$AuthSessionClearedImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$AuthSessionClearedImplCopyWithImpl<$Res>
+    extends _$AuthEventCopyWithImpl<$Res, _$AuthSessionClearedImpl>
+    implements _$$AuthSessionClearedImplCopyWith<$Res> {
+  __$$AuthSessionClearedImplCopyWithImpl(_$AuthSessionClearedImpl _value,
+      $Res Function(_$AuthSessionClearedImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of AuthEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$AuthSessionClearedImpl implements AuthSessionCleared {
+  const _$AuthSessionClearedImpl();
+
+  @override
+  String toString() {
+    return 'AuthEvent.sessionCleared()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$AuthSessionClearedImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() started,
+    required TResult Function(String account, String password) loginRequested,
+    required TResult Function() logoutRequested,
+    required TResult Function() sessionCleared,
+  }) {
+    return sessionCleared();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? started,
+    TResult? Function(String account, String password)? loginRequested,
+    TResult? Function()? logoutRequested,
+    TResult? Function()? sessionCleared,
+  }) {
+    return sessionCleared?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? started,
+    TResult Function(String account, String password)? loginRequested,
+    TResult Function()? logoutRequested,
+    TResult Function()? sessionCleared,
+    required TResult orElse(),
+  }) {
+    if (sessionCleared != null) {
+      return sessionCleared();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(AuthStarted value) started,
+    required TResult Function(AuthLoginRequested value) loginRequested,
+    required TResult Function(AuthLogoutRequested value) logoutRequested,
+    required TResult Function(AuthSessionCleared value) sessionCleared,
+  }) {
+    return sessionCleared(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(AuthStarted value)? started,
+    TResult? Function(AuthLoginRequested value)? loginRequested,
+    TResult? Function(AuthLogoutRequested value)? logoutRequested,
+    TResult? Function(AuthSessionCleared value)? sessionCleared,
+  }) {
+    return sessionCleared?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(AuthStarted value)? started,
+    TResult Function(AuthLoginRequested value)? loginRequested,
+    TResult Function(AuthLogoutRequested value)? logoutRequested,
+    TResult Function(AuthSessionCleared value)? sessionCleared,
+    required TResult orElse(),
+  }) {
+    if (sessionCleared != null) {
+      return sessionCleared(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class AuthSessionCleared implements AuthEvent {
+  const factory AuthSessionCleared() = _$AuthSessionClearedImpl;
 }
 
 /// @nodoc

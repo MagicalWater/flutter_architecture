@@ -173,11 +173,11 @@ flutter build bundle
 
 ### Milestone 3-3：Navigation Flow
 
-- [ ] Login 成功後切換到 Profile tab
-- [ ] Logout 成功後回到 Login tab
-- [ ] tab 切換不破壞 Auth / Session 狀態
-- [ ] analyze / test 通過
-- [ ] Git Commit
+- [x] Login 成功後切換到 Profile tab
+- [x] Logout 成功後回到 Login tab
+- [x] tab 切換不破壞 Auth / Session 狀態
+- [x] analyze / test 通過
+- [x] Git Commit
 
 ### Milestone 3-4：Protected Route Flow
 

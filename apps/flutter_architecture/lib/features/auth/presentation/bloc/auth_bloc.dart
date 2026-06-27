@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auth/auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -29,15 +31,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this._loginUseCase,
     this._restoreSessionUseCase,
     this._logoutUseCase,
+    this._sessionManager,
   ) : super(AuthState.initial()) {
     on<AuthStarted>(_onStarted);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
+    on<AuthSessionCleared>(_onSessionCleared);
+
+    _sessionSubscription = _sessionManager.sessionStream.listen((session) {
+      if (session == null && state.isAuthenticated) {
+        add(const AuthEvent.sessionCleared());
+      }
+    });
   }
 
   final LoginUseCase _loginUseCase;
   final RestoreSessionUseCase _restoreSessionUseCase;
   final LogoutUseCase _logoutUseCase;
+  final SessionManager _sessionManager;
+  late final StreamSubscription<AuthSession?> _sessionSubscription;
 
   Future<void> _onStarted(
     AuthStarted event,
@@ -98,6 +110,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
+  void _onSessionCleared(
+    AuthSessionCleared event,
+    Emitter<AuthState> emit,
+  ) {
+    emit(AuthState.initial());
+  }
+
   Future<void> _onLogoutRequested(
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
@@ -119,5 +138,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       },
     );
+  }
+
+  @override
+  Future<void> close() async {
+    await _sessionSubscription.cancel();
+    return super.close();
   }
 }

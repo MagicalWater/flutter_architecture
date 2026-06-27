@@ -201,14 +201,14 @@ dart run sqflite_common_ffi_web:setup
 
 - Milestone 3-1 Login Flow：LoginPage → AuthBloc → LoginUseCase → AuthRepository → Remote / Local → SessionManager 已串好。
 - Milestone 3-2 Profile Flow：ProfileBloc 透過 SessionManager 判斷登入狀態，已登入時呼叫 GetProfileUseCase，ProfilePage 顯示目前登入用戶名稱，並補上 ProfileBloc 測試。
+- Milestone 3-3 Navigation Flow：Login 成功後切換到 Profile tab，Logout 成功後回到 Login tab，AuthBloc 會監聽 SessionManager 避免跨 feature 登出後 UI state 與 Session state 不同步。
 
 目前進行中：
 
-- Milestone 3-3 Navigation Flow。
+- Milestone 3-4 Protected Route Flow。
 
 後續需要處理：
 
-- Login / Logout 後 tab 導航行為。
 - ProtectedRoute 驗證。
 - End-to-End 驗收。
 

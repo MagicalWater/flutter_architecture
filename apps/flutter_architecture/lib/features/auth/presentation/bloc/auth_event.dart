@@ -16,4 +16,7 @@ class AuthEvent with _$AuthEvent {
 
   /// 使用者按下登出。
   const factory AuthEvent.logoutRequested() = AuthLogoutRequested;
+
+  /// 跨 feature 登出或 session 清除後，同步 AuthBloc UI state。
+  const factory AuthEvent.sessionCleared() = AuthSessionCleared;
 }

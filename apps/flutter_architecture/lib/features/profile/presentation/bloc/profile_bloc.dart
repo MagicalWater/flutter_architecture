@@ -11,7 +11,21 @@ part 'profile_state.dart';
 
 /// Profile 頁面的狀態管理。
 ///
-/// 它不直接呼叫 ProfileApiClient，而是透過 GetProfileUseCase。
+/// ## Runtime Flow
+///
+/// ```txt
+/// ProfilePage
+///   ↓ add(ProfileRequested / ProfileLogoutRequested)
+/// ProfileBloc  ← 目前所在位置
+///   ↓
+/// GetProfileUseCase / LogoutUseCase
+///   ↓
+/// Repository / SessionManager
+/// ```
+///
+/// ProfileBloc 不直接呼叫 ProfileApiClient，也不直接依賴 AuthBloc。
+///
+/// 是否已登入由 SessionManager 判斷，登出則透過 LogoutUseCase 執行。
 @injectable
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc(

@@ -267,14 +267,14 @@ flutter build bundle
 
 ### Milestone 5-2：程式碼整理
 
-- [ ] 補齊重要中文註解
-- [ ] 清理 import
-- [ ] 檢查命名一致性
-- [ ] 移除暫時性或冗餘程式碼（若有）
-- [ ] analyze 通過
-- [ ] flutter test 通過
-- [ ] 檢查 git diff
-- [ ] Git Commit
+- [x] 補齊重要中文註解
+- [x] 清理 import
+- [x] 檢查命名一致性
+- [x] 移除暫時性或冗餘程式碼（若有）
+- [x] analyze 通過
+- [x] flutter test 通過
+- [x] 檢查 git diff
+- [x] Git Commit
 
 ### Milestone 5-3：最終驗收
 

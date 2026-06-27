@@ -27,7 +27,10 @@ class ProfileApiClient {
   }
 
   /// 示範真實 Dio request 應該如何標記需要登入。
-  Future<Response<dynamic>> debugRealRequestExample() {
+  ///
+  /// MVP 目前使用 mock response；若未來切換成真實 API，
+  /// 可以沿用這個 authenticated request 寫法。
+  Future<Response<dynamic>> authenticatedRequestExample() {
     return _dio.get<dynamic>(
       '/profile',
       options: Options(

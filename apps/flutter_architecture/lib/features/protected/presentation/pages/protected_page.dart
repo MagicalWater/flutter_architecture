@@ -1,7 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:auth/auth.dart';
-import 'package:flutter_architecture/app/di/injection.dart';
 
 /// ProtectedPage，也就是需求中的 D 頁面。
 ///
@@ -10,6 +8,7 @@ import 'package:flutter_architecture/app/di/injection.dart';
 /// 這個頁面需要登入才能進入。
 ///
 /// 檢查邏輯不放在頁面裡，而是放在 AuthGuard。
+/// 頁面不讀取 SessionManager，也不依賴 DI container。
 /// 頁面只負責顯示內容。
 @RoutePage()
 class ProtectedPage extends StatelessWidget {
@@ -17,24 +16,20 @@ class ProtectedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final session = getIt<SessionManager>().currentSession;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Protected Page'),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const Icon(Icons.verified_user_outlined, size: 64),
-            const SizedBox(height: 16),
-            const Text(
+            Icon(Icons.verified_user_outlined, size: 64),
+            SizedBox(height: 16),
+            Text(
               '你已通過 Route Guard',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
-            Text('目前登入用戶 ID：${session?.userId ?? '未知'}'),
           ],
         ),
       ),

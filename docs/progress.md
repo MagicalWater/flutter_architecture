@@ -148,7 +148,7 @@ flutter build bundle
 
 # Milestone 3：Auth + Profile Flow
 
-**狀態：** 🟡 In Progress
+**狀態：** 🟢 Completed
 
 ## 拆分計畫
 
@@ -194,7 +194,7 @@ flutter build bundle
 - [x] Logout 後 Profile 顯示尚未登入
 - [x] Logout 後 ProtectedRoute 會被擋下
 - [x] analyze / test 通過
-- [ ] build bundle 通過（本次工具安全檢查擋下，未能重跑）
+- [ ] build bundle 通過（前次工具安全檢查擋下，未能重跑；Milestone 4 收尾會重新驗證）
 - [x] Git Commit
 
 ## Definition of Done
@@ -206,3 +206,32 @@ flutter build bundle
 - [x] Auto Login 生效
 - [x] analyze 通過
 - [x] flutter test 通過
+
+---
+
+# Milestone 4：Route Guard 與頁面整理
+
+**狀態：** 🟡 In Progress
+
+## 拆分計畫
+
+### Milestone 4-1：ProtectedPage 展示責任整理
+
+- [x] ProtectedPage 不直接讀取 SessionManager
+- [x] ProtectedPage 不依賴 DI container
+- [x] 登入檢查責任只保留在 AuthGuard
+- [x] 補上 ProtectedPage widget test
+- [x] analyze 通過
+- [x] flutter test 通過
+- [x] Git Commit
+
+### Milestone 4-2：Shell / Route 結構驗收
+
+- [ ] ShellPage 有 AppBar
+- [ ] ShellPage 有 BottomNavigationBar
+- [ ] Login / Profile 是 ShellPage 內層頁面
+- [ ] AppBar action 可以跳轉 ProtectedPage
+- [ ] ProtectedPage 有 Route Guard
+- [ ] 未登入時進入 ProtectedPage 會導回 LoginPage
+- [ ] analyze / test / build bundle 通過
+- [ ] Git Commit

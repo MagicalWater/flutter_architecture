@@ -191,11 +191,11 @@ dart run sqflite_common_ffi_web:setup
 
 ---
 
-## 目前進行中
+## 已完成狀態
 
 ### Milestone 3：Auth + Profile Flow
 
-狀態：Completed（build bundle 本次因工具安全檢查擋下，未能重跑）。
+狀態：Completed（前次 build bundle 因工具安全檢查擋下，未能重跑；Milestone 4 收尾會重新驗證）。
 
 已完成：
 
@@ -205,9 +205,18 @@ dart run sqflite_common_ffi_web:setup
 - Milestone 3-4 Protected Route Flow：ProtectedRoute 已掛上 AuthGuard，AuthGuard 依賴 SessionManager 判斷可否進入，ProtectedPage 不依賴 AuthBloc，並補上 AuthGuard 測試。
 - Milestone 3-5 End-to-End 驗收：補上 AuthBloc restore session 測試，並以 AuthBloc / ProfileBloc / AuthGuard 測試覆蓋 Login、Profile、Logout、ProtectedRoute 的核心狀態流。
 
-目前進行中：
+---
 
-- Milestone 4：Route Guard 與頁面整理。
+## 目前進行中
+
+### Milestone 4：Route Guard 與頁面整理
+
+狀態：In Progress。
+
+拆分計畫：
+
+- Milestone 4-1 ProtectedPage 展示責任整理：ProtectedPage 不直接讀取 SessionManager，也不依賴 DI container；登入檢查責任只保留在 AuthGuard；已補上 ProtectedPage widget test。
+- Milestone 4-2 Shell / Route 結構驗收：確認 ShellPage、BottomNavigationBar、Login / Profile nested routes、ProtectedRoute guard 與未登入導回 LoginPage 行為。
 
 ---
 

@@ -260,6 +260,21 @@ ShellPage(A)
   └── ProtectedPage(D)
 ```
 
+### Milestone 4-1：ProtectedPage 展示責任整理
+
+完成 ProtectedPage 的頁面責任整理。
+
+完成定義：
+
+- ProtectedPage 不直接讀取 SessionManager。
+- ProtectedPage 不依賴 DI container。
+- 登入檢查責任只保留在 AuthGuard。
+- 補上 ProtectedPage widget test。
+
+### Milestone 4-2：Shell / Route 結構驗收
+
+完成 Shell 與 Route 結構的整體驗收。
+
 完成定義：
 
 - ShellPage 有 AppBar。

@@ -132,7 +132,7 @@ Commit：
 
 ### Milestone 2C：跨平台 SQLite 初始化
 
-狀態：In Progress。
+狀態：Completed。
 
 已完成：
 
@@ -142,11 +142,11 @@ Commit：
 - 使用條件匯入隔離平台差異。
 - analyze / test / build bundle 已通過。
 
-待完成：
+收尾紀錄：
 
-- README 補充 Web setup 指令。
-- 若 app 已建立 web 平台資料夾，驗證 flutter build web。
-- Commit。
+- README 已補充 Web setup 指令。
+- 已確認 app 目前只有 sqflite web binary，尚未建立完整 Flutter Web 平台 scaffold；`flutter build web` 需待執行 `flutter create . --platforms web` 後再驗證。
+- 已完成 Commit。
 
 Web SQLite setup 指令：
 

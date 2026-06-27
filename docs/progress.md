@@ -116,7 +116,7 @@ flutter build bundle
 
 # Milestone 2C：跨平台 SQLite 初始化
 
-**狀態：** 🟡 In Progress
+**狀態：** 🟢 Completed
 
 ## 已完成項目
 
@@ -128,11 +128,11 @@ flutter build bundle
 - [x] `flutter test` 通過
 - [x] `flutter build bundle` 通過
 
-## 待完成項目
+## 收尾紀錄
 
 - [x] README 補充 Web setup：`dart run sqflite_common_ffi_web:setup`
-- [ ] app 目前只有 sqflite web binary，尚未建立完整 Flutter Web 平台 scaffold；待執行 `flutter create . --platforms web` 後驗證 `flutter build web`
-- [ ] Git Commit
+- [x] 已確認 app 目前只有 sqflite web binary，尚未建立完整 Flutter Web 平台 scaffold；`flutter build web` 需待執行 `flutter create . --platforms web` 後再驗證
+- [x] Git Commit
 
 ## Definition of Done
 
@@ -141,7 +141,7 @@ flutter build bundle
 - [x] `melos run analyze` 通過
 - [x] `flutter test` 通過
 - [x] README 補充 Web setup
-- [ ] Git Commit
+- [x] Git Commit
 
 ---
 

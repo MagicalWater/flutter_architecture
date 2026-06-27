@@ -5,6 +5,38 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('AuthBloc', () {
+    test('App 啟動時可以 restore 已存在的 session', () async {
+      final tokenStorage = _MemoryTokenStorage();
+      final sessionManager = SessionManager(tokenStorage);
+      final repository = _FakeAuthRepository(sessionManager);
+      await repository.login(account: 'demo', password: 'password');
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      bloc.add(const AuthEvent.started());
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder(
+          <Matcher>[
+            predicate<AuthState>((state) => state.isLoading),
+            predicate<AuthState>(
+              (state) =>
+                  !state.isLoading &&
+                  state.isAuthenticated &&
+                  state.user?.name == 'Demo User',
+            ),
+          ],
+        ),
+      );
+    });
+
     test('SessionManager 被其他 feature 清空時，AuthBloc 會同步清除 user', () async {
       final tokenStorage = _MemoryTokenStorage();
       final sessionManager = SessionManager(tokenStorage);
@@ -55,9 +87,10 @@ void main() {
 }
 
 class _FakeAuthRepository implements AuthRepository {
-  const _FakeAuthRepository(this._sessionManager);
+  _FakeAuthRepository(this._sessionManager);
 
   final SessionManager _sessionManager;
+  AuthUser? _cachedUser;
 
   @override
   Future<Result<AuthResult>> login({
@@ -68,6 +101,7 @@ class _FakeAuthRepository implements AuthRepository {
       id: 'user-1',
       name: 'Demo User',
     );
+    _cachedUser = user;
 
     await _sessionManager.login(
       accessToken: 'access-token',
@@ -84,13 +118,22 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Result<void>> logout() async {
+    _cachedUser = null;
     await _sessionManager.logout();
     return const Success(null);
   }
 
   @override
   Future<Result<AuthUser?>> restoreSession() async {
-    return const Success(null);
+    final user = _cachedUser;
+
+    if (user == null) {
+      await _sessionManager.logout();
+      return const Success(null);
+    }
+
+    await _sessionManager.restore(userId: user.id);
+    return Success(user);
   }
 }
 

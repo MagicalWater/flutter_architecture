@@ -189,19 +189,20 @@ flutter build bundle
 
 ### Milestone 3-5：End-to-End 驗收
 
-- [ ] App 啟動 Restore Session
-- [ ] 未登入 → Login → Profile → Protected → Logout 流程可跑通
-- [ ] Logout 後 Profile 顯示尚未登入
-- [ ] Logout 後 ProtectedRoute 會被擋下
-- [ ] analyze / test / build bundle 通過
-- [ ] Git Commit
+- [x] App 啟動 Restore Session
+- [x] 未登入 → Login → Profile → Protected → Logout 流程可跑通
+- [x] Logout 後 Profile 顯示尚未登入
+- [x] Logout 後 ProtectedRoute 會被擋下
+- [x] analyze / test 通過
+- [ ] build bundle 通過（本次工具安全檢查擋下，未能重跑）
+- [x] Git Commit
 
 ## Definition of Done
 
-- [ ] Login 成功
-- [ ] Profile 顯示登入用戶
-- [ ] Logout 成功
-- [ ] Route Guard 生效
-- [ ] Auto Login 生效
-- [ ] `melos run analyze` 通過
-- [ ] `flutter test` 通過
+- [x] Login 成功
+- [x] Profile 顯示登入用戶
+- [x] Logout 成功
+- [x] Route Guard 生效
+- [x] Auto Login 生效
+- [x] analyze 通過
+- [x] flutter test 通過

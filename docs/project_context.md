@@ -207,16 +207,30 @@ dart run sqflite_common_ffi_web:setup
 
 ---
 
-## 目前進行中
+## 已完成狀態
 
 ### Milestone 4：Route Guard 與頁面整理
 
-狀態：In Progress。
+狀態：Completed。
 
-拆分計畫：
+已完成：
 
-- Milestone 4-1 ProtectedPage 展示責任整理：ProtectedPage 不直接讀取 SessionManager，也不依賴 DI container；登入檢查責任只保留在 AuthGuard；已補上 ProtectedPage widget test。
-- Milestone 4-2 Shell / Route 結構驗收：確認 ShellPage、BottomNavigationBar、Login / Profile nested routes、ProtectedRoute guard 與未登入導回 LoginPage 行為。
+- ShellPage 有 AppBar 與 BottomNavigationBar。
+- LoginRoute / ProfileRoute 是 ShellRoute 的 nested routes。
+- AppBar action 可以 push ProtectedRoute。
+- ProtectedRoute 已掛上 AuthGuard。
+- 未登入進 ProtectedRoute 會由 AuthGuard 導回 ShellRoute(LoginRoute)。
+- ProtectedPage 已整理成純展示頁，不直接讀取 SessionManager，也不依賴 DI container。
+- 已補上 AppRouter route 結構測試與 ProtectedPage widget test。
+- analyze / flutter test / flutter build bundle 已通過。
+
+---
+
+## 目前進行中
+
+### Milestone 5：整理與驗證
+
+狀態：Pending。
 
 ---
 

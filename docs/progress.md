@@ -211,7 +211,7 @@ flutter build bundle
 
 # Milestone 4：Route Guard 與頁面整理
 
-**狀態：** 🟡 In Progress
+**狀態：** 🟢 Completed
 
 ## 拆分計畫
 
@@ -227,11 +227,24 @@ flutter build bundle
 
 ### Milestone 4-2：Shell / Route 結構驗收
 
-- [ ] ShellPage 有 AppBar
-- [ ] ShellPage 有 BottomNavigationBar
-- [ ] Login / Profile 是 ShellPage 內層頁面
-- [ ] AppBar action 可以跳轉 ProtectedPage
-- [ ] ProtectedPage 有 Route Guard
-- [ ] 未登入時進入 ProtectedPage 會導回 LoginPage
-- [ ] analyze / test / build bundle 通過
-- [ ] Git Commit
+- [x] ShellPage 有 AppBar
+- [x] ShellPage 有 BottomNavigationBar
+- [x] Login / Profile 是 ShellPage 內層頁面
+- [x] AppBar action 可以跳轉 ProtectedPage
+- [x] ProtectedPage 有 Route Guard
+- [x] 未登入時進入 ProtectedPage 會導回 LoginPage
+- [x] analyze / test / build bundle 通過
+- [x] Git Commit
+
+## Definition of Done
+
+- [x] ShellPage 有 AppBar
+- [x] ShellPage 有 BottomNavigationBar
+- [x] Login / Profile nested routes 正確
+- [x] AppBar action 可進 ProtectedRoute
+- [x] ProtectedRoute 掛上 AuthGuard
+- [x] 未登入進 ProtectedRoute 會導回 LoginRoute
+- [x] ProtectedPage 只負責展示內容
+- [x] analyze 通過
+- [x] flutter test 通過
+- [x] flutter build bundle 通過

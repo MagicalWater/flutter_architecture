@@ -190,24 +190,62 @@ dart run sqflite_common_ffi_web:setup
 
 完成主要業務流程。
 
-需要完成：
+### Milestone 3-1：Login Flow
 
-- Login 完整流程
-- Restore Session
-- Logout
-- GetProfile
-- AuthBloc
-- ProfileBloc
-- LoginPage
-- ProfilePage
+完成登入本身，不先處理所有頁面跳轉細節。
 
 完成定義：
 
-- Login 頁面按鈕可以觸發完整 Clean Architecture 流程。
-- 登入成功後自動切換到 Profile 頁面。
-- Profile 頁面可以顯示當前登入用戶名稱。
-- App 重開後可以自動登入。
+- LoginPage 按鈕可以觸發 AuthBloc。
+- AuthBloc 呼叫 LoginUseCase。
+- LoginUseCase 經由 AuthRepository 完成 Remote + Local 流程。
+- 登入成功後更新 SessionManager。
+- AuthBloc state 可以正確呈現 loading / success / failure。
+
+### Milestone 3-2：Profile Flow
+
+完成 Profile 顯示與未登入狀態。
+
+完成定義：
+
 - 未登入時 Profile 顯示尚未登入。
+- 已登入時 ProfileBloc 呼叫 GetProfileUseCase。
+- Profile 頁面顯示目前登入用戶名稱。
+- Profile loading / error 狀態正常。
+
+### Milestone 3-3：Navigation Flow
+
+完成登入 / 登出後的 tab 行為。
+
+完成定義：
+
+- Login 成功後切換到 Profile tab。
+- Logout 成功後回到 Login tab。
+- tab 切換不破壞 Auth / Session 狀態。
+
+### Milestone 3-4：Protected Route Flow
+
+完成受保護頁面的路由行為。
+
+完成定義：
+
+- 未登入進 ProtectedRoute 會被 AuthGuard 導回 Login。
+- 已登入進 ProtectedRoute 會成功進入 ProtectedPage。
+- ProtectedPage 不依賴 AuthBloc。
+
+### Milestone 3-5：End-to-End 驗收
+
+完成整體流程驗證。
+
+完成定義：
+
+- App 啟動 Restore Session。
+- 未登入 → Login → Profile → Protected → Logout 流程可跑通。
+- Logout 後 Profile 顯示尚未登入。
+- Logout 後 ProtectedRoute 會被擋下。
+- `melos run analyze` 通過。
+- `flutter test` 通過。
+- `flutter build bundle` 通過。
 
 ---
 

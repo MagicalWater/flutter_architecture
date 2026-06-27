@@ -148,16 +148,53 @@ flutter build bundle
 
 # Milestone 3：Auth + Profile Flow
 
-**狀態：** ⏳ Not Started
+**狀態：** 🟡 In Progress
 
-## 預計完成項目
+## 拆分計畫
 
-- Login Button 串接 AuthBloc
-- 登入成功後切換到 Profile tab
-- Profile 頁面顯示目前登入用戶名稱
-- 未登入時 Profile 顯示尚未登入
-- ProtectedPage Route Guard
-- 未登入進 ProtectedPage 時導回 LoginPage
+### Milestone 3-1：Login Flow
+
+- [x] LoginPage 按鈕觸發 AuthBloc
+- [x] AuthBloc 呼叫 LoginUseCase
+- [x] LoginUseCase 經由 AuthRepository 完成 Remote + Local 流程
+- [x] 登入成功後更新 SessionManager
+- [x] AuthBloc state 正確呈現 loading / success / failure
+- [x] analyze / test 通過
+- [x] Git Commit
+
+### Milestone 3-2：Profile Flow
+
+- [ ] 未登入顯示尚未登入
+- [ ] 已登入時 ProfileBloc 呼叫 GetProfileUseCase
+- [ ] Profile 頁面顯示目前登入用戶名稱
+- [ ] Profile 錯誤與 loading 狀態正常
+- [ ] analyze / test 通過
+- [ ] Git Commit
+
+### Milestone 3-3：Navigation Flow
+
+- [ ] Login 成功後切換到 Profile tab
+- [ ] Logout 成功後回到 Login tab
+- [ ] tab 切換不破壞 Auth / Session 狀態
+- [ ] analyze / test 通過
+- [ ] Git Commit
+
+### Milestone 3-4：Protected Route Flow
+
+- [ ] 未登入進 ProtectedRoute 會被 AuthGuard 導回 Login
+- [ ] 已登入進 ProtectedRoute 會成功進入 ProtectedPage
+- [ ] ProtectedPage 不依賴 AuthBloc
+- [ ] analyze / test 通過
+- [ ] Git Commit
+
+### Milestone 3-5：End-to-End 驗收
+
+- [ ] App 啟動 Restore Session
+- [ ] 未登入 → Login → Profile → Protected → Logout 流程可跑通
+- [ ] Logout 後 Profile 顯示尚未登入
+- [ ] Logout 後 ProtectedRoute 會被擋下
+- [ ] analyze / test / build bundle 通過
+- [ ] Git Commit
 
 ## Definition of Done
 

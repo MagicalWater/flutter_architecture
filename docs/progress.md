@@ -181,11 +181,11 @@ flutter build bundle
 
 ### Milestone 3-4：Protected Route Flow
 
-- [ ] 未登入進 ProtectedRoute 會被 AuthGuard 導回 Login
-- [ ] 已登入進 ProtectedRoute 會成功進入 ProtectedPage
-- [ ] ProtectedPage 不依賴 AuthBloc
-- [ ] analyze / test 通過
-- [ ] Git Commit
+- [x] 未登入進 ProtectedRoute 會被 AuthGuard 導回 Login
+- [x] 已登入進 ProtectedRoute 會成功進入 ProtectedPage
+- [x] ProtectedPage 不依賴 AuthBloc
+- [x] analyze / test 通過
+- [x] Git Commit
 
 ### Milestone 3-5：End-to-End 驗收
 

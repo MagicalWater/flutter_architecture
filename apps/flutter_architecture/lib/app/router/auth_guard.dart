@@ -22,11 +22,11 @@ class AuthGuard extends AutoRouteGuard {
 
   final SessionManager _sessionManager;
 
+  bool get canNavigateToProtected => _sessionManager.isAuthenticated;
+
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) {
-    final isAuthenticated = _sessionManager.isAuthenticated;
-
-    if (isAuthenticated) {
+    if (canNavigateToProtected) {
       resolver.next(true);
       return;
     }

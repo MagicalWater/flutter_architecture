@@ -75,7 +75,15 @@ Monorepo 能讓共用能力獨立成 package，同時保持本地開發方便。
 
 ### 影響
 
-根目錄需要 `melos.yaml` 與 root `pubspec.yaml`。
+根目錄需要 root `pubspec.yaml` 管理 Dart Pub Workspaces 與 Melos 8 設定。
+
+`melos.yaml` 只保留遷移提示，不再作為主要設定來源。
+
+workspace package 需要在各自 `pubspec.yaml` 加上：
+
+```yaml
+resolution: workspace
+```
 
 Melos 指令統一使用：
 
@@ -84,6 +92,12 @@ dart run melos ...
 ```
 
 避免依賴全域安裝的 melos。
+
+`build_runner` 需要依 dependency graph 順序執行，避免乾淨 workspace 下游 package 早於上游 generated files 完成：
+
+```bash
+dart run melos exec --depends-on=build_runner --order-dependents --concurrency=1 -- flutter pub run build_runner build --delete-conflicting-outputs
+```
 
 ---
 

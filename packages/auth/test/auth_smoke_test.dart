@@ -1,5 +1,5 @@
 import 'package:auth/auth.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('AuthSession 可以保存 token 與使用者資訊', () {

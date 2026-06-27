@@ -1,9 +1,9 @@
 import 'package:api_client/api_client.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('AuthApiClient.login 會回傳 mock token 與使用者資料', () async {
-    final client = AuthApiClient();
+    const client = AuthApiClient();
 
     final response = await client.login(
       account: 'demo',

@@ -30,10 +30,12 @@ class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
   final SharedPreferences _preferences;
   final Database _database;
 
+  @override
   Future<void> saveAccessToken(String token) async {
     await _preferences.setString(_accessTokenKey, token);
   }
 
+  @override
   Future<String?> readAccessToken() async {
     return _preferences.getString(_accessTokenKey);
   }
@@ -47,6 +49,7 @@ class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
     return readAccessToken();
   }
 
+  @override
   Future<void> clearAccessToken() async {
     await _preferences.remove(_accessTokenKey);
   }

@@ -1,22 +1,3 @@
-name: flutter_enterprise_architecture_template
-
-packages:
-  - apps/**
-  - packages/**
-
-command:
-  bootstrap:
-    usePubspecOverrides: true
-
-scripts:
-  get:
-    description: 取得所有 packages 的 dependencies。
-    run: dart run melos exec -- flutter pub get
-
-  analyze:
-    description: 執行靜態分析。
-    run: dart run melos exec -- flutter analyze
-
-  build_runner:
-    description: 執行 build_runner 產生 Freezed、Auto Route、Injectable 程式碼。
-    run: dart run melos exec --depends-on=build_runner -- flutter pub run build_runner build --delete-conflicting-outputs
+# Melos 8 起主要設定已移到 root pubspec.yaml 的 `workspace:` 與 `melos:` 區塊。
+#
+# 本檔保留作為遷移提示，避免誤以為專案缺少 Melos 設定。

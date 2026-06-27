@@ -3,7 +3,27 @@ description: Flutter Enterprise Architecture Template 的 Melos workspace 設定
 publish_to: none
 
 environment:
-  sdk: ">=3.4.0 <4.0.0"
+  sdk: ">=3.6.0 <4.0.0"
+
+workspace:
+  - apps/flutter_architecture
+  - packages/api_client
+  - packages/auth
+  - packages/core
 
 dev_dependencies:
-  melos: ^6.3.3
+  melos: ^8.0.0
+
+melos:
+  scripts:
+    get:
+      description: 取得所有 packages 的 dependencies。
+      run: dart run melos exec -- flutter pub get
+
+    analyze:
+      description: 執行靜態分析。
+      run: dart run melos exec -- flutter analyze
+
+    build_runner:
+      description: 執行 build_runner 產生 Freezed、Auto Route、Injectable 程式碼。
+      run: dart run melos exec --depends-on=build_runner --order-dependents --concurrency=1 -- flutter pub run build_runner build --delete-conflicting-outputs

@@ -253,6 +253,27 @@ dart run sqflite_common_ffi_web:setup
 
 ---
 
+## 已完成狀態
+
+### Milestone 6：Melos 8 / Pub Workspaces Migration
+
+狀態：Completed。
+
+已完成：
+
+- 先執行 `dart run melos clean`，清掉舊版 bootstrap 狀態。
+- root `pubspec.yaml` 已升級為 Melos 8 + Dart Pub Workspaces 設定。
+- workspace package 清單已移到 root `pubspec.yaml` 的 `workspace:`。
+- Melos scripts 已移到 root `pubspec.yaml` 的 `melos:`。
+- 各 app / package 已加上 `resolution: workspace`。
+- SDK constraint 已升級為 `>=3.6.0 <4.0.0`。
+- 舊版 bootstrap 產生的 `pubspec_overrides.yaml` 已移除。
+- 純 Dart package 測試已改用 `flutter_test`，避免 workspace resolution 與 Flutter SDK pinned dependencies 衝突。
+- `build_runner` script 已加上 `--order-dependents --concurrency=1`，避免乾淨 workspace 下游 package 早於上游 generated files 完成。
+- `dart run melos bootstrap`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
+
+---
+
 ## 已拍板的重要設計
 
 ### 1. Auth domain / data 應該放在 packages/auth

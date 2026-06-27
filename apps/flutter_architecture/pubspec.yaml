@@ -2,9 +2,10 @@ name: flutter_architecture
 description: Clean Architecture + Feature First + Bloc 的 Flutter Enterprise Template。
 publish_to: none
 version: 0.1.0+1
+resolution: workspace
 
 environment:
-  sdk: ">=3.4.0 <4.0.0"
+  sdk: ">=3.6.0 <4.0.0"
 
 dependencies:
   flutter:

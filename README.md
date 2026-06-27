@@ -205,27 +205,59 @@ ApiClient / SQLite / SharedPreferences
 
 ## 快速開始
 
-### 1. 安裝 dependencies
+本專案使用 Melos 8 + Dart Pub Workspaces。
+
+Workspace 設定集中在 root `pubspec.yaml`：
+
+```txt
+workspace:
+  - apps/flutter_architecture
+  - packages/api_client
+  - packages/auth
+  - packages/core
+
+melos:
+  scripts:
+    analyze
+    build_runner
+```
+
+各 app / package 的 `pubspec.yaml` 需要設定：
+
+```yaml
+resolution: workspace
+```
+
+### 1. 清理舊 workspace 狀態（需要時）
+
+從舊版 Melos 設定遷移或遇到 dependency link 異常時，先清理：
 
 ```bash
-dart pub get
+dart run melos clean
+```
+
+### 2. 安裝 dependencies
+
+```bash
 dart run melos bootstrap
 ```
 
-### 2. 產生程式碼
+### 3. 產生程式碼
 
 ```bash
 dart run melos run build_runner
 ```
 
-### 3. 分析與測試
+`build_runner` script 會使用 `--order-dependents --concurrency=1`，確保上游 package 先產生 Freezed / JSON / Injectable / Auto Route 檔案，再產生下游 package。
+
+### 4. 分析與測試
 
 ```bash
 dart run melos run analyze
 dart run melos exec -- flutter test
 ```
 
-### 4. Build 驗證
+### 5. Build 驗證
 
 ```bash
 cd apps/flutter_architecture

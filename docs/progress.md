@@ -296,3 +296,32 @@ flutter build bundle
 - [x] `melos run analyze` 通過
 - [x] `flutter test` 通過
 - [x] `flutter build bundle` 通過
+
+---
+
+# Milestone 6：Melos 8 / Pub Workspaces Migration
+
+**狀態：** 🟢 Completed
+
+## 完成項目
+
+- [x] 先執行 `dart run melos clean`
+- [x] root `pubspec.yaml` 升級為 Melos 8 + Dart Pub Workspaces 設定
+- [x] workspace package 清單移到 root `pubspec.yaml` 的 `workspace:`
+- [x] Melos scripts 移到 root `pubspec.yaml` 的 `melos:`
+- [x] 各 app / package 加上 `resolution: workspace`
+- [x] SDK constraint 升級為 `>=3.6.0 <4.0.0`
+- [x] 移除舊版 bootstrap 產生的 `pubspec_overrides.yaml`
+- [x] 純 Dart package 測試改用 `flutter_test`
+- [x] `build_runner` script 加上 `--order-dependents --concurrency=1`
+- [x] `dart run melos bootstrap` 通過
+- [x] `dart run melos run build_runner` 通過
+- [x] `dart run melos run analyze` 通過
+- [x] `dart run melos exec -- flutter test` 通過
+- [x] `flutter build bundle` 通過
+
+## 注意事項
+
+- Melos 8 仍保留 `melos.yaml` 作為遷移提示，但實際設定來源是 root `pubspec.yaml`。
+- Pub Workspaces 使用單一 dependency resolution，測試依賴需要與 Flutter SDK pinned dependencies 相容。
+- 乾淨 workspace 下，多 package 同時跑 `build_runner` 可能造成下游找不到上游 generated files，因此需要依 dependency graph 順序執行。

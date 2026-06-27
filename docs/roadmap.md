@@ -290,12 +290,38 @@ ShellPage(A)
 
 收尾第一階段。
 
-需要完成：
+Milestone 5 不新增業務功能，而是把目前 MVP 整理到可交付、可閱讀、可作為模板基線的狀態。
+
+### Milestone 5-1：文件整理
+
+完成文件與目前實際架構的同步。
+
+完成定義：
+
+- README 與目前實際架構一致。
+- `project_context.md`、`progress.md`、`roadmap.md` 狀態一致。
+- 若有新的架構決策，已補充到 `architecture_decisions.md`。
+- 完成 git diff 檢查。
+- 完成 Git Commit。
+
+### Milestone 5-2：程式碼整理
+
+完成程式碼可讀性與一致性整理。
+
+完成定義：
 
 - 補齊必要中文註解。
-- 補齊必要 README。
-- 確認架構流程可讀。
-- 執行基本分析與 build_runner。
+- 清理 import。
+- 檢查命名一致性。
+- 移除暫時性或冗餘程式碼（若有）。
+- `melos run analyze` 通過。
+- `flutter test` 通過。
+- 完成 git diff 檢查。
+- 完成 Git Commit。
+
+### Milestone 5-3：最終驗收
+
+完成第一階段 MVP 的最終驗證。
 
 完成定義：
 
@@ -303,9 +329,11 @@ ShellPage(A)
 - 文件符合繁中規範。
 - MVP 功能可以跑通。
 - `melos bootstrap` 通過。
+- `melos run build_runner` 通過。
 - `melos run analyze` 通過。
 - `flutter test` 通過。
 - `flutter build bundle` 通過。
+- 完成 Final Commit。
 
 ---
 

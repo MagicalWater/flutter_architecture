@@ -248,3 +248,51 @@ flutter build bundle
 - [x] analyze 通過
 - [x] flutter test 通過
 - [x] flutter build bundle 通過
+
+---
+
+# Milestone 5：整理與驗證
+
+**狀態：** 🟡 In Progress
+
+## 拆分計畫
+
+### Milestone 5-1：文件整理
+
+- [x] 同步 README 與目前實際架構
+- [x] 檢查 `project_context.md`、`progress.md`、`roadmap.md` 是否一致
+- [x] 必要時補充 `architecture_decisions.md`（本次無新增架構決策，不需補充）
+- [x] 檢查 git diff
+- [x] Git Commit
+
+### Milestone 5-2：程式碼整理
+
+- [ ] 補齊重要中文註解
+- [ ] 清理 import
+- [ ] 檢查命名一致性
+- [ ] 移除暫時性或冗餘程式碼（若有）
+- [ ] analyze 通過
+- [ ] flutter test 通過
+- [ ] 檢查 git diff
+- [ ] Git Commit
+
+### Milestone 5-3：最終驗收
+
+- [ ] melos bootstrap 通過
+- [ ] build_runner 通過
+- [ ] melos run analyze 通過
+- [ ] flutter test 通過
+- [ ] flutter build bundle 通過
+- [ ] 確認 git diff 為預期內容
+- [ ] Final Commit
+
+## Definition of Done
+
+- [ ] 程式碼結構清楚
+- [ ] 文件符合繁中規範
+- [ ] MVP 功能可以跑通
+- [ ] `melos bootstrap` 通過
+- [ ] `melos run build_runner` 通過
+- [ ] `melos run analyze` 通過
+- [ ] `flutter test` 通過
+- [ ] `flutter build bundle` 通過

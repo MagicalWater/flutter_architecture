@@ -184,7 +184,7 @@ UserUseCase
 每個 Milestone 收尾至少執行：
 
 ```bash
-dart run melos bootstrap
+dart pub get
 dart run melos run build_runner
 dart run melos run analyze
 dart run melos exec -- flutter test

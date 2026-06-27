@@ -42,7 +42,7 @@
 
 ### Verified
 
-- `dart run melos bootstrap`
+- `dart pub get`
 - `dart run melos run build_runner`
 - `dart run melos exec -- flutter analyze`
 - `dart run melos exec -- flutter test`

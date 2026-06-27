@@ -16,10 +16,6 @@ dev_dependencies:
 
 melos:
   scripts:
-    get:
-      description: 取得所有 packages 的 dependencies。
-      run: dart run melos exec -- flutter pub get
-
     analyze:
       description: 執行靜態分析。
       run: dart run melos exec -- flutter analyze

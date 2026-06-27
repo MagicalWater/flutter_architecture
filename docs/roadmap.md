@@ -39,7 +39,7 @@ root/
 - 專案結構建立完成。
 - 每個 package 都有 `pubspec.yaml`。
 - 文件已經說明第一階段範圍。
-- `melos bootstrap` 可以成功。
+- `dart pub get` 可以成功。
 - `melos run analyze` 可以成功。
 - `flutter test` 可以成功。
 - `flutter build bundle` 可以成功。
@@ -328,7 +328,7 @@ Milestone 5 不新增業務功能，而是把目前 MVP 整理到可交付、可
 - 程式碼結構清楚。
 - 文件符合繁中規範。
 - MVP 功能可以跑通。
-- `melos bootstrap` 通過。
+- `dart pub get` 通過。
 - `melos run build_runner` 通過。
 - `melos run analyze` 通過。
 - `flutter test` 通過。
@@ -416,7 +416,7 @@ Milestone 5 不新增業務功能，而是把目前 MVP 整理到可交付、可
 最終至少執行：
 
 ```bash
-dart run melos bootstrap
+dart pub get
 dart run melos run build_runner
 dart run melos run analyze
 dart run melos exec -- flutter test
@@ -476,7 +476,7 @@ flutter build bundle
 
 #### Milestone 8-5：Final Verification
 
-- `dart run melos bootstrap`
+- `dart pub get`
 - `dart run melos run build_runner`
 - `dart run melos run analyze`
 - `dart run melos exec -- flutter test`

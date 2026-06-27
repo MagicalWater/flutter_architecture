@@ -238,14 +238,14 @@ dart run sqflite_common_ffi_web:setup
 
 - Milestone 5-1 文件整理：已同步 README 與目前實際架構，並確認 `project_context.md`、`docs/archive/progress_v1.0.0.md`、`roadmap.md` 狀態一致。
 - Milestone 5-2 程式碼整理：已補齊重要中文註解、清理 import、檢查命名一致性，並整理暫時性或冗餘程式碼。
-- Milestone 5-3 最終驗收：`melos bootstrap`、`melos run build_runner`、`melos run analyze`、`melos exec -- flutter test`、`flutter build bundle` 全部通過。
+- Milestone 5-3 最終驗收：`dart pub get`、`melos run build_runner`、`melos run analyze`、`melos exec -- flutter test`、`flutter build bundle` 全部通過。
 
 完成定義：
 
 - 程式碼結構清楚。
 - 文件符合繁中規範。
 - MVP 功能可以跑通。
-- `melos bootstrap` 通過。
+- `dart pub get` 通過。
 - `melos run build_runner` 通過。
 - `melos run analyze` 通過。
 - `flutter test` 通過。
@@ -270,7 +270,7 @@ dart run sqflite_common_ffi_web:setup
 - 舊版 bootstrap 產生的 `pubspec_overrides.yaml` 已移除。
 - 純 Dart package 測試已改用 `flutter_test`，避免 workspace resolution 與 Flutter SDK pinned dependencies 衝突。
 - `build_runner` script 使用 `dart run build_runner build`，並加上 `--order-dependents --concurrency=1`，避免乾淨 workspace 下游 package 早於上游 generated files 完成。
-- `dart run melos bootstrap`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
+- `dart pub get`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
 
 ---
 
@@ -289,7 +289,7 @@ dart run sqflite_common_ffi_web:setup
 - `build_runner` script 改為 `dart run build_runner build`。
 - Freezed 3 相容性修正：`@freezed` class 改為 `abstract class`。
 - AutoRoute 11 相容性修正：router test 改為直接讀取 `children` list。
-- `dart run melos bootstrap`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
+- `dart pub get`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
 
 未升級項目：
 
@@ -312,7 +312,7 @@ dart run sqflite_common_ffi_web:setup
 - Data model / Entity / State 維持 `abstract class`，避免不必要的 sealed 限制。
 - GetIt / Injectable 註冊方式維持現狀，沒有需要立即處理的 deprecated API。
 - AutoRoute 沒有使用 11.0 移除的 named-route APIs 或舊 redirect API。
-- `dart run melos bootstrap`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
+- `dart pub get`、`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 全部通過。
 
 ---
 
@@ -395,7 +395,7 @@ final authState = useBlocBuilder(authBloc);
 每個 Milestone 收尾至少執行：
 
 ```bash
-dart run melos bootstrap
+dart pub get
 dart run melos run build_runner
 dart run melos run analyze
 dart run melos exec -- flutter test

@@ -247,18 +247,21 @@ melos:
 resolution: workspace
 ```
 
-### 1. 清理舊 workspace 狀態（需要時）
+### 1. 安裝 dependencies
 
-從舊版 Melos 設定遷移或遇到 dependency link 異常時，先清理：
+本專案使用 Melos 8 + Dart Pub Workspaces，日常安裝 dependencies 請在 workspace root 執行：
+
+```bash
+dart pub get
+```
+
+### 2. 清理 workspace 狀態（需要時）
+
+遇到 dependency link、build cache 或 workspace 狀態異常時，先清理：
 
 ```bash
 dart run melos clean
-```
-
-### 2. 安裝 dependencies
-
-```bash
-dart run melos bootstrap
+dart pub get
 ```
 
 ### 3. 產生程式碼
@@ -302,7 +305,7 @@ Milestone 5-3：最終驗收
 最終驗收至少執行：
 
 ```bash
-dart run melos bootstrap
+dart pub get
 dart run melos run build_runner
 dart run melos run analyze
 dart run melos exec -- flutter test

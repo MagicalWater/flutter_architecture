@@ -389,11 +389,13 @@ ChatGPT 對話會變長，也不適合作為長期專案記憶。
 
 ```txt
 README.md
+CHANGELOG.md
+VERSION
 docs/project_context.md
 docs/architecture_decisions.md
-docs/progress.md
 docs/roadmap.md
 docs/conversation_rules.md
+docs/archive/progress_v1.0.0.md
 ```
 
 ### 原因

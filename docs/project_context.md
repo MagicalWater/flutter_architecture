@@ -236,7 +236,7 @@ dart run sqflite_common_ffi_web:setup
 
 已完成：
 
-- Milestone 5-1 文件整理：已同步 README 與目前實際架構，並確認 `project_context.md`、`progress.md`、`roadmap.md` 狀態一致。
+- Milestone 5-1 文件整理：已同步 README 與目前實際架構，並確認 `project_context.md`、`docs/archive/progress_v1.0.0.md`、`roadmap.md` 狀態一致。
 - Milestone 5-2 程式碼整理：已補齊重要中文註解、清理 import、檢查命名一致性，並整理暫時性或冗餘程式碼。
 - Milestone 5-3 最終驗收：`melos bootstrap`、`melos run build_runner`、`melos run analyze`、`melos exec -- flutter test`、`flutter build bundle` 全部通過。
 
@@ -418,11 +418,12 @@ flutter build web
 
 ```txt
 README.md
+CHANGELOG.md
+VERSION
 docs/project_context.md
 docs/architecture_decisions.md
-docs/progress.md
 docs/roadmap.md
 docs/conversation_rules.md
 ```
 
-閱讀後依照 `docs/progress.md` 的目前 Milestone 繼續。
+閱讀後依照 `docs/roadmap.md` 與 `CHANGELOG.md` 判斷下一個目標。

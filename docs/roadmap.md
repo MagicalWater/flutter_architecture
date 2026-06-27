@@ -299,7 +299,7 @@ Milestone 5 不新增業務功能，而是把目前 MVP 整理到可交付、可
 完成定義：
 
 - README 與目前實際架構一致。
-- `project_context.md`、`progress.md`、`roadmap.md` 狀態一致。
+- `project_context.md`、`docs/archive/progress_v1.0.0.md`、`roadmap.md` 狀態一致。
 - 若有新的架構決策，已補充到 `architecture_decisions.md`。
 - 完成 git diff 檢查。
 - 完成 Git Commit。

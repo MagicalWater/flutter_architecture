@@ -49,28 +49,31 @@ docs/architecture_decisions.md
 
 ---
 
-## Rule 3：Milestone 改變先更新 Roadmap / Progress
+## Rule 3：Milestone 改變先更新 Roadmap / Changelog
 
 如果目前工作順序改變，或新增 / 拆分 Milestone，必須同步更新：
 
 ```txt
 docs/roadmap.md
-docs/progress.md
+CHANGELOG.md
+VERSION
 ```
 
-避免文件和實際進度不同步。
+避免文件和實際版本狀態不同步。
 
 ---
 
-## Rule 4：Progress 是目前進度依據
+## Rule 4：Roadmap / Changelog 是目前進度依據
 
 任何新對話或新工作開始前，先閱讀：
 
 ```txt
-docs/progress.md
+docs/roadmap.md
+CHANGELOG.md
+VERSION
 ```
 
-目前要做什麼，以 progress.md 為準。
+目前要做什麼，以 roadmap 為準；已完成版本以 CHANGELOG 與 VERSION 為準。
 
 ---
 
@@ -202,7 +205,7 @@ flutter build web
 
 Commit 前確認：
 
-- progress.md 已更新。
+- roadmap / changelog / version 已更新。
 - roadmap.md 如有變更也已更新。
 - architecture_decisions.md 如有架構決策也已更新。
 - README 如有使用方式變更也已更新。
@@ -215,13 +218,14 @@ Commit 前確認：
 
 ```txt
 README.md
+CHANGELOG.md
+VERSION
 docs/project_context.md
 docs/architecture_decisions.md
-docs/progress.md
 docs/roadmap.md
 docs/conversation_rules.md
 ```
 
-閱讀完成後，依照 progress.md 的目前 Milestone 繼續開發。
+閱讀完成後，依照 roadmap 與 CHANGELOG 判斷下一個目標。
 
 不要依賴舊聊天紀錄作為唯一上下文。

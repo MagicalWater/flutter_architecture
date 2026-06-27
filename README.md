@@ -360,11 +360,11 @@ docs/project_context.md
   ↓
 docs/architecture_decisions.md
   ↓
-docs/progress.md
-  ↓
 docs/roadmap.md
   ↓
 docs/conversation_rules.md
+  ↓
+CHANGELOG.md
 ```
 
 ### docs/project_context.md
@@ -379,10 +379,6 @@ docs/conversation_rules.md
 
 如果某個架構問題已經在這裡被標記為 Accepted，後續不應該反覆重新討論，除非有新的需求或新的限制。
 
-### docs/progress.md
-
-目前做到哪個 Milestone。
-
 ### docs/roadmap.md
 
 接下來的 Milestone 規劃。
@@ -394,6 +390,18 @@ docs/conversation_rules.md
 ### docs/conversation_rules.md
 
 本專案與 ChatGPT 協作時的工作規範。
+
+### CHANGELOG.md
+
+正式版本變更紀錄。
+
+### VERSION
+
+目前 Template Baseline Version 的唯一版本來源。
+
+### docs/archive/
+
+歷史進度與已完成 milestone 紀錄。
 
 ---
 
@@ -416,13 +424,14 @@ docs/conversation_rules.md
 
 ```txt
 README.md
+CHANGELOG.md
+VERSION
 docs/project_context.md
 docs/architecture_decisions.md
-docs/progress.md
 docs/roadmap.md
 docs/conversation_rules.md
 ```
 
-閱讀完成後，請依照 `docs/progress.md` 的目前 Milestone 繼續開發。
+閱讀完成後，請依照 `docs/roadmap.md` 與 `CHANGELOG.md` 判斷下一個目標。
 
 不要依賴舊對話內容作為唯一上下文，專案文件才是 Single Source of Truth。

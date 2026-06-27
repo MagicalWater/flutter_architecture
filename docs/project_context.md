@@ -226,19 +226,19 @@ dart run sqflite_common_ffi_web:setup
 
 ---
 
-## 目前進行中
+## 已完成狀態
 
 ### Milestone 5：整理與驗證
 
-狀態：In Progress。
+狀態：Completed。
 
 目標：收尾第一階段 MVP，確認文件、程式碼可讀性與完整驗證流程都達到可交付狀態。
 
-拆分計畫：
+已完成：
 
-- Milestone 5-1 文件整理：同步 README 與目前實際架構，檢查 `project_context.md`、`progress.md`、`roadmap.md` 是否一致，必要時補充 `architecture_decisions.md`。
-- Milestone 5-2 程式碼整理：補齊重要中文註解、清理 import、檢查命名一致性，並移除暫時性或冗餘程式碼。
-- Milestone 5-3 最終驗收：執行 `melos bootstrap`、`melos run build_runner`、`melos run analyze`、`melos exec -- flutter test`、`flutter build bundle`，確認 git diff 後完成 Final Commit。
+- Milestone 5-1 文件整理：已同步 README 與目前實際架構，並確認 `project_context.md`、`progress.md`、`roadmap.md` 狀態一致。
+- Milestone 5-2 程式碼整理：已補齊重要中文註解、清理 import、檢查命名一致性，並整理暫時性或冗餘程式碼。
+- Milestone 5-3 最終驗收：`melos bootstrap`、`melos run build_runner`、`melos run analyze`、`melos exec -- flutter test`、`flutter build bundle` 全部通過。
 
 完成定義：
 

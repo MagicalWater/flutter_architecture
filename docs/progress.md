@@ -253,7 +253,7 @@ flutter build bundle
 
 # Milestone 5：整理與驗證
 
-**狀態：** 🟡 In Progress
+**狀態：** 🟢 Completed
 
 ## 拆分計畫
 
@@ -278,21 +278,21 @@ flutter build bundle
 
 ### Milestone 5-3：最終驗收
 
-- [ ] melos bootstrap 通過
-- [ ] build_runner 通過
-- [ ] melos run analyze 通過
-- [ ] flutter test 通過
-- [ ] flutter build bundle 通過
-- [ ] 確認 git diff 為預期內容
-- [ ] Final Commit
+- [x] melos bootstrap 通過
+- [x] build_runner 通過
+- [x] melos run analyze 通過
+- [x] flutter test 通過
+- [x] flutter build bundle 通過
+- [x] 確認 git diff 為預期內容
+- [x] Final Commit
 
 ## Definition of Done
 
-- [ ] 程式碼結構清楚
-- [ ] 文件符合繁中規範
-- [ ] MVP 功能可以跑通
-- [ ] `melos bootstrap` 通過
-- [ ] `melos run build_runner` 通過
-- [ ] `melos run analyze` 通過
-- [ ] `flutter test` 通過
-- [ ] `flutter build bundle` 通過
+- [x] 程式碼結構清楚
+- [x] 文件符合繁中規範
+- [x] MVP 功能可以跑通
+- [x] `melos bootstrap` 通過
+- [x] `melos run build_runner` 通過
+- [x] `melos run analyze` 通過
+- [x] `flutter test` 通過
+- [x] `flutter build bundle` 通過

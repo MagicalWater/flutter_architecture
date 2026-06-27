@@ -6,7 +6,6 @@ import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
 import 'package:auth/src/session/session_manager.dart';
 import 'package:core/core.dart';
-import 'package:injectable/injectable.dart';
 
 /// AuthRepository 的 Data Layer 實作。
 ///
@@ -23,7 +22,6 @@ import 'package:injectable/injectable.dart';
 /// ```
 ///
 /// RepositoryImpl 負責協調遠端與本地資料來源。
-@LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(
     this._remoteDataSource,

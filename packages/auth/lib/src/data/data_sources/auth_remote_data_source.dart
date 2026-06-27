@@ -1,5 +1,4 @@
 import 'package:api_client/api_client.dart';
-import 'package:injectable/injectable.dart';
 
 /// Auth 遠端資料來源。
 ///
@@ -10,7 +9,6 @@ import 'package:injectable/injectable.dart';
 /// ## 責任
 ///
 /// 負責呼叫 AuthApiClient，不處理 UI，也不處理業務規則。
-@lazySingleton
 class AuthRemoteDataSource {
   const AuthRemoteDataSource(this._authApiClient);
 

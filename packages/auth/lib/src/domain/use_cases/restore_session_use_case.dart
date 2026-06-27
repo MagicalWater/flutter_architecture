@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
-import 'package:injectable/injectable.dart';
 
 /// 嘗試從本地資料恢復登入狀態。
 ///
@@ -10,7 +9,6 @@ import 'package:injectable/injectable.dart';
 /// App 啟動時，AuthBloc 會呼叫這個 UseCase。
 ///
 /// 如果本地已有 token 與 profile，就可以自動登入。
-@injectable
 class RestoreSessionUseCase {
   const RestoreSessionUseCase(this._repository);
 

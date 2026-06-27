@@ -388,6 +388,7 @@ ChatGPT 對話會變長，也不適合作為長期專案記憶。
 關鍵文件：
 
 ```txt
+AGENTS.md
 README.md
 CHANGELOG.md
 VERSION
@@ -405,3 +406,48 @@ docs/archive/progress_v1.0.0.md
 ### 影響
 
 如果架構決策改變，先更新 architecture_decisions.md，再改程式。
+
+---
+
+## Decision 012：可重用 package 不直接綁定 DI framework
+
+**狀態：** Accepted
+
+### 背景
+
+本專案的 `packages/auth`、`packages/api_client`、`packages/core` 是可被 App 重用的能力邊界。
+
+若 package 內直接標註 `@injectable`、`@lazySingleton` 或依賴 `get_it` / `injectable`，會讓 package 同時負責提供能力與決定組裝方式，造成 Composition Root 分散。
+
+### 決策
+
+可重用 package 預設不直接依賴 DI framework。
+
+package 內 class 使用 constructor injection 表達自身依賴，但不宣告 DI lifecycle。
+
+App 專案負責 Composition Root，統一在 app 的 DI module 決定：
+
+```txt
+factory
+lazySingleton
+singleton
+第三方物件初始化
+介面與實作綁定
+```
+
+### 原因
+
+package 應提供能力，不應決定自己在某個 App 裡如何被建立、共用或替換。
+
+把 DI lifecycle 集中在 App 可以讓：
+
+- package 更容易被不同 App 重用。
+- package 不綁定特定 DI framework。
+- 測試與替換 fake / mock 更直接。
+- 專案只有一個清楚的 Composition Root。
+
+### 影響
+
+`packages/auth` 不再使用 `injectable` annotation，也不再依賴 `injectable` package。
+
+Auth 相關 data source、repository、use case、session 物件仍由 `apps/flutter_architecture/lib/app/di/register_module.dart` 註冊與組裝。

@@ -357,7 +357,13 @@ Web
 建議閱讀順序：
 
 ```txt
+AGENTS.md
+  ↓
 README.md
+  ↓
+CHANGELOG.md
+  ↓
+VERSION
   ↓
 docs/project_context.md
   ↓
@@ -366,9 +372,11 @@ docs/architecture_decisions.md
 docs/roadmap.md
   ↓
 docs/conversation_rules.md
-  ↓
-CHANGELOG.md
 ```
+
+### AGENTS.md
+
+給 AI coding agent / assistant 使用的專案工作守則。
 
 ### docs/project_context.md
 
@@ -426,6 +434,7 @@ CHANGELOG.md
 若需要在新的 ChatGPT 對話中延續本專案，請先閱讀：
 
 ```txt
+AGENTS.md
 README.md
 CHANGELOG.md
 VERSION

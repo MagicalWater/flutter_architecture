@@ -16,6 +16,30 @@
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- 新增 `AGENTS.md`，作為 AI coding agent / assistant 進入專案後的基本工作守則。
+- 新增 Architecture Decision 012，明確規範可重用 package 不直接綁定 DI framework。
+
+### Changed
+
+- 移除 `packages/auth` 對 `injectable` 的依賴。
+- 移除 `packages/auth` 內 data source、repository、use case 的 DI annotations。
+- Auth package 物件改由 app 的 `RegisterModule` 統一註冊與組裝，維持 app 作為唯一 Composition Root。
+
+### Verified
+
+- `dart pub get`
+- `dart run melos run analyze`
+- `dart run melos exec -- flutter test`
+- `flutter build bundle`
+
+> 本次 `dart run melos run build_runner` 因工具安全檢查擋下，未能重跑；本次未修改 source generator input，不影響 generated files。
+
+---
+
 ## [1.0.0] - 2026-06-27
 
 ### Added

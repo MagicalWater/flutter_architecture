@@ -68,9 +68,14 @@ VERSION
 任何新對話或新工作開始前，先閱讀：
 
 ```txt
-docs/roadmap.md
+AGENTS.md
+README.md
 CHANGELOG.md
 VERSION
+docs/project_context.md
+docs/architecture_decisions.md
+docs/roadmap.md
+docs/conversation_rules.md
 ```
 
 目前要做什麼，以 roadmap 為準；已完成版本以 CHANGELOG 與 VERSION 為準。
@@ -217,6 +222,7 @@ Commit 前確認：
 新的對話第一步請閱讀：
 
 ```txt
+AGENTS.md
 README.md
 CHANGELOG.md
 VERSION

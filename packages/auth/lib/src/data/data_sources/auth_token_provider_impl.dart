@@ -1,6 +1,5 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/data_sources/auth_local_data_source.dart';
-import 'package:injectable/injectable.dart';
 
 /// Dio interceptor 使用的 token provider 實作。
 ///
@@ -19,7 +18,6 @@ import 'package:injectable/injectable.dart';
 ///   ↓
 /// SharedPreferences
 /// ```
-@LazySingleton(as: AuthTokenProvider)
 class AuthTokenProviderImpl implements AuthTokenProvider {
   const AuthTokenProviderImpl(this._localDataSource);
 

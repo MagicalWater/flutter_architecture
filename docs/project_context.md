@@ -316,6 +316,26 @@ dart run sqflite_common_ffi_web:setup
 
 ---
 
+## 已完成狀態
+
+### Package DI Boundary Review
+
+狀態：Completed。
+
+已完成：
+
+- 新增 Architecture Decision 012：可重用 package 不直接綁定 DI framework。
+- `packages/auth` 已移除 `injectable` dependency。
+- `packages/auth` 內 data source、repository、use case 已移除 DI annotations。
+- Auth package 物件仍由 app 的 `RegisterModule` 統一註冊與組裝，維持 app 作為唯一 Composition Root。
+- `packages/auth`、`packages/api_client`、`packages/core` 已確認無 package-level DI annotation 殘留。
+- 已新增 `AGENTS.md`，作為 AI coding agent / assistant 的 repo root 工作守則。
+- `dart pub get`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle` 已通過。
+
+備註：本次 `dart run melos run build_runner` 因工具安全檢查擋下，未能重跑；本次未修改 source generator input，不影響 generated files。
+
+---
+
 ## 已拍板的重要設計
 
 ### 1. Auth domain / data 應該放在 packages/auth
@@ -366,7 +386,21 @@ RestoreSessionUseCase
 AuthUseCase
 ```
 
-### 5. hooked_bloc 的定位
+### 5. 可重用 package 不直接綁定 DI framework
+
+`packages/auth`、`packages/api_client`、`packages/core` 預設不直接依賴 `get_it` / `injectable`。
+
+package 內 class 使用 constructor injection 表達依賴，但 DI lifecycle 與介面綁定由 app 的 Composition Root 決定。
+
+目前 Auth 相關 data source、repository、use case、session 物件由：
+
+```txt
+apps/flutter_architecture/lib/app/di/register_module.dart
+```
+
+統一註冊與組裝。
+
+### 6. hooked_bloc 的定位
 
 hooked_bloc 用來降低 BlocBuilder / BlocListener 的巢狀。
 
@@ -417,6 +451,7 @@ flutter build web
 新的 ChatGPT 對話請先閱讀：
 
 ```txt
+AGENTS.md
 README.md
 CHANGELOG.md
 VERSION

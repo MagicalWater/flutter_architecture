@@ -23,7 +23,9 @@ docs/
 
 ## 閱讀順序
 
-建議照這個順序閱讀：
+新的 AI coding agent / assistant 請先閱讀 root `AGENTS.md`，再依照 README 的文件導覽恢復專案上下文。
+
+架構補充文件建議照這個順序閱讀：
 
 1. `docs/architecture/000-principles.md`
 2. `docs/architecture/001-folder-structure.md`

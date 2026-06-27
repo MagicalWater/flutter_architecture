@@ -13,7 +13,6 @@ dependencies:
   core:
     path: ../core
   freezed_annotation: ^3.1.0
-  injectable: ^3.0.0
   json_annotation: ^4.12.0
   meta: ^1.12.0
   rxdart: ^0.28.0

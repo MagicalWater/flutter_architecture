@@ -1,25 +1,90 @@
 # Flutter Enterprise Architecture Template
 
-這是一份可以直接作為新專案起點的 Flutter 架構模板。
+本專案不是 Boilerplate，也不是 Demo，而是一份可以持續演進、可直接作為企業專案起點的 Flutter Enterprise Template。
 
-它的目標不是展示所有技巧，而是建立一個清楚、穩定、可擴充的專案骨架。
+它的目標是建立一個清楚、穩定、可擴充、可閱讀的 Flutter 架構模板，同時讓開發者能透過程式碼與文件理解 Clean Architecture 在中大型專案中的實際落地方式。
 
-## 目前範圍
+---
 
-這個階段只做 MVP，不繼續擴張範圍。
+## 專案定位
 
-包含：
+本專案適合已經會寫 Flutter，但開始遇到下列問題的開發者：
+
+- Repository 應該放在哪？
+- UseCase 到底有什麼價值？
+- Feature First 要怎麼拆？
+- Auth 這種跨頁面功能要放 app feature，還是 package？
+- Route Guard 要不要依賴 Bloc？
+- Profile 頁面可不可以直接讀 AuthBloc？
+- Web / Desktop / Mobile 的本地資料庫差異要怎麼處理？
+
+本專案不追求最少程式碼，而是追求：
+
+```txt
+可讀性
+  > 炫技
+
+清楚邊界
+  > 快速堆功能
+
+長期維護
+  > 短期方便
+```
+
+---
+
+## 技術選型
+
+### Architecture
 
 - Clean Architecture
 - Feature First
-- Monorepo：`apps/` + `packages/`
-- Presentation Layer：Bloc + flutter_hooks + hooked_bloc
-- Router：auto_route + Route Guard + Nested Route
-- DI：get_it + injectable
-- Model：freezed + json_serializable
-- Network：Dio + Mock API
-- Storage：SharedPreferences + SQLite
-- Reactive：RxDart
+- Monorepo
+- Melos
+
+### Presentation Layer
+
+- flutter_bloc
+- flutter_hooks
+- hooked_bloc
+
+### Navigation
+
+- auto_route
+- Route Guard
+- Nested Route
+- Bottom Navigation
+
+### Dependency Injection
+
+- get_it
+- injectable
+
+### Model / Code Generation
+
+- freezed
+- json_serializable
+- build_runner
+
+### Network
+
+- Dio
+- Mock API
+- Authorization Header Interceptor
+
+### Storage
+
+- SharedPreferences
+- SQLite
+- sqflite
+- sqflite_common_ffi
+- sqflite_common_ffi_web
+
+### Reactive
+
+- RxDart
+
+---
 
 ## 專案結構
 
@@ -32,11 +97,70 @@ root/
     api_client/
     auth/
   docs/
+  melos.yaml
+  pubspec.yaml
+  analysis_options.yaml
+  README.md
 ```
+
+### apps/flutter_architecture
+
+主 App 專案。
+
+負責：
+
+- App bootstrap
+- Router
+- DI composition
+- ShellPage
+- LoginPage
+- ProfilePage
+- ProtectedPage
+- Feature 的 Presentation Layer
+
+### packages/core
+
+共用基礎能力。
+
+例如：
+
+- Result
+- Failure
+- AppException
+- Storage abstraction
+
+### packages/api_client
+
+Network boundary。
+
+例如：
+
+- Dio factory
+- API client
+- AuthHeaderInterceptor
+- API response model
+
+### packages/auth
+
+Auth 共用能力。
+
+後續 Milestone 會把 Auth 的 domain / data 從 app feature 移動到這裡。
+
+目標是：
+
+```txt
+packages/auth
+  負責 Auth domain / data / session
+
+apps/flutter_architecture/lib/features/auth
+  只保留 Auth presentation
+```
+
+---
 
 ## Demo Flow
 
-這個模板只實作四個頁面：
+目前 MVP 只需要四個頁面：
 
 ```txt
 ShellPage(A)
@@ -47,15 +171,17 @@ ShellPage(A)
 
 需求：
 
-- `ShellPage` 有 `AppBar` 與底部導航欄。
-- 底部導航欄有 Login 與 Profile 兩個頁面。
-- Login 頁面按下登入後，透過完整 Clean Architecture 流程呼叫 Mock API。
+- ShellPage 有 AppBar 與 BottomNavigationBar。
+- BottomNavigationBar 有 Login 與 Profile 兩個 tab。
+- Login 頁面按下登入後，走完整 Clean Architecture 流程。
 - 登入成功後保存 token 與 profile。
 - Profile 頁面顯示目前登入的使用者名稱。
 - 沒登入時 Profile 頁面顯示尚未登入。
-- `AppBar` 右上角按鈕可以進入 Protected 頁面。
-- Protected 頁面需要登入才能進入。
-- 沒登入時，`Route Guard` 會導回 Login 頁面。
+- AppBar 右上角按鈕可以進入 ProtectedPage。
+- ProtectedPage 需要登入才能進入。
+- 未登入時 Route Guard 會導回 LoginPage。
+
+---
 
 ## Runtime Flow
 
@@ -75,17 +201,150 @@ DataSource
 ApiClient / SQLite / SharedPreferences
 ```
 
-## 開發方式
+---
 
-請先閱讀：
+## 快速開始
 
-```txt
-docs/README.md
-docs/roadmap.md
-docs/architecture/000-principles.md
-docs/architecture/001-folder-structure.md
-docs/architecture/002-clean-architecture.md
-docs/backlog.md
+### 1. 安裝 dependencies
+
+```bash
+dart pub get
+dart run melos bootstrap
 ```
 
-目前先完成 MVP，未來想法放進 `docs/backlog.md`，不在第一階段實作。
+### 2. 產生程式碼
+
+```bash
+dart run melos run build_runner
+```
+
+### 3. 分析與測試
+
+```bash
+dart run melos run analyze
+dart run melos exec -- flutter test
+```
+
+### 4. Build 驗證
+
+```bash
+cd apps/flutter_architecture
+flutter build bundle
+```
+
+---
+
+## Flutter Web 注意事項
+
+若要在 Flutter Web 使用 SQLite，需要先準備 sqflite_common_ffi_web 的 Web binary：
+
+```bash
+cd apps/flutter_architecture
+dart run sqflite_common_ffi_web:setup
+```
+
+若 app 尚未建立 web 平台資料夾：
+
+```bash
+cd apps/flutter_architecture
+flutter create . --platforms web
+```
+
+之後可以執行：
+
+```bash
+flutter build web
+```
+
+SQLite 初始化已透過條件匯入處理：
+
+```txt
+Mobile
+  使用 sqflite 原生實作
+
+Desktop
+  使用 sqflite_common_ffi
+
+Web
+  使用 sqflite_common_ffi_web
+```
+
+---
+
+## 文件導覽
+
+建議閱讀順序：
+
+```txt
+README.md
+  ↓
+docs/project_context.md
+  ↓
+docs/architecture_decisions.md
+  ↓
+docs/progress.md
+  ↓
+docs/roadmap.md
+  ↓
+docs/conversation_rules.md
+```
+
+### docs/project_context.md
+
+專案目前完整上下文。
+
+新的 ChatGPT 對話應該先讀這份文件。
+
+### docs/architecture_decisions.md
+
+所有已拍板的架構決策。
+
+如果某個架構問題已經在這裡被標記為 Accepted，後續不應該反覆重新討論，除非有新的需求或新的限制。
+
+### docs/progress.md
+
+目前做到哪個 Milestone。
+
+### docs/roadmap.md
+
+接下來的 Milestone 規劃。
+
+### docs/backlog.md
+
+暫時不做，但未來可以加入的想法。
+
+### docs/conversation_rules.md
+
+本專案與 ChatGPT 協作時的工作規範。
+
+---
+
+## 開發原則
+
+- 文件、README、註解預設使用繁體中文。
+- 技術名詞、套件名稱、類別名稱保留英文。
+- 可讀性優先於技巧。
+- 不為了少寫幾行而犧牲架構邊界。
+- 跨 Feature 不直接依賴對方的 Bloc。
+- Route Guard 不依賴 AuthBloc，而應依賴 SessionManager 或 domain abstraction。
+- UseCase 以一個業務行為為單位，不使用過大的 AuthUseCase。
+- 每個 Milestone 必須驗證 analyze / test / build。
+
+---
+
+## 開新對話（給 ChatGPT）
+
+若需要在新的 ChatGPT 對話中延續本專案，請先閱讀：
+
+```txt
+README.md
+docs/project_context.md
+docs/architecture_decisions.md
+docs/progress.md
+docs/roadmap.md
+docs/conversation_rules.md
+```
+
+閱讀完成後，請依照 `docs/progress.md` 的目前 Milestone 繼續開發。
+
+不要依賴舊對話內容作為唯一上下文，專案文件才是 Single Source of Truth。

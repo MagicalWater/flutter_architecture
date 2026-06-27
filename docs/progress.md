@@ -62,38 +62,90 @@ flutter build bundle
 已建立：
 
 ```txt
-3eb1121 feat(mvp): initialize enterprise architecture template
+8ed9095 feat(mvp): initialize enterprise architecture template
 ```
 
 ---
 
-# Milestone 2A：Authentication Infrastructure
+# Milestone 2A：Auth Package 邊界重構
 
 **狀態：** ⏳ Not Started
 
 ## 預計完成項目
 
-- AuthRepository 完整底層流程
-- Mock Login API
-- Mock Profile API
-- Token Storage
-- SQLite Profile Storage
-- Dio Authorization Header Interceptor
-- Session Restore Infrastructure
+- 將 Auth 的 domain / data 從 app feature 移動到 `packages/auth`
+- App 的 auth feature 只保留 presentation layer
+- AuthBloc 改依賴 `packages/auth` 的 UseCase
+- AuthRepository / UseCase / DataSource / Model 整理到 auth package
+- 保留 LoginPage / AuthBloc / AuthEvent / AuthState 在 app
 
 ## Definition of Done
 
-- [ ] AuthRepository 可以登入並回傳 AuthResult
-- [ ] Token 存入 SharedPreferences
-- [ ] User / Profile 存入 SQLite
-- [ ] Profile API 自動帶 Header
-- [ ] Restore Session 可以從本地資料還原登入狀態
-- [ ] flutter analyze = 0
-- [ ] flutter test 全部通過
+- [ ] Auth 的 domain / data 不再放在 app feature 內
+- [ ] app 只保留 Auth 的 presentation layer
+- [ ] AuthBloc 依賴 `packages/auth` 的 UseCase
+- [ ] package export 邊界清楚
+- [ ] `melos run analyze` 通過
+- [ ] `flutter test` 通過
 
 ---
 
-# Milestone 2B：Authentication Flow
+# Milestone 2B：SessionManager 與跨 Feature 登入狀態
+
+**狀態：** ⏳ Not Started
+
+## 預計完成項目
+
+- 建立或整理 SessionManager / AuthSessionReader
+- AuthGuard 改為依賴 SessionManager，不再依賴 AuthBloc
+- ProfilePage 不再直接讀 AuthBloc
+- ProfileBloc / ProfileUseCase 透過 SessionManager 或 Repository 判斷登入狀態
+- 登入成功後更新 SessionManager
+- 登出後清除 SessionManager
+
+## Definition of Done
+
+- [ ] AuthGuard 不 import AuthBloc
+- [ ] ProfilePage 不 import AuthBloc
+- [ ] UI 只依賴自己 feature 的 Bloc
+- [ ] 跨 feature 登入狀態統一透過 SessionManager 或 domain abstraction 取得
+- [ ] `melos run analyze` 通過
+- [ ] `flutter test` 通過
+
+---
+
+# Milestone 2C：跨平台 SQLite 初始化
+
+**狀態：** 🟡 In Progress
+
+## 已完成項目
+
+- [x] Desktop 加入 sqflite_common_ffi 初始化
+- [x] Web 加入 sqflite_common_ffi_web 初始化
+- [x] main.dart 移除直接 `dart:io` import
+- [x] 使用條件匯入隔離平台差異
+- [x] `melos run analyze` 通過
+- [x] `flutter test` 通過
+- [x] `flutter build bundle` 通過
+
+## 待完成項目
+
+- [x] README 補充 Web setup：`dart run sqflite_common_ffi_web:setup`
+- [ ] app 目前只有 sqflite web binary，尚未建立完整 Flutter Web 平台 scaffold；待執行 `flutter create . --platforms web` 後驗證 `flutter build web`
+- [ ] Git Commit
+
+## Definition of Done
+
+- [x] Flutter Web 不再因 sqflite databaseFactory 未初始化而白畫面
+- [x] Desktop 不再因 sqflite databaseFactory 未初始化而錯誤
+- [x] `melos run analyze` 通過
+- [x] `flutter test` 通過
+- [x] README 補充 Web setup
+- [ ] Git Commit
+
+---
+
+# Milestone 3：Auth + Profile Flow
 
 **狀態：** ⏳ Not Started
 
@@ -113,5 +165,5 @@ flutter build bundle
 - [ ] Logout 成功
 - [ ] Route Guard 生效
 - [ ] Auto Login 生效
-- [ ] flutter analyze = 0
-- [ ] flutter test 全部通過
+- [ ] `melos run analyze` 通過
+- [ ] `flutter test` 通過

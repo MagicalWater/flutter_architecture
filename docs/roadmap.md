@@ -6,6 +6,8 @@
 
 不在第一階段做的內容，統一放到 `docs/backlog.md`。
 
+---
+
 ## Milestone 1：Monorepo 與專案骨架
 
 建立最外層結構：
@@ -23,6 +25,7 @@ root/
 需要完成：
 
 - `melos.yaml`
+- Root `pubspec.yaml`，讓 Melos 可以透過 `dart run melos` 執行
 - Root `analysis_options.yaml`
 - Root `README.md`
 - `docs/` 基礎文件
@@ -36,120 +39,179 @@ root/
 - 專案結構建立完成。
 - 每個 package 都有 `pubspec.yaml`。
 - 文件已經說明第一階段範圍。
+- `melos bootstrap` 可以成功。
+- `melos run analyze` 可以成功。
+- `flutter test` 可以成功。
+- `flutter build bundle` 可以成功。
 
-## Milestone 2：核心依賴與基礎設定
+---
 
-加入第一階段需要的套件。
+## Milestone 2A：Auth Package 邊界重構
 
-App 主要依賴：
+調整 Auth 的位置與責任邊界。
 
-- `flutter_bloc`
-- `flutter_hooks`
-- `hooked_bloc`
-- `auto_route`
-- `get_it`
-- `injectable`
-- `freezed_annotation`
-- `json_annotation`
-- `shared_preferences`
-- `sqflite`
-- `rxdart`
+目前 Auth 的 domain / data 暫時放在 app 的 feature 內，這適合作為初始骨架，但不適合作為長期模板標準。
 
-Package 主要依賴：
+Auth 是跨整個 App 都會使用的能力，因此第一階段 MVP 需要把 Auth 的非 UI 部分整理到 `packages/auth`。
 
-- `dio`
-- `freezed_annotation`
-- `json_annotation`
+### 需要完成
 
-Dev dependencies：
+移動到 `packages/auth`：
 
-- `build_runner`
-- `freezed`
-- `json_serializable`
-- `injectable_generator`
-- `auto_route_generator`
+- Auth Entity
+- Auth Result
+- Auth Repository Interface
+- LoginUseCase
+- LogoutUseCase
+- RestoreSessionUseCase
+- AuthRepositoryImpl
+- AuthRemoteDataSource
+- AuthLocalDataSource
+- Token / Session 相關能力
+- AuthTokenProvider 實作或 adapter
 
-完成定義：
+保留在 `apps/flutter_architecture/lib/features/auth`：
 
-- `flutter pub get` 可以成功。
-- build_runner 相關依賴放置正確。
-- 專案可以準備產生 Freezed、Auto Route、Injectable 程式碼。
+- LoginPage
+- AuthBloc
+- AuthEvent
+- AuthState
+- Auth UI widgets
 
-## Milestone 3：Clean Architecture 基礎骨架
+### 架構目標
 
-建立 feature-first 資料夾。
+調整後依賴方向應該變成：
 
 ```txt
-apps/flutter_architecture/lib/
-  app/
-    di/
-    router/
-    theme/
-  features/
-    auth/
-      presentation/
-      domain/
-      data/
-    profile/
-      presentation/
-      domain/
-      data/
-    protected/
-      presentation/
-    shell/
-      presentation/
+app/features/auth/presentation
+  ↓
+packages/auth
 ```
 
-完成定義：
+而不是：
 
-- 各 feature 有固定的 layer 結構。
-- 每個重要資料夾有簡短 README。
-- 目前只建立必要骨架，不加入過度抽象。
+```txt
+app/features/profile
+  ↓
+app/features/auth/presentation/AuthBloc
+```
 
-## Milestone 4：API 與 Storage
+### 完成定義
 
-完成 Mock API 與本地保存。
+- Auth 的 domain / data 不再放在 app feature 內。
+- app 只保留 Auth 的 presentation layer。
+- AuthBloc 依賴 `packages/auth` 的 UseCase。
+- Profile 不直接依賴 AuthBloc。
+- AuthGuard 不直接依賴 AuthBloc。
+- `melos run analyze` 通過。
+- `flutter test` 通過。
 
-需要完成：
+---
 
-- Dio client
-- Mock login API
-- Mock profile API
-- Auth interceptor
-- SharedPreferences token storage
-- SQLite profile storage
+## Milestone 2B：SessionManager 與跨 Feature 登入狀態
 
-完成定義：
+建立跨 feature 使用的登入狀態入口。
 
-- Login API 可以回傳 mock token。
-- Profile API 需要 token。
-- 登入後 token 可以自動加到需要登入的 API header。
-- token 與 profile 可以持久化。
+### 背景
 
-## Milestone 5：Auth + Profile Flow
+AuthGuard 與 ProfilePage 真正需要知道的不是 `AuthBloc`，而是：
+
+```txt
+目前是否已登入？
+目前登入者是誰？
+```
+
+因此它們不應該依賴 Auth feature 的 presentation layer。
+
+### 需要完成
+
+- 建立 `SessionManager` 或 `AuthSessionReader`。
+- `AuthGuard` 改為依賴 SessionManager。
+- `ProfileBloc` 或 Profile use case 透過 SessionManager / Repository 判斷登入狀態。
+- `ProfilePage` 不再直接讀取 AuthBloc。
+- 登入成功後更新 SessionManager。
+- 登出後清除 SessionManager。
+
+### 完成定義
+
+- AuthGuard 不 import AuthBloc。
+- ProfilePage 不 import AuthBloc。
+- 跨 feature 登入狀態統一透過 SessionManager 或 domain abstraction 取得。
+- UI 只依賴自己 feature 的 Bloc。
+- `melos run analyze` 通過。
+- `flutter test` 通過。
+
+---
+
+## Milestone 2C：跨平台 SQLite 初始化
+
+整理 SQLite 在 Mobile / Desktop / Web 的初始化方式。
+
+### 背景
+
+`sqflite` 在不同平台的初始化方式不同：
+
+```txt
+Mobile
+  使用 sqflite 原生實作
+
+Desktop
+  使用 sqflite_common_ffi
+
+Web
+  使用 sqflite_common_ffi_web
+```
+
+Web 另外需要先執行：
+
+```bash
+dart run sqflite_common_ffi_web:setup
+```
+
+### 需要完成
+
+- 使用條件匯入隔離 SQLite 平台差異。
+- main.dart 不直接 import `dart:io`。
+- Desktop 初始化 `databaseFactoryFfi`。
+- Web 初始化 `databaseFactoryFfiWeb`。
+- README 補充 Web setup 指令。
+
+### 完成定義
+
+- Flutter Web 不再因 sqflite databaseFactory 未初始化而白畫面。
+- Desktop 不再因 sqflite databaseFactory 未初始化而錯誤。
+- `melos run analyze` 通過。
+- `flutter test` 通過。
+- 若 app 有 web 平台資料夾，`flutter build web` 通過。
+
+---
+
+## Milestone 3：Auth + Profile Flow
 
 完成主要業務流程。
 
 需要完成：
 
-- `LoginUseCase`
-- `RestoreSessionUseCase`
-- `GetProfileUseCase`
-- `AuthRepository`
-- `AuthRepositoryImpl`
-- `AuthRemoteDataSource`
-- `AuthLocalDataSource`
-- `AuthBloc`
-- `ProfileBloc`
+- Login 完整流程
+- Restore Session
+- Logout
+- GetProfile
+- AuthBloc
+- ProfileBloc
+- LoginPage
+- ProfilePage
 
 完成定義：
 
-- Login 頁面按鈕可以觸發完整流程。
+- Login 頁面按鈕可以觸發完整 Clean Architecture 流程。
 - 登入成功後自動切換到 Profile 頁面。
 - Profile 頁面可以顯示當前登入用戶名稱。
 - App 重開後可以自動登入。
+- 未登入時 Profile 顯示尚未登入。
 
-## Milestone 6：Route Guard 與頁面
+---
+
+## Milestone 4：Route Guard 與頁面
 
 完成四個頁面與路由。
 
@@ -169,7 +231,9 @@ ShellPage(A)
 - ProtectedPage 有 Route Guard。
 - 未登入時進入 ProtectedPage 會導回 LoginPage。
 
-## Milestone 7：整理與驗證
+---
+
+## Milestone 5：整理與驗證
 
 收尾第一階段。
 
@@ -185,6 +249,12 @@ ShellPage(A)
 - 程式碼結構清楚。
 - 文件符合繁中規範。
 - MVP 功能可以跑通。
+- `melos bootstrap` 通過。
+- `melos run analyze` 通過。
+- `flutter test` 通過。
+- `flutter build bundle` 通過。
+
+---
 
 ## 第一階段不做
 

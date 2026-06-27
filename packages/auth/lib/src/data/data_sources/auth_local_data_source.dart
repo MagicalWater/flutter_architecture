@@ -1,5 +1,6 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/models/auth_user_model.dart';
+import 'package:auth/src/session/token_storage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -17,7 +18,7 @@ import 'package:sqflite/sqflite.dart';
 ///
 /// 這樣可以示範兩種常見本地持久化方式。
 @lazySingleton
-class AuthLocalDataSource implements AuthTokenProvider {
+class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
   const AuthLocalDataSource(
     this._preferences,
     this._database,

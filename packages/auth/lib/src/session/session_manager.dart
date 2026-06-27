@@ -21,10 +21,12 @@ class SessionManager {
 
   AuthSession? get currentSession => _sessionSubject.valueOrNull;
 
-  Future<void> restore() async {
+  bool get isAuthenticated => currentSession?.isAuthenticated ?? false;
+
+  Future<void> restore({String? userId}) async {
     final token = await _tokenStorage.readAccessToken();
 
-    if (token == null || token.isEmpty) {
+    if (token == null || token.isEmpty || userId == null || userId.isEmpty) {
       _sessionSubject.add(null);
       return;
     }
@@ -32,7 +34,7 @@ class SessionManager {
     _sessionSubject.add(
       AuthSession(
         accessToken: token,
-        userId: 'mock-user-id',
+        userId: userId,
       ),
     );
   }

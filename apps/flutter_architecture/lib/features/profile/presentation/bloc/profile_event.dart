@@ -5,4 +5,7 @@ part of 'profile_bloc.dart';
 class ProfileEvent with _$ProfileEvent {
   /// 讀取目前登入者 Profile。
   const factory ProfileEvent.requested() = ProfileRequested;
+
+  /// 使用者從 Profile 頁面按下登出。
+  const factory ProfileEvent.logoutRequested() = ProfileLogoutRequested;
 }

@@ -92,25 +92,26 @@ flutter build bundle
 
 # Milestone 2B：SessionManager 與跨 Feature 登入狀態
 
-**狀態：** ⏳ Not Started
+**狀態：** 🟢 Completed
 
-## 預計完成項目
+## 完成項目
 
-- 建立或整理 SessionManager / AuthSessionReader
-- AuthGuard 改為依賴 SessionManager，不再依賴 AuthBloc
-- ProfilePage 不再直接讀 AuthBloc
-- ProfileBloc / ProfileUseCase 透過 SessionManager 或 Repository 判斷登入狀態
-- 登入成功後更新 SessionManager
-- 登出後清除 SessionManager
+- [x] 建立或整理 SessionManager / AuthSessionReader
+- [x] AuthGuard 改為依賴 SessionManager，不再依賴 AuthBloc
+- [x] ProfilePage 不再直接讀 AuthBloc
+- [x] ProfileBloc 透過 SessionManager 判斷登入狀態
+- [x] 登入成功後更新 SessionManager
+- [x] 登出後清除 SessionManager
+- [x] ProtectedPage 不再直接讀 AuthBloc
 
 ## Definition of Done
 
-- [ ] AuthGuard 不 import AuthBloc
-- [ ] ProfilePage 不 import AuthBloc
-- [ ] UI 只依賴自己 feature 的 Bloc
-- [ ] 跨 feature 登入狀態統一透過 SessionManager 或 domain abstraction 取得
-- [ ] `melos run analyze` 通過
-- [ ] `flutter test` 通過
+- [x] AuthGuard 不 import AuthBloc
+- [x] ProfilePage 不 import AuthBloc
+- [x] UI 只依賴自己 feature 的 Bloc
+- [x] 跨 feature 登入狀態統一透過 SessionManager 或 domain abstraction 取得
+- [x] analyze 通過
+- [x] flutter test / dart test 通過
 
 ---
 

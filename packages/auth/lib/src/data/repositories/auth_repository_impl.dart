@@ -4,6 +4,7 @@ import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:auth/src/domain/entities/auth_result.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
+import 'package:auth/src/session/session_manager.dart';
 import 'package:core/core.dart';
 import 'package:injectable/injectable.dart';
 
@@ -27,10 +28,12 @@ class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
+    this._sessionManager,
   );
 
   final AuthRemoteDataSource _remoteDataSource;
   final AuthLocalDataSource _localDataSource;
+  final SessionManager _sessionManager;
 
   @override
   Future<Result<AuthResult>> login({
@@ -50,6 +53,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
       await _localDataSource.saveAccessToken(response.accessToken);
       await _localDataSource.saveUser(AuthUserModel.fromEntity(user));
+      await _sessionManager.login(
+        accessToken: response.accessToken,
+        userId: user.id,
+      );
 
       return Success(
         AuthResult(
@@ -74,8 +81,11 @@ class AuthRepositoryImpl implements AuthRepository {
       final user = await _localDataSource.readUser();
 
       if (token == null || token.isEmpty || user == null) {
+        await _sessionManager.logout();
         return const Success(null);
       }
+
+      await _sessionManager.restore(userId: user.id);
 
       return Success(user.toEntity());
     } catch (error) {
@@ -91,8 +101,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<void>> logout() async {
     try {
-      await _localDataSource.clearAccessToken();
       await _localDataSource.clearUser();
+      await _sessionManager.logout();
       return const Success(null);
     } catch (error) {
       return FailureResult(

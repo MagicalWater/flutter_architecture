@@ -71,13 +71,20 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
+  auth.SessionManager sessionManager(auth.AuthLocalDataSource localDataSource) {
+    return auth.SessionManager(localDataSource);
+  }
+
+  @lazySingleton
   auth.AuthRepository authRepository(
     auth.AuthRemoteDataSource remoteDataSource,
     auth.AuthLocalDataSource localDataSource,
+    auth.SessionManager sessionManager,
   ) {
     return auth.AuthRepositoryImpl(
       remoteDataSource,
       localDataSource,
+      sessionManager,
     );
   }
 

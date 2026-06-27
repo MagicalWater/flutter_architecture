@@ -19,32 +19,38 @@ mixin _$ProfileEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() requested,
+    required TResult Function() logoutRequested,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? requested,
+    TResult? Function()? logoutRequested,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? requested,
+    TResult Function()? logoutRequested,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ProfileRequested value) requested,
+    required TResult Function(ProfileLogoutRequested value) logoutRequested,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProfileRequested value)? requested,
+    TResult? Function(ProfileLogoutRequested value)? logoutRequested,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProfileRequested value)? requested,
+    TResult Function(ProfileLogoutRequested value)? logoutRequested,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -113,6 +119,7 @@ class _$ProfileRequestedImpl implements ProfileRequested {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() requested,
+    required TResult Function() logoutRequested,
   }) {
     return requested();
   }
@@ -121,6 +128,7 @@ class _$ProfileRequestedImpl implements ProfileRequested {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? requested,
+    TResult? Function()? logoutRequested,
   }) {
     return requested?.call();
   }
@@ -129,6 +137,7 @@ class _$ProfileRequestedImpl implements ProfileRequested {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? requested,
+    TResult Function()? logoutRequested,
     required TResult orElse(),
   }) {
     if (requested != null) {
@@ -141,6 +150,7 @@ class _$ProfileRequestedImpl implements ProfileRequested {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(ProfileRequested value) requested,
+    required TResult Function(ProfileLogoutRequested value) logoutRequested,
   }) {
     return requested(this);
   }
@@ -149,6 +159,7 @@ class _$ProfileRequestedImpl implements ProfileRequested {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProfileRequested value)? requested,
+    TResult? Function(ProfileLogoutRequested value)? logoutRequested,
   }) {
     return requested?.call(this);
   }
@@ -157,6 +168,7 @@ class _$ProfileRequestedImpl implements ProfileRequested {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProfileRequested value)? requested,
+    TResult Function(ProfileLogoutRequested value)? logoutRequested,
     required TResult orElse(),
   }) {
     if (requested != null) {
@@ -171,8 +183,118 @@ abstract class ProfileRequested implements ProfileEvent {
 }
 
 /// @nodoc
+abstract class _$$ProfileLogoutRequestedImplCopyWith<$Res> {
+  factory _$$ProfileLogoutRequestedImplCopyWith(
+          _$ProfileLogoutRequestedImpl value,
+          $Res Function(_$ProfileLogoutRequestedImpl) then) =
+      __$$ProfileLogoutRequestedImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ProfileLogoutRequestedImplCopyWithImpl<$Res>
+    extends _$ProfileEventCopyWithImpl<$Res, _$ProfileLogoutRequestedImpl>
+    implements _$$ProfileLogoutRequestedImplCopyWith<$Res> {
+  __$$ProfileLogoutRequestedImplCopyWithImpl(
+      _$ProfileLogoutRequestedImpl _value,
+      $Res Function(_$ProfileLogoutRequestedImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ProfileEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ProfileLogoutRequestedImpl implements ProfileLogoutRequested {
+  const _$ProfileLogoutRequestedImpl();
+
+  @override
+  String toString() {
+    return 'ProfileEvent.logoutRequested()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProfileLogoutRequestedImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() requested,
+    required TResult Function() logoutRequested,
+  }) {
+    return logoutRequested();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? requested,
+    TResult? Function()? logoutRequested,
+  }) {
+    return logoutRequested?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? requested,
+    TResult Function()? logoutRequested,
+    required TResult orElse(),
+  }) {
+    if (logoutRequested != null) {
+      return logoutRequested();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ProfileRequested value) requested,
+    required TResult Function(ProfileLogoutRequested value) logoutRequested,
+  }) {
+    return logoutRequested(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ProfileRequested value)? requested,
+    TResult? Function(ProfileLogoutRequested value)? logoutRequested,
+  }) {
+    return logoutRequested?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ProfileRequested value)? requested,
+    TResult Function(ProfileLogoutRequested value)? logoutRequested,
+    required TResult orElse(),
+  }) {
+    if (logoutRequested != null) {
+      return logoutRequested(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ProfileLogoutRequested implements ProfileEvent {
+  const factory ProfileLogoutRequested() = _$ProfileLogoutRequestedImpl;
+}
+
+/// @nodoc
 mixin _$ProfileState {
   bool get isLoading => throw _privateConstructorUsedError;
+  bool get isAuthenticated => throw _privateConstructorUsedError;
+  bool get logoutSucceeded => throw _privateConstructorUsedError;
   Profile? get profile => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
 
@@ -189,7 +311,12 @@ abstract class $ProfileStateCopyWith<$Res> {
           ProfileState value, $Res Function(ProfileState) then) =
       _$ProfileStateCopyWithImpl<$Res, ProfileState>;
   @useResult
-  $Res call({bool isLoading, Profile? profile, String? errorMessage});
+  $Res call(
+      {bool isLoading,
+      bool isAuthenticated,
+      bool logoutSucceeded,
+      Profile? profile,
+      String? errorMessage});
 
   $ProfileCopyWith<$Res>? get profile;
 }
@@ -210,6 +337,8 @@ class _$ProfileStateCopyWithImpl<$Res, $Val extends ProfileState>
   @override
   $Res call({
     Object? isLoading = null,
+    Object? isAuthenticated = null,
+    Object? logoutSucceeded = null,
     Object? profile = freezed,
     Object? errorMessage = freezed,
   }) {
@@ -217,6 +346,14 @@ class _$ProfileStateCopyWithImpl<$Res, $Val extends ProfileState>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isAuthenticated: null == isAuthenticated
+          ? _value.isAuthenticated
+          : isAuthenticated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      logoutSucceeded: null == logoutSucceeded
+          ? _value.logoutSucceeded
+          : logoutSucceeded // ignore: cast_nullable_to_non_nullable
               as bool,
       profile: freezed == profile
           ? _value.profile
@@ -252,7 +389,12 @@ abstract class _$$ProfileStateImplCopyWith<$Res>
       __$$ProfileStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool isLoading, Profile? profile, String? errorMessage});
+  $Res call(
+      {bool isLoading,
+      bool isAuthenticated,
+      bool logoutSucceeded,
+      Profile? profile,
+      String? errorMessage});
 
   @override
   $ProfileCopyWith<$Res>? get profile;
@@ -272,6 +414,8 @@ class __$$ProfileStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? isLoading = null,
+    Object? isAuthenticated = null,
+    Object? logoutSucceeded = null,
     Object? profile = freezed,
     Object? errorMessage = freezed,
   }) {
@@ -279,6 +423,14 @@ class __$$ProfileStateImplCopyWithImpl<$Res>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isAuthenticated: null == isAuthenticated
+          ? _value.isAuthenticated
+          : isAuthenticated // ignore: cast_nullable_to_non_nullable
+              as bool,
+      logoutSucceeded: null == logoutSucceeded
+          ? _value.logoutSucceeded
+          : logoutSucceeded // ignore: cast_nullable_to_non_nullable
               as bool,
       profile: freezed == profile
           ? _value.profile
@@ -297,11 +449,17 @@ class __$$ProfileStateImplCopyWithImpl<$Res>
 class _$ProfileStateImpl implements _ProfileState {
   const _$ProfileStateImpl(
       {required this.isLoading,
+      required this.isAuthenticated,
+      required this.logoutSucceeded,
       required this.profile,
       required this.errorMessage});
 
   @override
   final bool isLoading;
+  @override
+  final bool isAuthenticated;
+  @override
+  final bool logoutSucceeded;
   @override
   final Profile? profile;
   @override
@@ -309,7 +467,7 @@ class _$ProfileStateImpl implements _ProfileState {
 
   @override
   String toString() {
-    return 'ProfileState(isLoading: $isLoading, profile: $profile, errorMessage: $errorMessage)';
+    return 'ProfileState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, logoutSucceeded: $logoutSucceeded, profile: $profile, errorMessage: $errorMessage)';
   }
 
   @override
@@ -319,14 +477,18 @@ class _$ProfileStateImpl implements _ProfileState {
             other is _$ProfileStateImpl &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
+            (identical(other.isAuthenticated, isAuthenticated) ||
+                other.isAuthenticated == isAuthenticated) &&
+            (identical(other.logoutSucceeded, logoutSucceeded) ||
+                other.logoutSucceeded == logoutSucceeded) &&
             (identical(other.profile, profile) || other.profile == profile) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, isLoading, profile, errorMessage);
+  int get hashCode => Object.hash(runtimeType, isLoading, isAuthenticated,
+      logoutSucceeded, profile, errorMessage);
 
   /// Create a copy of ProfileState
   /// with the given fields replaced by the non-null parameter values.
@@ -340,11 +502,17 @@ class _$ProfileStateImpl implements _ProfileState {
 abstract class _ProfileState implements ProfileState {
   const factory _ProfileState(
       {required final bool isLoading,
+      required final bool isAuthenticated,
+      required final bool logoutSucceeded,
       required final Profile? profile,
       required final String? errorMessage}) = _$ProfileStateImpl;
 
   @override
   bool get isLoading;
+  @override
+  bool get isAuthenticated;
+  @override
+  bool get logoutSucceeded;
   @override
   Profile? get profile;
   @override

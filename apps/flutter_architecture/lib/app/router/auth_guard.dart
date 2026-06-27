@@ -1,6 +1,6 @@
+import 'package:auth/auth.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
-import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 /// 需要登入才能進入的 Route Guard。
@@ -10,7 +10,7 @@ import 'package:injectable/injectable.dart';
 /// ```txt
 /// 使用者點擊 ProtectedPage
 ///   ↓
-/// AuthGuard 檢查 AuthBloc.state
+/// AuthGuard 檢查 SessionManager.currentSession
 ///   ↓
 /// 已登入：resolver.next(true)
 ///   ↓
@@ -18,13 +18,13 @@ import 'package:injectable/injectable.dart';
 /// ```
 @lazySingleton
 class AuthGuard extends AutoRouteGuard {
-  AuthGuard(this._authBloc);
+  AuthGuard(this._sessionManager);
 
-  final AuthBloc _authBloc;
+  final SessionManager _sessionManager;
 
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) {
-    final isAuthenticated = _authBloc.state.isAuthenticated;
+    final isAuthenticated = _sessionManager.isAuthenticated;
 
     if (isAuthenticated) {
       resolver.next(true);

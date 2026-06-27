@@ -5,6 +5,8 @@ part of 'profile_bloc.dart';
 class ProfileState with _$ProfileState {
   const factory ProfileState({
     required bool isLoading,
+    required bool isAuthenticated,
+    required bool logoutSucceeded,
     required Profile? profile,
     required String? errorMessage,
   }) = _ProfileState;
@@ -12,6 +14,8 @@ class ProfileState with _$ProfileState {
   factory ProfileState.initial() {
     return const ProfileState(
       isLoading: false,
+      isAuthenticated: false,
+      logoutSucceeded: false,
       profile: null,
       errorMessage: null,
     );

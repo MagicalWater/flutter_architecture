@@ -61,16 +61,21 @@ extension GetItInjectableX on _i174.GetIt {
             ));
     gh.lazySingleton<_i633.AuthTokenProvider>(() =>
         registerModule.authTokenProvider(gh<_i662.AuthLocalDataSource>()));
+    gh.lazySingleton<_i662.SessionManager>(
+        () => registerModule.sessionManager(gh<_i662.AuthLocalDataSource>()));
     gh.lazySingleton<_i361.Dio>(() => registerModule.dio(
           gh<_i633.AppDioFactory>(),
           gh<_i633.AuthTokenProvider>(),
         ));
+    gh.lazySingleton<_i633.ProfileApiClient>(
+        () => registerModule.profileApiClient(gh<_i361.Dio>()));
     gh.lazySingleton<_i662.AuthRepository>(() => registerModule.authRepository(
           gh<_i662.AuthRemoteDataSource>(),
           gh<_i662.AuthLocalDataSource>(),
+          gh<_i662.SessionManager>(),
         ));
-    gh.lazySingleton<_i633.ProfileApiClient>(
-        () => registerModule.profileApiClient(gh<_i361.Dio>()));
+    gh.lazySingleton<_i997.AuthGuard>(
+        () => _i997.AuthGuard(gh<_i662.SessionManager>()));
     gh.lazySingleton<_i511.ProfileRepository>(
         () => _i407.ProfileRepositoryImpl(gh<_i633.ProfileApiClient>()));
     gh.factory<_i662.LoginUseCase>(
@@ -81,17 +86,18 @@ extension GetItInjectableX on _i174.GetIt {
         () => registerModule.restoreSessionUseCase(gh<_i662.AuthRepository>()));
     gh.factory<_i474.GetProfileUseCase>(
         () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()));
+    gh.lazySingleton<_i787.AppRouter>(
+        () => _i787.AppRouter(gh<_i997.AuthGuard>()));
+    gh.factory<_i173.ProfileBloc>(() => _i173.ProfileBloc(
+          gh<_i474.GetProfileUseCase>(),
+          gh<_i662.LogoutUseCase>(),
+          gh<_i662.SessionManager>(),
+        ));
     gh.lazySingleton<_i1024.AuthBloc>(() => _i1024.AuthBloc(
           gh<_i662.LoginUseCase>(),
           gh<_i662.RestoreSessionUseCase>(),
           gh<_i662.LogoutUseCase>(),
         ));
-    gh.lazySingleton<_i997.AuthGuard>(
-        () => _i997.AuthGuard(gh<_i1024.AuthBloc>()));
-    gh.factory<_i173.ProfileBloc>(
-        () => _i173.ProfileBloc(gh<_i474.GetProfileUseCase>()));
-    gh.lazySingleton<_i787.AppRouter>(
-        () => _i787.AppRouter(gh<_i997.AuthGuard>()));
     return this;
   }
 }

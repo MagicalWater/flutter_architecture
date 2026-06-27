@@ -175,26 +175,34 @@ dart run sqflite_common_ffi_web:setup
 
 ---
 
-## 目前進行中
-
 ### Milestone 2B：SessionManager 與跨 Feature 登入狀態
 
-目標：
+狀態：Completed。
 
-```txt
-AuthGuard / Profile
-  ↓
-SessionManager / AuthSessionReader
-```
+已完成：
+
+- SessionManager 已成為跨 feature 登入狀態入口。
+- AuthRepositoryImpl 在 login / restore / logout 時同步更新 SessionManager。
+- AuthGuard 已改為依賴 SessionManager，不再依賴 AuthBloc。
+- ProfilePage 不再直接讀 AuthBloc。
+- ProfileBloc 透過 SessionManager 判斷登入狀態，並透過 LogoutUseCase 登出。
+- ProtectedPage 不再直接讀 AuthBloc。
+- build_runner / analyze / test 已通過。
+
+---
+
+## 目前進行中
+
+### Milestone 3：Auth + Profile Flow
 
 需要處理：
 
-- 建立或整理 SessionManager / AuthSessionReader。
-- AuthGuard 改為依賴 SessionManager，不再依賴 AuthBloc。
-- ProfilePage 不再直接讀 AuthBloc。
-- ProfileBloc / ProfileUseCase 透過 SessionManager 或 Repository 判斷登入狀態。
-- 登入成功後更新 SessionManager。
-- 登出後清除 SessionManager。
+- Login Button 串接 AuthBloc。
+- 登入成功後切換到 Profile tab。
+- Profile 頁面顯示目前登入用戶名稱。
+- 未登入時 Profile 顯示尚未登入。
+- ProtectedPage Route Guard。
+- 未登入進 ProtectedPage 時導回 LoginPage。
 
 ---
 

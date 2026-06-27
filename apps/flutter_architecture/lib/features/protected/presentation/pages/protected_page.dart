@@ -1,8 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooked_bloc/hooked_bloc.dart';
+import 'package:auth/auth.dart';
+import 'package:flutter_architecture/app/di/injection.dart';
 
 /// ProtectedPage，也就是需求中的 D 頁面。
 ///
@@ -13,14 +12,12 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 /// 檢查邏輯不放在頁面裡，而是放在 AuthGuard。
 /// 頁面只負責顯示內容。
 @RoutePage()
-class ProtectedPage extends HookWidget {
+class ProtectedPage extends StatelessWidget {
   const ProtectedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authBloc = useBloc<AuthBloc>();
-    final authState = useBlocBuilder(authBloc);
-    final user = authState.user;
+    final session = getIt<SessionManager>().currentSession;
 
     return Scaffold(
       appBar: AppBar(
@@ -37,7 +34,7 @@ class ProtectedPage extends HookWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text('目前登入用戶：${user?.name ?? '未知'}'),
+            Text('目前登入用戶 ID：${session?.userId ?? '未知'}'),
           ],
         ),
       ),

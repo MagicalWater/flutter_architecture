@@ -496,7 +496,7 @@ flutter build bundle
 
 將 `packages/api_client` 的真實 HTTP API 統一遷移為 Retrofit，並建立 Mock / Retrofit 可替換的 API boundary。
 
-狀態：In Progress。
+狀態：Completed。
 
 ### Milestone 9-1：文件與邊界定義
 
@@ -599,17 +599,136 @@ Milestone 9 狀態：Completed。
 
 ---
 
-## 第一階段不做
+## Milestone 10：App Configuration 與 Dart Environment Entrypoint
 
-以下內容暫不實作：
+建立可供後續正式功能使用的 App Configuration 與 Dart-level environment entrypoint 基礎。
+
+狀態：Completed。
+
+本 Milestone 只處理 Dart 層環境與設定基礎，不包含 Native Flavor、CI/CD、GitHub Actions、Firebase、Analytics 或正式發布流程。
+
+### Milestone 10-1：環境模型與責任邊界
+
+- [x] 建立 `AppEnvironment`：`development`、`staging`、`production`。
+- [x] 保留 `ApiMode`：`mock`、`real`，不與 App Environment 混為同一概念。
+- [x] Dart entrypoint 是 `AppEnvironment` 的唯一來源，不另外使用 `APP_ENV` dart-define。
+- [x] 合法組合：development 可使用 mock / real；staging 與 production 只允許 real。
+- [x] package 不直接讀取 `String.fromEnvironment`。
+
+### Milestone 10-2：Typed AppConfig
+
+- [x] 建立集中、不可變且可測試的 App 設定模型。
+- [x] `AppConfig` 組合 `AppEnvironment` 與 `ApiConfig`。
+- [x] `ApiConfig` 保留為 typed sub-config，但不自行讀取 dart-define。
+- [x] 在 App bootstrap 集中解析 `API_MODE`、`API_BASE_URL`。
+- [x] `configureDependencies` 明確接收已驗證的 `AppConfig`。
+- [x] 缺少必要設定時 fail fast。
+- [x] 不將 secret 放入 `dart-define` 或編譯產物。
+
+### Milestone 10-3：共用 Bootstrap 與 Dart Entrypoint
+
+- [x] 建立 `main_development.dart`、`main_staging.dart`、`main_production.dart`。
+- [x] `main.dart` 預設使用 development，維持既有執行方式。
+- [x] 建立共用 `bootstrap`，集中 database initialization、config 建立、DI registration 與 `runApp`。
+- [x] 各 entrypoint 只指定 `AppEnvironment`，不複製業務 bootstrap 流程。
+- [x] 補充各環境的 run / build 使用方式。
+
+### Milestone 10-4：安全與驗證規則
+
+- [x] staging / production 不允許 Mock API。
+- [x] Real API 必須明確提供合法 base URL。
+- [x] base URL 只允許 `http` 或 `https` scheme。
+- [x] production 必須使用 `https`。
+- [x] production 不允許 `mock.local`、localhost、loopback 或 `.invalid` URL。
+- [x] 未知 `API_MODE` 或不合法設定直接 fail fast。
+
+### Milestone 10-5：測試與文件
+
+- [x] 驗證各 environment 對應的 config validation。
+- [x] 驗證 Mock / Real 合法組合。
+- [x] 驗證 staging / production + mock 會 fail fast。
+- [x] 驗證 real mode 缺少 URL、錯誤 scheme 與 production HTTP URL 會 fail fast。
+- [x] 驗證 AppConfig 會明確傳入 Composition Root，並注入正確 implementation。
+- [x] 維持既有 Login / Profile / Session / Route Guard 行為。
+- [x] 同步 README、Project Context、Architecture Decisions、Changelog。
+
+### 完成定義
+
+- App Environment 與 API implementation selection 邊界清楚。
+- Dart entrypoint 是 AppEnvironment 的唯一來源。
+- 所有 runtime config 由 App bootstrap 集中解析並明確傳入 Composition Root。
+- package 不直接依賴 environment parsing API。
+- development / staging / production 具備 Dart-level entrypoint 與最小可執行基礎。
+- 不建立 Android productFlavors、iOS Schemes 或其他 Native Flavor 設定。
+- 不包含 CI/CD 實作。
+- `dart pub get`、build_runner、analyze、test、build 驗證全部通過。
+
+---
+
+## Milestone 11：CI/CD（暫緩）
+
+狀態：Deferred。
+
+CI/CD、GitHub Actions、build matrix、automatic release 與 deployment pipeline 目前不實作。
+
+保留 Milestone 編號，待 deployment / release requirements 明確後再重新評估。
+
+---
+
+## Milestone 12：Refresh Token + Concurrent 401 Handling
+
+在 App Configuration 基礎完成後，建立完整 Refresh Token 與並行 401 處理流程。
+
+預計涵蓋：
+
+- Access Token / Refresh Token 模型與持久化。
+- Token expiration 與 refresh eligibility 判斷。
+- concurrent 401 single-flight refresh。
+- refresh 成功後安全 replay 原 request。
+- refresh 失敗後清除 Session 並導向未登入狀態。
+- 避免 refresh request 本身進入無限 retry。
+- Interceptor、Repository、SessionManager 與 App Composition Root 的責任邊界。
+- 對並行、失敗與登出情境補齊測試。
+
+---
+
+## Milestone 13：Pagination + Search Debounce
+
+建立可重用但不過度抽象的清單載入與搜尋範例。
+
+預計涵蓋：
+
+- Cursor 或 page-based pagination 的明確範例。
+- 初次載入、載入更多、重新整理與錯誤狀態。
+- 防止重複載入與過期 response 覆蓋新狀態。
+- Search debounce 與 query 切換取消策略。
+- Bloc / UseCase / Repository / DTO / Mapper 的完整流程。
+
+---
+
+## Milestone 14：Offline Cache
+
+建立 Remote + Local 協調的 Offline Cache 範例。
+
+預計涵蓋：
+
+- Cache policy 與資料新鮮度。
+- Remote-first、cache-first 或 stale-while-revalidate 的明確示範。
+- SQLite Entity 與 Domain Entity mapping。
+- Offline 狀態、同步失敗與 stale data 呈現。
+- 與 Pagination / Search 的整合邊界。
+
+---
+
+## 暫不處理
+
+以下內容目前暫不實作，且不代表仍全部留在 Backlog；已排入 Milestone 12 至 14 的項目以本 Roadmap 為準：
 
 - 完整 ADR 系列。
 - 大量測試範例。
 - CI/CD。
 - Design System。
-- Refresh Token 完整流程。
 - WebSocket。
-- Pagination。
 - 多個業務 feature。
 
-這些都放到 `docs/backlog.md`。
+CI/CD 已保留為 Milestone 11，但狀態為 Deferred。

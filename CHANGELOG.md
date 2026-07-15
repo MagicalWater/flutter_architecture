@@ -20,6 +20,15 @@
 
 ### Added
 
+- 完成 Milestone 10 App Configuration 與 Dart Environment Entrypoint。
+- 新增 `AppEnvironment`、typed `AppConfig` / `ApiConfig` 與集中式 validation。
+- 新增共用 `bootstrap` 與 development / staging / production Dart entrypoints。
+- 新增 staging / production 禁止 Mock、production 強制 HTTPS 與 URL scheme validation 測試。
+- 新增 Composition Root integration test，驗證 AppConfig、ApiConfig、Dio 與 Mock API graph 的實際註冊結果。
+- production URL validation 擴充拒絕 mock.local、localhost、loopback 與 `.invalid` host。
+- 規劃 Milestone 10：App Configuration 與 Dart Environment Entrypoint，範圍限定為 typed config、共用 bootstrap、Dart-level entrypoint 與 environment validation。
+- 新增 Architecture Decision 014，明確將 Dart entrypoint 定義為 AppEnvironment 唯一來源，並將 Native Flavor 排除於 Milestone 10。
+- 固定後續 Roadmap：Milestone 12 Refresh Token + Concurrent 401 Handling、Milestone 13 Pagination + Search Debounce、Milestone 14 Offline Cache。
 - 新增 `AGENTS.md`，作為 AI coding agent / assistant 進入專案後的基本工作守則。
 - 新增 Architecture Decision 012，明確規範可重用 package 不直接綁定 DI framework。
 - 新增 Architecture Decision 013，規範所有真實 HTTP API 統一使用 Retrofit，Mock API 則透過相同 abstraction 提供替代實作。
@@ -38,6 +47,11 @@
 
 ### Changed
 
+- `configureDependencies` 改為明確接收已驗證的 `AppConfig`，DI module 不再自行讀取 dart-define。
+- `ApiConfig.baseUrl` 改為已驗證的 `Uri baseUri`。
+- 將 Milestone 11 CI/CD 標記為 Deferred，目前不實作 GitHub Actions、build matrix 或 deployment pipeline。
+- 修正 Roadmap 中 Milestone 9 開頭仍標記為 In Progress 的狀態不一致。
+- 將 Android productFlavors、iOS Schemes 與其他 Native Flavor 工作移回 Backlog，等待平台 scaffold 與發布需求明確後再規劃。
 - 移除 `packages/auth` 對 `injectable` 的依賴。
 - 移除 `packages/auth` 內 data source、repository、use case 的 DI annotations。
 - Auth package 物件改由 app 的 `RegisterModule` 統一註冊與組裝，維持 app 作為唯一 Composition Root。
@@ -58,6 +72,8 @@
 
 ### Verified
 
+- Milestone 10：`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle`。
+- staging / production Dart entrypoint 已分別完成 `flutter build bundle` 驗證。
 - `dart pub get`
 - `dart run melos run build_runner`
 - `dart run melos run analyze`

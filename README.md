@@ -87,7 +87,15 @@
 
 真實 HTTP API 統一使用 Retrofit 宣告；Mock implementation 與 Retrofit generated implementation 共用相同 API abstraction，並由 App Composition Root 決定實際注入哪一個 implementation。
 
-預設使用 Mock API。切換到真實 Retrofit API 時，可透過 `--dart-define` 提供執行模式與 base URL：
+`main.dart` 與 `main_development.dart` 使用 development；staging / production 分別使用獨立 Dart entrypoint。預設 development 使用 Mock API。
+
+Development Mock：
+
+```bash
+flutter run
+```
+
+Development Real API：
 
 ```bash
 flutter run \
@@ -95,8 +103,32 @@ flutter run \
   --dart-define=API_BASE_URL=https://api.example.com
 ```
 
-`API_MODE` 只接受 `mock` 或 `real`；未提供時預設為 `mock`。
-當 `API_MODE=real` 時，必須明確提供合法的 `API_BASE_URL`，否則 App 會在啟動時直接拋出設定錯誤。
+Staging：
+
+```bash
+flutter run \
+  -t lib/main_staging.dart \
+  --dart-define=API_MODE=real \
+  --dart-define=API_BASE_URL=https://staging-api.example.com
+```
+
+Production：
+
+```bash
+flutter run \
+  -t lib/main_production.dart \
+  --dart-define=API_MODE=real \
+  --dart-define=API_BASE_URL=https://api.example.com
+```
+
+規則：
+
+- `API_MODE` 只接受 `mock` 或 `real`。
+- development 可使用 Mock 或 Real API。
+- staging / production 只允許 Real API。
+- Real API 必須明確提供 `API_BASE_URL`。
+- URL 只允許 HTTP / HTTPS；production 強制 HTTPS，並拒絕 mock.local、localhost、loopback 與 `.invalid` URL。
+- Dart entrypoint 是 App Environment 的唯一來源，不使用 `APP_ENV` dart-define。
 
 ### Storage
 
@@ -136,6 +168,8 @@ root/
 負責：
 
 - App bootstrap
+- Typed AppConfig
+- Dart environment entrypoints
 - Router
 - DI composition
 - ShellPage

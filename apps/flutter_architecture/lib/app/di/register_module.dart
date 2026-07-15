@@ -19,9 +19,6 @@ import 'package:sqflite/sqflite.dart';
 /// 這些外部物件需要透過 module 告訴 injectable 如何建立。
 @module
 abstract class RegisterModule {
-  @lazySingleton
-  ApiConfig get apiConfig => ApiConfig.fromEnvironment();
-
   @preResolve
   Future<SharedPreferences> get sharedPreferences =>
       SharedPreferences.getInstance();
@@ -116,7 +113,7 @@ abstract class RegisterModule {
     ApiConfig config,
   ) {
     return factory.create(
-      baseUrl: config.baseUrl,
+      baseUrl: config.baseUri.toString(),
       tokenProvider: tokenProvider,
     );
   }

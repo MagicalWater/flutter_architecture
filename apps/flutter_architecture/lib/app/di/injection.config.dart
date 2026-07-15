@@ -49,7 +49,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.database,
       preResolve: true,
     );
-    gh.lazySingleton<_i46.ApiConfig>(() => registerModule.apiConfig);
     gh.lazySingleton<_i633.AppDioFactory>(() => registerModule.appDioFactory);
     gh.lazySingleton<_i662.SessionManager>(() => registerModule.sessionManager);
     gh.lazySingleton<_i997.AuthGuard>(

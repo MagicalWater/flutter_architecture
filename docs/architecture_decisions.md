@@ -579,3 +579,117 @@ Domain Model 使用不帶 `Dto` 的業務名稱。
 - 真實 API 不再以手寫 Dio request 作為一般實作方式。
 - RemoteDataSource 只依賴 API abstraction，不知道底層是 Mock 或 Retrofit。
 - Domain Layer 不依賴 Dio、Retrofit、JSON annotation 或 generated API client。
+
+---
+
+## Decision 014：App Configuration 與 Dart Environment Entrypoint
+
+**狀態：** Accepted
+
+### 背景
+
+Milestone 9 已建立 `ApiConfig`、`ApiMode` 與 Mock / Retrofit implementation selection，但目前設定解析仍由 DI module 內部直接讀取 `String.fromEnvironment`。
+
+專案目前只有 Dart / Flutter Web scaffold，尚未建立 Android、iOS、macOS、Windows 或 Linux platform scaffold，因此本階段不適合直接導入 Android productFlavors、iOS Schemes、applicationId、bundle identifier 或原生 App 名稱切換。
+
+### 決策
+
+Milestone 10 只建立 App Configuration 與 Dart-level environment entrypoint 基礎，不建立 Native Flavor。
+
+環境模型分為兩個不同概念：
+
+```txt
+AppEnvironment
+  development
+  staging
+  production
+
+ApiMode
+  mock
+  real
+```
+
+`AppEnvironment` 表示部署環境；`ApiMode` 表示 API implementation selection，兩者不得合併成同一個 enum。
+
+Dart entrypoint 是 `AppEnvironment` 的唯一來源：
+
+```txt
+main.dart
+main_development.dart
+main_staging.dart
+main_production.dart
+```
+
+各 entrypoint 只決定 `AppEnvironment`，並進入共用 `bootstrap`。不另外使用 `APP_ENV` dart-define，避免 entrypoint 與 `--dart-define` 出現互相衝突的 environment source of truth。
+
+`--dart-define` 只提供環境內可變設定，例如：
+
+```txt
+API_MODE
+API_BASE_URL
+```
+
+所有 environment parsing 必須集中在 App bootstrap / Composition Root；可重用 package 不直接讀取 `String.fromEnvironment`。
+
+設定模型採 typed configuration：
+
+```txt
+AppConfig
+  environment: AppEnvironment
+  api: ApiConfig
+
+ApiConfig
+  mode: ApiMode
+  baseUri: Uri
+```
+
+`ApiConfig` 保留為 `AppConfig` 的子設定，但不自行讀取 dart-define。App bootstrap 先建立並驗證 `AppConfig`，再將其明確傳入 DI Composition Root。
+
+合法組合定義為：
+
+```txt
+development + mock：允許
+development + real：允許
+staging + mock：不允許
+staging + real：允許
+production + mock：不允許
+production + real：允許
+```
+
+Real API 規則：
+
+- 必須明確提供 `API_BASE_URL`。
+- 只允許 `http` 或 `https` scheme。
+- production 必須使用 `https`。
+- production 不允許 `mock.local`、localhost、loopback 或 `.invalid` URL。
+- 未知 `API_MODE` 或不合法設定直接 fail fast，不可靜默退回 development 或 mock。
+
+### 非目標
+
+Milestone 10 不包含：
+
+- Android productFlavors。
+- iOS Schemes / Build Configurations。
+- applicationId / bundle identifier 切換。
+- 原生 App 名稱或圖示切換。
+- Signing configuration。
+- Firebase configuration。
+- Crashlytics / Analytics。
+- CI/CD / GitHub Actions。
+- dotenv、remote config 或 secrets management。
+- 尚未存在的 network logger、debug tools 或 feature flag framework。
+
+### 原因
+
+先建立 Dart-level configuration boundary，可以讓後續 Refresh Token、Pagination、Offline Cache 與正式 API integration 都依賴同一個清楚的 Composition Root。
+
+Native Flavor 需要平台 scaffold 與實際發布需求，若現在一併處理會讓 Milestone 範圍失控，也會引入大量與目前模板基礎無直接關係的原生檔案。
+
+### 影響
+
+- `main.dart` 預設使用 development，維持既有 IDE 與開發指令可直接執行。
+- `main_development.dart`、`main_staging.dart`、`main_production.dart` 只負責指定環境。
+- 共用 `bootstrap` 負責 Flutter binding、database initialization、AppConfig 建立、DI registration 與 `runApp`。
+- `configureDependencies` 需要明確接收已完成驗證的 `AppConfig`，而不是由 DI module 自行讀取 dart-define。
+- `ApiConfig.baseUrl` 後續調整為已驗證的 `Uri` 或等價 typed value，再於 transport boundary 轉成字串。
+- 未來若加入 Android / iOS platform scaffold，Native Flavor 必須另行討論並新增或更新 Architecture Decision。

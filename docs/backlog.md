@@ -12,26 +12,26 @@
 
 - ADR：Architecture Decision Record。
 - Unit Test / Bloc Test / Repository Test 完整範例。
-- CI/CD。
-- GitHub Actions。
 - Design System。
-- Refresh Token 完整流程。
-- Token 過期重試。
 - API Error Mapping 進階版。
-- Pagination 範例。
-- Search + debounce 範例。
-- Offline Cache。
 - WebSocket。
 - Notification feature。
 - Payment feature。
-- 多環境設定：dev / staging / production。
 - Firebase Crashlytics。
 - Analytics。
-- App Flavor。
+- Native Flavor：Android productFlavors、iOS Schemes、applicationId、bundle identifier 與原生 App 名稱切換。
 - Localizations。
 - 完整 Feature 新增指南。
 - 常見錯誤文件。
 - 架構演進文件。
+
+## 已排入正式 Roadmap
+
+- Milestone 10：App Configuration 與 Environment 基礎。
+- Milestone 11：CI/CD（Deferred，目前不實作）。
+- Milestone 12：Refresh Token + Concurrent 401 Handling。
+- Milestone 13：Pagination + Search Debounce。
+- Milestone 14：Offline Cache。
 
 ## 範圍規則
 

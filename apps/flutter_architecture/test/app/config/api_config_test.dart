@@ -1,4 +1,6 @@
 import 'package:flutter_architecture/app/config/api_config.dart';
+import 'package:flutter_architecture/app/config/app_config.dart';
+import 'package:flutter_architecture/app/config/app_environment.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,31 +13,33 @@ void main() {
     expect(() => ApiMode.parse('staging'), throwsArgumentError);
   });
 
-  test('ApiConfig 接受明確的 mode 與 baseUrl', () {
-    const config = ApiConfig(
+  test('ApiConfig 接受明確的 mode 與 baseUri', () {
+    final config = ApiConfig(
       mode: ApiMode.real,
-      baseUrl: 'https://api.example.com',
+      baseUri: Uri.parse('https://api.example.com'),
     );
 
     expect(config.mode, ApiMode.real);
-    expect(config.baseUrl, 'https://api.example.com');
+    expect(config.baseUri, Uri.parse('https://api.example.com'));
   });
 
-  test('Mock mode 未提供 baseUrl 時使用 mock 預設值', () {
-    final config = ApiConfig.fromValues(
-      modeValue: 'mock',
-      baseUrlValue: '',
+  test('development + mock 使用 mock 預設 URL', () {
+    final config = AppConfigFactory.fromValues(
+      environment: AppEnvironment.development,
+      apiModeValue: 'mock',
+      apiBaseUrlValue: '',
     );
 
-    expect(config.mode, ApiMode.mock);
-    expect(config.baseUrl, 'https://mock.local');
+    expect(config.api.mode, ApiMode.mock);
+    expect(config.api.baseUri, Uri.parse('https://mock.local'));
   });
 
   test('Real mode 未提供 baseUrl 時會拋出 ArgumentError', () {
     expect(
-      () => ApiConfig.fromValues(
-        modeValue: 'real',
-        baseUrlValue: '',
+      () => AppConfigFactory.fromValues(
+        environment: AppEnvironment.development,
+        apiModeValue: 'real',
+        apiBaseUrlValue: '',
       ),
       throwsArgumentError,
     );
@@ -43,11 +47,89 @@ void main() {
 
   test('不合法的 baseUrl 會拋出 ArgumentError', () {
     expect(
-      () => ApiConfig.fromValues(
-        modeValue: 'real',
-        baseUrlValue: 'api.example.com',
+      () => AppConfigFactory.fromValues(
+        environment: AppEnvironment.development,
+        apiModeValue: 'real',
+        apiBaseUrlValue: 'api.example.com',
       ),
       throwsArgumentError,
     );
+  });
+
+  test('staging 與 production 不允許 mock', () {
+    for (final environment in [
+      AppEnvironment.staging,
+      AppEnvironment.production,
+    ]) {
+      expect(
+        () => AppConfigFactory.fromValues(
+          environment: environment,
+          apiModeValue: 'mock',
+          apiBaseUrlValue: '',
+        ),
+        throwsArgumentError,
+      );
+    }
+  });
+
+  test('Real mode 只允許 http 或 https', () {
+    expect(
+      () => AppConfigFactory.fromValues(
+        environment: AppEnvironment.development,
+        apiModeValue: 'real',
+        apiBaseUrlValue: 'ftp://api.example.com',
+      ),
+      throwsArgumentError,
+    );
+  });
+
+  test('production 必須使用 https', () {
+    expect(
+      () => AppConfigFactory.fromValues(
+        environment: AppEnvironment.production,
+        apiModeValue: 'real',
+        apiBaseUrlValue: 'http://api.example.com',
+      ),
+      throwsArgumentError,
+    );
+  });
+
+  test('production 不允許 mock placeholder URL', () {
+    for (final url in [
+      'https://mock.local',
+      'https://api.mock.local',
+      'https://localhost',
+      'https://api.localhost',
+      'https://127.0.0.1',
+      'https://127.10.20.30',
+      'https://[::1]',
+      'https://api.invalid',
+    ]) {
+      expect(
+        () => AppConfigFactory.fromValues(
+          environment: AppEnvironment.production,
+          apiModeValue: 'real',
+          apiBaseUrlValue: url,
+        ),
+        throwsArgumentError,
+      );
+    }
+  });
+
+  test('staging 與 production 接受合法 real API', () {
+    for (final environment in [
+      AppEnvironment.staging,
+      AppEnvironment.production,
+    ]) {
+      final config = AppConfigFactory.fromValues(
+        environment: environment,
+        apiModeValue: 'real',
+        apiBaseUrlValue: 'https://api.example.com',
+      );
+
+      expect(config.environment, environment);
+      expect(config.api.mode, ApiMode.real);
+      expect(config.api.baseUri, Uri.parse('https://api.example.com'));
+    }
   });
 }

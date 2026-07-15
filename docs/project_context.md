@@ -338,13 +338,59 @@ dart run sqflite_common_ffi_web:setup
 
 ## 下一個工作目標
 
+### Milestone 10：App Configuration 與 Dart Environment Entrypoint
+
+狀態：Completed。
+
+Milestone 10 只建立 Dart-level environment 與 typed configuration 基礎，不處理 Native Flavor 或 CI/CD。
+
+已完成：
+
+- `AppEnvironment`：development / staging / production。
+- `AppEnvironment` 與 `ApiMode` 的責任分離。
+- Dart entrypoint 作為 `AppEnvironment` 唯一來源。
+- Typed `AppConfig` 組合 `AppEnvironment` 與 `ApiConfig`。
+- 共用 bootstrap 集中 config parsing、database initialization、DI registration 與 `runApp`。
+- development / staging / production 的 Dart-level entrypoint。
+- staging / production 禁止 Mock、production 強制 HTTPS 與其他 fail-fast validation。
+- config parsing 與 Composition Root selection 測試。
+
+驗證已通過：
+
+```txt
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle
+flutter build bundle -t lib/main_staging.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://staging-api.example.com
+flutter build bundle -t lib/main_production.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://api.example.com
+```
+
+本階段明確不建立 Android productFlavors、iOS Schemes、applicationId、bundle identifier、原生 App 名稱或 signing configuration。
+
+後續順序已拍板：
+
+```txt
+Milestone 11：CI/CD（Deferred）
+  ↓
+Milestone 12：Refresh Token + Concurrent 401 Handling
+  ↓
+Milestone 13：Pagination + Search Debounce
+  ↓
+Milestone 14：Offline Cache
+```
+
+CI/CD 目前保留編號但不實作，待 deployment / release requirements 明確後再評估。
+
+---
+
+## Milestone 9 完成摘要
+
 ### Milestone 9：Retrofit API Client Standardization
 
 狀態：Completed。
 
 Milestone 9-1 至 Milestone 9-6 已全部完成。
-
-目前下一步：從 `docs/backlog.md` 選擇下一個正式 Milestone。
 
 已拍板：
 

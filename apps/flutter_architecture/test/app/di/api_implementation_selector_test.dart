@@ -8,9 +8,9 @@ void main() {
   final dio = Dio(BaseOptions(baseUrl: 'https://api.example.com'));
 
   test('Mock mode 會選擇 Mock API implementations', () {
-    const config = ApiConfig(
+    final config = ApiConfig(
       mode: ApiMode.mock,
-      baseUrl: 'https://mock.local',
+      baseUri: Uri.parse('https://mock.local'),
     );
 
     expect(
@@ -24,9 +24,9 @@ void main() {
   });
 
   test('Real mode 會選擇 Retrofit API implementations', () {
-    const config = ApiConfig(
+    final config = ApiConfig(
       mode: ApiMode.real,
-      baseUrl: 'https://api.example.com',
+      baseUri: Uri.parse('https://api.example.com'),
     );
 
     expect(

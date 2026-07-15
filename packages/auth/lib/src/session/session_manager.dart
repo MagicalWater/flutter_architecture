@@ -19,21 +19,40 @@ class SessionManager {
 
   AuthSession? get currentSession => _sessionSubject.valueOrNull;
 
+  int _generation = 0;
+
+  int get generation => _generation;
+
   bool get isAuthenticated => currentSession?.isAuthenticated ?? false;
 
   void setAuthenticated({
     required String accessToken,
     required String userId,
   }) {
+    _generation += 1;
     _sessionSubject.add(
       AuthSession(
         accessToken: accessToken,
         userId: userId,
+        generation: _generation,
+      ),
+    );
+  }
+
+  void updateAccessToken(String accessToken) {
+    final session = currentSession;
+    if (session == null) return;
+    _sessionSubject.add(
+      AuthSession(
+        accessToken: accessToken,
+        userId: session.userId,
+        generation: session.generation,
       ),
     );
   }
 
   void clear() {
+    _generation += 1;
     _sessionSubject.add(null);
   }
 

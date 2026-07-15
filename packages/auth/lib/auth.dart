@@ -1,7 +1,9 @@
 export 'src/data/data_sources/auth_local_data_source.dart';
 export 'src/data/data_sources/auth_remote_data_source.dart';
 export 'src/data/data_sources/auth_token_provider_impl.dart';
+export 'src/data/exceptions/corrupted_auth_tokens_exception.dart';
 export 'src/data/mappers/login_response_dto_mapper.dart';
+export 'src/data/models/stored_auth_tokens.dart';
 export 'src/data/repositories/auth_repository_impl.dart';
 export 'src/domain/entities/auth_result.dart';
 export 'src/domain/entities/auth_user.dart';
@@ -11,4 +13,4 @@ export 'src/domain/use_cases/logout_use_case.dart';
 export 'src/domain/use_cases/restore_session_use_case.dart';
 export 'src/session/auth_session.dart';
 export 'src/session/session_manager.dart';
-export 'src/session/token_storage.dart';
+export 'src/session/auth_token_storage.dart';

@@ -679,16 +679,132 @@ CI/CD、GitHub Actions、build matrix、automatic release 與 deployment pipelin
 
 在 App Configuration 基礎完成後，建立完整 Refresh Token 與並行 401 處理流程。
 
-預計涵蓋：
+狀態：In Progress；Milestone 12-1 已完成。
 
-- Access Token / Refresh Token 模型與持久化。
-- Token expiration 與 refresh eligibility 判斷。
-- concurrent 401 single-flight refresh。
-- refresh 成功後安全 replay 原 request。
-- refresh 失敗後清除 Session 並導向未登入狀態。
-- 避免 refresh request 本身進入無限 retry。
-- Interceptor、Repository、SessionManager 與 App Composition Root 的責任邊界。
-- 對並行、失敗與登出情境補齊測試。
+架構責任邊界已由 Architecture Decision 015 拍板。
+
+### Milestone 12-1：Token Model 與 Persistence
+
+狀態：Completed。
+
+- 將既有 access-token-only storage 升級為完整 Token Pair storage abstraction。
+- 建立 persistence model，包含 access token、refresh token 與可用的 expiration metadata。
+- Access / Refresh Token 以單一 logical value 保存，避免分開寫入造成不一致。
+- Login response、Mock Auth 與 mapper 支援 refresh token 與 token rotation 所需欄位。
+- Restore Session 只有在完整 Token Pair 與 User persistence 都有效時才恢復登入。
+- 舊 `auth.accessToken` 單 token state 不做複雜 migration；讀到不完整狀態時清除並視為未登入。
+- SessionManager 維持 runtime-only，不向跨 feature consumer 暴露 refresh token。
+- `packages/api_client` 定義 runtime Session snapshot abstraction，包含 access token、userId 與 generation。
+- `packages/auth` 實作只從 SessionManager 提供 snapshot，不在每個 request 時讀取 persistence。
+- Login 保存 Token Pair 與 User 時採補償式一致性；任一步驟失敗都會 best-effort 清除兩者，且不更新 SessionManager。
+- Restore Session 遇到 Token Pair / User 任一缺少或不合法時，best-effort 清除兩者並視為未登入。
+- Logout / invalidation 必須分別嘗試清除 Token Pair 與 User，不可因第一個 cleanup 失敗而跳過第二個，最後一定清除 SessionManager。
+- SharedPreferences 寫入與刪除必須檢查回傳結果，避免 persistence operation 回傳 `false` 卻被視為成功。
+- Token Pair payload 損壞時必須與一般 I/O failure 區分；損壞資料會清除本地 Auth state 並視為未登入。
+- Login / Logout 遇到未知 persistence error 時仍必須完成補償或第二個 cleanup，並保留原始 error 與 stack trace。
+- `AuthLocalStore` 僅作為 auth package 內部 data-layer seam，不成為 public package API。
+
+完成驗證：
+
+```txt
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle
+git diff --check
+```
+
+### Milestone 12-2：Refresh API 與 Auth Refresh Flow
+
+- 建立獨立 Retrofit `AuthRefreshApi`，只包含 refresh endpoint。
+- `AuthApi` 維持 login boundary；`AuthRefreshApi` 固定使用 Refresh Dio。
+- Mock implementation 分為 `MockAuthApi` 與 `MockAuthRefreshApi`。
+- 建立 Refresh request / response DTO 與 mapper。
+- 建立獨立 Refresh Dio，不安裝 AuthHeaderInterceptor 或 AuthRefreshInterceptor。
+- 在 `packages/api_client` 定義最小 refresh abstraction 與 result type。
+- 在 `packages/auth` 實作 refresh coordinator / refresher。
+- single-flight refresh 只允許同一時間存在一個 refresh Future。
+- 支援 refresh token rotation。
+- Refresh 成功先保存完整 Token Pair，再更新 SessionManager。
+- Refresh result 明確區分 `success`、`sessionExpired`、`temporarilyUnavailable`、`sessionChanged` 與 `localStateFailure`。
+- Invalid refresh credential 執行被動 Session invalidation，不透過 LogoutUseCase。
+- 防止 refresh 期間 Logout、重新 Login 或切換帳號後，舊 response 覆蓋新 Session。
+- `SessionManager` 持有 monotonically increasing session generation。
+- Login、Restore Session、Logout 與 Session invalidation 會遞增 generation；一般 refresh 成功不遞增。
+- Refresh 開始時捕獲 generation、userId 與 failed access token，寫入新 Token Pair 前再次驗證 Session identity。
+- Session identity 已改變時回傳 `sessionChanged`，不得保存、更新 Session 或 replay。
+
+### Milestone 12-3：Concurrent 401 Interceptor
+
+- 保留 AuthHeaderInterceptor 只負責加入 access token。
+- 新增獨立 AuthRefreshInterceptor。
+- 只處理 authenticated、未 retry、未 skip 且實際帶 token 的 401。
+- AuthHeaderInterceptor 在 request metadata 保存原 Session generation 與 userId。
+- Login、Refresh、public endpoint 與已 replay request 不進入 refresh flow。
+- 只有 request generation / userId 與 current Session 相同，且 failed token 與 current token 不同時，才直接以最新 token replay，不再次 refresh。
+- generation 或 userId 不同時回傳 `sessionChanged` 或原始 401，不 refresh、不 replay，避免跨帳號 request replay。
+- 多個並行 401 等待同一個 single-flight refresh。
+- Refresh request 本身不進入 refresh interceptor。
+
+### Milestone 12-4：Safe Request Replay
+
+- Refresh 成功後以最新 access token replay 原 request。
+- Replay request 標記 `authRetryCount = 1`。
+- Replay 再次 401 時直接回傳錯誤，不進入第二次 refresh。
+- 一般 JSON、query 與可重建 body 可 replay。
+- Stream、Multipart、upload、特殊 download 或其他不可安全重送 request，必須顯式關閉 auth replay。
+- Request replay 不取代業務 Idempotency Key。
+
+### Milestone 12-5：Session Expiration 與既有 UI Flow
+
+- Refresh credential 無效時清除 Token Pair、User persistence 與 SessionManager。
+- Interceptor 不直接操作 Router、Bloc 或 LogoutUseCase。
+- AuthBloc 透過 SessionManager stream 同步未登入狀態。
+- ProfileBloc 與 AuthGuard 維持既有依賴邊界。
+- 驗證 Session expiration 後 Profile、ProtectedRoute 與 Login UI 行為。
+
+### Milestone 12-6：Concurrency / Failure / Regression Tests
+
+至少涵蓋：
+
+- 10 個 authenticated request 同時收到 401，只呼叫一次 refresh。
+- Refresh 成功後所有 request 使用新 token replay。
+- 較晚返回的舊 401 不再次 refresh。
+- 帳號 A 的舊 request 不會使用帳號 B 的 token replay。
+- Logout 後的舊 request 不會在重新登入後被 replay。
+- Replay 再次 401 不形成無限 retry。
+- Login、Refresh、public endpoint 401 不觸發 refresh。
+- 缺少 refresh token或 invalid refresh credential 時 Session 失效。
+- Timeout、DNS、無網路與 server 5xx 不清除 Session。
+- `sessionChanged` 不清除新的 Session，也不 replay 舊 request。
+- Refresh token rotation 正確保存。
+- Persistence failure 不更新 runtime token，會 best-effort 清除本地 auth state、清除 SessionManager，並回傳 `localStateFailure`。
+- Login partial persistence failure 會補償清除 Token Pair 與 User，且不建立 runtime Session。
+- Logout / invalidation 的兩個 local cleanup 都會被嘗試，最後一定清除 SessionManager。
+- Refresh 中途 Logout / relogin 時舊 response 被丟棄。
+- Login / Restore / Logout / AuthGuard / Profile regression。
+- Mock / Real Composition Root graph 都能建立。
+
+### Milestone 12-7：文件與完整驗證
+
+- 同步 README、Project Context、Architecture Decisions、Changelog 與相關 feature / package 文件。
+- 執行 `dart pub get`。
+- 執行 build_runner。
+- 執行 analyze。
+- 執行全部 flutter test。
+- 執行 development / staging / production bundle build。
+
+### 完成定義
+
+- Token Pair persistence 與 runtime Session 邊界清楚。
+- concurrent 401 只會產生一次 refresh request。
+- Refresh 成功可安全 replay 原 request。
+- Refresh request與 replay request 不會形成無限 retry。
+- 暫時性 refresh failure 不會錯誤清除 Session。
+- Invalid refresh credential 會清除 auth state，並透過 SessionManager 自然驅動 UI 進入未登入狀態。
+- Logout / relogin race 不會讓舊 refresh response 復活或覆蓋 Session。
+- package 不綁定 DI framework，App 仍是唯一 Composition Root。
+- analyze / test / build 全部通過。
 
 ---
 

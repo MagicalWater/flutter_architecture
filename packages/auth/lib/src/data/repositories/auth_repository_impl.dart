@@ -1,7 +1,9 @@
-import 'package:auth/src/data/data_sources/auth_local_data_source.dart';
+import 'package:auth/src/data/data_sources/auth_local_store.dart';
 import 'package:auth/src/data/data_sources/auth_remote_data_source.dart';
+import 'package:auth/src/data/exceptions/corrupted_auth_tokens_exception.dart';
 import 'package:auth/src/data/mappers/login_response_dto_mapper.dart';
 import 'package:auth/src/data/models/auth_user_model.dart';
+import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/domain/entities/auth_result.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
@@ -31,7 +33,7 @@ class AuthRepositoryImpl implements AuthRepository {
   );
 
   final AuthRemoteDataSource _remoteDataSource;
-  final AuthLocalDataSource _localDataSource;
+  final AuthLocalStore _localDataSource;
   final SessionManager _sessionManager;
 
   @override
@@ -48,8 +50,19 @@ class AuthRepositoryImpl implements AuthRepository {
       final result = response.toDomain();
       final user = result.user;
 
-      await _localDataSource.saveAccessToken(result.accessToken);
-      await _localDataSource.saveUser(AuthUserModel.fromEntity(user));
+      try {
+        await _localDataSource.saveTokens(
+          StoredAuthTokens(
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+          ),
+        );
+        await _localDataSource.saveUser(AuthUserModel.fromEntity(user));
+      } catch (error, stackTrace) {
+        await _clearLocalAuthStateBestEffort();
+        _sessionManager.clear();
+        Error.throwWithStackTrace(error, stackTrace);
+      }
       _sessionManager.setAuthenticated(
         accessToken: result.accessToken,
         userId: user.id,
@@ -69,20 +82,25 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<AuthUser?>> restoreSession() async {
     try {
-      final token = await _localDataSource.readAccessToken();
+      final tokens = await _localDataSource.readTokens();
       final user = await _localDataSource.readUser();
 
-      if (token == null || token.isEmpty || user == null) {
+      if (tokens == null || user == null) {
+        await _clearLocalAuthStateBestEffort();
         _sessionManager.clear();
         return const Success(null);
       }
 
       _sessionManager.setAuthenticated(
-        accessToken: token,
+        accessToken: tokens.accessToken,
         userId: user.id,
       );
 
       return Success(user.toEntity());
+    } on CorruptedAuthTokensException {
+      await _clearLocalAuthStateBestEffort();
+      _sessionManager.clear();
+      return const Success(null);
     } on AppException catch (error) {
       return FailureResult(
         mapAppExceptionToFailure(
@@ -95,10 +113,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<void>> logout() async {
+    Object? firstError;
+    StackTrace? firstStackTrace;
     try {
-      await _localDataSource.clearUser();
-      await _localDataSource.clearAccessToken();
-      _sessionManager.clear();
+      try {
+        await _localDataSource.clearUser();
+      } catch (error, stackTrace) {
+        firstError = error;
+        firstStackTrace = stackTrace;
+      }
+      try {
+        await _localDataSource.clearTokens();
+      } catch (error, stackTrace) {
+        firstError ??= error;
+        firstStackTrace ??= stackTrace;
+      }
+      if (firstError != null) {
+        Error.throwWithStackTrace(firstError, firstStackTrace!);
+      }
       return const Success(null);
     } on AppException catch (error) {
       return FailureResult(
@@ -107,6 +139,17 @@ class AuthRepositoryImpl implements AuthRepository {
           fallbackMessage: '登出失敗',
         ),
       );
+    } finally {
+      _sessionManager.clear();
     }
+  }
+
+  Future<void> _clearLocalAuthStateBestEffort() async {
+    try {
+      await _localDataSource.clearTokens();
+    } catch (_) {}
+    try {
+      await _localDataSource.clearUser();
+    } catch (_) {}
   }
 }

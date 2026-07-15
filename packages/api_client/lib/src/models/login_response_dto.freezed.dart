@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LoginResponseDto {
 
- String get accessToken; String get userId; String get userName;
+ String get accessToken; String get refreshToken; String get userId; String get userName;
 /// Create a copy of LoginResponseDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $LoginResponseDtoCopyWith<LoginResponseDto> get copyWith => _$LoginResponseDtoCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginResponseDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginResponseDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,userId,userName);
+int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,userId,userName);
 
 @override
 String toString() {
-  return 'LoginResponseDto(accessToken: $accessToken, userId: $userId, userName: $userName)';
+  return 'LoginResponseDto(accessToken: $accessToken, refreshToken: $refreshToken, userId: $userId, userName: $userName)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $LoginResponseDtoCopyWith<$Res>  {
   factory $LoginResponseDtoCopyWith(LoginResponseDto value, $Res Function(LoginResponseDto) _then) = _$LoginResponseDtoCopyWithImpl;
 @useResult
 $Res call({
- String accessToken, String userId, String userName
+ String accessToken, String refreshToken, String userId, String userName
 });
 
 
@@ -65,9 +65,10 @@ class _$LoginResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of LoginResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? userId = null,Object? userName = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? refreshToken = null,Object? userId = null,Object? userName = null,}) {
   return _then(_self.copyWith(
 accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
 as String,
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String accessToken,  String userId,  String userName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String userId,  String userName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoginResponseDto() when $default != null:
-return $default(_that.accessToken,_that.userId,_that.userName);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.accessToken,_that.userId,_that.userName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String accessToken,  String userId,  String userName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String userId,  String userName)  $default,) {final _that = this;
 switch (_that) {
 case _LoginResponseDto():
-return $default(_that.accessToken,_that.userId,_that.userName);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.accessToken,_that.userId,_that.userName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String accessToken,  String userId,  String userName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String accessToken,  String refreshToken,  String userId,  String userName)?  $default,) {final _that = this;
 switch (_that) {
 case _LoginResponseDto() when $default != null:
-return $default(_that.accessToken,_that.userId,_that.userName);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName);case _:
   return null;
 
 }
@@ -211,10 +212,11 @@ return $default(_that.accessToken,_that.userId,_that.userName);case _:
 @JsonSerializable()
 
 class _LoginResponseDto implements LoginResponseDto {
-  const _LoginResponseDto({required this.accessToken, required this.userId, required this.userName});
+  const _LoginResponseDto({required this.accessToken, required this.refreshToken, required this.userId, required this.userName});
   factory _LoginResponseDto.fromJson(Map<String, dynamic> json) => _$LoginResponseDtoFromJson(json);
 
 @override final  String accessToken;
+@override final  String refreshToken;
 @override final  String userId;
 @override final  String userName;
 
@@ -231,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginResponseDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginResponseDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,userId,userName);
+int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,userId,userName);
 
 @override
 String toString() {
-  return 'LoginResponseDto(accessToken: $accessToken, userId: $userId, userName: $userName)';
+  return 'LoginResponseDto(accessToken: $accessToken, refreshToken: $refreshToken, userId: $userId, userName: $userName)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$LoginResponseDtoCopyWith<$Res> implements $LoginResponseD
   factory _$LoginResponseDtoCopyWith(_LoginResponseDto value, $Res Function(_LoginResponseDto) _then) = __$LoginResponseDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String accessToken, String userId, String userName
+ String accessToken, String refreshToken, String userId, String userName
 });
 
 
@@ -268,9 +270,10 @@ class __$LoginResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of LoginResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? userId = null,Object? userName = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,Object? userId = null,Object? userName = null,}) {
   return _then(_LoginResponseDto(
 accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
+as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
 as String,

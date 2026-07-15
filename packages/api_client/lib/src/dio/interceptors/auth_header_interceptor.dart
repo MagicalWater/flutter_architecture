@@ -38,7 +38,7 @@ class AuthHeaderInterceptor extends Interceptor {
       return;
     }
 
-    final token = await _tokenProvider.getAccessToken();
+    final token = _tokenProvider.getCurrentSession()?.accessToken;
 
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';

@@ -8,6 +8,7 @@ part 'login_response_dto.g.dart';
 abstract class LoginResponseDto with _$LoginResponseDto {
   const factory LoginResponseDto({
     required String accessToken,
+    required String refreshToken,
     required String userId,
     required String userName,
   }) = _LoginResponseDto;

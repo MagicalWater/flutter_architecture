@@ -51,20 +51,8 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i633.AppDioFactory>(() => registerModule.appDioFactory);
     gh.lazySingleton<_i662.SessionManager>(() => registerModule.sessionManager);
-    gh.lazySingleton<_i997.AuthGuard>(
-      () => _i997.AuthGuard(gh<_i662.SessionManager>()),
-    );
-    gh.lazySingleton<_i662.AuthLocalDataSource>(
-      () => registerModule.authLocalDataSource(
-        gh<_i460.SharedPreferences>(),
-        gh<_i779.Database>(),
-      ),
-    );
-    gh.lazySingleton<_i787.AppRouter>(
-      () => _i787.AppRouter(gh<_i997.AuthGuard>()),
-    );
     gh.lazySingleton<_i633.AuthTokenProvider>(
-      () => registerModule.authTokenProvider(gh<_i662.AuthLocalDataSource>()),
+      () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
     );
     gh.lazySingleton<_i361.Dio>(
       () => registerModule.dio(
@@ -79,11 +67,23 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i633.ProfileApi>(
       () => registerModule.profileApi(gh<_i46.ApiConfig>(), gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i997.AuthGuard>(
+      () => _i997.AuthGuard(gh<_i662.SessionManager>()),
+    );
+    gh.lazySingleton<_i662.AuthLocalDataSource>(
+      () => registerModule.authLocalDataSource(
+        gh<_i460.SharedPreferences>(),
+        gh<_i779.Database>(),
+      ),
+    );
     gh.lazySingleton<_i662.AuthRemoteDataSource>(
       () => registerModule.authRemoteDataSource(gh<_i633.AuthApi>()),
     );
     gh.lazySingleton<_i725.ProfileRemoteDataSource>(
       () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
+    );
+    gh.lazySingleton<_i787.AppRouter>(
+      () => _i787.AppRouter(gh<_i997.AuthGuard>()),
     );
     gh.lazySingleton<_i662.AuthRepository>(
       () => registerModule.authRepository(

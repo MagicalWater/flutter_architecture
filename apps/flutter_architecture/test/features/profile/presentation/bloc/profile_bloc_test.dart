@@ -104,6 +104,7 @@ class _FakeAuthRepository implements AuthRepository {
     return const Success(
       AuthResult(
         accessToken: 'access-token',
+        refreshToken: 'refresh-token',
         user: AuthUser(
           id: 'user-1',
           name: 'Demo User',

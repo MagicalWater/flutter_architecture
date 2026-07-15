@@ -338,49 +338,90 @@ dart run sqflite_common_ffi_web:setup
 
 ## 下一個工作目標
 
-### Milestone 10：App Configuration 與 Dart Environment Entrypoint
+### Milestone 12：Refresh Token + Concurrent 401 Handling
 
-狀態：Completed。
+狀態：In Progress；Architecture Review 已完成，Milestone 12-1 已完成。
 
-Milestone 10 只建立 Dart-level environment 與 typed configuration 基礎，不處理 Native Flavor 或 CI/CD。
+Milestone 11 CI/CD 維持 Deferred，不處理。
 
-已完成：
-
-- `AppEnvironment`：development / staging / production。
-- `AppEnvironment` 與 `ApiMode` 的責任分離。
-- Dart entrypoint 作為 `AppEnvironment` 唯一來源。
-- Typed `AppConfig` 組合 `AppEnvironment` 與 `ApiConfig`。
-- 共用 bootstrap 集中 config parsing、database initialization、DI registration 與 `runApp`。
-- development / staging / production 的 Dart-level entrypoint。
-- staging / production 禁止 Mock、production 強制 HTTPS 與其他 fail-fast validation。
-- config parsing 與 Composition Root selection 測試。
-
-驗證已通過：
+Milestone 12 已拍板 Architecture Decision 015，核心方向如下：
 
 ```txt
-dart run melos run build_runner
-dart run melos run analyze
-dart run melos exec -- flutter test
-flutter build bundle
-flutter build bundle -t lib/main_staging.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://staging-api.example.com
-flutter build bundle -t lib/main_production.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://api.example.com
+AuthHeaderInterceptor
+  只負責加入 access token
+
+AuthRefreshInterceptor
+  負責 authenticated 401、等待 refresh 與 request replay
+
+Refresh abstraction
+  定義於 packages/api_client
+
+Refresh implementation
+  位於 packages/auth
+  負責 single-flight、refresh API、Token Pair persistence、
+  SessionManager 更新、failure classification 與 session invalidation
+
+AuthRefreshApi
+  獨立於 AuthApi
+  固定使用 Refresh Dio
+
+App Composition Root
+  建立 Main Dio / Refresh Dio
+  綁定 abstraction 與 implementation
 ```
 
-本階段明確不建立 Android productFlavors、iOS Schemes、applicationId、bundle identifier、原生 App 名稱或 signing configuration。
+已拍板的重要規則：
 
-後續順序已拍板：
+- Token persistence 從 access-token-only 升級為完整 Token Pair。
+- Access / Refresh Token 以單一 logical value 保存。
+- SessionManager 維持 runtime-only，不向跨 feature consumer 暴露 refresh token。
+- HTTP request 的 current access token 由 runtime Session snapshot provider 從 SessionManager 讀取；AuthTokenStorage 只用於 Login、Restore、Refresh、Logout 與 invalidation。
+- Runtime auth abstraction 改為提供 access token、userId 與 generation 的 Session snapshot；AuthHeaderInterceptor 會把 Session identity 寫入 request metadata。
+- Main Dio 安裝 AuthHeaderInterceptor 與 AuthRefreshInterceptor。
+- Refresh Dio 不安裝上述 auth interceptors。
+- Login 使用 `AuthApi`；Refresh 使用獨立 `AuthRefreshApi`，避免同型別 Dio 綁定歧義與 DI cycle。
+- single-flight 由 auth-side refresher 負責，不由 Interceptor 管理。
+- failed request token 已不是 current token 時，直接 replay，不再次 refresh。
+- 直接 replay 前必須確認 request generation / userId 與 current Session 相同；不同時不得跨 Session 或跨帳號 replay。
+- Replay request 只允許一次，透過 `authRetryCount` 防止無限 retry。
+- Invalid refresh credential 才使 Session 失效；timeout、無網路與 5xx 保留 Session。
+- 被動 Session invalidation 不透過 LogoutUseCase。
+- Interceptor 不直接操作 Router 或 Bloc。
+- Refresh 完成前必須驗證 session identity，避免 Logout / relogin race。
+- Session identity 由 SessionManager 的 monotonically increasing generation 表達；Login、Restore、Logout、invalidation 會遞增，refresh 成功不遞增。
+- Persistence failure 會清除 SessionManager 並回傳 `localStateFailure`，不保留無法安全更新的 runtime Session。
+- Token Pair 與 User 位於不同 storage，Login / Restore / Logout / invalidation 採補償式一致性與 best-effort cleanup，最後 runtime Session 必須保持一致。
+- Refresh result 統一為 `success`、`sessionExpired`、`temporarilyUnavailable`、`sessionChanged`、`localStateFailure` 五種語意。
+- Stream、Multipart、upload 等特殊 request 必須明確定義 replay policy。
+- Milestone 12 不導入 Native secure storage，但 storage abstraction 必須保留替換能力。
+
+目前進度：
+
+- Milestone 12-1 Token Model 與 Persistence 已完成。
+- Login response、Mock Auth、DTO mapper 與 domain result 已支援 refresh token。
+- Token persistence 已升級為單一 JSON Token Pair，並保留未來替換 secure storage 的 abstraction。
+- SessionManager 已具備 generation 與 runtime Session snapshot 基礎。
+- Login / Restore / Logout 已具備跨 storage 補償式一致性、損壞資料清理與 unknown error cleanup 保證。
+- Repository persistence tests 已覆蓋 partial failure、corrupted state 與 unknown error。
+- analyze、全部 test、bundle build 與 diff check 均已通過。
+
+下一個實作階段：Milestone 12-2 Refresh API 與 Auth Refresh Flow。
+
+後續實作順序：
 
 ```txt
-Milestone 11：CI/CD（Deferred）
+Milestone 12-2：Refresh API 與 Auth Refresh Flow
   ↓
-Milestone 12：Refresh Token + Concurrent 401 Handling
+Milestone 12-3：Concurrent 401 Interceptor
   ↓
-Milestone 13：Pagination + Search Debounce
+Milestone 12-4：Safe Request Replay
   ↓
-Milestone 14：Offline Cache
+Milestone 12-5：Session Expiration 與既有 UI Flow
+  ↓
+Milestone 12-6：Concurrency / Failure / Regression Tests
+  ↓
+Milestone 12-7：文件與完整驗證
 ```
-
-CI/CD 目前保留編號但不實作，待 deployment / release requirements 明確後再評估。
 
 ---
 

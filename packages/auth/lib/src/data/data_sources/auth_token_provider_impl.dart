@@ -1,5 +1,5 @@
 import 'package:api_client/api_client.dart';
-import 'package:auth/src/data/data_sources/auth_local_data_source.dart';
+import 'package:auth/src/session/session_manager.dart';
 
 /// Dio interceptor 使用的 token provider 實作。
 ///
@@ -19,12 +19,18 @@ import 'package:auth/src/data/data_sources/auth_local_data_source.dart';
 /// SharedPreferences
 /// ```
 class AuthTokenProviderImpl implements AuthTokenProvider {
-  const AuthTokenProviderImpl(this._localDataSource);
+  const AuthTokenProviderImpl(this._sessionManager);
 
-  final AuthLocalDataSource _localDataSource;
+  final SessionManager _sessionManager;
 
   @override
-  Future<String?> getAccessToken() {
-    return _localDataSource.readAccessToken();
+  AuthSessionSnapshot? getCurrentSession() {
+    final session = _sessionManager.currentSession;
+    if (session == null) return null;
+    return AuthSessionSnapshot(
+      accessToken: session.accessToken,
+      userId: session.userId,
+      generation: session.generation,
+    );
   }
 }

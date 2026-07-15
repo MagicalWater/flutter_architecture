@@ -11,6 +11,7 @@ part 'auth_result.freezed.dart';
 abstract class AuthResult with _$AuthResult {
   const factory AuthResult({
     required String accessToken,
+    required String refreshToken,
     required AuthUser user,
   }) = _AuthResult;
 }

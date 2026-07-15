@@ -12,6 +12,7 @@ class MockAuthApi implements AuthApi {
 
     return const LoginResponseDto(
       accessToken: 'mock-access-token',
+      refreshToken: 'mock-refresh-token',
       userId: 'user-001',
       userName: 'Water Magical',
     );

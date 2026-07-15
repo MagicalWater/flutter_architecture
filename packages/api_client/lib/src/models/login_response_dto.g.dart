@@ -9,6 +9,7 @@ part of 'login_response_dto.dart';
 _LoginResponseDto _$LoginResponseDtoFromJson(Map<String, dynamic> json) =>
     _LoginResponseDto(
       accessToken: json['accessToken'] as String,
+      refreshToken: json['refreshToken'] as String,
       userId: json['userId'] as String,
       userName: json['userName'] as String,
     );
@@ -16,6 +17,7 @@ _LoginResponseDto _$LoginResponseDtoFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$LoginResponseDtoToJson(_LoginResponseDto instance) =>
     <String, dynamic>{
       'accessToken': instance.accessToken,
+      'refreshToken': instance.refreshToken,
       'userId': instance.userId,
       'userName': instance.userName,
     };

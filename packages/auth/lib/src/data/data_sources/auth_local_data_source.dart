@@ -1,6 +1,10 @@
-import 'package:api_client/api_client.dart';
+import 'dart:convert';
+
 import 'package:auth/src/data/models/auth_user_model.dart';
-import 'package:auth/src/session/token_storage.dart';
+import 'package:auth/src/data/models/stored_auth_tokens.dart';
+import 'package:auth/src/data/exceptions/corrupted_auth_tokens_exception.dart';
+import 'package:auth/src/data/data_sources/auth_local_store.dart';
+import 'package:auth/src/session/auth_token_storage.dart';
 import 'package:core/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -17,51 +21,78 @@ import 'package:sqflite/sqflite.dart';
 /// - profile 存在 SQLite。
 ///
 /// 這樣可以示範兩種常見本地持久化方式。
-class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
+class AuthLocalDataSource implements AuthTokenStorage, AuthLocalStore {
   const AuthLocalDataSource(
     this._preferences,
     this._database,
   );
 
-  static const String _accessTokenKey = 'auth.accessToken';
+  static const String _tokensKey = 'auth.tokens';
+  static const String _legacyAccessTokenKey = 'auth.accessToken';
   static const String _userTable = 'auth_user';
 
   final SharedPreferences _preferences;
   final Database _database;
 
   @override
-  Future<void> saveAccessToken(String token) async {
+  Future<void> saveTokens(StoredAuthTokens tokens) async {
     await _guardLocal(
-      () => _preferences.setString(_accessTokenKey, token),
-      message: '儲存 access token 失敗',
+      () async {
+        final success = await _preferences.setString(
+          _tokensKey,
+          jsonEncode(tokens.toJson()),
+        );
+        if (!success) {
+          throw const AppException(message: '儲存 token pair 失敗');
+        }
+      },
+      message: '儲存 token pair 失敗',
     );
   }
 
   @override
-  Future<String?> readAccessToken() async {
+  Future<StoredAuthTokens?> readTokens() async {
     return _guardLocal(
-      () async => _preferences.getString(_accessTokenKey),
-      message: '讀取 access token 失敗',
+      () async {
+        final raw = _preferences.getString(_tokensKey);
+        if (raw == null) {
+          if (_preferences.containsKey(_legacyAccessTokenKey)) {
+            await clearTokens();
+          }
+          return null;
+        }
+        try {
+          final decoded = jsonDecode(raw);
+          if (decoded is! Map<String, dynamic>) {
+            throw const FormatException('Invalid auth token payload');
+          }
+          return StoredAuthTokens.fromJson(decoded);
+        } on FormatException catch (error, stackTrace) {
+          Error.throwWithStackTrace(
+            CorruptedAuthTokensException(cause: error),
+            stackTrace,
+          );
+        }
+      },
+      message: '讀取 token pair 失敗',
     );
   }
 
-  /// 給 Dio interceptor 使用的 token 讀取方法。
-  ///
-  /// Interceptor 只知道 AuthTokenProvider，
-  /// 不需要知道 token 實際上存在 SharedPreferences。
   @override
-  Future<String?> getAccessToken() {
-    return readAccessToken();
-  }
-
-  @override
-  Future<void> clearAccessToken() async {
+  Future<void> clearTokens() async {
     await _guardLocal(
-      () => _preferences.remove(_accessTokenKey),
-      message: '清除 access token 失敗',
+      () async {
+        final tokensRemoved = await _preferences.remove(_tokensKey);
+        final legacyRemoved = await _preferences.remove(_legacyAccessTokenKey);
+        if (!tokensRemoved || !legacyRemoved) {
+          throw const AppException(message: '清除 token pair 失敗');
+        }
+      },
+      message: '清除 token pair 失敗',
     );
   }
 
+  @override
   Future<void> saveUser(AuthUserModel user) async {
     await _guardLocal(
       () => _database.insert(
@@ -73,6 +104,7 @@ class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
     );
   }
 
+  @override
   Future<AuthUserModel?> readUser() async {
     final rows = await _guardLocal(
       () => _database.query(_userTable, limit: 1),
@@ -86,6 +118,7 @@ class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
     return AuthUserModel.fromJson(rows.first);
   }
 
+  @override
   Future<void> clearUser() async {
     await _guardLocal(
       () => _database.delete(_userTable),

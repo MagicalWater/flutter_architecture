@@ -37,6 +37,7 @@ void main() {
     );
     const response = LoginResponseDto(
       accessToken: 'token',
+      refreshToken: 'refresh-token',
       userId: 'user-001',
       userName: 'Water Magical',
     );
@@ -163,6 +164,7 @@ class _RecordingAdapter implements HttpClientAdapter {
     final response = switch (options.path) {
       '/auth/login' => <String, dynamic>{
         'accessToken': 'real-access-token',
+        'refreshToken': 'real-refresh-token',
         'userId': 'user-002',
         'userName': 'Retrofit User',
       },

@@ -20,6 +20,15 @@
 
 ### Added
 
+- 完成 Milestone 12-1 Token Model 與 Persistence：Login / Mock / DTO / Domain 支援 refresh token，新增完整 Token Pair storage、runtime Session snapshot 與 generation。
+- 新增 Auth persistence 補償式一致性：Login partial write、Restore incomplete/corrupted state、Logout dual cleanup 與 unknown error cleanup 均保持 runtime/persistence 一致。
+- 新增 `StoredAuthTokens`、`AuthTokenStorage`、package-internal `AuthLocalStore` 與 `CorruptedAuthTokensException`。
+- 新增 Repository persistence tests，覆蓋 User save failure、corrupted Token Pair、cleanup failure 與 unknown error stack-preserving behavior。
+- 新增 Architecture Decision 015，拍板 Refresh Token、concurrent 401、single-flight refresh、request replay、session invalidation 與 Main Dio / Refresh Dio 的責任邊界。
+- 將 Milestone 12 拆分為 Token Model、Refresh Flow、Concurrent 401 Interceptor、Safe Replay、Session Expiration、Concurrency Tests 與 Final Verification 七個階段。
+- 補充 Decision 015：Refresh endpoint 使用獨立 `AuthRefreshApi` 與 Refresh Dio；Session identity 由 SessionManager generation 管理；Token Pair persistence failure 會清除 runtime Session 並回傳 `localStateFailure`。
+- 補充 Decision 015：HTTP request 的 current access token 以 SessionManager runtime state 為唯一來源，並統一 Refresh result 的五種語意。
+- 補充 Decision 015：authenticated request 需保存 Session generation / userId，禁止跨 Session 或跨帳號 replay；Token Pair 與 User 跨 storage 採補償式一致性與完整 cleanup policy。
 - 完成 Milestone 10 App Configuration 與 Dart Environment Entrypoint。
 - 新增 `AppEnvironment`、typed `AppConfig` / `ApiConfig` 與集中式 validation。
 - 新增共用 `bootstrap` 與 development / staging / production Dart entrypoints。

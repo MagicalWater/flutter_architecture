@@ -70,9 +70,9 @@ abstract class RegisterModule {
 
   @lazySingleton
   api_client.AuthTokenProvider authTokenProvider(
-    auth.AuthLocalDataSource localDataSource,
+    auth.SessionManager sessionManager,
   ) {
-    return auth.AuthTokenProviderImpl(localDataSource);
+    return auth.AuthTokenProviderImpl(sessionManager);
   }
 
   @lazySingleton

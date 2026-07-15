@@ -7,6 +7,7 @@ extension LoginResponseDtoMapper on LoginResponseDto {
   AuthResult toDomain() {
     return AuthResult(
       accessToken: accessToken,
+      refreshToken: refreshToken,
       user: AuthUser(
         id: userId,
         name: userName,

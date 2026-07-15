@@ -693,3 +693,531 @@ Native Flavor 需要平台 scaffold 與實際發布需求，若現在一併處�
 - `configureDependencies` 需要明確接收已完成驗證的 `AppConfig`，而不是由 DI module 自行讀取 dart-define。
 - `ApiConfig.baseUrl` 後續調整為已驗證的 `Uri` 或等價 typed value，再於 transport boundary 轉成字串。
 - 未來若加入 Android / iOS platform scaffold，Native Flavor 必須另行討論並新增或更新 Architecture Decision。
+
+---
+
+## Decision 015：Refresh Token 與 Concurrent 401 Handling 責任邊界
+
+**狀態：** Accepted
+
+### 背景
+
+Milestone 9 已建立 Retrofit API boundary、Dio transport、`AuthHeaderInterceptor`、`AuthTokenProvider`、Auth Repository 與 SessionManager。
+
+目前登入流程只保存 access token，且 authenticated request 收到 401 時不會自動 refresh。
+
+若直接把 refresh、token persistence、session invalidation、request replay 與 navigation 全部放進 Dio interceptor，會造成：
+
+- `packages/api_client` 與 `packages/auth` 循環依賴。
+- Interceptor 同時負責 transport、Auth application flow 與 UI 導航。
+- 多個並行 401 重複呼叫 refresh endpoint。
+- Refresh request 自己再次被攔截而形成無限 retry。
+- Logout 後舊 refresh response 將 Session 復活。
+- 舊帳號 refresh 覆蓋新帳號登入。
+- 暫時性網路錯誤被誤判為 refresh token 無效並強制登出。
+- 不可重播的 request body 被錯誤 replay。
+
+因此 Refresh Token 與 concurrent 401 必須先建立清楚的 package、transport、persistence 與 runtime session 邊界。
+
+### 決策
+
+#### 1. AuthHeaderInterceptor 只負責加入 access token
+
+`AuthHeaderInterceptor` 保持單一責任：
+
+```txt
+authenticated request
+  ↓
+AuthHeaderInterceptor
+  ↓
+讀取目前 access token
+  ↓
+加入 Authorization header
+```
+
+它不負責：
+
+- 呼叫 refresh endpoint。
+- single-flight 協調。
+- request replay。
+- 清除 Session。
+- 操作 Router、Bloc 或 UseCase。
+
+#### 2. 新增獨立 AuthRefreshInterceptor
+
+401 handling 由獨立 interceptor 負責。
+
+它只處理同時符合下列條件的 request：
+
+```txt
+statusCode == 401
+requiresAuth == true
+skipAuthRefresh != true
+authRetryCount == 0
+request 曾實際帶上 access token
+```
+
+Login、Refresh、public endpoint、已 replay 過的 request 與沒有 token 的 request，不進入 refresh flow。
+
+`AuthRefreshInterceptor` 的責任限於：
+
+- 辨識可處理的 authenticated 401。
+- 比較 failed request token 與目前 token。
+- 等待或觸發 single-flight refresh abstraction。
+- refresh 成功後 replay 原 request。
+- refresh 失敗時將錯誤交還上層。
+
+它不直接依賴 `AuthRepository`、`SessionManager`、Router、Bloc 或 LogoutUseCase。
+
+#### 3. Refresh API 與 refresh abstraction 分離
+
+Login 與 Refresh 使用不同的 Retrofit API abstraction：
+
+```txt
+AuthApi
+  └── login
+
+AuthRefreshApi
+  └── refresh
+```
+
+`AuthRefreshApi` 固定使用 Refresh Dio 建立，不與使用 Main Dio 的一般 API instance 共用。
+
+這樣可以避免：
+
+- 同一個 `AuthApi` instance 同時要求 Main Dio 與 Refresh Dio。
+- 透過 named DI / qualifier 才能區分同型別 instance。
+- `Main Dio → AuthRefreshInterceptor → Refresher → AuthApi → Main Dio` 的依賴循環。
+
+Mock implementation 也維持相同邊界：
+
+```txt
+MockAuthApi
+MockAuthRefreshApi
+```
+
+#### 4. Refresh abstraction 定義於 api_client，實作位於 auth
+
+`packages/api_client` 定義 transport 所需的最小 refresh abstraction 與 result type。
+
+`packages/auth` 提供實作，負責：
+
+- 讀取 refresh token。
+- 判斷 refresh eligibility。
+- 呼叫 refresh API。
+- single-flight refresh。
+- refresh token rotation。
+- 保存完整 Token Pair。
+- 更新 SessionManager runtime state。
+- refresh failure classification。
+- session invalidation。
+
+App Composition Root 負責 abstraction 與 implementation 的綁定與 lifecycle。
+
+此方向避免：
+
+```txt
+packages/api_client
+  ↓
+packages/auth
+  ↓
+packages/api_client
+```
+
+形成 package dependency cycle。
+
+#### 5. single-flight 由 auth-side refresher 負責
+
+single-flight 不放在 Interceptor 內，而由 refresh coordinator / refresher implementation 統一管理。
+
+同一時間只允許一個 refresh Future：
+
+```txt
+Request A 401 ─┐
+Request B 401 ─┼─→ 同一個 refresh Future
+Request C 401 ─┘
+```
+
+所有等待者共用同一結果。
+
+完成後清除 in-flight Future 時，必須做 identity check，避免較舊 Future 的 completion 清除較新的 refresh operation。
+
+#### 6. failed token 與 current token 不同時不再次 refresh
+
+每個 authenticated request 在送出前，除了加入 access token，也必須保存該 request 所屬的 Session identity snapshot：
+
+```txt
+accessToken
+sessionGeneration
+userId
+```
+
+可透過 request extra metadata 保存，例如：
+
+```txt
+authSessionGeneration
+authSessionUserId
+```
+
+401 回來時，只有同時符合下列條件，才能判定為同一個 Session 內已有其他流程完成 refresh：
+
+```txt
+current Session 仍存在
+current generation == request generation
+current userId == request userId
+current access token != failed access token
+```
+
+此時直接以目前 token replay，不再次呼叫 refresh endpoint。
+
+若 generation 或 userId 不同，代表該 request 所屬 Session 已被 Logout、invalidation、重新 Login 或切換帳號取代。此時不得 refresh，也不得使用新的 Session 身分 replay 舊 request，應回傳 `sessionChanged` 或保留原始 401。
+
+這個規則同時避免：
+
+- 較晚返回的舊 401 造成 sequential duplicate refresh。
+- 帳號 A 的舊 request 被帳號 B 的 token replay。
+- Logout 後的舊 request 被重新登入後的 Session 復活。
+
+#### 7. Main Dio 與 Refresh Dio 分離
+
+App Composition Root 建立兩個 Dio：
+
+```txt
+Main Dio
+  ├── AuthHeaderInterceptor
+  └── AuthRefreshInterceptor
+
+Refresh Dio
+  └── 不安裝 AuthHeaderInterceptor
+  └── 不安裝 AuthRefreshInterceptor
+```
+
+`AuthRefreshApi` 使用 Refresh Dio，從結構上避免 interceptor recursion 與過期 access token 被誤帶入 refresh request。
+
+Refresh endpoint 仍應標記 `skipAuthRefresh`，作為第二層防護。
+
+#### 8. Token Pair 以單一 persistence abstraction 保存
+
+既有只保存 access token 的 `TokenStorage` 需要升級為完整 Token Pair storage abstraction。
+
+Persistence model 至少包含：
+
+```txt
+accessToken
+refreshToken
+accessTokenExpiresAt（若 API 提供）
+refreshTokenExpiresAt（若 API 提供）
+```
+
+Access Token 與 Refresh Token 不分開以兩個互不關聯的寫入操作保存，避免一新一舊的不一致狀態。
+
+目前 Demo implementation 可使用 SharedPreferences 的單一 JSON entry 表達完整 Token Pair。
+
+Milestone 12 不同時導入 Android Keystore、iOS Keychain 或 secure storage package；但 storage abstraction 必須保留未來替換能力，文件需明確註記 production 應採平台安全儲存。
+
+#### 9. SessionManager 維持純 runtime state holder
+
+`SessionManager` 不負責 persistence、refresh API 或 Dio exception。
+
+Runtime Session 預設只暴露跨 feature 真正需要的資訊，例如：
+
+```txt
+userId
+accessToken
+accessTokenExpiresAt（若需要）
+```
+
+Refresh Token 不透過 SessionManager 暴露給 Route Guard、Profile 或其他跨 feature consumer；它只存在 Auth data boundary 與 persistence。
+
+HTTP request 使用的 current access token source of truth 是 SessionManager runtime state。
+
+`packages/api_client` 應定義能提供完整 runtime Session snapshot 的窄 abstraction，而不只提供 access token 字串。
+
+建議契約語意為：
+
+```txt
+AuthSessionSnapshot
+  accessToken
+  userId
+  generation
+
+AuthSessionSnapshotProvider
+  getCurrentSession()
+```
+
+其 `packages/auth` 實作只從 `SessionManager.currentSession` 與 generation 取得 snapshot，不在每次 request 時讀取 SharedPreferences 或其他 persistence。
+
+`AuthHeaderInterceptor` 使用同一份 snapshot：
+
+- 加入 Authorization header。
+- 將 generation 與 userId 寫入 request metadata。
+
+`AuthRefreshInterceptor` 再使用 request snapshot 與 current snapshot 做安全比較。
+
+Persistence 的責任限定為：
+
+- Login 成功後保存 Token Pair。
+- App 啟動 Restore Session 時讀取 Token Pair。
+- Refresh 成功後更新 Token Pair。
+- Logout 或 Session invalidation 時清除 Token Pair。
+
+因此：
+
+```txt
+HTTP request 的 current token source of truth
+  = SessionManager
+
+App restart 後的 restore source of truth
+  = AuthTokenStorage
+```
+
+這可避免每個 request 都讀取本地 storage，並確保 refresh 完成後的新 access token 能立即被後續 request 與 failed-token comparison 使用。
+
+`SessionManager` 同時持有 monotonically increasing session generation，用來識別目前登入 Session 的 identity。
+
+下列操作建立新的 Session identity，因此 generation 必須遞增：
+
+- Login 成功。
+- Restore Session 成功。
+- 主動 Logout。
+- 被動 Session invalidation。
+
+一般 access token refresh 成功不遞增 generation，因為它仍屬於同一個登入 Session，只更新 credentials。
+
+#### 10. Refresh 成功先持久化，再更新 runtime Session
+
+Refresh 成功後順序為：
+
+```txt
+驗證 refresh response
+  ↓
+確認 Session identity 仍有效
+  ↓
+保存完整 Token Pair
+  ↓
+更新 SessionManager
+  ↓
+完成 refresh Future
+  ↓
+等待中的 request replay
+```
+
+若 persistence 失敗，不更新 runtime token，也不 replay request。
+
+無法安全保存新 Token Pair 時，視為不可恢復的 local auth state failure：
+
+```txt
+新 Token Pair persistence 失敗
+  ↓
+不更新 runtime token
+  ↓
+best-effort 清除 Token Pair 與 User persistence
+  ↓
+無論 local clear 是否成功，都清除 SessionManager
+  ↓
+回傳 localStateFailure
+```
+
+這樣可以避免保留一個已收到 401、但又無法安全更新 credentials 的 runtime Session。
+
+#### 11. Auth persistence 採補償式一致性
+
+Token Pair 與 User persistence 位於不同 storage boundary：
+
+```txt
+SharedPreferences
+  └── Token Pair
+
+SQLite
+  └── Auth User
+```
+
+兩者無法形成同一個跨 storage transaction，因此 Auth flow 必須明確採用補償式一致性策略。
+
+Login 成功後順序為：
+
+```txt
+保存 Token Pair
+  ↓
+保存 User
+  ↓
+兩者皆成功後才更新 SessionManager
+```
+
+任一步驟失敗時：
+
+```txt
+best-effort 清除 Token Pair
+best-effort 清除 User
+SessionManager 保持未登入
+回傳 local persistence failure
+```
+
+Restore Session 時：
+
+```txt
+Token Pair 與 User 皆存在且合法
+  → Restore Session
+
+任一缺少、解析失敗或資料不合法
+  → best-effort 清除兩者
+  → SessionManager.clear
+  → 視為未登入或依錯誤類型回傳 Failure
+```
+
+Logout 與被動 Session invalidation 時，Token Pair 與 User 的清除必須分別嘗試；不可因第一個 clear 失敗而跳過第二個。
+
+清除流程完成後，無論 local clear 是否全部成功，都必須清除 SessionManager。若需要回報本地清除錯誤，應在兩個 cleanup 都嘗試後再彙整錯誤。
+
+Refresh 成功只更新 Token Pair，不更新 User；但 refresh 的 `localStateFailure` cleanup 仍必須分別嘗試清除 Token Pair 與 User。
+
+#### 12. Refresh failure 必須分類
+
+Refresh result 至少區分：
+
+```txt
+success
+sessionExpired
+temporarilyUnavailable
+sessionChanged
+localStateFailure
+```
+
+下列情況可判定 Session 失效：
+
+- 本地不存在 refresh token。
+- Refresh token 已知過期。
+- Refresh endpoint 明確回傳 invalid refresh credential。
+- Refresh response 缺少必要欄位或 token rotation response 不合法。
+
+下列情況不得直接清除 Session：
+
+- 無網路。
+- DNS failure。
+- Timeout。
+- Server 5xx。
+- 其他暫時性 transport failure。
+
+暫時性失敗保留 Session，讓後續 request 可再次嘗試。
+
+`sessionChanged` 表示 refresh 期間發生 Logout、重新 Login、切換帳號或其他 Session identity 改變，舊 refresh 結果被主動丟棄。
+
+`localStateFailure` 表示新 Token Pair 無法安全持久化；此時 SessionManager 必須清除，且不得 replay request。
+
+#### 13. Session invalidation 不等同主動 Logout
+
+使用者主動 Logout 維持：
+
+```txt
+LogoutUseCase
+  ↓
+AuthRepository.logout
+```
+
+Refresh credential 失效屬於被動 Session invalidation，不透過 LogoutUseCase。
+
+被動 invalidation 由 auth refresh flow 清除 Token Pair、User persistence 與 SessionManager。
+
+Interceptor 不操作 Router 或 Bloc；UI、AuthBloc、ProfileBloc 與 AuthGuard 透過 SessionManager stream 自然進入未登入狀態。
+
+#### 14. 防止 logout / relogin race
+
+Refresh 開始時必須捕獲：
+
+```txt
+session generation
+userId
+failed access token
+```
+
+Refresh response 寫入 persistence 前必須再次確認：
+
+```txt
+current generation == captured generation
+current userId == captured userId
+```
+
+若 refresh 期間發生：
+
+- Logout。
+- Session invalidation。
+- 重新 Login。
+- 切換帳號。
+
+舊 refresh response 必須被丟棄，不得保存 token、更新 Session 或 replay request，並回傳 `sessionChanged`。
+
+#### 15. Request replay 僅允許一次
+
+Replay request 必須標記：
+
+```txt
+authRetryCount = 1
+```
+
+Replay 後再次收到 401，不再觸發第二次 refresh，避免無限循環。
+
+Replay 時使用最新 access token覆蓋原 Authorization header，並透過 Dio `fetch()` 或等價底層 API 重送原 RequestOptions。
+
+#### 16. 特殊 request 必須明確定義 replay policy
+
+一般 JSON、query 與可重建的 request body 可自動 replay。
+
+下列 request 不應假設可安全重播：
+
+- Stream body。
+- Multipart / upload stream。
+- 已被消耗的 request data。
+- 特殊 download / progress flow。
+- 已取消的 request。
+
+新增此類 endpoint 時，必須顯式標記 `skipAuthRefresh` 或等價 replay policy。
+
+Refresh Token 只解決身份更新，不解決業務冪等性；付款、下單等非冪等 API 仍需獨立的 Idempotency Key 設計。
+
+#### 17. Token expiration 採 reactive 401 為基礎
+
+Milestone 12 的必要基礎是 server 401 驅動的 reactive refresh。
+
+Token model 可保存 expiration metadata 與 refresh eligibility，但 proactive pre-request refresh 屬於可選的後續子階段。
+
+即使未來加入 proactive refresh，server 401 仍是最終保護，因為 token 可能被 revoke、server session 可能失效，或 client / server clock 存在偏差。
+
+### 測試要求
+
+Milestone 12 至少驗證：
+
+- 多個並行 401 只呼叫一次 refresh。
+- 所有等待 request 使用新 token replay。
+- 舊 401 在 token 已更新後不再次 refresh。
+- 舊 Session / 舊帳號 request 不會被新 Session token replay。
+- Replay request 再次 401 不形成循環。
+- Refresh endpoint、Login endpoint、public endpoint 不進入 refresh flow。
+- Refresh token rotation 正確保存。
+- Invalid refresh credential 清除 persistence 與 runtime Session。
+- Timeout / 5xx 不清除 Session。
+- Persistence failure 不更新 runtime token。
+- Persistence failure 會清除 SessionManager，並回傳 `localStateFailure`。
+- Login partial persistence failure 會補償清除 Token Pair 與 User，且不建立 runtime Session。
+- Logout / invalidation 即使其中一個 local clear 失敗，仍會嘗試另一個 cleanup 並清除 SessionManager。
+- Refresh 期間 Logout / relogin 不會被舊 response 覆蓋。
+- Login / Restore / Logout / AuthGuard / Profile flow regression。
+
+### 非目標
+
+Milestone 12 不包含：
+
+- Native secure storage 實作。
+- OAuth browser flow。
+- Multi-device token management。
+- Server-side revoke endpoint，除非現有 API contract 明確要求。
+- 全域 Router / Navigation Service。
+- Idempotency Key framework。
+- Multipart / streaming request 的通用 replay engine。
+
+### 影響
+
+- `packages/api_client` 會增加 `AuthRefreshApi`、refresh abstraction、result、request metadata 與 401 interceptor。
+- `packages/auth` 會增加 Token Pair persistence model、refresh data flow、single-flight coordinator 與 session invalidation。
+- App Composition Root 會建立 Main Dio 與 Refresh Dio，並綁定 refresh abstraction implementation。
+- Auth Login response、Mock Auth 與 Restore Session 流程需要支援 Refresh Token。
+- SessionManager 仍維持 runtime-only，不直接依賴 storage、Dio 或 Retrofit。

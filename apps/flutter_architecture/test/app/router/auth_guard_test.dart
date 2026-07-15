@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('AuthGuard', () {
     test('未登入時不允許進入 ProtectedRoute', () async {
-      final sessionManager = SessionManager(_MemoryTokenStorage());
+      final sessionManager = SessionManager();
       final guard = AuthGuard(sessionManager);
       addTearDown(sessionManager.dispose);
 
@@ -13,11 +13,11 @@ void main() {
     });
 
     test('已登入時允許進入 ProtectedRoute', () async {
-      final sessionManager = SessionManager(_MemoryTokenStorage());
+      final sessionManager = SessionManager();
       final guard = AuthGuard(sessionManager);
       addTearDown(sessionManager.dispose);
 
-      await sessionManager.login(
+      sessionManager.setAuthenticated(
         accessToken: 'access-token',
         userId: 'user-1',
       );
@@ -25,23 +25,4 @@ void main() {
       expect(guard.canNavigateToProtected, isTrue);
     });
   });
-}
-
-class _MemoryTokenStorage implements TokenStorage {
-  String? _accessToken;
-
-  @override
-  Future<void> clearAccessToken() async {
-    _accessToken = null;
-  }
-
-  @override
-  Future<String?> readAccessToken() async {
-    return _accessToken;
-  }
-
-  @override
-  Future<void> saveAccessToken(String token) async {
-    _accessToken = token;
-  }
 }

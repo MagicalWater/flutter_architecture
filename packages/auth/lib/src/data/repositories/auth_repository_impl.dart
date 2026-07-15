@@ -1,5 +1,6 @@
 import 'package:auth/src/data/data_sources/auth_local_data_source.dart';
 import 'package:auth/src/data/data_sources/auth_remote_data_source.dart';
+import 'package:auth/src/data/mappers/login_response_dto_mapper.dart';
 import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:auth/src/domain/entities/auth_result.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
@@ -44,29 +45,22 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
 
-      final user = AuthUser(
-        id: response.userId,
-        name: response.userName,
-      );
+      final result = response.toDomain();
+      final user = result.user;
 
-      await _localDataSource.saveAccessToken(response.accessToken);
+      await _localDataSource.saveAccessToken(result.accessToken);
       await _localDataSource.saveUser(AuthUserModel.fromEntity(user));
-      await _sessionManager.login(
-        accessToken: response.accessToken,
+      _sessionManager.setAuthenticated(
+        accessToken: result.accessToken,
         userId: user.id,
       );
 
-      return Success(
-        AuthResult(
-          accessToken: response.accessToken,
-          user: user,
-        ),
-      );
-    } catch (error) {
+      return Success(result);
+    } on AppException catch (error) {
       return FailureResult(
-        Failure(
-          message: '登入失敗',
-          cause: error,
+        mapAppExceptionToFailure(
+          error,
+          fallbackMessage: '登入失敗',
         ),
       );
     }
@@ -79,18 +73,21 @@ class AuthRepositoryImpl implements AuthRepository {
       final user = await _localDataSource.readUser();
 
       if (token == null || token.isEmpty || user == null) {
-        await _sessionManager.logout();
+        _sessionManager.clear();
         return const Success(null);
       }
 
-      await _sessionManager.restore(userId: user.id);
+      _sessionManager.setAuthenticated(
+        accessToken: token,
+        userId: user.id,
+      );
 
       return Success(user.toEntity());
-    } catch (error) {
+    } on AppException catch (error) {
       return FailureResult(
-        Failure(
-          message: '恢復登入狀態失敗',
-          cause: error,
+        mapAppExceptionToFailure(
+          error,
+          fallbackMessage: '恢復登入狀態失敗',
         ),
       );
     }
@@ -100,13 +97,14 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<void>> logout() async {
     try {
       await _localDataSource.clearUser();
-      await _sessionManager.logout();
+      await _localDataSource.clearAccessToken();
+      _sessionManager.clear();
       return const Success(null);
-    } catch (error) {
+    } on AppException catch (error) {
       return FailureResult(
-        Failure(
-          message: '登出失敗',
-          cause: error,
+        mapAppExceptionToFailure(
+          error,
+          fallbackMessage: '登出失敗',
         ),
       );
     }

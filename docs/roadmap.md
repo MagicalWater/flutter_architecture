@@ -1,10 +1,10 @@
 # Roadmap
 
-這份 Roadmap 只描述第一階段 MVP。
+這份 Roadmap 記錄模板目前與後續 Milestone。
 
-第一階段的目標是完成一份可以直接拿來開新專案的 Flutter 架構模板。
+第一階段 MVP 已完成；後續 Milestone 用於模板基線升級、架構整理與能力擴充。
 
-不在第一階段做的內容，統一放到 `docs/backlog.md`。
+尚未排入正式 Milestone 的想法，統一放到 `docs/backlog.md`。
 
 ---
 
@@ -489,6 +489,113 @@ flutter build bundle
 - 所有修改皆有明確收益。
 - analyze / test / build 全部通過。
 - 文件同步完成。
+
+---
+
+## Milestone 9：Retrofit API Client Standardization
+
+將 `packages/api_client` 的真實 HTTP API 統一遷移為 Retrofit，並建立 Mock / Retrofit 可替換的 API boundary。
+
+狀態：In Progress。
+
+### Milestone 9-1：文件與邊界定義
+
+狀態：Completed。
+
+- 新增 Architecture Decision 013。
+- 定義所有真實 HTTP API 必須使用 Retrofit。
+- 定義 Mock API 例外與 API abstraction。
+- 定義 DTO、Mapper、Domain Entity 的責任邊界。
+- 定義直接操作 Dio 的允許範圍。
+
+### Milestone 9-2：Auth API 遷移
+
+狀態：Completed。
+
+- 建立 Auth API abstraction。
+- 由 Retrofit abstract class 同時作為 Auth API abstraction 與真實 HTTP declaration。
+- 建立 Mock Auth implementation。
+- 建立 `LoginRequestDto`。
+- 將既有 Login response model 明確調整為 DTO 命名。
+- Mock implementation 放在 `packages/api_client/lib/src/mocks/`。
+- 既有 Demo 預設繼續使用 Mock implementation。
+- 已驗證 Retrofit 會以 `POST /auth/login` 傳送 JSON request body，並將 JSON response 解析為 `LoginResponseDto`。
+- RemoteDataSource 建立 `LoginRequestDto` 並呼叫 `AuthApi`。
+- Login response 透過 Mapper 轉為 `AuthResult`，Repository 保留持久化與 Session 更新責任。
+- Dio transport exception mapping 保留在 `api_client`，避免 `packages/auth` 直接依賴 Dio。
+
+### Milestone 9-3：Profile API 遷移
+
+狀態：Completed。
+
+- 建立 Profile API abstraction。
+- 由 Retrofit abstract class 同時作為 Profile API abstraction 與真實 HTTP declaration。
+- 建立 Mock Profile implementation。
+- 將既有 Profile response model 明確調整為 DTO 命名。
+- 驗證 authenticated request metadata 是否正確進入 Dio `Options.extra`。
+- 移除手寫 Dio request 示範方法，改由 Retrofit endpoint 表達 authenticated request。
+- 已補上 `GET /profile` request test，驗證 `requiresAuth` metadata 會進入 Dio `Options.extra`。
+
+### Milestone 9-4：DI 與環境切換
+
+狀態：Completed。
+
+- App Composition Root 決定 Mock 或 Retrofit implementation。
+- package 內不加入 GetIt / Injectable annotation。
+- 使用最小 `ApiConfig` / `ApiMode` 表達 Mock / Real selection，並預留給後續完整 AppConfig / Flavor。
+- RemoteDataSource 只依賴 API abstraction。
+- `API_MODE` / `API_BASE_URL` 透過 `--dart-define` 提供；預設使用 Mock mode。
+- Dio 的 base URL 由 `ApiConfig` 注入，不再硬編碼在 `api_client` package。
+- 已補上 Mock / Real implementation selector tests。
+
+### Milestone 9-5：Mapper 與錯誤邊界整理
+
+狀態：Completed。
+
+- DTO 到 Domain Entity 的 Mapper 放在對應 package 的 data layer。
+- Mapper 只做純資料轉換；Repository implementation 負責持久化與 Session 更新。
+- Domain Layer 不暴露 DTO。
+- RemoteDataSource 將 DioException 映射為 AppException。
+- Repository implementation 將 Data Layer exception 映射為 Failure。
+- 保留後續統一 API Error Mapping 的擴充點。
+- Auth / Profile Repository 只將 `AppException` 映射為 `Failure`；未知程式錯誤不再被吞掉。
+- Profile 新增 RemoteDataSource，統一處理 transport exception mapping。
+- SharedPreferences / SQLite 錯誤在 AuthLocalDataSource boundary 轉為 `AppException`。
+
+### Milestone 9-6：測試與驗證
+
+狀態：Completed。
+
+- [x] Mock API test。
+- [x] DTO JSON serialization test。
+- [x] Mapper test。
+- [x] Retrofit endpoint generation / request test。
+- [x] Repository 與 RemoteDataSource regression test。
+- [x] 已知 `AppException` 轉為 domain `Failure`，未知錯誤保持拋出。
+- [x] Failure 顯示 domain fallback message，技術 exception 保留於 cause chain。
+
+最終至少執行：
+
+```bash
+dart pub get
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+cd apps/flutter_architecture
+flutter build bundle
+```
+
+### 完成定義
+
+- 所有真實 HTTP endpoint 都由 Retrofit 宣告。
+- Mock 與 Retrofit implementation 實作相同 API abstraction。
+- Feature、Repository、RemoteDataSource 不直接操作 Dio。
+- DTO 與 Domain Entity 維持分離。
+- Mock / Real implementation 由 App Composition Root 決定。
+- 既有 Login、Profile、Session 與 Route Guard 行為不變。
+- analyze / test / build 全部通過。
+
+Milestone 9 狀態：Completed。
 
 ---
 

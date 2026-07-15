@@ -18,10 +18,13 @@ import 'package:dio/dio.dart';
 class AppDioFactory {
   const AppDioFactory();
 
-  Dio create({required AuthTokenProvider tokenProvider}) {
+  Dio create({
+    required String baseUrl,
+    required AuthTokenProvider tokenProvider,
+  }) {
     final dio = Dio(
       BaseOptions(
-        baseUrl: 'https://mock.local',
+        baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
       ),

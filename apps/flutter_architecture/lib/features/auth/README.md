@@ -29,14 +29,13 @@ LoginUseCase
 AuthRepository
   ↓
 AuthRepositoryImpl
-  ↓
-AuthRemoteDataSource
-  ↓
-AuthApiClient
-  ↓
-Mock API
-  ↓
-AuthLocalDataSource
+  ├── AuthRemoteDataSource
+  │     ↓
+  │   AuthApi
+  │     ├── MockAuthApi
+  │     └── _AuthApi（Retrofit generated）
+  │
+  └── AuthLocalDataSource
   ↓
 SharedPreferences + SQLite
   ↓

@@ -451,3 +451,131 @@ package 應提供能力，不應決定自己在某個 App 裡如何被建立、�
 `packages/auth` 不再使用 `injectable` annotation，也不再依賴 `injectable` package。
 
 Auth 相關 data source、repository、use case、session 物件仍由 `apps/flutter_architecture/lib/app/di/register_module.dart` 註冊與組裝。
+
+---
+
+## Decision 013：所有真實 HTTP API 統一使用 Retrofit
+
+**狀態：** Accepted
+
+### 背景
+
+目前 `packages/api_client` 已使用 Dio，並以手寫方式建立 API client。
+
+隨著 API 數量增加，如果每個 endpoint 都自行處理 request method、path、query、body、response parsing 與錯誤轉送，容易出現重複程式碼與不一致的實作方式。
+
+本專案需要一套統一、可預期且方便 code generation 的 HTTP API 宣告方式，同時維持 Mock API 的彈性。
+
+### 決策
+
+所有真實 HTTP API 必須透過 Retrofit 宣告與產生實作。
+
+一般 feature、repository、data source 不直接呼叫：
+
+```dart
+dio.get(...)
+dio.post(...)
+dio.put(...)
+dio.delete(...)
+```
+
+Dio 保留作為底層 transport，負責：
+
+- BaseOptions。
+- Timeout。
+- Interceptor。
+- Authorization header。
+- Request / response transport。
+- Retrofit 無法合理表達的少數底層能力。
+
+Mock API 可以手寫，但 Mock 與 Retrofit implementation 必須遵守相同的 API abstraction，並由 App Composition Root 決定使用哪一個 implementation。
+
+Retrofit abstract class 本身同時作為 API abstraction 與真實 HTTP implementation 的宣告來源，不額外建立只有轉呼叫責任的 `RetrofitXxxApi` adapter。
+
+建議結構：
+
+```txt
+AuthApi
+  ├── _AuthApi（Retrofit generated implementation）
+  └── MockAuthApi（手寫 mock implementation）
+```
+
+### DTO 與 Mapper 邊界
+
+Retrofit 只負責：
+
+```txt
+HTTP JSON
+  ↓
+DTO
+```
+
+DTO 仍需明確定義，並透過 Freezed / json_serializable 處理 JSON serialization。
+
+DTO 不等於 Domain Entity。
+
+DTO 到 Domain Entity 的 Mapper 保留在使用該 DTO 的 data layer，例如：
+
+```txt
+packages/auth/lib/src/data/mappers/
+```
+
+`packages/api_client` 不依賴 `packages/auth` 的 Domain Model。
+
+Mapper 只負責純資料轉換，不處理持久化、Session 更新或流程協調；Repository implementation 仍負責上述副作用與資料來源協調。
+
+### RemoteDataSource 與錯誤邊界
+
+RemoteDataSource 保留作為 Data Layer 的遠端資料來源邊界，責任包括：
+
+- 建立 request DTO。
+- 呼叫 API abstraction。
+- 必要時協調同一外部系統的多個 endpoint。
+- 將 `DioException` 等 transport exception 映射為 `AppException`。
+
+Repository implementation 再將 Data Layer exception 映射為 Domain 可接受的 `Failure`。
+
+錯誤依賴流維持：
+
+```txt
+DioException
+  ↓ RemoteDataSource
+AppException
+  ↓ RepositoryImpl
+Failure
+  ↓ UseCase / Result<T>
+```
+
+### 命名規則
+
+API model 使用：
+
+```txt
+XxxRequestDto
+XxxResponseDto
+XxxDto
+```
+
+Domain Model 使用不帶 `Dto` 的業務名稱。
+
+### 認證 Request
+
+需要登入的 Retrofit endpoint 透過 request extra metadata 標記，並由 `AuthHeaderInterceptor` 統一加入 Authorization header。
+
+不在各個 API method 手動組合 token 或 header。
+
+### 例外
+
+若遇到 Retrofit 無法合理處理的特殊 transport 行為，例如特定大型檔案串流、底層下載進度或特殊 protocol bridge，可以在 `packages/api_client` 內建立封裝後的 Dio service，但不得讓 Dio 穿透 package boundary。
+
+只有當例外做法會形成新的全域架構規則時，才需要新增 Architecture Decision；單一特殊 endpoint 只需在相關文件或程式碼中記錄原因。
+
+### 影響
+
+- `packages/api_client` 會提供 Retrofit API abstraction、generated implementation 與 Mock implementation。
+- Mock implementation 放在明確的 `mocks/` 目錄，避免與真實 API declaration 混淆。
+- 若正式產品不允許 runtime mock，可將 Mock implementation 移至 App development module 或獨立 test-support package。
+- App Composition Root 負責依環境選擇 Mock 或 Retrofit implementation。
+- 真實 API 不再以手寫 Dio request 作為一般實作方式。
+- RemoteDataSource 只依賴 API abstraction，不知道底層是 Mock 或 Retrofit。
+- Domain Layer 不依賴 Dio、Retrofit、JSON annotation 或 generated API client。

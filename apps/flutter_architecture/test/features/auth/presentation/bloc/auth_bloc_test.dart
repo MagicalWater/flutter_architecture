@@ -6,8 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('AuthBloc', () {
     test('App 啟動時可以 restore 已存在的 session', () async {
-      final tokenStorage = _MemoryTokenStorage();
-      final sessionManager = SessionManager(tokenStorage);
+      final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(sessionManager);
       await repository.login(account: 'demo', password: 'password');
       final bloc = AuthBloc(
@@ -38,8 +37,7 @@ void main() {
     });
 
     test('SessionManager 被其他 feature 清空時，AuthBloc 會同步清除 user', () async {
-      final tokenStorage = _MemoryTokenStorage();
-      final sessionManager = SessionManager(tokenStorage);
+      final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(sessionManager);
       final bloc = AuthBloc(
         LoginUseCase(repository),
@@ -72,7 +70,7 @@ void main() {
         ),
       );
 
-      await sessionManager.logout();
+      sessionManager.clear();
 
       await expectLater(
         bloc.stream,
@@ -103,7 +101,7 @@ class _FakeAuthRepository implements AuthRepository {
     );
     _cachedUser = user;
 
-    await _sessionManager.login(
+    _sessionManager.setAuthenticated(
       accessToken: 'access-token',
       userId: user.id,
     );
@@ -119,7 +117,7 @@ class _FakeAuthRepository implements AuthRepository {
   @override
   Future<Result<void>> logout() async {
     _cachedUser = null;
-    await _sessionManager.logout();
+    _sessionManager.clear();
     return const Success(null);
   }
 
@@ -128,30 +126,14 @@ class _FakeAuthRepository implements AuthRepository {
     final user = _cachedUser;
 
     if (user == null) {
-      await _sessionManager.logout();
+      _sessionManager.clear();
       return const Success(null);
     }
 
-    await _sessionManager.restore(userId: user.id);
+    _sessionManager.setAuthenticated(
+      accessToken: 'access-token',
+      userId: user.id,
+    );
     return Success(user);
-  }
-}
-
-class _MemoryTokenStorage implements TokenStorage {
-  String? _accessToken;
-
-  @override
-  Future<void> clearAccessToken() async {
-    _accessToken = null;
-  }
-
-  @override
-  Future<String?> readAccessToken() async {
-    return _accessToken;
-  }
-
-  @override
-  Future<void> saveAccessToken(String token) async {
-    _accessToken = token;
   }
 }

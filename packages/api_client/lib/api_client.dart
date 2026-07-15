@@ -1,7 +1,13 @@
-export 'src/api/auth_api_client.dart';
-export 'src/api/profile_api_client.dart';
+export 'src/api/auth_retrofit_api.dart';
+export 'src/api/profile_retrofit_api.dart';
 export 'src/dio/app_dio_factory.dart';
 export 'src/dio/auth_token_provider.dart';
 export 'src/dio/interceptors/auth_header_interceptor.dart';
-export 'src/models/login_response.dart';
-export 'src/models/profile_response.dart';
+export 'src/dio/request_extras.dart';
+export 'src/errors/transport_exception_mapper.dart';
+export 'src/errors/transport_failure_details.dart';
+export 'src/mocks/mock_auth_api.dart';
+export 'src/mocks/mock_profile_api.dart';
+export 'src/models/login_request_dto.dart';
+export 'src/models/login_response_dto.dart';
+export 'src/models/profile_response_dto.dart';

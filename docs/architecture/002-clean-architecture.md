@@ -171,7 +171,7 @@ AuthRepositoryImpl
   ↓
 AuthRemoteDataSource
   ↓
-AuthApiClient
+AuthApi
 ```
 
 ## 登入流程範例
@@ -189,9 +189,10 @@ AuthRepositoryImpl
   ↓ 呼叫遠端資料來源
 AuthRemoteDataSource
   ↓ 呼叫 API package
-AuthApiClient
-  ↓ 回傳 mock token/profile
-Mock API
+AuthApi
+  ├── MockAuthApi
+  └── _AuthApi（Retrofit generated）
+  ↓ 回傳 LoginResponseDto
   ↓ 保存 token/profile
 AuthLocalDataSource
   ↓ 寫入本地

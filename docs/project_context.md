@@ -336,6 +336,78 @@ dart run sqflite_common_ffi_web:setup
 
 ---
 
+## 下一個工作目標
+
+### Milestone 9：Retrofit API Client Standardization
+
+狀態：Completed。
+
+Milestone 9-1 至 Milestone 9-6 已全部完成。
+
+目前下一步：從 `docs/backlog.md` 選擇下一個正式 Milestone。
+
+已拍板：
+
+- 所有真實 HTTP API 必須使用 Retrofit。
+- Mock API 可以手寫，但必須與 Retrofit implementation 實作相同 API abstraction。
+- Retrofit abstract class 本身即為 API abstraction，不額外增加純轉呼叫 adapter。
+- App Composition Root 負責選擇 Mock 或 Retrofit implementation。
+- RemoteDataSource 不直接操作 Dio。
+- RemoteDataSource 負責將 transport exception 映射為 Data Layer exception，Repository 再映射為 Failure。
+- Retrofit 負責 HTTP 與 JSON 到 DTO；DTO 到 Domain Entity 仍由 Mapper 處理。
+- Mapper 只負責純資料轉換，不處理持久化與 Session 更新。
+- DTO 使用 `RequestDto` / `ResponseDto` 命名，Domain Model 不帶 `Dto`。
+- package 內仍不直接綁定 DI framework。
+- Mock implementation 放在明確的 `mocks/` 目錄。
+
+Auth API 已完成：
+
+- `AuthApi` 由 Retrofit abstract class 宣告。
+- `_AuthApi` 由 Retrofit generator 產生真實 HTTP implementation。
+- `MockAuthApi` 實作相同 API abstraction，Demo 預設注入此實作。
+- Login request / response 已改為 `LoginRequestDto` / `LoginResponseDto`。
+- Profile response 已改為 `ProfileResponseDto`，並由 mapper 轉為 Profile Domain Entity。
+- Profile 真實 HTTP declaration 已改為 Retrofit `ProfileApi`，Demo 預設注入 `MockProfileApi`。
+- `GET /profile` 使用 request extra metadata 標記 authenticated request，並已由測試驗證 metadata 會進入 Dio `Options.extra`。
+- 已新增 Retrofit request test，驗證 `POST /auth/login`、JSON request serialization 與 response DTO parsing。
+- `LoginRequestDto` 明確宣告 `toJson()` contract，確保 Retrofit generator 產生正確的 request serialization。
+- Login response mapper 位於 `packages/auth` data layer。
+- DioException 的辨識與 AppException 轉換留在 `packages/api_client`，`packages/auth` 不直接依賴 Dio。
+
+DI 與環境切換已完成：
+
+- App layer 提供最小 `ApiConfig` / `ApiMode`，package 不依賴 GetIt / Injectable。
+- `API_MODE=mock|real` 決定 Auth / Profile 注入 Mock 或 Retrofit implementation。
+- `API_BASE_URL` 由 App Composition Root 注入 Dio。
+- 未提供 `--dart-define` 時預設使用 Mock mode 與 `https://mock.local`。
+- `ApiImplementationSelector` 集中 Mock / Real 選擇邏輯，並已測試兩種 mode。
+- Profile 新增 `ProfileRemoteDataSource`，與 Auth 一致在 remote boundary 將 DioException 轉為 AppException。
+- Auth / Profile Repository 只將 AppException 轉為 Failure，未知錯誤保留原始 stack trace。
+- AuthLocalDataSource 將 SharedPreferences / SQLite 錯誤轉為 AppException。
+- 共用 `mapAppExceptionToFailure` 使用 domain fallback message，並保留 code 與 cause 作為診斷資訊。
+- `API_MODE=real` 時必須明確提供合法 `API_BASE_URL`，避免誤用 mock 預設網址。
+- `SessionManager` 只管理 runtime session state；token / user persistence 統一由 `AuthRepositoryImpl` 協調。
+- `LoginRequestDto` 關閉欄位型 `toString()`，避免帳號密碼進入一般 log。
+- Dio transport failure 只保留不含 body / headers / token 的安全摘要，不再把完整 `DioException` 帶入 `Failure.cause`。
+- Mock Auth / Profile、DTO JSON serialization、DTO mapper、Retrofit request、transport exception、Repository regression tests 已補齊。
+- 已驗證 Repository 只轉換 `AppException`；未知錯誤不會被包成一般 Failure。
+
+實作順序：
+
+```txt
+Auth API
+  ↓
+Profile API
+  ↓
+DI / Environment selection
+  ↓
+Mapper / Error boundary
+  ↓
+Test / Analyze / Build
+```
+
+---
+
 ## 已拍板的重要設計
 
 ### 1. Auth domain / data 應該放在 packages/auth

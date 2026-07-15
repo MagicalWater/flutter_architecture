@@ -1,4 +1,5 @@
 import 'package:api_client/src/dio/auth_token_provider.dart';
+import 'package:api_client/src/dio/request_extras.dart';
 import 'package:dio/dio.dart';
 
 /// 自動替需要登入的 API 加上 Authorization header。
@@ -30,7 +31,7 @@ class AuthHeaderInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final requiresAuth = options.extra['requiresAuth'] == true;
+    final requiresAuth = options.extra[RequestExtras.requiresAuth] == true;
 
     if (!requiresAuth) {
       handler.next(options);

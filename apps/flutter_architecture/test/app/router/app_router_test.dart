@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('AppRouter', () {
     test('ShellRoute 包含 LoginRoute 與 ProfileRoute nested routes', () {
-      final sessionManager = SessionManager(_MemoryTokenStorage());
+      final sessionManager = SessionManager();
       final router = AppRouter(AuthGuard(sessionManager));
       addTearDown(sessionManager.dispose);
 
@@ -24,7 +24,7 @@ void main() {
     });
 
     test('ProtectedRoute 掛上 AuthGuard', () {
-      final sessionManager = SessionManager(_MemoryTokenStorage());
+      final sessionManager = SessionManager();
       final authGuard = AuthGuard(sessionManager);
       final router = AppRouter(authGuard);
       addTearDown(sessionManager.dispose);
@@ -36,23 +36,4 @@ void main() {
       expect(protectedRoute.guards, contains(authGuard));
     });
   });
-}
-
-class _MemoryTokenStorage implements TokenStorage {
-  String? _accessToken;
-
-  @override
-  Future<void> clearAccessToken() async {
-    _accessToken = null;
-  }
-
-  @override
-  Future<String?> readAccessToken() async {
-    return _accessToken;
-  }
-
-  @override
-  Future<void> saveAccessToken(String token) async {
-    _accessToken = token;
-  }
 }

@@ -62,9 +62,9 @@ AuthRepositoryImpl
   ↓
 AuthRemoteDataSource
   ↓
-AuthApiClient
-  ↓
-Mock API
+AuthApi
+  ├── MockAuthApi
+  └── _AuthApi（Retrofit generated）
   ↓
 AuthLocalDataSource
   ↓

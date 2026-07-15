@@ -1,6 +1,7 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:auth/src/session/token_storage.dart';
+import 'package:core/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -30,12 +31,18 @@ class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
 
   @override
   Future<void> saveAccessToken(String token) async {
-    await _preferences.setString(_accessTokenKey, token);
+    await _guardLocal(
+      () => _preferences.setString(_accessTokenKey, token),
+      message: '儲存 access token 失敗',
+    );
   }
 
   @override
   Future<String?> readAccessToken() async {
-    return _preferences.getString(_accessTokenKey);
+    return _guardLocal(
+      () async => _preferences.getString(_accessTokenKey),
+      message: '讀取 access token 失敗',
+    );
   }
 
   /// 給 Dio interceptor 使用的 token 讀取方法。
@@ -49,19 +56,28 @@ class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
 
   @override
   Future<void> clearAccessToken() async {
-    await _preferences.remove(_accessTokenKey);
+    await _guardLocal(
+      () => _preferences.remove(_accessTokenKey),
+      message: '清除 access token 失敗',
+    );
   }
 
   Future<void> saveUser(AuthUserModel user) async {
-    await _database.insert(
-      _userTable,
-      user.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+    await _guardLocal(
+      () => _database.insert(
+        _userTable,
+        user.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      ),
+      message: '儲存登入使用者失敗',
     );
   }
 
   Future<AuthUserModel?> readUser() async {
-    final rows = await _database.query(_userTable, limit: 1);
+    final rows = await _guardLocal(
+      () => _database.query(_userTable, limit: 1),
+      message: '讀取登入使用者失敗',
+    );
 
     if (rows.isEmpty) {
       return null;
@@ -71,6 +87,25 @@ class AuthLocalDataSource implements AuthTokenProvider, TokenStorage {
   }
 
   Future<void> clearUser() async {
-    await _database.delete(_userTable);
+    await _guardLocal(
+      () => _database.delete(_userTable),
+      message: '清除登入使用者失敗',
+    );
+  }
+
+  Future<T> _guardLocal<T>(
+    Future<T> Function() action, {
+    required String message,
+  }) async {
+    try {
+      return await action();
+    } on AppException {
+      rethrow;
+    } catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        AppException(message: message, cause: error),
+        stackTrace,
+      );
+    }
   }
 }

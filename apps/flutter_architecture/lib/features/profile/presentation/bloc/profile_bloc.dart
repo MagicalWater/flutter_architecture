@@ -23,7 +23,7 @@ part 'profile_state.dart';
 /// Repository / SessionManager
 /// ```
 ///
-/// ProfileBloc 不直接呼叫 ProfileApiClient，也不直接依賴 AuthBloc。
+/// ProfileBloc 不直接呼叫 ProfileApi，也不直接依賴 AuthBloc。
 ///
 /// 是否已登入由 SessionManager 判斷，登出則透過 LogoutUseCase 執行。
 @injectable

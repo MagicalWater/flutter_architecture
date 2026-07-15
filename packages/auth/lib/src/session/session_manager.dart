@@ -1,5 +1,4 @@
 import 'package:auth/src/session/auth_session.dart';
-import 'package:auth/src/session/token_storage.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// App Session 管理者。
@@ -12,9 +11,8 @@ import 'package:rxdart/rxdart.dart';
 ///
 /// 第一階段不做複雜 stream 範例，只用這裡展示 RxDart 的實務用途。
 class SessionManager {
-  SessionManager(this._tokenStorage);
+  SessionManager();
 
-  final TokenStorage _tokenStorage;
   final BehaviorSubject<AuthSession?> _sessionSubject = BehaviorSubject.seeded(null);
 
   Stream<AuthSession?> get sessionStream => _sessionSubject.stream;
@@ -23,28 +21,10 @@ class SessionManager {
 
   bool get isAuthenticated => currentSession?.isAuthenticated ?? false;
 
-  Future<void> restore({String? userId}) async {
-    final token = await _tokenStorage.readAccessToken();
-
-    if (token == null || token.isEmpty || userId == null || userId.isEmpty) {
-      _sessionSubject.add(null);
-      return;
-    }
-
-    _sessionSubject.add(
-      AuthSession(
-        accessToken: token,
-        userId: userId,
-      ),
-    );
-  }
-
-  Future<void> login({
+  void setAuthenticated({
     required String accessToken,
     required String userId,
-  }) async {
-    await _tokenStorage.saveAccessToken(accessToken);
-
+  }) {
     _sessionSubject.add(
       AuthSession(
         accessToken: accessToken,
@@ -53,8 +33,7 @@ class SessionManager {
     );
   }
 
-  Future<void> logout() async {
-    await _tokenStorage.clearAccessToken();
+  void clear() {
     _sessionSubject.add(null);
   }
 

@@ -11,7 +11,7 @@ void main() {
     test('未登入時不呼叫 GetProfileUseCase，並顯示未登入狀態', () async {
       final profileRepository = _FakeProfileRepository();
       final authRepository = _FakeAuthRepository();
-      final sessionManager = SessionManager(_MemoryTokenStorage());
+      final sessionManager = SessionManager();
       final bloc = ProfileBloc(
         GetProfileUseCase(profileRepository),
         LogoutUseCase(authRepository),
@@ -41,8 +41,7 @@ void main() {
     test('已登入時呼叫 GetProfileUseCase，並顯示目前登入用戶', () async {
       final profileRepository = _FakeProfileRepository();
       final authRepository = _FakeAuthRepository();
-      final tokenStorage = _MemoryTokenStorage();
-      final sessionManager = SessionManager(tokenStorage);
+      final sessionManager = SessionManager();
       final bloc = ProfileBloc(
         GetProfileUseCase(profileRepository),
         LogoutUseCase(authRepository),
@@ -51,7 +50,7 @@ void main() {
       addTearDown(bloc.close);
       addTearDown(sessionManager.dispose);
 
-      await sessionManager.login(
+      sessionManager.setAuthenticated(
         accessToken: 'access-token',
         userId: 'user-1',
       );
@@ -121,24 +120,5 @@ class _FakeAuthRepository implements AuthRepository {
   @override
   Future<Result<AuthUser?>> restoreSession() async {
     return const Success(null);
-  }
-}
-
-class _MemoryTokenStorage implements TokenStorage {
-  String? _accessToken;
-
-  @override
-  Future<void> clearAccessToken() async {
-    _accessToken = null;
-  }
-
-  @override
-  Future<String?> readAccessToken() async {
-    return _accessToken;
-  }
-
-  @override
-  Future<void> saveAccessToken(String token) async {
-    _accessToken = token;
   }
 }

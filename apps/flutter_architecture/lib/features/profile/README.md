@@ -28,9 +28,11 @@ ProfileRepository
   ↓
 ProfileRepositoryImpl
   ↓
-ProfileApiClient
+ProfileRemoteDataSource
   ↓
-Mock API
+ProfileApi
+  ├── MockProfileApi
+  └── _ProfileApi（Retrofit generated）
   ↓
 ProfileBloc
   ↓

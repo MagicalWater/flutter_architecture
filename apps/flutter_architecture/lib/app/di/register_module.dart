@@ -1,6 +1,9 @@
 import 'package:api_client/api_client.dart' as api_client;
 import 'package:auth/auth.dart' as auth;
 import 'package:dio/dio.dart';
+import 'package:flutter_architecture/app/config/api_config.dart';
+import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
+import 'package:flutter_architecture/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +19,9 @@ import 'package:sqflite/sqflite.dart';
 /// 這些外部物件需要透過 module 告訴 injectable 如何建立。
 @module
 abstract class RegisterModule {
+  @lazySingleton
+  ApiConfig get apiConfig => ApiConfig.fromEnvironment();
+
   @preResolve
   Future<SharedPreferences> get sharedPreferences =>
       SharedPreferences.getInstance();
@@ -43,7 +49,9 @@ abstract class RegisterModule {
   api_client.AppDioFactory get appDioFactory => const api_client.AppDioFactory();
 
   @lazySingleton
-  api_client.AuthApiClient get authApiClient => const api_client.AuthApiClient();
+  api_client.AuthApi authApi(ApiConfig config, Dio dio) {
+    return ApiImplementationSelector.createAuthApi(config, dio);
+  }
 
   @lazySingleton
   auth.AuthLocalDataSource authLocalDataSource(
@@ -58,9 +66,9 @@ abstract class RegisterModule {
 
   @lazySingleton
   auth.AuthRemoteDataSource authRemoteDataSource(
-    api_client.AuthApiClient authApiClient,
+    api_client.AuthApi authApi,
   ) {
-    return auth.AuthRemoteDataSource(authApiClient);
+    return auth.AuthRemoteDataSource(authApi);
   }
 
   @lazySingleton
@@ -71,9 +79,7 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
-  auth.SessionManager sessionManager(auth.AuthLocalDataSource localDataSource) {
-    return auth.SessionManager(localDataSource);
-  }
+  auth.SessionManager get sessionManager => auth.SessionManager();
 
   @lazySingleton
   auth.AuthRepository authRepository(
@@ -107,12 +113,23 @@ abstract class RegisterModule {
   Dio dio(
     api_client.AppDioFactory factory,
     api_client.AuthTokenProvider tokenProvider,
+    ApiConfig config,
   ) {
-    return factory.create(tokenProvider: tokenProvider);
+    return factory.create(
+      baseUrl: config.baseUrl,
+      tokenProvider: tokenProvider,
+    );
   }
 
   @lazySingleton
-  api_client.ProfileApiClient profileApiClient(Dio dio) {
-    return api_client.ProfileApiClient(dio);
+  api_client.ProfileApi profileApi(ApiConfig config, Dio dio) {
+    return ApiImplementationSelector.createProfileApi(config, dio);
+  }
+
+  @lazySingleton
+  ProfileRemoteDataSource profileRemoteDataSource(
+    api_client.ProfileApi profileApi,
+  ) {
+    return ProfileRemoteDataSource(profileApi);
   }
 }

@@ -1,16 +1,187 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:api_client/api_client.dart';
+import 'package:core/core.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('AuthApiClient.login 會回傳 mock token 與使用者資料', () async {
-    const client = AuthApiClient();
+  test('MockAuthApi.login 會回傳 mock token 與使用者資料', () async {
+    const client = MockAuthApi();
 
     final response = await client.login(
-      account: 'demo',
-      password: 'password',
+      const LoginRequestDto(
+        account: 'demo',
+        password: 'password',
+      ),
     );
 
     expect(response.accessToken, isNotEmpty);
     expect(response.userName, 'Water Magical');
   });
+
+  test('MockProfileApi.getProfile 會回傳 mock 使用者資料', () async {
+    const api = MockProfileApi();
+
+    final response = await api.getProfile();
+
+    expect(response.id, 'user-001');
+    expect(response.name, 'Water Magical');
+  });
+
+  test('Login DTO 可以正確進行 JSON serialization', () {
+    const request = LoginRequestDto(
+      account: 'demo',
+      password: 'super-secret',
+    );
+    const response = LoginResponseDto(
+      accessToken: 'token',
+      userId: 'user-001',
+      userName: 'Water Magical',
+    );
+
+    expect(request.toJson(), <String, dynamic>{
+      'account': 'demo',
+      'password': 'super-secret',
+    });
+    expect(LoginResponseDto.fromJson(response.toJson()), response);
+    expect(request.toString(), isNot(contains('super-secret')));
+    expect(request.toString(), isNot(contains('demo')));
+  });
+
+  test('ProfileResponseDto 可以正確進行 JSON serialization', () {
+    const response = ProfileResponseDto(
+      id: 'user-001',
+      name: 'Water Magical',
+    );
+
+    expect(ProfileResponseDto.fromJson(response.toJson()), response);
+  });
+
+  test('Transport mapper 會把 DioException 轉為 AppException', () {
+    final request = RequestOptions(path: '/auth/login', method: 'POST');
+    final error = DioException(
+      requestOptions: request,
+      response: Response<void>(
+        requestOptions: request,
+        statusCode: 503,
+      ),
+    );
+
+    expect(
+      () => rethrowMappedTransportException(error, StackTrace.current),
+      throwsA(
+        isA<AppException>()
+            .having((value) => value.code, 'code', '503')
+            .having(
+              (value) => value.cause,
+              'safe cause',
+              isA<TransportFailureDetails>()
+                  .having((details) => details.method, 'method', 'POST')
+                  .having((details) => details.path, 'path', '/auth/login'),
+            ),
+      ),
+    );
+  });
+
+  test('Transport mapper 不會吞掉未知錯誤', () {
+    final error = StateError('mapper bug');
+
+    expect(
+      () => rethrowMappedTransportException(error, StackTrace.current),
+      throwsA(same(error)),
+    );
+  });
+
+  test('AuthApi 會以 POST JSON 呼叫登入 endpoint 並解析 DTO', () async {
+    final adapter = _RecordingAdapter();
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.test'))
+      ..httpClientAdapter = adapter;
+    final api = AuthApi(dio);
+
+    final response = await api.login(
+      const LoginRequestDto(
+        account: 'demo',
+        password: 'password',
+      ),
+    );
+
+    expect(adapter.method, 'POST');
+    expect(adapter.path, '/auth/login');
+    expect(adapter.body, <String, dynamic>{
+      'account': 'demo',
+      'password': 'password',
+    });
+    expect(response.accessToken, 'real-access-token');
+    expect(response.userId, 'user-002');
+  });
+
+  test('ProfileApi 會以 GET 呼叫 endpoint 並標記 requiresAuth metadata', () async {
+    final adapter = _RecordingAdapter();
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.test'))
+      ..httpClientAdapter = adapter;
+    final api = ProfileApi(dio);
+
+    final response = await api.getProfile();
+
+    expect(adapter.method, 'GET');
+    expect(adapter.path, '/profile');
+    expect(adapter.extra[RequestExtras.requiresAuth], isTrue);
+    expect(response.id, 'user-003');
+    expect(response.name, 'Profile User');
+  });
+}
+
+class _RecordingAdapter implements HttpClientAdapter {
+  String? method;
+  String? path;
+  Map<String, dynamic>? body;
+  Map<String, dynamic> extra = <String, dynamic>{};
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    method = options.method;
+    path = options.path;
+    extra = Map<String, dynamic>.from(options.extra);
+
+    final bytes = <int>[];
+    if (requestStream != null) {
+      await for (final chunk in requestStream) {
+        bytes.addAll(chunk);
+      }
+    }
+
+    if (bytes.isNotEmpty) {
+      body = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+    }
+
+    final response = switch (options.path) {
+      '/auth/login' => <String, dynamic>{
+        'accessToken': 'real-access-token',
+        'userId': 'user-002',
+        'userName': 'Retrofit User',
+      },
+      '/profile' => <String, dynamic>{
+        'id': 'user-003',
+        'name': 'Profile User',
+      },
+      _ => <String, dynamic>{},
+    };
+
+    return ResponseBody.fromString(
+      jsonEncode(response),
+      200,
+      headers: <String, List<String>>{
+        Headers.contentTypeHeader: <String>[Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
 }

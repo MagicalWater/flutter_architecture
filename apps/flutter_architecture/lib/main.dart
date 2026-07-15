@@ -13,7 +13,7 @@ Future<void> main() async {
   // 因此透過條件匯入隔離平台差異，避免 Web 編譯碰到 dart:io。
   await initializeDatabaseFactory();
 
-  // App 啟動時先完成 DI 註冊。
+  // App 啟動時先完成 DI 註冊；ApiConfig 由 App Composition Root 提供。
   await configureDependencies();
 
   runApp(

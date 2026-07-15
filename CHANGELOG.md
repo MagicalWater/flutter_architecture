@@ -22,21 +22,51 @@
 
 - 新增 `AGENTS.md`，作為 AI coding agent / assistant 進入專案後的基本工作守則。
 - 新增 Architecture Decision 012，明確規範可重用 package 不直接綁定 DI framework。
+- 新增 Architecture Decision 013，規範所有真實 HTTP API 統一使用 Retrofit，Mock API 則透過相同 abstraction 提供替代實作。
+- 新增 Milestone 9，規劃 Auth / Profile API 的 Retrofit 遷移、DTO / Mapper 邊界、DI 切換與驗證流程。
+- 在 `packages/api_client` 加入 `retrofit` 與 `retrofit_generator`，作為後續宣告式 Dio API client code generation 基底。
+- 新增 Retrofit `AuthApi`、`MockAuthApi`、`LoginRequestDto` 與 `LoginResponseDto`。
+- 新增 Retrofit `ProfileApi`、`MockProfileApi` 與 `ProfileResponseDto`。
+- 新增 Login response DTO 到 Auth domain result 的 Mapper。
+- 新增 Profile response DTO 到 Profile domain entity 的 Mapper。
+- 新增 transport exception mapper，將 DioException 隔離在 `api_client` package 內。
+- 新增 App layer `ApiConfig`、`ApiMode` 與 `ApiImplementationSelector`，支援 Mock / Retrofit environment selection。
+- 新增共用 `mapAppExceptionToFailure` 與 ProfileRemoteDataSource。
+- 新增 Auth Retrofit request test，驗證 POST path、JSON body 與 response DTO parsing。
+- 新增 Mock Profile、DTO JSON serialization、Auth / Profile mapper、transport exception 與 Profile Repository regression tests。
+- 完成 Retrofit 架構審查，簡化 API abstraction、明確 Mock 目錄、RemoteDataSource 錯誤映射與 Dio 特殊例外規則。
 
 ### Changed
 
 - 移除 `packages/auth` 對 `injectable` 的依賴。
 - 移除 `packages/auth` 內 data source、repository、use case 的 DI annotations。
 - Auth package 物件改由 app 的 `RegisterModule` 統一註冊與組裝，維持 app 作為唯一 Composition Root。
+- Auth RemoteDataSource 改為依賴 `AuthApi` abstraction，並由 App Composition Root 預設注入 `MockAuthApi`。
+- Auth Repository 改用 DTO mapper 建立 Domain Model，持久化與 Session 更新責任維持在 Repository。
+- Auth / Profile API implementation 改由 `API_MODE` 決定，Dio base URL 改由 `API_BASE_URL` 注入。
+- Auth / Profile Repository 改為只映射 `AppException`，未知程式錯誤不再轉成一般 Failure。
+- AuthLocalDataSource 將 SharedPreferences / SQLite 例外統一轉為 `AppException`。
+- SessionManager 改為純 runtime state holder，token / user persistence 統一由 AuthRepositoryImpl 負責，移除重複 token 寫入。
+- LoginRequestDto 關閉欄位型 `toString()`，並以安全 transport 摘要取代完整 DioException cause，避免敏感資料進入一般 log。
+- `API_MODE=real` 時強制要求合法 `API_BASE_URL`，並補上可直接測試的 config parsing。
+- 預設 API mode 維持 Mock，真實 API 可透過 `--dart-define` 啟用。
+- Profile Repository 改為依賴 `ProfileRemoteDataSource`，再由其呼叫 `ProfileApi` abstraction；App Composition Root 預設注入 `MockProfileApi`。
+- Authenticated Profile endpoint 改由 Retrofit `@Extra` metadata 標記，不再保留手寫 Dio request 示範方法。
+- Login request DTO 明確宣告 `toJson()` contract，修正 Retrofit request body 被轉成字串而非 JSON 的問題。
+- Failure 顯示訊息統一使用 Repository 提供的 domain fallback，技術 exception message 保留在 cause chain。
+- 同步更新 Root README、Auth feature README、Clean Architecture 文件與 docs 導覽中的 Auth API 流程。
 
 ### Verified
 
 - `dart pub get`
+- `dart run melos run build_runner`
 - `dart run melos run analyze`
 - `dart run melos exec -- flutter test`
 - `flutter build bundle`
-
-> 本次 `dart run melos run build_runner` 因工具安全檢查擋下，未能重跑；本次未修改 source generator input，不影響 generated files。
+- Retrofit `POST /auth/login` request body serialization test。
+- Retrofit `GET /profile` authenticated metadata test。
+- Mock Auth / Profile tests、DTO JSON serialization tests、Mapper tests。
+- Transport exception mapping 與 Profile Repository known / unknown error regression tests。
 
 ---
 

@@ -8,19 +8,26 @@ import 'package:api_client/api_client.dart';
 ///
 /// ## 責任
 ///
-/// 負責呼叫 AuthApiClient，不處理 UI，也不處理業務規則。
+/// 負責建立 request DTO、呼叫 AuthApi abstraction，
+/// 並將 transport exception 映射為共用 AppException。
 class AuthRemoteDataSource {
-  const AuthRemoteDataSource(this._authApiClient);
+  const AuthRemoteDataSource(this._authApi);
 
-  final AuthApiClient _authApiClient;
+  final AuthApi _authApi;
 
-  Future<LoginResponse> login({
+  Future<LoginResponseDto> login({
     required String account,
     required String password,
-  }) {
-    return _authApiClient.login(
-      account: account,
-      password: password,
-    );
+  }) async {
+    try {
+      return await _authApi.login(
+        LoginRequestDto(
+          account: account,
+          password: password,
+        ),
+      );
+    } catch (error, stackTrace) {
+      rethrowMappedTransportException(error, stackTrace);
+    }
   }
 }

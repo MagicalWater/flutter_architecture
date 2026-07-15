@@ -12,11 +12,14 @@
 import 'package:api_client/api_client.dart' as _i633;
 import 'package:auth/auth.dart' as _i662;
 import 'package:dio/dio.dart' as _i361;
+import 'package:flutter_architecture/app/config/api_config.dart' as _i46;
 import 'package:flutter_architecture/app/di/register_module.dart' as _i712;
 import 'package:flutter_architecture/app/router/app_router.dart' as _i787;
 import 'package:flutter_architecture/app/router/auth_guard.dart' as _i997;
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart'
     as _i1024;
+import 'package:flutter_architecture/features/profile/data/data_sources/profile_remote_data_source.dart'
+    as _i725;
 import 'package:flutter_architecture/features/profile/data/repositories/profile_repository_impl.dart'
     as _i407;
 import 'package:flutter_architecture/features/profile/domain/repositories/profile_repository.dart'
@@ -46,10 +49,11 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.database,
       preResolve: true,
     );
+    gh.lazySingleton<_i46.ApiConfig>(() => registerModule.apiConfig);
     gh.lazySingleton<_i633.AppDioFactory>(() => registerModule.appDioFactory);
-    gh.lazySingleton<_i633.AuthApiClient>(() => registerModule.authApiClient);
-    gh.lazySingleton<_i662.AuthRemoteDataSource>(
-      () => registerModule.authRemoteDataSource(gh<_i633.AuthApiClient>()),
+    gh.lazySingleton<_i662.SessionManager>(() => registerModule.sessionManager);
+    gh.lazySingleton<_i997.AuthGuard>(
+      () => _i997.AuthGuard(gh<_i662.SessionManager>()),
     );
     gh.lazySingleton<_i662.AuthLocalDataSource>(
       () => registerModule.authLocalDataSource(
@@ -57,11 +61,30 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i779.Database>(),
       ),
     );
+    gh.lazySingleton<_i787.AppRouter>(
+      () => _i787.AppRouter(gh<_i997.AuthGuard>()),
+    );
     gh.lazySingleton<_i633.AuthTokenProvider>(
       () => registerModule.authTokenProvider(gh<_i662.AuthLocalDataSource>()),
     );
-    gh.lazySingleton<_i662.SessionManager>(
-      () => registerModule.sessionManager(gh<_i662.AuthLocalDataSource>()),
+    gh.lazySingleton<_i361.Dio>(
+      () => registerModule.dio(
+        gh<_i633.AppDioFactory>(),
+        gh<_i633.AuthTokenProvider>(),
+        gh<_i46.ApiConfig>(),
+      ),
+    );
+    gh.lazySingleton<_i633.AuthApi>(
+      () => registerModule.authApi(gh<_i46.ApiConfig>(), gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i633.ProfileApi>(
+      () => registerModule.profileApi(gh<_i46.ApiConfig>(), gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i662.AuthRemoteDataSource>(
+      () => registerModule.authRemoteDataSource(gh<_i633.AuthApi>()),
+    );
+    gh.lazySingleton<_i725.ProfileRemoteDataSource>(
+      () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
     );
     gh.lazySingleton<_i662.AuthRepository>(
       () => registerModule.authRepository(
@@ -69,9 +92,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.AuthLocalDataSource>(),
         gh<_i662.SessionManager>(),
       ),
-    );
-    gh.lazySingleton<_i997.AuthGuard>(
-      () => _i997.AuthGuard(gh<_i662.SessionManager>()),
     );
     gh.factory<_i662.LoginUseCase>(
       () => registerModule.loginUseCase(gh<_i662.AuthRepository>()),
@@ -90,20 +110,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.SessionManager>(),
       ),
     );
-    gh.lazySingleton<_i787.AppRouter>(
-      () => _i787.AppRouter(gh<_i997.AuthGuard>()),
-    );
-    gh.lazySingleton<_i361.Dio>(
-      () => registerModule.dio(
-        gh<_i633.AppDioFactory>(),
-        gh<_i633.AuthTokenProvider>(),
-      ),
-    );
-    gh.lazySingleton<_i633.ProfileApiClient>(
-      () => registerModule.profileApiClient(gh<_i361.Dio>()),
-    );
     gh.lazySingleton<_i511.ProfileRepository>(
-      () => _i407.ProfileRepositoryImpl(gh<_i633.ProfileApiClient>()),
+      () => _i407.ProfileRepositoryImpl(gh<_i725.ProfileRemoteDataSource>()),
     );
     gh.factory<_i474.GetProfileUseCase>(
       () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()),

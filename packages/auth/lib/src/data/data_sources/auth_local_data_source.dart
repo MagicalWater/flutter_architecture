@@ -4,6 +4,7 @@ import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/data/exceptions/corrupted_auth_tokens_exception.dart';
 import 'package:auth/src/data/data_sources/auth_local_store.dart';
+import 'package:auth/src/data/data_sources/auth_refresh_local_store.dart';
 import 'package:auth/src/session/auth_token_storage.dart';
 import 'package:core/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +22,8 @@ import 'package:sqflite/sqflite.dart';
 /// - profile 存在 SQLite。
 ///
 /// 這樣可以示範兩種常見本地持久化方式。
-class AuthLocalDataSource implements AuthTokenStorage, AuthLocalStore {
+class AuthLocalDataSource
+    implements AuthTokenStorage, AuthLocalStore, AuthRefreshLocalStore {
   const AuthLocalDataSource(
     this._preferences,
     this._database,

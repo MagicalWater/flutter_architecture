@@ -830,7 +830,7 @@ packages/api_client
 
 single-flight 不放在 Interceptor 內，而由 refresh coordinator / refresher implementation 統一管理。
 
-同一時間只允許一個 refresh Future：
+同一個 Session identity 同一時間只允許一個 refresh Future：
 
 ```txt
 Request A 401 ─┐
@@ -840,7 +840,21 @@ Request C 401 ─┘
 
 所有等待者共用同一結果。
 
+In-flight identity 必須至少包含：
+
+```txt
+sessionGeneration
+userId
+failedAccessToken
+```
+
+只有三者皆相同的 caller 才能加入同一個 refresh Future。新 Session 遇到舊 Session 的 in-flight operation 時，必須等待舊 operation 結束後重新判斷目前 Session，不得直接繼承舊結果。
+
 完成後清除 in-flight Future 時，必須做 identity check，避免較舊 Future 的 completion 清除較新的 refresh operation。
+
+Auth persistence 與 runtime Session 的複合修改必須透過共享 mutation coordinator 序列化。Login、Restore、Logout、Refresh commit 與 passive invalidation 使用同一個 coordinator；Refresh HTTP request 本身不得持有該 lock。
+
+任何 passive invalidation 在取得 lock 後都必須再次驗證原 operation 的 generation / userId。若 Session 已改變，回傳 `sessionChanged`，不得清除新 Session 的 Token Pair、User persistence 或 SessionManager。
 
 #### 6. failed token 與 current token 不同時不再次 refresh
 

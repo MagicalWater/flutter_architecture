@@ -14,6 +14,7 @@ void main() {
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
+      AuthStateMutationCoordinator(),
     );
 
     final result = await repository.login(account: 'demo', password: 'password');
@@ -31,6 +32,7 @@ void main() {
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
+      AuthStateMutationCoordinator(),
     );
 
     final result = await repository.restoreSession();
@@ -49,6 +51,7 @@ void main() {
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
+      AuthStateMutationCoordinator(),
     );
 
     final result = await repository.logout();
@@ -67,6 +70,7 @@ void main() {
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
+      AuthStateMutationCoordinator(),
     );
 
     await expectLater(
@@ -87,6 +91,7 @@ void main() {
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
+      AuthStateMutationCoordinator(),
     );
 
     await expectLater(repository.logout(), throwsA(isA<StateError>()));

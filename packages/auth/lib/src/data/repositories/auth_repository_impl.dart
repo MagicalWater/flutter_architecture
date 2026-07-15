@@ -8,6 +8,7 @@ import 'package:auth/src/domain/entities/auth_result.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
 import 'package:auth/src/session/session_manager.dart';
+import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
 import 'package:core/core.dart';
 
 /// AuthRepository 的 Data Layer 實作。
@@ -30,11 +31,13 @@ class AuthRepositoryImpl implements AuthRepository {
     this._remoteDataSource,
     this._localDataSource,
     this._sessionManager,
+    this._mutationCoordinator,
   );
 
   final AuthRemoteDataSource _remoteDataSource;
   final AuthLocalStore _localDataSource;
   final SessionManager _sessionManager;
+  final AuthStateMutationCoordinator _mutationCoordinator;
 
   @override
   Future<Result<AuthResult>> login({
@@ -50,23 +53,25 @@ class AuthRepositoryImpl implements AuthRepository {
       final result = response.toDomain();
       final user = result.user;
 
-      try {
-        await _localDataSource.saveTokens(
-          StoredAuthTokens(
-            accessToken: result.accessToken,
-            refreshToken: result.refreshToken,
-          ),
+      await _mutationCoordinator.runExclusive(() async {
+        try {
+          await _localDataSource.saveTokens(
+            StoredAuthTokens(
+              accessToken: result.accessToken,
+              refreshToken: result.refreshToken,
+            ),
+          );
+          await _localDataSource.saveUser(AuthUserModel.fromEntity(user));
+        } catch (error, stackTrace) {
+          await _clearLocalAuthStateBestEffort();
+          _sessionManager.clear();
+          Error.throwWithStackTrace(error, stackTrace);
+        }
+        _sessionManager.setAuthenticated(
+          accessToken: result.accessToken,
+          userId: user.id,
         );
-        await _localDataSource.saveUser(AuthUserModel.fromEntity(user));
-      } catch (error, stackTrace) {
-        await _clearLocalAuthStateBestEffort();
-        _sessionManager.clear();
-        Error.throwWithStackTrace(error, stackTrace);
-      }
-      _sessionManager.setAuthenticated(
-        accessToken: result.accessToken,
-        userId: user.id,
-      );
+      });
 
       return Success(result);
     } on AppException catch (error) {
@@ -82,24 +87,28 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<AuthUser?>> restoreSession() async {
     try {
-      final tokens = await _localDataSource.readTokens();
-      final user = await _localDataSource.readUser();
+      return await _mutationCoordinator.runExclusive(() async {
+        final tokens = await _localDataSource.readTokens();
+        final user = await _localDataSource.readUser();
 
-      if (tokens == null || user == null) {
+        if (tokens == null || user == null) {
+          await _clearLocalAuthStateBestEffort();
+          _sessionManager.clear();
+          return const Success(null);
+        }
+
+        _sessionManager.setAuthenticated(
+          accessToken: tokens.accessToken,
+          userId: user.id,
+        );
+
+        return Success(user.toEntity());
+      });
+    } on CorruptedAuthTokensException {
+      await _mutationCoordinator.runExclusive(() async {
         await _clearLocalAuthStateBestEffort();
         _sessionManager.clear();
-        return const Success(null);
-      }
-
-      _sessionManager.setAuthenticated(
-        accessToken: tokens.accessToken,
-        userId: user.id,
-      );
-
-      return Success(user.toEntity());
-    } on CorruptedAuthTokensException {
-      await _clearLocalAuthStateBestEffort();
-      _sessionManager.clear();
+      });
       return const Success(null);
     } on AppException catch (error) {
       return FailureResult(
@@ -113,24 +122,28 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<void>> logout() async {
-    Object? firstError;
-    StackTrace? firstStackTrace;
     try {
-      try {
-        await _localDataSource.clearUser();
-      } catch (error, stackTrace) {
-        firstError = error;
-        firstStackTrace = stackTrace;
-      }
-      try {
-        await _localDataSource.clearTokens();
-      } catch (error, stackTrace) {
-        firstError ??= error;
-        firstStackTrace ??= stackTrace;
-      }
-      if (firstError != null) {
-        Error.throwWithStackTrace(firstError, firstStackTrace!);
-      }
+      await _mutationCoordinator.runExclusive(() async {
+        Object? firstError;
+        StackTrace? firstStackTrace;
+        try {
+          await _localDataSource.clearUser();
+        } catch (error, stackTrace) {
+          firstError = error;
+          firstStackTrace = stackTrace;
+        }
+        try {
+          await _localDataSource.clearTokens();
+        } catch (error, stackTrace) {
+          firstError ??= error;
+          firstStackTrace ??= stackTrace;
+        } finally {
+          _sessionManager.clear();
+        }
+        if (firstError != null) {
+          Error.throwWithStackTrace(firstError, firstStackTrace!);
+        }
+      });
       return const Success(null);
     } on AppException catch (error) {
       return FailureResult(
@@ -139,8 +152,6 @@ class AuthRepositoryImpl implements AuthRepository {
           fallbackMessage: '登出失敗',
         ),
       );
-    } finally {
-      _sessionManager.clear();
     }
   }
 

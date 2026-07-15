@@ -679,7 +679,7 @@ CI/CD、GitHub Actions、build matrix、automatic release 與 deployment pipelin
 
 在 App Configuration 基礎完成後，建立完整 Refresh Token 與並行 401 處理流程。
 
-狀態：In Progress；Milestone 12-1 已完成。
+狀態：In Progress；Milestone 12-1、12-2 已完成。
 
 架構責任邊界已由 Architecture Decision 015 拍板。
 
@@ -716,6 +716,8 @@ git diff --check
 
 ### Milestone 12-2：Refresh API 與 Auth Refresh Flow
 
+狀態：Completed。
+
 - 建立獨立 Retrofit `AuthRefreshApi`，只包含 refresh endpoint。
 - `AuthApi` 維持 login boundary；`AuthRefreshApi` 固定使用 Refresh Dio。
 - Mock implementation 分為 `MockAuthApi` 與 `MockAuthRefreshApi`。
@@ -723,7 +725,7 @@ git diff --check
 - 建立獨立 Refresh Dio，不安裝 AuthHeaderInterceptor 或 AuthRefreshInterceptor。
 - 在 `packages/api_client` 定義最小 refresh abstraction 與 result type。
 - 在 `packages/auth` 實作 refresh coordinator / refresher。
-- single-flight refresh 只允許同一時間存在一個 refresh Future。
+- single-flight refresh 以 generation、userId 與 failed access token 綁定同一 Session identity；相同 identity 共用同一個 Future，不同 Session 不得互相加入。
 - 支援 refresh token rotation。
 - Refresh 成功先保存完整 Token Pair，再更新 SessionManager。
 - Refresh result 明確區分 `success`、`sessionExpired`、`temporarilyUnavailable`、`sessionChanged` 與 `localStateFailure`。
@@ -733,6 +735,20 @@ git diff --check
 - Login、Restore Session、Logout 與 Session invalidation 會遞增 generation；一般 refresh 成功不遞增。
 - Refresh 開始時捕獲 generation、userId 與 failed access token，寫入新 Token Pair 前再次驗證 Session identity。
 - Session identity 已改變時回傳 `sessionChanged`，不得保存、更新 Session 或 replay。
+- Login、Restore、Logout、Refresh persistence commit 與 passive invalidation 共用 `AuthStateMutationCoordinator`，確保 Token Pair、User persistence 與 runtime Session 的複合修改序列化。
+- Refresh HTTP request 不持有 mutation lock；只有讀取或提交本地 auth state 與更新 SessionManager 時進入臨界區。
+- Passive invalidation 在取得 mutation lock 後必須再次驗證 generation / userId；舊 Session operation 不得清除新 Session。
+- HTTP 401 / 403 暫時視為 invalid refresh credential；一般 400、5xx、timeout、malformed 200 與 serialization failure 保留 Session 並回傳 `temporarilyUnavailable`。
+
+完成驗證：
+
+```txt
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle
+git diff --check
+```
 
 ### Milestone 12-3：Concurrent 401 Interceptor
 

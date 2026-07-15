@@ -340,7 +340,7 @@ dart run sqflite_common_ffi_web:setup
 
 ### Milestone 12：Refresh Token + Concurrent 401 Handling
 
-狀態：In Progress；Architecture Review 已完成，Milestone 12-1 已完成。
+狀態：In Progress；Architecture Review 已完成，Milestone 12-1、12-2 已完成。
 
 Milestone 11 CI/CD 維持 Deferred，不處理。
 
@@ -403,15 +403,21 @@ App Composition Root
 - SessionManager 已具備 generation 與 runtime Session snapshot 基礎。
 - Login / Restore / Logout 已具備跨 storage 補償式一致性、損壞資料清理與 unknown error cleanup 保證。
 - Repository persistence tests 已覆蓋 partial failure、corrupted state 與 unknown error。
+- Milestone 12-2 Refresh API 與 Auth Refresh Flow 已完成。
+- 已建立獨立 Retrofit `AuthRefreshApi`、`MockAuthRefreshApi`、Refresh request / response DTO 與獨立 Refresh Dio。
+- `packages/api_client` 已提供最小 `AuthRefresher` abstraction 與五種 refresh result。
+- `packages/auth` 已完成 token rotation、persistence-first runtime update、identity-aware single-flight 與 failure classification。
+- Login、Restore、Logout、Refresh commit 與 passive invalidation 已共用 `AuthStateMutationCoordinator`，防止舊帳號 refresh 覆蓋或清除新 Session。
+- Passive invalidation 會在 mutation lock 內再次驗證 generation / userId；舊 refresh operation 只回傳 `sessionChanged`，不得影響新 Session。
+- HTTP 400、5xx、timeout 與 malformed success response 會保留 Session；目前只有 401 / 403 視為 invalid refresh credential。
+- Refresh tests 已覆蓋 10 個並行呼叫 single-flight、跨 Session in-flight、Token Pair 寫入 race、401 invalidation race、rotation、5xx、400、malformed response 與 persistence failure。
 - analyze、全部 test、bundle build 與 diff check 均已通過。
 
-下一個實作階段：Milestone 12-2 Refresh API 與 Auth Refresh Flow。
+下一個實作階段：Milestone 12-3 Concurrent 401 Interceptor。
 
 後續實作順序：
 
 ```txt
-Milestone 12-2：Refresh API 與 Auth Refresh Flow
-  ↓
 Milestone 12-3：Concurrent 401 Interceptor
   ↓
 Milestone 12-4：Safe Request Replay

@@ -46,8 +46,19 @@ abstract class RegisterModule {
   api_client.AppDioFactory get appDioFactory => const api_client.AppDioFactory();
 
   @lazySingleton
-  api_client.AuthApi authApi(ApiConfig config, Dio dio) {
+  api_client.AuthApi authApi(
+    ApiConfig config,
+    @Named('mainDio') Dio dio,
+  ) {
     return ApiImplementationSelector.createAuthApi(config, dio);
+  }
+
+  @lazySingleton
+  api_client.AuthRefreshApi authRefreshApi(
+    ApiConfig config,
+    @Named('refreshDio') Dio dio,
+  ) {
+    return ApiImplementationSelector.createAuthRefreshApi(config, dio);
   }
 
   @lazySingleton
@@ -69,6 +80,28 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
+  auth.AuthRefreshRemoteDataSource authRefreshRemoteDataSource(
+    api_client.AuthRefreshApi authRefreshApi,
+  ) {
+    return auth.AuthRefreshRemoteDataSource(authRefreshApi);
+  }
+
+  @lazySingleton
+  api_client.AuthRefresher authRefresher(
+    auth.AuthRefreshRemoteDataSource remoteDataSource,
+    auth.AuthLocalDataSource localDataSource,
+    auth.SessionManager sessionManager,
+    auth.AuthStateMutationCoordinator mutationCoordinator,
+  ) {
+    return auth.AuthSessionRefresher(
+      remoteDataSource,
+      localDataSource,
+      sessionManager,
+      mutationCoordinator,
+    );
+  }
+
+  @lazySingleton
   api_client.AuthTokenProvider authTokenProvider(
     auth.SessionManager sessionManager,
   ) {
@@ -79,15 +112,21 @@ abstract class RegisterModule {
   auth.SessionManager get sessionManager => auth.SessionManager();
 
   @lazySingleton
+  auth.AuthStateMutationCoordinator get authStateMutationCoordinator =>
+      auth.AuthStateMutationCoordinator();
+
+  @lazySingleton
   auth.AuthRepository authRepository(
     auth.AuthRemoteDataSource remoteDataSource,
     auth.AuthLocalDataSource localDataSource,
     auth.SessionManager sessionManager,
+    auth.AuthStateMutationCoordinator mutationCoordinator,
   ) {
     return auth.AuthRepositoryImpl(
       remoteDataSource,
       localDataSource,
       sessionManager,
+      mutationCoordinator,
     );
   }
 
@@ -106,20 +145,33 @@ abstract class RegisterModule {
     return auth.RestoreSessionUseCase(repository);
   }
 
+  @Named('mainDio')
   @lazySingleton
-  Dio dio(
+  Dio mainDio(
     api_client.AppDioFactory factory,
     api_client.AuthTokenProvider tokenProvider,
     ApiConfig config,
   ) {
-    return factory.create(
+    return factory.createMain(
       baseUrl: config.baseUri.toString(),
       tokenProvider: tokenProvider,
     );
   }
 
+  @Named('refreshDio')
   @lazySingleton
-  api_client.ProfileApi profileApi(ApiConfig config, Dio dio) {
+  Dio refreshDio(
+    api_client.AppDioFactory factory,
+    ApiConfig config,
+  ) {
+    return factory.createRefresh(baseUrl: config.baseUri.toString());
+  }
+
+  @lazySingleton
+  api_client.ProfileApi profileApi(
+    ApiConfig config,
+    @Named('mainDio') Dio dio,
+  ) {
     return ApiImplementationSelector.createProfileApi(config, dio);
   }
 

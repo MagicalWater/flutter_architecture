@@ -51,24 +51,29 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i633.AppDioFactory>(() => registerModule.appDioFactory);
     gh.lazySingleton<_i662.SessionManager>(() => registerModule.sessionManager);
+    gh.lazySingleton<_i662.AuthStateMutationCoordinator>(
+      () => registerModule.authStateMutationCoordinator,
+    );
     gh.lazySingleton<_i633.AuthTokenProvider>(
       () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
     );
     gh.lazySingleton<_i361.Dio>(
-      () => registerModule.dio(
+      () => registerModule.mainDio(
         gh<_i633.AppDioFactory>(),
         gh<_i633.AuthTokenProvider>(),
         gh<_i46.ApiConfig>(),
       ),
-    );
-    gh.lazySingleton<_i633.AuthApi>(
-      () => registerModule.authApi(gh<_i46.ApiConfig>(), gh<_i361.Dio>()),
-    );
-    gh.lazySingleton<_i633.ProfileApi>(
-      () => registerModule.profileApi(gh<_i46.ApiConfig>(), gh<_i361.Dio>()),
+      instanceName: 'mainDio',
     );
     gh.lazySingleton<_i997.AuthGuard>(
       () => _i997.AuthGuard(gh<_i662.SessionManager>()),
+    );
+    gh.lazySingleton<_i361.Dio>(
+      () => registerModule.refreshDio(
+        gh<_i633.AppDioFactory>(),
+        gh<_i46.ApiConfig>(),
+      ),
+      instanceName: 'refreshDio',
     );
     gh.lazySingleton<_i662.AuthLocalDataSource>(
       () => registerModule.authLocalDataSource(
@@ -76,8 +81,26 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i779.Database>(),
       ),
     );
+    gh.lazySingleton<_i633.AuthApi>(
+      () => registerModule.authApi(
+        gh<_i46.ApiConfig>(),
+        gh<_i361.Dio>(instanceName: 'mainDio'),
+      ),
+    );
+    gh.lazySingleton<_i633.ProfileApi>(
+      () => registerModule.profileApi(
+        gh<_i46.ApiConfig>(),
+        gh<_i361.Dio>(instanceName: 'mainDio'),
+      ),
+    );
     gh.lazySingleton<_i662.AuthRemoteDataSource>(
       () => registerModule.authRemoteDataSource(gh<_i633.AuthApi>()),
+    );
+    gh.lazySingleton<_i633.AuthRefreshApi>(
+      () => registerModule.authRefreshApi(
+        gh<_i46.ApiConfig>(),
+        gh<_i361.Dio>(instanceName: 'refreshDio'),
+      ),
     );
     gh.lazySingleton<_i725.ProfileRemoteDataSource>(
       () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
@@ -85,12 +108,32 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i787.AppRouter>(
       () => _i787.AppRouter(gh<_i997.AuthGuard>()),
     );
+    gh.lazySingleton<_i662.AuthRefreshRemoteDataSource>(
+      () => registerModule.authRefreshRemoteDataSource(
+        gh<_i633.AuthRefreshApi>(),
+      ),
+    );
+    gh.lazySingleton<_i633.AuthRefresher>(
+      () => registerModule.authRefresher(
+        gh<_i662.AuthRefreshRemoteDataSource>(),
+        gh<_i662.AuthLocalDataSource>(),
+        gh<_i662.SessionManager>(),
+        gh<_i662.AuthStateMutationCoordinator>(),
+      ),
+    );
     gh.lazySingleton<_i662.AuthRepository>(
       () => registerModule.authRepository(
         gh<_i662.AuthRemoteDataSource>(),
         gh<_i662.AuthLocalDataSource>(),
         gh<_i662.SessionManager>(),
+        gh<_i662.AuthStateMutationCoordinator>(),
       ),
+    );
+    gh.lazySingleton<_i511.ProfileRepository>(
+      () => _i407.ProfileRepositoryImpl(gh<_i725.ProfileRemoteDataSource>()),
+    );
+    gh.factory<_i474.GetProfileUseCase>(
+      () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()),
     );
     gh.factory<_i662.LoginUseCase>(
       () => registerModule.loginUseCase(gh<_i662.AuthRepository>()),
@@ -101,23 +144,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i662.RestoreSessionUseCase>(
       () => registerModule.restoreSessionUseCase(gh<_i662.AuthRepository>()),
     );
-    gh.lazySingleton<_i1024.AuthBloc>(
-      () => _i1024.AuthBloc(
-        gh<_i662.LoginUseCase>(),
-        gh<_i662.RestoreSessionUseCase>(),
+    gh.factory<_i173.ProfileBloc>(
+      () => _i173.ProfileBloc(
+        gh<_i474.GetProfileUseCase>(),
         gh<_i662.LogoutUseCase>(),
         gh<_i662.SessionManager>(),
       ),
     );
-    gh.lazySingleton<_i511.ProfileRepository>(
-      () => _i407.ProfileRepositoryImpl(gh<_i725.ProfileRemoteDataSource>()),
-    );
-    gh.factory<_i474.GetProfileUseCase>(
-      () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()),
-    );
-    gh.factory<_i173.ProfileBloc>(
-      () => _i173.ProfileBloc(
-        gh<_i474.GetProfileUseCase>(),
+    gh.lazySingleton<_i1024.AuthBloc>(
+      () => _i1024.AuthBloc(
+        gh<_i662.LoginUseCase>(),
+        gh<_i662.RestoreSessionUseCase>(),
         gh<_i662.LogoutUseCase>(),
         gh<_i662.SessionManager>(),
       ),

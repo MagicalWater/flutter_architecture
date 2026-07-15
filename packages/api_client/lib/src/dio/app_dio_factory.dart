@@ -18,7 +18,7 @@ import 'package:dio/dio.dart';
 class AppDioFactory {
   const AppDioFactory();
 
-  Dio create({
+  Dio createMain({
     required String baseUrl,
     required AuthTokenProvider tokenProvider,
   }) {
@@ -33,5 +33,15 @@ class AppDioFactory {
     dio.interceptors.add(AuthHeaderInterceptor(tokenProvider));
 
     return dio;
+  }
+
+  Dio createRefresh({required String baseUrl}) {
+    return Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+      ),
+    );
   }
 }

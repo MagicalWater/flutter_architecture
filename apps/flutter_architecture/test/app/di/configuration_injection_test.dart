@@ -1,4 +1,5 @@
 import 'package:api_client/api_client.dart';
+import 'package:auth/auth.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
@@ -35,7 +36,14 @@ void main() {
     expect(getIt<AppConfig>(), same(config));
     expect(getIt<ApiConfig>(), same(config.api));
     expect(getIt<AuthApi>(), isA<MockAuthApi>());
+    expect(getIt<AuthRefreshApi>(), isA<MockAuthRefreshApi>());
+    expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
     expect(getIt<ProfileApi>(), isA<MockProfileApi>());
-    expect(getIt<Dio>().options.baseUrl, 'https://mock.local');
+    final mainDio = getIt<Dio>(instanceName: 'mainDio');
+    final refreshDio = getIt<Dio>(instanceName: 'refreshDio');
+    expect(mainDio.options.baseUrl, 'https://mock.local');
+    expect(refreshDio.options.baseUrl, 'https://mock.local');
+    expect(mainDio.interceptors.whereType<AuthHeaderInterceptor>(), hasLength(1));
+    expect(refreshDio.interceptors.whereType<AuthHeaderInterceptor>(), isEmpty);
   });
 }

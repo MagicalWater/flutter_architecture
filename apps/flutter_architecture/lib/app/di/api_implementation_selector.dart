@@ -13,6 +13,16 @@ abstract final class ApiImplementationSelector {
     };
   }
 
+  static api_client.AuthRefreshApi createAuthRefreshApi(
+    ApiConfig config,
+    Dio dio,
+  ) {
+    return switch (config.mode) {
+      ApiMode.mock => const api_client.MockAuthRefreshApi(),
+      ApiMode.real => api_client.AuthRefreshApi(dio),
+    };
+  }
+
   static api_client.ProfileApi createProfileApi(ApiConfig config, Dio dio) {
     return switch (config.mode) {
       ApiMode.mock => const api_client.MockProfileApi(),

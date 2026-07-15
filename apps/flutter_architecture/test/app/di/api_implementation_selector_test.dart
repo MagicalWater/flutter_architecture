@@ -18,6 +18,10 @@ void main() {
       isA<MockAuthApi>(),
     );
     expect(
+      ApiImplementationSelector.createAuthRefreshApi(config, dio),
+      isA<MockAuthRefreshApi>(),
+    );
+    expect(
       ApiImplementationSelector.createProfileApi(config, dio),
       isA<MockProfileApi>(),
     );
@@ -32,6 +36,10 @@ void main() {
     expect(
       ApiImplementationSelector.createAuthApi(config, dio),
       isNot(isA<MockAuthApi>()),
+    );
+    expect(
+      ApiImplementationSelector.createAuthRefreshApi(config, dio),
+      isNot(isA<MockAuthRefreshApi>()),
     );
     expect(
       ApiImplementationSelector.createProfileApi(config, dio),

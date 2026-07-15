@@ -20,6 +20,14 @@
 
 ### Added
 
+- 完成 Milestone 12-2 Refresh API 與 Auth Refresh Flow。
+- 新增獨立 `AuthRefreshApi`、`MockAuthRefreshApi`、Refresh DTO、Refresh Dio 與 `AuthRefresher` 五種結果語意。
+- 新增 auth-side identity-aware single-flight refresher，支援 refresh token rotation、persistence-first runtime update 與跨 Session race protection。
+- 新增 `AuthStateMutationCoordinator`，序列化 Login、Restore、Logout、Refresh commit 與 passive invalidation 的 Auth state 複合修改。
+- Passive invalidation 會在 lock 內再次驗證 generation / userId，舊 refresh operation 不得清除新 Session。
+- Refresh failure classification 調整為只有 401 / 403 使 Session 失效；400、5xx、timeout 與 malformed success response 保留 Session。
+- 新增 refresh concurrency、token rotation、persistence failure、跨帳號 in-flight、Token Pair overwrite race 與 invalidation race 測試。
+
 - 完成 Milestone 12-1 Token Model 與 Persistence：Login / Mock / DTO / Domain 支援 refresh token，新增完整 Token Pair storage、runtime Session snapshot 與 generation。
 - 新增 Auth persistence 補償式一致性：Login partial write、Restore incomplete/corrupted state、Logout dual cleanup 與 unknown error cleanup 均保持 runtime/persistence 一致。
 - 新增 `StoredAuthTokens`、`AuthTokenStorage`、package-internal `AuthLocalStore` 與 `CorruptedAuthTokensException`。

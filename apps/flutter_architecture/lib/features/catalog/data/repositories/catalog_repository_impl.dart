@@ -3,8 +3,10 @@ import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_page_response_dto_mapper.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart';
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
+import 'package:injectable/injectable.dart';
 
 /// CatalogRepository 的 Data Layer 實作。
+@LazySingleton(as: CatalogRepository)
 class CatalogRepositoryImpl implements CatalogRepository {
   const CatalogRepositoryImpl(this._remoteDataSource);
 

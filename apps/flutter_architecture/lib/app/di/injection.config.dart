@@ -18,6 +18,16 @@ import 'package:flutter_architecture/app/router/app_router.dart' as _i787;
 import 'package:flutter_architecture/app/router/auth_guard.dart' as _i997;
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart'
     as _i1024;
+import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_remote_data_source.dart'
+    as _i98;
+import 'package:flutter_architecture/features/catalog/data/repositories/catalog_repository_impl.dart'
+    as _i410;
+import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart'
+    as _i1035;
+import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart'
+    as _i877;
+import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart'
+    as _i771;
 import 'package:flutter_architecture/features/profile/data/data_sources/profile_remote_data_source.dart'
     as _i725;
 import 'package:flutter_architecture/features/profile/data/repositories/profile_repository_impl.dart'
@@ -116,8 +126,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i361.Dio>(instanceName: 'mainDio'),
       ),
     );
+    gh.lazySingleton<_i633.CatalogApi>(
+      () => registerModule.catalogApi(
+        gh<_i46.ApiConfig>(),
+        gh<_i361.Dio>(instanceName: 'mainDio'),
+      ),
+    );
     gh.lazySingleton<_i662.AuthRemoteDataSource>(
       () => registerModule.authRemoteDataSource(gh<_i633.AuthApi>()),
+    );
+    gh.lazySingleton<_i98.CatalogRemoteDataSource>(
+      () => _i98.CatalogRemoteDataSource(gh<_i633.CatalogApi>()),
     );
     gh.lazySingleton<_i725.ProfileRemoteDataSource>(
       () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
@@ -130,11 +149,20 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.AuthStateMutationCoordinator>(),
       ),
     );
+    gh.lazySingleton<_i1035.CatalogRepository>(
+      () => _i410.CatalogRepositoryImpl(gh<_i98.CatalogRemoteDataSource>()),
+    );
     gh.lazySingleton<_i511.ProfileRepository>(
       () => _i407.ProfileRepositoryImpl(gh<_i725.ProfileRemoteDataSource>()),
     );
+    gh.factory<_i877.SearchCatalogUseCase>(
+      () => _i877.SearchCatalogUseCase(gh<_i1035.CatalogRepository>()),
+    );
     gh.factory<_i474.GetProfileUseCase>(
       () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()),
+    );
+    gh.factory<_i771.CatalogBloc>(
+      () => registerModule.catalogBloc(gh<_i877.SearchCatalogUseCase>()),
     );
     gh.factory<_i662.LoginUseCase>(
       () => registerModule.loginUseCase(gh<_i662.AuthRepository>()),

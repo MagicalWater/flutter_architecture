@@ -851,7 +851,7 @@ git diff --check
 
 建立可重用但不過度抽象的清單載入與搜尋範例。
 
-狀態：In Progress；Milestone 13-1 至 13-5 已完成。
+狀態：In Progress；Milestone 13-1 至 13-6 已完成。
 
 本 Milestone 使用 `Catalog` feature 示範完整垂直切片，正式採用 cursor-based pagination。
 
@@ -1020,6 +1020,8 @@ git diff --check
 ```
 
 ### Milestone 13-6：Page、Route、DI 與 UI Flow
+
+狀態：Completed。
 
 - 建立 `CatalogPage`。
 - 建立 Search TextField、清單、empty state 與錯誤呈現。

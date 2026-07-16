@@ -5,6 +5,9 @@ import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
+import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
+import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
+import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -39,14 +42,27 @@ void main() {
     expect(getIt<AuthRefreshApi>(), isA<MockAuthRefreshApi>());
     expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
     expect(getIt<ProfileApi>(), isA<MockProfileApi>());
+    expect(getIt<CatalogApi>(), isA<MockCatalogApi>());
+    expect(getIt<CatalogRepository>(), isNotNull);
+    expect(getIt<SearchCatalogUseCase>(), isNotNull);
+    expect(getIt<CatalogBloc>(), isNotNull);
     final mainDio = getIt<Dio>(instanceName: 'mainDio');
     final refreshDio = getIt<Dio>(instanceName: 'refreshDio');
     expect(mainDio.options.baseUrl, 'https://mock.local');
     expect(refreshDio.options.baseUrl, 'https://mock.local');
-    expect(mainDio.interceptors.whereType<AuthHeaderInterceptor>(), hasLength(1));
-    expect(mainDio.interceptors.whereType<AuthRefreshInterceptor>(), hasLength(1));
+    expect(
+      mainDio.interceptors.whereType<AuthHeaderInterceptor>(),
+      hasLength(1),
+    );
+    expect(
+      mainDio.interceptors.whereType<AuthRefreshInterceptor>(),
+      hasLength(1),
+    );
     expect(refreshDio.interceptors.whereType<AuthHeaderInterceptor>(), isEmpty);
-    expect(refreshDio.interceptors.whereType<AuthRefreshInterceptor>(), isEmpty);
+    expect(
+      refreshDio.interceptors.whereType<AuthRefreshInterceptor>(),
+      isEmpty,
+    );
   });
 
   test('configureDependencies 會建立 Real API graph', () async {
@@ -63,14 +79,24 @@ void main() {
     expect(getIt<AuthApi>(), isNot(isA<MockAuthApi>()));
     expect(getIt<AuthRefreshApi>(), isNot(isA<MockAuthRefreshApi>()));
     expect(getIt<ProfileApi>(), isNot(isA<MockProfileApi>()));
+    expect(getIt<CatalogApi>(), isNot(isA<MockCatalogApi>()));
     expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
     final mainDio = getIt<Dio>(instanceName: 'mainDio');
     final refreshDio = getIt<Dio>(instanceName: 'refreshDio');
     expect(mainDio.options.baseUrl, 'https://api.example.test');
     expect(refreshDio.options.baseUrl, 'https://api.example.test');
-    expect(mainDio.interceptors.whereType<AuthHeaderInterceptor>(), hasLength(1));
-    expect(mainDio.interceptors.whereType<AuthRefreshInterceptor>(), hasLength(1));
+    expect(
+      mainDio.interceptors.whereType<AuthHeaderInterceptor>(),
+      hasLength(1),
+    );
+    expect(
+      mainDio.interceptors.whereType<AuthRefreshInterceptor>(),
+      hasLength(1),
+    );
     expect(refreshDio.interceptors.whereType<AuthHeaderInterceptor>(), isEmpty);
-    expect(refreshDio.interceptors.whereType<AuthRefreshInterceptor>(), isEmpty);
+    expect(
+      refreshDio.interceptors.whereType<AuthRefreshInterceptor>(),
+      isEmpty,
+    );
   });
 }

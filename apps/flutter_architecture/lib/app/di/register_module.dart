@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/features/profile/data/data_sources/profile_remote_data_source.dart';
+import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
+import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,13 +45,11 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
-  api_client.AppDioFactory get appDioFactory => const api_client.AppDioFactory();
+  api_client.AppDioFactory get appDioFactory =>
+      const api_client.AppDioFactory();
 
   @lazySingleton
-  api_client.AuthApi authApi(
-    ApiConfig config,
-    @Named('mainDio') Dio dio,
-  ) {
+  api_client.AuthApi authApi(ApiConfig config, @Named('mainDio') Dio dio) {
     return ApiImplementationSelector.createAuthApi(config, dio);
   }
 
@@ -66,16 +66,11 @@ abstract class RegisterModule {
     SharedPreferences preferences,
     Database database,
   ) {
-    return auth.AuthLocalDataSource(
-      preferences,
-      database,
-    );
+    return auth.AuthLocalDataSource(preferences, database);
   }
 
   @lazySingleton
-  auth.AuthRemoteDataSource authRemoteDataSource(
-    api_client.AuthApi authApi,
-  ) {
+  auth.AuthRemoteDataSource authRemoteDataSource(api_client.AuthApi authApi) {
     return auth.AuthRemoteDataSource(authApi);
   }
 
@@ -141,7 +136,9 @@ abstract class RegisterModule {
   }
 
   @injectable
-  auth.RestoreSessionUseCase restoreSessionUseCase(auth.AuthRepository repository) {
+  auth.RestoreSessionUseCase restoreSessionUseCase(
+    auth.AuthRepository repository,
+  ) {
     return auth.RestoreSessionUseCase(repository);
   }
 
@@ -162,10 +159,7 @@ abstract class RegisterModule {
 
   @Named('refreshDio')
   @lazySingleton
-  Dio refreshDio(
-    api_client.AppDioFactory factory,
-    ApiConfig config,
-  ) {
+  Dio refreshDio(api_client.AppDioFactory factory, ApiConfig config) {
     return factory.createRefresh(baseUrl: config.baseUri.toString());
   }
 
@@ -175,6 +169,19 @@ abstract class RegisterModule {
     @Named('mainDio') Dio dio,
   ) {
     return ApiImplementationSelector.createProfileApi(config, dio);
+  }
+
+  @lazySingleton
+  api_client.CatalogApi catalogApi(
+    ApiConfig config,
+    @Named('mainDio') Dio dio,
+  ) {
+    return ApiImplementationSelector.createCatalogApi(config, dio);
+  }
+
+  @injectable
+  CatalogBloc catalogBloc(SearchCatalogUseCase searchCatalogUseCase) {
+    return CatalogBloc(searchCatalogUseCase);
   }
 
   @lazySingleton

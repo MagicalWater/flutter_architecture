@@ -1,27 +1,36 @@
 import 'package:auth/auth.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/app/router/auth_guard.dart';
+import 'package:flutter_architecture/features/shell/presentation/shell_tab.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('AppRouter', () {
-    test('ShellRoute 包含 LoginRoute 與 ProfileRoute nested routes', () {
-      final sessionManager = SessionManager();
-      final router = AppRouter(AuthGuard(sessionManager));
-      addTearDown(sessionManager.dispose);
+    test(
+      'ShellRoute 包含 LoginRoute、CatalogRoute 與 ProfileRoute nested routes',
+      () {
+        final sessionManager = SessionManager();
+        final router = AppRouter(AuthGuard(sessionManager));
+        addTearDown(sessionManager.dispose);
 
-      final routes = router.routes;
-      final shellRoute = routes.first;
+        final routes = router.routes;
+        final shellRoute = routes.first;
 
-      expect(shellRoute.page.name, ShellRoute.name);
-      expect(shellRoute.initial, isTrue);
-      final shellChildren = shellRoute.children!.toList();
+        expect(shellRoute.page.name, ShellRoute.name);
+        expect(shellRoute.initial, isTrue);
+        final shellChildren = shellRoute.children!.toList();
 
-      expect(shellChildren, hasLength(2));
-      expect(shellChildren[0].page.name, LoginRoute.name);
-      expect(shellChildren[0].initial, isTrue);
-      expect(shellChildren[1].page.name, ProfileRoute.name);
-    });
+        expect(shellChildren, hasLength(3));
+        expect(shellChildren[0].page.name, LoginRoute.name);
+        expect(shellChildren[0].initial, isTrue);
+        expect(shellChildren[1].page.name, CatalogRoute.name);
+        expect(shellChildren[2].page.name, ProfileRoute.name);
+        expect(
+          shellChildren[ShellTab.profile.index].page.name,
+          ProfileRoute.name,
+        );
+      },
+    );
 
     test('ProtectedRoute 掛上 AuthGuard', () {
       final sessionManager = SessionManager();

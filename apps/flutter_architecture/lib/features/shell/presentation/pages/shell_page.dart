@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_architecture/features/shell/presentation/shell_tab.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 
@@ -12,11 +13,12 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 /// ```txt
 /// ShellPage(A)
 ///   ├── LoginPage(B)
-///   ├── ProfilePage(C)
-///   └── ProtectedPage(D)
+///   ├── CatalogPage(C)
+///   ├── ProfilePage(D)
+///   └── ProtectedPage(E)
 /// ```
 ///
-/// LoginPage 與 ProfilePage 位於 ShellPage 的 body 區域。
+/// LoginPage、CatalogPage 與 ProfilePage 位於 ShellPage 的 body 區域。
 /// ProtectedPage 透過 AppBar action 開啟，並由 Route Guard 保護。
 @RoutePage()
 class ShellPage extends HookWidget {
@@ -26,17 +28,15 @@ class ShellPage extends HookWidget {
   Widget build(BuildContext context) {
     final authBloc = useBloc<AuthBloc>();
 
-    useEffect(
-      () {
-        authBloc.add(const AuthEvent.started());
-        return null;
-      },
-      const <Object?>[],
-    );
+    useEffect(() {
+      authBloc.add(const AuthEvent.started());
+      return null;
+    }, const <Object?>[]);
 
     return AutoTabsRouter(
       routes: const <PageRouteInfo>[
         LoginRoute(),
+        CatalogRoute(),
         ProfileRoute(),
       ],
       builder: (context, child) {
@@ -56,16 +56,16 @@ class ShellPage extends HookWidget {
           body: child,
           bottomNavigationBar: NavigationBar(
             selectedIndex: tabsRouter.activeIndex,
-            onDestinationSelected: tabsRouter.setActiveIndex,
+            onDestinationSelected: (index) {
+              tabsRouter.setActiveIndex(ShellTab.values[index].index);
+            },
             destinations: const <NavigationDestination>[
+              NavigationDestination(icon: Icon(Icons.login), label: 'Login'),
               NavigationDestination(
-                icon: Icon(Icons.login),
-                label: 'Login',
+                icon: Icon(Icons.view_list_outlined),
+                label: 'Catalog',
               ),
-              NavigationDestination(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
+              NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
             ],
           ),
         );

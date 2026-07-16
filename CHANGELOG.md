@@ -46,6 +46,11 @@
 - Append 依穩定 Domain ID 去重並保留既有順序；failure 保留 items/cursor 並允許 retry，end reached 停止請求。
 - Refresh 使用目前 query 與 cursor = null，遞增 generation，成功整批替換、失敗保留資料，並防止舊 Append response 污染 state。
 - Catalog Bloc 目標測試增加至 18 項，涵蓋 append 防重、cursor、去重、retry、end reached、refresh success/failure、race protection 與未知錯誤 loading cleanup。
+- 完成 Milestone 13-6 Catalog Page、Route、DI 與 UI Flow。
+- 新增 Catalog Shell tab、AutoRoute route、搜尋欄位、清單、empty、initial/refresh/append loading 與 failure surfaces、scroll load more 與 pull-to-refresh。
+- 完成 Catalog API、RemoteDataSource、Repository、UseCase、Bloc 的 Composition Root registration，並補上 Mock / Real DI graph 與 route tests；完整 Page widget coverage 留在 Milestone 13-7。
+- 修正新增 Catalog tab 後登入成功誤導向 Catalog 的回歸，Shell tab index 改由 `ShellTab` 統一定義。
+- 修正 pull-to-refresh 快速完成時可能遺失完成 state、導致 RefreshIndicator 永久等待的 stream subscription race。
 
 - 完成 Milestone 12-3 至 12-6：Concurrent 401 Interceptor、Safe Request Replay、Session Expiration UI Flow，以及 concurrency / failure / regression coverage。
 - Main Dio 新增 `AuthRefreshInterceptor`；同 Session 的並行 401 共用 auth-side single-flight refresh，refresh 成功後使用最新 access token 安全 replay。

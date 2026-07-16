@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_architecture/features/shell/presentation/shell_tab.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 
@@ -27,14 +28,11 @@ class LoginPage extends HookWidget {
     final authBloc = useBloc<AuthBloc>();
     final authState = useBlocBuilder(authBloc);
 
-    useBlocListener<AuthBloc, AuthState>(
-      authBloc,
-      (_, state, _) {
-        if (state.isAuthenticated) {
-          context.tabsRouter.setActiveIndex(1);
-        }
-      },
-    );
+    useBlocListener<AuthBloc, AuthState>(authBloc, (_, state, _) {
+      if (state.isAuthenticated) {
+        context.tabsRouter.setActiveIndex(ShellTab.profile.index);
+      }
+    });
 
     return Scaffold(
       body: Center(
@@ -72,7 +70,9 @@ class LoginPage extends HookWidget {
                 if (authState.errorMessage != null) ...<Widget>[
                   Text(
                     authState.errorMessage!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                   const SizedBox(height: 12),
                 ],

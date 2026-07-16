@@ -487,7 +487,11 @@ Milestone 13-6：Page、Route、DI 與 UI Flow
 Milestone 13-7：Regression、文件與完整驗證
 ```
 
-下一個實作階段：Milestone 13-6 Page、Route、DI 與 UI Flow。Catalog route 與 Shell UI 入口依現有 Shell 結構做最小整合。
+Milestone 13-6 已完成 CatalogPage、Search、List、Empty、Initial / Refresh / Append loading 與 failure surfaces、scroll load more、pull-to-refresh、Catalog route 與 Shell tab。
+Catalog API、RemoteDataSource、Repository、UseCase 與 Bloc 已完成 Composition Root registration，Mock / Real graph 與 route 已驗證；完整 Page widget coverage 留在 Milestone 13-7。
+Shell tab index 已由 `ShellTab` 統一定義，避免新增 tab 後登入成功導向錯誤頁面；Catalog refresh callback 使用單一 lifecycle subscription，避免快速完成時遺失完成 state。
+
+下一個實作階段：Milestone 13-7 Regression、文件與完整驗證。
 
 ---
 

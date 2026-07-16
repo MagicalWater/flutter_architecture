@@ -898,12 +898,12 @@ Cache
 
 ### Milestone 13-2：Catalog API、DTO、Mock 與 Retrofit Contract
 
-- 建立 Retrofit `CatalogApi`。
-- 建立 `MockCatalogApi`，支援 query、cursor、limit 與多頁資料。
-- 建立 `CatalogItemDto` 與 `CatalogPageResponseDto`。
-- 第一頁使用 `cursor = null`，下一頁使用 response `nextCursor`。
-- Catalog 使用 public demo endpoint，不標記 authenticated request metadata。
-- App Composition Root 根據 ApiMode 選擇 Mock 或 Retrofit implementation。
+- [x] 建立 Retrofit `CatalogApi`。
+- [x] 建立 `MockCatalogApi`，支援 query、cursor、limit 與多頁資料。
+- [x] 建立 `CatalogItemDto` 與 `CatalogPageResponseDto`。
+- [x] 第一頁使用 `cursor = null`，下一頁使用 response `nextCursor`。
+- [x] Catalog 使用 public demo endpoint，不標記 authenticated request metadata。
+- [x] App Composition Root selector 根據 ApiMode 選擇 Mock 或 Retrofit implementation。
 
 測試至少涵蓋：
 
@@ -913,6 +913,19 @@ Cache
 - DTO JSON serialization / deserialization。
 - Mock 分頁、搜尋與最後一頁 `nextCursor = null`。
 - Public request 不會被加入 Authorization header。
+
+狀態：Completed。
+
+完成驗證：
+
+```txt
+dart run build_runner build（packages/api_client）
+flutter test packages/api_client/test/api_client_smoke_test.dart
+flutter test apps/flutter_architecture/test/app/di/api_implementation_selector_test.dart
+dart run melos run analyze
+dart run melos exec -- flutter test
+git diff --check
+```
 
 ### Milestone 13-3：Domain、Mapper、RemoteDataSource 與 Repository
 

@@ -25,6 +25,10 @@ void main() {
       ApiImplementationSelector.createProfileApi(config, dio),
       isA<MockProfileApi>(),
     );
+    expect(
+      ApiImplementationSelector.createCatalogApi(config, dio),
+      isA<MockCatalogApi>(),
+    );
   });
 
   test('Real mode 會選擇 Retrofit API implementations', () {
@@ -44,6 +48,10 @@ void main() {
     expect(
       ApiImplementationSelector.createProfileApi(config, dio),
       isNot(isA<MockProfileApi>()),
+    );
+    expect(
+      ApiImplementationSelector.createCatalogApi(config, dio),
+      isNot(isA<MockCatalogApi>()),
     );
   });
 }

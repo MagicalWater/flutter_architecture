@@ -30,6 +30,40 @@ void main() {
     expect(response.name, 'Water Magical');
   });
 
+  test('MockCatalogApi 支援 cursor pagination 與搜尋', () async {
+    const api = MockCatalogApi(responseDelay: Duration.zero);
+
+    final firstPage = await api.searchCatalog(
+      query: '',
+      cursor: null,
+      limit: 5,
+    );
+    final secondPage = await api.searchCatalog(
+      query: '',
+      cursor: firstPage.nextCursor,
+      limit: 5,
+    );
+    final lastPage = await api.searchCatalog(
+      query: '',
+      cursor: secondPage.nextCursor,
+      limit: 5,
+    );
+    final searchPage = await api.searchCatalog(
+      query: 'flutter',
+      cursor: null,
+      limit: 10,
+    );
+
+    expect(firstPage.items, hasLength(5));
+    expect(firstPage.nextCursor, 'offset:5');
+    expect(secondPage.items, hasLength(5));
+    expect(secondPage.items.first.id, 'catalog-006');
+    expect(secondPage.nextCursor, 'offset:10');
+    expect(lastPage.items, hasLength(2));
+    expect(lastPage.nextCursor, isNull);
+    expect(searchPage.items.map((item) => item.id), contains('catalog-001'));
+  });
+
   test('Login DTO 可以正確進行 JSON serialization', () {
     const request = LoginRequestDto(
       account: 'demo',
@@ -58,6 +92,21 @@ void main() {
     );
 
     expect(ProfileResponseDto.fromJson(response.toJson()), response);
+  });
+
+  test('Catalog DTO 可以正確進行 JSON serialization', () {
+    const response = CatalogPageResponseDto(
+      items: <CatalogItemDto>[
+        CatalogItemDto(
+          id: 'catalog-001',
+          name: 'Flutter',
+          description: '跨平台 App 開發框架',
+        ),
+      ],
+      nextCursor: 'cursor-002',
+    );
+
+    expect(CatalogPageResponseDto.fromJson(response.toJson()), response);
   });
 
   test('Transport mapper 會把 DioException 轉為 AppException', () {
@@ -162,6 +211,49 @@ void main() {
     expect(response.id, 'user-003');
     expect(response.name, 'Profile User');
   });
+
+  test('CatalogApi 會傳遞 public search query 與 cursor parameters', () async {
+    final adapter = _RecordingAdapter();
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.test'))
+      ..httpClientAdapter = adapter;
+    final api = CatalogApi(dio);
+
+    final response = await api.searchCatalog(
+      query: 'flutter',
+      cursor: 'cursor-001',
+      limit: 20,
+    );
+
+    expect(adapter.method, 'GET');
+    expect(adapter.path, '/catalog');
+    expect(adapter.queryParameters, <String, dynamic>{
+      'query': 'flutter',
+      'cursor': 'cursor-001',
+      'limit': 20,
+    });
+    expect(adapter.extra[RequestExtras.requiresAuth], isNot(true));
+    expect(response.items.single.id, 'catalog-101');
+    expect(response.nextCursor, 'cursor-002');
+  });
+
+  test('CatalogApi 第一次 request 不傳 cursor parameter', () async {
+    final adapter = _RecordingAdapter();
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.test'))
+      ..httpClientAdapter = adapter;
+    final api = CatalogApi(dio);
+
+    await api.searchCatalog(
+      query: '',
+      cursor: null,
+      limit: 20,
+    );
+
+    expect(adapter.queryParameters, <String, dynamic>{
+      'query': '',
+      'limit': 20,
+    });
+    expect(adapter.extra[RequestExtras.requiresAuth], isNot(true));
+  });
 }
 
 class _RecordingAdapter implements HttpClientAdapter {
@@ -169,6 +261,7 @@ class _RecordingAdapter implements HttpClientAdapter {
   String? path;
   Map<String, dynamic>? body;
   Map<String, dynamic> extra = <String, dynamic>{};
+  Map<String, dynamic> queryParameters = <String, dynamic>{};
 
   @override
   Future<ResponseBody> fetch(
@@ -179,6 +272,7 @@ class _RecordingAdapter implements HttpClientAdapter {
     method = options.method;
     path = options.path;
     extra = Map<String, dynamic>.from(options.extra);
+    queryParameters = Map<String, dynamic>.from(options.queryParameters);
 
     final bytes = <int>[];
     if (requestStream != null) {
@@ -208,6 +302,16 @@ class _RecordingAdapter implements HttpClientAdapter {
       '/profile' => <String, dynamic>{
         'id': 'user-003',
         'name': 'Profile User',
+      },
+      '/catalog' => <String, dynamic>{
+        'items': <Map<String, dynamic>>[
+          <String, dynamic>{
+            'id': 'catalog-101',
+            'name': 'Flutter Catalog Item',
+            'description': 'Catalog response',
+          },
+        ],
+        'nextCursor': 'cursor-002',
       },
       _ => <String, dynamic>{},
     };

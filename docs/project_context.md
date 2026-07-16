@@ -380,7 +380,7 @@ dart run sqflite_common_ffi_web:setup
 
 ### Milestone 13：Pagination + Search Debounce
 
-狀態：Planned；Architecture Review 與文件落檔已完成，尚未開始功能實作。
+狀態：In Progress；Milestone 13-1 與 13-2 已完成。
 
 Milestone 11 CI/CD 維持 Deferred，不處理。Milestone 12 已全部完成。
 
@@ -435,6 +435,18 @@ Offline Cache
 - 不建立 Generic Pagination Bloc、PaginationController 或多 strategy framework。
 - Milestone 14 再於 Repository implementation 加入 Remote + Local cache coordination。
 
+目前進度：
+
+- Milestone 13-1 Architecture Decision 與 Feature Contract 已完成。
+- Milestone 13-2 Catalog API、DTO、Mock 與 Retrofit Contract 已完成。
+- 已新增 public Retrofit `CatalogApi`，使用 `query`、`cursor`、`limit` query parameters。
+- 已新增 `CatalogItemDto`、`CatalogPageResponseDto` 與 generated JSON / Freezed code。
+- Nested item serialization 使用明確 field converter，確保 DTO JSON round-trip 正確。
+- 已新增 `MockCatalogApi`，使用 opaque `offset:<n>` cursor，支援搜尋、多頁資料與最後一頁 null cursor。
+- App `ApiImplementationSelector` 已支援 Mock / Real Catalog API selection。
+- 已驗證第一次 request 不傳 cursor、下一頁傳遞 cursor、public endpoint 不標記 requiresAuth、Mock pagination/search 與 DTO serialization。
+- api_client 目標測試、selector tests、workspace analyze 與全部 flutter tests 已通過。
+
 正式實作順序：
 
 ```txt
@@ -453,7 +465,7 @@ Milestone 13-6：Page、Route、DI 與 UI Flow
 Milestone 13-7：Regression、文件與完整驗證
 ```
 
-下一個實作階段：Milestone 13-2 Catalog API、DTO、Mock 與 Retrofit Contract。Milestone 13-1 的架構決策與文件落檔已完成；Catalog route 與 Shell UI 入口可在 13-6 實作前依現有 Shell 結構做最小決定。
+下一個實作階段：Milestone 13-3 Domain、Mapper、RemoteDataSource 與 Repository。Catalog route 與 Shell UI 入口可在 13-6 實作前依現有 Shell 結構做最小決定。
 
 ---
 

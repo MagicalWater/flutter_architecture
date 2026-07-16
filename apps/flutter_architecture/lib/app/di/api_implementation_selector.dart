@@ -29,4 +29,11 @@ abstract final class ApiImplementationSelector {
       ApiMode.real => api_client.ProfileApi(dio),
     };
   }
+
+  static api_client.CatalogApi createCatalogApi(ApiConfig config, Dio dio) {
+    return switch (config.mode) {
+      ApiMode.mock => const api_client.MockCatalogApi(),
+      ApiMode.real => api_client.CatalogApi(dio),
+    };
+  }
 }

@@ -111,6 +111,40 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
+  test('讀取 Token Pair 發生未知錯誤時清除 Session 並回傳 localStateFailure', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore(failReadTokensUnknown: true);
+    final refresher = _createRefresher(
+      _FakeAuthRefreshApi(),
+      localStore,
+      sessionManager,
+    );
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshLocalStateFailure>());
+    expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  test('保存 Token Pair 發生未知錯誤時清除 Session 並回傳 localStateFailure', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore(failSaveTokensUnknown: true);
+    final refresher = _createRefresher(
+      _FakeAuthRefreshApi(),
+      localStore,
+      sessionManager,
+    );
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshLocalStateFailure>());
+    expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
   test('新 Session 不會加入舊 Session 的 in-flight refresh', () async {
     final sessionManager = _authenticatedSession();
     final localStore = _FakeRefreshLocalStore();
@@ -330,10 +364,14 @@ class _SequencedAuthRefreshApi implements AuthRefreshApi {
 class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
   _FakeRefreshLocalStore({
     this.failSaveTokens = false,
+    this.failReadTokensUnknown = false,
+    this.failSaveTokensUnknown = false,
     this.blockSaveTokens = false,
   });
 
   final bool failSaveTokens;
+  final bool failReadTokensUnknown;
+  final bool failSaveTokensUnknown;
   final bool blockSaveTokens;
   int saveTokensCalls = 0;
   int clearTokensCalls = 0;
@@ -347,7 +385,12 @@ class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
   );
 
   @override
-  Future<StoredAuthTokens?> readTokens() async => tokens;
+  Future<StoredAuthTokens?> readTokens() async {
+    if (failReadTokensUnknown) {
+      throw StateError('read tokens failed');
+    }
+    return tokens;
+  }
 
   @override
   Future<void> saveTokens(StoredAuthTokens value) async {
@@ -358,6 +401,9 @@ class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
     }
     if (failSaveTokens) {
       throw const AppException(message: 'save tokens failed');
+    }
+    if (failSaveTokensUnknown) {
+      throw StateError('save tokens failed');
     }
     tokens = value;
   }

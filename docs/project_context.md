@@ -380,7 +380,7 @@ dart run sqflite_common_ffi_web:setup
 
 ### Milestone 13：Pagination + Search Debounce
 
-狀態：In Progress；Milestone 13-1 至 13-4 已完成。
+狀態：Completed；Milestone 13-1 至 13-7 已完成。
 
 Milestone 11 CI/CD 維持 Deferred，不處理。Milestone 12 已全部完成。
 
@@ -491,7 +491,10 @@ Milestone 13-6 已完成 CatalogPage、Search、List、Empty、Initial / Refresh
 Catalog API、RemoteDataSource、Repository、UseCase 與 Bloc 已完成 Composition Root registration，Mock / Real graph 與 route 已驗證；完整 Page widget coverage 留在 Milestone 13-7。
 Shell tab index 已由 `ShellTab` 統一定義，避免新增 tab 後登入成功導向錯誤頁面；Catalog refresh callback 使用單一 lifecycle subscription，避免快速完成時遺失完成 state。
 
-下一個實作階段：Milestone 13-7 Regression、文件與完整驗證。
+Milestone 13-7 已完成 regression、Catalog widget coverage、文件同步與完整環境驗證。
+最終驗證已通過 `dart pub get`、workspace build_runner、analyze、全部 Flutter tests，以及 development / staging / production bundle build；Flutter App 測試共 72 項。
+
+下一個正式實作階段：Milestone 14 Offline Cache。
 
 ---
 

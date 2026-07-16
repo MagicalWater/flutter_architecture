@@ -1035,6 +1035,8 @@ git diff --check
 
 ### Milestone 13-7：Regression、文件與完整驗證
 
+狀態：Completed。
+
 - 補齊 Catalog API、DTO、Mapper、Repository、Bloc 與 Widget tests。
 - 補齊 debounce、query switching、stale response、duplicate load 與 refresh race tests。
 - 驗證 Login、Refresh Token、Profile、Session 與 Route Guard regression。

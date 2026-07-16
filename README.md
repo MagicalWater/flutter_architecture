@@ -180,8 +180,10 @@ root/
 - ShellPage
 - LoginPage
 - ProfilePage
+- CatalogPage
 - ProtectedPage
 - Feature 的 Presentation Layer
+- Catalog cursor pagination、search debounce、refresh 與 load more 範例
 
 ### packages/core
 

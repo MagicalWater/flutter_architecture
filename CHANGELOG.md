@@ -51,6 +51,10 @@
 - 完成 Catalog API、RemoteDataSource、Repository、UseCase、Bloc 的 Composition Root registration，並補上 Mock / Real DI graph 與 route tests；完整 Page widget coverage 留在 Milestone 13-7。
 - 修正新增 Catalog tab 後登入成功誤導向 Catalog 的回歸，Shell tab index 改由 `ShellTab` 統一定義。
 - 修正 pull-to-refresh 快速完成時可能遺失完成 state、導致 RefreshIndicator 永久等待的 stream subscription race。
+- 完成 Milestone 13-7 Regression、文件與完整驗證。
+- 將 Catalog list body 抽為可獨立測試的 `CatalogView`，補上 initial loading/failure/empty、item、append loading/failure 與 retry widget tests。
+- Decision 016、Project Context 與 Roadmap 已同步標記 Milestone 13 完成；下一階段為 Milestone 14 Offline Cache。
+- Milestone 13 最終驗證通過 dependency resolution、workspace code generation、analyze、全部 Flutter tests，以及 development / staging / production bundle build。
 
 - 完成 Milestone 12-3 至 12-6：Concurrent 401 Interceptor、Safe Request Replay、Session Expiration UI Flow，以及 concurrency / failure / regression coverage。
 - Main Dio 新增 `AuthRefreshInterceptor`；同 Session 的並行 401 共用 auth-side single-flight refresh，refresh 成功後使用最新 access token 安全 replay。

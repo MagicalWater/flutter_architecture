@@ -1244,7 +1244,7 @@ Milestone 12 不包含：
 
 **狀態：** Accepted
 
-**實作狀態：** Milestone 13 尚未開始實作；Architecture Review 已完成，本 Decision 拍板協議、責任邊界、競態處理與非目標。
+**實作狀態：** Milestone 13 已完成。Catalog API、Data、Domain、Bloc、Page、Route、DI、競態防護、regression tests 與三環境 build 驗證均已落地。
 
 ### 背景
 

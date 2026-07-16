@@ -44,7 +44,7 @@ class CatalogPage extends HookWidget {
           ),
         ),
         Expanded(
-          child: _CatalogBody(
+          child: CatalogView(
             state: state,
             scrollController: scrollController,
             onRetryInitial: () =>
@@ -69,8 +69,9 @@ Future<void> requestCatalogRefresh(CatalogBloc bloc) {
   return refreshCompleted;
 }
 
-class _CatalogBody extends StatelessWidget {
-  const _CatalogBody({
+class CatalogView extends StatelessWidget {
+  const CatalogView({
+    super.key,
     required this.state,
     required this.scrollController,
     required this.onRetryInitial,

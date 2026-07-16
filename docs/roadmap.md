@@ -851,7 +851,7 @@ git diff --check
 
 建立可重用但不過度抽象的清單載入與搜尋範例。
 
-狀態：Planned；Architecture Review 已完成，Decision 016 已拍板，尚未開始功能實作。
+狀態：In Progress；Milestone 13-1 至 13-3 已完成。
 
 本 Milestone 使用 `Catalog` feature 示範完整垂直切片，正式採用 cursor-based pagination。
 
@@ -929,17 +929,29 @@ git diff --check
 
 ### Milestone 13-3：Domain、Mapper、RemoteDataSource 與 Repository
 
-- 建立 `CatalogItem` Domain Entity。
-- 建立 `CatalogPage` Domain Model。
-- 建立 `CatalogRepository` interface。
-- 建立 `SearchCatalogUseCase`。
-- 建立 `CatalogRemoteDataSource`。
-- 建立 DTO 到 Domain Mapper。
-- 建立 `CatalogRepositoryImpl`。
-- RemoteDataSource 將 transport exception 映射為 `AppException`。
-- Repository 將 `AppException` 映射為 `Failure`，未知錯誤保留原始 stack trace。
-- Mapper 正規化空 cursor，並驗證 DTO 欄位。
-- Repository 比對 request cursor 與 response `nextCursor`，拒絕無法前進的 cursor chain。
+- [x] 建立 `CatalogItem` Domain Entity。
+- [x] 建立 `CatalogPage` Domain Model。
+- [x] 建立 `CatalogRepository` interface。
+- [x] 建立 `SearchCatalogUseCase`。
+- [x] 建立 `CatalogRemoteDataSource`。
+- [x] 建立 DTO 到 Domain Mapper。
+- [x] 建立 `CatalogRepositoryImpl`。
+- [x] RemoteDataSource 將 transport exception 映射為 `AppException`。
+- [x] Repository 將 `AppException` 映射為 `Failure`，未知錯誤保留原始 stack trace。
+- [x] Mapper 正規化空 cursor，並驗證 DTO 欄位。
+- [x] Repository 比對 request cursor 與 response `nextCursor`，拒絕無法前進的 cursor chain。
+
+狀態：Completed。
+
+完成驗證：
+
+```txt
+dart run build_runner build（apps/flutter_architecture）
+flutter test apps/flutter_architecture/test/features/catalog/data/catalog_data_layer_test.dart
+dart run melos run analyze
+dart run melos exec -- flutter test
+git diff --check
+```
 
 ### Milestone 13-4：Initial Search、Debounce 與 Query Switching
 

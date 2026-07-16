@@ -30,6 +30,11 @@
 - `MockCatalogApi` 支援 query、opaque cursor、limit、多頁資料與最後一頁 null cursor。
 - App API selector 已支援 Mock / Real Catalog implementation，並補上 Retrofit query、public metadata、DTO round-trip 與 selector tests。
 - 修正 Mock Catalog cursor identity：cursor 現在綁定 normalized query，避免舊 query cursor 被新 query 接受並回傳錯頁。
+- 完成 Milestone 13-3 Catalog Domain、Mapper、RemoteDataSource、Repository 與 Search UseCase。
+- 新增 `CatalogItem`、`CatalogPage`、`CatalogRepository`、`SearchCatalogUseCase` 與 Catalog data layer implementation。
+- Catalog Mapper 會正規化空 cursor 並驗證必要欄位；Repository 會拒絕無法前進的 cursor chain。
+- 補上 Catalog mapper、transport mapping、repository success/failure/cursor validation、unknown error 與 use case parameter tests。
+- 修正 Catalog Mapper 不應改寫 opaque cursor 與穩定 Domain ID；trim 僅用於空值驗證。
 
 - 完成 Milestone 12-3 至 12-6：Concurrent 401 Interceptor、Safe Request Replay、Session Expiration UI Flow，以及 concurrency / failure / regression coverage。
 - Main Dio 新增 `AuthRefreshInterceptor`；同 Session 的並行 401 共用 auth-side single-flight refresh，refresh 成功後使用最新 access token 安全 replay。

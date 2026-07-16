@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('並行 401 共用 refresh，並各自以新 token replay', () async {
+  test('10 個並行 401 共用一次 refresh，並各自以新 token replay', () async {
     final provider = _MutableTokenProvider(_session('old-token'));
     final refreshGate = Completer<void>();
     final refresher = _FakeRefresher(() async {
@@ -21,7 +21,48 @@ void main() {
       authRefresher: refresher,
     )..httpClientAdapter = adapter;
 
-    final first = dio.get<dynamic>(
+    final requests = List.generate(
+      10,
+      (index) => dio.get<dynamic>(
+        '/resource-$index',
+        options: Options(
+          extra: {
+            RequestExtras.requiresAuth: true,
+            RequestExtras.allowAuthReplay: true,
+          },
+        ),
+      ),
+    );
+    unawaited(
+      Future<void>.delayed(const Duration(milliseconds: 10)).then((_) {
+        refreshGate.complete();
+      }),
+    );
+    final responses = await Future.wait(requests);
+
+    expect(responses.map((response) => response.statusCode), everyElement(200));
+    expect(refresher.callCount, 1);
+    expect(adapter.oldTokenCalls, 10);
+    expect(adapter.newTokenCalls, 10);
+  });
+
+  test('Logout 後重新登入時，舊 request 不會使用新 Session token replay', () async {
+    final provider = _MutableTokenProvider(_session('old-token'));
+    final refreshGate = Completer<void>();
+    final refreshStarted = Completer<void>();
+    final refresher = _FakeRefresher(() async {
+      refreshStarted.complete();
+      await refreshGate.future;
+      return const AuthRefreshSessionChanged();
+    });
+    final adapter = _AuthAdapter();
+    final dio = AppDioFactory().createMain(
+      baseUrl: 'https://example.test',
+      tokenProvider: provider,
+      authRefresher: refresher,
+    )..httpClientAdapter = adapter;
+
+    final request = dio.get<dynamic>(
       '/profile',
       options: Options(
         extra: {
@@ -30,26 +71,21 @@ void main() {
         },
       ),
     );
-    final second = dio.get<dynamic>(
-      '/orders',
-      options: Options(
-        extra: {
-          RequestExtras.requiresAuth: true,
-          RequestExtras.allowAuthReplay: true,
-        },
-      ),
-    );
-    unawaited(
-      Future<void>.delayed(const Duration(milliseconds: 10)).then((_) {
-        refreshGate.complete();
-      }),
-    );
-    final responses = await Future.wait([first, second]);
+    await refreshStarted.future;
 
-    expect(responses.map((response) => response.statusCode), everyElement(200));
+    provider.current = null;
+    provider.current = const AuthSessionSnapshot(
+      accessToken: 'account-b-token',
+      userId: 'user-002',
+      generation: 3,
+    );
+    refreshGate.complete();
+
+    await expectLater(request, throwsA(isA<DioException>()));
     expect(refresher.callCount, 1);
-    expect(adapter.oldTokenCalls, 2);
-    expect(adapter.newTokenCalls, 2);
+    expect(adapter.oldTokenCalls, 1);
+    expect(adapter.accountBTokenCalls, 0);
+    expect(adapter.totalCalls, 1);
   });
 
   test('failed token 已過期時直接以 current token replay，不再次 refresh', () async {

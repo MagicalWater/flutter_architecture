@@ -5,6 +5,161 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('AuthBloc', () {
+    test('Login 成功後進入 authenticated state', () async {
+      final sessionManager = SessionManager();
+      final repository = _FakeAuthRepository(sessionManager);
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      bloc.add(
+        const AuthEvent.loginRequested(
+          account: 'demo',
+          password: 'password',
+        ),
+      );
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder(
+          <Matcher>[
+            predicate<AuthState>((state) => state.isLoading),
+            predicate<AuthState>(
+              (state) =>
+                  !state.isLoading &&
+                  state.isAuthenticated &&
+                  state.user?.name == 'Demo User' &&
+                  state.errorMessage == null,
+            ),
+          ],
+        ),
+      );
+    });
+
+    test('Login 失敗時保持未登入並顯示錯誤', () async {
+      final sessionManager = SessionManager();
+      final repository = _FakeAuthRepository(
+        sessionManager,
+        loginResult: const FailureResult<AuthResult>('login failed'),
+      );
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      bloc.add(
+        const AuthEvent.loginRequested(
+          account: 'demo',
+          password: 'wrong',
+        ),
+      );
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder(
+          <Matcher>[
+            predicate<AuthState>((state) => state.isLoading),
+            predicate<AuthState>(
+              (state) =>
+                  !state.isLoading &&
+                  !state.isAuthenticated &&
+                  state.errorMessage == 'login failed',
+            ),
+          ],
+        ),
+      );
+    });
+
+    test('Logout 成功後清除 authenticated user', () async {
+      final sessionManager = SessionManager();
+      final repository = _FakeAuthRepository(sessionManager);
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      bloc.add(
+        const AuthEvent.loginRequested(
+          account: 'demo',
+          password: 'password',
+        ),
+      );
+      await bloc.stream.firstWhere((state) => state.isAuthenticated);
+
+      bloc.add(const AuthEvent.logoutRequested());
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder(
+          <Matcher>[
+            predicate<AuthState>(
+              (state) => state.isLoading && state.isAuthenticated,
+            ),
+            predicate<AuthState>(
+              (state) => !state.isLoading && !state.isAuthenticated,
+            ),
+          ],
+        ),
+      );
+    });
+
+    test('Logout 失敗時保留 authenticated user 並顯示錯誤', () async {
+      final sessionManager = SessionManager();
+      final repository = _FakeAuthRepository(
+        sessionManager,
+        logoutResult: const FailureResult<void>('logout failed'),
+      );
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      bloc.add(
+        const AuthEvent.loginRequested(
+          account: 'demo',
+          password: 'password',
+        ),
+      );
+      await bloc.stream.firstWhere((state) => state.isAuthenticated);
+
+      bloc.add(const AuthEvent.logoutRequested());
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder(
+          <Matcher>[
+            predicate<AuthState>(
+              (state) => state.isLoading && state.isAuthenticated,
+            ),
+            predicate<AuthState>(
+              (state) =>
+                  !state.isLoading &&
+                  state.isAuthenticated &&
+                  state.user?.name == 'Demo User' &&
+                  state.errorMessage == 'logout failed',
+            ),
+          ],
+        ),
+      );
+    });
+
     test('App 啟動時可以 restore 已存在的 session', () async {
       final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(sessionManager);
@@ -85,9 +240,15 @@ void main() {
 }
 
 class _FakeAuthRepository implements AuthRepository {
-  _FakeAuthRepository(this._sessionManager);
+  _FakeAuthRepository(
+    this._sessionManager, {
+    this.loginResult,
+    this.logoutResult,
+  });
 
   final SessionManager _sessionManager;
+  final Result<AuthResult>? loginResult;
+  final Result<void>? logoutResult;
   AuthUser? _cachedUser;
 
   @override
@@ -95,6 +256,11 @@ class _FakeAuthRepository implements AuthRepository {
     required String account,
     required String password,
   }) async {
+    final configuredResult = loginResult;
+    if (configuredResult != null) {
+      return configuredResult;
+    }
+
     const user = AuthUser(
       id: 'user-1',
       name: 'Demo User',
@@ -117,6 +283,11 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Result<void>> logout() async {
+    final configuredResult = logoutResult;
+    if (configuredResult != null) {
+      return configuredResult;
+    }
+
     _cachedUser = null;
     _sessionManager.clear();
     return const Success(null);

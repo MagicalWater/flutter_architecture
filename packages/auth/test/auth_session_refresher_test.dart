@@ -59,6 +59,77 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
+  test('Invalidation 的 clearTokens 失敗時仍嘗試 clearUser 並清除 Session', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore(failClearTokens: true);
+    final refresher = _createRefresher(
+      _FakeAuthRefreshApi(statusCode: 401),
+      localStore,
+      sessionManager,
+    );
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  test('Invalidation 的 clearUser 失敗時仍清除 Session', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore(failClearUser: true);
+    final refresher = _createRefresher(
+      _FakeAuthRefreshApi(statusCode: 401),
+      localStore,
+      sessionManager,
+    );
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  test('缺少 refresh token 時會清除 auth state 並回傳 sessionExpired', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore()..tokens = null;
+    final api = _FakeAuthRefreshApi();
+    final refresher = _createRefresher(api, localStore, sessionManager);
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(api.callCount, 0);
+    expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  for (final type in <DioExceptionType>[
+    DioExceptionType.connectionTimeout,
+    DioExceptionType.connectionError,
+  ]) {
+    test('$type 會保留 Session 並回傳 temporarilyUnavailable', () async {
+      final sessionManager = _authenticatedSession();
+      final localStore = _FakeRefreshLocalStore();
+      final refresher = _createRefresher(
+        _FakeAuthRefreshApi(errorType: type),
+        localStore,
+        sessionManager,
+      );
+
+      final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+      expect(result, isA<AuthRefreshTemporarilyUnavailable>());
+      expect(localStore.clearTokensCalls, 0);
+      expect(localStore.clearUserCalls, 0);
+      expect(sessionManager.currentSession?.accessToken, 'access-token');
+    });
+  }
+
   test('Server 5xx 會保留 Session 並回傳 temporarilyUnavailable', () async {
     final sessionManager = _authenticatedSession();
     final localStore = _FakeRefreshLocalStore();
@@ -316,7 +387,12 @@ AuthSessionRefresher _createRefresher(
 }
 
 class _FakeAuthRefreshApi implements AuthRefreshApi {
-  _FakeAuthRefreshApi({this.statusCode, this.completer, this.response});
+  _FakeAuthRefreshApi({
+    this.statusCode,
+    this.completer,
+    this.response,
+    this.errorType,
+  });
 
   static const successResponse = RefreshTokenResponseDto(
     accessToken: 'new-access-token',
@@ -326,6 +402,7 @@ class _FakeAuthRefreshApi implements AuthRefreshApi {
   final int? statusCode;
   final Completer<RefreshTokenResponseDto>? completer;
   final RefreshTokenResponseDto? response;
+  final DioExceptionType? errorType;
   int callCount = 0;
 
   @override
@@ -333,6 +410,13 @@ class _FakeAuthRefreshApi implements AuthRefreshApi {
     RefreshTokenRequestDto request,
   ) async {
     callCount += 1;
+    final type = errorType;
+    if (type != null) {
+      throw DioException(
+        requestOptions: RequestOptions(path: '/auth/refresh'),
+        type: type,
+      );
+    }
     final code = statusCode;
     if (code != null) {
       final options = RequestOptions(path: '/auth/refresh');
@@ -367,12 +451,16 @@ class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
     this.failReadTokensUnknown = false,
     this.failSaveTokensUnknown = false,
     this.blockSaveTokens = false,
+    this.failClearTokens = false,
+    this.failClearUser = false,
   });
 
   final bool failSaveTokens;
   final bool failReadTokensUnknown;
   final bool failSaveTokensUnknown;
   final bool blockSaveTokens;
+  final bool failClearTokens;
+  final bool failClearUser;
   int saveTokensCalls = 0;
   int clearTokensCalls = 0;
   int clearUserCalls = 0;
@@ -411,11 +499,17 @@ class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
   @override
   Future<void> clearTokens() async {
     clearTokensCalls += 1;
+    if (failClearTokens) {
+      throw StateError('clear tokens failed');
+    }
     tokens = null;
   }
 
   @override
   Future<void> clearUser() async {
     clearUserCalls += 1;
+    if (failClearUser) {
+      throw StateError('clear user failed');
+    }
   }
 }

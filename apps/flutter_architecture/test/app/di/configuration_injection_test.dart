@@ -48,4 +48,29 @@ void main() {
     expect(refreshDio.interceptors.whereType<AuthHeaderInterceptor>(), isEmpty);
     expect(refreshDio.interceptors.whereType<AuthRefreshInterceptor>(), isEmpty);
   });
+
+  test('configureDependencies 會建立 Real API graph', () async {
+    final config = AppConfig(
+      environment: AppEnvironment.development,
+      api: ApiConfig(
+        mode: ApiMode.real,
+        baseUri: Uri.parse('https://api.example.test'),
+      ),
+    );
+
+    await configureDependencies(config);
+
+    expect(getIt<AuthApi>(), isNot(isA<MockAuthApi>()));
+    expect(getIt<AuthRefreshApi>(), isNot(isA<MockAuthRefreshApi>()));
+    expect(getIt<ProfileApi>(), isNot(isA<MockProfileApi>()));
+    expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
+    final mainDio = getIt<Dio>(instanceName: 'mainDio');
+    final refreshDio = getIt<Dio>(instanceName: 'refreshDio');
+    expect(mainDio.options.baseUrl, 'https://api.example.test');
+    expect(refreshDio.options.baseUrl, 'https://api.example.test');
+    expect(mainDio.interceptors.whereType<AuthHeaderInterceptor>(), hasLength(1));
+    expect(mainDio.interceptors.whereType<AuthRefreshInterceptor>(), hasLength(1));
+    expect(refreshDio.interceptors.whereType<AuthHeaderInterceptor>(), isEmpty);
+    expect(refreshDio.interceptors.whereType<AuthRefreshInterceptor>(), isEmpty);
+  });
 }

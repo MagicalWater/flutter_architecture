@@ -110,12 +110,42 @@ void main() {
 
     expect(adapter.method, 'POST');
     expect(adapter.path, '/auth/login');
+    expect(adapter.extra[RequestExtras.requiresAuth], isNot(true));
     expect(adapter.body, <String, dynamic>{
       'account': 'demo',
       'password': 'password',
     });
     expect(response.accessToken, 'real-access-token');
     expect(response.userId, 'user-002');
+  });
+
+  test('AuthRefreshApi 使用獨立 endpoint 並標記 skipAuthRefresh', () async {
+    final adapter = _RecordingAdapter();
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.test'))
+      ..httpClientAdapter = adapter;
+    final api = AuthRefreshApi(dio);
+
+    final response = await api.refresh(
+      const RefreshTokenRequestDto(refreshToken: 'refresh-token'),
+    );
+
+    expect(adapter.method, 'POST');
+    expect(adapter.path, '/auth/refresh');
+    expect(adapter.extra[RequestExtras.requiresAuth], isNot(true));
+    expect(adapter.extra[RequestExtras.skipAuthRefresh], isTrue);
+    expect(response.accessToken, 'new-access-token');
+    expect(response.refreshToken, 'new-refresh-token');
+  });
+
+  test('Public request 不帶 requiresAuth metadata', () async {
+    final adapter = _RecordingAdapter();
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.test'))
+      ..httpClientAdapter = adapter;
+
+    await dio.get<dynamic>('/public');
+
+    expect(adapter.path, '/public');
+    expect(adapter.extra[RequestExtras.requiresAuth], isNot(true));
   });
 
   test('ProfileApi 會以 GET 呼叫 endpoint 並標記 requiresAuth metadata', () async {
@@ -158,7 +188,10 @@ class _RecordingAdapter implements HttpClientAdapter {
     }
 
     if (bytes.isNotEmpty) {
-      body = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+      final encodedBody = utf8.decode(bytes);
+      if (encodedBody.trimLeft().startsWith('{')) {
+        body = jsonDecode(encodedBody) as Map<String, dynamic>;
+      }
     }
 
     final response = switch (options.path) {
@@ -167,6 +200,10 @@ class _RecordingAdapter implements HttpClientAdapter {
         'refreshToken': 'real-refresh-token',
         'userId': 'user-002',
         'userName': 'Retrofit User',
+      },
+      '/auth/refresh' => <String, dynamic>{
+        'accessToken': 'new-access-token',
+        'refreshToken': 'new-refresh-token',
       },
       '/profile' => <String, dynamic>{
         'id': 'user-003',

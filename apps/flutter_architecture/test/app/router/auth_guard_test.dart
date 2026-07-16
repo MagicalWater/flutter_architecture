@@ -24,5 +24,21 @@ void main() {
 
       expect(guard.canNavigateToProtected, isTrue);
     });
+
+    test('Session expiration 後不再允許進入 ProtectedRoute', () async {
+      final sessionManager = SessionManager();
+      final guard = AuthGuard(sessionManager);
+      addTearDown(sessionManager.dispose);
+
+      sessionManager.setAuthenticated(
+        accessToken: 'access-token',
+        userId: 'user-1',
+      );
+      expect(guard.canNavigateToProtected, isTrue);
+
+      sessionManager.clear();
+
+      expect(guard.canNavigateToProtected, isFalse);
+    });
   });
 }

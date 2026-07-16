@@ -8,4 +8,7 @@ sealed class ProfileEvent with _$ProfileEvent {
 
   /// 使用者從 Profile 頁面按下登出。
   const factory ProfileEvent.logoutRequested() = ProfileLogoutRequested;
+
+  /// Refresh credential 失效或其他 feature 清除 Session 時同步 UI。
+  const factory ProfileEvent.sessionCleared() = ProfileSessionCleared;
 }

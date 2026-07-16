@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auth/auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_architecture/features/profile/domain/entities/profile.dart';
@@ -35,17 +37,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) : super(ProfileState.initial()) {
     on<ProfileRequested>(_onRequested);
     on<ProfileLogoutRequested>(_onLogoutRequested);
+    on<ProfileSessionCleared>(_onSessionCleared);
+
+    _sessionSubscription = _sessionManager.sessionStream.listen((session) {
+      if (session == null && state.isAuthenticated) {
+        add(const ProfileEvent.sessionCleared());
+      }
+    });
   }
 
   final GetProfileUseCase _getProfileUseCase;
   final LogoutUseCase _logoutUseCase;
   final SessionManager _sessionManager;
+  late final StreamSubscription<AuthSession?> _sessionSubscription;
 
   Future<void> _onRequested(
     ProfileRequested event,
     Emitter<ProfileState> emit,
   ) async {
-    if (!_sessionManager.isAuthenticated) {
+    final requestSession = _sessionManager.currentSession;
+    if (requestSession == null) {
       emit(
         state.copyWith(
           isLoading: false,
@@ -68,6 +79,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     );
 
     final result = await _getProfileUseCase.execute();
+
+    final currentSession = _sessionManager.currentSession;
+    if (currentSession == null ||
+        currentSession.generation != requestSession.generation ||
+        currentSession.userId != requestSession.userId) {
+      if (!_sessionManager.isAuthenticated) {
+        emit(ProfileState.initial());
+      }
+      return;
+    }
 
     result.when(
       success: (profile) {
@@ -114,5 +135,27 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         );
       },
     );
+  }
+
+  void _onSessionCleared(
+    ProfileSessionCleared event,
+    Emitter<ProfileState> emit,
+  ) {
+    if (_sessionManager.isAuthenticated) {
+      emit(
+        ProfileState.initial().copyWith(
+          isAuthenticated: true,
+        ),
+      );
+      add(const ProfileEvent.requested());
+      return;
+    }
+    emit(ProfileState.initial());
+  }
+
+  @override
+  Future<void> close() async {
+    await _sessionSubscription.cancel();
+    return super.close();
   }
 }

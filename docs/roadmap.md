@@ -679,7 +679,7 @@ CI/CD、GitHub Actions、build matrix、automatic release 與 deployment pipelin
 
 在 App Configuration 基礎完成後，建立完整 Refresh Token 與並行 401 處理流程。
 
-狀態：In Progress；Milestone 12-1、12-2 已完成。
+狀態：Completed。
 
 架構責任邊界已由 Architecture Decision 015 拍板。
 
@@ -752,6 +752,8 @@ git diff --check
 
 ### Milestone 12-3：Concurrent 401 Interceptor
 
+狀態：Completed。
+
 - 保留 AuthHeaderInterceptor 只負責加入 access token。
 - 新增獨立 AuthRefreshInterceptor。
 - 只處理 authenticated、未 retry、未 skip 且實際帶 token 的 401。
@@ -764,6 +766,8 @@ git diff --check
 
 ### Milestone 12-4：Safe Request Replay
 
+狀態：Completed。
+
 - Refresh 成功後以最新 access token replay 原 request。
 - Replay request 標記 `authRetryCount = 1`。
 - Replay 再次 401 時直接回傳錯誤，不進入第二次 refresh。
@@ -773,6 +777,8 @@ git diff --check
 
 ### Milestone 12-5：Session Expiration 與既有 UI Flow
 
+狀態：Completed。
+
 - Refresh credential 無效時清除 Token Pair、User persistence 與 SessionManager。
 - Interceptor 不直接操作 Router、Bloc 或 LogoutUseCase。
 - AuthBloc 透過 SessionManager stream 同步未登入狀態。
@@ -780,6 +786,8 @@ git diff --check
 - 驗證 Session expiration 後 Profile、ProtectedRoute 與 Login UI 行為。
 
 ### Milestone 12-6：Concurrency / Failure / Regression Tests
+
+狀態：Completed。
 
 至少涵蓋：
 
@@ -803,12 +811,27 @@ git diff --check
 
 ### Milestone 12-7：文件與完整驗證
 
+狀態：Completed。
+
 - 同步 README、Project Context、Architecture Decisions、Changelog 與相關 feature / package 文件。
 - 執行 `dart pub get`。
 - 執行 build_runner。
 - 執行 analyze。
 - 執行全部 flutter test。
 - 執行 development / staging / production bundle build。
+
+完成驗證：
+
+```txt
+dart pub get
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle -t lib/main_development.dart
+flutter build bundle -t lib/main_staging.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://staging-api.example.com
+flutter build bundle -t lib/main_production.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://api.example.com
+git diff --check
+```
 
 ### 完成定義
 

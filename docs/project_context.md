@@ -97,9 +97,49 @@
 
 - RxDart
 
+### Auth Session / Refresh
+
+- 完整 Token Pair persistence。
+- SessionManager runtime generation / userId identity。
+- Main Dio 與 Refresh Dio 分離。
+- Concurrent 401 single-flight refresh。
+- Refresh token rotation 與 persistence-first runtime update。
+- Session-aware safe request replay。
+- Logout / relogin / account-switch race protection。
+
 ---
 
 ## 已完成狀態
+
+### Milestone 12：Refresh Token + Concurrent 401 Handling
+
+狀態：Completed。
+
+已完成：
+
+- Login、Mock、DTO、Domain 與 persistence 全面支援 access token + refresh token。
+- `AuthSessionRefresher` 以 generation / userId / failed token 管理 identity-aware single-flight refresh。
+- Main Dio 安裝 `AuthHeaderInterceptor` 與 `AuthRefreshInterceptor`；Refresh Dio 不安裝 auth interceptors。
+- Refresh 成功先保存 rotated Token Pair，再更新 SessionManager runtime access token。
+- 只有同一 Session identity 且可安全重送的 authenticated request 才允許 replay。
+- `authRetryCount` 防止 replay 再次 401 形成無限 retry。
+- Stream、Multipart、upload、progress callback 與特殊 download request 不自動 replay。
+- Invalid refresh credential 或缺少 refresh token 會 best-effort 清除 Token Pair、User 與 SessionManager。
+- Timeout、connection error、5xx、一般 400 與 malformed success 不會錯誤清除 Session。
+- AuthBloc、ProfileBloc、AuthGuard 透過 SessionManager 自然同步 Session expiration。
+- 已覆蓋 10-request concurrent 401、account switch、logout/relogin、persistence failure、cleanup failure、Login / Restore / Logout / AuthGuard / Profile regression，以及 Mock / Real Composition Root graph。
+- `dart pub get`、build_runner、analyze、全部 flutter test，以及 development / staging / production bundle build 均已通過。
+
+主要 commits：
+
+```txt
+d73f6d3 test(auth): 完成 Milestone 12-6 regression coverage
+ec7acd2 feat(auth): 完成 Milestone 12-5 Session Expiration UI Flow
+c2c3ad6 feat(auth): 完成 Milestone 12-4 Safe Request Replay
+e5ee421 feat(auth): 完成 Milestone 12-3 Concurrent 401 Interceptor
+```
+
+---
 
 ### Milestone 1：Project Skeleton
 

@@ -20,6 +20,13 @@
 
 ### Added
 
+- 完成 Milestone 12-3 至 12-6：Concurrent 401 Interceptor、Safe Request Replay、Session Expiration UI Flow，以及 concurrency / failure / regression coverage。
+- Main Dio 新增 `AuthRefreshInterceptor`；同 Session 的並行 401 共用 auth-side single-flight refresh，refresh 成功後使用最新 access token 安全 replay。
+- Authenticated request 保存 generation / userId / failed token identity，禁止舊帳號 request 使用新帳號 token replay，並阻止 logout / relogin 後舊 request 復活。
+- Replay 使用 `authRetryCount` 防止無限 retry；Stream、Multipart、upload、progress callback 與特殊 download request 不自動重送。
+- Session expiration 透過 `SessionManager` stream 自然同步 AuthBloc、ProfileBloc 與 AuthGuard；interceptor 不直接操作 Router、Bloc 或 LogoutUseCase。
+- 新增 10-request concurrent 401、logout/relogin race、invalid refresh cleanup failure、network failure、AuthBloc login/logout regression，以及 Mock / Real Composition Root graph 測試。
+
 - 完成 Milestone 12-2 Refresh API 與 Auth Refresh Flow。
 - 新增獨立 `AuthRefreshApi`、`MockAuthRefreshApi`、Refresh DTO、Refresh Dio 與 `AuthRefresher` 五種結果語意。
 - 新增 auth-side identity-aware single-flight refresher，支援 refresh token rotation、persistence-first runtime update 與跨 Session race protection。
@@ -88,6 +95,10 @@
 - 同步更新 Root README、Auth feature README、Clean Architecture 文件與 docs 導覽中的 Auth API 流程。
 
 ### Verified
+
+- Milestone 12-7：`dart pub get`、build_runner、analyze、全部 flutter test，以及 development / staging / production bundle build 全部通過。
+- Milestone 12-6：10 個 authenticated request 同時 401 只呼叫一次 refresh，並全部使用新 token replay。
+- Login / Restore / Logout / AuthGuard / Profile regression、refresh token rotation、persistence compensation、Session identity race 與 invalidation cleanup failure tests。
 
 - Milestone 10：`dart run melos run build_runner`、`dart run melos run analyze`、`dart run melos exec -- flutter test`、`flutter build bundle`。
 - staging / production Dart entrypoint 已分別完成 `flutter build bundle` 驗證。

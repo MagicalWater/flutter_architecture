@@ -84,8 +84,13 @@
 - Retrofit
 - Mock API
 - Authorization Header Interceptor
+- Refresh Token rotation
+- Concurrent 401 single-flight refresh
+- Session-aware safe request replay
 
 真實 HTTP API 統一使用 Retrofit 宣告；Mock implementation 與 Retrofit generated implementation 共用相同 API abstraction，並由 App Composition Root 決定實際注入哪一個 implementation。
+
+Authenticated request 由 Main Dio 加入 access token；401 refresh 使用獨立 Refresh Dio，避免 refresh request 再次進入 auth interceptor。多個同 Session 的並行 401 共用一次 refresh，成功後只有可安全重送的 request 才會以新 token replay。Logout、Session expiration 或帳號切換後，舊 request / 舊 refresh response 都不得使用新 Session 身分繼續執行。
 
 `main.dart` 與 `main_development.dart` 使用 development；staging / production 分別使用獨立 Dart entrypoint。預設 development 使用 Mock API。
 
@@ -198,19 +203,23 @@ Network boundary。
 - Dio factory
 - API client
 - AuthHeaderInterceptor
+- AuthRefreshInterceptor
+- Auth refresh abstraction / result
+- Safe request replay metadata
 - API response model
 
 ### packages/auth
 
 Auth 共用能力。
 
-後續 Milestone 會把 Auth 的 domain / data 從 app feature 移動到這裡。
-
-目標是：
+目前負責：
 
 ```txt
 packages/auth
   負責 Auth domain / data / session
+  負責 Token Pair persistence
+  負責 refresh single-flight 與 token rotation
+  負責 Session invalidation 與 mutation coordination
 
 apps/flutter_architecture/lib/features/auth
   只保留 Auth presentation

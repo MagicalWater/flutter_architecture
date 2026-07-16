@@ -700,6 +700,8 @@ Native Flavor 需要平台 scaffold 與實際發布需求，若現在一併處�
 
 **狀態：** Accepted
 
+**實作狀態：** Milestone 12 已完成。Main / Refresh Dio、identity-aware single-flight、Token Pair rotation、safe replay、Session invalidation、UI synchronization、regression tests、文件同步與完整環境建置驗證均已落地。
+
 ### 背景
 
 Milestone 9 已建立 Retrofit API boundary、Dio transport、`AuthHeaderInterceptor`、`AuthTokenProvider`、Auth Repository 與 SessionManager。

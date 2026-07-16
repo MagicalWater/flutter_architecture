@@ -378,96 +378,82 @@ dart run sqflite_common_ffi_web:setup
 
 ## 下一個工作目標
 
-### Milestone 12：Refresh Token + Concurrent 401 Handling
+### Milestone 13：Pagination + Search Debounce
 
-狀態：In Progress；Architecture Review 已完成，Milestone 12-1、12-2 已完成。
+狀態：Planned；Architecture Review 與文件落檔已完成，尚未開始功能實作。
 
-Milestone 11 CI/CD 維持 Deferred，不處理。
+Milestone 11 CI/CD 維持 Deferred，不處理。Milestone 12 已全部完成。
 
-Milestone 12 已拍板 Architecture Decision 015，核心方向如下：
+Milestone 13 已拍板 Architecture Decision 016，核心方向如下：
 
 ```txt
-AuthHeaderInterceptor
-  只負責加入 access token
+Catalog feature
+  作為 Pagination + Search 的完整垂直切片
 
-AuthRefreshInterceptor
-  負責 authenticated 401、等待 refresh 與 request replay
+Pagination
+  使用 cursor-based
+  request = query + cursor + limit
 
-Refresh abstraction
-  定義於 packages/api_client
+Search debounce
+  300 ms
+  trim + distinct
+  位於 CatalogBloc event pipeline
 
-Refresh implementation
-  位於 packages/auth
-  負責 single-flight、refresh API、Token Pair persistence、
-  SessionManager 更新、failure classification 與 session invalidation
+Stale response protection
+  search generation + query + requested cursor
 
-AuthRefreshApi
-  獨立於 AuthApi
-  固定使用 Refresh Dio
+Load More
+  state guard + in-flight suppression + response identity validation
 
-App Composition Root
-  建立 Main Dio / Refresh Dio
-  綁定 abstraction 與 implementation
+Cancellation
+  logical cancellation
+  不讓 Dio CancelToken 穿透 Presentation / Domain
+
+Offline Cache
+  不屬於 Milestone 13，留給 Milestone 14
 ```
 
 已拍板的重要規則：
 
-- Token persistence 從 access-token-only 升級為完整 Token Pair。
-- Access / Refresh Token 以單一 logical value 保存。
-- SessionManager 維持 runtime-only，不向跨 feature consumer 暴露 refresh token。
-- HTTP request 的 current access token 由 runtime Session snapshot provider 從 SessionManager 讀取；AuthTokenStorage 只用於 Login、Restore、Refresh、Logout 與 invalidation。
-- Runtime auth abstraction 改為提供 access token、userId 與 generation 的 Session snapshot；AuthHeaderInterceptor 會把 Session identity 寫入 request metadata。
-- Main Dio 安裝 AuthHeaderInterceptor 與 AuthRefreshInterceptor。
-- Refresh Dio 不安裝上述 auth interceptors。
-- Login 使用 `AuthApi`；Refresh 使用獨立 `AuthRefreshApi`，避免同型別 Dio 綁定歧義與 DI cycle。
-- single-flight 由 auth-side refresher 負責，不由 Interceptor 管理。
-- failed request token 已不是 current token 時，直接 replay，不再次 refresh。
-- 直接 replay 前必須確認 request generation / userId 與 current Session 相同；不同時不得跨 Session 或跨帳號 replay。
-- Replay request 只允許一次，透過 `authRetryCount` 防止無限 retry。
-- Invalid refresh credential 才使 Session 失效；timeout、無網路與 5xx 保留 Session。
-- 被動 Session invalidation 不透過 LogoutUseCase。
-- Interceptor 不直接操作 Router 或 Bloc。
-- Refresh 完成前必須驗證 session identity，避免 Logout / relogin race。
-- Session identity 由 SessionManager 的 monotonically increasing generation 表達；Login、Restore、Logout、invalidation 會遞增，refresh 成功不遞增。
-- Persistence failure 會清除 SessionManager 並回傳 `localStateFailure`，不保留無法安全更新的 runtime Session。
-- Token Pair 與 User 位於不同 storage，Login / Restore / Logout / invalidation 採補償式一致性與 best-effort cleanup，最後 runtime Session 必須保持一致。
-- Refresh result 統一為 `success`、`sessionExpired`、`temporarilyUnavailable`、`sessionChanged`、`localStateFailure` 五種語意。
-- Stream、Multipart、upload 等特殊 request 必須明確定義 replay policy。
-- Milestone 12 不導入 Native secure storage，但 storage abstraction 必須保留替換能力。
+- 使用具有業務語意的 Catalog feature，不建立 pagination / search 技術型 feature。
+- 正式 Pagination contract 使用 cursor-based，不同時實作 page-based strategy。
+- 第一頁與 Refresh 使用 `cursor = null`；Load More 使用 response `nextCursor`。
+- `nextCursor` 是是否可繼續載入的唯一 source of truth，不另存獨立 `hasMore` state。
+- Query、filter、sort 或 search generation 改變後，不得沿用舊 cursor。
+- Mapper 將空 cursor 正規化為 null；Repository 驗證 request / response cursor chain 是否能前進。
+- Catalog 使用 public demo endpoint，不與 Auth Session 或 authenticated metadata 綁定。
+- `SearchCatalogUseCase` 表達單一搜尋業務行為；Initial、Refresh、Append 是 Bloc workflow。
+- Page 只發送 event，不自行管理 Timer、Repository 或 cancellation。
+- Debounce duration 可注入，測試可使用 `Duration.zero`。
+- 每個 logical search 使用 monotonically increasing generation。
+- 即使 event handler 被 restart，仍必須使用 generation guard 防止底層 Future 的舊 response emit。
+- Load More 同時使用 state guard、in-flight event suppression 與 generation/query/cursor validation；不額外引入 `bloc_concurrency`。
+- Refresh 遞增 generation，使舊 Initial / Append operation 過期。
+- Initial、Refresh、Append 的 loading 與 failure state 分開建模。
+- Append 由 Bloc 依穩定 Domain ID 去重並保留原順序；Refresh 成功整批替換。
+- Milestone 13 只保證 logical cancellation，不讓 Dio `CancelToken` 穿透架構邊界。
+- 不建立 Generic Pagination Bloc、PaginationController 或多 strategy framework。
+- Milestone 14 再於 Repository implementation 加入 Remote + Local cache coordination。
 
-目前進度：
-
-- Milestone 12-1 Token Model 與 Persistence 已完成。
-- Login response、Mock Auth、DTO mapper 與 domain result 已支援 refresh token。
-- Token persistence 已升級為單一 JSON Token Pair，並保留未來替換 secure storage 的 abstraction。
-- SessionManager 已具備 generation 與 runtime Session snapshot 基礎。
-- Login / Restore / Logout 已具備跨 storage 補償式一致性、損壞資料清理與 unknown error cleanup 保證。
-- Repository persistence tests 已覆蓋 partial failure、corrupted state 與 unknown error。
-- Milestone 12-2 Refresh API 與 Auth Refresh Flow 已完成。
-- 已建立獨立 Retrofit `AuthRefreshApi`、`MockAuthRefreshApi`、Refresh request / response DTO 與獨立 Refresh Dio。
-- `packages/api_client` 已提供最小 `AuthRefresher` abstraction 與五種 refresh result。
-- `packages/auth` 已完成 token rotation、persistence-first runtime update、identity-aware single-flight 與 failure classification。
-- Login、Restore、Logout、Refresh commit 與 passive invalidation 已共用 `AuthStateMutationCoordinator`，防止舊帳號 refresh 覆蓋或清除新 Session。
-- Passive invalidation 會在 mutation lock 內再次驗證 generation / userId；舊 refresh operation 只回傳 `sessionChanged`，不得影響新 Session。
-- HTTP 400、5xx、timeout 與 malformed success response 會保留 Session；目前只有 401 / 403 視為 invalid refresh credential。
-- Refresh tests 已覆蓋 10 個並行呼叫 single-flight、跨 Session in-flight、Token Pair 寫入 race、401 invalidation race、rotation、5xx、400、malformed response 與 persistence failure。
-- analyze、全部 test、bundle build 與 diff check 均已通過。
-
-下一個實作階段：Milestone 12-3 Concurrent 401 Interceptor。
-
-後續實作順序：
+正式實作順序：
 
 ```txt
-Milestone 12-3：Concurrent 401 Interceptor
+Milestone 13-1：Architecture Decision 與 Feature Contract
   ↓
-Milestone 12-4：Safe Request Replay
+Milestone 13-2：Catalog API、DTO、Mock 與 Retrofit Contract
   ↓
-Milestone 12-5：Session Expiration 與既有 UI Flow
+Milestone 13-3：Domain、Mapper、RemoteDataSource 與 Repository
   ↓
-Milestone 12-6：Concurrency / Failure / Regression Tests
+Milestone 13-4：Initial Search、Debounce 與 Query Switching
   ↓
-Milestone 12-7：文件與完整驗證
+Milestone 13-5：Load More、Refresh 與 Failure Recovery
+  ↓
+Milestone 13-6：Page、Route、DI 與 UI Flow
+  ↓
+Milestone 13-7：Regression、文件與完整驗證
 ```
+
+下一個實作階段：Milestone 13-2 Catalog API、DTO、Mock 與 Retrofit Contract。Milestone 13-1 的架構決策與文件落檔已完成；Catalog route 與 Shell UI 入口可在 13-6 實作前依現有 Shell 結構做最小決定。
 
 ---
 

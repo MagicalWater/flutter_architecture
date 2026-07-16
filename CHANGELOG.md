@@ -20,6 +20,12 @@
 
 ### Added
 
+- 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
+- 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。
+- Catalog 定義為 public demo endpoint；`nextCursor` 為唯一分頁 source of truth，Repository 負責驗證 cursor chain，不額外引入 `bloc_concurrency`。
+- 將 Milestone 13 拆分為 Architecture Contract、API / DTO、Domain / Repository、Initial Search、Load More / Refresh、UI / DI 與 Final Verification 七個階段。
+- 明確將 page-based strategy、Generic Pagination framework、Dio CancelToken 跨層傳遞與 Offline Cache 排除於 Milestone 13。
+
 - 完成 Milestone 12-3 至 12-6：Concurrent 401 Interceptor、Safe Request Replay、Session Expiration UI Flow，以及 concurrency / failure / regression coverage。
 - Main Dio 新增 `AuthRefreshInterceptor`；同 Session 的並行 401 共用 auth-side single-flight refresh，refresh 成功後使用最新 access token 安全 replay。
 - Authenticated request 保存 generation / userId / failed token identity，禁止舊帳號 request 使用新帳號 token replay，並阻止 logout / relogin 後舊 request 復活。

@@ -1237,3 +1237,344 @@ Milestone 12 不包含：
 - App Composition Root 會建立 Main Dio 與 Refresh Dio，並綁定 refresh abstraction implementation。
 - Auth Login response、Mock Auth 與 Restore Session 流程需要支援 Refresh Token。
 - SessionManager 仍維持 runtime-only，不直接依賴 storage、Dio 或 Retrofit。
+
+---
+
+## Decision 016：Pagination 與 Search Debounce 責任邊界
+
+**狀態：** Accepted
+
+**實作狀態：** Milestone 13 尚未開始實作；Architecture Review 已完成，本 Decision 拍板協議、責任邊界、競態處理與非目標。
+
+### 背景
+
+Milestone 13 要建立一個可閱讀、可測試、可延續到 Offline Cache 的清單搜尋範例。
+
+若未先定義 Pagination contract、Search debounce 所在層級、過期 response 判定與取消語意，實作容易出現：
+
+- page key 與 cursor contract 混用。
+- Page 自行管理 Timer、Repository 或 Dio cancellation。
+- 舊 query response 覆蓋新 query state。
+- Refresh 與 Load More response 交錯後錯誤合併資料。
+- Scroll event 重複觸發多個相同 page request。
+- 為單一範例過早建立通用 Pagination framework。
+- 為了真正取消 HTTP request，讓 Dio `CancelToken` 穿透 Presentation / Domain boundary。
+
+因此 Milestone 13 必須先建立清楚的 API、Data、Domain、Bloc 與 UI 責任邊界。
+
+### 決策
+
+#### 1. Milestone 13 使用 Catalog feature 作為垂直切片
+
+Milestone 13 建立具備業務語意的 `Catalog` feature，示範完整流程：
+
+```txt
+CatalogPage
+  ↓
+CatalogBloc
+  ↓
+SearchCatalogUseCase
+  ↓
+CatalogRepository
+  ↓
+CatalogRepositoryImpl
+  ↓
+CatalogRemoteDataSource
+  ↓
+CatalogApi
+```
+
+不建立以技術名稱命名的 `pagination`、`search` 或 `list` feature。
+
+Catalog 預設放在 App feature 內；只有跨多個 feature 證實可重用的能力，才考慮提升到 package。
+
+#### 2. 正式 Pagination contract 使用 cursor-based pagination
+
+Milestone 13 使用 cursor-based pagination，不同時實作 page-based strategy。
+
+Request contract：
+
+```txt
+query
+cursor
+limit
+```
+
+第一次載入與 Refresh 使用：
+
+```txt
+cursor = null
+```
+
+Load More 使用上一個 response 提供的 `nextCursor`。
+
+Domain page model 至少包含：
+
+```txt
+items
+nextCursor
+```
+
+`nextCursor` 是是否能繼續載入的唯一 source of truth。`nextCursor != null` 表示可繼續載入；`nextCursor == null` 表示已到最後一頁。若 UI 為可讀性需要 `hasMore`，應由 `nextCursor` 衍生，不另外保存一份可能不一致的 mutable state。
+
+`nextCursor` 屬於產生它的 query、filter、sort 與 search generation；任一搜尋條件改變後，不得沿用舊 cursor。
+
+API 若回傳空字串 cursor，由 Mapper 正規化為 `null`。若 response 的 `nextCursor` 與 request cursor 相同，Repository 必須視為無法前進的 pagination response，不得讓 Bloc 形成無限 Load More。
+
+page-based pagination 不列入 Milestone 13；未來若實際 API 使用 page number，只替換 API / Repository page key contract，不建立多 strategy framework。
+
+#### 3. API、DTO、Mapper、Repository 維持既有邊界
+
+所有真實 Catalog HTTP endpoint 使用 Retrofit 宣告；Mock 與 generated implementation 實作相同 `CatalogApi` abstraction，並由 App Composition Root 選擇。
+
+Catalog 在 Milestone 13 定義為 public demo endpoint，不要求登入，也不標記 authenticated request metadata。Pagination / Search 範例不應與 Auth Session 綁定；既有 Profile endpoint 已負責示範 authenticated Retrofit request。
+
+API Layer 負責：
+
+- HTTP method、path 與 query parameters。
+- JSON serialization / deserialization。
+- public request contract，不加入 authenticated metadata。
+
+RemoteDataSource 負責：
+
+- 呼叫 `CatalogApi`。
+- 傳遞 query、cursor 與 limit。
+- 將 transport exception 映射為 `AppException`。
+
+Mapper 負責：
+
+- DTO 到 Domain Entity / Page 的純資料轉換。
+- cursor 正規化與 DTO 欄位 validation。
+
+Repository implementation 負責：
+
+- 協調 RemoteDataSource。
+- 呼叫 Mapper。
+- 比對 request cursor 與 response `nextCursor`，驗證 cursor chain 能否前進。
+- 將 `AppException` 映射為 `Failure`。
+
+Repository 不保存 UI state、不管理 debounce、不合併既有 pages。
+
+#### 4. UseCase 以單一搜尋業務行為建模
+
+Milestone 13 使用單一：
+
+```txt
+SearchCatalogUseCase
+```
+
+輸入包含：
+
+```txt
+query
+cursor
+limit
+```
+
+不拆成 `InitialLoadCatalogUseCase`、`LoadMoreCatalogUseCase` 與 `RefreshCatalogUseCase`，因為三者在 Domain 中都是同一個搜尋行為；Initial、Refresh 與 Append 是 Presentation workflow。
+
+#### 5. Search debounce 位於 Bloc event pipeline
+
+`CatalogPage` 只負責將 TextField 變化轉成 `queryChanged` event。
+
+Debounce、distinct 與 latest-query-wins 語意由 `CatalogBloc` 管理，不在 Page 使用 Timer，也不讓 Page 直接呼叫 Repository。
+
+預設 debounce 為：
+
+```txt
+300 milliseconds
+```
+
+Debounce duration 必須可由 Bloc constructor 注入，讓測試可以使用 `Duration.zero` 或較短時間。
+
+Query normalization 使用：
+
+```txt
+trim + distinct
+```
+
+不預設轉成小寫，大小寫是否等價由 API contract 決定。
+
+空 query 代表載入預設 Catalog 清單，而不是直接清空頁面，讓同一個 feature 同時示範一般分頁與搜尋。
+
+#### 6. 過期 response 使用 search generation 防護
+
+`CatalogBloc` 持有 monotonically increasing search generation。
+
+下列操作建立新的 logical search，因此 generation 必須遞增：
+
+- Debounced query 真正開始搜尋。
+- Pull-to-refresh。
+- 清空或改變 query。
+- 未來 filter / sort 改變。
+
+Initial / Refresh request 至少捕獲：
+
+```txt
+generation
+query
+```
+
+Load More request 至少捕獲：
+
+```txt
+generation
+query
+requestedCursor
+```
+
+Response 回來後，只有 identity 仍與目前 state 一致時才可 emit。
+
+即使 event transformer 使用 restart / switch 語意，仍不得假設底層 Future 或 HTTP request 已真正取消；generation guard 是防止 stale response 覆蓋新 state 的必要條件。
+
+#### 7. Load More 使用多層防重策略
+
+Load More 同時採用：
+
+```txt
+state guard
+  + in-flight event suppression
+  + generation / query / cursor response validation
+```
+
+Milestone 13 不為此額外引入 `bloc_concurrency`。實作可使用現有 RxDart 建立 feature-local exhaust / droppable transformer，或使用等價的 Bloc event transformer；無論採用哪種 transformer，state guard 都是不可省略的正確性防線。
+
+收到 `loadMoreRequested` 時，至少確認：
+
+- 不在 Initial Loading。
+- 不在 Refreshing。
+- 不在 Loading More。
+- 已有可顯示的 items。
+- `nextCursor != null`。
+
+通過後先同步更新 `isLoadingMore`，再開始 async request，避免同一 event loop 內的重複 scroll event 穿透。
+
+#### 8. Refresh 會使舊 Initial / Append operation 過期
+
+Refresh 使用目前 query 與 `cursor = null`，並遞增 generation。
+
+Refresh 開始後：
+
+- 保留目前 items。
+- 阻擋新的 Load More。
+- 舊 Initial / Append response 因 generation 不符而被丟棄。
+
+Refresh 成功整批替換 items 與 cursor chain；Refresh failure 保留舊 items。
+
+#### 9. Page merge 與 item 去重由 Bloc 負責
+
+Mapper 不合併 pages；Bloc 在 Append 成功時依穩定 Domain ID 合併。
+
+規則：
+
+- 保留既有順序。
+- 只加入尚未存在的 ID。
+- Append 遇到重複 ID 時保留既有 item。
+- Refresh 成功時以新 page 整批替換。
+
+不使用未明確定義 equality 語意的 `Set<CatalogItem>` 直接去重。
+
+#### 10. Loading 與 Failure state 分離建模
+
+Catalog state 至少需要表達：
+
+```txt
+isInitialLoading
+isRefreshing
+isLoadingMore
+initialFailure
+refreshFailure
+appendFailure
+items
+query
+nextCursor
+```
+
+`hasMore` 由 `nextCursor != null` 衍生，不作為第二份獨立 state。
+
+UI 語意：
+
+- Initial Loading：全頁 loading。
+- Initial Failure：全頁錯誤與 retry。
+- Empty Result：獨立 empty state。
+- Refreshing：保留清單並顯示 refresh indicator。
+- Refresh Failure：保留清單並顯示非阻斷錯誤。
+- Loading More：清單底部 loading。
+- Append Failure：清單底部 retry。
+- End Reached：停止 Load More。
+
+不使用單一 `isLoading` 或單一 `errorMessage` 混合所有狀態。
+
+#### 11. Milestone 13 採 logical cancellation，不導入 Dio CancelToken 跨層傳遞
+
+Milestone 13 的取消保證為：
+
+```txt
+舊 operation 可以完成
+但不得更新目前 UI state
+```
+
+實作手段包括：
+
+- Debounce。
+- Latest-query-wins event semantics。
+- Search generation。
+- Query / cursor identity validation。
+
+Milestone 13 不將 Dio `CancelToken` 傳入 Bloc、UseCase 或 Repository interface，避免 Presentation / Domain 依賴 transport detail。
+
+Logical cancellation 不保證已送出的 HTTP request 停止消耗網路或 server resource。若未來真實 API 有高成本查詢、嚴格 quota 或大型 response，再新增 transport-neutral cancellation abstraction 與 Architecture Decision。
+
+#### 12. 不建立通用 Pagination framework
+
+Milestone 13 不建立：
+
+```txt
+GenericPagedBloc<T, K>
+PaginationController
+PaginationStrategy
+CursorPaginationStrategy
+PagePaginationStrategy
+```
+
+先以 Catalog feature-local implementation 驗證真正需求。Milestone 14 Offline Cache 完成後，若多個 feature 出現穩定重複模式，再評估提升共用能力。
+
+### 測試要求
+
+Milestone 13 至少驗證：
+
+- 快速輸入多個 query，只執行最後一個 debounced query。
+- 相同 normalized query 不重複搜尋。
+- 舊 query response 晚回來不覆蓋新 query。
+- 相同 query 的舊 generation 不覆蓋 Refresh 或重新搜尋。
+- 連續多次 Load More 只呼叫一次 Repository。
+- Append 使用正確 cursor。
+- `nextCursor == null` 時不再載入。
+- 重複或無法前進的 cursor 不形成無限 request。
+- Append item 依穩定 ID 去重並保留順序。
+- Append failure 保留既有 items，並可使用相同 cursor retry。
+- Refresh 使用 `cursor = null` 並整批替換成功結果。
+- Refresh failure 保留舊 items。
+- Refresh 或 query 切換後，舊 Append response 被丟棄。
+- Mock / Real Composition Root graph 都能建立。
+- 既有 Login、Refresh Token、Profile、Session 與 Route Guard flow 不退化。
+
+### 非目標
+
+Milestone 13 不包含：
+
+- Page-based pagination implementation。
+- 多種 Pagination strategy framework。
+- Offline Cache、SQLite page storage 或 stale policy。
+- Dio `CancelToken` 跨 Presentation / Domain boundary。
+- Transport-level cancellation abstraction。
+- Server-side search index、ranking 或全文檢索設計。
+- Infinite list virtualization framework。
+- 跨 feature 共用 Generic Pagination Bloc。
+
+### 影響
+
+- App 會新增 Catalog feature 的 Presentation / Domain / Data 垂直切片。
+- `packages/api_client` 會新增 Catalog Retrofit API、DTO 與 Mock implementation。
+- App Composition Root 會新增 Catalog API selection 與 feature dependency registration。
+- Milestone 14 可在不改變 Presentation / Domain contract 的前提下，於 Repository implementation 加入 Remote + Local 協調。

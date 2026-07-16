@@ -851,13 +851,173 @@ git diff --check
 
 建立可重用但不過度抽象的清單載入與搜尋範例。
 
-預計涵蓋：
+狀態：Planned；Architecture Review 已完成，Decision 016 已拍板，尚未開始功能實作。
 
-- Cursor 或 page-based pagination 的明確範例。
-- 初次載入、載入更多、重新整理與錯誤狀態。
-- 防止重複載入與過期 response 覆蓋新狀態。
-- Search debounce 與 query 切換取消策略。
-- Bloc / UseCase / Repository / DTO / Mapper 的完整流程。
+本 Milestone 使用 `Catalog` feature 示範完整垂直切片，正式採用 cursor-based pagination。
+
+核心決策：
+
+```txt
+Feature
+  Catalog
+
+Pagination
+  Cursor-based
+
+Search debounce
+  300 ms
+  trim + distinct
+  位於 Bloc event pipeline
+
+過期 response
+  search generation + query + cursor identity
+
+Load More
+  state guard + in-flight suppression + response validation
+
+取消策略
+  logical cancellation
+  不讓 Dio CancelToken 穿透 Presentation / Domain
+
+UseCase
+  SearchCatalogUseCase
+
+Cache
+  不屬於 Milestone 13，留給 Milestone 14
+```
+
+### Milestone 13-1：Architecture Decision 與 Feature Contract
+
+- [x] 新增 Architecture Decision 016。
+- [x] 拍板使用 cursor-based pagination。
+- [x] 定義 query / cursor / limit contract。
+- [x] 定義 search generation 與 stale-response guard。
+- [x] 定義 debounce、query normalization 與 logical cancellation。
+- [x] 定義 Initial / Refresh / Append loading 與 failure state。
+- [x] 定義 Milestone 13 不處理 Offline Cache、page-based strategy 與 transport cancellation。
+
+### Milestone 13-2：Catalog API、DTO、Mock 與 Retrofit Contract
+
+- 建立 Retrofit `CatalogApi`。
+- 建立 `MockCatalogApi`，支援 query、cursor、limit 與多頁資料。
+- 建立 `CatalogItemDto` 與 `CatalogPageResponseDto`。
+- 第一頁使用 `cursor = null`，下一頁使用 response `nextCursor`。
+- Catalog 使用 public demo endpoint，不標記 authenticated request metadata。
+- App Composition Root 根據 ApiMode 選擇 Mock 或 Retrofit implementation。
+
+測試至少涵蓋：
+
+- HTTP method、path 與 query serialization。
+- `cursor = null` 的第一次 request。
+- 有 cursor 的下一頁 request。
+- DTO JSON serialization / deserialization。
+- Mock 分頁、搜尋與最後一頁 `nextCursor = null`。
+- Public request 不會被加入 Authorization header。
+
+### Milestone 13-3：Domain、Mapper、RemoteDataSource 與 Repository
+
+- 建立 `CatalogItem` Domain Entity。
+- 建立 `CatalogPage` Domain Model。
+- 建立 `CatalogRepository` interface。
+- 建立 `SearchCatalogUseCase`。
+- 建立 `CatalogRemoteDataSource`。
+- 建立 DTO 到 Domain Mapper。
+- 建立 `CatalogRepositoryImpl`。
+- RemoteDataSource 將 transport exception 映射為 `AppException`。
+- Repository 將 `AppException` 映射為 `Failure`，未知錯誤保留原始 stack trace。
+- Mapper 正規化空 cursor，並驗證 DTO 欄位。
+- Repository 比對 request cursor 與 response `nextCursor`，拒絕無法前進的 cursor chain。
+
+### Milestone 13-4：Initial Search、Debounce 與 Query Switching
+
+- 建立 `CatalogBloc`、Event 與 State。
+- `queryChanged` 使用預設 300 ms debounce。
+- Debounce duration 可由 constructor 注入，方便測試。
+- Query 使用 trim + distinct；不預設轉小寫。
+- 空 query 載入預設 Catalog 清單。
+- Initial loading、initial failure 與 empty state 分開呈現。
+- 每個 logical search 使用 monotonically increasing generation。
+- 舊 query 或舊 generation response 不得覆蓋目前 state。
+
+測試至少涵蓋：
+
+- 快速輸入 `f → fl → flutter` 只搜尋最後一個 query。
+- 相同 normalized query 不重複搜尋。
+- 舊 query response 晚回來不覆蓋新 query。
+- 同 query 的舊 generation 不覆蓋新搜尋。
+- Initial error 與 empty result。
+
+### Milestone 13-5：Load More、Refresh 與 Failure Recovery
+
+- `loadMoreRequested` 使用 state guard 與 in-flight event suppression。
+- 不額外引入 `bloc_concurrency`；可使用既有 RxDart 建立 feature-local exhaust / droppable transformer。
+- 同一時間最多一個 append request。
+- Append response 驗證 generation、query 與 requested cursor。
+- `nextCursor == null` 時停止載入；是否有下一頁只由 cursor 衍生。
+- 依穩定 Domain ID 去重並保留原順序。
+- Append failure 保留既有 items，並提供底部 retry。
+- Refresh 使用目前 query 與 `cursor = null`。
+- Refresh 遞增 generation，使舊 Initial / Append operation 過期。
+- Refresh 成功整批替換資料；失敗保留舊 items。
+
+測試至少涵蓋：
+
+- 連續 Load More 只呼叫一次 Repository。
+- Append 使用正確 cursor。
+- End reached 不再請求。
+- 重複或無法前進 cursor 不形成無限 request。
+- Append 去重、順序與 retry。
+- Refresh 與舊 Append response race。
+- Query 切換與舊 Append response race。
+
+### Milestone 13-6：Page、Route、DI 與 UI Flow
+
+- 建立 `CatalogPage`。
+- 建立 Search TextField、清單、empty state 與錯誤呈現。
+- Scroll 接近底部時觸發 Load More。
+- Pull-to-refresh 觸發 Refresh。
+- Initial / Refresh / Append loading 與 failure 使用不同 UI surface。
+- Page 只依賴 `CatalogBloc`，不直接依賴 Repository、API 或 Dio。
+- 建立 Catalog route 與 Shell 入口。
+- 完成 Catalog API、DataSource、Repository、UseCase 與 Bloc 的 Composition Root registration。
+- 驗證 Mock / Real graph。
+
+### Milestone 13-7：Regression、文件與完整驗證
+
+- 補齊 Catalog API、DTO、Mapper、Repository、Bloc 與 Widget tests。
+- 補齊 debounce、query switching、stale response、duplicate load 與 refresh race tests。
+- 驗證 Login、Refresh Token、Profile、Session 與 Route Guard regression。
+- 同步 README、Project Context、Architecture Decisions、Roadmap、Changelog 與 feature 文件。
+- 執行完整 dependency、generation、analyze、test 與 environment build 驗證。
+
+完成驗證至少包含：
+
+```txt
+dart pub get
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle -t lib/main_development.dart
+flutter build bundle -t lib/main_staging.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://staging-api.example.com
+flutter build bundle -t lib/main_production.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://api.example.com
+git diff --check
+```
+
+### 完成定義
+
+- Catalog feature 具備 Bloc / UseCase / Repository / RemoteDataSource / DTO / Mapper / API 完整流程。
+- Cursor-based pagination contract 清楚，且不混用 page-based state。
+- Search debounce、query normalization 與 latest-query-wins 行為可測試。
+- Initial、Refresh 與 Load More loading / failure state 分離。
+- 重複 scroll event 不產生重複 append request。
+- 舊 query、舊 generation、舊 cursor response 不會覆蓋或污染目前 state。
+- Refresh 與 Query 切換可使舊 Append operation 安全過期。
+- Append item 依穩定 ID 去重並維持順序。
+- 不讓 Dio cancellation detail 穿透 Presentation / Domain boundary。
+- 不建立通用 Generic Pagination framework。
+- Offline Cache 維持 Milestone 14 範圍。
+- package 不綁定 DI framework，App 仍是唯一 Composition Root。
+- analyze / test / development、staging、production build 全部通過。
 
 ---
 

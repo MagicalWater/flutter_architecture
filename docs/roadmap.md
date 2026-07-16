@@ -851,7 +851,7 @@ git diff --check
 
 建立可重用但不過度抽象的清單載入與搜尋範例。
 
-狀態：In Progress；Milestone 13-1 至 13-3 已完成。
+狀態：In Progress；Milestone 13-1 至 13-4 已完成。
 
 本 Milestone 使用 `Catalog` feature 示範完整垂直切片，正式採用 cursor-based pagination。
 
@@ -955,14 +955,14 @@ git diff --check
 
 ### Milestone 13-4：Initial Search、Debounce 與 Query Switching
 
-- 建立 `CatalogBloc`、Event 與 State。
-- `queryChanged` 使用預設 300 ms debounce。
-- Debounce duration 可由 constructor 注入，方便測試。
-- Query 使用 trim + distinct；不預設轉小寫。
-- 空 query 載入預設 Catalog 清單。
-- Initial loading、initial failure 與 empty state 分開呈現。
-- 每個 logical search 使用 monotonically increasing generation。
-- 舊 query 或舊 generation response 不得覆蓋目前 state。
+- [x] 建立 `CatalogBloc`、Event 與 State。
+- [x] `queryChanged` 使用預設 300 ms debounce。
+- [x] Debounce duration 可由 constructor 注入，方便測試。
+- [x] Query 使用 trim + distinct；不預設轉小寫。
+- [x] 空 query 載入預設 Catalog 清單。
+- [x] Initial loading、initial failure 與 empty state 分開呈現。
+- [x] 每個 logical search 使用 monotonically increasing generation。
+- [x] 舊 query 或舊 generation response 不得覆蓋目前 state。
 
 測試至少涵蓋：
 
@@ -971,6 +971,18 @@ git diff --check
 - 舊 query response 晚回來不覆蓋新 query。
 - 同 query 的舊 generation 不覆蓋新搜尋。
 - Initial error 與 empty result。
+
+狀態：Completed。
+
+完成驗證：
+
+```txt
+dart run build_runner build（apps/flutter_architecture）
+flutter test apps/flutter_architecture/test/features/catalog/presentation/bloc/catalog_bloc_test.dart
+dart run melos run analyze
+dart run melos exec -- flutter test
+git diff --check
+```
 
 ### Milestone 13-5：Load More、Refresh 與 Failure Recovery
 

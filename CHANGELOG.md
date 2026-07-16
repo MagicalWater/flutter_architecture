@@ -35,6 +35,11 @@
 - Catalog Mapper 會正規化空 cursor 並驗證必要欄位；Repository 會拒絕無法前進的 cursor chain。
 - 補上 Catalog mapper、transport mapping、repository success/failure/cursor validation、unknown error 與 use case parameter tests。
 - 修正 Catalog Mapper 不應改寫 opaque cursor 與穩定 Domain ID；trim 僅用於空值驗證。
+- 完成 Milestone 13-4 Catalog Initial Search、Debounce 與 Query Switching。
+- 修正 Catalog 初始 state 不應被視為 empty result，並加入 page size validation 與測試等待 timeout。
+- 新增 `CatalogBloc`、Event、State 與 generated Freezed code；query pipeline 使用預設 300ms、可注入的 debounce + trim distinct。
+- 新增 search generation 與 query identity guard，避免舊 query 或同 query 舊 generation response 覆蓋目前 state。
+- 補上 initial loading/failure/empty、快速輸入、normalized distinct 與 stale response regression tests。
 
 - 完成 Milestone 12-3 至 12-6：Concurrent 401 Interceptor、Safe Request Replay、Session Expiration UI Flow，以及 concurrency / failure / regression coverage。
 - Main Dio 新增 `AuthRefreshInterceptor`；同 Session 的並行 401 共用 auth-side single-flight refresh，refresh 成功後使用最新 access token 安全 replay。

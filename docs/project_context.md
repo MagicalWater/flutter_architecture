@@ -380,7 +380,7 @@ dart run sqflite_common_ffi_web:setup
 
 ### Milestone 13：Pagination + Search Debounce
 
-狀態：In Progress；Milestone 13-1、13-2 與 13-3 已完成。
+狀態：In Progress；Milestone 13-1 至 13-4 已完成。
 
 Milestone 11 CI/CD 維持 Deferred，不處理。Milestone 12 已全部完成。
 
@@ -453,6 +453,14 @@ Offline Cache
 - DTO Mapper 只將空 cursor 正規化為 null，非空 opaque cursor 與 Domain identity 欄位原樣保留；空 id / name 仍會被拒絕。
 - `CatalogRepositoryImpl` 會驗證 request / response cursor 是否前進，並將 `AppException` 映射為 domain `Failure`；未知錯誤維持原樣拋出。
 - Catalog data layer 12 個目標測試、workspace analyze 與全部 flutter tests 已通過。
+- Milestone 13-4 已新增 `CatalogBloc`、`CatalogEvent` 與 `CatalogState`。
+- `queryChanged` 使用預設 300ms、可注入 duration 的 RxDart debounce + normalized distinct transformer。
+- Query 僅做 trim，不預設轉小寫；空 query 仍會載入預設 Catalog 清單。
+- `hasCompletedInitialLoad` 會區分「尚未載入」與「成功但結果為空」，避免初始 state 被誤判為 empty result。
+- Initial loading、initial failure 與 empty result 已分離建模；Refresh / Append state shape 已預留但 workflow 留待 13-5。
+- `CatalogBloc` 會 fail fast 拒絕非正數 page size；測試輪詢 helper 也加入明確 timeout。
+- 每次 logical initial search 都遞增 generation，response 需同時符合 generation 與 query identity 才能更新 state。
+- Catalog Bloc 8 個目標測試涵蓋 initial state、page size validation、debounce、distinct、跨 query stale response、同 query generation guard、initial failure 與 empty result。
 
 正式實作順序：
 
@@ -472,7 +480,7 @@ Milestone 13-6：Page、Route、DI 與 UI Flow
 Milestone 13-7：Regression、文件與完整驗證
 ```
 
-下一個實作階段：Milestone 13-4 Initial Search、Debounce 與 Query Switching。Catalog route 與 Shell UI 入口可在 13-6 實作前依現有 Shell 結構做最小決定。
+下一個實作階段：Milestone 13-5 Load More、Refresh 與 Failure Recovery。Catalog route 與 Shell UI 入口可在 13-6 實作前依現有 Shell 結構做最小決定。
 
 ---
 

@@ -8,4 +8,8 @@ sealed class CatalogEvent with _$CatalogEvent {
 
   /// 搜尋欄文字變更；由 Bloc event pipeline 處理 debounce 與 distinct。
   const factory CatalogEvent.queryChanged(String query) = CatalogQueryChanged;
+
+  const factory CatalogEvent.loadMoreRequested() = CatalogLoadMoreRequested;
+
+  const factory CatalogEvent.refreshRequested() = CatalogRefreshRequested;
 }

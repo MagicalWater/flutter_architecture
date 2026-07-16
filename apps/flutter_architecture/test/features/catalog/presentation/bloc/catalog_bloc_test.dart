@@ -162,6 +162,295 @@ void main() {
     await failureBloc.close();
     await emptyBloc.close();
   });
+
+  test('Initial unknown error 不會卡在 initial loading', () async {
+    final repository = _ControlledCatalogRepository();
+    late CatalogBloc bloc;
+    final errors = <Object>[];
+
+    await runZonedGuarded(() async {
+      bloc = CatalogBloc(
+        SearchCatalogUseCase(repository),
+        debounceDuration: Duration.zero,
+      );
+      bloc.add(const CatalogEvent.initialRequested());
+      await repository.waitForRequestCount(1);
+      repository.completeUnknown(0, StateError('initial unknown'));
+      await _waitUntil(() => !bloc.state.isInitialLoading);
+    }, (error, stackTrace) => errors.add(error));
+
+    expect(errors.single, isA<StateError>());
+    expect(bloc.state.isInitialLoading, isFalse);
+    expect(bloc.state.hasCompletedInitialLoad, isFalse);
+    expect(bloc.state.isEmpty, isFalse);
+    await bloc.close();
+  });
+
+  test('連續 Load More 只送出一個 request，並使用正確 cursor', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc
+      ..add(const CatalogEvent.loadMoreRequested())
+      ..add(const CatalogEvent.loadMoreRequested())
+      ..add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(2);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    expect(repository.requests, hasLength(2));
+    expect(repository.requests[1].cursor, 'cursor-1');
+
+    repository.completeSuccess(1, _page('append'));
+    await _waitUntil(() => !bloc.state.isLoadingMore);
+    await bloc.close();
+  });
+
+  test('Append 依穩定 ID 去重並保留既有順序', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(
+      0,
+      const CatalogPage(
+        items: <CatalogItem>[
+          CatalogItem(id: '1', name: 'old-1', description: 'old-1'),
+          CatalogItem(id: '2', name: 'old-2', description: 'old-2'),
+        ],
+        nextCursor: 'cursor-1',
+      ),
+    );
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(2);
+    repository.completeSuccess(
+      1,
+      const CatalogPage(
+        items: <CatalogItem>[
+          CatalogItem(id: '2', name: 'new-2', description: 'new-2'),
+          CatalogItem(id: '3', name: 'new-3', description: 'new-3'),
+        ],
+      ),
+    );
+    await _waitUntil(() => !bloc.state.isLoadingMore);
+
+    expect(bloc.state.items.map((item) => item.id), <String>['1', '2', '3']);
+    expect(bloc.state.items[1].name, 'old-2');
+    expect(bloc.state.hasMore, isFalse);
+    await bloc.close();
+  });
+
+  test('Append failure 保留 items 與 cursor，並允許 retry', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(2);
+    repository.completeFailure(
+      1,
+      const Failure(message: 'append failed', code: 'append_failed'),
+    );
+    await _waitUntil(() => !bloc.state.isLoadingMore);
+
+    expect(bloc.state.items.single.id, 'item-initial');
+    expect(bloc.state.nextCursor, 'cursor-1');
+    expect(bloc.state.appendFailure?.code, 'append_failed');
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(3);
+    expect(repository.requests[2].cursor, 'cursor-1');
+    repository.completeSuccess(2, _page('retry'));
+    await _waitUntil(() => !bloc.state.isLoadingMore);
+    expect(bloc.state.appendFailure, isNull);
+    await bloc.close();
+  });
+
+  test('Append unknown error 不會卡住，並允許 retry', () async {
+    final repository = _ControlledCatalogRepository();
+    late CatalogBloc bloc;
+    final errors = <Object>[];
+
+    await runZonedGuarded(() async {
+      bloc = CatalogBloc(
+        SearchCatalogUseCase(repository),
+        debounceDuration: Duration.zero,
+      );
+      bloc.add(const CatalogEvent.initialRequested());
+      await repository.waitForRequestCount(1);
+      repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+      await _waitUntil(() => !bloc.state.isInitialLoading);
+
+      bloc.add(const CatalogEvent.loadMoreRequested());
+      await repository.waitForRequestCount(2);
+      repository.completeUnknown(1, StateError('append unknown'));
+      await _waitUntil(() => !bloc.state.isLoadingMore);
+
+      bloc.add(const CatalogEvent.loadMoreRequested());
+      await repository.waitForRequestCount(3);
+      repository.completeSuccess(2, _page('retry'));
+      await _waitUntil(() => !bloc.state.isLoadingMore);
+    }, (error, stackTrace) => errors.add(error));
+
+    expect(errors.single, isA<StateError>());
+    expect(bloc.state.items.last.id, 'item-retry');
+    await bloc.close();
+  });
+
+  test('nextCursor 為 null 時不再請求 Load More', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('end'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(repository.requests, hasLength(1));
+    await bloc.close();
+  });
+
+  test('Refresh 成功整批替換；失敗保留既有 items', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(2);
+    expect(repository.requests[1].cursor, isNull);
+    repository.completeSuccess(1, _page('fresh', nextCursor: 'cursor-2'));
+    await _waitUntil(() => !bloc.state.isRefreshing);
+    expect(bloc.state.items.single.id, 'item-fresh');
+
+    bloc.add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(3);
+    repository.completeFailure(
+      2,
+      const Failure(message: 'refresh failed', code: 'refresh_failed'),
+    );
+    await _waitUntil(() => !bloc.state.isRefreshing);
+    expect(bloc.state.items.single.id, 'item-fresh');
+    expect(bloc.state.nextCursor, 'cursor-2');
+    expect(bloc.state.refreshFailure?.code, 'refresh_failed');
+    await bloc.close();
+  });
+
+  test('Refresh unknown error 不會卡住，並允許 retry', () async {
+    final repository = _ControlledCatalogRepository();
+    late CatalogBloc bloc;
+    final errors = <Object>[];
+
+    await runZonedGuarded(() async {
+      bloc = CatalogBloc(
+        SearchCatalogUseCase(repository),
+        debounceDuration: Duration.zero,
+      );
+      bloc.add(const CatalogEvent.initialRequested());
+      await repository.waitForRequestCount(1);
+      repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+      await _waitUntil(() => !bloc.state.isInitialLoading);
+
+      bloc.add(const CatalogEvent.refreshRequested());
+      await repository.waitForRequestCount(2);
+      repository.completeUnknown(1, StateError('refresh unknown'));
+      await _waitUntil(() => !bloc.state.isRefreshing);
+
+      bloc.add(const CatalogEvent.refreshRequested());
+      await repository.waitForRequestCount(3);
+      repository.completeSuccess(2, _page('fresh'));
+      await _waitUntil(() => !bloc.state.isRefreshing);
+    }, (error, stackTrace) => errors.add(error));
+
+    expect(errors.single, isA<StateError>());
+    expect(bloc.state.items.single.id, 'item-fresh');
+    await bloc.close();
+  });
+
+  test('Refresh 會使舊 Append response 過期', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(2);
+    bloc.add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(3);
+    repository.completeSuccess(2, _page('fresh'));
+    await _waitUntil(() => !bloc.state.isRefreshing);
+    repository.completeSuccess(1, _page('stale-append'));
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    expect(bloc.state.items.single.id, 'item-fresh');
+    expect(bloc.state.isLoadingMore, isFalse);
+    await bloc.close();
+  });
+
+  test('Query 切換會使舊 Append response 過期', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.queryChanged('old'));
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('old', nextCursor: 'cursor-old'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(2);
+    bloc.add(const CatalogEvent.queryChanged('new'));
+    await repository.waitForRequestCount(3);
+    repository.completeSuccess(2, _page('new'));
+    await _waitUntil(
+      () => !bloc.state.isInitialLoading && bloc.state.query == 'new',
+    );
+    repository.completeSuccess(1, _page('stale-append'));
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    expect(bloc.state.query, 'new');
+    expect(bloc.state.items.single.id, 'item-new');
+    await bloc.close();
+  });
 }
 
 Future<void> _waitUntil(bool Function() predicate) async {
@@ -175,11 +464,11 @@ Future<void> _waitUntil(bool Function() predicate) async {
   }
 }
 
-CatalogPage _page(String query) => CatalogPage(
+CatalogPage _page(String query, {String? nextCursor}) => CatalogPage(
   items: <CatalogItem>[
     CatalogItem(id: 'item-$query', name: query, description: query),
   ],
-  nextCursor: 'cursor-$query',
+  nextCursor: nextCursor,
 );
 
 class _CatalogRequest {
@@ -235,5 +524,13 @@ class _ControlledCatalogRepository implements CatalogRepository {
 
   void completeSuccess(int index, CatalogPage page) {
     _completers[index].complete(Success<CatalogPage>(page));
+  }
+
+  void completeFailure(int index, Failure failure) {
+    _completers[index].complete(FailureResult<CatalogPage>(failure));
+  }
+
+  void completeUnknown(int index, Object error) {
+    _completers[index].complete(FailureResult<CatalogPage>(error));
   }
 }

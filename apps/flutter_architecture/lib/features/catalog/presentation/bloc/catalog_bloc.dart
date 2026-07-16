@@ -28,6 +28,11 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       _onQueryChanged,
       transformer: _debounceDistinctQuery(debounceDuration),
     );
+    on<CatalogLoadMoreRequested>(
+      _onLoadMoreRequested,
+      transformer: _exhaustEvents(),
+    );
+    on<CatalogRefreshRequested>(_onRefreshRequested);
   }
 
   final SearchCatalogUseCase _searchCatalogUseCase;
@@ -105,6 +110,12 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       },
       failure: (error) {
         if (error is! Failure) {
+          emit(
+            state.copyWith(
+              isInitialLoading: false,
+              hasCompletedInitialLoad: false,
+            ),
+          );
           throw error;
         }
 
@@ -117,6 +128,111 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
             initialFailure: error,
           ),
         );
+      },
+    );
+  }
+
+  Future<void> _onLoadMoreRequested(
+    CatalogLoadMoreRequested event,
+    Emitter<CatalogState> emit,
+  ) async {
+    final requestedCursor = state.nextCursor;
+    if (state.isInitialLoading ||
+        state.isRefreshing ||
+        state.isLoadingMore ||
+        state.items.isEmpty ||
+        requestedCursor == null) {
+      return;
+    }
+
+    final generation = _searchGeneration;
+    final query = state.query;
+
+    emit(state.copyWith(isLoadingMore: true, appendFailure: null));
+
+    final result = await _searchCatalogUseCase.execute(
+      query: query,
+      cursor: requestedCursor,
+      limit: pageSize,
+    );
+
+    if (generation != _searchGeneration ||
+        query != state.query ||
+        requestedCursor != state.nextCursor) {
+      return;
+    }
+
+    result.when(
+      success: (page) {
+        emit(
+          state.copyWith(
+            items: _mergeItems(state.items, page.items),
+            nextCursor: page.nextCursor,
+            isLoadingMore: false,
+            appendFailure: null,
+          ),
+        );
+      },
+      failure: (error) {
+        if (error is! Failure) {
+          emit(state.copyWith(isLoadingMore: false));
+          throw error;
+        }
+        emit(state.copyWith(isLoadingMore: false, appendFailure: error));
+      },
+    );
+  }
+
+  Future<void> _onRefreshRequested(
+    CatalogRefreshRequested event,
+    Emitter<CatalogState> emit,
+  ) async {
+    if (state.isRefreshing) {
+      return;
+    }
+
+    final generation = ++_searchGeneration;
+    final query = state.query;
+
+    emit(
+      state.copyWith(
+        isInitialLoading: false,
+        isRefreshing: true,
+        isLoadingMore: false,
+        initialFailure: null,
+        refreshFailure: null,
+        appendFailure: null,
+      ),
+    );
+
+    final result = await _searchCatalogUseCase.execute(
+      query: query,
+      cursor: null,
+      limit: pageSize,
+    );
+
+    if (generation != _searchGeneration || query != state.query) {
+      return;
+    }
+
+    result.when(
+      success: (page) {
+        emit(
+          state.copyWith(
+            items: page.items,
+            nextCursor: page.nextCursor,
+            isRefreshing: false,
+            hasCompletedInitialLoad: true,
+            refreshFailure: null,
+          ),
+        );
+      },
+      failure: (error) {
+        if (error is! Failure) {
+          emit(state.copyWith(isRefreshing: false));
+          throw error;
+        }
+        emit(state.copyWith(isRefreshing: false, refreshFailure: error));
       },
     );
   }
@@ -133,4 +249,20 @@ EventTransformer<CatalogQueryChanged> _debounceDistinctQuery(
         )
         .switchMap(mapper);
   };
+}
+
+EventTransformer<Event> _exhaustEvents<Event>() {
+  return (events, mapper) => events.exhaustMap(mapper);
+}
+
+List<CatalogItem> _mergeItems(
+  List<CatalogItem> existingItems,
+  List<CatalogItem> incomingItems,
+) {
+  final existingIds = existingItems.map((item) => item.id).toSet();
+  return <CatalogItem>[
+    ...existingItems,
+    for (final item in incomingItems)
+      if (existingIds.add(item.id)) item,
+  ];
 }

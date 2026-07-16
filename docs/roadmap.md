@@ -851,7 +851,7 @@ git diff --check
 
 建立可重用但不過度抽象的清單載入與搜尋範例。
 
-狀態：In Progress；Milestone 13-1 至 13-4 已完成。
+狀態：In Progress；Milestone 13-1 至 13-5 已完成。
 
 本 Milestone 使用 `Catalog` feature 示範完整垂直切片，正式採用 cursor-based pagination。
 
@@ -986,16 +986,16 @@ git diff --check
 
 ### Milestone 13-5：Load More、Refresh 與 Failure Recovery
 
-- `loadMoreRequested` 使用 state guard 與 in-flight event suppression。
-- 不額外引入 `bloc_concurrency`；可使用既有 RxDart 建立 feature-local exhaust / droppable transformer。
-- 同一時間最多一個 append request。
-- Append response 驗證 generation、query 與 requested cursor。
-- `nextCursor == null` 時停止載入；是否有下一頁只由 cursor 衍生。
-- 依穩定 Domain ID 去重並保留原順序。
-- Append failure 保留既有 items，並提供底部 retry。
-- Refresh 使用目前 query 與 `cursor = null`。
-- Refresh 遞增 generation，使舊 Initial / Append operation 過期。
-- Refresh 成功整批替換資料；失敗保留舊 items。
+- [x] `loadMoreRequested` 使用 state guard 與 in-flight event suppression。
+- [x] 不額外引入 `bloc_concurrency`；使用既有 RxDart 建立 feature-local exhaust transformer。
+- [x] 同一時間最多一個 append request。
+- [x] Append response 驗證 generation、query 與 requested cursor。
+- [x] `nextCursor == null` 時停止載入；是否有下一頁只由 cursor 衍生。
+- [x] 依穩定 Domain ID 去重並保留原順序。
+- [x] Append failure 保留既有 items，並允許 retry。
+- [x] Refresh 使用目前 query 與 `cursor = null`。
+- [x] Refresh 遞增 generation，使舊 Initial / Append operation 過期。
+- [x] Refresh 成功整批替換資料；失敗保留舊 items。
 
 測試至少涵蓋：
 
@@ -1006,6 +1006,18 @@ git diff --check
 - Append 去重、順序與 retry。
 - Refresh 與舊 Append response race。
 - Query 切換與舊 Append response race。
+
+狀態：Completed。
+
+完成驗證：
+
+```txt
+dart run build_runner build（apps/flutter_architecture）
+flutter test apps/flutter_architecture/test/features/catalog/presentation/bloc/catalog_bloc_test.dart
+dart run melos run analyze
+dart run melos exec -- flutter test
+git diff --check
+```
 
 ### Milestone 13-6：Page、Route、DI 與 UI Flow
 

@@ -55,12 +55,14 @@ extension CatalogEventPatterns on CatalogEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( CatalogInitialRequested value)?  initialRequested,TResult Function( CatalogQueryChanged value)?  queryChanged,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( CatalogInitialRequested value)?  initialRequested,TResult Function( CatalogQueryChanged value)?  queryChanged,TResult Function( CatalogLoadMoreRequested value)?  loadMoreRequested,TResult Function( CatalogRefreshRequested value)?  refreshRequested,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case CatalogInitialRequested() when initialRequested != null:
 return initialRequested(_that);case CatalogQueryChanged() when queryChanged != null:
-return queryChanged(_that);case _:
+return queryChanged(_that);case CatalogLoadMoreRequested() when loadMoreRequested != null:
+return loadMoreRequested(_that);case CatalogRefreshRequested() when refreshRequested != null:
+return refreshRequested(_that);case _:
   return orElse();
 
 }
@@ -78,12 +80,14 @@ return queryChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( CatalogInitialRequested value)  initialRequested,required TResult Function( CatalogQueryChanged value)  queryChanged,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( CatalogInitialRequested value)  initialRequested,required TResult Function( CatalogQueryChanged value)  queryChanged,required TResult Function( CatalogLoadMoreRequested value)  loadMoreRequested,required TResult Function( CatalogRefreshRequested value)  refreshRequested,}){
 final _that = this;
 switch (_that) {
 case CatalogInitialRequested():
 return initialRequested(_that);case CatalogQueryChanged():
-return queryChanged(_that);}
+return queryChanged(_that);case CatalogLoadMoreRequested():
+return loadMoreRequested(_that);case CatalogRefreshRequested():
+return refreshRequested(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -97,12 +101,14 @@ return queryChanged(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( CatalogInitialRequested value)?  initialRequested,TResult? Function( CatalogQueryChanged value)?  queryChanged,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( CatalogInitialRequested value)?  initialRequested,TResult? Function( CatalogQueryChanged value)?  queryChanged,TResult? Function( CatalogLoadMoreRequested value)?  loadMoreRequested,TResult? Function( CatalogRefreshRequested value)?  refreshRequested,}){
 final _that = this;
 switch (_that) {
 case CatalogInitialRequested() when initialRequested != null:
 return initialRequested(_that);case CatalogQueryChanged() when queryChanged != null:
-return queryChanged(_that);case _:
+return queryChanged(_that);case CatalogLoadMoreRequested() when loadMoreRequested != null:
+return loadMoreRequested(_that);case CatalogRefreshRequested() when refreshRequested != null:
+return refreshRequested(_that);case _:
   return null;
 
 }
@@ -119,11 +125,13 @@ return queryChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initialRequested,TResult Function( String query)?  queryChanged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initialRequested,TResult Function( String query)?  queryChanged,TResult Function()?  loadMoreRequested,TResult Function()?  refreshRequested,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case CatalogInitialRequested() when initialRequested != null:
 return initialRequested();case CatalogQueryChanged() when queryChanged != null:
-return queryChanged(_that.query);case _:
+return queryChanged(_that.query);case CatalogLoadMoreRequested() when loadMoreRequested != null:
+return loadMoreRequested();case CatalogRefreshRequested() when refreshRequested != null:
+return refreshRequested();case _:
   return orElse();
 
 }
@@ -141,11 +149,13 @@ return queryChanged(_that.query);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initialRequested,required TResult Function( String query)  queryChanged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initialRequested,required TResult Function( String query)  queryChanged,required TResult Function()  loadMoreRequested,required TResult Function()  refreshRequested,}) {final _that = this;
 switch (_that) {
 case CatalogInitialRequested():
 return initialRequested();case CatalogQueryChanged():
-return queryChanged(_that.query);}
+return queryChanged(_that.query);case CatalogLoadMoreRequested():
+return loadMoreRequested();case CatalogRefreshRequested():
+return refreshRequested();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -159,11 +169,13 @@ return queryChanged(_that.query);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initialRequested,TResult? Function( String query)?  queryChanged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initialRequested,TResult? Function( String query)?  queryChanged,TResult? Function()?  loadMoreRequested,TResult? Function()?  refreshRequested,}) {final _that = this;
 switch (_that) {
 case CatalogInitialRequested() when initialRequested != null:
 return initialRequested();case CatalogQueryChanged() when queryChanged != null:
-return queryChanged(_that.query);case _:
+return queryChanged(_that.query);case CatalogLoadMoreRequested() when loadMoreRequested != null:
+return loadMoreRequested();case CatalogRefreshRequested() when refreshRequested != null:
+return refreshRequested();case _:
   return null;
 
 }
@@ -176,7 +188,7 @@ return queryChanged(_that.query);case _:
 
 class CatalogInitialRequested implements CatalogEvent {
   const CatalogInitialRequested();
-  
+
 
 
 
@@ -208,7 +220,7 @@ String toString() {
 
 class CatalogQueryChanged implements CatalogEvent {
   const CatalogQueryChanged(this.query);
-  
+
 
  final  String query;
 
@@ -268,6 +280,70 @@ as String,
 
 
 }
+
+/// @nodoc
+
+
+class CatalogLoadMoreRequested implements CatalogEvent {
+  const CatalogLoadMoreRequested();
+
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogLoadMoreRequested);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'CatalogEvent.loadMoreRequested()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class CatalogRefreshRequested implements CatalogEvent {
+  const CatalogRefreshRequested();
+
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogRefreshRequested);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'CatalogEvent.refreshRequested()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 mixin _$CatalogState {
@@ -474,7 +550,7 @@ return $default(_that.query,_that.items,_that.nextCursor,_that.isInitialLoading,
 
 class _CatalogState extends CatalogState {
   const _CatalogState({required this.query, required final  List<CatalogItem> items, required this.nextCursor, required this.isInitialLoading, required this.isRefreshing, required this.isLoadingMore, required this.hasCompletedInitialLoad, required this.initialFailure, required this.refreshFailure, required this.appendFailure}): _items = items,super._();
-  
+
 
 @override final  String query;
  final  List<CatalogItem> _items;

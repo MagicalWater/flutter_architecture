@@ -40,6 +40,12 @@
 - 新增 `CatalogBloc`、Event、State 與 generated Freezed code；query pipeline 使用預設 300ms、可注入的 debounce + trim distinct。
 - 新增 search generation 與 query identity guard，避免舊 query 或同 query 舊 generation response 覆蓋目前 state。
 - 補上 initial loading/failure/empty、快速輸入、normalized distinct 與 stale response regression tests。
+- 完成 Milestone 13-5 Catalog Load More、Refresh 與 Failure Recovery。
+- 修正 Initial、Append、Refresh 遇到未知錯誤時 loading state 可能永久卡住；錯誤仍保留原樣向外傳遞，Append / Refresh 可再次重試。
+- Load More 使用 state guard 與 RxDart exhaust transformer，驗證 generation、query 與 requested cursor，避免重複 append 與 stale response。
+- Append 依穩定 Domain ID 去重並保留既有順序；failure 保留 items/cursor 並允許 retry，end reached 停止請求。
+- Refresh 使用目前 query 與 cursor = null，遞增 generation，成功整批替換、失敗保留資料，並防止舊 Append response 污染 state。
+- Catalog Bloc 目標測試增加至 18 項，涵蓋 append 防重、cursor、去重、retry、end reached、refresh success/failure、race protection 與未知錯誤 loading cleanup。
 
 - 完成 Milestone 12-3 至 12-6：Concurrent 401 Interceptor、Safe Request Replay、Session Expiration UI Flow，以及 concurrency / failure / regression coverage。
 - Main Dio 新增 `AuthRefreshInterceptor`；同 Session 的並行 401 共用 auth-side single-flight refresh，refresh 成功後使用最新 access token 安全 replay。

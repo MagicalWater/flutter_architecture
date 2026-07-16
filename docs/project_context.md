@@ -461,6 +461,13 @@ Offline Cache
 - `CatalogBloc` 會 fail fast 拒絕非正數 page size；測試輪詢 helper 也加入明確 timeout。
 - 每次 logical initial search 都遞增 generation，response 需同時符合 generation 與 query identity 才能更新 state。
 - Catalog Bloc 8 個目標測試涵蓋 initial state、page size validation、debounce、distinct、跨 query stale response、同 query generation guard、initial failure 與 empty result。
+- Milestone 13-5 已完成 Load More、Refresh 與 Failure Recovery。
+- Load More 使用 state guard 與 RxDart exhaust transformer，同一時間最多一個 append request。
+- Append response 驗證 generation、query 與 requested cursor，並依穩定 Domain ID 去重、保留既有 item 與順序。
+- Append failure 保留 items 與 cursor，清除 failure 後可使用相同 cursor retry；`nextCursor == null` 時不再請求。
+- Refresh 使用目前 query 與 `cursor = null`，遞增 generation 並使舊 Initial / Append response 過期。
+- Refresh 成功整批替換 items 與 cursor；失敗保留既有資料並以 `refreshFailure` 表達。
+- Catalog Bloc 18 個目標測試已涵蓋 initial、debounce、append 防重、cursor、去重、retry、end reached、refresh success/failure、race protection，以及 Initial / Append / Refresh 未知錯誤的 loading cleanup 與 retry。
 
 正式實作順序：
 
@@ -480,7 +487,7 @@ Milestone 13-6：Page、Route、DI 與 UI Flow
 Milestone 13-7：Regression、文件與完整驗證
 ```
 
-下一個實作階段：Milestone 13-5 Load More、Refresh 與 Failure Recovery。Catalog route 與 Shell UI 入口可在 13-6 實作前依現有 Shell 結構做最小決定。
+下一個實作階段：Milestone 13-6 Page、Route、DI 與 UI Flow。Catalog route 與 Shell UI 入口依現有 Shell 結構做最小整合。
 
 ---
 

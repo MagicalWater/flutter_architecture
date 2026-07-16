@@ -39,5 +39,6 @@ abstract class CatalogState with _$CatalogState {
       hasCompletedInitialLoad &&
       !isInitialLoading &&
       initialFailure == null &&
+      refreshFailure == null &&
       items.isEmpty;
 }

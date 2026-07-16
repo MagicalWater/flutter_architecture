@@ -444,6 +444,171 @@ void main() {
     expect(refresher.callCount, 0);
     expect(adapter.totalCalls, 1);
   });
+
+  test('JSON body、query、headers 與 Idempotency-Key 會完整保留並 replay', () async {
+    final provider = _MutableTokenProvider(_session('old-token'));
+    final refresher = _FakeRefresher(() async {
+      provider.current = _session('new-token');
+      return const AuthRefreshSuccess();
+    });
+    final adapter = _AuthAdapter();
+    final dio = AppDioFactory().createMain(
+      baseUrl: 'https://example.test',
+      tokenProvider: provider,
+      authRefresher: refresher,
+    )..httpClientAdapter = adapter;
+
+    final response = await dio.post<dynamic>(
+      '/orders',
+      data: <String, dynamic>{'symbol': '2330', 'quantity': 1},
+      queryParameters: <String, dynamic>{'market': 'TW'},
+      options: Options(
+        headers: const <String, dynamic>{
+          'X-Request-Source': 'app',
+          'Idempotency-Key': 'order-001',
+        },
+        extra: const <String, dynamic>{
+          RequestExtras.requiresAuth: true,
+          RequestExtras.allowAuthReplay: true,
+        },
+      ),
+    );
+
+    expect(response.statusCode, 200);
+    expect(adapter.requests, hasLength(2));
+    final original = adapter.requests.first;
+    final replay = adapter.requests.last;
+    expect(replay.method, original.method);
+    expect(replay.path, original.path);
+    expect(replay.queryParameters, original.queryParameters);
+    expect(replay.data, original.data);
+    expect(replay.headers['X-Request-Source'], 'app');
+    expect(replay.headers['Idempotency-Key'], 'order-001');
+    expect(replay.extra[RequestExtras.authRetryCount], 1);
+    expect(replay.headers['Authorization'], 'Bearer new-token');
+  });
+
+  test('Stream request body 即使明確允許 replay 也不會自動重送', () async {
+    final provider = _MutableTokenProvider(_session('old-token'));
+    final refresher = _FakeRefresher(
+      () async => const AuthRefreshSuccess(),
+    );
+    final adapter = _AuthAdapter();
+    final dio = AppDioFactory().createMain(
+      baseUrl: 'https://example.test',
+      tokenProvider: provider,
+      authRefresher: refresher,
+    )..httpClientAdapter = adapter;
+
+    await expectLater(
+      dio.post<dynamic>(
+        '/upload-stream',
+        data: Stream<List<int>>.value(<int>[1, 2, 3]),
+        options: Options(
+          extra: const <String, dynamic>{
+            RequestExtras.requiresAuth: true,
+            RequestExtras.allowAuthReplay: true,
+          },
+        ),
+      ),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(refresher.callCount, 0);
+    expect(adapter.totalCalls, 1);
+  });
+
+  test('ResponseType.stream 特殊下載即使明確允許 replay 也不會自動重送', () async {
+    final provider = _MutableTokenProvider(_session('old-token'));
+    final refresher = _FakeRefresher(
+      () async => const AuthRefreshSuccess(),
+    );
+    final adapter = _AuthAdapter();
+    final dio = AppDioFactory().createMain(
+      baseUrl: 'https://example.test',
+      tokenProvider: provider,
+      authRefresher: refresher,
+    )..httpClientAdapter = adapter;
+
+    await expectLater(
+      dio.get<ResponseBody>(
+        '/download',
+        options: Options(
+          responseType: ResponseType.stream,
+          extra: const <String, dynamic>{
+            RequestExtras.requiresAuth: true,
+            RequestExtras.allowAuthReplay: true,
+          },
+        ),
+      ),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(refresher.callCount, 0);
+    expect(adapter.totalCalls, 1);
+  });
+
+  test('onSendProgress 上傳即使明確允許 replay 也不會自動重送', () async {
+    final provider = _MutableTokenProvider(_session('old-token'));
+    final refresher = _FakeRefresher(
+      () async => const AuthRefreshSuccess(),
+    );
+    final adapter = _AuthAdapter();
+    final dio = AppDioFactory().createMain(
+      baseUrl: 'https://example.test',
+      tokenProvider: provider,
+      authRefresher: refresher,
+    )..httpClientAdapter = adapter;
+
+    await expectLater(
+      dio.post<dynamic>(
+        '/upload-bytes',
+        data: Uint8List.fromList(<int>[1, 2, 3]),
+        onSendProgress: (_, _) {},
+        options: Options(
+          extra: const <String, dynamic>{
+            RequestExtras.requiresAuth: true,
+            RequestExtras.allowAuthReplay: true,
+          },
+        ),
+      ),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(refresher.callCount, 0);
+    expect(adapter.totalCalls, 1);
+  });
+
+  test('onReceiveProgress 下載即使明確允許 replay 也不會自動重送', () async {
+    final provider = _MutableTokenProvider(_session('old-token'));
+    final refresher = _FakeRefresher(
+      () async => const AuthRefreshSuccess(),
+    );
+    final adapter = _AuthAdapter();
+    final dio = AppDioFactory().createMain(
+      baseUrl: 'https://example.test',
+      tokenProvider: provider,
+      authRefresher: refresher,
+    )..httpClientAdapter = adapter;
+
+    await expectLater(
+      dio.get<List<int>>(
+        '/download-bytes',
+        onReceiveProgress: (_, _) {},
+        options: Options(
+          responseType: ResponseType.bytes,
+          extra: const <String, dynamic>{
+            RequestExtras.requiresAuth: true,
+            RequestExtras.allowAuthReplay: true,
+          },
+        ),
+      ),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(refresher.callCount, 0);
+    expect(adapter.totalCalls, 1);
+  });
 }
 
 AuthSessionSnapshot _session(String token) => AuthSessionSnapshot(
@@ -504,6 +669,7 @@ class _AuthAdapter implements HttpClientAdapter {
   int oldTokenCalls = 0;
   int newTokenCalls = 0;
   int accountBTokenCalls = 0;
+  final List<RequestOptions> requests = <RequestOptions>[];
 
   @override
   Future<ResponseBody> fetch(
@@ -512,6 +678,7 @@ class _AuthAdapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) async {
     totalCalls += 1;
+    requests.add(options);
     final authorization = options.headers['Authorization'];
     if (authorization == 'Bearer old-token') {
       oldTokenCalls += 1;

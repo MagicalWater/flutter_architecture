@@ -443,6 +443,7 @@ Offline Cache
 - 已新增 `CatalogItemDto`、`CatalogPageResponseDto` 與 generated JSON / Freezed code。
 - Nested item serialization 使用明確 field converter，確保 DTO JSON round-trip 正確。
 - 已新增 `MockCatalogApi`，使用 opaque `offset:<n>` cursor，支援搜尋、多頁資料與最後一頁 null cursor。
+- Mock cursor 會綁定 normalized query identity，舊 query cursor 不得套用到新 query。
 - App `ApiImplementationSelector` 已支援 Mock / Real Catalog API selection。
 - 已驗證第一次 request 不傳 cursor、下一頁傳遞 cursor、public endpoint 不標記 requiresAuth、Mock pagination/search 與 DTO serialization。
 - api_client 目標測試、selector tests、workspace analyze 與全部 flutter tests 已通過。

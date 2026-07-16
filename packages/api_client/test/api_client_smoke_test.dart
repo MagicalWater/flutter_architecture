@@ -55,13 +55,32 @@ void main() {
     );
 
     expect(firstPage.items, hasLength(5));
-    expect(firstPage.nextCursor, 'offset:5');
+    expect(firstPage.nextCursor, 'offset:5:');
     expect(secondPage.items, hasLength(5));
     expect(secondPage.items.first.id, 'catalog-006');
-    expect(secondPage.nextCursor, 'offset:10');
+    expect(secondPage.nextCursor, 'offset:10:');
     expect(lastPage.items, hasLength(2));
     expect(lastPage.nextCursor, isNull);
     expect(searchPage.items.map((item) => item.id), contains('catalog-001'));
+  });
+
+  test('MockCatalogApi 不接受其他 query 產生的 cursor', () async {
+    const api = MockCatalogApi(responseDelay: Duration.zero);
+
+    final firstPage = await api.searchCatalog(
+      query: '',
+      cursor: null,
+      limit: 5,
+    );
+
+    expect(
+      () => api.searchCatalog(
+        query: 'flutter',
+        cursor: firstPage.nextCursor,
+        limit: 5,
+      ),
+      throwsArgumentError,
+    );
   });
 
   test('Login DTO 可以正確進行 JSON serialization', () {

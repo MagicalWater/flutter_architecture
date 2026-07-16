@@ -88,19 +88,21 @@ class MockCatalogApi implements CatalogApi {
                     item.description.toLowerCase().contains(normalizedQuery);
               })
               .toList(growable: false);
-    final offset = _decodeCursor(cursor);
+    final offset = _decodeCursor(cursor, expectedQuery: normalizedQuery);
     if (offset > filteredItems.length) {
       throw ArgumentError.value(cursor, 'cursor', '超出目前搜尋結果範圍');
     }
 
     final end = (offset + limit).clamp(0, filteredItems.length);
     final pageItems = filteredItems.sublist(offset, end);
-    final nextCursor = end < filteredItems.length ? _encodeCursor(end) : null;
+    final nextCursor = end < filteredItems.length
+        ? _encodeCursor(offset: end, normalizedQuery: normalizedQuery)
+        : null;
 
     return CatalogPageResponseDto(items: pageItems, nextCursor: nextCursor);
   }
 
-  static int _decodeCursor(String? cursor) {
+  static int _decodeCursor(String? cursor, {required String expectedQuery}) {
     if (cursor == null) {
       return 0;
     }
@@ -110,12 +112,32 @@ class MockCatalogApi implements CatalogApi {
       throw ArgumentError.value(cursor, 'cursor', '格式不合法');
     }
 
-    final offset = int.tryParse(cursor.substring(prefix.length));
+    final separatorIndex = cursor.indexOf(':', prefix.length);
+    if (separatorIndex < 0) {
+      throw ArgumentError.value(cursor, 'cursor', '格式不合法');
+    }
+
+    final offset = int.tryParse(
+      cursor.substring(prefix.length, separatorIndex),
+    );
     if (offset == null || offset < 0) {
       throw ArgumentError.value(cursor, 'cursor', '格式不合法');
     }
+
+    final cursorQuery = Uri.decodeComponent(
+      cursor.substring(separatorIndex + 1),
+    );
+    if (cursorQuery != expectedQuery) {
+      throw ArgumentError.value(cursor, 'cursor', '不屬於目前搜尋條件');
+    }
+
     return offset;
   }
 
-  static String _encodeCursor(int offset) => 'offset:$offset';
+  static String _encodeCursor({
+    required int offset,
+    required String normalizedQuery,
+  }) {
+    return 'offset:$offset:${Uri.encodeComponent(normalizedQuery)}';
+  }
 }

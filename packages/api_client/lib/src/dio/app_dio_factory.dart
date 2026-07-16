@@ -1,5 +1,7 @@
 import 'package:api_client/src/dio/auth_token_provider.dart';
 import 'package:api_client/src/dio/interceptors/auth_header_interceptor.dart';
+import 'package:api_client/src/dio/interceptors/auth_refresh_interceptor.dart';
+import 'package:api_client/src/auth_refresh/auth_refresher.dart';
 import 'package:dio/dio.dart';
 
 /// 建立 App 使用的 Dio。
@@ -21,6 +23,7 @@ class AppDioFactory {
   Dio createMain({
     required String baseUrl,
     required AuthTokenProvider tokenProvider,
+    required AuthRefresher authRefresher,
   }) {
     final dio = Dio(
       BaseOptions(
@@ -31,6 +34,9 @@ class AppDioFactory {
     );
 
     dio.interceptors.add(AuthHeaderInterceptor(tokenProvider));
+    dio.interceptors.add(
+      AuthRefreshInterceptor(dio, tokenProvider, authRefresher),
+    );
 
     return dio;
   }

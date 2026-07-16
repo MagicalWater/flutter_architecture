@@ -21,7 +21,10 @@ class _ProfileApi implements ProfileApi {
 
   @override
   Future<ProfileResponseDto> getProfile() async {
-    final _extra = <String, dynamic>{'requiresAuth': true};
+    final _extra = <String, dynamic>{
+      'requiresAuth': true,
+      'allowAuthReplay': true,
+    };
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;

@@ -5,6 +5,7 @@ export 'src/auth_refresh/auth_refresher.dart';
 export 'src/dio/app_dio_factory.dart';
 export 'src/dio/auth_token_provider.dart';
 export 'src/dio/interceptors/auth_header_interceptor.dart';
+export 'src/dio/interceptors/auth_refresh_interceptor.dart';
 export 'src/dio/request_extras.dart';
 export 'src/errors/transport_exception_mapper.dart';
 export 'src/errors/transport_failure_details.dart';

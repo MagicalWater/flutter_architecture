@@ -150,11 +150,13 @@ abstract class RegisterModule {
   Dio mainDio(
     api_client.AppDioFactory factory,
     api_client.AuthTokenProvider tokenProvider,
+    api_client.AuthRefresher authRefresher,
     ApiConfig config,
   ) {
     return factory.createMain(
       baseUrl: config.baseUri.toString(),
       tokenProvider: tokenProvider,
+      authRefresher: authRefresher,
     );
   }
 

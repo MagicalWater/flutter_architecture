@@ -44,6 +44,8 @@ void main() {
     expect(mainDio.options.baseUrl, 'https://mock.local');
     expect(refreshDio.options.baseUrl, 'https://mock.local');
     expect(mainDio.interceptors.whereType<AuthHeaderInterceptor>(), hasLength(1));
+    expect(mainDio.interceptors.whereType<AuthRefreshInterceptor>(), hasLength(1));
     expect(refreshDio.interceptors.whereType<AuthHeaderInterceptor>(), isEmpty);
+    expect(refreshDio.interceptors.whereType<AuthRefreshInterceptor>(), isEmpty);
   });
 }

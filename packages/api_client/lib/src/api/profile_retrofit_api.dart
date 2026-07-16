@@ -11,6 +11,9 @@ abstract class ProfileApi {
   factory ProfileApi(Dio dio, {String? baseUrl}) = _ProfileApi;
 
   @GET('/profile')
-  @Extra(<String, Object>{RequestExtras.requiresAuth: true})
+  @Extra(<String, Object>{
+    RequestExtras.requiresAuth: true,
+    RequestExtras.allowAuthReplay: true,
+  })
   Future<ProfileResponseDto> getProfile();
 }

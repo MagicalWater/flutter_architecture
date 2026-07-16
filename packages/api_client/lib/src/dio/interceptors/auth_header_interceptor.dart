@@ -38,10 +38,36 @@ class AuthHeaderInterceptor extends Interceptor {
       return;
     }
 
-    final token = _tokenProvider.getCurrentSession()?.accessToken;
+    if (options.extra[RequestExtras.preserveAuthSnapshot] == true) {
+      final replayGeneration =
+          options.extra[RequestExtras.authSessionGeneration];
+      final replayUserId = options.extra[RequestExtras.authSessionUserId];
+      final current = _tokenProvider.getCurrentSession();
+      if (current == null ||
+          replayGeneration != current.generation ||
+          replayUserId != current.userId ||
+          options.headers['Authorization'] !=
+              'Bearer ${current.accessToken}') {
+        handler.reject(
+          DioException(
+            requestOptions: options,
+            type: DioExceptionType.cancel,
+            message: 'Auth session changed before request replay.',
+          ),
+        );
+        return;
+      }
+      handler.next(options);
+      return;
+    }
+
+    final session = _tokenProvider.getCurrentSession();
+    final token = session?.accessToken;
 
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
+      options.extra[RequestExtras.authSessionGeneration] = session!.generation;
+      options.extra[RequestExtras.authSessionUserId] = session.userId;
     }
 
     handler.next(options);

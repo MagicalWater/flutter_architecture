@@ -57,14 +57,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i633.AuthTokenProvider>(
       () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
     );
-    gh.lazySingleton<_i361.Dio>(
-      () => registerModule.mainDio(
-        gh<_i633.AppDioFactory>(),
-        gh<_i633.AuthTokenProvider>(),
-        gh<_i46.ApiConfig>(),
-      ),
-      instanceName: 'mainDio',
-    );
     gh.lazySingleton<_i997.AuthGuard>(
       () => _i997.AuthGuard(gh<_i662.SessionManager>()),
     );
@@ -81,29 +73,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i779.Database>(),
       ),
     );
-    gh.lazySingleton<_i633.AuthApi>(
-      () => registerModule.authApi(
-        gh<_i46.ApiConfig>(),
-        gh<_i361.Dio>(instanceName: 'mainDio'),
-      ),
-    );
-    gh.lazySingleton<_i633.ProfileApi>(
-      () => registerModule.profileApi(
-        gh<_i46.ApiConfig>(),
-        gh<_i361.Dio>(instanceName: 'mainDio'),
-      ),
-    );
-    gh.lazySingleton<_i662.AuthRemoteDataSource>(
-      () => registerModule.authRemoteDataSource(gh<_i633.AuthApi>()),
-    );
     gh.lazySingleton<_i633.AuthRefreshApi>(
       () => registerModule.authRefreshApi(
         gh<_i46.ApiConfig>(),
         gh<_i361.Dio>(instanceName: 'refreshDio'),
       ),
-    );
-    gh.lazySingleton<_i725.ProfileRemoteDataSource>(
-      () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
     );
     gh.lazySingleton<_i787.AppRouter>(
       () => _i787.AppRouter(gh<_i997.AuthGuard>()),
@@ -120,6 +94,33 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.SessionManager>(),
         gh<_i662.AuthStateMutationCoordinator>(),
       ),
+    );
+    gh.lazySingleton<_i361.Dio>(
+      () => registerModule.mainDio(
+        gh<_i633.AppDioFactory>(),
+        gh<_i633.AuthTokenProvider>(),
+        gh<_i633.AuthRefresher>(),
+        gh<_i46.ApiConfig>(),
+      ),
+      instanceName: 'mainDio',
+    );
+    gh.lazySingleton<_i633.AuthApi>(
+      () => registerModule.authApi(
+        gh<_i46.ApiConfig>(),
+        gh<_i361.Dio>(instanceName: 'mainDio'),
+      ),
+    );
+    gh.lazySingleton<_i633.ProfileApi>(
+      () => registerModule.profileApi(
+        gh<_i46.ApiConfig>(),
+        gh<_i361.Dio>(instanceName: 'mainDio'),
+      ),
+    );
+    gh.lazySingleton<_i662.AuthRemoteDataSource>(
+      () => registerModule.authRemoteDataSource(gh<_i633.AuthApi>()),
+    );
+    gh.lazySingleton<_i725.ProfileRemoteDataSource>(
+      () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
     );
     gh.lazySingleton<_i662.AuthRepository>(
       () => registerModule.authRepository(

@@ -184,6 +184,9 @@ root/
 - ProtectedPage
 - Feature 的 Presentation Layer
 - Catalog cursor pagination、search debounce、refresh 與 load more 範例
+- Catalog feature-level Offline Cache、Stale-While-Revalidate、retention cleanup 與 cached/stale UI
+
+Catalog Cache 以 `query + requested cursor + limit` 作為 page identity。Fresh Cache 可直接呈現，Stale Cache 先顯示並背景更新，Pull-to-refresh 強制 Remote，Append 使用 retained page Cache 或 Remote fallback。Cache 是可重建的 public read model，因此 Logout 只清除 Auth state，不清除 Catalog Cache。
 
 ### packages/core
 

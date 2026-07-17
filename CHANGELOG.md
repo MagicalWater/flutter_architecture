@@ -73,6 +73,10 @@
 - Fresh Remote data 不顯示 Cache notice；Fresh Cache 與 Stale Cache 使用不同文案與視覺狀態。
 - Mock / Real Composition Root tests 現在明確驗證 CatalogApi、LocalDataSource、RemoteDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc graph。
 - Catalog Widget tests 補齊 cached、stale、lastUpdatedAt、revalidation loading、non-blocking failure 與 Fresh Remote 隱藏 notice coverage。
+- 完成 Milestone 14-7 Cleanup、Regression、文件與完整驗證，Milestone 14 Offline Cache 全階段完成。
+- 新增 Auth / Catalog 共用 SQLite database 的 Logout integration test，確認 Logout 清除 token、user 與 runtime Session，但保留 public Catalog Cache。
+- retention-based expired page lazy cleanup、retainFor boundary、migration、Repository、Bloc、Widget、Refresh lifecycle 與 DI scope regression 已完整驗證。
+- 同步 README、Architecture Decision 017、Roadmap、Project Context 與 Catalog feature 文件，並完成 development / staging / production bundle builds。
 - 依 Milestone 14-6 implementation review 修正 Refresh lifecycle 等待與 empty failure 呈現。
 - `requestCatalogRefresh` 在 Refresh 已進行中時會等待目前 lifecycle 結束，不再等待不存在的新一輪 `isRefreshing = true`。
 - Empty result 的 Refresh failure 現在與 empty content 同時可見，且保留 pull-to-refresh。

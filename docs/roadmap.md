@@ -1078,7 +1078,7 @@ git diff --check
 
 建立 Remote + Local 協調的 Offline Cache 範例。
 
-狀態：In Progress；Milestone 14-1 至 14-4 已完成。
+狀態：Completed；Milestone 14-1 至 14-7 已完成。
 
 本 Milestone 只為 Catalog 建立 feature-level、明確 opt-in 的 Offline Cache，不建立所有 API 自動寫入 SQLite 的 generic HTTP cache。
 
@@ -1288,12 +1288,14 @@ git diff --check
 
 ### Milestone 14-7：Cleanup、Regression、文件與完整驗證
 
-- 驗證 retention-based expired cleanup。
-- 驗證 Logout 不清除 public Catalog Cache。
-- 補齊 migration、LocalDataSource、Repository、Bloc 與 Widget coverage。
-- 驗證 Login、Refresh Token、Profile、Session、Route Guard 與 Milestone 13 regression。
-- 同步 README、Project Context、Architecture Decisions、Roadmap、Changelog 與 feature 文件。
-- 執行完整 dependency、generation、analyze、test 與三環境 bundle build。
+狀態：Completed。
+
+- [x] 驗證 retention-based expired page lazy cleanup 與 retainFor boundary。
+- [x] 新增同一 SQLite database 的 Logout integration test，確認 Auth token / user / runtime Session 清除，但 public Catalog Cache 保留。
+- [x] 補齊 migration、LocalDataSource、Repository、Bloc、Widget、Refresh lifecycle 與 DI scope coverage。
+- [x] 驗證 Login、Refresh Token、Profile、Session、Route Guard 與 Milestone 13 pagination / search regression。
+- [x] 同步 README、Project Context、Architecture Decisions、Roadmap、Changelog 與 Catalog feature 文件。
+- [x] 執行完整 dependency、generation、analyze、test 與 development / staging / production bundle build。
 
 完成驗證至少包含：
 

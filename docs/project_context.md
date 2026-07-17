@@ -498,7 +498,7 @@ Milestone 13-7 已完成 regression、Catalog widget coverage、文件同步與�
 
 ### Milestone 14：Offline Cache
 
-狀態：In Progress；Milestone 14-1 至 14-4 已完成。
+狀態：Completed；Milestone 14-1 至 14-7 已完成。
 
 Architecture Decision 017 已完成 review 並正式接受，核心方向如下：
 
@@ -644,7 +644,15 @@ Milestone 14-6 已完成：
 - Revalidation UI tests 已拆成正式狀態機中的更新中與更新失敗兩種互斥狀態。
 - DI tests 已鎖定 LocalDataSource / CachePolicy / Clock / Repository 為 singleton，UseCase / CatalogBloc 為 factory，並明確 close 測試 Bloc。
 
-目前工作目標：Milestone 14-7 Cleanup、Regression、文件與完整驗證。
+Milestone 14-7 已完成：
+
+- retention-based expired cleanup 已由 LocalDataSource 與 Repository boundary tests 鎖定。
+- 新增 Auth / Catalog 共用 SQLite database 的 Logout integration test；Logout 清除 token、user 與 runtime Session，但 public Catalog Cache 仍可讀。
+- Migration、LocalDataSource、Repository、Bloc、Widget、Refresh lifecycle 與 Mock / Real DI scope coverage 已完整回歸。
+- README、Architecture Decision 017、Roadmap、Changelog 與 Catalog feature 文件已同步。
+- dependency、generation、workspace analyze、完整 tests 與 development / staging / production bundle build 全部通過。
+
+目前工作目標：Review Milestone 14 baseline，並由 Backlog 選擇下一個正式 Milestone。
 
 ---
 

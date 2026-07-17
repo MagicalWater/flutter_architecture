@@ -1585,7 +1585,7 @@ Milestone 13 不包含：
 
 **狀態：** Accepted
 
-**實作狀態：** Milestone 14-1 Architecture Decision 與 Cache Contract 已完成；程式實作尚未開始。
+**實作狀態：** Milestone 14-1 至 14-7 已完成。SQLite migration、LocalDataSource、Repository SWR coordination、Bloc lifecycle、cursor chain protection、Offline Cache UI、Mock / Real Composition Root、Logout persistence regression 與三環境 build 均已落地並驗證。
 
 ### 背景
 

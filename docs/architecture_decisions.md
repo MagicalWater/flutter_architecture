@@ -1577,4 +1577,562 @@ Milestone 13 不包含：
 - App 會新增 Catalog feature 的 Presentation / Domain / Data 垂直切片。
 - `packages/api_client` 會新增 Catalog Retrofit API、DTO 與 Mock implementation。
 - App Composition Root 會新增 Catalog API selection 與 feature dependency registration。
-- Milestone 14 可在不改變 Presentation / Domain contract 的前提下，於 Repository implementation 加入 Remote + Local 協調。
+- Milestone 14 將保留既有 Catalog pagination、query、cursor 與 stale-response protection 語意，但可依 Offline Cache 需求擴充 Repository、Domain result 與 Presentation state contract。
+
+---
+
+## Decision 017：Catalog Offline Cache 與 Stale-While-Revalidate 責任邊界
+
+**狀態：** Accepted
+
+**實作狀態：** Milestone 14-1 Architecture Decision 與 Cache Contract 已完成；程式實作尚未開始。
+
+### 背景
+
+Milestone 13 已完成 Catalog cursor pagination、search debounce、query switching、Refresh、Append 與 stale-response guard。
+
+Milestone 14 要在不破壞既有 Pagination / Search contract 的前提下，加入可離線顯示、可辨識 stale data、可背景更新，且不會把所有 HTTP request 自動寫入 SQLite 的 Offline Cache 範例。
+
+若直接建立 generic HTTP cache，容易造成：
+
+- Login、Refresh Token、付款、交易或其他 command API 被錯誤快取。
+- DTO / HTTP response schema 直接成為 persistence schema。
+- Cache policy 隱藏在 interceptor，Feature 無法清楚表達 freshness 與 stale UI。
+- query、cursor、limit 與 cursor chain 的 identity 被忽略。
+- Repository、Bloc 與 UI 無法區分 Cache、Remote 與背景更新結果。
+- 在只有一個 feature 驗證前，過早建立 Generic Cache / Generic Pagination framework。
+
+因此 Offline Cache 必須先以 Catalog feature-level、明確 opt-in 的方式實作。
+
+### 決策
+
+#### 1. Cache 僅對 Catalog feature 明確 opt-in
+
+Milestone 14 只為 Catalog 建立 feature-level Offline Cache。
+
+不建立：
+
+```txt
+全域 Dio response cache interceptor
+所有 GET 自動寫入 SQLite
+GenericCacheRepository<T>
+GenericPagedCache<T, K>
+```
+
+Login、Refresh Token、交易、付款與其他 command API 不自動快取。
+
+未來其他 feature 需要 Offline Cache 時，必須先定義自己的資料敏感度、identity、TTL、logout 與 invalidation policy，再決定是否重用已被多個 feature 證實穩定的共用能力。
+
+#### 2. Initial Search 採 Cache-first + Stale-While-Revalidate
+
+Catalog Initial Search 與 Query Switching 使用：
+
+```txt
+Cache-first display
+  +
+Stale-While-Revalidate
+```
+
+規則：
+
+```txt
+Cache miss
+  → Remote
+  → Remote 成功後寫入 Cache 並回傳 fresh data
+  → Remote 失敗則回傳 blocking failure
+
+Fresh Cache
+  → 立即回傳 Cache
+  → Milestone 14 第一版不強制再次打 Remote
+
+Stale Cache
+  → 立即回傳 stale Cache
+  → 背景請求 Remote
+  → 成功後寫回 Cache 並回傳 fresh data
+  → 失敗時保留 stale Cache，回傳非阻斷 revalidation failure
+```
+
+這不是純 remote-first，也不是永遠不更新的 cache-first。
+
+#### 3. Refresh 與 Append 使用不同 policy
+
+Pull-to-refresh 代表使用者明確要求更新，因此：
+
+```txt
+Refresh
+  → 強制 Remote
+  → cursor = null
+  → 成功後 replacement 第一頁 Cache
+  → 失敗時保留既有資料與 Cache
+```
+
+Append 以目前 `nextCursor` 查詢指定 page：
+
+```txt
+Append page Cache 可用且未超過 retainFor
+  → 直接回傳單次 Cache 結果
+
+Append page Cache miss
+  → Remote
+```
+
+Milestone 14 第一版不對 Append 執行背景 revalidation。Append 的 Cache 只作為離線 pagination 與 page cache hit / miss 範例；使用者可透過 Pull-to-refresh 強制 Remote 並重建目前 query 的 cursor chain。
+
+這可避免同一 Append operation 先合併 stale page、再 replacement Remote page 時，額外引入 item 更新、跨 page 重複 ID、`nextCursor` 修正與 cursor chain replacement 的複合語意。
+
+Refresh、Append 與 Initial 仍由同一個 Catalog Repository 協調，不讓 Bloc 直接操作 LocalDataSource 或 RemoteDataSource。
+
+#### 4. Freshness、Stale 與 Retention 明確分離
+
+Catalog Cache policy 至少包含：
+
+```txt
+freshFor
+retainFor
+```
+
+預設建議值：
+
+```txt
+freshFor = 5 minutes
+retainFor = 7 days
+```
+
+定義：
+
+```txt
+Fresh
+  now - updatedAt <= freshFor
+
+Stale
+  freshFor < now - updatedAt <= retainFor
+
+Expired / Evictable
+  now - updatedAt > retainFor
+```
+
+Fresh Cache 可直接顯示；Stale Cache 可顯示但需標記並背景更新；Expired Cache 視為 miss，並可由 lazy cleanup 或 maintenance flow 清除。
+
+時間判定不得在 Repository 內散落 `DateTime.now()`；需透過可注入 Clock 或等價 time provider，讓 TTL boundary 可穩定測試。
+
+#### 5. Cache identity 使用 normalized query + request cursor + limit
+
+Cache identity 必須完整包含：
+
+```txt
+normalized query
+request cursor
+limit
+```
+
+Query normalization 沿用 Decision 016：
+
+```txt
+trim
+不預設轉小寫
+```
+
+因此 `Flutter` 與 `flutter` 不得在 Local Cache 被自行合併。
+
+Domain / Repository 第一頁仍使用：
+
+```dart
+cursor = null
+```
+
+SQLite persistence 可使用空字串作為第一頁 cursor sentinel，但此 representation 不得穿透 LocalDataSource boundary。
+
+#### 6. Cache 以 cursor page 儲存，不保存單一合併 List
+
+Catalog Cache 以 page 為單位保存：
+
+```txt
+Page metadata
+  query
+  requestCursor
+  requestLimit
+  nextCursor
+  updatedAt
+
+Ordered page items
+  item fields
+  itemPosition
+```
+
+不只保存畫面目前合併後的完整 List，因為那會失去：
+
+- requested cursor identity。
+- cursor chain。
+- page-level freshness。
+- limit identity。
+- Append retry 與 page replacement 能力。
+
+第一頁與後續頁使用相同 schema；差別只在 request cursor。
+
+#### 7. 所有 Remote 第一頁成功都會重設該 query + limit 的 cursor chain
+
+下列 operation 都會以 `cursor = null` 取得 Remote 第一頁：
+
+```txt
+Initial Cache miss 後的 Remote fetch
+Stale Cache background revalidation
+Pull-to-refresh
+```
+
+任一 Remote 第一頁成功後，都必須在單一 SQLite transaction 中：
+
+1. Replacement 第一頁 page metadata。
+2. Replacement 第一頁 ordered items。
+3. 更新 `nextCursor` 與 `updatedAt`。
+4. 失效同一 normalized query + limit 的舊後續頁。
+
+因為任一 Remote 第一頁結果都可能產生新的 cursor chain，舊 page 2 / page 3 不得再被目前查詢讀取。
+
+Query Switching 不清除其他 query Cache；不同 query 由 cache identity 隔離並依 TTL 自然失效。
+
+Append 成功只 replacement 該 request cursor 對應 page。孤立舊 page 可留待 retention cleanup，但只能透過目前 response `nextCursor` 讀取，不可主動掃描並合併孤立頁。
+
+#### 8. DTO、Local Entity 與 Domain Entity 維持分離
+
+Remote DTO 維持位於 `packages/api_client`，只負責：
+
+```txt
+HTTP JSON ↔ DTO
+```
+
+Catalog Local Entity 位於 feature data layer，負責：
+
+```txt
+SQLite row ↔ Local Entity
+```
+
+Domain 維持：
+
+```txt
+CatalogItem
+CatalogPage
+```
+
+並新增 feature-specific snapshot metadata：
+
+```txt
+CatalogPageSnapshot
+CatalogDataSource
+CatalogFreshness
+lastUpdatedAt
+```
+
+建議語意：
+
+```txt
+CatalogPageSnapshot
+  page
+  source
+  freshness
+  lastUpdatedAt
+
+CatalogDataSource
+  remote
+  cache
+
+CatalogFreshness
+  fresh
+  stale
+```
+
+`isRevalidating` 與 `revalidationFailure` 屬於 Bloc operation state，不放入持久資料 snapshot，避免 Domain snapshot 同時承擔資料描述與 workflow 狀態。
+
+Remote DTO 不直接作為 SQLite Entity；Local Entity 不穿透到 Domain 或 Bloc。
+
+#### 9. Repository 負責 Remote + Local 協調
+
+Catalog Repository implementation 負責：
+
+- 讀取 Local Cache。
+- 判斷 freshness / stale / expired。
+- 呼叫 RemoteDataSource。
+- 驗證 cursor chain。
+- Remote success 後寫入 Local Cache。
+- 協調 Cache → Remote 的多次結果。
+- 將 `AppException` 映射為 Domain `Failure`。
+- 保留未知程式錯誤與原始 stack trace。
+
+Bloc、UseCase 與 Page 不直接依賴 SQLite、DTO、Dio、LocalDataSource 或 RemoteDataSource。
+
+因 SWR 可能先回傳 Cache、再回傳 Remote，Catalog Repository / UseCase contract 使用 feature-specific Stream 支援多次結果。不得以 callback 讓 Repository 直接操作 Bloc。
+
+Repository contract 必須明確接收 feature-specific load policy：
+
+```txt
+CatalogLoadPolicy.initial
+  Initial / Query Switching
+  使用 Cache-first + SWR
+  cursor 必須為 null
+
+CatalogLoadPolicy.refresh
+  強制 Remote
+  cursor 必須為 null
+
+CatalogLoadPolicy.append
+  使用單次 page cache hit / miss
+  cursor 必須非 null
+```
+
+Repository 必須 fail fast 拒絕不合法組合，例如：
+
+```txt
+initial + non-null cursor
+refresh + non-null cursor
+append + null cursor
+```
+
+此 enum 只表達 Catalog feature workflow，不提升為 Generic Cache Strategy framework。
+
+Repository Stream contract 依 policy 明確定義為：
+
+```txt
+CatalogLoadPolicy.initial
+  Fresh Cache
+    emit Success(fresh cache snapshot)
+    close
+
+  Stale Cache + Remote success
+    emit Success(stale cache snapshot)
+    emit Success(remote fresh snapshot)
+    close
+
+  Stale Cache + Remote failure
+    emit Success(stale cache snapshot)
+    emit FailureResult(revalidation failure)
+    close
+
+  Cache miss + Remote success
+    emit Success(remote fresh snapshot)
+    close
+
+  Cache miss + Remote failure
+    emit FailureResult(blocking failure)
+    close
+
+CatalogLoadPolicy.refresh
+  不以 Cache 作為本次 request result
+  emit 單次 Remote Success 或 FailureResult
+  close
+
+CatalogLoadPolicy.append
+  可用且未 expired 的 page Cache
+    emit 單次 Success(cache snapshot)
+    close
+
+  Cache miss 或 expired
+    emit 單次 Remote Success 或 FailureResult
+    close
+```
+
+Bloc 必須依目前 operation 是否已收到可顯示 snapshot，判斷後續 `FailureResult` 是 blocking initial failure 或 non-blocking revalidation failure；Repository 不把 Bloc workflow flag 塞入 Domain snapshot。
+
+預期的 Remote / Local `AppException` 透過 `Result` 表達；未知程式錯誤才使用 Stream error channel，並保留原始 stack trace。
+
+#### 10. Local Cache failure 與 Auth persistence failure 採不同語意
+
+Catalog Cache 是可重建的 read model，不等同 Auth Token persistence。
+
+因此：
+
+```txt
+Cache read failure + Remote success
+  → 仍顯示 Remote data
+  → 不向一般 Catalog UI 暴露 cache read failure
+
+Remote success + Cache write failure
+  → 仍顯示 Remote data
+  → Cache failure 為非阻斷 local diagnostic
+  → 不加入 Domain snapshot 或一般 Catalog UI state
+
+Remote failure + 可用 Cache
+  → 保留 Cache
+  → 回傳非阻斷 revalidation failure
+
+Remote failure + 無 Cache
+  → 回傳 blocking failure
+```
+
+不得因 Catalog Cache write failure 清除 runtime Session 或將成功的 Remote read 轉成整體失敗。
+
+#### 11. UI 不以單次 transport failure 直接宣告全域 Offline
+
+Timeout、DNS failure、connection error 與 server 5xx 不一定等同裝置已離線。
+
+Milestone 14 第一版不新增推測性的全域 `isOffline`，優先使用精確 metadata：
+
+```txt
+isUsingCachedData
+isStale
+lastUpdatedAt
+isRevalidating
+revalidationFailure
+```
+
+UI 可以顯示「目前顯示先前資料」或「無法更新，顯示快取」，但 state 不應在沒有 connectivity abstraction 時宣稱已確定離線。
+
+若未來加入 network monitor，需以獨立 transport-neutral abstraction 表達 network status。
+
+#### 12. Background Revalidation 與 User Refresh 分離
+
+Bloc state 應區分：
+
+```txt
+isRefreshing
+  使用者 Pull-to-refresh
+
+isRevalidating
+  stale Cache 背景更新
+```
+
+兩者不可共用單一 loading flag。
+
+`isStale` 與 `lastUpdatedAt` 應由 Repository snapshot 提供，不由 Presentation 自行實作 TTL policy。
+
+畫面級 `isUsingCachedData`、`isStale` 與 `lastUpdatedAt` 只描述目前 query 的第一頁 snapshot。Append page 可以來自 Cache，但不改寫第一頁的畫面級 freshness 與最後更新時間，也不在第一版顯示每頁 freshness。
+
+#### 13. SQLite schema 與 migration 由 App database boundary 管理
+
+目前 database version 為 1。Milestone 14 實作時升級為 version 2，新增 Catalog Cache tables 與 index，並提供：
+
+```txt
+onCreate
+onUpgrade(oldVersion < 2)
+```
+
+v1 → v2 migration 必須保留既有 `auth_user` 資料。
+
+Database instance 仍由 App Composition Root 建立。SQL migration 可整理到 app database helper，避免 DI module 直接承載大量 schema 細節，但不得把 Composition Root 移入 package。
+
+#### 14. Public Catalog Cache 不因 Logout 清除
+
+Catalog endpoint 在 Decision 016 已定義為 public demo endpoint，因此：
+
+```txt
+Logout
+  不清除 Catalog Cache
+```
+
+Auth logout 不應控制無關的 public feature storage。
+
+未來 authenticated 或 user-scoped cache 必須包含 account identity，並另行定義 logout / account-switch cleanup policy。
+
+#### 15. Cache cleanup 採 page-level lazy cleanup
+
+Milestone 14 第一版至少支援 expired page 的 lazy cleanup。
+
+讀取指定 page 時若發現已超過 `retainFor`：
+
+```txt
+視為 Cache miss
+  ↓
+best-effort 刪除該 expired page 與 child rows
+```
+
+第一版不在每次 read / write 後執行全表 expired cleanup，避免每個 request 額外掃描整個 Cache table。
+
+LRU、最大容量、背景排程與設定頁手動清除可留待未來需求，不在本 Milestone 建立通用 maintenance framework。
+
+#### 16. App 維持唯一 Composition Root
+
+Catalog LocalDataSource、CachePolicy、Clock、Repository implementation、UseCase 與 Bloc 的 lifecycle 仍由 App DI module 決定。
+
+不在 `packages/core`、`packages/api_client` 或其他可重用 package 內加入 GetIt / Injectable annotation。
+
+#### 17. 不建立 Generic Cache / Generic Pagination framework
+
+Milestone 14 不建立：
+
+```txt
+GenericCache<T>
+CacheStrategy<T>
+GenericOfflineRepository<T>
+GenericPagedCache<T, K>
+GlobalCacheInterceptor
+```
+
+先完成 Catalog feature-local vertical slice。只有多個 feature 出現穩定且真正相同的 cache identity、freshness、storage 與 invalidation pattern，才評估提升共用能力。
+
+### 建議 SQLite Schema
+
+第一版建議使用：
+
+```sql
+CREATE TABLE catalog_cache_page (
+  query TEXT NOT NULL,
+  request_cursor TEXT NOT NULL,
+  request_limit INTEGER NOT NULL,
+  next_cursor TEXT,
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (query, request_cursor, request_limit)
+);
+```
+
+```sql
+CREATE TABLE catalog_cache_page_item (
+  query TEXT NOT NULL,
+  request_cursor TEXT NOT NULL,
+  request_limit INTEGER NOT NULL,
+  item_id TEXT NOT NULL,
+  item_position INTEGER NOT NULL,
+  item_name TEXT NOT NULL,
+  PRIMARY KEY (query, request_cursor, request_limit, item_id),
+  FOREIGN KEY (query, request_cursor, request_limit)
+    REFERENCES catalog_cache_page (query, request_cursor, request_limit)
+    ON DELETE CASCADE
+);
+```
+
+並建立 page item order index。
+
+若實作環境未明確啟用 SQLite foreign key enforcement，LocalDataSource 必須在 transaction 中明確清除 child rows，不可假設 cascade 一定生效。
+
+### 測試要求
+
+Milestone 14 至少驗證：
+
+- 第一頁 null cursor 與 Local sentinel round-trip。
+- query trim、大小寫與 limit identity isolation。
+- page metadata、item order 與 empty page round-trip。
+- 同一 page replacement 不殘留舊 item。
+- 任一 Remote 第一頁成功都清除同 query + limit 的舊後續 chain，不影響其他 query / limit。
+- v1 → v2 migration 保留 `auth_user`。
+- Fresh Cache 不呼叫 Remote。
+- Stale Cache 先回傳 Cache，再回傳 Remote fresh data。
+- Stale Cache revalidation failure 保留既有資料。
+- Cache miss + Remote success / failure。
+- Cache read failure 不阻止 Remote success。
+- Cache write failure 不吞掉 Remote success。
+- Non-advancing cursor 不寫入 Cache。
+- Query switch、Refresh 與舊 Cache / Remote result race protection。
+- Append Cache hit、miss、expired fallback、去重與 cursor identity；第一版 Append 不執行背景 revalidation。
+- `isUsingCachedData`、`isStale`、`lastUpdatedAt`、`isRevalidating` 與 revalidation failure UI。
+- Logout 不清除 public Catalog Cache。
+- Login、Refresh Token、Profile、Session、Route Guard 與 Milestone 13 regression。
+
+### 非目標
+
+Milestone 14 不包含：
+
+- 全域 HTTP Cache。
+- Login、Refresh Token、交易、付款或 command API cache。
+- Generic Cache / Generic Pagination framework。
+- Connectivity monitoring framework。
+- Background task scheduler。
+- LRU / disk quota framework。
+- 跨帳號 authenticated cache。
+- Cache encryption。
+- Server push、WebSocket 或 sync conflict resolution。
+
+### 影響
+
+- Catalog Domain contract 會增加可表達 Cache source、stale 與 update metadata 的 feature-specific snapshot。
+- Catalog Repository / UseCase 會調整為可支援 SWR 多次結果與 `CatalogLoadPolicy` 的 contract。
+- Catalog Data Layer 會新增 Local Entity、Local Mapper、LocalDataSource、CachePolicy 與 Clock dependency。
+- App SQLite database 會新增 version 2 migration 與 Catalog Cache tables。
+- CatalogBloc 會增加 Cache / stale / background revalidation state，但保留既有 generation、query 與 cursor guard。
+- App Composition Root 仍負責所有 lifecycle 與 implementation binding。

@@ -851,7 +851,7 @@ git diff --check
 
 建立可重用但不過度抽象的清單載入與搜尋範例。
 
-狀態：In Progress；Milestone 13-1 至 13-6 已完成。
+狀態：Completed；Milestone 13-1 至 13-7 已完成。
 
 本 Milestone 使用 `Catalog` feature 示範完整垂直切片，正式採用 cursor-based pagination。
 
@@ -1078,13 +1078,163 @@ git diff --check
 
 建立 Remote + Local 協調的 Offline Cache 範例。
 
-預計涵蓋：
+狀態：In Progress；Milestone 14-1 Architecture Decision 與 Cache Contract 已完成。
 
-- Cache policy 與資料新鮮度。
-- Remote-first、cache-first 或 stale-while-revalidate 的明確示範。
-- SQLite Entity 與 Domain Entity mapping。
-- Offline 狀態、同步失敗與 stale data 呈現。
-- 與 Pagination / Search 的整合邊界。
+本 Milestone 只為 Catalog 建立 feature-level、明確 opt-in 的 Offline Cache，不建立所有 API 自動寫入 SQLite 的 generic HTTP cache。
+
+核心決策：
+
+```txt
+Feature
+  Catalog 專屬 Offline Cache
+
+Initial / Query Switching
+  Cache-first + Stale-While-Revalidate
+
+Refresh
+  強制 Remote
+  成功後 replacement 第一頁並重設 cursor chain
+
+Append
+  以 query + requested cursor + limit 讀寫單次 page cache
+  第一版不做 background revalidation
+
+Freshness
+  freshFor + retainFor
+
+Cache identity
+  normalized query + request cursor + limit
+
+Storage
+  SQLite page metadata + ordered page items
+
+UI metadata
+  isUsingCachedData / isStale / lastUpdatedAt / isRevalidating
+
+Logout
+  Public Catalog Cache 保留
+
+非目標
+  Generic Cache / Generic Pagination framework
+```
+
+架構責任邊界已由 Architecture Decision 017 拍板。
+
+### Milestone 14-1：Architecture Decision 與 Cache Contract
+
+狀態：Completed。
+
+- [x] 定義 Catalog feature-level opt-in cache。
+- [x] 排除 generic HTTP cache 與 command API cache。
+- [x] Initial / Query Switching 採 Cache-first + SWR。
+- [x] Refresh 強制 Remote，Append 使用單次 page cache，不做背景 revalidation。
+- [x] 定義 fresh、stale、expired / retention。
+- [x] 定義 normalized query + request cursor + limit identity。
+- [x] 定義 page metadata + ordered page items storage。
+- [x] 定義所有 Remote 第一頁成功時的 cursor chain invalidation。
+- [x] 定義 `CatalogLoadPolicy.initial / refresh / append` 與合法 cursor 組合。
+- [x] 定義 initial / refresh / append 各自的 Stream emission contract。
+- [x] 定義 DTO、Local Entity、Domain Entity mapping boundary。
+- [x] 定義 Repository Remote + Local coordination 與 Stream emission contract。
+- [x] 定義 Domain snapshot metadata 與 Bloc workflow metadata 邊界。
+- [x] 定義畫面級 freshness 只代表第一頁 snapshot。
+- [x] 定義 UI metadata，不以單次 transport failure 推測全域 `isOffline`。
+- [x] 定義 SQLite v1 → v2 migration 與 public cache logout policy。
+- [x] 定義測試策略與 Milestone 14 分段。
+
+Decision 016 / 017、Roadmap、Project Context 與 CHANGELOG 已完成 consistency review；下一階段進入 Milestone 14-2。
+
+### Milestone 14-2：SQLite Schema、Migration 與 Local Models
+
+- 將 App database version 由 1 升級為 2。
+- 建立 `catalog_cache_page`、`catalog_cache_page_item` 與必要 index。
+- 建立 v1 → v2 migration，保留 `auth_user`。
+- 建立 Catalog Local Entity 與 Local Mapper。
+- 建立 `CatalogLocalDataSource`。
+- 以 transaction replacement page metadata 與 ordered items。
+- 建立 cursor null sentinel boundary 與 page-level expired lazy cleanup。
+- 補上 in-memory SQLite、transaction、migration 與 mapping tests。
+
+### Milestone 14-3：Repository Cache Coordination
+
+- Repository 注入 RemoteDataSource、LocalDataSource、CachePolicy 與 Clock。
+- 建立 feature-specific Catalog snapshot / source metadata。
+- 建立 `CatalogLoadPolicy.initial / refresh / append` contract、合法 cursor 組合與 fail-fast validation。
+- 實作 initial / refresh / append 各自明確的 Stream emission contract。
+- 調整 Repository / UseCase contract，使 SWR 可先回傳 Cache、再回傳 Remote。
+- 實作 Cache miss、Fresh Cache、Stale Cache + revalidate。
+- Remote success 通過 cursor validation 後才寫入 Cache。
+- Cache read / write failure 採非阻斷 read-model policy。
+- Remote failure + Cache available 保留 Cache；無 Cache 才回傳 blocking failure。
+- 補齊 Repository freshness、failure、cursor 與 stack trace tests。
+
+### Milestone 14-4：Initial Search、Query Switching 與 SWR Bloc Flow
+
+- CatalogBloc 處理 Cache → Remote 多次結果。
+- 保留 search generation、query identity 與 logical cancellation guard。
+- Query switching 不清除其他 query Cache。
+- 新增 `isUsingCachedData`、`isStale`、`lastUpdatedAt`、`isRevalidating` 與 `revalidationFailure` state。
+- Background revalidation 與 user Refresh 使用不同 loading / failure state。
+- 補齊 Initial SWR、query switching、stale response 與 subscription cleanup tests。
+
+### Milestone 14-5：Refresh、Append 與 Cursor Chain
+
+- Refresh 使用目前 query 與 `cursor = null` 強制 Remote。
+- 所有 Remote 第一頁成功都 transaction replacement 第一頁並失效同 query + limit 舊後續 chain。
+- Refresh failure 保留既有 Cache、items 與 stale metadata。
+- Append 以 requested cursor page identity 讀寫 Cache。
+- Append 支援 Cache hit、miss 與 expired fallback；第一版不執行背景 revalidation。
+- Append Cache result 不得造成重複 item 或 cursor chain 污染。
+- 保留既有 generation、query、requested cursor race protection。
+
+### Milestone 14-6：UI、DI 與 Offline Cache Flow
+
+- Catalog UI 顯示 cached / stale notice。
+- 顯示 background revalidation indicator 與 non-blocking update failure。
+- 顯示 `lastUpdatedAt`。
+- Fresh data 不顯示 stale notice。
+- App Composition Root 註冊 LocalDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc。
+- package 不加入 DI framework annotation。
+- 補上 Mock / Real Composition Root graph 與 Widget tests。
+
+### Milestone 14-7：Cleanup、Regression、文件與完整驗證
+
+- 驗證 retention-based expired cleanup。
+- 驗證 Logout 不清除 public Catalog Cache。
+- 補齊 migration、LocalDataSource、Repository、Bloc 與 Widget coverage。
+- 驗證 Login、Refresh Token、Profile、Session、Route Guard 與 Milestone 13 regression。
+- 同步 README、Project Context、Architecture Decisions、Roadmap、Changelog 與 feature 文件。
+- 執行完整 dependency、generation、analyze、test 與三環境 bundle build。
+
+完成驗證至少包含：
+
+```txt
+dart pub get
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle -t lib/main_development.dart
+flutter build bundle -t lib/main_staging.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://staging-api.example.com
+flutter build bundle -t lib/main_production.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://api.example.com
+git diff --check
+```
+
+### 完成定義
+
+- Catalog 可在 Cache 存在時離線顯示。
+- Fresh / stale / expired policy 清楚且可測試。
+- Stale Cache 可先顯示並背景更新。
+- Cache identity 正確隔離 query、cursor 與 limit。
+- 第一頁與後續頁以 cursor page 儲存，不保存單一合併 List。
+- Refresh 成功可安全重設 cursor chain。
+- DTO、Local Entity 與 Domain Entity 維持分離。
+- Repository 負責 Remote + Local coordination，Bloc 不直接操作 DataSource。
+- UI 可表達 cached、stale、last updated 與 background revalidation。
+- 不以單次 transport failure 推測全域 Offline。
+- Public Catalog Cache 不因 Logout 清除。
+- 不建立 Generic Cache / Generic Pagination framework。
+- App 仍是唯一 Composition Root。
+- analyze / test / development、staging、production build 全部通過。
 
 ---
 

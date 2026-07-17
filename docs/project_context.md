@@ -413,7 +413,7 @@ Offline Cache
   不屬於 Milestone 13，留給 Milestone 14
 ```
 
-已拍板的重要規則：
+目前提案的重要規則：
 
 - 使用具有業務語意的 Catalog feature，不建立 pagination / search 技術型 feature。
 - 正式 Pagination contract 使用 cursor-based，不同時實作 page-based strategy。
@@ -495,6 +495,82 @@ Milestone 13-7 已完成 regression、Catalog widget coverage、文件同步與�
 最終驗證已通過 `dart pub get`、workspace build_runner、analyze、全部 Flutter tests，以及 development / staging / production bundle build；Flutter App 測試共 72 項。
 
 下一個正式實作階段：Milestone 14 Offline Cache。
+
+### Milestone 14：Offline Cache
+
+狀態：In Progress；Milestone 14-1 Architecture Decision 與 Cache Contract 已完成。
+
+Architecture Decision 017 已完成 review 並正式接受，核心方向如下：
+
+```txt
+Catalog feature-level opt-in cache
+  不建立 generic HTTP cache
+
+Initial / Query Switching
+  Cache-first + Stale-While-Revalidate
+
+Refresh
+  強制 Remote
+  成功後 replacement 第一頁並重設 cursor chain
+
+Append
+  query + requested cursor + limit 單次 page cache
+  第一版不做 background revalidation
+
+Freshness
+  freshFor / retainFor
+
+Storage
+  SQLite page metadata + ordered page items
+
+Presentation metadata
+  isUsingCachedData
+  isStale
+  lastUpdatedAt
+  isRevalidating
+  revalidationFailure
+```
+
+已拍板的重要規則：
+
+- Cache 只對 Catalog 明確 opt-in，不自動快取 Login、Refresh Token、交易、付款或 command API。
+- Initial Search 與 Query Switching 使用 Cache-first + SWR；Fresh Cache 可直接回傳，Stale Cache 先顯示再背景更新。
+- Pull-to-refresh 強制 Remote；Refresh failure 保留既有資料。
+- Cache identity 為 normalized query + request cursor + limit；query 只 trim，不預設轉小寫。
+- 第一頁與後續頁以 cursor page 儲存，不保存單一合併 List。
+- Initial Cache miss、stale revalidation 與 Refresh 的 Remote 第一頁成功，都需 replacement 第一頁並失效同 query + limit 的舊後續 cursor chain。
+- Repository contract 使用 `CatalogLoadPolicy.initial / refresh / append`；initial / refresh 必須使用 null cursor，append 必須使用 non-null cursor，其他組合 fail fast。
+- Initial 使用 SWR 多次 emission；Refresh 使用 Remote-only 單次 emission；Append 使用 page cache hit 或 Remote fallback 的單次 emission。
+- DTO、Local Entity、Domain Entity 維持分離；SQLite representation 不穿透 Data Layer。
+- Repository implementation 負責 Remote + Local 協調，Initial SWR 使用明確 Stream emission contract。
+- Domain snapshot 只描述 page、source、freshness 與 lastUpdatedAt；`isRevalidating`、`revalidationFailure` 留在 Bloc workflow state。
+- Append 第一版只做 page cache hit / miss，不做背景 revalidation。
+- 畫面級 cached / stale / lastUpdatedAt metadata 只代表第一頁 snapshot。
+- Remote success 但 Cache write failure 仍可顯示 Remote data；Catalog cache failure 不採 Auth credential 的 fatal persistence policy。
+- UI 不以單次 timeout / DNS / 5xx 推測全域 `isOffline`，改用 cached / stale / revalidation metadata。
+- App database 預計由 version 1 升級為 version 2，migration 必須保留 `auth_user`。
+- Catalog 是 public endpoint，因此 Logout 不清除 Catalog Cache。
+- App 維持唯一 Composition Root，不建立 Generic Cache / Generic Pagination framework。
+
+正式實作順序：
+
+```txt
+Milestone 14-1：Architecture Decision 與 Cache Contract（Completed）
+  ↓
+Milestone 14-2：SQLite Schema、Migration 與 Local Models
+  ↓
+Milestone 14-3：Repository Cache Coordination
+  ↓
+Milestone 14-4：Initial Search、Query Switching 與 SWR Bloc Flow
+  ↓
+Milestone 14-5：Refresh、Append 與 Cursor Chain
+  ↓
+Milestone 14-6：UI、DI 與 Offline Cache Flow
+  ↓
+Milestone 14-7：Cleanup、Regression、文件與完整驗證
+```
+
+目前工作目標：Milestone 14-2 SQLite Schema、Migration 與 Local Models。
 
 ---
 

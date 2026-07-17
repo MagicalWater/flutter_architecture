@@ -20,6 +20,19 @@
 
 ### Added
 
+- 規劃 Milestone 14 Offline Cache，正式採用 Catalog feature-level、明確 opt-in 的 Cache-first + Stale-While-Revalidate。
+- 新增 Architecture Decision 017，拍板 freshness / retention、query + cursor + limit cache identity、cursor page storage、所有 Remote 第一頁成功時的 chain invalidation、Remote + Local coordination 與 UI metadata。
+- Catalog Cache 不使用 generic HTTP interceptor，不自動快取 Login、Refresh Token、交易、付款或其他 command API。
+- Initial / Query Switching 使用 Fresh Cache 或 Stale Cache + background revalidation；Pull-to-refresh 強制 Remote，Append 第一版使用單次 cursor page cache，不做背景 revalidation。
+- SQLite Cache 採 page metadata + ordered page items，DTO、Local Entity 與 Domain Entity 維持分離。
+- Domain snapshot 將表達 page source、freshness 與 `lastUpdatedAt`；Bloc state 表達 `isUsingCachedData`、`isStale`、`isRevalidating` 與 revalidation failure，不以單次 transport failure 推測全域 Offline。
+- 明確定義 Initial SWR 的 Repository Stream emissions、預期 failure 使用 `Result`、未知程式錯誤才走 Stream error channel。
+- 明確定義 `CatalogLoadPolicy.initial / refresh / append` contract、合法 cursor 組合，以及三種 policy 各自的 Stream emission 語意。
+- 畫面級 freshness metadata 只代表第一頁 snapshot；Append page freshness 不提升為整體清單最後更新時間。
+- Cache read / write failure 維持非阻斷 local diagnostic，不加入一般 Catalog UI contract；expired cleanup 採讀取指定 page 時的 page-level lazy cleanup。
+- 將 Milestone 14 拆分為 Architecture Contract、SQLite / Migration、Repository Coordination、Initial SWR、Refresh / Append、UI / DI 與 Final Verification 七個階段。
+- 明確定義 public Catalog Cache 不因 Logout 清除，App 仍是唯一 Composition Root，且不建立 Generic Cache / Generic Pagination framework。
+
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。
 - Catalog 定義為 public demo endpoint；`nextCursor` 為唯一分頁 source of truth，Repository 負責驗證 cursor chain，不額外引入 `bloc_concurrency`。
@@ -106,6 +119,8 @@
 - 完成 Retrofit 架構審查，簡化 API abstraction、明確 Mock 目錄、RemoteDataSource 錯誤映射與 Dio 特殊例外規則。
 
 ### Changed
+
+- 修正 Roadmap 的 Milestone 13 狀態，正式標記 Milestone 13-1 至 13-7 全部完成。
 
 - `configureDependencies` 改為明確接收已驗證的 `AppConfig`，DI module 不再自行讀取 dart-define。
 - `ApiConfig.baseUrl` 改為已驗證的 `Uri baseUri`。

@@ -608,6 +608,10 @@ Milestone 14-4 已完成：
 - CatalogState 已新增 `isUsingCachedData`、`isStale`、`lastUpdatedAt`、`isRevalidating` 與 `revalidationFailure`。
 - Refresh / Append 已遷移到相同 Stream contract，但 workflow metadata 的完整整合留在 Milestone 14-5。
 - 21 項 CatalogBloc tests、build_runner、workspace analyze 與完整 tests 已通過。
+- Implementation review 已將所有第一頁載入統一到可取消的 SWR subscription boundary；Initial、Query switching、Retry 與 Refresh 都會先取消舊第一頁 subscription。
+- Refresh 會取消 stale revalidation，並以 Remote snapshot 完整更新 cached / stale / lastUpdatedAt metadata。
+- Stale Cache 後 Stream 若直接關閉，會視為 protocol violation，不再無聲清除 `isRevalidating`。
+- CatalogBloc tests 已增至 24 項，補齊跨事件 cancellation 與 protocol violation coverage。
 
 目前工作目標：Milestone 14-5 Refresh、Append 與 Cursor Chain。
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
@@ -46,6 +48,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   final int pageSize;
 
   int _searchGeneration = 0;
+  StreamSubscription<Result<CatalogPageSnapshot>>? _firstPageSubscription;
+  Completer<void>? _firstPageCompleter;
 
   Future<void> _onInitialRequested(
     CatalogInitialRequested event,
@@ -71,6 +75,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     required String query,
     required Emitter<CatalogState> emit,
   }) async {
+    await _cancelFirstPageSearch();
     final generation = ++_searchGeneration;
 
     emit(
@@ -94,81 +99,121 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     );
 
     var hasDisplayableSnapshot = false;
-    await emit.forEach<Result<CatalogPageSnapshot>>(
-      _searchCatalogUseCase.watch(
-        query: query,
-        cursor: null,
-        limit: pageSize,
-        policy: CatalogLoadPolicy.initial,
-      ),
-      onData: (result) {
-        if (generation != _searchGeneration || query != state.query) {
-          return state;
-        }
+    var isAwaitingRevalidation = false;
+    final completer = Completer<void>();
+    _firstPageCompleter = completer;
 
-        return result.when(
-          success: (snapshot) {
-            hasDisplayableSnapshot = true;
-            final isCache = snapshot.source == CatalogDataSource.cache;
-            final isStale = snapshot.freshness == CatalogFreshness.stale;
-            return state.copyWith(
-              items: snapshot.page.items,
-              nextCursor: snapshot.page.nextCursor,
-              isInitialLoading: false,
-              hasCompletedInitialLoad: true,
-              isUsingCachedData: isCache,
-              isStale: isStale,
-              lastUpdatedAt: snapshot.lastUpdatedAt,
-              isRevalidating: isCache && isStale,
-              initialFailure: null,
-              revalidationFailure: null,
+    final subscription = _searchCatalogUseCase
+        .watch(
+          query: query,
+          cursor: null,
+          limit: pageSize,
+          policy: CatalogLoadPolicy.initial,
+        )
+        .listen(
+          (result) {
+            if (generation != _searchGeneration || query != state.query) {
+              return;
+            }
+            result.when(
+              success: (snapshot) {
+                hasDisplayableSnapshot = true;
+                final isCache = snapshot.source == CatalogDataSource.cache;
+                final isStale = snapshot.freshness == CatalogFreshness.stale;
+                isAwaitingRevalidation = isCache && isStale;
+                emit(
+                  state.copyWith(
+                    items: snapshot.page.items,
+                    nextCursor: snapshot.page.nextCursor,
+                    isInitialLoading: false,
+                    hasCompletedInitialLoad: true,
+                    isUsingCachedData: isCache,
+                    isStale: isStale,
+                    lastUpdatedAt: snapshot.lastUpdatedAt,
+                    isRevalidating: isAwaitingRevalidation,
+                    initialFailure: null,
+                    revalidationFailure: null,
+                  ),
+                );
+              },
+              failure: (error) {
+                if (error is! Failure) {
+                  throw error;
+                }
+                if (hasDisplayableSnapshot) {
+                  isAwaitingRevalidation = false;
+                  emit(
+                    state.copyWith(
+                      isInitialLoading: false,
+                      isRevalidating: false,
+                      revalidationFailure: error,
+                    ),
+                  );
+                  return;
+                }
+                emit(
+                  state.copyWith(
+                    items: const <CatalogItem>[],
+                    nextCursor: null,
+                    isInitialLoading: false,
+                    hasCompletedInitialLoad: true,
+                    isUsingCachedData: false,
+                    isStale: false,
+                    lastUpdatedAt: null,
+                    isRevalidating: false,
+                    initialFailure: error,
+                    revalidationFailure: null,
+                  ),
+                );
+              },
             );
           },
-          failure: (error) {
-            if (error is! Failure) {
-              throw error;
-            }
-            if (hasDisplayableSnapshot) {
-              return state.copyWith(
-                isInitialLoading: false,
-                isRevalidating: false,
-                revalidationFailure: error,
+          onError: (Object error, StackTrace stackTrace) {
+            if (generation == _searchGeneration && query == state.query) {
+              emit(
+                state.copyWith(
+                  isInitialLoading: false,
+                  isRevalidating: false,
+                  hasCompletedInitialLoad: hasDisplayableSnapshot,
+                ),
               );
             }
-            return state.copyWith(
-              items: const <CatalogItem>[],
-              nextCursor: null,
-              isInitialLoading: false,
-              hasCompletedInitialLoad: true,
-              isUsingCachedData: false,
-              isStale: false,
-              lastUpdatedAt: null,
-              isRevalidating: false,
-              initialFailure: error,
-              revalidationFailure: null,
-            );
+            if (!completer.isCompleted) {
+              completer.completeError(error, stackTrace);
+            }
           },
+          onDone: () {
+            if (isAwaitingRevalidation) {
+              if (generation == _searchGeneration && query == state.query) {
+                emit(state.copyWith(isRevalidating: false));
+              }
+              if (!completer.isCompleted) {
+                completer.completeError(
+                  StateError(
+                    'Catalog initial SWR stream closed before revalidation result',
+                  ),
+                  StackTrace.current,
+                );
+              }
+              return;
+            }
+            if (!completer.isCompleted) {
+              completer.complete();
+            }
+          },
+          cancelOnError: true,
         );
-      },
-      onError: (error, stackTrace) {
-        if (generation == _searchGeneration && query == state.query) {
-          emit(
-            state.copyWith(
-              isInitialLoading: false,
-              isRevalidating: false,
-              hasCompletedInitialLoad: hasDisplayableSnapshot,
-            ),
-          );
-        }
-        Error.throwWithStackTrace(error, stackTrace);
-      },
-    );
+    _firstPageSubscription = subscription;
 
-    if (!emit.isDone &&
-        generation == _searchGeneration &&
-        query == state.query &&
-        state.isRevalidating) {
-      emit(state.copyWith(isRevalidating: false));
+    try {
+      await completer.future;
+    } finally {
+      if (identical(_firstPageSubscription, subscription)) {
+        _firstPageSubscription = null;
+      }
+      if (identical(_firstPageCompleter, completer)) {
+        _firstPageCompleter = null;
+      }
     }
   }
 
@@ -245,6 +290,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       return;
     }
 
+    await _cancelFirstPageSearch();
     final generation = ++_searchGeneration;
     final query = state.query;
 
@@ -253,7 +299,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         isInitialLoading: false,
         isRefreshing: true,
         isLoadingMore: false,
+        isRevalidating: false,
         initialFailure: null,
+        revalidationFailure: null,
         refreshFailure: null,
         appendFailure: null,
       ),
@@ -289,6 +337,11 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
             nextCursor: page.nextCursor,
             isRefreshing: false,
             hasCompletedInitialLoad: true,
+            isUsingCachedData: snapshot.source == CatalogDataSource.cache,
+            isStale: snapshot.freshness == CatalogFreshness.stale,
+            lastUpdatedAt: snapshot.lastUpdatedAt,
+            isRevalidating: false,
+            revalidationFailure: null,
             refreshFailure: null,
           ),
         );
@@ -301,6 +354,23 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         emit(state.copyWith(isRefreshing: false, refreshFailure: error));
       },
     );
+  }
+
+  Future<void> _cancelFirstPageSearch() async {
+    final subscription = _firstPageSubscription;
+    final completer = _firstPageCompleter;
+    _firstPageSubscription = null;
+    _firstPageCompleter = null;
+    await subscription?.cancel();
+    if (completer != null && !completer.isCompleted) {
+      completer.complete();
+    }
+  }
+
+  @override
+  Future<void> close() async {
+    await _cancelFirstPageSearch();
+    return super.close();
   }
 }
 

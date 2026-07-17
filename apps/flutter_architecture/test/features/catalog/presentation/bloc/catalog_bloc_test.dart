@@ -124,6 +124,7 @@ void main() {
     await repository.waitForRequestCount(1);
     bloc.add(const CatalogEvent.initialRequested());
     await repository.waitForRequestCount(2);
+    await _waitUntil(() => repository.cancelledRequests.contains(0));
 
     repository.completeSuccess(1, _page('new-generation'));
     await bloc.stream.firstWhere((state) => !state.isInitialLoading);
@@ -132,6 +133,36 @@ void main() {
 
     expect(bloc.state.items.single.id, 'item-new-generation');
 
+    await bloc.close();
+  });
+
+  test('Initial request 會在 Query switching 時取消舊 subscription', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.emitSuccess(
+      0,
+      _page('initial-cache'),
+      source: CatalogDataSource.cache,
+      freshness: CatalogFreshness.stale,
+    );
+    await _waitUntil(() => bloc.state.isRevalidating);
+
+    bloc.add(const CatalogEvent.queryChanged('new'));
+    await repository.waitForRequestCount(2);
+    await _waitUntil(() => repository.cancelledRequests.contains(0));
+    repository.completeSuccess(1, _page('new'));
+    await _waitUntil(
+      () => bloc.state.query == 'new' && !bloc.state.isInitialLoading,
+    );
+
+    expect(bloc.state.items.single.id, 'item-new');
+    expect(bloc.state.isRevalidating, isFalse);
     await bloc.close();
   });
 
@@ -204,6 +235,35 @@ void main() {
       await bloc.close();
     },
   );
+
+  test('Initial Stale Cache 後 Stream 關閉視為 protocol violation', () async {
+    final repository = _ControlledCatalogRepository();
+    late CatalogBloc bloc;
+    final errors = <Object>[];
+
+    await runZonedGuarded(() async {
+      bloc = CatalogBloc(
+        SearchCatalogUseCase(repository),
+        debounceDuration: Duration.zero,
+      );
+      bloc.add(const CatalogEvent.initialRequested());
+      await repository.waitForRequestCount(1);
+      repository.emitSuccess(
+        0,
+        _page('cached'),
+        source: CatalogDataSource.cache,
+        freshness: CatalogFreshness.stale,
+      );
+      await _waitUntil(() => bloc.state.isRevalidating);
+      await repository.closeRequest(0);
+      await _waitUntil(() => !bloc.state.isRevalidating);
+    }, (error, stackTrace) => errors.add(error));
+
+    expect(errors.single, isA<StateError>());
+    expect(bloc.state.items.single.id, 'item-cached');
+    expect(bloc.state.isStale, isTrue);
+    await bloc.close();
+  });
 
   test('Query switching 取消舊 SWR subscription 並只接受新 query', () async {
     final repository = _ControlledCatalogRepository();
@@ -477,6 +537,43 @@ void main() {
     await bloc.close();
   });
 
+  test('Refresh 取消 stale revalidation 並更新第一頁 metadata', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.emitSuccess(
+      0,
+      _page('cached'),
+      source: CatalogDataSource.cache,
+      freshness: CatalogFreshness.stale,
+      lastUpdatedAt: DateTime.utc(2026, 7, 17, 10),
+    );
+    await _waitUntil(() => bloc.state.isRevalidating);
+
+    bloc.add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(2);
+    await _waitUntil(() => repository.cancelledRequests.contains(0));
+    expect(bloc.state.isRefreshing, isTrue);
+    expect(bloc.state.isRevalidating, isFalse);
+
+    final refreshedAt = DateTime.utc(2026, 7, 17, 13);
+    repository.completeSuccess(1, _page('fresh'), lastUpdatedAt: refreshedAt);
+    await _waitUntil(() => !bloc.state.isRefreshing);
+
+    expect(bloc.state.items.single.id, 'item-fresh');
+    expect(bloc.state.isUsingCachedData, isFalse);
+    expect(bloc.state.isStale, isFalse);
+    expect(bloc.state.lastUpdatedAt, refreshedAt);
+    expect(bloc.state.isRevalidating, isFalse);
+    expect(bloc.state.revalidationFailure, isNull);
+    await bloc.close();
+  });
+
   test('Refresh unknown error 不會卡住，並允許 retry', () async {
     final repository = _ControlledCatalogRepository();
     late CatalogBloc bloc;
@@ -654,8 +751,20 @@ class _ControlledCatalogRepository implements CatalogRepository {
     await _waitUntil(() => requests.length >= count);
   }
 
-  void completeSuccess(int index, CatalogPage page) {
-    emitSuccess(index, page);
+  void completeSuccess(
+    int index,
+    CatalogPage page, {
+    CatalogDataSource source = CatalogDataSource.remote,
+    CatalogFreshness freshness = CatalogFreshness.fresh,
+    DateTime? lastUpdatedAt,
+  }) {
+    emitSuccess(
+      index,
+      page,
+      source: source,
+      freshness: freshness,
+      lastUpdatedAt: lastUpdatedAt,
+    );
     _controllers[index].close();
   }
 
@@ -689,6 +798,8 @@ class _ControlledCatalogRepository implements CatalogRepository {
       ..addError(error, StackTrace.current)
       ..close();
   }
+
+  Future<void> closeRequest(int index) => _controllers[index].close();
 }
 
 CatalogPageSnapshot _snapshot(

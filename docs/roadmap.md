@@ -1213,6 +1213,10 @@ git diff --check
 - [x] Background revalidation 與 user Refresh 使用不同 loading / failure state。
 - [x] 移除舊單次 Repository / UseCase contract，Refresh / Append 暫以單次 Stream emission 保持既有行為。
 - [x] 補齊 Initial SWR、query switching、stale response、unknown error cleanup 與 subscription cancellation tests。
+- [x] Implementation review：Initial / Query / Retry / Refresh 共用可取消的第一頁 SWR subscription boundary。
+- [x] Implementation review：Refresh 取消 stale revalidation 並完整更新第一頁 snapshot metadata。
+- [x] Implementation review：Stale Cache 後 Stream 提前關閉視為 protocol violation。
+- [x] CatalogBloc tests 增至 24 項，補齊跨事件 cancellation 與 stale-only Stream close coverage。
 
 完成驗證：
 

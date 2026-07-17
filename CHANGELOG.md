@@ -52,6 +52,10 @@
 - CatalogState 新增 cached/stale/lastUpdatedAt/revalidating/revalidationFailure metadata；Stale Cache revalidation failure 會保留現有資料並以 non-blocking failure 表達。
 - Query switching 會取消舊 SWR subscription，並保留 generation、query identity 與 stale-response guard；Refresh / Append 暫以單次 Stream emission 維持既有 workflow。
 - CatalogBloc tests 增至 21 項，新增 Cache → Remote、revalidation failure、query switch cancellation 與 Stream error cleanup coverage。
+- 依 Milestone 14-4 implementation review，第一頁 Initial / Query / Retry / Refresh 現在共用可取消的 SWR subscription boundary，不再只靠 generation guard 忽略舊結果。
+- Refresh 會取消 stale revalidation，並完整更新 `isUsingCachedData`、`isStale`、`lastUpdatedAt`、`isRevalidating` 與 `revalidationFailure` metadata。
+- Stale Cache 後 Stream 若未產生 Remote success / failure 就關閉，現在視為 protocol violation，不再靜默結束 revalidation。
+- CatalogBloc tests 增至 24 項，補齊 Initial → Query、Initial retry、Stale → Refresh cancellation 與 stale-only Stream close coverage。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

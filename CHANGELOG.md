@@ -68,6 +68,11 @@
 - CatalogBloc 追蹤已消耗 cursor，阻止多節點 cursor cycle；Local boundary 也拒絕 self-loop Cache page。
 - Refresh 採 exhaust transformer 防止重複請求；Initial、Query、Refresh 與 Bloc close 會實際取消執行中的 Refresh / Append Stream。
 - 補齊 stale Append late-write、cursor cycle、連續 Refresh、Query → Refresh cancellation、Refresh → Append cancellation 與 Local self-loop tests。
+- 完成 Milestone 14-6 UI、DI 與 Offline Cache Flow。
+- Catalog UI 新增 cached / stale status banner，顯示 UTC `lastUpdatedAt`、background revalidation indicator 與 non-blocking revalidation failure，且保留現有 items 可操作。
+- Fresh Remote data 不顯示 Cache notice；Fresh Cache 與 Stale Cache 使用不同文案與視覺狀態。
+- Mock / Real Composition Root tests 現在明確驗證 CatalogApi、LocalDataSource、RemoteDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc graph。
+- Catalog Widget tests 補齊 cached、stale、lastUpdatedAt、revalidation loading、non-blocking failure 與 Fresh Remote 隱藏 notice coverage。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

@@ -61,6 +61,68 @@ void main() {
     await tester.tap(find.text('Retry'));
     expect(retryCount, 1);
   });
+
+  testWidgets('CatalogView 顯示 cached notice 與 lastUpdatedAt', (tester) async {
+    await _pumpView(
+      tester,
+      _state(
+        items: const <CatalogItem>[
+          CatalogItem(id: '1', name: 'Cached', description: 'cached'),
+        ],
+        isUsingCachedData: true,
+        lastUpdatedAt: DateTime.utc(2026, 7, 17, 3, 5),
+      ),
+    );
+
+    expect(find.byKey(const Key('catalog-cache-status')), findsOneWidget);
+    expect(find.byKey(const Key('catalog-cached-notice')), findsOneWidget);
+    expect(find.text('Last updated: 2026-07-17 03:05 UTC'), findsOneWidget);
+    expect(find.byKey(const Key('catalog-stale-notice')), findsNothing);
+  });
+
+  testWidgets('CatalogView 顯示 stale、revalidation 與 non-blocking failure', (
+    tester,
+  ) async {
+    await _pumpView(
+      tester,
+      _state(
+        items: const <CatalogItem>[
+          CatalogItem(id: '1', name: 'Cached', description: 'cached'),
+        ],
+        isUsingCachedData: true,
+        isStale: true,
+        lastUpdatedAt: DateTime.utc(2026, 7, 17, 3, 5),
+        isRevalidating: true,
+        revalidationFailure: const Failure(message: 'Update failed'),
+      ),
+    );
+
+    expect(find.byKey(const Key('catalog-stale-notice')), findsOneWidget);
+    expect(
+      find.byKey(const Key('catalog-revalidation-loading')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('catalog-revalidation-failure')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
+  });
+
+  testWidgets('CatalogView fresh Remote data 不顯示 Cache notice', (tester) async {
+    await _pumpView(
+      tester,
+      _state(
+        items: const <CatalogItem>[
+          CatalogItem(id: '1', name: 'Remote', description: 'fresh'),
+        ],
+        lastUpdatedAt: DateTime.utc(2026, 7, 17, 3, 5),
+      ),
+    );
+
+    expect(find.byKey(const Key('catalog-cache-status')), findsNothing);
+    expect(find.byKey(const Key('catalog-last-updated')), findsNothing);
+  });
 }
 
 Future<void> _pumpView(
@@ -89,7 +151,12 @@ CatalogState _state({
   bool isInitialLoading = false,
   bool isLoadingMore = false,
   bool hasCompletedInitialLoad = false,
+  bool isUsingCachedData = false,
+  bool isStale = false,
+  DateTime? lastUpdatedAt,
+  bool isRevalidating = false,
   Failure? initialFailure,
+  Failure? revalidationFailure,
   Failure? appendFailure,
 }) {
   return CatalogState(
@@ -100,12 +167,12 @@ CatalogState _state({
     isRefreshing: false,
     isLoadingMore: isLoadingMore,
     hasCompletedInitialLoad: hasCompletedInitialLoad,
-    isUsingCachedData: false,
-    isStale: false,
-    lastUpdatedAt: null,
-    isRevalidating: false,
+    isUsingCachedData: isUsingCachedData,
+    isStale: isStale,
+    lastUpdatedAt: lastUpdatedAt,
+    isRevalidating: isRevalidating,
     initialFailure: initialFailure,
-    revalidationFailure: null,
+    revalidationFailure: revalidationFailure,
     refreshFailure: null,
     appendFailure: appendFailure,
   );

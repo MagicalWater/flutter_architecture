@@ -101,81 +101,176 @@ class CatalogView extends StatelessWidget {
       );
     }
 
-    if (state.isEmpty) {
-      return RefreshIndicator(
-        onRefresh: onRefresh,
-        child: ListView(
-          controller: scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: const <Widget>[
-            SizedBox(height: 160),
-            Center(child: Text('No catalog items', key: Key('catalog-empty'))),
-          ],
-        ),
-      );
-    }
+    return Column(
+      children: <Widget>[
+        if (_shouldShowCacheStatus(state)) _CatalogCacheStatus(state: state),
+        Expanded(
+          child: state.isEmpty
+              ? RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: ListView(
+                    controller: scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: const <Widget>[
+                      SizedBox(height: 160),
+                      Center(
+                        child: Text(
+                          'No catalog items',
+                          key: Key('catalog-empty'),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: ListView.builder(
+                    key: const Key('catalog-list'),
+                    controller: scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: state.items.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index < state.items.length) {
+                        final item = state.items[index];
+                        return ListTile(
+                          key: ValueKey<String>('catalog-item-${item.id}'),
+                          title: Text(item.name),
+                          subtitle: Text(item.description),
+                        );
+                      }
 
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: ListView.builder(
-        key: const Key('catalog-list'),
-        controller: scrollController,
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: state.items.length + 1,
-        itemBuilder: (context, index) {
-          if (index < state.items.length) {
-            final item = state.items[index];
-            return ListTile(
-              key: ValueKey<String>('catalog-item-${item.id}'),
-              title: Text(item.name),
-              subtitle: Text(item.description),
-            );
-          }
+                      if (state.isLoadingMore) {
+                        return const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              key: Key('catalog-append-loading'),
+                            ),
+                          ),
+                        );
+                      }
 
-          if (state.isLoadingMore) {
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(
-                child: CircularProgressIndicator(
-                  key: Key('catalog-append-loading'),
+                      if (state.appendFailure != null) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: <Widget>[
+                              Text(
+                                state.appendFailure!.message,
+                                key: const Key('catalog-append-failure'),
+                              ),
+                              TextButton(
+                                onPressed: onRetryAppend,
+                                child: const Text('Retry load more'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      if (state.refreshFailure != null) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            state.refreshFailure!.message,
+                            key: const Key('catalog-refresh-failure'),
+                          ),
+                        );
+                      }
+
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ),
-              ),
-            );
-          }
+        ),
+      ],
+    );
+  }
+}
 
-          if (state.appendFailure != null) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
+bool _shouldShowCacheStatus(CatalogState state) {
+  return state.isUsingCachedData ||
+      state.isStale ||
+      state.isRevalidating ||
+      state.revalidationFailure != null;
+}
+
+class _CatalogCacheStatus extends StatelessWidget {
+  const _CatalogCacheStatus({required this.state});
+
+  final CatalogState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isStale = state.isStale;
+
+    return Material(
+      key: const Key('catalog-cache-status'),
+      color: isStale
+          ? colorScheme.errorContainer
+          : colorScheme.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Icon(
+              isStale ? Icons.cloud_off_outlined : Icons.offline_pin_outlined,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    state.appendFailure!.message,
-                    key: const Key('catalog-append-failure'),
+                    isStale
+                        ? 'Showing stale cached data'
+                        : 'Showing cached data',
+                    key: Key(
+                      isStale
+                          ? 'catalog-stale-notice'
+                          : 'catalog-cached-notice',
+                    ),
                   ),
-                  TextButton(
-                    onPressed: onRetryAppend,
-                    child: const Text('Retry load more'),
-                  ),
+                  if (state.lastUpdatedAt != null) ...<Widget>[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Last updated: ${_formatUtcTimestamp(state.lastUpdatedAt!)}',
+                      key: const Key('catalog-last-updated'),
+                    ),
+                  ],
+                  if (state.revalidationFailure != null) ...<Widget>[
+                    const SizedBox(height: 4),
+                    Text(
+                      state.revalidationFailure!.message,
+                      key: const Key('catalog-revalidation-failure'),
+                    ),
+                  ],
                 ],
               ),
-            );
-          }
-
-          if (state.refreshFailure != null) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                state.refreshFailure!.message,
-                key: const Key('catalog-refresh-failure'),
+            ),
+            if (state.isRevalidating)
+              const SizedBox.square(
+                dimension: 20,
+                child: CircularProgressIndicator(
+                  key: Key('catalog-revalidation-loading'),
+                  strokeWidth: 2,
+                ),
               ),
-            );
-          }
-
-          return const SizedBox.shrink();
-        },
+          ],
+        ),
       ),
     );
   }
+}
+
+String _formatUtcTimestamp(DateTime value) {
+  final utc = value.toUtc();
+  String twoDigits(int number) => number.toString().padLeft(2, '0');
+  return '${utc.year}-${twoDigits(utc.month)}-${twoDigits(utc.day)} '
+      '${twoDigits(utc.hour)}:${twoDigits(utc.minute)} UTC';
 }
 
 class _FailureView extends StatelessWidget {

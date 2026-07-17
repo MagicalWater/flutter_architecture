@@ -1259,13 +1259,28 @@ git diff --check
 
 ### Milestone 14-6：UI、DI 與 Offline Cache Flow
 
-- Catalog UI 顯示 cached / stale notice。
-- 顯示 background revalidation indicator 與 non-blocking update failure。
-- 顯示 `lastUpdatedAt`。
-- Fresh data 不顯示 stale notice。
-- App Composition Root 註冊 LocalDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc。
-- package 不加入 DI framework annotation。
-- 補上 Mock / Real Composition Root graph 與 Widget tests。
+狀態：Completed。
+
+- [x] Catalog UI 顯示 cached / stale notice。
+- [x] 顯示 background revalidation indicator 與 non-blocking update failure。
+- [x] 顯示 UTC `lastUpdatedAt`。
+- [x] Fresh Remote data 不顯示 Cache / stale notice。
+- [x] Fresh Cache 與 Stale Cache 使用不同 notice 與 visual state。
+- [x] App Composition Root 註冊 LocalDataSource、RemoteDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc。
+- [x] package 不加入 DI framework annotation。
+- [x] 補上 Mock / Real Composition Root graph assertions。
+- [x] 補上 cached、stale、lastUpdatedAt、revalidation 與 Fresh Remote Widget tests。
+
+完成驗證：
+
+```txt
+flutter test test/features/catalog/presentation/pages/catalog_view_test.dart test/app/di/configuration_injection_test.dart
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle -t lib/main_development.dart
+git diff --check
+```
 
 ### Milestone 14-7：Cleanup、Regression、文件與完整驗證
 

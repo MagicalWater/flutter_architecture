@@ -629,7 +629,18 @@ Milestone 14-5 已完成：
 - Refresh 使用 exhaust transformer，快速重複事件只建立一個 request。
 - Initial / Query / Refresh / Bloc close 會取消執行中的 Refresh 與 Append Stream，不再只靠 generation guard 忽略結果。
 
-目前工作目標：Milestone 14-6 UI、DI 與 Offline Cache Flow。
+Milestone 14-6 已完成：
+
+- Catalog UI 會在列表上方顯示 cached / stale status，不遮蔽既有資料。
+- Cache status 顯示 UTC `lastUpdatedAt`。
+- Background revalidation 使用小型 progress indicator，與 user Refresh loading 分離。
+- Revalidation failure 以 non-blocking 訊息呈現，items 與 pull-to-refresh 保持可用。
+- Fresh Remote data 不顯示 Cache status；Fresh Cache 與 Stale Cache 使用不同 notice。
+- App Composition Root 已完整註冊 Catalog LocalDataSource、RemoteDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc。
+- Mock / Real graph tests 已明確驗證完整 Catalog dependency graph。
+- Catalog Widget tests 已涵蓋 cached、stale、lastUpdatedAt、revalidation loading、non-blocking failure 與 Fresh Remote notice suppression。
+
+目前工作目標：Milestone 14-7 Cleanup、Regression、文件與完整驗證。
 
 ---
 

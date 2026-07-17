@@ -21,6 +21,7 @@ class CatalogLocalDataSource {
     required Duration retainFor,
   }) async {
     _validateCursor(cursor);
+    _validateLimit(limit);
     return _guardLocal(() async {
       final normalizedQuery = query.trim();
       final storedCursor = _encodeCursor(cursor);
@@ -35,38 +36,48 @@ class CatalogLocalDataSource {
         return null;
       }
 
-      final updatedAt = DateTime.fromMillisecondsSinceEpoch(
-        pageRows.single['updated_at']! as int,
-        isUtc: true,
-      );
+      late final CatalogCachePageEntity page;
+      try {
+        final updatedAt = DateTime.fromMillisecondsSinceEpoch(
+          pageRows.single['updated_at']! as int,
+          isUtc: true,
+        );
+        final itemRows = await _database.query(
+          _itemTable,
+          where: 'query = ? AND request_cursor = ? AND request_limit = ?',
+          whereArgs: <Object?>[normalizedQuery, storedCursor, limit],
+          orderBy: 'item_position ASC',
+        );
+
+        page = CatalogCachePageEntity(
+          query: normalizedQuery,
+          requestCursor: _decodeCursor(storedCursor),
+          requestLimit: limit,
+          nextCursor: _parseOptionalCursor(pageRows.single['next_cursor']),
+          updatedAt: updatedAt,
+          items: <CatalogCacheItemEntity>[
+            for (final row in itemRows) _parseItem(row),
+          ],
+        );
+        _validatePage(page);
+      } on _CorruptedCatalogCacheException {
+        await deletePage(query: normalizedQuery, cursor: cursor, limit: limit);
+        return null;
+      } on AppException {
+        await deletePage(query: normalizedQuery, cursor: cursor, limit: limit);
+        return null;
+      } on TypeError {
+        await deletePage(query: normalizedQuery, cursor: cursor, limit: limit);
+        return null;
+      }
+
+      final updatedAt = page.updatedAt;
       if (now.toUtc().difference(updatedAt) > retainFor) {
         await deletePage(query: normalizedQuery, cursor: cursor, limit: limit);
         return null;
       }
 
-      final itemRows = await _database.query(
-        _itemTable,
-        where: 'query = ? AND request_cursor = ? AND request_limit = ?',
-        whereArgs: <Object?>[normalizedQuery, storedCursor, limit],
-        orderBy: 'item_position ASC',
-      );
-
-      return CatalogCachePageEntity(
-        query: normalizedQuery,
-        requestCursor: _decodeCursor(storedCursor),
-        requestLimit: limit,
-        nextCursor: pageRows.single['next_cursor'] as String?,
-        updatedAt: updatedAt,
-        items: <CatalogCacheItemEntity>[
-          for (final row in itemRows)
-            CatalogCacheItemEntity(
-              id: row['item_id']! as String,
-              name: row['item_name']! as String,
-              description: row['item_description']! as String,
-              position: row['item_position']! as int,
-            ),
-        ],
-      );
+      return page;
     }, message: '讀取 Catalog Cache 失敗');
   }
 
@@ -75,6 +86,8 @@ class CatalogLocalDataSource {
     required bool resetFollowingPages,
   }) async {
     _validateCursor(page.requestCursor);
+    _validateLimit(page.requestLimit);
+    _validatePage(page);
     if (resetFollowingPages && page.requestCursor != null) {
       throw const AppException(
         message: '只有 Catalog 第一頁可以重設 cursor chain',
@@ -146,6 +159,7 @@ class CatalogLocalDataSource {
     required int limit,
   }) async {
     _validateCursor(cursor);
+    _validateLimit(limit);
     await _guardLocal(() async {
       final normalizedQuery = query.trim();
       final storedCursor = _encodeCursor(cursor);
@@ -178,6 +192,83 @@ class CatalogLocalDataSource {
     }
   }
 
+  void _validatePage(CatalogCachePageEntity page) {
+    _validateOptionalCursor(page.nextCursor);
+
+    final positions = <int>{};
+    for (final item in page.items) {
+      if (item.id.trim().isEmpty || item.name.trim().isEmpty) {
+        throw const AppException(
+          message: 'Catalog Cache item 欄位不合法',
+          code: 'invalid_catalog_cache_item',
+        );
+      }
+      if (item.position < 0 || !positions.add(item.position)) {
+        throw const AppException(
+          message: 'Catalog Cache item position 不合法',
+          code: 'invalid_catalog_cache_item_position',
+        );
+      }
+    }
+
+    for (var index = 0; index < page.items.length; index++) {
+      if (!positions.contains(index)) {
+        throw const AppException(
+          message: 'Catalog Cache item position 必須連續',
+          code: 'invalid_catalog_cache_item_position',
+        );
+      }
+    }
+  }
+
+  void _validateLimit(int limit) {
+    if (limit <= 0) {
+      throw const AppException(
+        message: 'Catalog Cache limit 必須大於 0',
+        code: 'invalid_catalog_cache_limit',
+      );
+    }
+  }
+
+  void _validateOptionalCursor(String? cursor) {
+    if (cursor != null && cursor.trim().isEmpty) {
+      throw const AppException(
+        message: 'Catalog Cache next cursor 不可為空字串',
+        code: 'invalid_catalog_cache_next_cursor',
+      );
+    }
+  }
+
+  String? _parseOptionalCursor(Object? value) {
+    if (value == null) return null;
+    if (value is! String || value.trim().isEmpty) {
+      throw const _CorruptedCatalogCacheException();
+    }
+    return value;
+  }
+
+  CatalogCacheItemEntity _parseItem(Map<String, Object?> row) {
+    final id = row['item_id'];
+    final name = row['item_name'];
+    final description = row['item_description'];
+    final position = row['item_position'];
+    if (id is! String ||
+        id.trim().isEmpty ||
+        name is! String ||
+        name.trim().isEmpty ||
+        description is! String ||
+        position is! int ||
+        position < 0) {
+      throw const _CorruptedCatalogCacheException();
+    }
+    return CatalogCacheItemEntity(
+      id: id,
+      name: name,
+      description: description,
+      position: position,
+    );
+  }
+
   Future<T> _guardLocal<T>(
     Future<T> Function() action, {
     required String message,
@@ -193,4 +284,8 @@ class CatalogLocalDataSource {
       );
     }
   }
+}
+
+class _CorruptedCatalogCacheException implements Exception {
+  const _CorruptedCatalogCacheException();
 }

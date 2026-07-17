@@ -572,15 +572,15 @@ Milestone 14-7：Cleanup、Regression、文件與完整驗證
 
 Milestone 14-2 已完成：
 
-- App database version 已由 1 升級為 2。
-- 新增集中式 `AppDatabaseSchema`，管理 onCreate 與 v1 → v2 migration。
+- App database version 已由 1 最終升級為 3；v2 建立 Catalog Cache tables，v3 升級 unique position index。
+- 新增集中式 `AppDatabaseSchema`，管理 onCreate、v1 → v2 與 v2 → v3 migration。
 - 新增 `catalog_cache_page`、`catalog_cache_page_item` 與 page item order index。
 - Local item row 保存 id、name、description 與 position，確保 Domain 完整 round-trip。
 - 新增 `CatalogCachePageEntity`、`CatalogCacheItemEntity` 與 Local Mapper。
 - 新增 `CatalogLocalDataSource`，支援 page read、transaction replacement、chain reset、delete 與 expired page lazy cleanup。
 - 第一頁 null cursor 只在 SQLite boundary 編碼為空字串，不穿透 Domain。
 - migration test 已確認保留既有 `auth_user`。
-- transaction rollback、query/cursor/limit identity、cursor sentinel 防護、replacement、chain reset 與 expiration tests 已通過。
+- Local Entity validation、corrupted page 自我清除、empty page、delete isolation、failure mapping、transaction rollback、query/cursor/limit identity、cursor sentinel 防護、replacement、chain reset 與 migration tests 已通過。
 
 目前工作目標：Milestone 14-3 Repository Cache Coordination。
 

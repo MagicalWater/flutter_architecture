@@ -187,6 +187,71 @@ void main() {
     expect(cached.nextCursor, isNull);
   });
 
+  test('empty page 可正確 round-trip', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      CatalogCachePageEntity(
+        query: '',
+        requestCursor: null,
+        requestLimit: 20,
+        nextCursor: null,
+        updatedAt: now,
+        items: const <CatalogCacheItemEntity>[],
+      ),
+      resetFollowingPages: true,
+    );
+
+    final cached = await _read(dataSource, '', null, 20, now);
+    expect(cached, isNotNull);
+    expect(cached!.items, isEmpty);
+    expect(cached.nextCursor, isNull);
+  });
+
+  test('duplicate position 會拒絕寫入並保留舊 page', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      _page(query: '', cursor: null, updatedAt: now),
+      resetFollowingPages: true,
+    );
+
+    await expectLater(
+      dataSource.replacePage(
+        CatalogCachePageEntity(
+          query: '',
+          requestCursor: null,
+          requestLimit: 20,
+          nextCursor: null,
+          updatedAt: now.add(const Duration(minutes: 1)),
+          items: const <CatalogCacheItemEntity>[
+            CatalogCacheItemEntity(
+              id: 'one',
+              name: 'One',
+              description: '',
+              position: 0,
+            ),
+            CatalogCacheItemEntity(
+              id: 'two',
+              name: 'Two',
+              description: '',
+              position: 0,
+            ),
+          ],
+        ),
+        resetFollowingPages: true,
+      ),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'invalid_catalog_cache_item_position',
+        ),
+      ),
+    );
+
+    final cached = await _read(dataSource, '', null, 20, now);
+    expect(cached!.items.single.id, 'item-old');
+  });
+
   test('Remote 第一頁 replacement 可清除同 query/limit 後續 chain', () async {
     final now = DateTime.utc(2026, 7, 17);
     await dataSource.replacePage(
@@ -242,6 +307,74 @@ void main() {
     expect(itemRows, isEmpty);
   });
 
+  test('deletePage 只刪除指定 query/cursor/limit', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      _page(query: 'flutter', cursor: null, updatedAt: now),
+      resetFollowingPages: true,
+    );
+    await dataSource.replacePage(
+      _page(query: 'flutter', cursor: 'cursor-1', updatedAt: now),
+      resetFollowingPages: false,
+    );
+    await dataSource.replacePage(
+      _page(query: 'other', cursor: 'cursor-1', updatedAt: now),
+      resetFollowingPages: false,
+    );
+    await dataSource.replacePage(
+      _page(query: 'flutter', cursor: 'cursor-1', limit: 30, updatedAt: now),
+      resetFollowingPages: false,
+    );
+
+    await dataSource.deletePage(
+      query: 'flutter',
+      cursor: 'cursor-1',
+      limit: 20,
+    );
+
+    expect(await _read(dataSource, 'flutter', 'cursor-1', 20, now), isNull);
+    expect(await _read(dataSource, 'flutter', null, 20, now), isNotNull);
+    expect(await _read(dataSource, 'other', 'cursor-1', 20, now), isNotNull);
+    expect(await _read(dataSource, 'flutter', 'cursor-1', 30, now), isNotNull);
+  });
+
+  test('損壞的 local row 會刪除 page 並視為 cache miss', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      _page(query: '', cursor: null, updatedAt: now),
+      resetFollowingPages: true,
+    );
+    await database.update('catalog_cache_page_item', <String, Object?>{
+      'item_name': '   ',
+    });
+
+    final cached = await _read(dataSource, '', null, 20, now);
+    expect(cached, isNull);
+    expect(await database.query('catalog_cache_page'), isEmpty);
+    expect(await database.query('catalog_cache_page_item'), isEmpty);
+  });
+
+  test('readPage SQLite failure 會映射為 AppException', () async {
+    await database.close();
+
+    await expectLater(
+      dataSource.readPage(
+        query: '',
+        cursor: null,
+        limit: 20,
+        now: DateTime.utc(2026, 7, 17),
+        retainFor: const Duration(days: 7),
+      ),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.message,
+          'message',
+          '讀取 Catalog Cache 失敗',
+        ),
+      ),
+    );
+  });
+
   test('transaction 失敗時保留 replacement 前的完整 page', () async {
     final now = DateTime.utc(2026, 7, 17);
     await dataSource.replacePage(
@@ -282,7 +415,7 @@ void main() {
     expect(cached.nextCursor, 'cursor-next');
   });
 
-  test('v1 到 v2 migration 會保留 auth_user 並建立 Cache tables', () async {
+  test('v1 到目前版本 migration 會保留 auth_user 並建立 Cache tables', () async {
     final path = await databaseFactoryFfi.getDatabasesPath();
     final databasePath = '$path/catalog-migration-test.db';
     await databaseFactoryFfi.deleteDatabase(databasePath);
@@ -331,6 +464,56 @@ void main() {
     );
 
     await version2.close();
+    await databaseFactoryFfi.deleteDatabase(databasePath);
+  });
+
+  test('v2 到 v3 migration 會把 item position index 升級為 unique', () async {
+    final path = await databaseFactoryFfi.getDatabasesPath();
+    final databasePath = '$path/catalog-v2-v3-migration-test.db';
+    await databaseFactoryFfi.deleteDatabase(databasePath);
+
+    final version2 = await databaseFactoryFfi.openDatabase(
+      databasePath,
+      options: OpenDatabaseOptions(
+        version: 2,
+        onCreate: (db, version) async {
+          await AppDatabaseSchema.onCreate(db, version);
+          await db.execute('DROP INDEX catalog_cache_page_item_position_idx');
+          await db.execute('''
+            CREATE INDEX catalog_cache_page_item_order_idx
+            ON catalog_cache_page_item (
+              query,
+              request_cursor,
+              request_limit,
+              item_position
+            )
+          ''');
+        },
+      ),
+    );
+    await version2.close();
+
+    final version3 = await databaseFactoryFfi.openDatabase(
+      databasePath,
+      options: OpenDatabaseOptions(
+        version: AppDatabaseSchema.version,
+        onUpgrade: AppDatabaseSchema.onUpgrade,
+      ),
+    );
+    final indexes = await version3.rawQuery(
+      "PRAGMA index_list('catalog_cache_page_item')",
+    );
+
+    expect(
+      indexes.any(
+        (row) =>
+            row['name'] == 'catalog_cache_page_item_position_idx' &&
+            row['unique'] == 1,
+      ),
+      isTrue,
+    );
+
+    await version3.close();
     await databaseFactoryFfi.deleteDatabase(databasePath);
   });
 }

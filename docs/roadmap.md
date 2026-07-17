@@ -1148,7 +1148,7 @@ Decision 016 / 017、Roadmap、Project Context 與 CHANGELOG 已完成 consisten
 
 狀態：Completed。
 
-- [x] 將 App database version 由 1 升級為 2。
+- [x] 將 App database version 由 1 最終升級為 3；v2 建立 Cache tables，v3 升級 unique position index。
 - [x] 建立 `catalog_cache_page`、`catalog_cache_page_item` 與必要 index。
 - [x] item row 保存 id、name、description 與 position，完整支援 Domain round-trip。
 - [x] 建立 v1 → v2 migration，保留 `auth_user`。
@@ -1158,6 +1158,7 @@ Decision 016 / 017、Roadmap、Project Context 與 CHANGELOG 已完成 consisten
 - [x] 所有 Remote 第一頁成功可清除同 query + limit 的舊後續 chain。
 - [x] 建立 cursor null sentinel boundary、空 cursor 防護與 page-level expired lazy cleanup。
 - [x] 補上 in-memory SQLite、transaction rollback、migration 與 mapping tests。
+- [x] Implementation review 補強 Local Entity validation、corrupted page recovery、empty page、delete isolation 與 SQLite failure mapping。
 
 完成驗證：
 

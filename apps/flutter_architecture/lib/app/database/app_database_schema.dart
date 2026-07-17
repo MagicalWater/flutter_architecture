@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 
 /// App SQLite schema 與 migration 入口。
 abstract final class AppDatabaseSchema {
-  static const int version = 2;
+  static const int version = 3;
 
   static Future<void> onCreate(Database db, int version) async {
     await _createAuthUserTable(db);
@@ -16,6 +16,9 @@ abstract final class AppDatabaseSchema {
   ) async {
     if (oldVersion < 2) {
       await _createCatalogCacheTables(db);
+    }
+    if (oldVersion >= 2 && oldVersion < 3) {
+      await _upgradeCatalogItemPositionIndex(db);
     }
   }
 
@@ -57,7 +60,30 @@ abstract final class AppDatabaseSchema {
     ''');
 
     await db.execute('''
-      CREATE INDEX catalog_cache_page_item_order_idx
+      CREATE UNIQUE INDEX catalog_cache_page_item_position_idx
+      ON catalog_cache_page_item (
+        query,
+        request_cursor,
+        request_limit,
+        item_position
+      )
+    ''');
+  }
+
+  static Future<void> _upgradeCatalogItemPositionIndex(
+    DatabaseExecutor db,
+  ) async {
+    await db.execute('DROP INDEX IF EXISTS catalog_cache_page_item_order_idx');
+    await db.execute('''
+      DELETE FROM catalog_cache_page_item
+      WHERE rowid NOT IN (
+        SELECT MIN(rowid)
+        FROM catalog_cache_page_item
+        GROUP BY query, request_cursor, request_limit, item_position
+      )
+    ''');
+    await db.execute('''
+      CREATE UNIQUE INDEX catalog_cache_page_item_position_idx
       ON catalog_cache_page_item (
         query,
         request_cursor,

@@ -1997,14 +1997,14 @@ isRevalidating
 
 #### 13. SQLite schema 與 migration 由 App database boundary 管理
 
-目前 database version 為 1。Milestone 14 實作時升級為 version 2，新增 Catalog Cache tables 與 index，並提供：
+Milestone 14-2 最終將 database version 升級為 3：version 2 新增 Catalog Cache tables，version 3 將 page item position index 升級為 unique，並提供：
 
 ```txt
 onCreate
 onUpgrade(oldVersion < 2)
 ```
 
-v1 → v2 migration 必須保留既有 `auth_user` 資料。
+v1 → v2 migration 必須保留既有 `auth_user` 資料；v2 → v3 migration 必須保留既有 Catalog Cache page，並只升級 position index constraint。
 
 Database instance 仍由 App Composition Root 建立。SQL migration 可整理到 app database helper，避免 DI module 直接承載大量 schema 細節，但不得把 Composition Root 移入 package。
 

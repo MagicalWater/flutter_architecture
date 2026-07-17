@@ -61,6 +61,10 @@ class CatalogPage extends HookWidget {
 
 /// 先建立單一 refresh lifecycle subscription，再送出 event。
 Future<void> requestCatalogRefresh(CatalogBloc bloc) {
+  if (bloc.state.isRefreshing) {
+    return bloc.stream.firstWhere((state) => !state.isRefreshing);
+  }
+
   final refreshCompleted = bloc.stream
       .skipWhile((state) => !state.isRefreshing)
       .firstWhere((state) => !state.isRefreshing);
@@ -105,20 +109,33 @@ class CatalogView extends StatelessWidget {
       children: <Widget>[
         if (_shouldShowCacheStatus(state)) _CatalogCacheStatus(state: state),
         Expanded(
-          child: state.isEmpty
+          child: state.hasCompletedInitialLoad && state.items.isEmpty
               ? RefreshIndicator(
                   onRefresh: onRefresh,
                   child: ListView(
                     controller: scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    children: const <Widget>[
-                      SizedBox(height: 160),
-                      Center(
+                    children: <Widget>[
+                      const SizedBox(height: 160),
+                      const Center(
                         child: Text(
                           'No catalog items',
                           key: Key('catalog-empty'),
                         ),
                       ),
+                      if (state.refreshFailure != null) ...<Widget>[
+                        const SizedBox(height: 12),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              state.refreshFailure!.message,
+                              key: const Key('catalog-refresh-failure'),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 )

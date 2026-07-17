@@ -54,7 +54,7 @@ void main() {
     expect(getIt<CatalogClock>(), isA<SystemCatalogClock>());
     expect(getIt<CatalogRepository>(), isA<CatalogRepositoryImpl>());
     expect(getIt<SearchCatalogUseCase>(), isNotNull);
-    expect(getIt<CatalogBloc>(), isNotNull);
+    await _expectCatalogScopes();
     final mainDio = getIt<Dio>(instanceName: 'mainDio');
     final refreshDio = getIt<Dio>(instanceName: 'refreshDio');
     expect(mainDio.options.baseUrl, 'https://mock.local');
@@ -95,7 +95,7 @@ void main() {
     expect(getIt<CatalogClock>(), isA<SystemCatalogClock>());
     expect(getIt<CatalogRepository>(), isA<CatalogRepositoryImpl>());
     expect(getIt<SearchCatalogUseCase>(), isNotNull);
-    expect(getIt<CatalogBloc>(), isNotNull);
+    await _expectCatalogScopes();
     expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
     final mainDio = getIt<Dio>(instanceName: 'mainDio');
     final refreshDio = getIt<Dio>(instanceName: 'refreshDio');
@@ -115,4 +115,30 @@ void main() {
       isEmpty,
     );
   });
+}
+
+Future<void> _expectCatalogScopes() async {
+  expect(
+    identical(getIt<CatalogLocalDataSource>(), getIt<CatalogLocalDataSource>()),
+    isTrue,
+  );
+  expect(
+    identical(getIt<CatalogCachePolicy>(), getIt<CatalogCachePolicy>()),
+    isTrue,
+  );
+  expect(identical(getIt<CatalogClock>(), getIt<CatalogClock>()), isTrue);
+  expect(
+    identical(getIt<CatalogRepository>(), getIt<CatalogRepository>()),
+    isTrue,
+  );
+  expect(
+    identical(getIt<SearchCatalogUseCase>(), getIt<SearchCatalogUseCase>()),
+    isFalse,
+  );
+
+  final firstBloc = getIt<CatalogBloc>();
+  final secondBloc = getIt<CatalogBloc>();
+  expect(identical(firstBloc, secondBloc), isFalse);
+  await firstBloc.close();
+  await secondBloc.close();
 }

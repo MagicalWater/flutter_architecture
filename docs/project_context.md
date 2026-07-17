@@ -639,6 +639,10 @@ Milestone 14-6 已完成：
 - App Composition Root 已完整註冊 Catalog LocalDataSource、RemoteDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc。
 - Mock / Real graph tests 已明確驗證完整 Catalog dependency graph。
 - Catalog Widget tests 已涵蓋 cached、stale、lastUpdatedAt、revalidation loading、non-blocking failure 與 Fresh Remote notice suppression。
+- Implementation review 已修正 `requestCatalogRefresh` 在既有 Refresh lifecycle 中可能永久等待的問題。
+- Empty result 的 Refresh failure 會與 empty content 同時呈現，不再因 `CatalogState.isEmpty` 的 failure 語意走錯 branch。
+- Revalidation UI tests 已拆成正式狀態機中的更新中與更新失敗兩種互斥狀態。
+- DI tests 已鎖定 LocalDataSource / CachePolicy / Clock / Repository 為 singleton，UseCase / CatalogBloc 為 factory，並明確 close 測試 Bloc。
 
 目前工作目標：Milestone 14-7 Cleanup、Regression、文件與完整驗證。
 

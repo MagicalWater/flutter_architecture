@@ -73,6 +73,11 @@
 - Fresh Remote data 不顯示 Cache notice；Fresh Cache 與 Stale Cache 使用不同文案與視覺狀態。
 - Mock / Real Composition Root tests 現在明確驗證 CatalogApi、LocalDataSource、RemoteDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc graph。
 - Catalog Widget tests 補齊 cached、stale、lastUpdatedAt、revalidation loading、non-blocking failure 與 Fresh Remote 隱藏 notice coverage。
+- 依 Milestone 14-6 implementation review 修正 Refresh lifecycle 等待與 empty failure 呈現。
+- `requestCatalogRefresh` 在 Refresh 已進行中時會等待目前 lifecycle 結束，不再等待不存在的新一輪 `isRefreshing = true`。
+- Empty result 的 Refresh failure 現在與 empty content 同時可見，且保留 pull-to-refresh。
+- Revalidation Widget tests 改為正式狀態機中的互斥案例：更新中只顯示 spinner，更新失敗只顯示 non-blocking failure。
+- DI graph tests 補上 LocalDataSource / CachePolicy / Clock / Repository singleton identity，以及 UseCase / CatalogBloc factory identity；測試建立的 Bloc 會明確 close。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

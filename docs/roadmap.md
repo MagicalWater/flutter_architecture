@@ -1270,6 +1270,10 @@ git diff --check
 - [x] package 不加入 DI framework annotation。
 - [x] 補上 Mock / Real Composition Root graph assertions。
 - [x] 補上 cached、stale、lastUpdatedAt、revalidation 與 Fresh Remote Widget tests。
+- [x] Implementation review：Refresh 已進行時再次呼叫 helper 會等待目前 lifecycle，不建立新 request。
+- [x] Implementation review：Empty result 的 Refresh failure 與 empty content 同時可見。
+- [x] Implementation review：Revalidation spinner / failure tests 符合正式互斥狀態。
+- [x] Implementation review：補上 Catalog DI singleton / factory identity tests，並 close 測試 Bloc。
 
 完成驗證：
 

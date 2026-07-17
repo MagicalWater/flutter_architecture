@@ -80,9 +80,7 @@ void main() {
     expect(find.byKey(const Key('catalog-stale-notice')), findsNothing);
   });
 
-  testWidgets('CatalogView 顯示 stale、revalidation 與 non-blocking failure', (
-    tester,
-  ) async {
+  testWidgets('CatalogView 顯示 stale 與 background revalidation', (tester) async {
     await _pumpView(
       tester,
       _state(
@@ -93,7 +91,6 @@ void main() {
         isStale: true,
         lastUpdatedAt: DateTime.utc(2026, 7, 17, 3, 5),
         isRevalidating: true,
-        revalidationFailure: const Failure(message: 'Update failed'),
       ),
     );
 
@@ -102,11 +99,44 @@ void main() {
       find.byKey(const Key('catalog-revalidation-loading')),
       findsOneWidget,
     );
+    expect(find.byKey(const Key('catalog-revalidation-failure')), findsNothing);
+    expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
+  });
+
+  testWidgets('CatalogView 顯示 non-blocking revalidation failure 並保留 items', (
+    tester,
+  ) async {
+    await _pumpView(
+      tester,
+      _state(
+        items: const <CatalogItem>[
+          CatalogItem(id: '1', name: 'Cached', description: 'cached'),
+        ],
+        isUsingCachedData: true,
+        isStale: true,
+        revalidationFailure: const Failure(message: 'Update failed'),
+      ),
+    );
+
+    expect(find.byKey(const Key('catalog-revalidation-loading')), findsNothing);
     expect(
       find.byKey(const Key('catalog-revalidation-failure')),
       findsOneWidget,
     );
     expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
+  });
+
+  testWidgets('CatalogView empty result 的 refresh failure 仍可見', (tester) async {
+    await _pumpView(
+      tester,
+      _state(
+        hasCompletedInitialLoad: true,
+        refreshFailure: const Failure(message: 'Refresh failed'),
+      ),
+    );
+
+    expect(find.byKey(const Key('catalog-empty')), findsOneWidget);
+    expect(find.byKey(const Key('catalog-refresh-failure')), findsOneWidget);
   });
 
   testWidgets('CatalogView fresh Remote data 不顯示 Cache notice', (tester) async {
@@ -157,6 +187,7 @@ CatalogState _state({
   bool isRevalidating = false,
   Failure? initialFailure,
   Failure? revalidationFailure,
+  Failure? refreshFailure,
   Failure? appendFailure,
 }) {
   return CatalogState(
@@ -173,7 +204,7 @@ CatalogState _state({
     isRevalidating: isRevalidating,
     initialFailure: initialFailure,
     revalidationFailure: revalidationFailure,
-    refreshFailure: null,
+    refreshFailure: refreshFailure,
     appendFailure: appendFailure,
   );
 }

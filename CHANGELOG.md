@@ -18,6 +18,12 @@
 
 ## [Unreleased]
 
+尚無未發布變更。
+
+---
+
+## [1.1.0] - 2026-07-17
+
 ### Added
 
 - 規劃 Milestone 14 Offline Cache，正式採用 Catalog feature-level、明確 opt-in 的 Cache-first + Stale-While-Revalidate。

@@ -1080,6 +1080,8 @@ git diff --check
 
 狀態：Completed；Milestone 14-1 至 14-7 已完成。
 
+封存：已納入 Template Baseline 1.1.0（2026-07-17）；final review findings 與 chain revision 修正均已完成。
+
 最終整體 review 已完成：新增 SQLite v4 `chain_revision` migration、相同 cursor Refresh late-write 防護，以及 expired predecessor / retained successor replacement regression coverage。
 
 本 Milestone 只為 Catalog 建立 feature-level、明確 opt-in 的 Offline Cache，不建立所有 API 自動寫入 SQLite 的 generic HTTP cache。

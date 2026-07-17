@@ -17,3 +17,4 @@
 ## Files
 
 - `progress_v1.0.0.md`：Template 1.0.0 建立過程與 Milestone 1-8 的歷史紀錄。
+- `milestone_14_offline_cache.md`：Milestone 14 Offline Cache 的封存摘要、完成範圍與驗證基線。

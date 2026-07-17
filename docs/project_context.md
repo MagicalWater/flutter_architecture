@@ -655,7 +655,9 @@ Milestone 14-7 已完成：
 - 即使 Refresh 重用相同 opaque cursor，舊 Append response 也不能污染新 chain。
 - Expired predecessor 可在同 revision retained successor 存在時合法 replacement，cycle 改以 ancestor path 判斷。
 
-目前工作目標：完成 Milestone 14 final review fix 驗證，之後由 Backlog 選擇下一個正式 Milestone。
+Milestone 14 已於 Template Baseline 1.1.0 正式封存。
+
+目前工作目標：盤點 Backlog 並拍板下一個正式 Milestone；尚未開始新功能實作。
 
 ---
 

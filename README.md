@@ -8,11 +8,14 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.0.0
+- Template Baseline Version：1.1.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
 - Modernization Review：Completed
+- Milestone 12 Refresh Token / Concurrent 401：Completed
+- Milestone 13 Pagination / Search Debounce：Completed
+- Milestone 14 Offline Cache：Archived
 
 版本變更請參考 `CHANGELOG.md`。
 

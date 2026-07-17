@@ -462,6 +462,37 @@ void main() {
     await bloc.close();
   });
 
+  test('Append cursor cycle 不推進 nextCursor 並回傳 chain failure', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(2);
+    repository.completeSuccess(1, _page('append-1', nextCursor: 'cursor-2'));
+    await _waitUntil(() => !bloc.state.isLoadingMore);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(3);
+    repository.completeSuccess(2, _page('append-2', nextCursor: 'cursor-1'));
+    await _waitUntil(() => !bloc.state.isLoadingMore);
+
+    expect(bloc.state.nextCursor, 'cursor-2');
+    expect(bloc.state.appendFailure?.code, 'cyclic_catalog_cursor');
+    expect(bloc.state.items.map((item) => item.id), <String>[
+      'item-initial',
+      'item-append-1',
+    ]);
+    await bloc.close();
+  });
+
   test('Append 多次 emission 視為 protocol violation 並清除 loading', () async {
     final repository = _ControlledCatalogRepository();
     late CatalogBloc bloc;
@@ -704,6 +735,82 @@ void main() {
     expect(bloc.state.isStale, isTrue);
     expect(bloc.state.lastUpdatedAt, cachedAt);
     expect(bloc.state.refreshFailure?.code, 'refresh_failed');
+    await bloc.close();
+  });
+
+  test('連續 Refresh 只建立一個 request', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc
+      ..add(const CatalogEvent.refreshRequested())
+      ..add(const CatalogEvent.refreshRequested())
+      ..add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(2);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+
+    expect(repository.requests, hasLength(2));
+    repository.completeSuccess(1, _page('fresh'));
+    await _waitUntil(() => !bloc.state.isRefreshing);
+    await bloc.close();
+  });
+
+  test('Query switching 取消執行中的 Refresh subscription', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(2);
+    bloc.add(const CatalogEvent.queryChanged('new'));
+    await repository.waitForRequestCount(3);
+    await _waitUntil(() => repository.cancelledRequests.contains(1));
+    repository.completeSuccess(2, _page('new'));
+    await _waitUntil(
+      () => bloc.state.query == 'new' && !bloc.state.isInitialLoading,
+    );
+
+    expect(bloc.state.items.single.id, 'item-new');
+    await bloc.close();
+  });
+
+  test('Refresh 取消執行中的 Append subscription', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(2);
+    bloc.add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(3);
+    await _waitUntil(() => repository.cancelledRequests.contains(1));
+    repository.completeSuccess(2, _page('fresh'));
+    await _waitUntil(() => !bloc.state.isRefreshing);
+
+    expect(bloc.state.items.single.id, 'item-fresh');
+    expect(bloc.state.isLoadingMore, isFalse);
     await bloc.close();
   });
 

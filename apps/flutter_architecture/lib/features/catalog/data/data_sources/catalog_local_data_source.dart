@@ -153,6 +153,92 @@ class CatalogLocalDataSource {
     }, message: '儲存 Catalog Cache 失敗');
   }
 
+  /// 只有 requested cursor 仍由目前 Cache chain 指向時才寫入 Append page。
+  ///
+  /// 可避免舊 Append request 在第一頁 replacement 後完成，重新污染已失效的
+  /// cursor chain；同時拒絕 nextCursor 指回已存在 page identity 的 cycle。
+  Future<bool> replaceAppendPageIfLinked(CatalogCachePageEntity page) async {
+    _validateCursor(page.requestCursor);
+    _validateLimit(page.requestLimit);
+    _validatePage(page);
+    if (page.requestCursor == null) {
+      throw const AppException(
+        message: 'Catalog Append Cache 必須提供 request cursor',
+        code: 'invalid_catalog_append_cache_cursor',
+      );
+    }
+
+    return _guardLocal(() async {
+      final normalizedQuery = page.query.trim();
+      final storedCursor = _encodeCursor(page.requestCursor);
+
+      return _database.transaction((transaction) async {
+        final predecessorRows = await transaction.query(
+          _pageTable,
+          columns: const <String>['request_cursor'],
+          where: 'query = ? AND request_limit = ? AND next_cursor = ?',
+          whereArgs: <Object?>[
+            normalizedQuery,
+            page.requestLimit,
+            page.requestCursor,
+          ],
+          limit: 1,
+        );
+        if (predecessorRows.isEmpty) {
+          return false;
+        }
+
+        final nextCursor = page.nextCursor;
+        if (nextCursor != null) {
+          final existingNextRows = await transaction.query(
+            _pageTable,
+            columns: const <String>['request_cursor'],
+            where: 'query = ? AND request_limit = ? AND request_cursor = ?',
+            whereArgs: <Object?>[
+              normalizedQuery,
+              page.requestLimit,
+              _encodeCursor(nextCursor),
+            ],
+            limit: 1,
+          );
+          if (existingNextRows.isNotEmpty) {
+            return false;
+          }
+        }
+
+        await transaction.delete(
+          _itemTable,
+          where: 'query = ? AND request_cursor = ? AND request_limit = ?',
+          whereArgs: <Object?>[
+            normalizedQuery,
+            storedCursor,
+            page.requestLimit,
+          ],
+        );
+        await transaction.insert(_pageTable, <String, Object?>{
+          'query': normalizedQuery,
+          'request_cursor': storedCursor,
+          'request_limit': page.requestLimit,
+          'next_cursor': page.nextCursor,
+          'updated_at': page.updatedAt.toUtc().millisecondsSinceEpoch,
+        }, conflictAlgorithm: ConflictAlgorithm.replace);
+
+        for (final item in page.items) {
+          await transaction.insert(_itemTable, <String, Object?>{
+            'query': normalizedQuery,
+            'request_cursor': storedCursor,
+            'request_limit': page.requestLimit,
+            'item_id': item.id,
+            'item_position': item.position,
+            'item_name': item.name,
+            'item_description': item.description,
+          });
+        }
+        return true;
+      });
+    }, message: '儲存 Catalog Append Cache 失敗');
+  }
+
   Future<void> deletePage({
     required String query,
     required String? cursor,
@@ -194,6 +280,12 @@ class CatalogLocalDataSource {
 
   void _validatePage(CatalogCachePageEntity page) {
     _validateOptionalCursor(page.nextCursor);
+    if (page.requestCursor != null && page.nextCursor == page.requestCursor) {
+      throw const AppException(
+        message: 'Catalog Cache cursor 無法前進',
+        code: 'non_advancing_catalog_cache_cursor',
+      );
+    }
 
     final positions = <int>{};
     for (final item in page.items) {

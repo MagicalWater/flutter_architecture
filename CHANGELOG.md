@@ -63,6 +63,11 @@
 - Append Cache snapshot 只影響 appended items 與 nextCursor，不覆蓋第一頁 freshness metadata；既有 generation、query、requested cursor race protection 維持不變。
 - Refresh / Append 現在透過明確 single-result Stream protocol helper 驗證零筆與多筆 emission，違規時會清除 loading 並保留原始錯誤。
 - Repository Cache tests 增至 19 項、CatalogBloc tests 增至 28 項，涵蓋第一頁 chain reset、append identity、expired fallback、metadata preservation 與 Stream protocol violation。
+- 依 Milestone 14-5 implementation review 補強 cursor chain consistency 與跨操作 cancellation。
+- Append Cache write 改為 conditional transaction：只有 requested cursor 仍由目前 chain 指向時才寫入，避免 Refresh chain reset 後較晚完成的舊 Append 重新污染 SQLite。
+- CatalogBloc 追蹤已消耗 cursor，阻止多節點 cursor cycle；Local boundary 也拒絕 self-loop Cache page。
+- Refresh 採 exhaust transformer 防止重複請求；Initial、Query、Refresh 與 Bloc close 會實際取消執行中的 Refresh / Append Stream。
+- 補齊 stale Append late-write、cursor cycle、連續 Refresh、Query → Refresh cancellation、Refresh → Append cancellation 與 Local self-loop tests。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

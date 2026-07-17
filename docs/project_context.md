@@ -623,6 +623,11 @@ Milestone 14-5 已完成：
 - Append Cache snapshot 只合併 items 與更新 nextCursor，不會覆蓋第一頁 freshness metadata。
 - Refresh / Append 共用 single-result Stream protocol helper；零筆與多筆 emission 都視為 programming error，並確保 loading flag 清除。
 - Repository Cache tests 已增至 19 項，CatalogBloc tests 已增至 28 項。
+- Implementation review 已補強 stale Append late-write：Append page 只有在 requested cursor 仍由目前 Cache chain 指向時才允許 transaction write。
+- Bloc 追蹤已消耗 requested cursors，若 nextCursor 回到任何已消耗 cursor，會回傳 `cyclic_catalog_cursor` 並停止推進。
+- Local boundary 拒絕 `requestCursor == nextCursor` 的 self-loop page。
+- Refresh 使用 exhaust transformer，快速重複事件只建立一個 request。
+- Initial / Query / Refresh / Bloc close 會取消執行中的 Refresh 與 Append Stream，不再只靠 generation guard 忽略結果。
 
 目前工作目標：Milestone 14-6 UI、DI 與 Offline Cache Flow。
 

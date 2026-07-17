@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:api_client/api_client.dart';
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
@@ -223,6 +225,65 @@ void main() {
     expect(firstPage?.items.single.id, 'remote');
   });
 
+  test('Refresh chain reset 後，較晚完成的舊 Append 不得寫回 Cache', () async {
+    await _write(local, clock.nowUtc(), nextCursor: 'cursor-old');
+    final api = _ControlledCatalogApi();
+    final repository = _repository(api, local, clock);
+
+    final appendFuture = repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: 'cursor-old',
+          limit: 20,
+          policy: CatalogLoadPolicy.append,
+        )
+        .single;
+    await api.waitForRequestCount(1);
+
+    final refreshFuture = repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.refresh,
+        )
+        .single;
+    await api.waitForRequestCount(2);
+
+    api.complete(
+      1,
+      const CatalogPageResponseDto(
+        items: <CatalogItemDto>[
+          CatalogItemDto(id: 'fresh', name: 'Fresh', description: ''),
+        ],
+        nextCursor: 'cursor-new',
+      ),
+    );
+    await refreshFuture;
+
+    api.complete(
+      0,
+      const CatalogPageResponseDto(
+        items: <CatalogItemDto>[
+          CatalogItemDto(id: 'stale', name: 'Stale', description: ''),
+        ],
+        nextCursor: 'cursor-stale-next',
+      ),
+    );
+    await appendFuture;
+
+    expect(
+      await local.readPage(
+        query: 'flutter',
+        cursor: 'cursor-old',
+        limit: 20,
+        now: clock.nowUtc(),
+        retainFor: const Duration(days: 7),
+      ),
+      isNull,
+    );
+  });
+
   test('append retained Cache 即使 stale 也只 emit 一次 Cache', () async {
     await _write(
       local,
@@ -247,6 +308,7 @@ void main() {
   });
 
   test('append Cache miss 會走 Remote 並以 requested cursor identity 寫入', () async {
+    await _write(local, clock.nowUtc(), nextCursor: 'cursor-1');
     final api = _RecordingCatalogApi(nextCursor: 'cursor-2');
     final repository = _repository(api, local, clock);
 
@@ -275,6 +337,7 @@ void main() {
   });
 
   test('append expired page 會刪除舊 Cache 並以 Remote replacement 更新', () async {
+    await _write(local, clock.nowUtc(), nextCursor: 'cursor-1');
     await _write(
       local,
       clock.nowUtc().subtract(const Duration(days: 8)),
@@ -486,8 +549,9 @@ Future<void> _write(
   CatalogLocalDataSource local,
   DateTime updatedAt, {
   String? cursor,
+  String? nextCursor = 'cursor-next',
 }) {
-  const page = CatalogPage(items: [], nextCursor: 'cursor-next');
+  final page = CatalogPage(items: const [], nextCursor: nextCursor);
   return local.replacePage(
     page.toCacheEntity(
       query: 'flutter',
@@ -539,5 +603,35 @@ class _RecordingCatalogApi implements CatalogApi {
       ],
       nextCursor: nextCursor,
     );
+  }
+}
+
+class _ControlledCatalogApi implements CatalogApi {
+  final List<Completer<CatalogPageResponseDto>> _completers =
+      <Completer<CatalogPageResponseDto>>[];
+
+  @override
+  Future<CatalogPageResponseDto> searchCatalog({
+    required String query,
+    String? cursor,
+    required int limit,
+  }) {
+    final completer = Completer<CatalogPageResponseDto>();
+    _completers.add(completer);
+    return completer.future;
+  }
+
+  Future<void> waitForRequestCount(int count) async {
+    final deadline = DateTime.now().add(const Duration(seconds: 1));
+    while (_completers.length < count) {
+      if (DateTime.now().isAfter(deadline)) {
+        fail('Timed out waiting for API request');
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+    }
+  }
+
+  void complete(int index, CatalogPageResponseDto response) {
+    _completers[index].complete(response);
   }
 }

@@ -36,7 +36,10 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       _onLoadMoreRequested,
       transformer: _exhaustEvents(),
     );
-    on<CatalogRefreshRequested>(_onRefreshRequested);
+    on<CatalogRefreshRequested>(
+      _onRefreshRequested,
+      transformer: _exhaustEvents(),
+    );
   }
 
   final SearchCatalogUseCase _searchCatalogUseCase;
@@ -50,6 +53,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   int _searchGeneration = 0;
   StreamSubscription<Result<CatalogPageSnapshot>>? _firstPageSubscription;
   Completer<void>? _firstPageCompleter;
+  _SingleSnapshotRequest? _refreshRequest;
+  _SingleSnapshotRequest? _appendRequest;
+  final Set<String> _consumedAppendCursors = <String>{};
 
   Future<void> _onInitialRequested(
     CatalogInitialRequested event,
@@ -76,6 +82,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     required Emitter<CatalogState> emit,
   }) async {
     await _cancelFirstPageSearch();
+    await _cancelTransientOperations();
+    _consumedAppendCursors.clear();
     final generation = ++_searchGeneration;
 
     emit(
@@ -236,23 +244,31 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     emit(state.copyWith(isLoadingMore: true, appendFailure: null));
 
     late final Result<CatalogPageSnapshot> result;
+    final request = _SingleSnapshotRequest(
+      _searchCatalogUseCase.watch(
+        query: query,
+        cursor: requestedCursor,
+        limit: pageSize,
+        policy: CatalogLoadPolicy.append,
+      ),
+    );
+    _appendRequest = request;
     try {
-      result = await _loadSingleSnapshot(
-        _searchCatalogUseCase.watch(
-          query: query,
-          cursor: requestedCursor,
-          limit: pageSize,
-          policy: CatalogLoadPolicy.append,
-        ),
-        operation: 'append',
-      );
+      result = await request.load(operation: 'append');
     } catch (error, stackTrace) {
+      if (request.isCancelled) {
+        return;
+      }
       if (generation == _searchGeneration &&
           query == state.query &&
           requestedCursor == state.nextCursor) {
         emit(state.copyWith(isLoadingMore: false));
       }
       Error.throwWithStackTrace(error, stackTrace);
+    } finally {
+      if (identical(_appendRequest, request)) {
+        _appendRequest = null;
+      }
     }
 
     if (generation != _searchGeneration ||
@@ -264,6 +280,22 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     result.when(
       success: (snapshot) {
         final page = snapshot.page;
+        final nextCursor = page.nextCursor;
+        if (nextCursor != null &&
+            (nextCursor == requestedCursor ||
+                _consumedAppendCursors.contains(nextCursor))) {
+          emit(
+            state.copyWith(
+              isLoadingMore: false,
+              appendFailure: const Failure(
+                message: 'Catalog 分頁 cursor 形成循環',
+                code: 'cyclic_catalog_cursor',
+              ),
+            ),
+          );
+          return;
+        }
+        _consumedAppendCursors.add(requestedCursor);
         emit(
           state.copyWith(
             items: _mergeItems(state.items, page.items),
@@ -292,6 +324,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     }
 
     await _cancelFirstPageSearch();
+    await _cancelAppendRequest();
     final generation = ++_searchGeneration;
     final query = state.query;
 
@@ -309,21 +342,29 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     );
 
     late final Result<CatalogPageSnapshot> result;
+    final request = _SingleSnapshotRequest(
+      _searchCatalogUseCase.watch(
+        query: query,
+        cursor: null,
+        limit: pageSize,
+        policy: CatalogLoadPolicy.refresh,
+      ),
+    );
+    _refreshRequest = request;
     try {
-      result = await _loadSingleSnapshot(
-        _searchCatalogUseCase.watch(
-          query: query,
-          cursor: null,
-          limit: pageSize,
-          policy: CatalogLoadPolicy.refresh,
-        ),
-        operation: 'refresh',
-      );
+      result = await request.load(operation: 'refresh');
     } catch (error, stackTrace) {
+      if (request.isCancelled) {
+        return;
+      }
       if (generation == _searchGeneration && query == state.query) {
         emit(state.copyWith(isRefreshing: false));
       }
       Error.throwWithStackTrace(error, stackTrace);
+    } finally {
+      if (identical(_refreshRequest, request)) {
+        _refreshRequest = null;
+      }
     }
 
     if (generation != _searchGeneration || query != state.query) {
@@ -333,6 +374,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     result.when(
       success: (snapshot) {
         final page = snapshot.page;
+        _consumedAppendCursors.clear();
         emit(
           state.copyWith(
             items: page.items,
@@ -369,31 +411,65 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     }
   }
 
+  Future<void> _cancelAppendRequest() async {
+    final request = _appendRequest;
+    _appendRequest = null;
+    await request?.cancel();
+  }
+
+  Future<void> _cancelRefreshRequest() async {
+    final request = _refreshRequest;
+    _refreshRequest = null;
+    await request?.cancel();
+  }
+
+  Future<void> _cancelTransientOperations() async {
+    await Future.wait<void>(<Future<void>>[
+      _cancelAppendRequest(),
+      _cancelRefreshRequest(),
+    ]);
+  }
+
   @override
   Future<void> close() async {
     await _cancelFirstPageSearch();
+    await _cancelTransientOperations();
     return super.close();
   }
 }
 
-Future<Result<CatalogPageSnapshot>> _loadSingleSnapshot(
-  Stream<Result<CatalogPageSnapshot>> stream, {
-  required String operation,
-}) async {
-  final iterator = StreamIterator<Result<CatalogPageSnapshot>>(stream);
-  try {
-    if (!await iterator.moveNext()) {
-      throw StateError('Catalog $operation stream completed without a result');
+class _SingleSnapshotRequest {
+  _SingleSnapshotRequest(Stream<Result<CatalogPageSnapshot>> stream)
+    : _iterator = StreamIterator<Result<CatalogPageSnapshot>>(stream);
+
+  final StreamIterator<Result<CatalogPageSnapshot>> _iterator;
+  bool isCancelled = false;
+
+  Future<Result<CatalogPageSnapshot>> load({required String operation}) async {
+    try {
+      if (!await _iterator.moveNext()) {
+        throw StateError(
+          'Catalog $operation stream completed without a result',
+        );
+      }
+      final result = _iterator.current;
+      if (await _iterator.moveNext()) {
+        throw StateError(
+          'Catalog $operation stream emitted more than one result',
+        );
+      }
+      return result;
+    } finally {
+      if (!isCancelled) {
+        await _iterator.cancel();
+      }
     }
-    final result = iterator.current;
-    if (await iterator.moveNext()) {
-      throw StateError(
-        'Catalog $operation stream emitted more than one result',
-      );
-    }
-    return result;
-  } finally {
-    await iterator.cancel();
+  }
+
+  Future<void> cancel() async {
+    if (isCancelled) return;
+    isCancelled = true;
+    await _iterator.cancel();
   }
 }
 

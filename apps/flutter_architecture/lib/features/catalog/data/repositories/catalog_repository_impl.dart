@@ -89,15 +89,20 @@ class CatalogRepositoryImpl implements CatalogRepository {
 
       final updatedAt = _nowUtc();
       try {
-        await _localDataSource.replacePage(
-          page.toCacheEntity(
-            query: query,
-            requestCursor: cursor,
-            requestLimit: limit,
-            updatedAt: updatedAt,
-          ),
-          resetFollowingPages: cursor == null,
+        final cachePage = page.toCacheEntity(
+          query: query,
+          requestCursor: cursor,
+          requestLimit: limit,
+          updatedAt: updatedAt,
         );
+        if (cursor == null) {
+          await _localDataSource.replacePage(
+            cachePage,
+            resetFollowingPages: true,
+          );
+        } else {
+          await _localDataSource.replaceAppendPageIfLinked(cachePage);
+        }
       } on AppException {
         // Catalog Cache 是可重建 read model；寫入失敗不覆蓋 Remote success。
       }

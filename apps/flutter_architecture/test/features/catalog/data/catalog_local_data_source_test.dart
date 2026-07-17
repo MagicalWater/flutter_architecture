@@ -150,6 +150,30 @@ void main() {
     );
   });
 
+  test('Local boundary 拒絕 requestCursor 與 nextCursor 相同的 self-loop', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await expectLater(
+      dataSource.replacePage(
+        CatalogCachePageEntity(
+          query: '',
+          requestCursor: 'cursor-1',
+          requestLimit: 20,
+          nextCursor: 'cursor-1',
+          updatedAt: now,
+          items: const <CatalogCacheItemEntity>[],
+        ),
+        resetFollowingPages: false,
+      ),
+      throwsA(
+        isA<AppException>().having(
+          (error) => error.code,
+          'code',
+          'non_advancing_catalog_cache_cursor',
+        ),
+      ),
+    );
+  });
+
   test('replacement 同一 page 不會殘留舊 item', () async {
     final now = DateTime.utc(2026, 7, 17);
     await dataSource.replacePage(

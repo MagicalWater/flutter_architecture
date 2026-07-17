@@ -1233,7 +1233,7 @@ git diff --check
 狀態：Completed。
 
 - [x] Refresh 使用目前 query 與 `cursor = null` 強制 Remote。
-- [x] 所有 Remote 第一頁成功都 transaction replacement 第一頁並失效同 query + limit 舊後續 chain。
+- [x] Remote 第一頁 Cache replacement 成功時，transaction 取代第一頁並失效同 query + limit 當下的舊後續 chain；Cache write failure 維持 non-blocking。
 - [x] Refresh failure 保留既有 Cache、items、cursor 與 stale metadata。
 - [x] Append 以 requested cursor page identity 讀寫 Cache。
 - [x] Append 支援 Cache hit、miss 與 expired fallback；第一版不執行背景 revalidation。
@@ -1242,6 +1242,9 @@ git diff --check
 - [x] 保留既有 generation、query、requested cursor race protection。
 - [x] Refresh / Append 單次 Stream contract 明確拒絕零筆與多筆 emission。
 - [x] 補齊第一頁 chain reset、append identity、expired replacement、metadata preservation 與 protocol violation tests。
+- [x] Implementation review：Append conditional write 防止 Refresh 後 stale request 重新污染 Cache chain。
+- [x] Implementation review：Bloc cursor history 防止多節點 cycle，Local boundary 防止 self-loop。
+- [x] Implementation review：Refresh 採 exhaust，第一頁操作與 close 會取消 Refresh / Append subscription。
 
 完成驗證：
 

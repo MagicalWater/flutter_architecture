@@ -2078,9 +2078,10 @@ CREATE TABLE catalog_cache_page_item (
   request_cursor TEXT NOT NULL,
   request_limit INTEGER NOT NULL,
   item_id TEXT NOT NULL,
-  item_position INTEGER NOT NULL,
-  item_name TEXT NOT NULL,
-  PRIMARY KEY (query, request_cursor, request_limit, item_id),
+        item_position INTEGER NOT NULL,
+        item_name TEXT NOT NULL,
+        item_description TEXT NOT NULL,
+        PRIMARY KEY (query, request_cursor, request_limit, item_id),
   FOREIGN KEY (query, request_cursor, request_limit)
     REFERENCES catalog_cache_page (query, request_cursor, request_limit)
     ON DELETE CASCADE

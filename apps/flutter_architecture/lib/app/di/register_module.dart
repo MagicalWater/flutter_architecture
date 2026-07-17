@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart' as api_client;
 import 'package:auth/auth.dart' as auth;
 import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
+import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
@@ -32,15 +33,9 @@ abstract class RegisterModule {
 
     return openDatabase(
       path,
-      version: 1,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE auth_user (
-            id TEXT PRIMARY KEY,
-            name TEXT NOT NULL
-          )
-        ''');
-      },
+      version: AppDatabaseSchema.version,
+      onCreate: AppDatabaseSchema.onCreate,
+      onUpgrade: AppDatabaseSchema.onUpgrade,
     );
   }
 

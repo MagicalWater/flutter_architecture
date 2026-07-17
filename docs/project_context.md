@@ -498,7 +498,7 @@ Milestone 13-7 已完成 regression、Catalog widget coverage、文件同步與�
 
 ### Milestone 14：Offline Cache
 
-狀態：In Progress；Milestone 14-1 Architecture Decision 與 Cache Contract 已完成。
+狀態：In Progress；Milestone 14-1 至 14-2 已完成。
 
 Architecture Decision 017 已完成 review 並正式接受，核心方向如下：
 
@@ -557,7 +557,7 @@ Presentation metadata
 ```txt
 Milestone 14-1：Architecture Decision 與 Cache Contract（Completed）
   ↓
-Milestone 14-2：SQLite Schema、Migration 與 Local Models
+Milestone 14-2：SQLite Schema、Migration 與 Local Models（Completed）
   ↓
 Milestone 14-3：Repository Cache Coordination
   ↓
@@ -570,7 +570,19 @@ Milestone 14-6：UI、DI 與 Offline Cache Flow
 Milestone 14-7：Cleanup、Regression、文件與完整驗證
 ```
 
-目前工作目標：Milestone 14-2 SQLite Schema、Migration 與 Local Models。
+Milestone 14-2 已完成：
+
+- App database version 已由 1 升級為 2。
+- 新增集中式 `AppDatabaseSchema`，管理 onCreate 與 v1 → v2 migration。
+- 新增 `catalog_cache_page`、`catalog_cache_page_item` 與 page item order index。
+- Local item row 保存 id、name、description 與 position，確保 Domain 完整 round-trip。
+- 新增 `CatalogCachePageEntity`、`CatalogCacheItemEntity` 與 Local Mapper。
+- 新增 `CatalogLocalDataSource`，支援 page read、transaction replacement、chain reset、delete 與 expired page lazy cleanup。
+- 第一頁 null cursor 只在 SQLite boundary 編碼為空字串，不穿透 Domain。
+- migration test 已確認保留既有 `auth_user`。
+- transaction rollback、query/cursor/limit identity、cursor sentinel 防護、replacement、chain reset 與 expiration tests 已通過。
+
+目前工作目標：Milestone 14-3 Repository Cache Coordination。
 
 ---
 

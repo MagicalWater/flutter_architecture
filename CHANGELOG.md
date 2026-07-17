@@ -32,6 +32,11 @@
 - Cache read / write failure 維持非阻斷 local diagnostic，不加入一般 Catalog UI contract；expired cleanup 採讀取指定 page 時的 page-level lazy cleanup。
 - 將 Milestone 14 拆分為 Architecture Contract、SQLite / Migration、Repository Coordination、Initial SWR、Refresh / Append、UI / DI 與 Final Verification 七個階段。
 - 明確定義 public Catalog Cache 不因 Logout 清除，App 仍是唯一 Composition Root，且不建立 Generic Cache / Generic Pagination framework。
+- 完成 Milestone 14-2 SQLite Schema、Migration 與 Local Models。
+- App database version 升級為 2，新增集中式 `AppDatabaseSchema` 與 v1 → v2 migration，並保留既有 `auth_user`。
+- 新增 `catalog_cache_page`、`catalog_cache_page_item` 與 page item order index；Local item row 保存 id、name、description 與 position。
+- 新增 Catalog Local Entity、Local Mapper 與 `CatalogLocalDataSource`，支援 page read、transaction replacement、第一頁 chain reset、cursor sentinel 與 expired page lazy cleanup。
+- 新增 10 項 in-memory SQLite tests，涵蓋完整欄位與順序 round-trip、identity isolation、cursor sentinel 防護、replacement、chain reset、expiration、transaction rollback 與 migration。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

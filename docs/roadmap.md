@@ -1078,7 +1078,7 @@ git diff --check
 
 建立 Remote + Local 協調的 Offline Cache 範例。
 
-狀態：In Progress；Milestone 14-1 Architecture Decision 與 Cache Contract 已完成。
+狀態：In Progress；Milestone 14-1 至 14-2 已完成。
 
 本 Milestone 只為 Catalog 建立 feature-level、明確 opt-in 的 Offline Cache，不建立所有 API 自動寫入 SQLite 的 generic HTTP cache。
 
@@ -1146,14 +1146,28 @@ Decision 016 / 017、Roadmap、Project Context 與 CHANGELOG 已完成 consisten
 
 ### Milestone 14-2：SQLite Schema、Migration 與 Local Models
 
-- 將 App database version 由 1 升級為 2。
-- 建立 `catalog_cache_page`、`catalog_cache_page_item` 與必要 index。
-- 建立 v1 → v2 migration，保留 `auth_user`。
-- 建立 Catalog Local Entity 與 Local Mapper。
-- 建立 `CatalogLocalDataSource`。
-- 以 transaction replacement page metadata 與 ordered items。
-- 建立 cursor null sentinel boundary 與 page-level expired lazy cleanup。
-- 補上 in-memory SQLite、transaction、migration 與 mapping tests。
+狀態：Completed。
+
+- [x] 將 App database version 由 1 升級為 2。
+- [x] 建立 `catalog_cache_page`、`catalog_cache_page_item` 與必要 index。
+- [x] item row 保存 id、name、description 與 position，完整支援 Domain round-trip。
+- [x] 建立 v1 → v2 migration，保留 `auth_user`。
+- [x] 建立 Catalog Local Entity 與 Local Mapper。
+- [x] 建立 `CatalogLocalDataSource`。
+- [x] 以 transaction replacement page metadata 與 ordered items。
+- [x] 所有 Remote 第一頁成功可清除同 query + limit 的舊後續 chain。
+- [x] 建立 cursor null sentinel boundary、空 cursor 防護與 page-level expired lazy cleanup。
+- [x] 補上 in-memory SQLite、transaction rollback、migration 與 mapping tests。
+
+完成驗證：
+
+```txt
+flutter test test/features/catalog/data/catalog_local_data_source_test.dart
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle
+git diff --check
+```
 
 ### Milestone 14-3：Repository Cache Coordination
 

@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart';
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page_snapshot.dart';
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
@@ -10,7 +12,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Initial state 尚未載入時不視為 empty result', () {
-    expect(CatalogState.initial().isEmpty, isFalse);
+    final state = CatalogState.initial();
+    expect(state.isEmpty, isFalse);
+    expect(state.isUsingCachedData, isFalse);
+    expect(state.isStale, isFalse);
+    expect(state.lastUpdatedAt, isNull);
+    expect(state.isRevalidating, isFalse);
+    expect(state.revalidationFailure, isNull);
   });
 
   test('CatalogBloc 拒絕非正數 pageSize', () {
@@ -127,9 +135,110 @@ void main() {
     await bloc.close();
   });
 
+  test('Initial Stale Cache 先顯示並標記 revalidating，再由 Remote 替換', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    final cachedAt = DateTime.utc(2026, 7, 17, 10);
+    repository.emitSuccess(
+      0,
+      _page('cached'),
+      source: CatalogDataSource.cache,
+      freshness: CatalogFreshness.stale,
+      lastUpdatedAt: cachedAt,
+    );
+    await _waitUntil(() => bloc.state.isRevalidating);
+
+    expect(bloc.state.items.single.id, 'item-cached');
+    expect(bloc.state.isInitialLoading, isFalse);
+    expect(bloc.state.isUsingCachedData, isTrue);
+    expect(bloc.state.isStale, isTrue);
+    expect(bloc.state.lastUpdatedAt, cachedAt);
+    expect(bloc.state.revalidationFailure, isNull);
+
+    repository.completeSuccess(0, _page('remote'));
+    await _waitUntil(() => !bloc.state.isRevalidating);
+
+    expect(bloc.state.items.single.id, 'item-remote');
+    expect(bloc.state.isUsingCachedData, isFalse);
+    expect(bloc.state.isStale, isFalse);
+    expect(bloc.state.initialFailure, isNull);
+    expect(bloc.state.revalidationFailure, isNull);
+    await bloc.close();
+  });
+
+  test(
+    'Initial Stale Cache revalidation failure 保留 Cache 並使用非阻斷 failure',
+    () async {
+      final repository = _ControlledCatalogRepository();
+      final bloc = CatalogBloc(
+        SearchCatalogUseCase(repository),
+        debounceDuration: Duration.zero,
+      );
+
+      bloc.add(const CatalogEvent.initialRequested());
+      await repository.waitForRequestCount(1);
+      repository.emitSuccess(
+        0,
+        _page('cached'),
+        source: CatalogDataSource.cache,
+        freshness: CatalogFreshness.stale,
+      );
+      await _waitUntil(() => bloc.state.isRevalidating);
+      repository.completeFailure(
+        0,
+        const Failure(message: 'revalidate failed', code: 'revalidate_failed'),
+      );
+      await _waitUntil(() => !bloc.state.isRevalidating);
+
+      expect(bloc.state.items.single.id, 'item-cached');
+      expect(bloc.state.isUsingCachedData, isTrue);
+      expect(bloc.state.isStale, isTrue);
+      expect(bloc.state.initialFailure, isNull);
+      expect(bloc.state.revalidationFailure?.code, 'revalidate_failed');
+      await bloc.close();
+    },
+  );
+
+  test('Query switching 取消舊 SWR subscription 並只接受新 query', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.queryChanged('old'));
+    await repository.waitForRequestCount(1);
+    repository.emitSuccess(
+      0,
+      _page('old-cache'),
+      source: CatalogDataSource.cache,
+      freshness: CatalogFreshness.stale,
+    );
+    await _waitUntil(() => bloc.state.isRevalidating);
+
+    bloc.add(const CatalogEvent.queryChanged('new'));
+    await repository.waitForRequestCount(2);
+    await _waitUntil(() => repository.cancelledRequests.contains(0));
+    repository.completeSuccess(1, _page('new'));
+    await _waitUntil(
+      () => bloc.state.query == 'new' && !bloc.state.isInitialLoading,
+    );
+
+    expect(bloc.state.items.single.id, 'item-new');
+    expect(bloc.state.isUsingCachedData, isFalse);
+    expect(bloc.state.isRevalidating, isFalse);
+    await bloc.close();
+  });
+
   test('Initial failure 與 empty result 可分開表達', () async {
     final failureRepository = _CatalogRepositoryStub(
-      resultBuilder: (_) => const FailureResult<CatalogPage>(
+      resultBuilder: (_) => const FailureResult<CatalogPageSnapshot>(
         Failure(message: 'initial failed', code: 'initial_failed'),
       ),
     );
@@ -145,8 +254,9 @@ void main() {
     expect(failureBloc.state.isEmpty, isFalse);
 
     final emptyRepository = _CatalogRepositoryStub(
-      resultBuilder: (_) =>
-          const Success<CatalogPage>(CatalogPage(items: <CatalogItem>[])),
+      resultBuilder: (_) => Success<CatalogPageSnapshot>(
+        _snapshot(const CatalogPage(items: <CatalogItem>[])),
+      ),
     );
     final emptyBloc = CatalogBloc(
       SearchCatalogUseCase(emptyRepository),
@@ -476,46 +586,68 @@ class _CatalogRequest {
     required this.query,
     required this.cursor,
     required this.limit,
+    required this.policy,
   });
 
   final String query;
   final String? cursor;
   final int limit;
+  final CatalogLoadPolicy policy;
 }
 
 class _CatalogRepositoryStub implements CatalogRepository {
   _CatalogRepositoryStub({this.resultBuilder});
 
-  final Result<CatalogPage> Function(_CatalogRequest request)? resultBuilder;
+  final Result<CatalogPageSnapshot> Function(_CatalogRequest request)?
+  resultBuilder;
   final List<_CatalogRequest> requests = <_CatalogRequest>[];
 
   @override
-  Future<Result<CatalogPage>> searchCatalog({
+  Stream<Result<CatalogPageSnapshot>> watchCatalog({
     required String query,
     required String? cursor,
     required int limit,
-  }) async {
-    final request = _CatalogRequest(query: query, cursor: cursor, limit: limit);
+    required CatalogLoadPolicy policy,
+  }) async* {
+    final request = _CatalogRequest(
+      query: query,
+      cursor: cursor,
+      limit: limit,
+      policy: policy,
+    );
     requests.add(request);
-    return resultBuilder?.call(request) ?? Success<CatalogPage>(_page(query));
+    yield resultBuilder?.call(request) ??
+        Success<CatalogPageSnapshot>(_snapshot(_page(query)));
   }
 }
 
 class _ControlledCatalogRepository implements CatalogRepository {
   final List<_CatalogRequest> requests = <_CatalogRequest>[];
-  final List<Completer<Result<CatalogPage>>> _completers =
-      <Completer<Result<CatalogPage>>>[];
+  final List<StreamController<Result<CatalogPageSnapshot>>> _controllers =
+      <StreamController<Result<CatalogPageSnapshot>>>[];
+  final Set<int> cancelledRequests = <int>{};
 
   @override
-  Future<Result<CatalogPage>> searchCatalog({
+  Stream<Result<CatalogPageSnapshot>> watchCatalog({
     required String query,
     required String? cursor,
     required int limit,
+    required CatalogLoadPolicy policy,
   }) {
-    requests.add(_CatalogRequest(query: query, cursor: cursor, limit: limit));
-    final completer = Completer<Result<CatalogPage>>();
-    _completers.add(completer);
-    return completer.future;
+    requests.add(
+      _CatalogRequest(
+        query: query,
+        cursor: cursor,
+        limit: limit,
+        policy: policy,
+      ),
+    );
+    final index = _controllers.length;
+    final controller = StreamController<Result<CatalogPageSnapshot>>(
+      onCancel: () => cancelledRequests.add(index),
+    );
+    _controllers.add(controller);
+    return controller.stream;
   }
 
   Future<void> waitForRequestCount(int count) async {
@@ -523,14 +655,52 @@ class _ControlledCatalogRepository implements CatalogRepository {
   }
 
   void completeSuccess(int index, CatalogPage page) {
-    _completers[index].complete(Success<CatalogPage>(page));
+    emitSuccess(index, page);
+    _controllers[index].close();
+  }
+
+  void emitSuccess(
+    int index,
+    CatalogPage page, {
+    CatalogDataSource source = CatalogDataSource.remote,
+    CatalogFreshness freshness = CatalogFreshness.fresh,
+    DateTime? lastUpdatedAt,
+  }) {
+    _controllers[index].add(
+      Success<CatalogPageSnapshot>(
+        _snapshot(
+          page,
+          source: source,
+          freshness: freshness,
+          lastUpdatedAt: lastUpdatedAt,
+        ),
+      ),
+    );
   }
 
   void completeFailure(int index, Failure failure) {
-    _completers[index].complete(FailureResult<CatalogPage>(failure));
+    _controllers[index]
+      ..add(FailureResult<CatalogPageSnapshot>(failure))
+      ..close();
   }
 
   void completeUnknown(int index, Object error) {
-    _completers[index].complete(FailureResult<CatalogPage>(error));
+    _controllers[index]
+      ..addError(error, StackTrace.current)
+      ..close();
   }
+}
+
+CatalogPageSnapshot _snapshot(
+  CatalogPage page, {
+  CatalogDataSource source = CatalogDataSource.remote,
+  CatalogFreshness freshness = CatalogFreshness.fresh,
+  DateTime? lastUpdatedAt,
+}) {
+  return CatalogPageSnapshot(
+    page: page,
+    source: source,
+    freshness: freshness,
+    lastUpdatedAt: lastUpdatedAt ?? DateTime.utc(2026, 7, 17, 12),
+  );
 }

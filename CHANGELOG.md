@@ -47,6 +47,11 @@
 - 依 Milestone 14-3 implementation review，將 Catalog Repository 的 Remote、Local、CachePolicy 與 Clock dependencies 全部改為 required，避免 silent misconfiguration。
 - 補強 policy / cursor validation，Append 的空字串與空白 cursor 現在會在 Cache read 或 Remote request 前 fail fast。
 - 未來 `updatedAt` 不再被判定為 Fresh-only，而是視為 Stale 並執行 revalidation；Repository Cache tests 增至 16 項，補齊 freshFor / retainFor 精確邊界與 read/write failure 分離。
+- 完成 Milestone 14-4 Initial Search、Query Switching 與 SWR Bloc Flow。
+- CatalogBloc 改為直接消費 `CatalogRepository.watchCatalog()` Stream，支援 Cache → Remote 多次 emission，並移除舊單次 Repository / UseCase contract。
+- CatalogState 新增 cached/stale/lastUpdatedAt/revalidating/revalidationFailure metadata；Stale Cache revalidation failure 會保留現有資料並以 non-blocking failure 表達。
+- Query switching 會取消舊 SWR subscription，並保留 generation、query identity 與 stale-response guard；Refresh / Append 暫以單次 Stream emission 維持既有 workflow。
+- CatalogBloc tests 增至 21 項，新增 Cache → Remote、revalidation failure、query switch cancellation 與 Stream error cleanup coverage。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

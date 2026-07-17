@@ -7,12 +7,11 @@ import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_page_response_dto_mapper.dart';
 import 'package:flutter_architecture/features/catalog/data/models/catalog_cache_page_entity.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
-import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page_snapshot.dart';
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 
 /// CatalogRepository 的 Data Layer 實作。
-class CatalogRepositoryImpl implements CatalogStreamingRepository {
+class CatalogRepositoryImpl implements CatalogRepository {
   const CatalogRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
@@ -24,26 +23,6 @@ class CatalogRepositoryImpl implements CatalogStreamingRepository {
   final CatalogLocalDataSource _localDataSource;
   final CatalogCachePolicy _cachePolicy;
   final CatalogClock _clock;
-
-  @override
-  Future<Result<CatalogPage>> searchCatalog({
-    required String query,
-    required String? cursor,
-    required int limit,
-  }) async {
-    final result = await watchCatalog(
-      query: query,
-      cursor: cursor,
-      limit: limit,
-      policy: cursor == null
-          ? CatalogLoadPolicy.refresh
-          : CatalogLoadPolicy.append,
-    ).first;
-    return result.when(
-      success: (snapshot) => Success(snapshot.page),
-      failure: FailureResult.new,
-    );
-  }
 
   @override
   Stream<Result<CatalogPageSnapshot>> watchCatalog({

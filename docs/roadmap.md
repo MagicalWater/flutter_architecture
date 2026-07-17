@@ -1078,7 +1078,7 @@ git diff --check
 
 建立 Remote + Local 協調的 Offline Cache 範例。
 
-狀態：In Progress；Milestone 14-1 至 14-3 已完成。
+狀態：In Progress；Milestone 14-1 至 14-4 已完成。
 
 本 Milestone 只為 Catalog 建立 feature-level、明確 opt-in 的 Offline Cache，不建立所有 API 自動寫入 SQLite 的 generic HTTP cache。
 
@@ -1178,8 +1178,8 @@ git diff --check
 - [x] 建立 `CatalogPageSnapshot`、`CatalogDataSource` 與 `CatalogFreshness`。
 - [x] 建立 `CatalogLoadPolicy.initial / refresh / append` contract、合法 cursor 組合與 fail-fast validation。
 - [x] 實作 initial / refresh / append 各自明確的 Stream emission contract。
-- [x] 建立 `CatalogStreamingRepository.watchCatalog()` 與 `SearchCatalogUseCase.watch()`。
-- [x] 保留舊單次 `searchCatalog()` / `execute()` 至 Milestone 14-4，避免提前修改 Bloc。
+- [x] 建立 `CatalogRepository.watchCatalog()` 與 `SearchCatalogUseCase.watch()`。
+- [x] Milestone 14-4 完成 Bloc 遷移後移除舊單次 `searchCatalog()` / `execute()` contract。
 - [x] 實作 Cache miss、Fresh Cache、Stale Cache + revalidate。
 - [x] Remote success 通過 cursor validation 後才寫入 Cache。
 - [x] Cache read / write failure 採非阻斷 read-model policy。
@@ -1202,12 +1202,27 @@ git diff --check
 
 ### Milestone 14-4：Initial Search、Query Switching 與 SWR Bloc Flow
 
-- CatalogBloc 處理 Cache → Remote 多次結果。
-- 保留 search generation、query identity 與 logical cancellation guard。
-- Query switching 不清除其他 query Cache。
-- 新增 `isUsingCachedData`、`isStale`、`lastUpdatedAt`、`isRevalidating` 與 `revalidationFailure` state。
-- Background revalidation 與 user Refresh 使用不同 loading / failure state。
-- 補齊 Initial SWR、query switching、stale response 與 subscription cleanup tests。
+狀態：Completed。
+
+- [x] CatalogBloc 使用 `emit.forEach` 處理 Cache → Remote 多次結果。
+- [x] 保留 search generation、query identity 與 logical cancellation guard。
+- [x] Query switching 使用 switchMap 取消舊 SWR subscription，且不清除其他 query Cache。
+- [x] 新增 `isUsingCachedData`、`isStale`、`lastUpdatedAt`、`isRevalidating` 與 `revalidationFailure` state。
+- [x] Stale Cache 先顯示並標記 background revalidation；Remote success 替換 snapshot metadata。
+- [x] Revalidation failure 保留 Cache data，寫入 non-blocking `revalidationFailure`。
+- [x] Background revalidation 與 user Refresh 使用不同 loading / failure state。
+- [x] 移除舊單次 Repository / UseCase contract，Refresh / Append 暫以單次 Stream emission 保持既有行為。
+- [x] 補齊 Initial SWR、query switching、stale response、unknown error cleanup 與 subscription cancellation tests。
+
+完成驗證：
+
+```txt
+flutter test test/features/catalog/presentation/bloc/catalog_bloc_test.dart
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+git diff --check
+```
 
 ### Milestone 14-5：Refresh、Append 與 Cursor Chain
 

@@ -498,7 +498,7 @@ Milestone 13-7 已完成 regression、Catalog widget coverage、文件同步與�
 
 ### Milestone 14：Offline Cache
 
-狀態：In Progress；Milestone 14-1 至 14-3 已完成。
+狀態：In Progress；Milestone 14-1 至 14-4 已完成。
 
 Architecture Decision 017 已完成 review 並正式接受，核心方向如下：
 
@@ -561,7 +561,7 @@ Milestone 14-2：SQLite Schema、Migration 與 Local Models（Completed）
   ↓
 Milestone 14-3：Repository Cache Coordination（Completed）
   ↓
-Milestone 14-4：Initial Search、Query Switching 與 SWR Bloc Flow
+Milestone 14-4：Initial Search、Query Switching 與 SWR Bloc Flow（Completed）
   ↓
 Milestone 14-5：Refresh、Append 與 Cursor Chain
   ↓
@@ -591,14 +591,25 @@ Milestone 14-3 已完成：
 - Cache read / write failure 不覆蓋 Remote success；未知錯誤保留 Stream error channel。
 - Remote cursor 驗證通過後才寫入 Cache，第一頁 success 會重設 cursor chain。
 - App Composition Root 明確註冊 LocalDataSource、CachePolicy、Clock 與 Repository。
-- 為避免提前修改 Presentation，舊單次 Repository / UseCase API 暫時保留至 Milestone 14-4。
+- Milestone 14-4 已完成 Presentation 遷移，舊單次 Repository / UseCase API 已移除。
 - Implementation review 已將 Repository dependencies 全部改為 required，避免宣稱支援 SWR 卻缺少 Local / Policy / Clock 的半配置 instance。
 - Append 空字串與空白 cursor 會 fail fast，不再被誤當 Cache miss 後傳給 Remote。
 - `updatedAt` 位於未來時會視為 Stale 並 revalidate，不會形成 Fresh-only Cache。
 - 16 項 Repository contract tests 已涵蓋 freshFor / retainFor 精確邊界、未來 timestamp、Cache read/write failure 分離、三種 policy、cursor validation 與未知錯誤。
 - build_runner、workspace analyze 與完整 tests 已通過。
 
-目前工作目標：Milestone 14-4 Initial Search、Query Switching 與 SWR Bloc Flow。
+Milestone 14-4 已完成：
+
+- CatalogBloc Initial / Query Switching 已改為消費 Repository Stream。
+- Cache snapshot 可先完成 initial loading；Stale Cache 會標記 `isRevalidating`。
+- Remote success 會替換 items、cursor、source、freshness 與 lastUpdatedAt。
+- Remote failure 若已有 Cache，保留資料並寫入 `revalidationFailure`，不產生 blocking initial failure。
+- Query switching 會取消舊 SWR subscription，並保留既有 generation / query stale-response guard。
+- CatalogState 已新增 `isUsingCachedData`、`isStale`、`lastUpdatedAt`、`isRevalidating` 與 `revalidationFailure`。
+- Refresh / Append 已遷移到相同 Stream contract，但 workflow metadata 的完整整合留在 Milestone 14-5。
+- 21 項 CatalogBloc tests、build_runner、workspace analyze 與完整 tests 已通過。
+
+目前工作目標：Milestone 14-5 Refresh、Append 與 Cursor Chain。
 
 ---
 

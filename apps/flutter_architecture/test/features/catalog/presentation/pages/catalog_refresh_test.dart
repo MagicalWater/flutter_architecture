@@ -1,7 +1,9 @@
 import 'package:core/core.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart'
     as domain;
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page_snapshot.dart';
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
@@ -28,13 +30,19 @@ void main() {
 
 class _ImmediateCatalogRepository implements CatalogRepository {
   @override
-  Future<Result<domain.CatalogPage>> searchCatalog({
+  Stream<Result<CatalogPageSnapshot>> watchCatalog({
     required String query,
     required String? cursor,
     required int limit,
-  }) async {
-    return const Success<domain.CatalogPage>(
-      domain.CatalogPage(items: <CatalogItem>[]),
+    required CatalogLoadPolicy policy,
+  }) async* {
+    yield Success<CatalogPageSnapshot>(
+      CatalogPageSnapshot(
+        page: const domain.CatalogPage(items: <CatalogItem>[]),
+        source: CatalogDataSource.remote,
+        freshness: CatalogFreshness.fresh,
+        lastUpdatedAt: DateTime.utc(2026, 7, 17),
+      ),
     );
   }
 }

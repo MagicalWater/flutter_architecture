@@ -1,5 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page_snapshot.dart';
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -80,56 +82,94 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         isRefreshing: false,
         isLoadingMore: false,
         hasCompletedInitialLoad: false,
+        isUsingCachedData: false,
+        isStale: false,
+        lastUpdatedAt: null,
+        isRevalidating: false,
         initialFailure: null,
+        revalidationFailure: null,
         refreshFailure: null,
         appendFailure: null,
       ),
     );
 
-    final result = await _searchCatalogUseCase.execute(
-      query: query,
-      cursor: null,
-      limit: pageSize,
-    );
+    var hasDisplayableSnapshot = false;
+    await emit.forEach<Result<CatalogPageSnapshot>>(
+      _searchCatalogUseCase.watch(
+        query: query,
+        cursor: null,
+        limit: pageSize,
+        policy: CatalogLoadPolicy.initial,
+      ),
+      onData: (result) {
+        if (generation != _searchGeneration || query != state.query) {
+          return state;
+        }
 
-    if (generation != _searchGeneration || query != state.query) {
-      return;
-    }
-
-    result.when(
-      success: (page) {
-        emit(
-          state.copyWith(
-            items: page.items,
-            nextCursor: page.nextCursor,
-            isInitialLoading: false,
-            hasCompletedInitialLoad: true,
-            initialFailure: null,
-          ),
+        return result.when(
+          success: (snapshot) {
+            hasDisplayableSnapshot = true;
+            final isCache = snapshot.source == CatalogDataSource.cache;
+            final isStale = snapshot.freshness == CatalogFreshness.stale;
+            return state.copyWith(
+              items: snapshot.page.items,
+              nextCursor: snapshot.page.nextCursor,
+              isInitialLoading: false,
+              hasCompletedInitialLoad: true,
+              isUsingCachedData: isCache,
+              isStale: isStale,
+              lastUpdatedAt: snapshot.lastUpdatedAt,
+              isRevalidating: isCache && isStale,
+              initialFailure: null,
+              revalidationFailure: null,
+            );
+          },
+          failure: (error) {
+            if (error is! Failure) {
+              throw error;
+            }
+            if (hasDisplayableSnapshot) {
+              return state.copyWith(
+                isInitialLoading: false,
+                isRevalidating: false,
+                revalidationFailure: error,
+              );
+            }
+            return state.copyWith(
+              items: const <CatalogItem>[],
+              nextCursor: null,
+              isInitialLoading: false,
+              hasCompletedInitialLoad: true,
+              isUsingCachedData: false,
+              isStale: false,
+              lastUpdatedAt: null,
+              isRevalidating: false,
+              initialFailure: error,
+              revalidationFailure: null,
+            );
+          },
         );
       },
-      failure: (error) {
-        if (error is! Failure) {
+      onError: (error, stackTrace) {
+        if (generation == _searchGeneration && query == state.query) {
           emit(
             state.copyWith(
               isInitialLoading: false,
-              hasCompletedInitialLoad: false,
+              isRevalidating: false,
+              hasCompletedInitialLoad: hasDisplayableSnapshot,
             ),
           );
-          throw error;
         }
-
-        emit(
-          state.copyWith(
-            items: const <CatalogItem>[],
-            nextCursor: null,
-            isInitialLoading: false,
-            hasCompletedInitialLoad: true,
-            initialFailure: error,
-          ),
-        );
+        Error.throwWithStackTrace(error, stackTrace);
       },
     );
+
+    if (!emit.isDone &&
+        generation == _searchGeneration &&
+        query == state.query &&
+        state.isRevalidating) {
+      emit(state.copyWith(isRevalidating: false));
+    }
   }
 
   Future<void> _onLoadMoreRequested(
@@ -150,11 +190,24 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
     emit(state.copyWith(isLoadingMore: true, appendFailure: null));
 
-    final result = await _searchCatalogUseCase.execute(
-      query: query,
-      cursor: requestedCursor,
-      limit: pageSize,
-    );
+    late final Result<CatalogPageSnapshot> result;
+    try {
+      result = await _searchCatalogUseCase
+          .watch(
+            query: query,
+            cursor: requestedCursor,
+            limit: pageSize,
+            policy: CatalogLoadPolicy.append,
+          )
+          .single;
+    } catch (error, stackTrace) {
+      if (generation == _searchGeneration &&
+          query == state.query &&
+          requestedCursor == state.nextCursor) {
+        emit(state.copyWith(isLoadingMore: false));
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
 
     if (generation != _searchGeneration ||
         query != state.query ||
@@ -163,7 +216,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     }
 
     result.when(
-      success: (page) {
+      success: (snapshot) {
+        final page = snapshot.page;
         emit(
           state.copyWith(
             items: _mergeItems(state.items, page.items),
@@ -205,18 +259,30 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       ),
     );
 
-    final result = await _searchCatalogUseCase.execute(
-      query: query,
-      cursor: null,
-      limit: pageSize,
-    );
+    late final Result<CatalogPageSnapshot> result;
+    try {
+      result = await _searchCatalogUseCase
+          .watch(
+            query: query,
+            cursor: null,
+            limit: pageSize,
+            policy: CatalogLoadPolicy.refresh,
+          )
+          .single;
+    } catch (error, stackTrace) {
+      if (generation == _searchGeneration && query == state.query) {
+        emit(state.copyWith(isRefreshing: false));
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
 
     if (generation != _searchGeneration || query != state.query) {
       return;
     }
 
     result.when(
-      success: (page) {
+      success: (snapshot) {
+        final page = snapshot.page;
         emit(
           state.copyWith(
             items: page.items,

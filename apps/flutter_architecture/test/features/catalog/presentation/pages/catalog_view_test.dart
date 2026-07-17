@@ -100,7 +100,12 @@ CatalogState _state({
     isRefreshing: false,
     isLoadingMore: isLoadingMore,
     hasCompletedInitialLoad: hasCompletedInitialLoad,
+    isUsingCachedData: false,
+    isStale: false,
+    lastUpdatedAt: null,
+    isRevalidating: false,
     initialFailure: initialFailure,
+    revalidationFailure: null,
     refreshFailure: null,
     appendFailure: appendFailure,
   );

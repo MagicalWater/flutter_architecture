@@ -9,7 +9,9 @@ import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_page_response_dto_mapper.dart';
 import 'package:flutter_architecture/features/catalog/data/repositories/catalog_repository_impl.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart';
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page_snapshot.dart';
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -129,14 +131,17 @@ void main() {
   test('CatalogRepository 會把 DTO 映射為成功結果', () async {
     final repository = _repository(_RecordingCatalogApi(), localDataSource);
 
-    final result = await repository.searchCatalog(
-      query: 'flutter',
-      cursor: null,
-      limit: 20,
-    );
+    final result = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.refresh,
+        )
+        .single;
 
     final page = result.when(
-      success: (value) => value,
+      success: (value) => value.page,
       failure: (_) => throw StateError('unexpected failure'),
     );
 
@@ -155,11 +160,14 @@ void main() {
       localDataSource,
     );
 
-    final result = await repository.searchCatalog(
-      query: '',
-      cursor: 'cursor-001',
-      limit: 20,
-    );
+    final result = await repository
+        .watchCatalog(
+          query: '',
+          cursor: 'cursor-001',
+          limit: 20,
+          policy: CatalogLoadPolicy.append,
+        )
+        .single;
 
     final failure = result.when(
       success: (_) => throw StateError('unexpected success'),
@@ -178,11 +186,14 @@ void main() {
       localDataSource,
     );
 
-    final result = await repository.searchCatalog(
-      query: '',
-      cursor: null,
-      limit: 20,
-    );
+    final result = await repository
+        .watchCatalog(
+          query: '',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.refresh,
+        )
+        .single;
 
     final failure = result.when(
       success: (_) => throw StateError('unexpected success'),
@@ -207,11 +218,14 @@ void main() {
         localDataSource,
       );
 
-      final result = await repository.searchCatalog(
-        query: '',
-        cursor: null,
-        limit: 20,
-      );
+      final result = await repository
+          .watchCatalog(
+            query: '',
+            cursor: null,
+            limit: 20,
+            policy: CatalogLoadPolicy.refresh,
+          )
+          .single;
 
       final failure = result.when(
         success: (_) => throw StateError('unexpected success'),
@@ -228,8 +242,13 @@ void main() {
     final repository = _repository(_ThrowingCatalogApi(error), localDataSource);
 
     await expectLater(
-      repository.searchCatalog(query: '', cursor: null, limit: 20),
-      throwsA(same(error)),
+      repository.watchCatalog(
+        query: '',
+        cursor: null,
+        limit: 20,
+        policy: CatalogLoadPolicy.refresh,
+      ),
+      emitsError(same(error)),
     );
   });
 
@@ -237,7 +256,14 @@ void main() {
     final repository = _RecordingCatalogRepository();
     final useCase = SearchCatalogUseCase(repository);
 
-    await useCase.execute(query: 'flutter', cursor: 'cursor-001', limit: 30);
+    await useCase
+        .watch(
+          query: 'flutter',
+          cursor: 'cursor-001',
+          limit: 30,
+          policy: CatalogLoadPolicy.append,
+        )
+        .single;
 
     expect(repository.query, 'flutter');
     expect(repository.cursor, 'cursor-001');
@@ -321,15 +347,23 @@ class _RecordingCatalogRepository implements CatalogRepository {
   int? limit;
 
   @override
-  Future<Result<CatalogPage>> searchCatalog({
+  Stream<Result<CatalogPageSnapshot>> watchCatalog({
     required String query,
     required String? cursor,
     required int limit,
-  }) async {
+    required CatalogLoadPolicy policy,
+  }) async* {
     this.query = query;
     this.cursor = cursor;
     this.limit = limit;
-    return const Success<CatalogPage>(CatalogPage(items: <CatalogItem>[]));
+    yield Success<CatalogPageSnapshot>(
+      CatalogPageSnapshot(
+        page: const CatalogPage(items: <CatalogItem>[]),
+        source: CatalogDataSource.remote,
+        freshness: CatalogFreshness.fresh,
+        lastUpdatedAt: DateTime.utc(2026, 7, 17),
+      ),
+    );
   }
 }
 

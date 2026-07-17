@@ -423,6 +423,72 @@ void main() {
     await bloc.close();
   });
 
+  test('Append Cache snapshot 不會污染第一頁 freshness metadata', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    final firstPageAt = DateTime.utc(2026, 7, 17, 12);
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(
+      0,
+      _page('initial', nextCursor: 'cursor-1'),
+      lastUpdatedAt: firstPageAt,
+    );
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.loadMoreRequested());
+    await repository.waitForRequestCount(2);
+    repository.completeSuccess(
+      1,
+      _page('cached-append', nextCursor: 'cursor-2'),
+      source: CatalogDataSource.cache,
+      freshness: CatalogFreshness.stale,
+      lastUpdatedAt: DateTime.utc(2026, 7, 10),
+    );
+    await _waitUntil(() => !bloc.state.isLoadingMore);
+
+    expect(bloc.state.items.map((item) => item.id), <String>[
+      'item-initial',
+      'item-cached-append',
+    ]);
+    expect(bloc.state.nextCursor, 'cursor-2');
+    expect(bloc.state.isUsingCachedData, isFalse);
+    expect(bloc.state.isStale, isFalse);
+    expect(bloc.state.lastUpdatedAt, firstPageAt);
+    await bloc.close();
+  });
+
+  test('Append 多次 emission 視為 protocol violation 並清除 loading', () async {
+    final repository = _ControlledCatalogRepository();
+    late CatalogBloc bloc;
+    final errors = <Object>[];
+
+    await runZonedGuarded(() async {
+      bloc = CatalogBloc(
+        SearchCatalogUseCase(repository),
+        debounceDuration: Duration.zero,
+      );
+      bloc.add(const CatalogEvent.initialRequested());
+      await repository.waitForRequestCount(1);
+      repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+      await _waitUntil(() => !bloc.state.isInitialLoading);
+
+      bloc.add(const CatalogEvent.loadMoreRequested());
+      await repository.waitForRequestCount(2);
+      repository.emitSuccess(1, _page('append-1'));
+      repository.completeSuccess(1, _page('append-2'));
+      await _waitUntil(() => !bloc.state.isLoadingMore);
+    }, (error, stackTrace) => errors.add(error));
+
+    expect(errors.single, isA<StateError>());
+    expect(bloc.state.items.single.id, 'item-initial');
+    await bloc.close();
+  });
+
   test('Append failure 保留 items 與 cursor，並允許 retry', () async {
     final repository = _ControlledCatalogRepository();
     final bloc = CatalogBloc(
@@ -602,6 +668,68 @@ void main() {
 
     expect(errors.single, isA<StateError>());
     expect(bloc.state.items.single.id, 'item-fresh');
+    await bloc.close();
+  });
+
+  test('Refresh failure 保留 stale Cache 與 freshness metadata', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    final cachedAt = DateTime.utc(2026, 7, 17, 9);
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.emitSuccess(
+      0,
+      _page('cached', nextCursor: 'cursor-1'),
+      source: CatalogDataSource.cache,
+      freshness: CatalogFreshness.stale,
+      lastUpdatedAt: cachedAt,
+    );
+    await _waitUntil(() => bloc.state.isRevalidating);
+
+    bloc.add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(2);
+    repository.completeFailure(
+      1,
+      const Failure(message: 'refresh failed', code: 'refresh_failed'),
+    );
+    await _waitUntil(() => !bloc.state.isRefreshing);
+
+    expect(bloc.state.items.single.id, 'item-cached');
+    expect(bloc.state.nextCursor, 'cursor-1');
+    expect(bloc.state.isUsingCachedData, isTrue);
+    expect(bloc.state.isStale, isTrue);
+    expect(bloc.state.lastUpdatedAt, cachedAt);
+    expect(bloc.state.refreshFailure?.code, 'refresh_failed');
+    await bloc.close();
+  });
+
+  test('Refresh 無 emission 視為 protocol violation 並清除 loading', () async {
+    final repository = _ControlledCatalogRepository();
+    late CatalogBloc bloc;
+    final errors = <Object>[];
+
+    await runZonedGuarded(() async {
+      bloc = CatalogBloc(
+        SearchCatalogUseCase(repository),
+        debounceDuration: Duration.zero,
+      );
+      bloc.add(const CatalogEvent.initialRequested());
+      await repository.waitForRequestCount(1);
+      repository.completeSuccess(0, _page('initial'));
+      await _waitUntil(() => !bloc.state.isInitialLoading);
+
+      bloc.add(const CatalogEvent.refreshRequested());
+      await repository.waitForRequestCount(2);
+      await repository.closeRequest(1);
+      await _waitUntil(() => !bloc.state.isRefreshing);
+    }, (error, stackTrace) => errors.add(error));
+
+    expect(errors.single, isA<StateError>());
+    expect(bloc.state.items.single.id, 'item-initial');
     await bloc.close();
   });
 

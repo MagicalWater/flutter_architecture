@@ -184,6 +184,45 @@ void main() {
     expect(api.callCount, 1);
   });
 
+  test('refresh Remote 第一頁會替換第一頁並失效舊後續 cursor chain', () async {
+    await _write(local, clock.nowUtc(), cursor: 'cursor-old');
+    final repository = _repository(
+      _RecordingCatalogApi(nextCursor: 'cursor-new'),
+      local,
+      clock,
+    );
+
+    final result = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.refresh,
+        )
+        .single;
+
+    expect(_success(result).page.nextCursor, 'cursor-new');
+    expect(
+      await local.readPage(
+        query: 'flutter',
+        cursor: 'cursor-old',
+        limit: 20,
+        now: clock.nowUtc(),
+        retainFor: const Duration(days: 7),
+      ),
+      isNull,
+    );
+    final firstPage = await local.readPage(
+      query: 'flutter',
+      cursor: null,
+      limit: 20,
+      now: clock.nowUtc(),
+      retainFor: const Duration(days: 7),
+    );
+    expect(firstPage?.nextCursor, 'cursor-new');
+    expect(firstPage?.items.single.id, 'remote');
+  });
+
   test('append retained Cache 即使 stale 也只 emit 一次 Cache', () async {
     await _write(
       local,
@@ -205,6 +244,67 @@ void main() {
     expect(results, hasLength(1));
     expect(_success(results.single).source, CatalogDataSource.cache);
     expect(api.callCount, 0);
+  });
+
+  test('append Cache miss 會走 Remote 並以 requested cursor identity 寫入', () async {
+    final api = _RecordingCatalogApi(nextCursor: 'cursor-2');
+    final repository = _repository(api, local, clock);
+
+    final first = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: 'cursor-1',
+          limit: 20,
+          policy: CatalogLoadPolicy.append,
+        )
+        .single;
+    expect(_success(first).source, CatalogDataSource.remote);
+    expect(api.callCount, 1);
+
+    final second = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: 'cursor-1',
+          limit: 20,
+          policy: CatalogLoadPolicy.append,
+        )
+        .single;
+    expect(_success(second).source, CatalogDataSource.cache);
+    expect(_success(second).page.nextCursor, 'cursor-2');
+    expect(api.callCount, 1);
+  });
+
+  test('append expired page 會刪除舊 Cache 並以 Remote replacement 更新', () async {
+    await _write(
+      local,
+      clock.nowUtc().subtract(const Duration(days: 8)),
+      cursor: 'cursor-1',
+    );
+    final repository = _repository(
+      _RecordingCatalogApi(nextCursor: 'cursor-2'),
+      local,
+      clock,
+    );
+
+    final result = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: 'cursor-1',
+          limit: 20,
+          policy: CatalogLoadPolicy.append,
+        )
+        .single;
+
+    expect(_success(result).source, CatalogDataSource.remote);
+    final cached = await local.readPage(
+      query: 'flutter',
+      cursor: 'cursor-1',
+      limit: 20,
+      now: clock.nowUtc(),
+      retainFor: const Duration(days: 7),
+    );
+    expect(cached?.nextCursor, 'cursor-2');
+    expect(cached?.items.single.id, 'remote');
   });
 
   test('expired Cache 視為 miss 並改走 Remote', () async {

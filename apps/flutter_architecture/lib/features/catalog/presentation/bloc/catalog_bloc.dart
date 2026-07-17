@@ -237,14 +237,15 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
     late final Result<CatalogPageSnapshot> result;
     try {
-      result = await _searchCatalogUseCase
-          .watch(
-            query: query,
-            cursor: requestedCursor,
-            limit: pageSize,
-            policy: CatalogLoadPolicy.append,
-          )
-          .single;
+      result = await _loadSingleSnapshot(
+        _searchCatalogUseCase.watch(
+          query: query,
+          cursor: requestedCursor,
+          limit: pageSize,
+          policy: CatalogLoadPolicy.append,
+        ),
+        operation: 'append',
+      );
     } catch (error, stackTrace) {
       if (generation == _searchGeneration &&
           query == state.query &&
@@ -309,14 +310,15 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
     late final Result<CatalogPageSnapshot> result;
     try {
-      result = await _searchCatalogUseCase
-          .watch(
-            query: query,
-            cursor: null,
-            limit: pageSize,
-            policy: CatalogLoadPolicy.refresh,
-          )
-          .single;
+      result = await _loadSingleSnapshot(
+        _searchCatalogUseCase.watch(
+          query: query,
+          cursor: null,
+          limit: pageSize,
+          policy: CatalogLoadPolicy.refresh,
+        ),
+        operation: 'refresh',
+      );
     } catch (error, stackTrace) {
       if (generation == _searchGeneration && query == state.query) {
         emit(state.copyWith(isRefreshing: false));
@@ -371,6 +373,27 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   Future<void> close() async {
     await _cancelFirstPageSearch();
     return super.close();
+  }
+}
+
+Future<Result<CatalogPageSnapshot>> _loadSingleSnapshot(
+  Stream<Result<CatalogPageSnapshot>> stream, {
+  required String operation,
+}) async {
+  final iterator = StreamIterator<Result<CatalogPageSnapshot>>(stream);
+  try {
+    if (!await iterator.moveNext()) {
+      throw StateError('Catalog $operation stream completed without a result');
+    }
+    final result = iterator.current;
+    if (await iterator.moveNext()) {
+      throw StateError(
+        'Catalog $operation stream emitted more than one result',
+      );
+    }
+    return result;
+  } finally {
+    await iterator.cancel();
   }
 }
 

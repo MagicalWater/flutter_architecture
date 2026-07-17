@@ -56,6 +56,13 @@
 - Refresh 會取消 stale revalidation，並完整更新 `isUsingCachedData`、`isStale`、`lastUpdatedAt`、`isRevalidating` 與 `revalidationFailure` metadata。
 - Stale Cache 後 Stream 若未產生 Remote success / failure 就關閉，現在視為 protocol violation，不再靜默結束 revalidation。
 - CatalogBloc tests 增至 24 項，補齊 Initial → Query、Initial retry、Stale → Refresh cancellation 與 stale-only Stream close coverage。
+- 完成 Milestone 14-5 Refresh、Append 與 Cursor Chain。
+- Refresh 使用目前 query 與 null cursor 強制 Remote；Remote 第一頁成功會 transaction replacement 第一頁，並失效同 query + limit 的舊後續 cursor chain。
+- Refresh failure 會保留既有 items、cursor 與 cached / stale / lastUpdatedAt metadata。
+- Append 以 requested cursor page identity 讀寫 Cache，支援 retained Cache hit、Cache miss Remote fallback 與 expired page replacement；第一版不做背景 revalidation。
+- Append Cache snapshot 只影響 appended items 與 nextCursor，不覆蓋第一頁 freshness metadata；既有 generation、query、requested cursor race protection 維持不變。
+- Refresh / Append 現在透過明確 single-result Stream protocol helper 驗證零筆與多筆 emission，違規時會清除 loading 並保留原始錯誤。
+- Repository Cache tests 增至 19 項、CatalogBloc tests 增至 28 項，涵蓋第一頁 chain reset、append identity、expired fallback、metadata preservation 與 Stream protocol violation。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

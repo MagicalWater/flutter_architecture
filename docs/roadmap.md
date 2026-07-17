@@ -1230,13 +1230,29 @@ git diff --check
 
 ### Milestone 14-5：Refresh、Append 與 Cursor Chain
 
-- Refresh 使用目前 query 與 `cursor = null` 強制 Remote。
-- 所有 Remote 第一頁成功都 transaction replacement 第一頁並失效同 query + limit 舊後續 chain。
-- Refresh failure 保留既有 Cache、items 與 stale metadata。
-- Append 以 requested cursor page identity 讀寫 Cache。
-- Append 支援 Cache hit、miss 與 expired fallback；第一版不執行背景 revalidation。
-- Append Cache result 不得造成重複 item 或 cursor chain 污染。
-- 保留既有 generation、query、requested cursor race protection。
+狀態：Completed。
+
+- [x] Refresh 使用目前 query 與 `cursor = null` 強制 Remote。
+- [x] 所有 Remote 第一頁成功都 transaction replacement 第一頁並失效同 query + limit 舊後續 chain。
+- [x] Refresh failure 保留既有 Cache、items、cursor 與 stale metadata。
+- [x] Append 以 requested cursor page identity 讀寫 Cache。
+- [x] Append 支援 Cache hit、miss 與 expired fallback；第一版不執行背景 revalidation。
+- [x] Append Cache result 依穩定 ID 去重，不造成重複 item 或 cursor chain 污染。
+- [x] Append snapshot 不覆蓋第一頁 source / freshness / lastUpdatedAt metadata。
+- [x] 保留既有 generation、query、requested cursor race protection。
+- [x] Refresh / Append 單次 Stream contract 明確拒絕零筆與多筆 emission。
+- [x] 補齊第一頁 chain reset、append identity、expired replacement、metadata preservation 與 protocol violation tests。
+
+完成驗證：
+
+```txt
+flutter test test/features/catalog/data/catalog_repository_cache_test.dart test/features/catalog/presentation/bloc/catalog_bloc_test.dart
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+flutter build bundle -t lib/main_development.dart
+git diff --check
+```
 
 ### Milestone 14-6：UI、DI 與 Offline Cache Flow
 

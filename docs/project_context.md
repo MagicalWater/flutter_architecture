@@ -613,7 +613,18 @@ Milestone 14-4 已完成：
 - Stale Cache 後 Stream 若直接關閉，會視為 protocol violation，不再無聲清除 `isRevalidating`。
 - CatalogBloc tests 已增至 24 項，補齊跨事件 cancellation 與 protocol violation coverage。
 
-目前工作目標：Milestone 14-5 Refresh、Append 與 Cursor Chain。
+Milestone 14-5 已完成：
+
+- Refresh 使用目前 query 與 `cursor = null` 強制 Remote。
+- Remote 第一頁成功會 replacement 第一頁，並失效同 query + limit 的舊後續 cursor chain。
+- Refresh failure 保留既有 items、nextCursor 與 cached / stale / lastUpdatedAt metadata。
+- Append 以 requested cursor page identity 讀寫 Cache。
+- Append 支援 retained Cache hit、Cache miss Remote fallback 與 expired Cache replacement，第一版不執行背景 revalidation。
+- Append Cache snapshot 只合併 items 與更新 nextCursor，不會覆蓋第一頁 freshness metadata。
+- Refresh / Append 共用 single-result Stream protocol helper；零筆與多筆 emission 都視為 programming error，並確保 loading flag 清除。
+- Repository Cache tests 已增至 19 項，CatalogBloc tests 已增至 28 項。
+
+目前工作目標：Milestone 14-6 UI、DI 與 Offline Cache Flow。
 
 ---
 

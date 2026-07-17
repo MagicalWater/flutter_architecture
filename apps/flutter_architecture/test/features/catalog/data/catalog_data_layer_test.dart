@@ -1,6 +1,10 @@
 import 'package:api_client/api_client.dart';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
+import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_remote_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_page_response_dto_mapper.dart';
 import 'package:flutter_architecture/features/catalog/data/repositories/catalog_repository_impl.dart';
@@ -9,8 +13,28 @@ import 'package:flutter_architecture/features/catalog/domain/entities/catalog_pa
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
+  sqfliteFfiInit();
+
+  late Database database;
+  late CatalogLocalDataSource localDataSource;
+
+  setUp(() async {
+    database = await databaseFactoryFfi.openDatabase(
+      inMemoryDatabasePath,
+      options: OpenDatabaseOptions(
+        version: AppDatabaseSchema.version,
+        onCreate: AppDatabaseSchema.onCreate,
+        onUpgrade: AppDatabaseSchema.onUpgrade,
+      ),
+    );
+    localDataSource = CatalogLocalDataSource(database);
+  });
+
+  tearDown(() => database.close());
+
   test('Catalog mapper 只將空 cursor 正規化為 null，其他欄位保留原值', () {
     const dto = CatalogPageResponseDto(
       items: <CatalogItemDto>[
@@ -47,11 +71,7 @@ void main() {
   test('Catalog mapper 驗證 ID 時可 trim，但輸出 ID 必須保持原值', () {
     const dto = CatalogPageResponseDto(
       items: <CatalogItemDto>[
-        CatalogItemDto(
-          id: ' catalog-001 ',
-          name: 'Flutter',
-          description: '',
-        ),
+        CatalogItemDto(id: ' catalog-001 ', name: 'Flutter', description: ''),
       ],
     );
 
@@ -107,9 +127,7 @@ void main() {
   });
 
   test('CatalogRepository 會把 DTO 映射為成功結果', () async {
-    final repository = CatalogRepositoryImpl(
-      CatalogRemoteDataSource(_RecordingCatalogApi()),
-    );
+    final repository = _repository(_RecordingCatalogApi(), localDataSource);
 
     final result = await repository.searchCatalog(
       query: 'flutter',
@@ -127,15 +145,14 @@ void main() {
   });
 
   test('CatalogRepository 拒絕無法前進的 cursor chain', () async {
-    final repository = CatalogRepositoryImpl(
-      CatalogRemoteDataSource(
-        const _StaticCatalogApi(
-          CatalogPageResponseDto(
-            items: <CatalogItemDto>[],
-            nextCursor: 'cursor-001',
-          ),
+    final repository = _repository(
+      const _StaticCatalogApi(
+        CatalogPageResponseDto(
+          items: <CatalogItemDto>[],
+          nextCursor: 'cursor-001',
         ),
       ),
+      localDataSource,
     );
 
     final result = await repository.searchCatalog(
@@ -154,12 +171,11 @@ void main() {
   });
 
   test('CatalogRepository 會把 AppException 轉為 domain Failure', () async {
-    final repository = CatalogRepositoryImpl(
-      CatalogRemoteDataSource(
-        const _ThrowingCatalogApi(
-          AppException(message: 'API failed', code: '503'),
-        ),
+    final repository = _repository(
+      const _ThrowingCatalogApi(
+        AppException(message: 'API failed', code: '503'),
       ),
+      localDataSource,
     );
 
     final result = await repository.searchCatalog(
@@ -177,9 +193,10 @@ void main() {
     expect(failure.code, '503');
   });
 
-  test('CatalogRepository 會把 Mapper 的 AppException 轉為 domain Failure', () async {
-    final repository = CatalogRepositoryImpl(
-      CatalogRemoteDataSource(
+  test(
+    'CatalogRepository 會把 Mapper 的 AppException 轉為 domain Failure',
+    () async {
+      final repository = _repository(
         const _StaticCatalogApi(
           CatalogPageResponseDto(
             items: <CatalogItemDto>[
@@ -187,29 +204,28 @@ void main() {
             ],
           ),
         ),
-      ),
-    );
+        localDataSource,
+      );
 
-    final result = await repository.searchCatalog(
-      query: '',
-      cursor: null,
-      limit: 20,
-    );
+      final result = await repository.searchCatalog(
+        query: '',
+        cursor: null,
+        limit: 20,
+      );
 
-    final failure = result.when(
-      success: (_) => throw StateError('unexpected success'),
-      failure: (value) => value as Failure,
-    );
+      final failure = result.when(
+        success: (_) => throw StateError('unexpected success'),
+        failure: (value) => value as Failure,
+      );
 
-    expect(failure.code, 'malformed_catalog_response');
-    expect(failure.message, '取得 Catalog 失敗');
-  });
+      expect(failure.code, 'malformed_catalog_response');
+      expect(failure.message, '取得 Catalog 失敗');
+    },
+  );
 
   test('CatalogRepository 不會把未知錯誤轉為 Failure', () async {
     final error = StateError('mapper bug');
-    final repository = CatalogRepositoryImpl(
-      CatalogRemoteDataSource(_ThrowingCatalogApi(error)),
-    );
+    final repository = _repository(_ThrowingCatalogApi(error), localDataSource);
 
     await expectLater(
       repository.searchCatalog(query: '', cursor: null, limit: 20),
@@ -227,6 +243,18 @@ void main() {
     expect(repository.cursor, 'cursor-001');
     expect(repository.limit, 30);
   });
+}
+
+CatalogRepositoryImpl _repository(
+  CatalogApi api,
+  CatalogLocalDataSource localDataSource,
+) {
+  return CatalogRepositoryImpl(
+    CatalogRemoteDataSource(api),
+    localDataSource,
+    CatalogCachePolicy(),
+    const SystemCatalogClock(),
+  );
 }
 
 class _RecordingCatalogApi implements CatalogApi {

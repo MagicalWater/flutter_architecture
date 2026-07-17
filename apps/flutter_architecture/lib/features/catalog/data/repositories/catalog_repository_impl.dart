@@ -14,16 +14,16 @@ import 'package:flutter_architecture/features/catalog/domain/repositories/catalo
 /// CatalogRepository 的 Data Layer 實作。
 class CatalogRepositoryImpl implements CatalogStreamingRepository {
   const CatalogRepositoryImpl(
-    this._remoteDataSource, [
+    this._remoteDataSource,
     this._localDataSource,
     this._cachePolicy,
     this._clock,
-  ]);
+  );
 
   final CatalogRemoteDataSource _remoteDataSource;
-  final CatalogLocalDataSource? _localDataSource;
-  final CatalogCachePolicy? _cachePolicy;
-  final CatalogClock? _clock;
+  final CatalogLocalDataSource _localDataSource;
+  final CatalogCachePolicy _cachePolicy;
+  final CatalogClock _clock;
 
   @override
   Future<Result<CatalogPage>> searchCatalog({
@@ -110,7 +110,7 @@ class CatalogRepositoryImpl implements CatalogStreamingRepository {
 
       final updatedAt = _nowUtc();
       try {
-        await _localDataSource?.replacePage(
+        await _localDataSource.replacePage(
           page.toCacheEntity(
             query: query,
             requestCursor: cursor,
@@ -144,17 +144,12 @@ class CatalogRepositoryImpl implements CatalogStreamingRepository {
     required int limit,
   }) async {
     try {
-      final localDataSource = _localDataSource;
-      final cachePolicy = _cachePolicy;
-      if (localDataSource == null || cachePolicy == null) {
-        return null;
-      }
-      return await localDataSource.readPage(
+      return await _localDataSource.readPage(
         query: query,
         cursor: cursor,
         limit: limit,
         now: _nowUtc(),
-        retainFor: cachePolicy.retainFor,
+        retainFor: _cachePolicy.retainFor,
       );
     } on AppException {
       return null;
@@ -163,12 +158,15 @@ class CatalogRepositoryImpl implements CatalogStreamingRepository {
 
   CatalogFreshness _freshness(DateTime updatedAt) {
     final age = _nowUtc().difference(updatedAt.toUtc());
-    return age <= (_cachePolicy?.freshFor ?? Duration.zero)
+    if (age.isNegative) {
+      return CatalogFreshness.stale;
+    }
+    return age <= _cachePolicy.freshFor
         ? CatalogFreshness.fresh
         : CatalogFreshness.stale;
   }
 
-  DateTime _nowUtc() => (_clock ?? const SystemCatalogClock()).nowUtc();
+  DateTime _nowUtc() => _clock.nowUtc();
 
   void _validateRequest({
     required String? cursor,
@@ -179,10 +177,9 @@ class CatalogRepositoryImpl implements CatalogStreamingRepository {
       throw ArgumentError.value(limit, 'limit', 'must be greater than 0');
     }
 
-    final hasCursor = cursor != null;
     final valid = switch (policy) {
-      CatalogLoadPolicy.initial || CatalogLoadPolicy.refresh => !hasCursor,
-      CatalogLoadPolicy.append => hasCursor,
+      CatalogLoadPolicy.initial || CatalogLoadPolicy.refresh => cursor == null,
+      CatalogLoadPolicy.append => cursor != null && cursor.trim().isNotEmpty,
     };
     if (!valid) {
       throw ArgumentError('CatalogLoadPolicy 與 cursor 組合不合法');

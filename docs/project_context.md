@@ -592,7 +592,11 @@ Milestone 14-3 已完成：
 - Remote cursor 驗證通過後才寫入 Cache，第一頁 success 會重設 cursor chain。
 - App Composition Root 明確註冊 LocalDataSource、CachePolicy、Clock 與 Repository。
 - 為避免提前修改 Presentation，舊單次 Repository / UseCase API 暫時保留至 Milestone 14-4。
-- 10 項 Repository contract tests、build_runner、workspace analyze 與完整 tests 已通過。
+- Implementation review 已將 Repository dependencies 全部改為 required，避免宣稱支援 SWR 卻缺少 Local / Policy / Clock 的半配置 instance。
+- Append 空字串與空白 cursor 會 fail fast，不再被誤當 Cache miss 後傳給 Remote。
+- `updatedAt` 位於未來時會視為 Stale 並 revalidate，不會形成 Fresh-only Cache。
+- 16 項 Repository contract tests 已涵蓋 freshFor / retainFor 精確邊界、未來 timestamp、Cache read/write failure 分離、三種 policy、cursor validation 與未知錯誤。
+- build_runner、workspace analyze 與完整 tests 已通過。
 
 目前工作目標：Milestone 14-4 Initial Search、Query Switching 與 SWR Bloc Flow。
 

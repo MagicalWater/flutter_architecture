@@ -44,6 +44,9 @@
 - Cache read / write failure 維持非阻斷，Remote cursor 驗證通過後才寫入 Cache，未知程式錯誤保留 Stream error channel。
 - App Composition Root 明確註冊 Catalog LocalDataSource、CachePolicy、Clock 與 Repository；舊單次 API 暫時保留至 Milestone 14-4 Bloc 遷移。
 - 新增 10 項 Repository Cache tests，涵蓋 fresh/stale/expired、三種 policy、Local failure、cursor validation 與未知錯誤。
+- 依 Milestone 14-3 implementation review，將 Catalog Repository 的 Remote、Local、CachePolicy 與 Clock dependencies 全部改為 required，避免 silent misconfiguration。
+- 補強 policy / cursor validation，Append 的空字串與空白 cursor 現在會在 Cache read 或 Remote request 前 fail fast。
+- 未來 `updatedAt` 不再被判定為 Fresh-only，而是視為 Stale 並執行 revalidation；Repository Cache tests 增至 16 項，補齊 freshFor / retainFor 精確邊界與 read/write failure 分離。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

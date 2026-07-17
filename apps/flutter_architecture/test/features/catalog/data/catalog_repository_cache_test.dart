@@ -60,6 +60,66 @@ void main() {
     expect(api.callCount, 0);
   });
 
+  test('age 等於 freshFor 時仍為 Fresh', () async {
+    await _write(local, clock.nowUtc().subtract(const Duration(minutes: 5)));
+    final api = _RecordingCatalogApi();
+    final repository = _repository(api, local, clock);
+
+    final results = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.initial,
+        )
+        .toList();
+
+    expect(results, hasLength(1));
+    expect(_success(results.single).freshness, CatalogFreshness.fresh);
+    expect(api.callCount, 0);
+  });
+
+  test('age 超過 freshFor 時為 Stale 並 revalidate', () async {
+    await _write(
+      local,
+      clock.nowUtc().subtract(const Duration(minutes: 5, milliseconds: 1)),
+    );
+    final api = _RecordingCatalogApi();
+    final repository = _repository(api, local, clock);
+
+    final results = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.initial,
+        )
+        .toList();
+
+    expect(results, hasLength(2));
+    expect(_success(results.first).freshness, CatalogFreshness.stale);
+    expect(api.callCount, 1);
+  });
+
+  test('未來 updatedAt 不會被視為 Fresh-only', () async {
+    await _write(local, clock.nowUtc().add(const Duration(minutes: 1)));
+    final api = _RecordingCatalogApi();
+    final repository = _repository(api, local, clock);
+
+    final results = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.initial,
+        )
+        .toList();
+
+    expect(results, hasLength(2));
+    expect(_success(results.first).freshness, CatalogFreshness.stale);
+    expect(_success(results.last).source, CatalogDataSource.remote);
+  });
+
   test('initial Stale Cache 先 emit Cache，再 emit Remote fresh', () async {
     await _write(local, clock.nowUtc().subtract(const Duration(hours: 1)));
     final api = _RecordingCatalogApi();
@@ -165,6 +225,29 @@ void main() {
     expect(_success(results.single).source, CatalogDataSource.remote);
   });
 
+  test('age 等於 retainFor 時仍可使用 Cache', () async {
+    await _write(
+      local,
+      clock.nowUtc().subtract(const Duration(days: 7)),
+      cursor: 'cursor-1',
+    );
+    final api = _RecordingCatalogApi();
+    final repository = _repository(api, local, clock);
+
+    final results = await repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: 'cursor-1',
+          limit: 20,
+          policy: CatalogLoadPolicy.append,
+        )
+        .toList();
+
+    expect(results, hasLength(1));
+    expect(_success(results.single).source, CatalogDataSource.cache);
+    expect(api.callCount, 0);
+  });
+
   test('Cache read/write failure 不阻止 Remote success', () async {
     await database.close();
     final repository = _repository(_RecordingCatalogApi(), local, clock);
@@ -182,6 +265,23 @@ void main() {
     expect(_success(results.single).source, CatalogDataSource.remote);
   });
 
+  test('Cache write failure 不阻止 refresh Remote success', () async {
+    await database.close();
+    final repository = _repository(_RecordingCatalogApi(), local, clock);
+
+    final results = await repository
+        .watchCatalog(
+          query: '',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.refresh,
+        )
+        .toList();
+
+    expect(results, hasLength(1));
+    expect(_success(results.single).source, CatalogDataSource.remote);
+  });
+
   test('policy 與 cursor 不合法時 fail fast', () async {
     final repository = _repository(_RecordingCatalogApi(), local, clock);
 
@@ -192,6 +292,17 @@ void main() {
             cursor: 'cursor-1',
             limit: 20,
             policy: CatalogLoadPolicy.initial,
+          )
+          .toList(),
+      throwsArgumentError,
+    );
+    await expectLater(
+      repository
+          .watchCatalog(
+            query: '',
+            cursor: '   ',
+            limit: 20,
+            policy: CatalogLoadPolicy.append,
           )
           .toList(),
       throwsArgumentError,

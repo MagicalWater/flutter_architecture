@@ -1186,7 +1186,9 @@ git diff --check
 - [x] Remote failure + Cache available 保留 Cache；無 Cache 才回傳 blocking failure。
 - [x] 未知錯誤保留 Stream error channel 與原始 stack trace。
 - [x] App Composition Root 明確註冊 LocalDataSource、CachePolicy、Clock 與 Repository。
-- [x] 補齊 10 項 Repository freshness、failure、cursor 與 emission tests。
+- [x] Implementation review：Repository dependencies 全部改為 required，避免 silent Offline Cache misconfiguration。
+- [x] Implementation review：Append 空白 cursor fail fast，未來 timestamp 視為 stale 並 revalidate。
+- [x] 補齊 16 項 Repository freshness、retention boundary、failure、cursor 與 emission tests。
 
 完成驗證：
 

@@ -74,6 +74,8 @@
 - Mock / Real Composition Root tests 現在明確驗證 CatalogApi、LocalDataSource、RemoteDataSource、CachePolicy、Clock、Repository、UseCase 與 Bloc graph。
 - Catalog Widget tests 補齊 cached、stale、lastUpdatedAt、revalidation loading、non-blocking failure 與 Fresh Remote 隱藏 notice coverage。
 - 完成 Milestone 14-7 Cleanup、Regression、文件與完整驗證，Milestone 14 Offline Cache 全階段完成。
+- 依 Milestone 14 最終整體 review 新增 SQLite v4 `chain_revision` migration；Append Remote request 會捕捉 revision 並於 transaction write 時 compare-and-set，防止 Refresh 重用相同 cursor 的 stale late-write。
+- Cursor cycle persistence validation 改為 ancestor path + revision，允許 expired predecessor 在 retained successor 尚存在時合法 replacement。
 - 新增 Auth / Catalog 共用 SQLite database 的 Logout integration test，確認 Logout 清除 token、user 與 runtime Session，但保留 public Catalog Cache。
 - retention-based expired page lazy cleanup、retainFor boundary、migration、Repository、Bloc、Widget、Refresh lifecycle 與 DI scope regression 已完整驗證。
 - 同步 README、Architecture Decision 017、Roadmap、Project Context 與 Catalog feature 文件，並完成 development / staging / production bundle builds。

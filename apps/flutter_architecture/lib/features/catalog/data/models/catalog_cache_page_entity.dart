@@ -7,6 +7,7 @@ class CatalogCachePageEntity {
     required this.requestCursor,
     required this.requestLimit,
     required this.nextCursor,
+    this.chainRevision = 0,
     required this.updatedAt,
     required this.items,
   });
@@ -15,6 +16,7 @@ class CatalogCachePageEntity {
   final String? requestCursor;
   final int requestLimit;
   final String? nextCursor;
+  final int chainRevision;
   final DateTime updatedAt;
   final List<CatalogCacheItemEntity> items;
 }

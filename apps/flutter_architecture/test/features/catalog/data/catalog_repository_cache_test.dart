@@ -284,6 +284,65 @@ void main() {
     );
   });
 
+  test('Refresh 重用相同 cursor 時，舊 Append 仍不得寫入新 revision', () async {
+    await _write(local, clock.nowUtc(), nextCursor: 'cursor-same');
+    final api = _ControlledCatalogApi();
+    final repository = _repository(api, local, clock);
+
+    final appendFuture = repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: 'cursor-same',
+          limit: 20,
+          policy: CatalogLoadPolicy.append,
+        )
+        .single;
+    await api.waitForRequestCount(1);
+
+    final refreshFuture = repository
+        .watchCatalog(
+          query: 'flutter',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.refresh,
+        )
+        .single;
+    await api.waitForRequestCount(2);
+
+    api.complete(
+      1,
+      const CatalogPageResponseDto(
+        items: <CatalogItemDto>[
+          CatalogItemDto(id: 'fresh', name: 'Fresh', description: ''),
+        ],
+        nextCursor: 'cursor-same',
+      ),
+    );
+    await refreshFuture;
+
+    api.complete(
+      0,
+      const CatalogPageResponseDto(
+        items: <CatalogItemDto>[
+          CatalogItemDto(id: 'stale', name: 'Stale', description: ''),
+        ],
+        nextCursor: 'cursor-next',
+      ),
+    );
+    await appendFuture;
+
+    expect(
+      await local.readPage(
+        query: 'flutter',
+        cursor: 'cursor-same',
+        limit: 20,
+        now: clock.nowUtc(),
+        retainFor: const Duration(days: 7),
+      ),
+      isNull,
+    );
+  });
+
   test('append retained Cache 即使 stale 也只 emit 一次 Cache', () async {
     await _write(
       local,
@@ -369,6 +428,74 @@ void main() {
     expect(cached?.nextCursor, 'cursor-2');
     expect(cached?.items.single.id, 'remote');
   });
+
+  test(
+    'expired Append predecessor 可在 retained successor 存在時 replacement',
+    () async {
+      await _write(local, clock.nowUtc(), nextCursor: 'cursor-1');
+      final revision = await local.readLinkedChainRevision(
+        query: 'flutter',
+        cursor: 'cursor-1',
+        limit: 20,
+      );
+      await local.replaceAppendPageIfLinked(
+        const CatalogPage(items: [], nextCursor: 'cursor-2').toCacheEntity(
+          query: 'flutter',
+          requestCursor: 'cursor-1',
+          requestLimit: 20,
+          updatedAt: DateTime.utc(2026, 7, 9),
+          chainRevision: revision!,
+        ),
+        expectedChainRevision: revision,
+      );
+      await local.replaceAppendPageIfLinked(
+        const CatalogPage(items: [], nextCursor: null).toCacheEntity(
+          query: 'flutter',
+          requestCursor: 'cursor-2',
+          requestLimit: 20,
+          updatedAt: DateTime.utc(2026, 7, 17),
+          chainRevision: revision,
+        ),
+        expectedChainRevision: revision,
+      );
+
+      final repository = _repository(
+        _RecordingCatalogApi(nextCursor: 'cursor-2'),
+        local,
+        clock,
+      );
+      final result = await repository
+          .watchCatalog(
+            query: 'flutter',
+            cursor: 'cursor-1',
+            limit: 20,
+            policy: CatalogLoadPolicy.append,
+          )
+          .single;
+
+      expect(_success(result).source, CatalogDataSource.remote);
+      expect(
+        await local.readPage(
+          query: 'flutter',
+          cursor: 'cursor-1',
+          limit: 20,
+          now: clock.nowUtc(),
+          retainFor: const Duration(days: 7),
+        ),
+        isNotNull,
+      );
+      expect(
+        await local.readPage(
+          query: 'flutter',
+          cursor: 'cursor-2',
+          limit: 20,
+          now: clock.nowUtc(),
+          retainFor: const Duration(days: 7),
+        ),
+        isNotNull,
+      );
+    },
+  );
 
   test('expired Cache 視為 miss 並改走 Remote', () async {
     await _write(local, clock.nowUtc().subtract(const Duration(days: 8)));

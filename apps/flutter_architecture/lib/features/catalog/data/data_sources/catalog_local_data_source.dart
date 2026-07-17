@@ -54,6 +54,7 @@ class CatalogLocalDataSource {
           requestCursor: _decodeCursor(storedCursor),
           requestLimit: limit,
           nextCursor: _parseOptionalCursor(pageRows.single['next_cursor']),
+          chainRevision: pageRows.single['chain_revision']! as int,
           updatedAt: updatedAt,
           items: <CatalogCacheItemEntity>[
             for (final row in itemRows) _parseItem(row),
@@ -81,7 +82,7 @@ class CatalogLocalDataSource {
     }, message: '讀取 Catalog Cache 失敗');
   }
 
-  Future<void> replacePage(
+  Future<int> replacePage(
     CatalogCachePageEntity page, {
     required bool resetFollowingPages,
   }) async {
@@ -94,12 +95,27 @@ class CatalogLocalDataSource {
         code: 'invalid_catalog_cache_chain_reset',
       );
     }
-    await _guardLocal(() async {
+    return _guardLocal(() async {
       final normalizedQuery = page.query.trim();
       final storedCursor = _encodeCursor(page.requestCursor);
 
-      await _database.transaction((transaction) async {
+      return _database.transaction((transaction) async {
+        var chainRevision = page.chainRevision;
         if (resetFollowingPages) {
+          final currentRows = await transaction.query(
+            _pageTable,
+            columns: const <String>['chain_revision'],
+            where: 'query = ? AND request_limit = ? AND request_cursor = ?',
+            whereArgs: <Object?>[
+              normalizedQuery,
+              page.requestLimit,
+              _firstPageCursor,
+            ],
+            limit: 1,
+          );
+          chainRevision = currentRows.isEmpty
+              ? 1
+              : (currentRows.single['chain_revision']! as int) + 1;
           await transaction.delete(
             _itemTable,
             where: 'query = ? AND request_limit = ? AND request_cursor <> ?',
@@ -136,6 +152,7 @@ class CatalogLocalDataSource {
           'request_limit': page.requestLimit,
           'next_cursor': page.nextCursor,
           'updated_at': page.updatedAt.toUtc().millisecondsSinceEpoch,
+          'chain_revision': chainRevision,
         }, conflictAlgorithm: ConflictAlgorithm.replace);
 
         for (final item in page.items) {
@@ -149,6 +166,7 @@ class CatalogLocalDataSource {
             'item_description': item.description,
           });
         }
+        return chainRevision;
       });
     }, message: '儲存 Catalog Cache 失敗');
   }
@@ -157,7 +175,10 @@ class CatalogLocalDataSource {
   ///
   /// 可避免舊 Append request 在第一頁 replacement 後完成，重新污染已失效的
   /// cursor chain；同時拒絕 nextCursor 指回已存在 page identity 的 cycle。
-  Future<bool> replaceAppendPageIfLinked(CatalogCachePageEntity page) async {
+  Future<bool> replaceAppendPageIfLinked(
+    CatalogCachePageEntity page, {
+    int? expectedChainRevision,
+  }) async {
     _validateCursor(page.requestCursor);
     _validateLimit(page.requestLimit);
     _validatePage(page);
@@ -173,18 +194,53 @@ class CatalogLocalDataSource {
       final storedCursor = _encodeCursor(page.requestCursor);
 
       return _database.transaction((transaction) async {
-        final predecessorRows = await transaction.query(
+        final firstRows = await transaction.query(
           _pageTable,
-          columns: const <String>['request_cursor'],
-          where: 'query = ? AND request_limit = ? AND next_cursor = ?',
+          columns: const <String>['chain_revision'],
+          where: 'query = ? AND request_limit = ? AND request_cursor = ?',
           whereArgs: <Object?>[
             normalizedQuery,
             page.requestLimit,
-            page.requestCursor,
+            _firstPageCursor,
           ],
           limit: 1,
         );
-        if (predecessorRows.isEmpty) {
+        if (firstRows.isEmpty) {
+          return false;
+        }
+        final currentRevision = firstRows.single['chain_revision']! as int;
+        final requiredRevision = expectedChainRevision ?? currentRevision;
+        if (currentRevision != requiredRevision) return false;
+
+        final ancestors = <String>{_firstPageCursor};
+        var cursorToRead = _firstPageCursor;
+        var isLinked = false;
+        while (true) {
+          final rows = await transaction.query(
+            _pageTable,
+            columns: const <String>['next_cursor', 'chain_revision'],
+            where: 'query = ? AND request_limit = ? AND request_cursor = ?',
+            whereArgs: <Object?>[
+              normalizedQuery,
+              page.requestLimit,
+              cursorToRead,
+            ],
+            limit: 1,
+          );
+          if (rows.isEmpty ||
+              rows.single['chain_revision'] != currentRevision) {
+            return false;
+          }
+          final next = rows.single['next_cursor'] as String?;
+          if (next == page.requestCursor) {
+            isLinked = true;
+            break;
+          }
+          if (next == null || !ancestors.add(next)) return false;
+          cursorToRead = next;
+        }
+        if (!isLinked ||
+            (page.nextCursor != null && ancestors.contains(page.nextCursor))) {
           return false;
         }
 
@@ -192,7 +248,7 @@ class CatalogLocalDataSource {
         if (nextCursor != null) {
           final existingNextRows = await transaction.query(
             _pageTable,
-            columns: const <String>['request_cursor'],
+            columns: const <String>['request_cursor', 'chain_revision'],
             where: 'query = ? AND request_limit = ? AND request_cursor = ?',
             whereArgs: <Object?>[
               normalizedQuery,
@@ -201,8 +257,26 @@ class CatalogLocalDataSource {
             ],
             limit: 1,
           );
-          if (existingNextRows.isNotEmpty) {
-            return false;
+          if (existingNextRows.isNotEmpty &&
+              existingNextRows.single['chain_revision'] != currentRevision) {
+            await transaction.delete(
+              _itemTable,
+              where: 'query = ? AND request_limit = ? AND request_cursor = ?',
+              whereArgs: <Object?>[
+                normalizedQuery,
+                page.requestLimit,
+                _encodeCursor(nextCursor),
+              ],
+            );
+            await transaction.delete(
+              _pageTable,
+              where: 'query = ? AND request_limit = ? AND request_cursor = ?',
+              whereArgs: <Object?>[
+                normalizedQuery,
+                page.requestLimit,
+                _encodeCursor(nextCursor),
+              ],
+            );
           }
         }
 
@@ -221,6 +295,7 @@ class CatalogLocalDataSource {
           'request_limit': page.requestLimit,
           'next_cursor': page.nextCursor,
           'updated_at': page.updatedAt.toUtc().millisecondsSinceEpoch,
+          'chain_revision': currentRevision,
         }, conflictAlgorithm: ConflictAlgorithm.replace);
 
         for (final item in page.items) {
@@ -237,6 +312,27 @@ class CatalogLocalDataSource {
         return true;
       });
     }, message: '儲存 Catalog Append Cache 失敗');
+  }
+
+  Future<int?> readLinkedChainRevision({
+    required String query,
+    required String cursor,
+    required int limit,
+  }) async {
+    _validateCursor(cursor);
+    _validateLimit(limit);
+    return _guardLocal(() async {
+      final normalizedQuery = query.trim();
+      final rows = await _database.query(
+        _pageTable,
+        columns: const <String>['chain_revision'],
+        where: 'query = ? AND request_limit = ? AND next_cursor = ?',
+        whereArgs: <Object?>[normalizedQuery, limit, cursor],
+        limit: 1,
+      );
+      if (rows.isEmpty) return null;
+      return rows.single['chain_revision']! as int;
+    }, message: '讀取 Catalog chain revision 失敗');
   }
 
   Future<void> deletePage({

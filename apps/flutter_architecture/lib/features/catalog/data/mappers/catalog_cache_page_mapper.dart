@@ -9,12 +9,14 @@ extension CatalogPageToCacheEntity on CatalogPage {
     required String? requestCursor,
     required int requestLimit,
     required DateTime updatedAt,
+    int chainRevision = 0,
   }) {
     return CatalogCachePageEntity(
       query: query.trim(),
       requestCursor: requestCursor,
       requestLimit: requestLimit,
       nextCursor: nextCursor,
+      chainRevision: chainRevision,
       updatedAt: updatedAt.toUtc(),
       items: <CatalogCacheItemEntity>[
         for (var index = 0; index < items.length; index++)

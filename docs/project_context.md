@@ -651,8 +651,11 @@ Milestone 14-7 已完成：
 - Migration、LocalDataSource、Repository、Bloc、Widget、Refresh lifecycle 與 Mock / Real DI scope coverage 已完整回歸。
 - README、Architecture Decision 017、Roadmap、Changelog 與 Catalog feature 文件已同步。
 - dependency、generation、workspace analyze、完整 tests 與 development / staging / production bundle build 全部通過。
+- 最終整體 review 新增 SQLite v4 `chain_revision` migration；第一頁 replacement 遞增 revision，Append Remote 回寫以 transaction CAS 驗證。
+- 即使 Refresh 重用相同 opaque cursor，舊 Append response 也不能污染新 chain。
+- Expired predecessor 可在同 revision retained successor 存在時合法 replacement，cycle 改以 ancestor path 判斷。
 
-目前工作目標：Review Milestone 14 baseline，並由 Backlog 選擇下一個正式 Milestone。
+目前工作目標：完成 Milestone 14 final review fix 驗證，之後由 Backlog 選擇下一個正式 Milestone。
 
 ---
 

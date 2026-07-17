@@ -540,6 +540,58 @@ void main() {
     await version3.close();
     await databaseFactoryFfi.deleteDatabase(databasePath);
   });
+
+  test('v3 到 v4 migration 會保留 page 並加入 chain revision', () async {
+    final path = await databaseFactoryFfi.getDatabasesPath();
+    final databasePath = '$path/catalog-v3-v4-migration-test.db';
+    await databaseFactoryFfi.deleteDatabase(databasePath);
+
+    final version3 = await databaseFactoryFfi.openDatabase(
+      databasePath,
+      options: OpenDatabaseOptions(
+        version: 3,
+        onCreate: (db, version) async {
+          await db.execute('''
+            CREATE TABLE catalog_cache_page (
+              query TEXT NOT NULL,
+              request_cursor TEXT NOT NULL,
+              request_limit INTEGER NOT NULL,
+              next_cursor TEXT,
+              updated_at INTEGER NOT NULL,
+              PRIMARY KEY (query, request_cursor, request_limit)
+            )
+          ''');
+        },
+      ),
+    );
+    await version3.insert('catalog_cache_page', <String, Object?>{
+      'query': 'flutter',
+      'request_cursor': '',
+      'request_limit': 20,
+      'next_cursor': 'cursor-1',
+      'updated_at': DateTime.utc(2026, 7, 17).millisecondsSinceEpoch,
+    });
+    await version3.close();
+
+    final version4 = await databaseFactoryFfi.openDatabase(
+      databasePath,
+      options: OpenDatabaseOptions(
+        version: AppDatabaseSchema.version,
+        onUpgrade: AppDatabaseSchema.onUpgrade,
+      ),
+    );
+    final columns = await version4.rawQuery(
+      "PRAGMA table_info('catalog_cache_page')",
+    );
+    final rows = await version4.query('catalog_cache_page');
+
+    expect(columns.any((row) => row['name'] == 'chain_revision'), isTrue);
+    expect(rows.single['chain_revision'], 0);
+    expect(rows.single['next_cursor'], 'cursor-1');
+
+    await version4.close();
+    await databaseFactoryFfi.deleteDatabase(databasePath);
+  });
 }
 
 Future<CatalogCachePageEntity?> _read(

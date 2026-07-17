@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 
 /// App SQLite schema 與 migration 入口。
 abstract final class AppDatabaseSchema {
-  static const int version = 3;
+  static const int version = 4;
 
   static Future<void> onCreate(Database db, int version) async {
     await _createAuthUserTable(db);
@@ -19,6 +19,9 @@ abstract final class AppDatabaseSchema {
     }
     if (oldVersion >= 2 && oldVersion < 3) {
       await _upgradeCatalogItemPositionIndex(db);
+    }
+    if (oldVersion < 4) {
+      await _addCatalogChainRevision(db);
     }
   }
 
@@ -39,6 +42,7 @@ abstract final class AppDatabaseSchema {
         request_limit INTEGER NOT NULL,
         next_cursor TEXT,
         updated_at INTEGER NOT NULL,
+        chain_revision INTEGER NOT NULL DEFAULT 0,
         PRIMARY KEY (query, request_cursor, request_limit)
       )
     ''');
@@ -68,6 +72,15 @@ abstract final class AppDatabaseSchema {
         item_position
       )
     ''');
+  }
+
+  static Future<void> _addCatalogChainRevision(DatabaseExecutor db) async {
+    final columns = await db.rawQuery('PRAGMA table_info(catalog_cache_page)');
+    if (columns.any((row) => row['name'] == 'chain_revision')) return;
+    await db.execute(
+      'ALTER TABLE catalog_cache_page '
+      'ADD COLUMN chain_revision INTEGER NOT NULL DEFAULT 0',
+    );
   }
 
   static Future<void> _upgradeCatalogItemPositionIndex(

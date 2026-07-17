@@ -58,10 +58,19 @@ class CatalogRepositoryImpl implements CatalogRepository {
       }
     }
 
+    final expectedChainRevision = policy == CatalogLoadPolicy.append
+        ? await _readLinkedChainRevision(
+            query: normalizedQuery,
+            cursor: cursor!,
+            limit: limit,
+          )
+        : null;
+
     yield await _loadRemote(
       query: normalizedQuery,
       cursor: cursor,
       limit: limit,
+      expectedChainRevision: expectedChainRevision,
     );
   }
 
@@ -69,6 +78,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
     required String query,
     required String? cursor,
     required int limit,
+    required int? expectedChainRevision,
   }) async {
     try {
       final response = await _remoteDataSource.searchCatalog(
@@ -94,6 +104,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
           requestCursor: cursor,
           requestLimit: limit,
           updatedAt: updatedAt,
+          chainRevision: expectedChainRevision ?? 0,
         );
         if (cursor == null) {
           await _localDataSource.replacePage(
@@ -101,7 +112,10 @@ class CatalogRepositoryImpl implements CatalogRepository {
             resetFollowingPages: true,
           );
         } else {
-          await _localDataSource.replaceAppendPageIfLinked(cachePage);
+          await _localDataSource.replaceAppendPageIfLinked(
+            cachePage,
+            expectedChainRevision: expectedChainRevision,
+          );
         }
       } on AppException {
         // Catalog Cache 是可重建 read model；寫入失敗不覆蓋 Remote success。
@@ -119,6 +133,22 @@ class CatalogRepositoryImpl implements CatalogRepository {
       return FailureResult(
         mapAppExceptionToFailure(error, fallbackMessage: '取得 Catalog 失敗'),
       );
+    }
+  }
+
+  Future<int?> _readLinkedChainRevision({
+    required String query,
+    required String cursor,
+    required int limit,
+  }) async {
+    try {
+      return await _localDataSource.readLinkedChainRevision(
+        query: query,
+        cursor: cursor,
+        limit: limit,
+      );
+    } on AppException {
+      return null;
     }
   }
 

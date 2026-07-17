@@ -1078,7 +1078,7 @@ git diff --check
 
 建立 Remote + Local 協調的 Offline Cache 範例。
 
-狀態：In Progress；Milestone 14-1 至 14-2 已完成。
+狀態：In Progress；Milestone 14-1 至 14-3 已完成。
 
 本 Milestone 只為 Catalog 建立 feature-level、明確 opt-in 的 Offline Cache，不建立所有 API 自動寫入 SQLite 的 generic HTTP cache。
 
@@ -1172,16 +1172,31 @@ git diff --check
 
 ### Milestone 14-3：Repository Cache Coordination
 
-- Repository 注入 RemoteDataSource、LocalDataSource、CachePolicy 與 Clock。
-- 建立 feature-specific Catalog snapshot / source metadata。
-- 建立 `CatalogLoadPolicy.initial / refresh / append` contract、合法 cursor 組合與 fail-fast validation。
-- 實作 initial / refresh / append 各自明確的 Stream emission contract。
-- 調整 Repository / UseCase contract，使 SWR 可先回傳 Cache、再回傳 Remote。
-- 實作 Cache miss、Fresh Cache、Stale Cache + revalidate。
-- Remote success 通過 cursor validation 後才寫入 Cache。
-- Cache read / write failure 採非阻斷 read-model policy。
-- Remote failure + Cache available 保留 Cache；無 Cache 才回傳 blocking failure。
-- 補齊 Repository freshness、failure、cursor 與 stack trace tests。
+狀態：Completed。
+
+- [x] Repository 注入 RemoteDataSource、LocalDataSource、CachePolicy 與 Clock。
+- [x] 建立 `CatalogPageSnapshot`、`CatalogDataSource` 與 `CatalogFreshness`。
+- [x] 建立 `CatalogLoadPolicy.initial / refresh / append` contract、合法 cursor 組合與 fail-fast validation。
+- [x] 實作 initial / refresh / append 各自明確的 Stream emission contract。
+- [x] 建立 `CatalogStreamingRepository.watchCatalog()` 與 `SearchCatalogUseCase.watch()`。
+- [x] 保留舊單次 `searchCatalog()` / `execute()` 至 Milestone 14-4，避免提前修改 Bloc。
+- [x] 實作 Cache miss、Fresh Cache、Stale Cache + revalidate。
+- [x] Remote success 通過 cursor validation 後才寫入 Cache。
+- [x] Cache read / write failure 採非阻斷 read-model policy。
+- [x] Remote failure + Cache available 保留 Cache；無 Cache 才回傳 blocking failure。
+- [x] 未知錯誤保留 Stream error channel 與原始 stack trace。
+- [x] App Composition Root 明確註冊 LocalDataSource、CachePolicy、Clock 與 Repository。
+- [x] 補齊 10 項 Repository freshness、failure、cursor 與 emission tests。
+
+完成驗證：
+
+```txt
+flutter test test/features/catalog/data/catalog_repository_cache_test.dart
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+git diff --check
+```
 
 ### Milestone 14-4：Initial Search、Query Switching 與 SWR Bloc Flow
 

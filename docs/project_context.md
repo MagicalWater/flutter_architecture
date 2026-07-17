@@ -498,7 +498,7 @@ Milestone 13-7 已完成 regression、Catalog widget coverage、文件同步與�
 
 ### Milestone 14：Offline Cache
 
-狀態：In Progress；Milestone 14-1 至 14-2 已完成。
+狀態：In Progress；Milestone 14-1 至 14-3 已完成。
 
 Architecture Decision 017 已完成 review 並正式接受，核心方向如下：
 
@@ -559,7 +559,7 @@ Milestone 14-1：Architecture Decision 與 Cache Contract（Completed）
   ↓
 Milestone 14-2：SQLite Schema、Migration 與 Local Models（Completed）
   ↓
-Milestone 14-3：Repository Cache Coordination
+Milestone 14-3：Repository Cache Coordination（Completed）
   ↓
 Milestone 14-4：Initial Search、Query Switching 與 SWR Bloc Flow
   ↓
@@ -582,7 +582,19 @@ Milestone 14-2 已完成：
 - migration test 已確認保留既有 `auth_user`。
 - Local Entity validation、corrupted page 自我清除、empty page、delete isolation、failure mapping、transaction rollback、query/cursor/limit identity、cursor sentinel 防護、replacement、chain reset 與 migration tests 已通過。
 
-目前工作目標：Milestone 14-3 Repository Cache Coordination。
+Milestone 14-3 已完成：
+
+- 新增 `CatalogCachePolicy` 與可注入 `CatalogClock`。
+- 新增 `CatalogPageSnapshot`、`CatalogDataSource`、`CatalogFreshness` 與 `CatalogLoadPolicy`。
+- `initial` 支援 Fresh Cache 單次結果與 Stale Cache → Remote 多次 emission。
+- `refresh` 使用 Remote-only；`append` 使用 retained page Cache 或 Remote fallback。
+- Cache read / write failure 不覆蓋 Remote success；未知錯誤保留 Stream error channel。
+- Remote cursor 驗證通過後才寫入 Cache，第一頁 success 會重設 cursor chain。
+- App Composition Root 明確註冊 LocalDataSource、CachePolicy、Clock 與 Repository。
+- 為避免提前修改 Presentation，舊單次 Repository / UseCase API 暫時保留至 Milestone 14-4。
+- 10 項 Repository contract tests、build_runner、workspace analyze 與完整 tests 已通過。
+
+目前工作目標：Milestone 14-4 Initial Search、Query Switching 與 SWR Bloc Flow。
 
 ---
 

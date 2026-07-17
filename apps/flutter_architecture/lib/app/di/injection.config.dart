@@ -18,10 +18,14 @@ import 'package:flutter_architecture/app/router/app_router.dart' as _i787;
 import 'package:flutter_architecture/app/router/auth_guard.dart' as _i997;
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart'
     as _i1024;
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart'
+    as _i923;
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart'
+    as _i401;
+import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart'
+    as _i538;
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_remote_data_source.dart'
     as _i98;
-import 'package:flutter_architecture/features/catalog/data/repositories/catalog_repository_impl.dart'
-    as _i410;
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart'
     as _i1035;
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart'
@@ -63,6 +67,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i662.SessionManager>(() => registerModule.sessionManager);
     gh.lazySingleton<_i662.AuthStateMutationCoordinator>(
       () => registerModule.authStateMutationCoordinator,
+    );
+    gh.lazySingleton<_i923.CatalogCachePolicy>(
+      () => registerModule.catalogCachePolicy,
+    );
+    gh.lazySingleton<_i401.CatalogClock>(() => registerModule.catalogClock);
+    gh.lazySingleton<_i538.CatalogLocalDataSource>(
+      () => registerModule.catalogLocalDataSource(gh<_i779.Database>()),
     );
     gh.lazySingleton<_i633.AuthTokenProvider>(
       () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
@@ -141,6 +152,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i725.ProfileRemoteDataSource>(
       () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
     );
+    gh.lazySingleton<_i1035.CatalogRepository>(
+      () => registerModule.catalogRepository(
+        gh<_i98.CatalogRemoteDataSource>(),
+        gh<_i538.CatalogLocalDataSource>(),
+        gh<_i923.CatalogCachePolicy>(),
+        gh<_i401.CatalogClock>(),
+      ),
+    );
     gh.lazySingleton<_i662.AuthRepository>(
       () => registerModule.authRepository(
         gh<_i662.AuthRemoteDataSource>(),
@@ -148,9 +167,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.SessionManager>(),
         gh<_i662.AuthStateMutationCoordinator>(),
       ),
-    );
-    gh.lazySingleton<_i1035.CatalogRepository>(
-      () => _i410.CatalogRepositoryImpl(gh<_i98.CatalogRemoteDataSource>()),
     );
     gh.lazySingleton<_i511.ProfileRepository>(
       () => _i407.ProfileRepositoryImpl(gh<_i725.ProfileRemoteDataSource>()),

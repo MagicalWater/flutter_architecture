@@ -38,6 +38,12 @@
 - 新增 Catalog Local Entity、Local Mapper 與 `CatalogLocalDataSource`，支援 page read、transaction replacement、第一頁 chain reset、cursor sentinel 與 expired page lazy cleanup。
 - 新增 16 項 in-memory SQLite tests，涵蓋完整欄位與順序 round-trip、identity isolation、cursor sentinel 防護、empty page、replacement、chain reset、expiration、delete isolation、corrupted cache recovery、failure mapping、transaction rollback 與 migration。
 - 依 Milestone 14-2 implementation review 補強 Local Entity validation、position unique constraint 與損壞 page 自我清除。
+- 完成 Milestone 14-3 Repository Cache Coordination。
+- 新增 `CatalogCachePolicy`、可注入 `CatalogClock`、`CatalogPageSnapshot`、source / freshness metadata 與 `CatalogLoadPolicy`。
+- 新增 `CatalogStreamingRepository.watchCatalog()` 與 `SearchCatalogUseCase.watch()`，支援 Initial SWR 多次 emission、Refresh Remote-only 與 Append 單次 Cache/Remote fallback。
+- Cache read / write failure 維持非阻斷，Remote cursor 驗證通過後才寫入 Cache，未知程式錯誤保留 Stream error channel。
+- App Composition Root 明確註冊 Catalog LocalDataSource、CachePolicy、Clock 與 Repository；舊單次 API 暫時保留至 Milestone 14-4 Bloc 遷移。
+- 新增 10 項 Repository Cache tests，涵蓋 fresh/stale/expired、三種 policy、Local failure、cursor validation 與未知錯誤。
 
 - 規劃 Milestone 13 Pagination + Search Debounce，正式採用 Catalog feature 與 cursor-based pagination。
 - 新增 Architecture Decision 016，拍板 query / cursor / limit contract、300 ms debounce、search generation、stale-response guard、Load More 防重與 logical cancellation。

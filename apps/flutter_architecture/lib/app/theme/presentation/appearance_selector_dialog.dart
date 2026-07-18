@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/app/theme/presentation/theme_localization.dart';
 import 'package:flutter_architecture/app/theme/theme_controller.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
+import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 
 final class AppearanceSelectorDialog extends StatelessWidget {
   const AppearanceSelectorDialog({required this.controller, super.key});
@@ -9,16 +11,20 @@ final class AppearanceSelectorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) => AlertDialog(
-        title: const Text('Appearance'),
+        title: Text(l10n.appearanceDialogTitle),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Theme', style: Theme.of(context).textTheme.titleSmall),
+              Text(
+                l10n.appearanceThemeSectionLabel,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
               for (final metadata in controller.registry.availableThemes)
                 ListTile(
                   selected: metadata.id == controller.preference.themeId,
@@ -27,11 +33,14 @@ final class AppearanceSelectorDialog extends StatelessWidget {
                         ? Icons.radio_button_checked
                         : Icons.radio_button_unchecked,
                   ),
-                  title: Text(metadata.displayName),
+                  title: Text(localizedThemeName(l10n, metadata)),
                   onTap: () => controller.selectTheme(metadata.id),
                 ),
               const Divider(),
-              Text('Mode', style: Theme.of(context).textTheme.titleSmall),
+              Text(
+                l10n.appearanceModeSectionLabel,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
               for (final mode in AppThemeMode.values)
                 ListTile(
                   selected: mode == controller.preference.mode,
@@ -41,9 +50,9 @@ final class AppearanceSelectorDialog extends StatelessWidget {
                         : Icons.radio_button_unchecked,
                   ),
                   title: Text(switch (mode) {
-                    AppThemeMode.system => 'System',
-                    AppThemeMode.light => 'Light',
-                    AppThemeMode.dark => 'Dark',
+                    AppThemeMode.system => l10n.appearanceModeSystemLabel,
+                    AppThemeMode.light => l10n.appearanceModeLightLabel,
+                    AppThemeMode.dark => l10n.appearanceModeDarkLabel,
                   }),
                   onTap: () => controller.selectMode(mode),
                 ),
@@ -53,7 +62,7 @@ final class AppearanceSelectorDialog extends StatelessWidget {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Done'),
+            child: Text(l10n.commonDoneAction),
           ),
         ],
       ),

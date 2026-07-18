@@ -32,7 +32,7 @@ void main() {
                 !state.isLoading &&
                 !state.isAuthenticated &&
                 state.profile == null &&
-                state.errorMessage == null,
+                state.failure == null && state.failureOperation == null,
           ),
         ),
       );
@@ -71,7 +71,7 @@ void main() {
                   !state.isLoading &&
                   state.isAuthenticated &&
                   state.profile?.name == 'Demo User' &&
-                  state.errorMessage == null,
+                  state.failure == null && state.failureOperation == null,
             ),
           ],
         ),
@@ -111,7 +111,8 @@ void main() {
         (state) => !state.isLoading && !state.isAuthenticated,
       );
       expect(expired.profile, isNull);
-      expect(expired.errorMessage, isNull);
+      expect(expired.failure, isNull);
+      expect(expired.failureOperation, isNull);
       expect(states.any((state) => state.isAuthenticated), isTrue);
     });
 

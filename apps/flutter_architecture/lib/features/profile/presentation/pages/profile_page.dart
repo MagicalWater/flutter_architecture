@@ -3,7 +3,9 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/profile/domain/entities/profile.dart';
 import 'package:flutter_architecture/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:flutter_architecture/features/profile/presentation/profile_failure_localization.dart';
 import 'package:flutter_architecture/features/shell/presentation/shell_tab.dart';
+import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 
@@ -24,6 +26,7 @@ class ProfilePage extends HookWidget {
   Widget build(BuildContext context) {
     final profileBloc = useBloc<ProfileBloc>();
     final profileState = useBlocBuilder(profileBloc);
+    final l10n = AppLocalizations.of(context);
 
     useEffect(() {
       profileBloc.add(const ProfileEvent.requested());
@@ -39,7 +42,15 @@ class ProfilePage extends HookWidget {
     return ProfileView(
       isAuthenticated: profileState.isAuthenticated,
       isLoading: profileState.isLoading,
-      errorMessage: profileState.errorMessage,
+      failureMessage:
+          profileState.failure != null && profileState.failureOperation != null
+          ? localizedProfileFailure(
+              l10n,
+              failure: profileState.failure!,
+              operation: profileState.failureOperation!,
+            )
+          : null,
+      failureOperation: profileState.failureOperation,
       profile: profileState.profile,
       onRetry: () => profileBloc.add(const ProfileEvent.requested()),
       onLogout: () => profileBloc.add(const ProfileEvent.logoutRequested()),
@@ -53,41 +64,47 @@ final class ProfileView extends StatelessWidget {
     required this.isLoading,
     required this.onRetry,
     required this.onLogout,
-    this.errorMessage,
+    this.failureMessage,
+    this.failureOperation,
     this.profile,
     super.key,
   });
 
   final bool isAuthenticated;
   final bool isLoading;
-  final String? errorMessage;
+  final String? failureMessage;
+  final ProfileFailureOperation? failureOperation;
   final Profile? profile;
   final VoidCallback onRetry;
   final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (!isAuthenticated) {
-      return const DsMessageState(
-        title: '尚未登入',
-        message: '登入後即可查看目前帳號的個人資料。',
-        icon: Icon(Icons.person_off_outlined, size: DsIconSize.hero),
+      return DsMessageState(
+        title: l10n.profileUnauthenticatedTitle,
+        message: l10n.profileUnauthenticatedMessage,
+        icon: const Icon(Icons.person_off_outlined, size: DsIconSize.hero),
       );
     }
 
     if (isLoading && profile == null) {
-      return const DsLoadingState(
-        title: '載入個人資料',
-        message: '正在取得最新的帳號資訊。',
-        progressSemanticsLabel: '個人資料載入進度',
+      return DsLoadingState(
+        title: l10n.profileLoadingTitle,
+        message: l10n.profileLoadingMessage,
+        progressSemanticsLabel: l10n.profileLoadingProgressSemanticsLabel,
       );
     }
 
-    if (errorMessage != null && profile == null) {
+    if (failureMessage != null && profile == null) {
       return DsBlockingErrorState(
-        title: '無法載入個人資料',
-        message: errorMessage,
-        primaryAction: DsPageStateAction(label: '重試', onPressed: onRetry),
+        title: l10n.profileLoadFailureTitle,
+        message: failureMessage,
+        primaryAction: DsPageStateAction(
+          label: l10n.commonRetryAction,
+          onPressed: onRetry,
+        ),
       );
     }
 
@@ -97,22 +114,25 @@ final class ProfileView extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          if (errorMessage != null) ...<Widget>[
+          if (failureMessage != null &&
+              failureOperation == ProfileFailureOperation.logout) ...<Widget>[
             DsStatusBanner(
               tone: DsStatusTone.error,
-              title: '登出失敗',
-              message: errorMessage!,
+              title: l10n.profileLogoutFailureTitle,
+              message: failureMessage!,
             ),
             const SizedBox(height: DsSpace.lg),
           ],
           Text(
-            'Profile Page',
+            l10n.profileTitle,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: DsSpace.lg),
           Text(
-            '目前登入用戶：${profile?.name ?? '未知'}',
+            l10n.profileCurrentUser(
+              profile?.name ?? l10n.profileUnknownUserLabel,
+            ),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
@@ -120,9 +140,11 @@ final class ProfileView extends StatelessWidget {
           FilledButton.tonal(
             onPressed: isLoading ? null : onLogout,
             child: DsButtonContent(
-              label: isLoading ? '登出中' : '登出',
+              label: isLoading
+                  ? l10n.profileLoggingOutLabel
+                  : l10n.profileLogoutLabel,
               isLoading: isLoading,
-              progressSemanticsLabel: '登出進度',
+              progressSemanticsLabel: l10n.profileLogoutProgressSemanticsLabel,
             ),
           ),
         ],

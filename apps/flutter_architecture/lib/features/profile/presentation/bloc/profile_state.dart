@@ -1,5 +1,7 @@
 part of 'profile_bloc.dart';
 
+enum ProfileFailureOperation { load, logout }
+
 /// ProfileBloc 的 UI 狀態。
 @freezed
 abstract class ProfileState with _$ProfileState {
@@ -8,7 +10,8 @@ abstract class ProfileState with _$ProfileState {
     required bool isAuthenticated,
     required bool logoutSucceeded,
     required Profile? profile,
-    required String? errorMessage,
+    required Failure? failure,
+    required ProfileFailureOperation? failureOperation,
   }) = _ProfileState;
 
   factory ProfileState.initial() {
@@ -17,7 +20,8 @@ abstract class ProfileState with _$ProfileState {
       isAuthenticated: false,
       logoutSucceeded: false,
       profile: null,
-      errorMessage: null,
+      failure: null,
+      failureOperation: null,
     );
   }
 }

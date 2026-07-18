@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth/auth.dart';
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -51,28 +52,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SessionManager _sessionManager;
   late final StreamSubscription<AuthSession?> _sessionSubscription;
 
-  Future<void> _onStarted(
-    AuthStarted event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+  Future<void> _onStarted(AuthStarted event, Emitter<AuthState> emit) async {
+    emit(
+      state.copyWith(isLoading: true, failure: null, failureOperation: null),
+    );
 
     final result = await _restoreSessionUseCase.execute();
 
     result.when(
       success: (user) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            user: user,
-          ),
-        );
+        emit(state.copyWith(isLoading: false, user: user));
       },
       failure: (error) {
         emit(
           state.copyWith(
             isLoading: false,
-            errorMessage: error.toString(),
+            failure: _asFailure(error),
+            failureOperation: AuthFailureOperation.restore,
           ),
         );
       },
@@ -83,7 +79,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    emit(
+      state.copyWith(isLoading: true, failure: null, failureOperation: null),
+    );
 
     final result = await _loginUseCase.execute(
       account: event.account,
@@ -92,28 +90,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     result.when(
       success: (authResult) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            user: authResult.user,
-          ),
-        );
+        emit(state.copyWith(isLoading: false, user: authResult.user));
       },
       failure: (error) {
         emit(
           state.copyWith(
             isLoading: false,
-            errorMessage: error.toString(),
+            failure: _asFailure(error),
+            failureOperation: AuthFailureOperation.login,
           ),
         );
       },
     );
   }
 
-  void _onSessionCleared(
-    AuthSessionCleared event,
-    Emitter<AuthState> emit,
-  ) {
+  void _onSessionCleared(AuthSessionCleared event, Emitter<AuthState> emit) {
     emit(AuthState.initial());
   }
 
@@ -121,7 +112,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    emit(
+      state.copyWith(isLoading: true, failure: null, failureOperation: null),
+    );
 
     final result = await _logoutUseCase.execute();
 
@@ -133,7 +126,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             isLoading: false,
-            errorMessage: error.toString(),
+            failure: _asFailure(error),
+            failureOperation: AuthFailureOperation.logout,
           ),
         );
       },
@@ -145,4 +139,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await _sessionSubscription.cancel();
     return super.close();
   }
+}
+
+Failure _asFailure(Object error) {
+  return error is Failure
+      ? error
+      : Failure(message: error.toString(), cause: error);
 }

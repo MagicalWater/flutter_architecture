@@ -276,7 +276,7 @@ String toString() {
 /// @nodoc
 mixin _$ProfileState {
 
- bool get isLoading; bool get isAuthenticated; bool get logoutSucceeded; Profile? get profile; String? get errorMessage;
+ bool get isLoading; bool get isAuthenticated; bool get logoutSucceeded; Profile? get profile; Failure? get failure; ProfileFailureOperation? get failureOperation;
 /// Create a copy of ProfileState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -287,16 +287,16 @@ $ProfileStateCopyWith<ProfileState> get copyWith => _$ProfileStateCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.logoutSucceeded, logoutSucceeded) || other.logoutSucceeded == logoutSucceeded)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.logoutSucceeded, logoutSucceeded) || other.logoutSucceeded == logoutSucceeded)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.failureOperation, failureOperation) || other.failureOperation == failureOperation));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,isAuthenticated,logoutSucceeded,profile,errorMessage);
+int get hashCode => Object.hash(runtimeType,isLoading,isAuthenticated,logoutSucceeded,profile,failure,failureOperation);
 
 @override
 String toString() {
-  return 'ProfileState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, logoutSucceeded: $logoutSucceeded, profile: $profile, errorMessage: $errorMessage)';
+  return 'ProfileState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, logoutSucceeded: $logoutSucceeded, profile: $profile, failure: $failure, failureOperation: $failureOperation)';
 }
 
 
@@ -307,7 +307,7 @@ abstract mixin class $ProfileStateCopyWith<$Res>  {
   factory $ProfileStateCopyWith(ProfileState value, $Res Function(ProfileState) _then) = _$ProfileStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, bool isAuthenticated, bool logoutSucceeded, Profile? profile, String? errorMessage
+ bool isLoading, bool isAuthenticated, bool logoutSucceeded, Profile? profile, Failure? failure, ProfileFailureOperation? failureOperation
 });
 
 
@@ -324,14 +324,15 @@ class _$ProfileStateCopyWithImpl<$Res>
 
 /// Create a copy of ProfileState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? isAuthenticated = null,Object? logoutSucceeded = null,Object? profile = freezed,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? isAuthenticated = null,Object? logoutSucceeded = null,Object? profile = freezed,Object? failure = freezed,Object? failureOperation = freezed,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isAuthenticated: null == isAuthenticated ? _self.isAuthenticated : isAuthenticated // ignore: cast_nullable_to_non_nullable
 as bool,logoutSucceeded: null == logoutSucceeded ? _self.logoutSucceeded : logoutSucceeded // ignore: cast_nullable_to_non_nullable
 as bool,profile: freezed == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
-as Profile?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as Profile?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure?,failureOperation: freezed == failureOperation ? _self.failureOperation : failureOperation // ignore: cast_nullable_to_non_nullable
+as ProfileFailureOperation?,
   ));
 }
 /// Create a copy of ProfileState
@@ -428,10 +429,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  Failure? failure,  ProfileFailureOperation? failureOperation)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProfileState() when $default != null:
-return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.errorMessage);case _:
+return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.failure,_that.failureOperation);case _:
   return orElse();
 
 }
@@ -449,10 +450,10 @@ return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  Failure? failure,  ProfileFailureOperation? failureOperation)  $default,) {final _that = this;
 switch (_that) {
 case _ProfileState():
-return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.errorMessage);case _:
+return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.failure,_that.failureOperation);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -469,10 +470,10 @@ return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool isAuthenticated,  bool logoutSucceeded,  Profile? profile,  Failure? failure,  ProfileFailureOperation? failureOperation)?  $default,) {final _that = this;
 switch (_that) {
 case _ProfileState() when $default != null:
-return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.errorMessage);case _:
+return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_that.profile,_that.failure,_that.failureOperation);case _:
   return null;
 
 }
@@ -484,14 +485,15 @@ return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_tha
 
 
 class _ProfileState implements ProfileState {
-  const _ProfileState({required this.isLoading, required this.isAuthenticated, required this.logoutSucceeded, required this.profile, required this.errorMessage});
+  const _ProfileState({required this.isLoading, required this.isAuthenticated, required this.logoutSucceeded, required this.profile, required this.failure, required this.failureOperation});
 
 
 @override final  bool isLoading;
 @override final  bool isAuthenticated;
 @override final  bool logoutSucceeded;
 @override final  Profile? profile;
-@override final  String? errorMessage;
+@override final  Failure? failure;
+@override final  ProfileFailureOperation? failureOperation;
 
 /// Create a copy of ProfileState
 /// with the given fields replaced by the non-null parameter values.
@@ -503,16 +505,16 @@ _$ProfileStateCopyWith<_ProfileState> get copyWith => __$ProfileStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.logoutSucceeded, logoutSucceeded) || other.logoutSucceeded == logoutSucceeded)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.logoutSucceeded, logoutSucceeded) || other.logoutSucceeded == logoutSucceeded)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.failureOperation, failureOperation) || other.failureOperation == failureOperation));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,isAuthenticated,logoutSucceeded,profile,errorMessage);
+int get hashCode => Object.hash(runtimeType,isLoading,isAuthenticated,logoutSucceeded,profile,failure,failureOperation);
 
 @override
 String toString() {
-  return 'ProfileState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, logoutSucceeded: $logoutSucceeded, profile: $profile, errorMessage: $errorMessage)';
+  return 'ProfileState(isLoading: $isLoading, isAuthenticated: $isAuthenticated, logoutSucceeded: $logoutSucceeded, profile: $profile, failure: $failure, failureOperation: $failureOperation)';
 }
 
 
@@ -523,7 +525,7 @@ abstract mixin class _$ProfileStateCopyWith<$Res> implements $ProfileStateCopyWi
   factory _$ProfileStateCopyWith(_ProfileState value, $Res Function(_ProfileState) _then) = __$ProfileStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, bool isAuthenticated, bool logoutSucceeded, Profile? profile, String? errorMessage
+ bool isLoading, bool isAuthenticated, bool logoutSucceeded, Profile? profile, Failure? failure, ProfileFailureOperation? failureOperation
 });
 
 
@@ -540,14 +542,15 @@ class __$ProfileStateCopyWithImpl<$Res>
 
 /// Create a copy of ProfileState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? isAuthenticated = null,Object? logoutSucceeded = null,Object? profile = freezed,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? isAuthenticated = null,Object? logoutSucceeded = null,Object? profile = freezed,Object? failure = freezed,Object? failureOperation = freezed,}) {
   return _then(_ProfileState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isAuthenticated: null == isAuthenticated ? _self.isAuthenticated : isAuthenticated // ignore: cast_nullable_to_non_nullable
 as bool,logoutSucceeded: null == logoutSucceeded ? _self.logoutSucceeded : logoutSucceeded // ignore: cast_nullable_to_non_nullable
 as bool,profile: freezed == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
-as Profile?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as Profile?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure?,failureOperation: freezed == failureOperation ? _self.failureOperation : failureOperation // ignore: cast_nullable_to_non_nullable
+as ProfileFailureOperation?,
   ));
 }
 

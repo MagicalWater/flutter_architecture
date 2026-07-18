@@ -754,7 +754,94 @@ Milestone 15-6 已完成：
 
 Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persistence、serialized write queue、bootstrap restore、MaterialApp Light / Dark / ThemeMode wiring 與 Appearance selector 已落地。
 
-目前工作目標：Milestone 15 Design System Foundation 已完成；下一個正式 Milestone 需重新 review backlog 與 roadmap 後決定。
+最近完成目標：Milestone 16 Localization Foundation。
+
+### Milestone 16：Localization Foundation
+
+狀態：Completed；Milestone 16-1 至 16-7 已完成。
+
+已拍板：
+
+- 使用 Flutter 官方 `gen_l10n`，第一版支援 English 與繁體中文 `zh_TW`。
+- App 負責 locale、delegates、supported locales、preference、restore、persistence、controller、selector 與 `MaterialApp.router` wiring；App title 使用 `onGenerateTitle`。
+- `system` 對 `MaterialApp.router.locale` 提供 `null`，由 `localeListResolutionCallback` 解析 platform locale list；explicit preference 才提供具體 Locale。
+- LocaleController 不另外保存 resolved system locale，也不自行監聽 platform locale。
+- `zh_TW` / `zh_Hant` / `zh_HK` / `zh_MO` → `zh_TW`；`zh_CN` / `zh_SG` / `zh_Hans` 與其他 unsupported locale → English。
+- `packages/design_system` 不依賴 App generated `AppLocalizations`；primitive 只接收已 localized presentation text。
+- Theme ID 維持穩定；App 依 Theme ID 映射 localized display name，metadata 只保留 fallback display name。
+- Data、Domain 與 Cache timestamp 維持 UTC；Presentation 轉為 local time 後依 locale 的日期與時間慣例格式化。
+- Theme 與 Locale preference 不抽象成 Generic Preference Framework。
+
+Failure / Exception 範圍：Milestone 16 不全面重構 hierarchy。Catalog 已保存 `Failure`；Auth / Profile 只做最小 state contract 調整，使 Presentation 能取得 stable failure identity。只有目前 user-facing 的 Login、Logout、Profile 與 Catalog failure path 建立 feature-local mapping，且不建立全域 mapper 或 taxonomy。
+
+規劃分段：
+
+```txt
+Milestone 16-1  Architecture Contract、文字盤點與規劃 Review（Completed）
+Milestone 16-2  gen_l10n Skeleton 與 App Wiring（Completed）
+Milestone 16-3  Locale Preference、Persistence 與 Bootstrap（Completed）
+Milestone 16-4  Shell、Appearance 與 Theme Metadata Localization（Completed）
+Milestone 16-5  Auth、Profile 與 Protected Localization（Completed）
+Milestone 16-6  Catalog Localization、Failure Mapping 與 Date Formatting（Completed）
+Milestone 16-7  Production Text Audit、Regression、文件與完整驗證（Completed）
+```
+
+Milestone 16-2 已完成：
+
+- App 加入 Flutter 官方 `flutter_localizations` 並啟用 `flutter.generate`。
+- 建立 `l10n.yaml`、English template ARB、`zh_TW` ARB 與 generator 所需的 base `zh` fallback ARB。
+- App 實際 `supportedLocales` 仍只公開 `en` 與 `zh_TW`。
+- `MaterialApp.router` 已接上 generated delegates、明確 locale list resolution 與 `onGenerateTitle`。
+- Locale resolution 已驗證繁中 script / region、簡中 exclusion、platform priority order 與 English fallback。
+- Design System 未新增 App localization dependency。
+- Workspace analyze 與 App 完整 167 tests 已通過。
+
+Milestone 16-3 已完成：
+
+- 新增 `AppLocalePreference.system / english / traditionalChinese`，storage value 固定為 `system / en / zh_TW`。
+- 新增獨立 Version 1 JSON codec / store，SharedPreferences key 為 `app.locale.preference`。
+- 新增 runtime-first `LocaleController` 與 serialized snapshot write queue；快速連續切換時依序保存，最新 preference 為 runtime truth。
+- Storage read exception 以 System 啟動並保留 non-blocking diagnostic；寫入失敗不回滾 runtime，也不阻止後續較新 preference 保存。
+- Bootstrap 在 `runApp` 前 restore Theme 與 Locale controller，並重用相同 SharedPreferences instance。
+- `ArchitectureApp` 由 `LocaleControllerScope` 提供 App-local locale state；System 回傳 `null`，explicit English / `zh_TW` 回傳具體 Locale。
+- Shell 新增語言 selector 入口；dialog 支援 System、English、繁體中文，並在 runtime locale 切換後即時重建 localized labels。
+- 未建立 Generic Preference Framework，也未保存 resolved system locale 或加入 platform locale observer。
+- Locale preference、selector、Shell callback、完整 App 177 tests、analyze 與 bundle build 已通過。
+
+Milestone 16-4 已完成：
+
+- Shell title、Language / Appearance / Protected tooltips 與 Login / Catalog / Profile Navigation labels 已移入 ARB。
+- Appearance dialog title、Theme / Mode section labels、System / Light / Dark labels 與 Done action 已 localization。
+- App 依 stable Theme ID 將內建 `default` / `ocean` 映射為 localized display name；Design System metadata 仍保留 fallback display name。
+- 未知或外部 Theme 不要求 App 預先建立 ARB key，直接顯示 metadata fallback display name。
+- English / `zh_TW` runtime switching、Appearance localized labels 與 Theme fallback tests 已補齊。
+- 完整 App 183 tests、analyze 與 bundle build 已通過。
+
+Milestone 16-5 已完成：
+
+- Login、Profile、Logout 與 Protected 固定 user-facing text 已移入 English / `zh_TW` ARB。
+- Profile current user 使用 generated ARB placeholder，不在 Dart 直接拼接句子。
+- Auth / Profile Bloc state 改為保存 `Failure` 與 operation context，不再以 `error.toString()` / `String? errorMessage` 作為 UI contract。
+- Login、restore、logout、Profile load 與 Profile logout 使用 feature-local localized mapping；目前只有 `401` 映射為帳密錯誤或 Session 失效，`403` 與其他 code 使用操作專屬 generic fallback，避免由 HTTP forbidden 狀態推導錯誤 UX。
+- `Failure.message` 與 mapper contract 已改為 diagnostic / fallback；Repository fallback 不再使用固定 UI 語言，也不宣稱可直接交給 UI。
+- 未建立全域 Failure taxonomy、Generic Error Localization Service 或 Generic Failure Mapper。
+
+Milestone 16-6 已完成：
+
+- Catalog Search、Initial Loading / Failure、Empty、Append、Refresh、Cached、Stale、Revalidation 與相關 Semantics / action text 已移入 English / `zh_TW` ARB。
+- Catalog Bloc state shape 不變，Presentation 依 initial / refresh / append / revalidation surface 做 feature-local failure mapping，diagnostic `Failure.message` 不直接顯示。
+- HTTP `408` / `429` 映射為 timeout / rate-limit localized copy；其他 code 使用 surface-specific generic fallback，不建立全域 error taxonomy。
+- App 新增直接 `intl` dependency；`lastUpdatedAt` 於 Presentation `toLocal()` 後，依目前 locale 的日期與時間慣例產生字串，不固定所有語系使用同一種 12／24 小時制。
+- Data、Domain 與 Cache timestamp 維持 UTC；Catalog item name / description、cursor、pagination、SWR、refresh、append 與 Offline Cache contract 未改變。
+- Catalog targeted 52 tests 與 App analyze 已通過。
+
+Milestone 16-7 已完成：
+
+- 完成 production user-facing text、Tooltip、Semantics、Dialog、Navigation、page-state surface 與 failure path audit。
+- 確認 Domain、Data、Repository、exception、log、technical ID、storage value 與 server content 不進 App localization。
+- 確認 `packages/design_system` 不依賴 App generated localization；`DsButtonContent` 移除固定英文 progress semantics fallback，改為重用呼叫方 localized label。
+- 採 Theme matrix、locale runtime switching、feature localization 與既有 business flow regression 的分層測試，不建立完整笛卡兒積。
+- README、Catalog feature README、Architecture Decision、Roadmap、Backlog 與 CHANGELOG 已同步。
 
 ---
 

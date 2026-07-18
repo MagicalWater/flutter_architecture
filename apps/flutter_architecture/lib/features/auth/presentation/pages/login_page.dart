@@ -2,8 +2,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
+import 'package:flutter_architecture/features/auth/presentation/auth_failure_localization.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_architecture/features/shell/presentation/shell_tab.dart';
+import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 
@@ -28,6 +30,7 @@ class LoginPage extends HookWidget {
     // Bloc 仍然是業務狀態來源，Hook 只負責 UI 綁定。
     final authBloc = useBloc<AuthBloc>();
     final authState = useBlocBuilder(authBloc);
+    final l10n = AppLocalizations.of(context);
 
     useBlocListener<AuthBloc, AuthState>(authBloc, (_, state, _) {
       if (state.isAuthenticated) {
@@ -39,7 +42,14 @@ class LoginPage extends HookWidget {
       accountController: accountController,
       passwordController: passwordController,
       isLoading: authState.isLoading,
-      errorMessage: authState.errorMessage,
+      failureMessage:
+          authState.failure != null && authState.failureOperation != null
+          ? localizedAuthFailure(
+              l10n,
+              failure: authState.failure!,
+              operation: authState.failureOperation!,
+            )
+          : null,
       onLogin: () {
         authBloc.add(
           AuthEvent.loginRequested(
@@ -60,19 +70,20 @@ final class LoginView extends StatelessWidget {
     required this.isLoading,
     required this.onLogin,
     required this.onOpenProtected,
-    this.errorMessage,
+    this.failureMessage,
     super.key,
   });
 
   final TextEditingController accountController;
   final TextEditingController passwordController;
   final bool isLoading;
-  final String? errorMessage;
+  final String? failureMessage;
   final VoidCallback onLogin;
   final VoidCallback onOpenProtected;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -84,7 +95,7 @@ final class LoginView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Text(
-                  'Login Page',
+                  l10n.loginTitle,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
@@ -92,7 +103,9 @@ final class LoginView extends StatelessWidget {
                 TextField(
                   controller: accountController,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: 'Account'),
+                  decoration: InputDecoration(
+                    labelText: l10n.loginAccountLabel,
+                  ),
                 ),
                 const SizedBox(height: DsSpace.md),
                 TextField(
@@ -100,12 +113,14 @@ final class LoginView extends StatelessWidget {
                   obscureText: true,
                   textInputAction: TextInputAction.done,
                   onSubmitted: isLoading ? null : (_) => onLogin(),
-                  decoration: const InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(
+                    labelText: l10n.loginPasswordLabel,
+                  ),
                 ),
                 const SizedBox(height: DsSpace.lg),
-                if (errorMessage != null) ...<Widget>[
+                if (failureMessage != null) ...<Widget>[
                   Text(
-                    errorMessage!,
+                    failureMessage!,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.error,
                     ),
@@ -115,15 +130,17 @@ final class LoginView extends StatelessWidget {
                 FilledButton(
                   onPressed: isLoading ? null : onLogin,
                   child: DsButtonContent(
-                    label: isLoading ? '登入中' : '登入',
+                    label: isLoading
+                        ? l10n.loginSubmittingLabel
+                        : l10n.loginSubmitLabel,
                     isLoading: isLoading,
-                    progressSemanticsLabel: '登入進度',
+                    progressSemanticsLabel: l10n.loginProgressSemanticsLabel,
                   ),
                 ),
                 const SizedBox(height: DsSpace.md),
                 OutlinedButton(
                   onPressed: onOpenProtected,
-                  child: const Text('嘗試進入需要登入的頁面'),
+                  child: Text(l10n.loginOpenProtectedAction),
                 ),
               ],
             ),

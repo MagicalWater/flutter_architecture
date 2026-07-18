@@ -19,7 +19,7 @@
 - Firebase Crashlytics。
 - Analytics。
 - Native Flavor：Android productFlavors、iOS Schemes、applicationId、bundle identifier 與原生 App 名稱切換。
-- Localizations。
+- Localizations。（已由 Milestone 16 Localization Foundation 完成）
 - 完整 Feature 新增指南。
 - 常見錯誤文件。
 - 架構演進文件。

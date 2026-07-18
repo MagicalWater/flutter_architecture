@@ -20,6 +20,8 @@ Catalog 是公開讀取型 feature，用來示範 cursor pagination、search deb
 - LocalDataSource：SQLite page transaction、chain validation 與 lazy cleanup。
 - Repository：協調 Remote、Local、freshness、retention 與 load policy。
 - Bloc：管理 SWR emissions、Refresh / Append lifecycle、race protection 與 cursor cycle guard。
-- UI：呈現 cached、stale、last updated、background revalidation 與 non-blocking failure。
+- UI：呈現 localized cached、stale、last updated、background revalidation 與 non-blocking failure；`lastUpdatedAt` 只在 Presentation 轉為 local time 後依目前 locale 格式化。
+
+Catalog item name / description 是 server content，不進 App ARB。Catalog user-facing failure 由 Presentation 依 initial / refresh / append / revalidation surface 映射，diagnostic `Failure.message` 不直接顯示。
 
 Catalog package 不使用 DI annotation；所有 composition 由 App Composition Root 完成。

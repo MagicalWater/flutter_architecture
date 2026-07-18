@@ -20,6 +20,32 @@
 
 ### Added
 
+- 完成 Milestone 16-7：production text、Tooltip、Semantics、Dialog、Navigation、page-state surface、failure path 與 dependency boundary audit；README、Catalog feature 文件、Project Context、Architecture Decision、Roadmap 與 Backlog 已同步。
+- Localization regression 採 Theme render matrix、English / `zh_TW` runtime switching、feature-local mapping 與既有 Auth / Profile / Catalog business flow 的分層驗證，避免建立完整 Theme × Locale 笛卡兒積。
+- 修正 Design System localization boundary：`DsButtonContent` 不再拼接固定英文 `in progress` semantics；未提供專用 progress label 時重用呼叫方已 localized 的 label。
+- 完成 Milestone 16-6：Catalog Search、Loading、Empty、Initial / Append / Refresh failure、Cache、Stale、Revalidation、actions 與 Semantics 已加入 English / `zh_TW` ARB。
+- Catalog Presentation 新增 surface-specific failure localization；`408 / 429` 映射 timeout / rate-limit copy，其他 code 使用 initial / refresh / append / revalidation fallback，diagnostic `Failure.message` 不直接顯示。
+- App 新增直接 `intl` dependency；Catalog `lastUpdatedAt` 在 Presentation 轉為 local time 後依目前 locale 的日期與時間慣例格式化，Data / Domain / Cache UTC 與 Pagination / SWR / Offline Cache contract 不變。
+- Milestone 16-6 review 修正 time formatter：改用 locale-sensitive time skeleton，不再以 `Hm` 強制所有語系使用 24 小時制。
+- 完成 Milestone 16-5：Login、Profile、Logout 與 Protected user-facing text 已加入 English / `zh_TW` ARB，Profile current user 使用 generated placeholder。
+- Auth / Profile state 改為保存 `Failure + operation`，Presentation 使用 feature-local localized mapping；目前只有 `401` 進行帳密錯誤或 Session 失效的特定映射，`403` 與其他 code 使用操作專屬 generic fallback。
+- 修正 `Failure.message`、AppException mapper 與 Repository fallback contract，使 diagnostic message 不再被視為可直接顯示的 localized UI copy；未擴張為全域 error taxonomy 或 generic mapper。
+- 完成 Milestone 16-4：Shell title、Navigation labels、Language / Appearance / Protected tooltips、Appearance dialog 與 Theme mode labels 已移入 App ARB。
+- 內建 Default / Ocean Theme 由 App 依 stable Theme ID 映射 localized display name；未知 Theme 使用 Design System metadata fallback display name，Theme persistence identity 不變。
+- 新增 English / `zh_TW` Shell runtime switching、Appearance localized labels 與 unknown Theme fallback tests；App 完整 183 tests、analyze 與 bundle build 通過。
+- 完成 Milestone 16-3：新增 App-local Locale preference、Version 1 JSON persistence、runtime-first `LocaleController`、serialized write queue、bootstrap restore、`MaterialApp.locale` wiring 與語言 selector。
+- Locale preference storage key 為 `app.locale.preference`；System 維持 `locale = null`，English / `zh_TW` 使用 explicit Locale，且不保存 resolved system locale。
+- Locale read / write failure 採 non-blocking policy；寫入失敗不回滾 runtime，也不阻止後續較新 preference 保存。
+- 語言 selector 支援 System、English、繁體中文，dialog labels 與 Shell tooltip 會隨 runtime locale 即時更新。
+- 完成 Milestone 16-2：加入 Flutter 官方 `gen_l10n`、English / `zh_TW` ARB、generator base `zh` fallback、App delegates、`en / zh_TW` supported locales、明確 locale list resolution 與 localized `onGenerateTitle`。
+- 新增 locale resolution tests，驗證 `zh_TW` / `zh_Hant` / `zh_HK` / `zh_MO` 對應繁中，`zh_CN` / `zh_SG` / `zh_Hans` 與 unsupported locale fallback 至英文；Workspace analyze 與 App 完整 167 tests 通過。
+- 規劃 Milestone 16 Localization Foundation，採用 Flutter 官方 `gen_l10n`，第一版支援 English 與繁體中文 `zh_TW`。
+- 新增 Architecture Decision 019，定義 App、Feature Presentation、Design System、Domain、Data、Repository、Theme metadata、locale preference、formatting 與 user-facing failure mapping 的責任邊界。
+- Locale preference 支援 `system / en / zh_TW`；`system` 使用 `MaterialApp.locale = null` 搭配 `localeListResolutionCallback`，explicit preference 才提供具體 Locale。
+- 明確限制 Milestone 16 不全面重構 Failure / Exception hierarchy；只針對目前實際顯示到 UI 的 Login、Logout、Profile 與 Catalog failure path 建立 feature-local localized mapping。
+- Catalog Bloc 已保留 `Failure`；Auth / Profile Bloc 後續只做最小 state contract 調整，以保留 stable failure identity，不擴張為全域 error framework。
+- System locale resolution 採 `zh_TW` / `zh_Hant` / `zh_HK` / `zh_MO` → `zh_TW`；`zh_CN` / `zh_SG` / `zh_Hans` 與其他 unsupported locale → English。
+
 - 完成 Milestone 15-10：清查 production UI hard-coded style、移除未有穩定 consumer 的 Design System tokens、加入單一 stable gallery golden fixture，同步主要文件並完成完整 regression 與 development / staging / production bundle 驗證。
 - 完成 Milestone 15-8：ProtectedPage 導入 `DsMessageState`；ProfilePage 導入 unauthenticated／loading／blocking error／content surfaces；LoginPage 導入 constrained scrollable form、Theme InputDecoration 與 `DsButtonContent`，並補上窄畫面、鍵盤、2.0 text scaling、Dark mode 與 Ocean Theme widget tests。
 - 完成 Milestone 15-9：Catalog 導入 initial loading／empty／blocking error page-state surfaces，append、refresh、cache、stale 與 revalidation 保持 feature-local non-blocking presentation；Shell chrome 抽為可測 `ShellScaffold`。

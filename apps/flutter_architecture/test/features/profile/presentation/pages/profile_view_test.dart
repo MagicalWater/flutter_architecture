@@ -1,7 +1,9 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/profile/domain/entities/profile.dart';
+import 'package:flutter_architecture/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:flutter_architecture/features/profile/presentation/pages/profile_page.dart';
+import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -42,7 +44,8 @@ void main() {
           child: ProfileView(
             isAuthenticated: true,
             isLoading: false,
-            errorMessage: 'network failed',
+            failureMessage: 'network failed',
+            failureOperation: ProfileFailureOperation.load,
             onRetry: _noop,
             onLogout: _noop,
           ),
@@ -99,7 +102,8 @@ void main() {
         child: ProfileView(
           isAuthenticated: true,
           isLoading: false,
-          errorMessage: 'logout failed',
+          failureMessage: 'logout failed',
+          failureOperation: ProfileFailureOperation.logout,
           profile: profile,
           onRetry: _noop,
           onLogout: _noop,
@@ -123,7 +127,8 @@ void main() {
         child: ProfileView(
           isAuthenticated: true,
           isLoading: false,
-          errorMessage: 'network failed',
+          failureMessage: 'network failed',
+          failureOperation: ProfileFailureOperation.load,
           onRetry: () => retryCount += 1,
           onLogout: () => logoutCount += 1,
         ),
@@ -191,6 +196,9 @@ final class _TestApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: theme,
+      locale: const Locale('zh', 'TW'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: MediaQuery(
         data: MediaQueryData(textScaler: textScaler),
         child: Scaffold(body: child),

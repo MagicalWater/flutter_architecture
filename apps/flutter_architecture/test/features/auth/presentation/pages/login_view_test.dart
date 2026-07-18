@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/auth/presentation/pages/login_page.dart';
+import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,11 +16,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: OceanThemeDefinition().createDarkTheme(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: LoginView(
           accountController: account,
           passwordController: password,
           isLoading: true,
-          errorMessage: 'Login failed',
+          failureMessage: 'Login failed',
           onLogin: _noop,
           onOpenProtected: _noop,
         ),
@@ -28,7 +31,7 @@ void main() {
 
     expect(find.byType(DsConstrainedContent), findsOneWidget);
     expect(find.byType(DsButtonContent), findsOneWidget);
-    expect(find.bySemanticsLabel('登入進度'), findsOneWidget);
+    expect(find.bySemanticsLabel('Login progress'), findsOneWidget);
     expect(find.text('Login failed'), findsOneWidget);
     expect(
       tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
@@ -51,6 +54,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: DefaultThemeDefinition().createLightTheme(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: MediaQuery(
             data: const MediaQueryData(
               textScaler: TextScaler.linear(2),
@@ -85,6 +90,9 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: DefaultThemeDefinition().createLightTheme(),
+        locale: const Locale('zh', 'TW'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: LoginView(
           accountController: account,
           passwordController: password,
@@ -95,14 +103,14 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('登入'));
+    await tester.tap(find.byType(FilledButton));
     expect(loginCount, 1);
 
     await tester.enterText(find.byType(TextField).last, 'password');
     await tester.testTextInput.receiveAction(TextInputAction.done);
     expect(loginCount, 2);
 
-    await tester.tap(find.text('嘗試進入需要登入的頁面'));
+    await tester.tap(find.text('開啟需要登入的頁面'));
     expect(protectedCount, 1);
   });
 }

@@ -78,7 +78,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return FailureResult(
         mapAppExceptionToFailure(
           error,
-          fallbackMessage: '登入失敗',
+          fallbackMessage: 'Authentication login failed.',
         ),
       );
     }
@@ -114,7 +114,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return FailureResult(
         mapAppExceptionToFailure(
           error,
-          fallbackMessage: '恢復登入狀態失敗',
+          fallbackMessage: 'Authentication session restore failed.',
         ),
       );
     }
@@ -149,7 +149,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return FailureResult(
         mapAppExceptionToFailure(
           error,
-          fallbackMessage: '登出失敗',
+          fallbackMessage: 'Authentication logout failed.',
         ),
       );
     }

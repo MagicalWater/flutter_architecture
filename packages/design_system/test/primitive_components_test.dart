@@ -246,16 +246,17 @@ void main() {
           child: const Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              DsButtonContent(label: 'Save'),
+              DsButtonContent(label: 'Idle'),
               DsButtonContent(label: 'Save', isLoading: true),
             ],
           ),
         ),
       );
 
-      expect(find.text('Save'), findsNWidgets(2));
+      expect(find.text('Idle'), findsOneWidget);
+      expect(find.text('Save'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.bySemanticsLabel('Save in progress'), findsOneWidget);
+      expect(find.bySemanticsLabel('Save'), findsOneWidget);
     });
 
     testWidgets('works inside a disabled Material button while loading', (
@@ -303,9 +304,7 @@ void main() {
       );
 
       expect(
-        find.bySemanticsLabel(
-          'Submitting a deliberately long request in progress',
-        ),
+        find.bySemanticsLabel('Submitting a deliberately long request'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);

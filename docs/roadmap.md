@@ -1606,3 +1606,109 @@ Decision 018、Roadmap、Project Context、Backlog 與 CHANGELOG 已完成同步
 - 主要 UI 在大型 text scaling、窄畫面、Light / Dark 與兩套 Theme 下不發生主要 overflow 或裁切。
 - 原有 Auth、Profile、Route Guard、Pagination 與 Offline Cache regression 全部通過。
 - analyze、test 與 development / staging / production build 全部通過。
+
+---
+
+## Milestone 16：Localization Foundation
+
+使用 Flutter 官方 `gen_l10n` 建立 English 與繁體中文 `zh_TW` localization foundation，並加入 App-local locale preference、restore、persistence 與 runtime switching。
+
+狀態：Completed；Milestone 16-1 至 16-7 已完成。
+
+### Milestone 16-1：Architecture Contract、文字盤點與規劃 Review
+
+狀態：Completed。
+
+- [x] 盤點 production user-facing text、Tooltip、Semantics、Dialog、SnackBar、test fixture、diagnostic、server content 與 technical ID。
+- [x] 拍板 App、Feature Presentation、Design System、Domain、Data、Repository、Theme metadata 與 formatting 責任。
+- [x] 限制本 Milestone 不全面重構 Failure / Exception hierarchy。
+- [x] Review state contract：Catalog 已保存 `Failure`；Auth / Profile 後續只做最小 stable identity 調整。
+- [x] 拍板 `system / en / zh_TW` preference 與繁簡中文 resolution policy。
+- [x] 拍板 `system` 使用 `MaterialApp.locale = null` + `localeListResolutionCallback`，LocaleController 不保存 resolved locale 或自行監聽平台 locale。
+
+### Milestone 16-2：gen_l10n Skeleton 與 App Wiring
+
+狀態：Completed。
+
+- [x] 加入官方 `flutter_localizations`，在 App `pubspec.yaml` 啟用 `flutter.generate: true`，建立 `l10n.yaml`。
+- [x] 建立 English template ARB、`zh_TW` ARB 與 generator 所需的 base `zh` fallback ARB；App supported locales 仍只公開 `en` 與 `zh_TW`。
+- [x] 建立純 locale resolution callback，驗證 platform locale list 的 English、繁中、簡中與 unsupported fallback；此階段不依賴 preference model。
+- [x] 設定 delegates、supported locales、`localeListResolutionCallback` 與 generated localization contract tests。
+- [x] App title 使用 `onGenerateTitle`。
+- [x] Design System 未新增 App localization dependency。
+
+完成實作：App 已接上 generated `AppLocalizations`、delegates、`en / zh_TW` supported locales、明確 locale list resolution 與 localized App title。`zh_TW`、`zh_Hant`、`zh_HK`、`zh_MO` 解析為繁中；`zh_CN`、`zh_SG`、`zh_Hans` 與 unsupported locale fallback 至英文。Workspace analyze 與 App 完整 167 tests 已通過。
+
+### Milestone 16-3：Locale Preference、Persistence 與 Bootstrap
+
+狀態：Completed。
+
+- [x] 建立 App-local `system / en / zh_TW` preference model與 Version 1 JSON storage，key 為 `app.locale.preference`。
+- [x] 建立 runtime-first LocaleController 與 serialized write queue；read / write failure 採 non-blocking policy。
+- [x] Bootstrap 在 `runApp` 前 restore preference，並重用 App Composition Root 已取得的 SharedPreferences instance。
+- [x] `system` 對 `MaterialApp.router.locale` 提供 `null`；explicit preference 提供具體 Locale。
+- [x] LocaleController 不保存 resolved system locale，也不自行實作 platform locale observer。
+- [x] 加入 App-level locale selector 與 localized selector labels / tooltip；不抽象 Generic Preference Framework。
+- [x] 驗證 round-trip、invalid payload fallback、read diagnostic、runtime-first、serialized writes、latest preference、write recovery 與 runtime locale rebuild。
+
+完成實作：Locale preference 使用獨立 Version 1 JSON contract；`LocaleController` 先更新 runtime，再透過 serialized queue 保存完整 snapshot。Bootstrap 於 `runApp` 前 restore Theme 與 Locale controller；System preference 維持 `MaterialApp.locale = null`，English / `zh_TW` 使用 explicit locale。Shell 提供 App-level language selector 入口，selector 文案會隨 locale 即時重建。
+
+### Milestone 16-4：Shell、Appearance 與 Theme Metadata Localization
+
+狀態：Completed。
+
+- [x] Localization Shell title、Navigation、Tooltip、Semantics、Appearance dialog、Theme mode 與 actions。
+- [x] 使用 App-side Theme ID → localized display name mapping；Theme ID 與 persistence contract 不變。
+- [x] 未知或外部 Theme 使用 Design System metadata fallback display name。
+- [x] 補 English / `zh_TW` runtime switching widget tests。
+
+完成實作：Shell AppBar title、Language / Appearance / Protected tooltips 與 Login / Catalog / Profile Navigation labels 已由 App ARB 提供；Appearance dialog 的 title、section labels、Theme mode labels、actions 與內建 Default / Ocean Theme display name 已 localization。Theme ID 仍維持 stable persistence identity，未知 Theme 不要求 App ARB key，直接使用 metadata fallback display name。App 完整 183 tests、analyze 與 bundle build 已通過。
+
+### Milestone 16-5：Auth、Profile 與 Protected Localization
+
+狀態：Completed。
+
+- [x] Localization Login、Profile、Logout 與 Protected user-facing text。
+- [x] Profile name 使用 ARB placeholder。
+- [x] Auth / Profile Bloc 不再以 `error.toString()` / `String? errorMessage` 作為 user-facing contract，只做最小 state 調整保留 `Failure` 與 operation context。
+- [x] Login / Logout / Profile failure 使用 feature-local localized mapping 與 unknown fallback；目前只有可安全判定未授權的 `401` 進行特定 UX 映射，`403` 與其他 code 使用操作專屬 fallback。
+- [x] 修正 Core `Failure.message` / mapper 註解與 Repository 固定語言 fallback contract。
+- [x] 不全面重構 `Failure`、`AppException`、`Result` 或 Repository hierarchy。
+
+完成實作：Login、Profile、Logout 與 Protected 固定文案已進 App ARB；Profile name 使用 generated placeholder API。Auth / Profile state 保存 `Failure + operation`，Presentation 依 stable code 與操作建立 feature-local localized copy，unknown code 使用操作專屬 generic fallback，diagnostic `Failure.message` 不直接顯示。Core 與 Repository contract 已同步修正，未建立全域 error taxonomy 或 generic mapper。
+
+### Milestone 16-6：Catalog Localization、Failure Mapping 與 Date Formatting
+
+狀態：Completed。
+
+- [x] Localization Search、Loading、Empty、Blocking Error、Append、Refresh、Cache、Stale 與 Revalidation UI。
+- [x] Catalog failure 使用 feature-local localized mapping與 unknown fallback；`408 / 429` 進行語意明確的特定映射，其餘依 surface fallback。
+- [x] 加入直接使用的 `intl` dependency；`lastUpdatedAt` 轉為 local time 後依目前 locale 的日期與時間慣例格式化。
+- [x] Cache timestamp 與 Data / Domain UTC contract 不變；server item content 不進 ARB。
+- [x] 保留 Pagination、SWR、Refresh、Append、cursor chain 與 Offline Cache regression。
+
+完成實作：Catalog search、initial loading / failure、empty、append、refresh、cached / stale、background revalidation 與 Semantics 文案已移入 App ARB。Catalog Presentation 依 initial / refresh / append / revalidation surface 將 `Failure` 映射為 localized copy，`Failure.message` 不直接顯示；HTTP `408 / 429` 使用安全的 timeout / rate-limit 文案，其餘使用 surface-specific fallback。`lastUpdatedAt` 僅在 Presentation 先 `toLocal()` 再以 `intl` 與目前 locale 的日期與時間慣例格式化，不強制固定 12 或 24 小時制；Cache、Domain 與 Data UTC contract、item name / description、cursor 與 SWR lifecycle 均未改變。
+
+### Milestone 16-7：Production Text Audit、Regression、文件與完整驗證
+
+- [x] 再次盤點 hard-coded production text、Tooltip、Semantics、Dialog、SnackBar、Navigation 與 page-state surfaces。
+- [x] 確認 Domain、Data、Repository、exception、log、technical ID 與 server content 未被誤 localization。
+- [x] 確認 Design System 不依賴 App generated localization；移除 `DsButtonContent` 內建英文 progress semantics fallback。
+- [x] 採分層 Theme × Locale 測試矩陣，避免完整笛卡兒積。
+- [x] 同步 README、Project Context、Architecture Decisions、Roadmap、Backlog 與 CHANGELOG。
+- [x] 執行 dependency、generation、analyze、完整 tests 與 development / staging / production bundle builds。
+
+完成實作：Production text audit 已覆蓋 App chrome、Feature Presentation、Tooltip、Semantics、Dialog、Navigation、page-state surfaces 與 user-facing failure path；Domain、Data、Repository、exception、log、technical ID、server content 與 Design System dependency boundary 均維持原責任。`DsButtonContent` 不再自行拼接固定英文 semantics，未提供專用 progress label 時只重用呼叫方已 localized 的 label。測試採 Theme render matrix、English / `zh_TW` runtime switching、Feature-local localization 與既有 business regression 分層驗證，未建立完整 Theme × Locale 笛卡兒積。
+
+### 完成定義
+
+- App 使用官方 `gen_l10n`，支援 English 與 `zh_TW`。
+- Locale preference 可 restore、persist、runtime switch；system mode 可自然跟隨 platform locale list。
+- System resolution 不會將 `zh_CN` / `zh_Hans` 錯誤映射為繁體中文。
+- Design System 只接收已 localized presentation text。
+- Theme ID 穩定，內建 Theme display name 由 App localization。
+- 固定 UI 文案、Tooltip、Semantics、Navigation、Loading／Empty／Error／Message 已進 ARB。
+- User-facing failure 不再直接顯示 diagnostic `Failure.message`；Auth / Profile 可取得 stable failure identity。
+- 日期顯示 locale-aware，Data / Cache timestamp 維持 UTC。
+- 本 Milestone 未擴張為全域 Failure / Exception 重構或 Generic Preference Framework。
+- analyze、test 與三環境 bundle build 全部通過。

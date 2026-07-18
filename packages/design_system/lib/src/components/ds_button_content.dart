@@ -21,7 +21,7 @@ final class DsButtonContent extends StatelessWidget {
     }
 
     return Semantics(
-      label: progressSemanticsLabel ?? '$label in progress',
+      label: progressSemanticsLabel ?? label,
       child: ExcludeSemantics(
         child: Row(
           mainAxisSize: MainAxisSize.min,

@@ -34,7 +34,8 @@ void main() {
                   !state.isLoading &&
                   state.isAuthenticated &&
                   state.user?.name == 'Demo User' &&
-                  state.errorMessage == null,
+                  state.failure == null &&
+                  state.failureOperation == null,
             ),
           ],
         ),
@@ -72,7 +73,8 @@ void main() {
               (state) =>
                   !state.isLoading &&
                   !state.isAuthenticated &&
-                  state.errorMessage == 'login failed',
+                  state.failure?.message == 'login failed' &&
+                  state.failureOperation == AuthFailureOperation.login,
             ),
           ],
         ),
@@ -153,7 +155,8 @@ void main() {
                   !state.isLoading &&
                   state.isAuthenticated &&
                   state.user?.name == 'Demo User' &&
-                  state.errorMessage == 'logout failed',
+                  state.failure?.message == 'logout failed' &&
+                  state.failureOperation == AuthFailureOperation.logout,
             ),
           ],
         ),

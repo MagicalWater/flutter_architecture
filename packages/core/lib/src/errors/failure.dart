@@ -4,15 +4,12 @@
 ///
 /// Exception 通常代表外部實作錯誤，例如 Dio、SQLite、檔案系統。
 ///
-/// Failure 則是整理後，準備交給 UseCase、Bloc、UI 使用的失敗資訊。
+/// Failure 則是整理後，準備交給 UseCase 與 Bloc 使用的失敗資訊。
+/// Presentation 應依穩定 code / kind 映射成目前 locale 的 UI 文案。
 class Failure {
-  const Failure({
-    required this.message,
-    this.code,
-    this.cause,
-  });
+  const Failure({required this.message, this.code, this.cause});
 
-  /// 給 UI 或 log 使用的人類可讀訊息。
+  /// 診斷與 fallback 訊息，不保證可直接作為 localized UI 文案。
   final String message;
 
   /// 可選錯誤代碼，例如 API error code。

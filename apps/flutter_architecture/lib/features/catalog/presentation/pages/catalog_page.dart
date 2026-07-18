@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/features/catalog/presentation/catalog_presentation_localization.dart';
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
+import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 
@@ -14,6 +16,7 @@ class CatalogPage extends HookWidget {
     final bloc = useBloc<CatalogBloc>();
     final state = useBlocBuilder(bloc);
     final scrollController = useScrollController();
+    final l10n = AppLocalizations.of(context);
 
     useEffect(() {
       bloc.add(const CatalogEvent.initialRequested());
@@ -37,9 +40,9 @@ class CatalogPage extends HookWidget {
           child: TextField(
             key: const Key('catalog-search-field'),
             onChanged: (value) => bloc.add(CatalogEvent.queryChanged(value)),
-            decoration: const InputDecoration(
-              labelText: 'Search catalog',
-              prefixIcon: Icon(Icons.search),
+            decoration: InputDecoration(
+              labelText: l10n.catalogSearchLabel,
+              prefixIcon: const Icon(Icons.search),
             ),
           ),
         ),
@@ -91,22 +94,27 @@ class CatalogView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (state.isInitialLoading) {
-      return const DsLoadingState(
-        key: Key('catalog-initial-loading'),
-        title: 'Loading catalog',
-        message: 'Fetching the latest catalog items.',
-        progressSemanticsLabel: 'Catalog loading progress',
+      return DsLoadingState(
+        key: const Key('catalog-initial-loading'),
+        title: l10n.catalogLoadingTitle,
+        message: l10n.catalogLoadingMessage,
+        progressSemanticsLabel: l10n.catalogLoadingProgressSemanticsLabel,
       );
     }
 
     if (state.initialFailure != null) {
       return DsBlockingErrorState(
         key: const Key('catalog-initial-failure'),
-        title: 'Unable to load catalog',
-        message: state.initialFailure!.message,
+        title: l10n.catalogInitialFailureTitle,
+        message: localizedCatalogFailure(
+          l10n,
+          failure: state.initialFailure!,
+          surface: CatalogFailureSurface.initial,
+        ),
         primaryAction: DsPageStateAction(
-          label: 'Retry',
+          label: l10n.commonRetryAction,
           onPressed: onRetryInitial,
         ),
       );
@@ -123,12 +131,12 @@ class CatalogView extends StatelessWidget {
                     controller: scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: <Widget>[
-                      const SliverFillRemaining(
+                      SliverFillRemaining(
                         hasScrollBody: false,
                         child: DsEmptyState(
-                          key: Key('catalog-empty'),
-                          title: 'No catalog items',
-                          message: 'Try another search or pull to refresh.',
+                          key: const Key('catalog-empty'),
+                          title: l10n.catalogEmptyTitle,
+                          message: l10n.catalogEmptyMessage,
                           scrollable: false,
                         ),
                       ),
@@ -139,8 +147,12 @@ class CatalogView extends StatelessWidget {
                             child: DsStatusBanner(
                               key: const Key('catalog-refresh-failure'),
                               tone: DsStatusTone.error,
-                              title: 'Refresh failed',
-                              message: state.refreshFailure!.message,
+                              title: l10n.catalogRefreshFailureTitle,
+                              message: localizedCatalogFailure(
+                                l10n,
+                                failure: state.refreshFailure!,
+                                surface: CatalogFailureSurface.refresh,
+                              ),
                             ),
                           ),
                         ),
@@ -165,15 +177,15 @@ class CatalogView extends StatelessWidget {
                       }
 
                       if (state.isLoadingMore) {
-                        return const Padding(
-                          padding: EdgeInsets.all(DsSpace.lg),
+                        return Padding(
+                          padding: const EdgeInsets.all(DsSpace.lg),
                           child: Center(
                             child: DsButtonContent(
-                              key: Key('catalog-append-loading'),
-                              label: 'Loading more',
+                              key: const Key('catalog-append-loading'),
+                              label: l10n.catalogLoadingMoreLabel,
                               isLoading: true,
                               progressSemanticsLabel:
-                                  'Catalog load more progress',
+                                  l10n.catalogLoadMoreProgressSemanticsLabel,
                             ),
                           ),
                         );
@@ -185,10 +197,14 @@ class CatalogView extends StatelessWidget {
                           child: DsStatusBanner(
                             key: const Key('catalog-append-failure'),
                             tone: DsStatusTone.error,
-                            title: 'Unable to load more items',
-                            message: state.appendFailure!.message,
+                            title: l10n.catalogAppendFailureTitle,
+                            message: localizedCatalogFailure(
+                              l10n,
+                              failure: state.appendFailure!,
+                              surface: CatalogFailureSurface.append,
+                            ),
                             action: DsStatusBannerAction(
-                              label: 'Retry load more',
+                              label: l10n.catalogRetryLoadMoreAction,
                               onPressed: onRetryAppend,
                             ),
                           ),
@@ -201,8 +217,12 @@ class CatalogView extends StatelessWidget {
                           child: DsStatusBanner(
                             key: const Key('catalog-refresh-failure'),
                             tone: DsStatusTone.error,
-                            title: 'Refresh failed',
-                            message: state.refreshFailure!.message,
+                            title: l10n.catalogRefreshFailureTitle,
+                            message: localizedCatalogFailure(
+                              l10n,
+                              failure: state.refreshFailure!,
+                              surface: CatalogFailureSurface.refresh,
+                            ),
                           ),
                         );
                       }
@@ -231,12 +251,23 @@ class _CatalogCacheStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isStale = state.isStale;
-    final title = isStale ? 'Showing stale cached data' : 'Showing cached data';
+    final title = isStale
+        ? l10n.catalogStaleCacheTitle
+        : l10n.catalogCachedDataTitle;
+    final localeName = Localizations.localeOf(context).toLanguageTag();
     final details = <String>[
       if (state.lastUpdatedAt != null)
-        'Last updated: ${_formatUtcTimestamp(state.lastUpdatedAt!)}',
-      if (state.revalidationFailure != null) state.revalidationFailure!.message,
+        l10n.catalogLastUpdated(
+          formatCatalogUpdatedAt(state.lastUpdatedAt!, localeName),
+        ),
+      if (state.revalidationFailure != null)
+        localizedCatalogFailure(
+          l10n,
+          failure: state.revalidationFailure!,
+          surface: CatalogFailureSurface.revalidation,
+        ),
     ];
 
     return Padding(
@@ -260,13 +291,14 @@ class _CatalogCacheStatus extends StatelessWidget {
           ),
           if (state.isRevalidating) ...<Widget>[
             const SizedBox(height: DsSpace.xs),
-            const Align(
+            Align(
               alignment: AlignmentDirectional.centerEnd,
               child: DsButtonContent(
-                key: Key('catalog-revalidation-loading'),
-                label: 'Updating cached data',
+                key: const Key('catalog-revalidation-loading'),
+                label: l10n.catalogUpdatingCacheLabel,
                 isLoading: true,
-                progressSemanticsLabel: 'Catalog revalidation progress',
+                progressSemanticsLabel:
+                    l10n.catalogRevalidationProgressSemanticsLabel,
               ),
             ),
           ],
@@ -274,11 +306,4 @@ class _CatalogCacheStatus extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatUtcTimestamp(DateTime value) {
-  final utc = value.toUtc();
-  String twoDigits(int number) => number.toString().padLeft(2, '0');
-  return '${utc.year}-${twoDigits(utc.month)}-${twoDigits(utc.day)} '
-      '${twoDigits(utc.hour)}:${twoDigits(utc.minute)} UTC';
 }

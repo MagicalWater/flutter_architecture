@@ -3,7 +3,9 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
+import 'package:flutter_architecture/features/catalog/presentation/catalog_presentation_localization.dart';
 import 'package:flutter_architecture/features/catalog/presentation/pages/catalog_page.dart';
+import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -83,7 +85,11 @@ void main() {
     expect(find.byKey(const Key('catalog-cache-status')), findsOneWidget);
     expect(find.byType(DsStatusBanner), findsOneWidget);
     expect(find.byKey(const Key('catalog-cached-notice')), findsOneWidget);
-    expect(find.text('Last updated: 2026-07-17 03:05 UTC'), findsOneWidget);
+    final expected = formatCatalogUpdatedAt(
+      DateTime.utc(2026, 7, 17, 3, 5),
+      'en',
+    );
+    expect(find.text('Last updated: $expected'), findsOneWidget);
     expect(find.byKey(const Key('catalog-stale-notice')), findsNothing);
   });
 
@@ -126,7 +132,11 @@ void main() {
     );
 
     expect(find.byKey(const Key('catalog-revalidation-loading')), findsNothing);
-    expect(find.text('Update failed'), findsOneWidget);
+    expect(
+      find.text('Unable to update the cached catalog right now.'),
+      findsOneWidget,
+    );
+    expect(find.text('Update failed'), findsNothing);
     expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
   });
 
@@ -235,6 +245,34 @@ void main() {
     expect(find.byKey(const Key('catalog-cache-status')), findsNothing);
     expect(find.textContaining('Last updated:'), findsNothing);
   });
+
+  testWidgets('CatalogView renders zh_TW copy and locale-aware local time', (
+    tester,
+  ) async {
+    final timestamp = DateTime.utc(2026, 7, 17, 3, 5);
+    await _pumpView(
+      tester,
+      _state(
+        items: const <CatalogItem>[
+          CatalogItem(
+            id: '1',
+            name: 'Server content',
+            description: 'Unchanged',
+          ),
+        ],
+        isUsingCachedData: true,
+        isStale: true,
+        lastUpdatedAt: timestamp,
+      ),
+      locale: const Locale('zh', 'TW'),
+    );
+
+    expect(find.text('正在顯示過期的快取資料'), findsOneWidget);
+    final expected = formatCatalogUpdatedAt(timestamp, 'zh-TW');
+    expect(find.text('最後更新：$expected'), findsOneWidget);
+    expect(find.text('Server content'), findsOneWidget);
+    expect(find.text('Unchanged'), findsOneWidget);
+  });
 }
 
 Future<void> _pumpView(
@@ -244,10 +282,14 @@ Future<void> _pumpView(
   VoidCallback? onRetryAppend,
   Future<void> Function()? onRefresh,
   ThemeData? theme,
+  Locale locale = const Locale('en'),
   TextScaler textScaler = TextScaler.noScaling,
 }) {
   return tester.pumpWidget(
     MaterialApp(
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: theme ?? OceanThemeDefinition().createDarkTheme(),
       home: MediaQuery(
         data: MediaQueryData(textScaler: textScaler),

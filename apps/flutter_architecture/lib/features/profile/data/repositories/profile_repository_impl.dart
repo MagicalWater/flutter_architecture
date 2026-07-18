@@ -23,7 +23,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return FailureResult(
         mapAppExceptionToFailure(
           error,
-          fallbackMessage: '取得 Profile 失敗',
+          fallbackMessage: 'Profile retrieval failed.',
         ),
       );
     }

@@ -17,6 +17,7 @@
 - Milestone 13 Pagination / Search Debounce：Completed
 - Milestone 14 Offline Cache：Archived
 - Milestone 15 Design System Foundation：Completed
+- Milestone 16 Localization Foundation：Completed
 
 版本變更請參考 `CHANGELOG.md`。
 
@@ -162,6 +163,17 @@ flutter run \
 - Non-blocking status banner and loading button content
 - Narrow viewport, large text and four-theme-combination regression coverage
 
+### Localization
+
+- Flutter official `gen_l10n`
+- English and Traditional Chinese (`zh_TW`)
+- System / English / Traditional Chinese locale preference
+- Runtime locale switching with persisted App-local preference
+- Explicit locale-list resolution for Traditional and Simplified Chinese
+- Feature-local user-facing failure mapping
+- Locale-aware Catalog date and time formatting through `intl`
+- App-owned localization; Design System only receives localized presentation text
+
 ---
 
 ## 專案結構
@@ -201,6 +213,8 @@ root/
 - Feature 的 Presentation Layer
 - Catalog cursor pagination、search debounce、refresh 與 load more 範例
 - Catalog feature-level Offline Cache、Stale-While-Revalidate、retention cleanup 與 cached/stale UI
+- App-local Theme 與 Locale preference、bootstrap restore、runtime selector 與 `MaterialApp.router` wiring
+- English / `zh_TW` App chrome、Auth、Profile、Protected 與 Catalog localization
 
 Catalog Cache 以 `query + requested cursor + limit` 作為 page identity。Fresh Cache 可直接呈現，Stale Cache 先顯示並背景更新，Pull-to-refresh 強制 Remote，Append 使用 retained page Cache 或 Remote fallback。Cache 是可重建的 public read model，因此 Logout 只清除 Auth state，不清除 Catalog Cache。
 
@@ -331,6 +345,7 @@ workspace:
   - packages/api_client
   - packages/auth
   - packages/core
+  - packages/design_system
 
 melos:
   scripts:

@@ -2521,3 +2521,76 @@ Milestone 15 不包含：
 - `ArchitectureApp` 會從直接建立單一 ThemeData，改為消費目前 Theme Identity 的 Light / Dark ThemeData 與 Theme Mode。
 - Login、Profile、Protected、Catalog 與 Shell presentation 會逐步改用 semantic tokens、Material component themes 與 Design System primitives。
 - Feature business state、Bloc、Repository 與 Milestone 13 / 14 data flow 不因 Design System 導入而改變。
+
+---
+
+## Decision 019：Localization、Locale Preference 與 User-facing Failure Mapping 責任邊界
+
+**狀態：** Accepted
+
+**實作狀態：** Milestone 16-1 至 16-7 已完成；`gen_l10n`、locale preference、persistence、bootstrap、selector、Shell / Appearance、Theme metadata、Auth / Profile / Protected / Catalog localization、feature-local failure mapping、locale-aware date formatting、production text audit 與完整 regression 已落地。
+
+### 決策
+
+#### Localization owner
+
+- App 是 localization owner 與唯一 Composition Root，負責 `gen_l10n`、ARB、delegates、supported locales、locale resolution、preference、restore、persistence、controller、selector 與 `MaterialApp.router` wiring。
+- App title 使用 `onGenerateTitle` 取得 localized text。
+- `gen_l10n` 對 `zh_TW` 要求存在 base `zh` ARB 作為 generator fallback；該檔案只滿足 generated localization fallback contract，App 的 `supportedLocales` 仍只公開 `en` 與 `zh_TW`。
+- `packages/design_system` 不依賴 App generated `AppLocalizations`，只接收呼叫方傳入的 title、message、label、tooltip、Semantics 與 action text。
+- Design System primitive 不自行拼接固定語言的 user-facing fallback；例如 loading semantics 未提供專用文案時，只能重用呼叫方已 localized 的 label。
+- Domain、Data、Repository、exception 與 log 不依賴 `BuildContext`、`AppLocalizations` 或 App locale，也不建立可直接顯示的 localized UI sentence。
+- Server / user content，例如 Profile name、Catalog item name / description，不進 App ARB。
+
+#### Locale preference 與 resolution
+
+- 第一版支援 `system / en / zh_TW`，使用獨立 App-local versioned persistence contract，storage key 為 `app.locale.preference`。
+- `system` preference 不保存 resolved locale；`MaterialApp.router.locale` 維持 `null`，由 `localeListResolutionCallback` 根據 platform locale list 解析，因此自然跟隨平台 locale 變化。
+- Explicit `en` / `zh_TW` preference 由 controller 提供具體 Locale，直接覆蓋 system resolution。
+- LocaleController 只保存 preference 與 persistence 狀態，不另外保存 resolved system locale，也不自行實作 `WidgetsBindingObserver`。
+- `zh_TW`、script `Hant`、`zh_HK`、`zh_MO` 解析為 `zh_TW`；`zh_CN`、`zh_SG`、script `Hans` 與其他 unsupported locale fallback 至 English。
+- Theme preference 與 Locale preference 不抽象成 Generic Preference Framework。
+- Locale preference 使用 Version 1 JSON `{version, locale}`，SharedPreferences key 為 `app.locale.preference`。
+- `LocaleController` 採 runtime-first 與 serialized complete-snapshot write queue；寫入失敗不回滾 runtime，且不阻止較新 preference 繼續保存。
+- Storage read exception 以 System 啟動，保留 non-blocking diagnostic，不阻止 `runApp`，也不自動寫回 fallback。
+- Bootstrap 在 `runApp` 前 restore Locale preference，App-level selector 支援 System、English 與繁體中文。
+
+#### Failure / Exception 範圍
+
+- Milestone 16 不全面重構 `Failure`、`AppException`、`Result`、cause chain、Repository mapping 或 Bloc hierarchy。
+- `Failure.message` 定義為 diagnostic / fallback information，不保證是可直接顯示的 localized UI text。
+- 只處理目前實際顯示到 UI 的 Login、Logout、Profile load 與 Catalog initial / refresh / append / revalidation failure。
+- Catalog Bloc 原本已保存 `Failure`；Auth / Profile Bloc 已於 Milestone 16-5 完成最小 state contract 調整，改為保存 `Failure + operation context`，使 Presentation 能取得 stable failure identity。
+- Feature Presentation 依 stable code / kind 做 feature-local mapping；只有語意足夠明確的 code 才能產生特定 UX copy。現有 HTTP status contract 下，`401` 可用於 Login invalid credentials / Profile session expired，`403` 不推導成這兩種語意，改用操作專屬 localized fallback。
+- Catalog 保留既有 initial / refresh / append / revalidation `Failure` 欄位，由 Presentation 依 surface 映射；HTTP `408 / 429` 可安全映射 timeout / rate-limit copy，其餘使用 surface-specific fallback。
+- 不建立 Global Error Localization Service、Generic Failure Mapper 或全域 typed failure taxonomy。
+- `Failure.message` 與 `mapAppExceptionToFailure` 的既有註解需同步修正；Repository 固定語言 fallback 不再宣稱可直接交給 UI。
+
+正式流程：
+
+```txt
+AppException / technical diagnostic
+  ↓
+Repository 建立穩定 Failure identity
+  ↓
+Bloc 保存 Failure
+  ↓
+Feature Presentation 映射 AppLocalizations
+  ↓
+Design System 顯示已 localized String
+```
+
+#### Theme、ARB 與 formatting
+
+- Theme ID 維持 stable persistence identity；App 依 Theme ID 映射 localized display name，Design System metadata 只保留 fallback display name。
+- ARB key 使用 lowerCamelCase 與 feature + semantic purpose；parameterized message 使用 placeholder，不在 Dart 拼接句子。
+- Data、Domain 與 Cache timestamp 維持 UTC；Presentation 轉為 local time 後依目前 locale 的日期與時間慣例格式化，不強制固定 12 或 24 小時制。
+- Catalog 日期顯示使用 App 直接依賴的 `intl`；formatter 不回寫或改變原始 UTC timestamp。
+- Localization 不改變 cursor、ID、version、HTTP code、SQL schema 或 storage value。
+
+### 非目標
+
+- 全專案 Failure / Exception hierarchy 重構。
+- Generic Localization Service、Generic Error Localization Service 或 Generic Preference Framework。
+- Design System 依賴 App generated localization。
+- Remote language pack、server content 自動翻譯、timezone / currency preference、完整 region settings 或完整 RTL。

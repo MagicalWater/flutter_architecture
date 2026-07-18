@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth/auth.dart';
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_architecture/features/profile/domain/entities/profile.dart';
 import 'package:flutter_architecture/features/profile/domain/use_cases/get_profile_use_case.dart';
@@ -63,7 +64,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           isAuthenticated: false,
           logoutSucceeded: false,
           profile: null,
-          errorMessage: null,
+          failure: null,
+          failureOperation: null,
         ),
       );
       return;
@@ -74,7 +76,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         isLoading: true,
         isAuthenticated: true,
         logoutSucceeded: false,
-        errorMessage: null,
+        failure: null,
+        failureOperation: null,
       ),
     );
 
@@ -105,7 +108,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           state.copyWith(
             isLoading: false,
             isAuthenticated: true,
-            errorMessage: error.toString(),
+            failure: _asFailure(error),
+            failureOperation: ProfileFailureOperation.load,
           ),
         );
       },
@@ -116,21 +120,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileLogoutRequested event,
     Emitter<ProfileState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    emit(
+      state.copyWith(isLoading: true, failure: null, failureOperation: null),
+    );
 
     final result = await _logoutUseCase.execute();
 
     result.when(
       success: (_) {
-        emit(
-          ProfileState.initial().copyWith(logoutSucceeded: true),
-        );
+        emit(ProfileState.initial().copyWith(logoutSucceeded: true));
       },
       failure: (error) {
         emit(
           state.copyWith(
             isLoading: false,
-            errorMessage: error.toString(),
+            failure: _asFailure(error),
+            failureOperation: ProfileFailureOperation.logout,
           ),
         );
       },
@@ -142,11 +147,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) {
     if (_sessionManager.isAuthenticated) {
-      emit(
-        ProfileState.initial().copyWith(
-          isAuthenticated: true,
-        ),
-      );
+      emit(ProfileState.initial().copyWith(isAuthenticated: true));
       add(const ProfileEvent.requested());
       return;
     }
@@ -158,4 +159,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     await _sessionSubscription.cancel();
     return super.close();
   }
+}
+
+Failure _asFailure(Object error) {
+  return error is Failure
+      ? error
+      : Failure(message: error.toString(), cause: error);
 }

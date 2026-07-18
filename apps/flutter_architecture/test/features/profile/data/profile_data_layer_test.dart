@@ -55,7 +55,7 @@ void main() {
       failure: (failure) => (failure as Failure).message,
     );
 
-    expect(message, '取得 Profile 失敗');
+    expect(message, 'Profile retrieval failed.');
   });
 
   test('ProfileRepository 不會把未知錯誤轉為 Failure', () async {

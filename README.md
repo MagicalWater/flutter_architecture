@@ -16,6 +16,7 @@
 - Milestone 12 Refresh Token / Concurrent 401：Completed
 - Milestone 13 Pagination / Search Debounce：Completed
 - Milestone 14 Offline Cache：Archived
+- Milestone 15 Design System Foundation：Completed
 
 版本變更請參考 `CHANGELOG.md`。
 
@@ -150,6 +151,17 @@ flutter run \
 
 - RxDart
 
+### Design System
+
+- Reusable `packages/design_system`
+- Default / Ocean Theme identities
+- Light / Dark / System mode
+- Persistent appearance preference
+- Semantic colors and Material component themes
+- Shared blocking page-state surfaces
+- Non-blocking status banner and loading button content
+- Narrow viewport, large text and four-theme-combination regression coverage
+
 ---
 
 ## 專案結構
@@ -162,6 +174,7 @@ root/
     core/
     api_client/
     auth/
+    design_system/
   docs/
   melos.yaml
   pubspec.yaml
@@ -232,6 +245,25 @@ packages/auth
 apps/flutter_architecture/lib/features/auth
   只保留 Auth presentation
 ```
+
+### packages/design_system
+
+Design System 共用能力。
+
+Milestone 15 已完成，現在提供：
+
+- Primitive design tokens。
+- Semantic color role contract。
+- Theme ID / metadata / definition contract。
+- Theme Registry 與 default / duplicate / fallback validation。
+- Default / Ocean Theme 的 Material 3 Light / Dark variants。
+- Typography、核心 Material component themes 與 semantic colors。
+- App-local Theme preference、persistence 與 Appearance selector。
+- Status Banner、constrained content、loading button content 與共用 page-state surfaces。
+- Login、Profile、Protected、Catalog 與 Shell 的 Theme-aware 導入範例。
+- 窄畫面、大型文字、四組 Theme composition 與 stable gallery golden regression。
+
+Package 不依賴 App、Feature、DI framework 或 persistence implementation；Theme preference、controller、storage 與 selector workflow 留在 App，App 仍是唯一 Composition Root。
 
 ---
 

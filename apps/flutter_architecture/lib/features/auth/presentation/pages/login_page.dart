@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
@@ -34,69 +35,94 @@ class LoginPage extends HookWidget {
       }
     });
 
+    return LoginView(
+      accountController: accountController,
+      passwordController: passwordController,
+      isLoading: authState.isLoading,
+      errorMessage: authState.errorMessage,
+      onLogin: () {
+        authBloc.add(
+          AuthEvent.loginRequested(
+            account: accountController.text,
+            password: passwordController.text,
+          ),
+        );
+      },
+      onOpenProtected: () => context.pushRoute(const ProtectedRoute()),
+    );
+  }
+}
+
+final class LoginView extends StatelessWidget {
+  const LoginView({
+    required this.accountController,
+    required this.passwordController,
+    required this.isLoading,
+    required this.onLogin,
+    required this.onOpenProtected,
+    this.errorMessage,
+    super.key,
+  });
+
+  final TextEditingController accountController;
+  final TextEditingController passwordController;
+  final bool isLoading;
+  final String? errorMessage;
+  final VoidCallback onLogin;
+  final VoidCallback onOpenProtected;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: DsConstrainedContent(
+            maxWidth: 420,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const Text(
+                Text(
                   'Login Page',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: DsSpace.xl),
                 TextField(
                   controller: accountController,
-                  decoration: const InputDecoration(
-                    labelText: 'Account',
-                    border: OutlineInputBorder(),
-                  ),
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(labelText: 'Account'),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: DsSpace.md),
                 TextField(
                   controller: passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                  ),
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: isLoading ? null : (_) => onLogin(),
+                  decoration: const InputDecoration(labelText: 'Password'),
                 ),
-                const SizedBox(height: 16),
-                if (authState.errorMessage != null) ...<Widget>[
+                const SizedBox(height: DsSpace.lg),
+                if (errorMessage != null) ...<Widget>[
                   Text(
-                    authState.errorMessage!,
-                    style: TextStyle(
+                    errorMessage!,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: DsSpace.md),
                 ],
                 FilledButton(
-                  onPressed: authState.isLoading
-                      ? null
-                      : () {
-                          authBloc.add(
-                            AuthEvent.loginRequested(
-                              account: accountController.text,
-                              password: passwordController.text,
-                            ),
-                          );
-                        },
-                  child: authState.isLoading
-                      ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('登入'),
+                  onPressed: isLoading ? null : onLogin,
+                  child: DsButtonContent(
+                    label: isLoading ? '登入中' : '登入',
+                    isLoading: isLoading,
+                    progressSemanticsLabel: '登入進度',
+                  ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: DsSpace.md),
                 OutlinedButton(
-                  onPressed: () => context.pushRoute(const ProtectedRoute()),
+                  onPressed: onOpenProtected,
                   child: const Text('嘗試進入需要登入的頁面'),
                 ),
               ],

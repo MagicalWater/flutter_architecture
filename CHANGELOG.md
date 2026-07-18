@@ -18,7 +18,56 @@
 
 ## [Unreleased]
 
-尚無未發布變更。
+### Added
+
+- 完成 Milestone 15-10：清查 production UI hard-coded style、移除未有穩定 consumer 的 Design System tokens、加入單一 stable gallery golden fixture，同步主要文件並完成完整 regression 與 development / staging / production bundle 驗證。
+- 完成 Milestone 15-8：ProtectedPage 導入 `DsMessageState`；ProfilePage 導入 unauthenticated／loading／blocking error／content surfaces；LoginPage 導入 constrained scrollable form、Theme InputDecoration 與 `DsButtonContent`，並補上窄畫面、鍵盤、2.0 text scaling、Dark mode 與 Ocean Theme widget tests。
+- 完成 Milestone 15-9：Catalog 導入 initial loading／empty／blocking error page-state surfaces，append、refresh、cache、stale 與 revalidation 保持 feature-local non-blocking presentation；Shell chrome 抽為可測 `ShellScaffold`。
+- Milestone 15-9 review 修正：Catalog empty surface 改為單一 scroll owner，補上 pull-to-refresh、窄畫面大型文字、四組 Theme render matrix，並鎖定 Shell selected destination mapping。
+- 移除 Catalog empty state 固定高度 spacer，改為依 viewport 配置的可捲動 empty surface；保留 Pagination、SWR、Refresh、Append、cursor chain、cache metadata、AutoTabsRouter 與 Appearance／Protected routing contract。
+
+- 規劃 Milestone 15 Design System Foundation，正式採用 `packages/design_system` 作為不依賴 App、Feature、DI framework 或 persistence implementation 的純 Flutter UI package。
+- 新增 Architecture Decision 018，明確區分 Theme Identity 與 Theme Mode；每一套 Theme 必須提供 Light / Dark variants，System mode 只決定目前 variant，不改變 Theme Identity。
+- Milestone 15 第一版將提供 Default Theme 與第二套示範 Theme，用來驗證多主題 registry、semantic token、Light / Dark 交叉組合與 persistence contract。
+- Theme preference 將分別保存 `themeId` 與 `mode`；App 負責 restore、controller lifecycle、persistence 與 `MaterialApp.themeMode` wiring，Design System package 不直接依賴 SharedPreferences。
+- Theme preference 已拍板使用單一 versioned JSON `app.theme.preference`；損壞或未知 version 整體 fallback，未知 themeId / mode 採欄位級 fallback。
+- Theme 切換採 runtime-first、persistence-second；寫入失敗不回滾目前 Theme，只回報 non-blocking persistence failure。
+- Theme preference persistence 採完整 snapshot 的單一序列化 write queue，保證快速連續切換時 latest preference wins，且較舊寫入不得覆蓋較新選擇。
+- Theme preference storage read exception 時以 Default Theme + System mode 繼續啟動，保留 non-blocking diagnostic，不阻止 `runApp`，也不自動寫回 fallback。
+- Appearance selector 定位為 App-level theme presentation，Shell 只提供入口，不承擔 settings workflow。
+- 規劃 primitive tokens、semantic colors、Typography、Radius、Elevation、Material component themes、`ThemeExtension`、primitive components、page state surfaces、Accessibility 與 text scaling tests。
+- 將 Milestone 15 拆分為 Architecture Contract、Package / Tokens、Default Theme、示範 Theme、Primitive Components、Page State Surfaces、Theme Persistence / Selector、現有頁面導入與 Final Verification。
+- 完成 Milestone 15-2 Package Skeleton、Design Tokens 與 Theme Registry。
+- 新增 `packages/design_system` workspace package、public entrypoint 與 package README；package 不依賴 App、Feature、DI framework 或 persistence implementation。
+- 新增 spacing、radius、elevation、icon size primitive tokens，以及 success、warning、info semantic color role contract。
+- 新增穩定 `DsThemeId`、`DsThemeMetadata`、`DsThemeDefinition` 與 `DsThemeRegistry`；Registry 支援 default validation、duplicate rejection 與 unknown ID fallback。
+- Raw palette 保持 package internal，Fake Theme definitions 已驗證 Light / Dark ThemeData factory contract；production Default Theme 留在 Milestone 15-3。
+- Theme ID 採 lowercase canonical contract，只允許小寫英文字母、數字、底線與連字號；Theme metadata 會拒絕空白 display name。
+- 補強 Theme Registry definition / metadata ID mismatch 與 available themes 不可修改的 boundary tests。
+- 完成 Milestone 15-3 Default Theme Light / Dark。
+- 新增 production `DefaultThemeDefinition`，提供 Material 3 Light / Dark `ThemeData`、Typography hierarchy、surface hierarchy 與核心 Material component themes。
+- 新增 `DsSemanticColors` ThemeExtension，提供 success、warning、info foreground / container semantic roles，並完成 `copyWith` / `lerp` contract tests。
+- 補強 Default Theme contract tests，鎖定 Typography exact hierarchy、Material component theme 精確值、touch target、radius、elevation 與 semantic foreground / container contrast。
+- 完成 Milestone 15-4 第二套示範 Theme Light / Dark。
+- 新增 production `OceanThemeDefinition`，提供獨立 Light / Dark ColorScheme、semantic colors、Typography weight 與 radius 差異。
+- 抽取 package-internal `DsMaterialThemeFactory`，只共用 Default / Ocean 已證明重複的 Material Theme 組裝，不建立 generic skin engine。
+- 新增 Registry 四組 ThemeData、Ocean semantic contrast 與非單純 seed replacement contract tests。
+- 補強 Ocean Theme tests：同 brightness 比較 Default / Ocean semantic identity、驗證六組 semantic contrast，並鎖定 Registry 回傳正確 definition 與四組 ThemeData identity。
+- 完成 Milestone 15-5 Primitive Components。
+- 新增 `DsStatusBanner`，提供 neutral、info、success、warning、error semantic tone、optional action 與 Semantics。
+- 新增 `DsConstrainedContent`，統一內容 max width、置中與 page padding。
+- 新增 `DsButtonContent`，供 Material Button variants 使用 idle / loading presentation，不建立 generic button。
+- 新增兩套 Theme × Light / Dark、action callback、disabled/loading、長文字與窄 viewport widget tests；沒有穩定第二 consumer 的 compact progress / search abstraction 不予建立。
+- 完成 Milestone 15-7 Theme Preference、Persistence 與 Selector UI。
+- 新增 App-local `ThemePreference`、`AppThemeMode`、Version 1 JSON codec 與 `app.theme.preference` SharedPreferences storage。
+- 新增 runtime-first `ThemeController` 與 serialized complete-snapshot write queue；寫入失敗不回滾 runtime，且不阻止後續較新 preference。
+- Bootstrap 在 `runApp` 前 restore preference；storage read exception 使用 Default + System 啟動、保留 diagnostic 且不自動寫回。
+- `MaterialApp.router` 已接上選中 Theme identity 的 Light / Dark ThemeData 與 ThemeMode；Shell 新增 Appearance selector 入口。
+- 完成 Milestone 15-6 Page State Surfaces。
+- Milestone 15-8 review 修正：Profile 在既存內容下的登出 loading / failure 改為 non-blocking presentation，並補上 Login / Profile callback wiring tests。
+- 新增 `DsLoadingState`、`DsEmptyState`、`DsBlockingErrorState`、`DsMessageState` 與 typed `DsPageStateAction`。
+- Page-state surfaces 支援 Widget icon slot、primary / secondary actions、viewport-aware scrolling 與 Wrap action layout，不使用固定高度 empty-state hack。
+- 新增 Default / Ocean × Light / Dark、Loading / Error / Retry Semantics、custom icon slot，以及 text scale 1.0 / 1.3 / 2.0 的 320px widget tests。
 
 ---
 

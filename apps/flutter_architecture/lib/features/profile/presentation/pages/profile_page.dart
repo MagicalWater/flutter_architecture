@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/features/profile/domain/entities/profile.dart';
 import 'package:flutter_architecture/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:flutter_architecture/features/shell/presentation/shell_tab.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -34,36 +36,94 @@ class ProfilePage extends HookWidget {
       }
     });
 
-    if (!profileState.isAuthenticated) {
-      return const Center(child: Text('尚未登入'));
+    return ProfileView(
+      isAuthenticated: profileState.isAuthenticated,
+      isLoading: profileState.isLoading,
+      errorMessage: profileState.errorMessage,
+      profile: profileState.profile,
+      onRetry: () => profileBloc.add(const ProfileEvent.requested()),
+      onLogout: () => profileBloc.add(const ProfileEvent.logoutRequested()),
+    );
+  }
+}
+
+final class ProfileView extends StatelessWidget {
+  const ProfileView({
+    required this.isAuthenticated,
+    required this.isLoading,
+    required this.onRetry,
+    required this.onLogout,
+    this.errorMessage,
+    this.profile,
+    super.key,
+  });
+
+  final bool isAuthenticated;
+  final bool isLoading;
+  final String? errorMessage;
+  final Profile? profile;
+  final VoidCallback onRetry;
+  final VoidCallback onLogout;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isAuthenticated) {
+      return const DsMessageState(
+        title: '尚未登入',
+        message: '登入後即可查看目前帳號的個人資料。',
+        icon: Icon(Icons.person_off_outlined, size: DsIconSize.hero),
+      );
     }
 
-    if (profileState.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+    if (isLoading && profile == null) {
+      return const DsLoadingState(
+        title: '載入個人資料',
+        message: '正在取得最新的帳號資訊。',
+        progressSemanticsLabel: '個人資料載入進度',
+      );
     }
 
-    if (profileState.errorMessage != null) {
-      return Center(child: Text(profileState.errorMessage!));
+    if (errorMessage != null && profile == null) {
+      return DsBlockingErrorState(
+        title: '無法載入個人資料',
+        message: errorMessage,
+        primaryAction: DsPageStateAction(label: '重試', onPressed: onRetry),
+      );
     }
 
-    final profile = profileState.profile;
-
-    return Center(
+    return DsConstrainedContent(
+      maxWidth: 560,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const Text(
+          if (errorMessage != null) ...<Widget>[
+            DsStatusBanner(
+              tone: DsStatusTone.error,
+              title: '登出失敗',
+              message: errorMessage!,
+            ),
+            const SizedBox(height: DsSpace.lg),
+          ],
+          Text(
             'Profile Page',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-          const SizedBox(height: 16),
-          Text('目前登入用戶：${profile?.name ?? '未知'}'),
-          const SizedBox(height: 16),
+          const SizedBox(height: DsSpace.lg),
+          Text(
+            '目前登入用戶：${profile?.name ?? '未知'}',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: DsSpace.lg),
           FilledButton.tonal(
-            onPressed: () {
-              profileBloc.add(const ProfileEvent.logoutRequested());
-            },
-            child: const Text('登出'),
+            onPressed: isLoading ? null : onLogout,
+            child: DsButtonContent(
+              label: isLoading ? '登出中' : '登出',
+              isLoading: isLoading,
+              progressSemanticsLabel: '登出進度',
+            ),
           ),
         ],
       ),

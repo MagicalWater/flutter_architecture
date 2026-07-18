@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
+import 'package:flutter_architecture/app/theme/theme_controller.dart';
+import 'package:flutter_architecture/app/theme/theme_preference.dart';
 
 /// App 入口 Widget。
 ///
@@ -10,7 +12,9 @@ import 'package:flutter_architecture/app/router/app_router.dart';
 ///
 /// 它負責把 Router、Theme、全域設定組合起來。
 class ArchitectureApp extends StatefulWidget {
-  const ArchitectureApp({super.key});
+  const ArchitectureApp({required this.themeController, super.key});
+
+  final ThemeController themeController;
 
   @override
   State<ArchitectureApp> createState() => _ArchitectureAppState();
@@ -27,13 +31,53 @@ class _ArchitectureAppState extends State<ArchitectureApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Flutter Architecture',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        useMaterial3: true,
+    return ThemeControllerScope(
+      controller: widget.themeController,
+      child: ArchitectureThemeBuilder(
+        controller: widget.themeController,
+        builder: (context, lightTheme, darkTheme, themeMode) {
+          return MaterialApp.router(
+            title: 'Flutter Architecture',
+            theme: lightTheme,
+            darkTheme: darkTheme,
+            themeMode: themeMode,
+            routerConfig: _router.config(),
+          );
+        },
       ),
-      routerConfig: _router.config(),
+    );
+  }
+}
+
+final class ArchitectureThemeBuilder extends StatelessWidget {
+  const ArchitectureThemeBuilder({
+    required this.controller,
+    required this.builder,
+    super.key,
+  });
+
+  final ThemeController controller;
+  final Widget Function(
+    BuildContext context,
+    ThemeData lightTheme,
+    ThemeData darkTheme,
+    ThemeMode themeMode,
+  )
+  builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final definition = controller.definition;
+        return builder(
+          context,
+          definition.createLightTheme(),
+          definition.createDarkTheme(),
+          controller.preference.mode.materialMode,
+        );
+      },
     );
   }
 }

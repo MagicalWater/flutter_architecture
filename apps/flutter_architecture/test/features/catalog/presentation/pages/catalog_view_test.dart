@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
@@ -11,15 +12,18 @@ void main() {
   ) async {
     await _pumpView(tester, _state(isInitialLoading: true));
     expect(find.byKey(const Key('catalog-initial-loading')), findsOneWidget);
+    expect(find.byType(DsLoadingState), findsOneWidget);
 
     await _pumpView(
       tester,
       _state(initialFailure: const Failure(message: 'initial failed')),
     );
     expect(find.byKey(const Key('catalog-initial-failure')), findsOneWidget);
+    expect(find.byType(DsBlockingErrorState), findsOneWidget);
 
     await _pumpView(tester, _state(hasCompletedInitialLoad: true));
     expect(find.byKey(const Key('catalog-empty')), findsOneWidget);
+    expect(find.byType(DsEmptyState), findsOneWidget);
   });
 
   testWidgets('CatalogView 顯示 items、append loading 與 append retry', (
@@ -37,6 +41,7 @@ void main() {
     );
     expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
     expect(find.byKey(const Key('catalog-append-loading')), findsOneWidget);
+    expect(find.byType(DsButtonContent), findsOneWidget);
 
     await _pumpView(
       tester,
@@ -48,6 +53,7 @@ void main() {
     );
     await tester.tap(find.text('Retry load more'));
     expect(retryCount, 1);
+    expect(find.byType(DsStatusBanner), findsOneWidget);
   });
 
   testWidgets('CatalogView initial retry callback 可被觸發', (tester) async {
@@ -75,6 +81,7 @@ void main() {
     );
 
     expect(find.byKey(const Key('catalog-cache-status')), findsOneWidget);
+    expect(find.byType(DsStatusBanner), findsOneWidget);
     expect(find.byKey(const Key('catalog-cached-notice')), findsOneWidget);
     expect(find.text('Last updated: 2026-07-17 03:05 UTC'), findsOneWidget);
     expect(find.byKey(const Key('catalog-stale-notice')), findsNothing);
@@ -119,10 +126,7 @@ void main() {
     );
 
     expect(find.byKey(const Key('catalog-revalidation-loading')), findsNothing);
-    expect(
-      find.byKey(const Key('catalog-revalidation-failure')),
-      findsOneWidget,
-    );
+    expect(find.text('Update failed'), findsOneWidget);
     expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
   });
 
@@ -136,8 +140,86 @@ void main() {
     );
 
     expect(find.byKey(const Key('catalog-empty')), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('catalog-refresh-failure')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.byKey(const Key('catalog-refresh-failure')), findsOneWidget);
+    expect(find.byType(DsStatusBanner), findsOneWidget);
   });
+
+  testWidgets('CatalogView empty surface pull-to-refresh callback 可被觸發', (
+    tester,
+  ) async {
+    var refreshCount = 0;
+    await _pumpView(
+      tester,
+      _state(hasCompletedInitialLoad: true),
+      onRefresh: () async => refreshCount += 1,
+    );
+
+    await tester.drag(
+      find.byKey(const Key('catalog-empty')),
+      const Offset(0, 300),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(refreshCount, 1);
+  });
+
+  testWidgets(
+    'CatalogView empty failure supports narrow viewport and 2.0 text scaling',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await _pumpView(
+        tester,
+        _state(
+          hasCompletedInitialLoad: true,
+          refreshFailure: const Failure(
+            message:
+                'Refresh failed because the network is unavailable. Please check the connection and try again.',
+          ),
+        ),
+        textScaler: const TextScaler.linear(2),
+      );
+
+      expect(find.byKey(const Key('catalog-empty')), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('catalog-refresh-failure')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.byKey(const Key('catalog-refresh-failure')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final themeCase in _themeCases) {
+    testWidgets('CatalogView renders under ${themeCase.name}', (tester) async {
+      await _pumpView(
+        tester,
+        _state(
+          items: const <CatalogItem>[
+            CatalogItem(id: '1', name: 'Cached', description: 'cached'),
+          ],
+          isUsingCachedData: true,
+          isStale: true,
+          lastUpdatedAt: DateTime.utc(2026, 7, 17, 3, 5),
+        ),
+        theme: themeCase.theme,
+      );
+
+      expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
+      expect(find.byType(DsStatusBanner), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('CatalogView fresh Remote data 不顯示 Cache notice', (tester) async {
     await _pumpView(
@@ -151,7 +233,7 @@ void main() {
     );
 
     expect(find.byKey(const Key('catalog-cache-status')), findsNothing);
-    expect(find.byKey(const Key('catalog-last-updated')), findsNothing);
+    expect(find.textContaining('Last updated:'), findsNothing);
   });
 }
 
@@ -160,21 +242,35 @@ Future<void> _pumpView(
   CatalogState state, {
   VoidCallback? onRetryInitial,
   VoidCallback? onRetryAppend,
+  Future<void> Function()? onRefresh,
+  ThemeData? theme,
+  TextScaler textScaler = TextScaler.noScaling,
 }) {
   return tester.pumpWidget(
     MaterialApp(
-      home: Scaffold(
-        body: CatalogView(
-          state: state,
-          scrollController: ScrollController(),
-          onRetryInitial: onRetryInitial ?? () {},
-          onRetryAppend: onRetryAppend ?? () {},
-          onRefresh: () async {},
+      theme: theme ?? OceanThemeDefinition().createDarkTheme(),
+      home: MediaQuery(
+        data: MediaQueryData(textScaler: textScaler),
+        child: Scaffold(
+          body: CatalogView(
+            state: state,
+            scrollController: ScrollController(),
+            onRetryInitial: onRetryInitial ?? () {},
+            onRetryAppend: onRetryAppend ?? () {},
+            onRefresh: onRefresh ?? () async {},
+          ),
         ),
       ),
     ),
   );
 }
+
+final _themeCases = <({String name, ThemeData theme})>[
+  (name: 'Default Light', theme: DefaultThemeDefinition().createLightTheme()),
+  (name: 'Default Dark', theme: DefaultThemeDefinition().createDarkTheme()),
+  (name: 'Ocean Light', theme: OceanThemeDefinition().createLightTheme()),
+  (name: 'Ocean Dark', theme: OceanThemeDefinition().createDarkTheme()),
+];
 
 CatalogState _state({
   List<CatalogItem> items = const <CatalogItem>[],

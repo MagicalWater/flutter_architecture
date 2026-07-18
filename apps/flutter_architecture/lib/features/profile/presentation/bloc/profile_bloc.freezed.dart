@@ -182,7 +182,7 @@ return sessionCleared();case _:
 
 class ProfileRequested implements ProfileEvent {
   const ProfileRequested();
-  
+
 
 
 
@@ -214,7 +214,7 @@ String toString() {
 
 class ProfileLogoutRequested implements ProfileEvent {
   const ProfileLogoutRequested();
-  
+
 
 
 
@@ -485,7 +485,7 @@ return $default(_that.isLoading,_that.isAuthenticated,_that.logoutSucceeded,_tha
 
 class _ProfileState implements ProfileState {
   const _ProfileState({required this.isLoading, required this.isAuthenticated, required this.logoutSucceeded, required this.profile, required this.errorMessage});
-  
+
 
 @override final  bool isLoading;
 @override final  bool isAuthenticated;

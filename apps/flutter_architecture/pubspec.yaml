@@ -17,6 +17,8 @@ dependencies:
     path: ../../packages/auth
   core:
     path: ../../packages/core
+  design_system:
+    path: ../../packages/design_system
 
   auto_route: ^11.1.0
   dio: ^5.7.0

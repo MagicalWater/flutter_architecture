@@ -2137,3 +2137,387 @@ Milestone 14 不包含：
 - App SQLite database 會新增 version 2 migration 與 Catalog Cache tables。
 - CatalogBloc 會增加 Cache / stale / background revalidation state，但保留既有 generation、query 與 cursor guard。
 - App Composition Root 仍負責所有 lifecycle 與 implementation binding。
+
+---
+
+## Decision 018：Design System、Theme Identity 與 Theme Mode 責任邊界
+
+**狀態：** Accepted
+
+**實作狀態：** Milestone 15-1 至 15-10 已完成。Design System foundations、page-state surfaces、App-local Theme preference 與 selector 已落地；Protected、Profile、Login、Catalog 與 Shell 已完成 semantic surfaces 與 Theme-aware integration，且保留既有 Auth、Profile、Logout、Route Guard、Pagination、SWR 與 Offline Cache 行為。最終 regression 只保留一個 stable Design System gallery golden fixture，並已完成 production hard-coded style audit、未使用 token 清理與三環境 build 驗證。
+
+### 背景
+
+目前 App 只有一個直接建立於 `app.dart` 的 Material 3 Theme：
+
+```dart
+ThemeData(
+  colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+  useMaterial3: true,
+)
+```
+
+Login、Profile、Protected 與 Catalog 頁面各自宣告固定 spacing、font size、loading、empty、error 與 status UI。Catalog 已出現 cached、stale、revalidation 與 blocking / non-blocking failure 等重複 presentation pattern，但目前沒有 Design token、ThemeExtension、Dark Theme、Theme persistence 或 feature 使用 Design System 的邊界規則。
+
+只建立一組 Light ThemeData 與 Dark ThemeData，雖然足以支援裝置亮暗模式，卻不構成完整主題系統。主題身份與顯示模式必須分離，否則未來加入另一組品牌 Theme 時，容易把 Light / Dark 誤當成兩套 Theme，或讓 Feature 直接依賴 raw color。
+
+### 決策
+
+#### 1. 建立 `packages/design_system`
+
+Milestone 15 建立：
+
+```txt
+packages/design_system
+```
+
+它是一個純 Flutter UI package，負責：
+
+- Primitive design tokens。
+- Semantic tokens。
+- Theme definitions 與 Theme registry contract。
+- Light / Dark ThemeData factories。
+- Material component themes。
+- 必要的 ThemeExtension。
+- Primitive components。
+- Page state surfaces。
+- Accessibility-friendly presentation contract 與 tests。
+
+它不負責：
+
+- App bootstrap。
+- Router。
+- Bloc 或 feature state。
+- Repository / UseCase / DataSource。
+- SharedPreferences 或其他 persistence implementation。
+- GetIt / Injectable registration。
+- Auth、Profile、Catalog、Cache 或 Failure domain semantics。
+
+App 仍是唯一 Composition Root。
+
+#### 2. Theme Identity 與 Theme Mode 分離
+
+主題系統有兩個獨立維度：
+
+```txt
+Theme Identity
+  決定品牌色、semantic colors、Typography、Radius、Elevation
+  與 Material component appearance
+
+Theme Mode
+  system / light / dark
+  決定目前使用該 Theme Identity 的 Light 或 Dark variant
+```
+
+每一套 Theme Identity 必須同時提供：
+
+```txt
+Theme Definition
+  ├── Light ThemeData
+  └── Dark ThemeData
+```
+
+`system` 不代表另一套 Theme。它只讓 Flutter 根據平台 brightness 選擇目前 Theme Identity 的 Light 或 Dark variant。
+
+例如：
+
+```txt
+themeId = ocean
+mode = system
+
+系統 Light → Ocean Light
+系統 Dark  → Ocean Dark
+```
+
+#### 3. 第一版提供兩套 Theme Identity
+
+Milestone 15 第一版至少提供：
+
+```txt
+Default Theme
+  ├── Light
+  └── Dark
+
+第二套示範 Theme
+  ├── Light
+  └── Dark
+```
+
+第二套 Theme 用來驗證：
+
+- Feature 沒有依賴 raw palette。
+- Theme registry 能解析不同 Theme ID。
+- Theme preference 能持久化與恢復。
+- Theme Identity 與 Mode 可以交叉組合。
+- Component themes 不只替換單一 seed color。
+
+Milestone 15 不建立 Theme marketplace、remote Theme、runtime token editor 或任意 JSON skin engine。
+
+#### 4. Theme ID 使用穩定 value contract
+
+Theme ID 必須是可持久化的穩定值，不直接將 class name、display name 或 Flutter enum 當成 storage contract。
+
+Theme ID 採 canonical lowercase contract：必須以小寫英文字母開頭，且只允許小寫英文字母、數字、底線與連字號。前後空白、大寫字母與其他符號直接拒絕，不進行隱式 trim 或 lowercase 正規化。
+
+Registry 必須：
+
+- 有一個明確 Default Theme ID。
+- 拒絕重複 Theme ID。
+- 確認 Default Theme 存在。
+- 將未知或已移除的 Theme ID fallback 至 Default Theme。
+- 提供 presentation 可使用的 Theme metadata，但不負責 persistence。
+
+#### 5. Design token 分成三層
+
+```txt
+Primitive Tokens
+  spacing / radius / elevation / icon size / raw palette
+
+Semantic Tokens
+  surface / content / border / success / warning / info / error
+
+Component Tokens
+  只有 Material Theme 無法清楚表達，且已有穩定 consumer 時才建立
+```
+
+Raw palette 保持 package internal。Feature 不得直接使用 `DefaultPalette`、`OceanPalette` 或特定色階。
+
+Feature 應使用：
+
+- Material `ColorScheme` semantic roles。
+- Design System semantic ThemeExtension。
+- Public spacing / radius / layout tokens。
+- Public primitive components。
+
+#### 6. Material Theme 優先，ThemeExtension 補缺口
+
+以下優先使用 `ThemeData` 與 Material component themes：
+
+- `ColorScheme`。
+- `TextTheme`。
+- `AppBarTheme`。
+- `NavigationBarThemeData`。
+- `InputDecorationTheme`。
+- Filled / Outlined / Text Button themes。
+- Card、Divider、ProgressIndicator、SnackBar themes。
+
+ThemeExtension 只補 Material contract 沒有完整表達的語意，例如：
+
+- success。
+- warning。
+- info。
+- 對應 container / on-container colors。
+- 必要的 semantic layout values。
+
+不把所有 spacing、所有 component state 或 raw palette 都塞進 ThemeExtension。
+
+#### 7. Typography、Radius 與 Elevation 的主題能力
+
+Spacing scale、minimum interactive size 與核心 accessibility contract 預設跨 Theme 共用。
+
+Theme definition 可以覆寫：
+
+- ColorScheme。
+- Semantic colors。
+- Font family 與有限的 Typography characteristics。
+- Radius family。
+- Elevation / surface treatment。
+- Material component appearance。
+
+第二套示範 Theme 第一版只需有限度展示差異，避免測試矩陣與 scope 失控。
+
+#### 8. Feature 與 Design System 邊界
+
+Feature 可以：
+
+- 使用 `Theme.of(context)` 與公開 semantic extensions。
+- 使用 public tokens。
+- 使用 primitive components 與 page state surfaces。
+- 建立 feature-local composite component。
+
+Feature 不可以：
+
+- import raw palette。
+- 深層 import Design System internal files。
+- 將 Bloc state、Failure、Catalog snapshot 或 domain entity 傳入 Design System primitive。
+- 為單一 feature 情境要求 Design System 建立未經驗證的 generic abstraction。
+
+例如 Catalog cache banner 應維持：
+
+```txt
+CatalogCacheStatus
+  將 cached / stale / revalidation state
+  映射為 DsStatusBanner 的純 presentation properties
+```
+
+Design System 不知道 Cache 或 SWR。
+
+#### 9. Primitive components 與 Page State Surfaces
+
+第一版優先建立已有實際 consumer 的能力：
+
+- Status Banner / Inline Notice。
+- Constrained Content。
+- Button loading content。
+- Loading State。
+- Empty State。
+- Blocking Error State。
+- Generic Message State。
+
+Material Button variants 繼續使用 `FilledButton`、`OutlinedButton`、`TextButton` 等明確型別，不建立單一巨型 `DsButton(variant: ...)`。
+
+Blocking error 與 non-blocking error 必須分開。Refresh、Append、Revalidation failure 應保留原內容與 operation context，不自動使用全頁 Error State。
+
+#### 10. Theme preference 與 persistence 留在 App
+
+Theme preference 至少包含：
+
+```txt
+themeId
+mode = system | light | dark
+```
+
+App 負責：
+
+- Theme preference model / application policy。
+- Persistence abstraction 與 implementation。
+- Bootstrap restore。
+- Theme controller lifecycle。
+- Theme registry composition。
+- `MaterialApp.theme` / `darkTheme` / `themeMode` wiring。
+- Appearance selector UI 的組裝。
+
+Design System package 不直接依賴 SharedPreferences。
+
+Persistence 使用單一 versioned JSON，儲存於：
+
+```txt
+app.theme.preference
+```
+
+Version 1 contract：
+
+```json
+{
+  "version": 1,
+  "themeId": "default",
+  "mode": "system"
+}
+```
+
+Fallback policy：
+
+- 資料不存在、JSON 損壞或未知 version：整體 fallback 至 Default Theme + System mode。
+- 未知或已移除的 Theme ID：只將 Theme ID fallback 至 Default Theme，保留合法 mode。
+- 未知 mode：只將 mode fallback 至 System，保留合法 Theme ID。
+
+Theme preference 是非關鍵 UI setting。使用者切換 Theme Identity 或 Theme Mode 時，Runtime state 先立即更新，再非同步持久化；若寫入失敗：
+
+- 不回滾目前 runtime Theme，避免畫面切換後跳回。
+- Controller 暴露 non-blocking persistence failure，供 UI 或 diagnostic boundary 處理。
+- 不提升為 blocking page error，也不使 App crash。
+- 下次啟動仍以最後一次成功持久化的 preference 為準。
+
+多次 Theme preference mutation 必須遵守 latest preference wins。Controller 每次都持久化完整 preference snapshot，並透過單一序列化 write queue 保證寫入順序；不得將 Theme ID 與 mode 拆成彼此獨立、可交錯完成的非同步寫入。
+
+序列化寫入必須符合：
+
+- 快速連續切換時，最後一次使用者選擇是最後 persisted snapshot。
+- 前一次寫入失敗不得阻止後續較新的 preference 繼續寫入。
+- 每次寫入都保存完整 `version`、`themeId` 與 `mode`。
+- 較舊 mutation 不得在較新 mutation 完成後覆蓋 storage。
+
+Bootstrap restore 若遇到 storage read exception，仍必須啟動 App：
+
+- Runtime 使用 Default Theme + System mode。
+- 保留 non-blocking restore diagnostic，供 controller 或 diagnostic boundary 觀察。
+- 不阻止 `runApp`，也不提升為 blocking page error。
+- 不因 read failure 自動寫回 fallback preference，避免啟動時再觸發第二個 storage error。
+
+內容不存在或無效屬於 fallback / repair policy；storage read exception 屬於 diagnostic failure，兩者需分開測試。
+
+Bootstrap 應在 `runApp` 前恢復 preference，避免先顯示錯誤 Theme 再切換造成明顯閃爍。
+
+Appearance selector 屬於 App-level presentation，建議放在：
+
+```txt
+apps/flutter_architecture/lib/app/theme/presentation/
+```
+
+Shell 只負責提供入口並開啟 selector；Design System package 不知道 Theme controller 或 persistence workflow，也不需要建立完整 Settings feature。
+
+#### 11. Accessibility 與 text scaling 是完成條件
+
+Milestone 15 不禁止系統 text scaling，也不以固定高度承載可換行文字。
+
+至少驗證：
+
+- Text scaling 1.0、1.3、2.0。
+- 窄 viewport。
+- Light / Dark variants。
+- 兩套 Theme Identity。
+- Loading、Error、Retry、Status Banner 與 icon-only action Semantics。
+- 主要互動元件維持合理 touch target。
+- Semantic foreground / container colors 成對使用。
+
+Catalog empty state 現有 `SizedBox(height: 160)` 屬於 layout hack，導入 Page State Surface 時應移除，而不是提升為 global token。
+
+#### 12. 現有頁面導入順序
+
+依風險由低至高：
+
+```txt
+Theme infrastructure
+  ↓
+ProtectedPage
+  ↓
+ProfilePage
+  ↓
+LoginPage
+  ↓
+CatalogPage
+  ↓
+ShellPage final verification
+```
+
+Catalog 最後導入，因為它同時包含 Initial、Empty、Refresh、Append、Cache、Stale 與 Revalidation states；Design System 遷移不得改變 Milestone 13 / 14 的 state machine 與 lifecycle contract。
+
+### 測試要求
+
+Milestone 15 至少驗證：
+
+- Token 與 semantic role contract。
+- Theme registry default、duplicate、unknown ID 與 fallback。
+- Default / 示範 Theme 都能建立 Light / Dark ThemeData。
+- ThemeExtension `copyWith` / `lerp`。
+- Material component themes 的關鍵設定。
+- Primitive component callback、disabled/loading、Semantics、長文字與窄畫面。
+- Page State Surfaces 在 text scaling 1.0、1.3、2.0 下不發生主要 overflow。
+- Theme preference round-trip、unknown/corrupted value 與 removed Theme fallback。
+- `MaterialApp` 正確使用選中 Theme 的 Light / Dark ThemeData 與 ThemeMode。
+- Login、Profile、Logout、AuthGuard、Catalog Pagination 與 Offline Cache regression。
+
+Golden tests 保持少量且穩定，優先測 Design System gallery / state fixtures，不為所有 feature page 建立完整 Theme × Mode golden matrix。
+
+### 非目標
+
+Milestone 15 不包含：
+
+- Theme marketplace。
+- Remote Theme / server-driven UI theme。
+- Runtime JSON token editor。
+- Generic form framework。
+- Generic responsive framework。
+- 完整 icon library。
+- Motion / animation framework。
+- Localizations infrastructure。
+- Failure taxonomy 或 error code mapping 重構。
+- 為沒有穩定 consumer 的 component 建立抽象。
+
+### 影響
+
+- Workspace 會新增 `packages/design_system`。
+- App 會新增 Theme preference、persistence、controller 與 Appearance selector wiring。
+- `ArchitectureApp` 會從直接建立單一 ThemeData，改為消費目前 Theme Identity 的 Light / Dark ThemeData 與 Theme Mode。
+- Login、Profile、Protected、Catalog 與 Shell presentation 會逐步改用 semantic tokens、Material component themes 與 Design System primitives。
+- Feature business state、Bloc、Repository 與 Milestone 13 / 14 data flow 不因 Design System 導入而改變。

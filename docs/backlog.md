@@ -12,7 +12,6 @@
 
 - ADR：Architecture Decision Record。
 - Unit Test / Bloc Test / Repository Test 完整範例。
-- Design System。
 - API Error Mapping 進階版。
 - WebSocket。
 - Notification feature。
@@ -32,6 +31,9 @@
 - Milestone 12：Refresh Token + Concurrent 401 Handling。
 - Milestone 13：Pagination + Search Debounce。
 - Milestone 14：Offline Cache。
+- Milestone 15：Design System Foundation。
+
+Milestone 10、12、13 與 15 已完成；Milestone 11 維持 Deferred，Milestone 14 已完成後封存其 roadmap 細節。
 
 ## 範圍規則
 

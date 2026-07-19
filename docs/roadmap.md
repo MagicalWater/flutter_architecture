@@ -1908,3 +1908,31 @@ Audit 關鍵發現：
 - Sensitive data 不進 exception、failure、cause、log或 `toString()`。
 - Auth Session、Concurrent 401、Pagination、SWR、Offline Cache與 Localization regression 全部通過。
 - analyze、test與 development / staging / production build全部通過。
+
+---
+
+## Milestone 18：Template Baseline Holistic Audit
+
+狀態：Planning / Audit in progress。
+
+Milestone 18 不逐個重播 Milestone 1 至 17，而是以目前 `main` 最終程式碼為準，進行橫向基線審查。Audit 期間只盤點、驗證與提出 findings；未經 review 與拍板前不修改 production code，也不直接升級 Template Baseline Version。
+
+正式目標、範圍、方法、finding格式、severity、capability taxonomy與完成定義位於：
+
+```txt
+docs/audits/milestone_18_holistic_audit.md
+```
+
+正式子階段：
+
+```txt
+18-1 Repository Inventory & Boundary Audit
+18-2 Runtime Critical Flow Audit
+18-3 Persistence & Database Audit
+18-4 Platform Capability & Build Audit
+18-5 Test Capability Matrix
+18-6 Documentation & Baseline Decision
+18-7 Approved Remediation & Release Validation
+```
+
+目前先進行 18-1，建立實際 dependency graph、Feature / Package責任矩陣、cross-feature dependency、DI ownership與architecture findings register。完成同一子階段的完整 findings review前，不進行局部重構。

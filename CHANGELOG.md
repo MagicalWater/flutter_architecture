@@ -20,6 +20,8 @@
 
 ### Added
 
+- 規劃 Milestone 18 Template Baseline Holistic Audit：以目前 `main` 最終程式碼為準，橫向審查 Architecture與dependency boundary、runtime critical flows、`sqflite` / SQLite persistence、六平台capability、test strategy、文件與Template Baseline版本；audit期間只盤點、驗證與提出findings，未經review與拍板前不修改production code。
+- 新增 `docs/audits/milestone_18_holistic_audit.md`，定義Supported / Scaffold only / Dependency-ready / Not supported capability taxonomy、P0至P3 severity、finding格式與18-1至18-7正式子階段；不預設改用Drift，也不將`flutter build bundle`視為Android `appbundle`驗證。
 - 完成 Milestone 17-7 Sensitive Data Audit、Regression與完整驗證：關閉Refresh request、Login / Refresh response、AuthResult與AuthEvent.loginRequested的Freezed欄位型`toString()`，避免account、password、access token與refresh token進入一般log；新增secret sentinel tests。Workspace五個package analyze與382項完整tests、App / api_client / auth generation及development / staging / production bundle builds全部通過，Milestone 17正式完成。
 - 補強Milestone 17最終review revision：關閉`AuthEvent.loginRequested`的Freezed欄位型`toString()`，避免account與password進入Bloc tooling、debug log或測試輸出；新增App secret sentinel regression，並將credential-bearing Freezed model預設禁用欄位型`toString()`寫入Decision 020。
 - 完成 Milestone 17-6C Serialized Write Queue與Non-fatal Reporting：Theme / Locale expected write failure以degraded上報並允許latest snapshot續寫，unknown error以unexpected上報且不再被吞掉；Catalog Cache fallback透過feature-local sink與App adapter送入ErrorReporter；Composition Root註冊Debug reporter，未加入Firebase。

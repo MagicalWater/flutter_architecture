@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-2 Runtime Critical Flow Audit盤點：建立Bootstrap、Auth restore / login / logout、Concurrent 401 / Refresh / Replay、Profile / Guard、Catalog Search / SWR / Refresh / Append / Cache與Failure ownership矩陣，逐項記錄production path、existing test evidence與coverage gap。
+- 新增`docs/audits/milestone_18/18-2_runtime_flows.md`與正式finding`M18-R01`（P1）：AuthBloc restore、login與logout事件使用預設並行處理且缺少operation identity，較舊operation可能覆蓋較新使用者意圖；Phase A只落檔，等待18-2 review與18-6C Gate決定remediation。
 - 完成Milestone 18-1正式review revision：修正App非generated Dart source count為85，將source dependency direction與runtime call flow分開描述，並補記`packages/auth`直接使用Dio、SharedPreferences與SQLite屬Decision 020既有accepted infrastructure boundary。
 - 18-1 review重查相對路徑cross-feature import、package cycle、package→App依賴與DI framework洩漏，未發現額外P0 / P1 finding；`M18-A01`維持P1、`M18-A02`維持P2，18-1正式Reviewed / Closed。
 - 完成Milestone 18-1 Architecture & Dependency Audit：建立repository / package / feature inventory、workspace dependency graph、cross-feature import、DI ownership、package export surface、mapper / abstraction與test evidence盤點；確認App仍是唯一Composition Root、package graph無cycle且packages未綁定DI framework。

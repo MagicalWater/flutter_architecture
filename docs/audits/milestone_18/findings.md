@@ -135,3 +135,52 @@ Auth與Profile Presentation知道Shell有哪些tab及其index mapping。Feature�
 ### Disposition rationale
 
 目前先保留Pending。這是明確耦合但未造成核心流程失效，適合在Audit Review Gate與M18-A01一起決定最小remediation。
+
+---
+
+## M18-R01 — AuthBloc lifecycle events缺少明確ordering
+
+**Area：** Runtime / Auth State Mutation Ordering
+
+**Severity：** P1
+
+**Status：** Confirmed
+
+**Baseline blocking：** Yes，除非在Audit Review Gate修正、明確限制可接受的event concurrency contract，或記錄Accepted risk。
+
+**Disposition：** Pending Audit Review Gate
+
+**Target phase：** 18-7 candidate
+
+**Verification required：** Restore + Login、double Login、Login + Logout反向完成測試；Auth、Session與persistence regression。
+
+### Evidence
+
+`AuthBloc`註冊`AuthStarted`、`AuthLoginRequested`與`AuthLogoutRequested`時皆未指定event transformer，handlers可並行執行。三者在await後直接emit結果，沒有operation generation、request identity或latest-operation guard。
+
+`AuthRepositoryImpl.login()`的remote request在`AuthStateMutationCoordinator.runExclusive()`之前執行。Coordinator只序列化完成後的persistence / Session mutation，不保證較新的使用者意圖最後commit。
+
+### Current contract
+
+較舊restore / login response不得在較新的login / logout後覆蓋UI、persistence或runtime Session。
+
+### Observed behavior
+
+可能情境：Login A先開始，Login B後開始但先完成並commit Session B；Login A較晚完成後仍可commit Session A。Restore、Login與Logout交錯時也沒有明確latest-intent-wins或strictly-sequential contract。
+
+### Risk
+
+- 雙login或account switch可能得到與最後操作不同的帳號。
+- 較晚完成的舊login可能在logout後重新建立Session。
+- 各次commit內部一致，但跨operation ordering不符合使用者意圖。
+- 現有測試未覆蓋Bloc lifecycle交錯。
+
+### Recommendation
+
+Audit Review Gate應拍板最小contract：Auth lifecycle events明確sequential；或使用restartable / operation generation；或在Auth orchestration boundary驗證intent generation。Logout需使舊operation失效。
+
+不可只依靠UI loading button避免重複event。不建議建立Generic Operation Coordinator framework。
+
+### Disposition rationale
+
+目前先保留Pending。依Milestone 18 contract，在18-6C前不得修改production code。

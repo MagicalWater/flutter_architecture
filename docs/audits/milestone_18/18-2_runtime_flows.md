@@ -112,7 +112,7 @@ Login remote request在進入mutation lock前執行。AuthBloc的`AuthStarted`�
 
 ### Finding
 
-`M18-R01`：AuthBloc lifecycle events可並行完成，缺少operation identity或明確event ordering；較舊restore / login結果可能覆蓋較新操作的UI與persisted Session。
+`M18-R01`：AuthBloc lifecycle command可並行完成，缺少跨operation latest-intent contract。已確認的風險是雙Login反向完成，以及舊Login在較新的Logout後重新commit Session。Restore + Login目前只確認為UI ordering / transient-state coverage gap，尚無足夠evidence證明Restore會在較新Login commit後覆蓋最終persisted Session。
 
 ---
 
@@ -174,20 +174,49 @@ Tests已覆蓋Repository unknown error、Bloc loading cleanup、Catalog diagnost
 
 ---
 
-## 9. Open-ended scan
+## 9. Theme與Locale runtime preference flow
 
-另檢查Bloc event concurrency、Session generation、late response commit、stream cancellation、exactly-one emission、reporter failure與cache fallback typed identity。
+ThemeController與LocaleController均採runtime-first、persistence-second。每次變更先更新目前runtime preference，再把完整snapshot放入serialized write queue；較舊write失敗不阻止較新的preference繼續保存。
 
-新增唯一正式runtime finding為`M18-R01`。沒有發現P0問題。
+Expected同kind write failure以degraded severity上報並保存typed diagnostic；wrong-kind與unknown error以unexpected severity上報，不回滾runtime，也不阻塞後續snapshot。
+
+Tests已覆蓋快速連續切換、latest preference、舊write失敗後較新write、expected / unexpected failure與reporter failure。
+
+結論：Theme與Locale runtime preference sequencing具備明確contract與充分test evidence；不建立新finding。
 
 ---
 
-## 10. 18-2 conclusion
+## 10. Open-ended scan
+
+另檢查Bloc event concurrency、Session generation、late response commit、stream cancellation、exactly-one emission、reporter failure與cache fallback typed identity。
+
+新增唯一正式runtime finding為`M18-R01`。Review重查Restore + Login後，將其收斂為coverage gap，不宣稱其會反向覆蓋最終Session。沒有發現P0問題。
+
+---
+
+## 11. 18-2 review conclusion
 
 整體runtime foundation成熟。正式finding：
 
 ```txt
-M18-R01 — AuthBloc restore、login與logout事件缺少明確ordering，較舊operation可能覆蓋較新使用者意圖
+M18-R01 — Auth lifecycle command缺少跨operation latest-intent ordering
 ```
 
+Confirmed scenarios：
+
+```txt
+Double Login反向完成
+Login + Logout反向完成
+```
+
+Coverage gap：
+
+```txt
+Restore + Login UI ordering / transient state
+```
+
+Review維持`M18-R01`為P1。單純在各event handler加`sequential()`不一定建立跨event type的全域ordering，也可能讓Logout等待慢速Login；Audit Review Gate應優先比較operation generation / latest-intent guard、App-owned Auth command coordinator，或單一AuthLifecycleEvent bucket等最小方案。
+
 本階段只完成audit與落檔，不修改production code。Finding需等18-6C Audit Review Gate統一決定remediation。
+
+18-2狀態：Reviewed / Closed。下一個正式階段為18-3 Persistence & Database Audit。

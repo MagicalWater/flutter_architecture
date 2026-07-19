@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0與18-1已完成並封閉；18-2 Runtime Critical Flow Audit已完成盤點，下一步為18-2 review。Runtime audit確認Bootstrap、Refresh / Replay、Profile / Guard與Catalog Search / SWR / Pagination / Cache整體具備強guard及test evidence，並新增`M18-R01` AuthBloc lifecycle event ordering（P1）。Milestone目前仍只進行Phase A Audit，尚未修改production code。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
+目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0、18-1與18-2均已完成並通過review；下一個正式階段為18-3 Persistence & Database Audit。18-2確認Bootstrap、Refresh / Replay、Profile / Guard、Catalog Search / SWR / Pagination / Cache、Theme / Locale runtime preference與Failure ownership整體具備強guard及test evidence。正式finding`M18-R01`維持P1，confirmed risk為Double Login及Login + Logout反向完成；Restore + Login只保留為UI ordering coverage gap。Milestone目前仍只進行Phase A Audit，尚未修改production code。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
 
 ### Milestone 17：Exception & Failure Architecture
 

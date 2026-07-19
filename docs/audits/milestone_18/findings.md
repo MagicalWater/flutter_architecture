@@ -138,7 +138,7 @@ Auth與Profile Presentation知道Shell有哪些tab及其index mapping。Feature�
 
 ---
 
-## M18-R01 — AuthBloc lifecycle events缺少明確ordering
+## M18-R01 — Auth lifecycle command缺少跨operation latest-intent ordering
 
 **Area：** Runtime / Auth State Mutation Ordering
 
@@ -152,21 +152,23 @@ Auth與Profile Presentation知道Shell有哪些tab及其index mapping。Feature�
 
 **Target phase：** 18-7 candidate
 
-**Verification required：** Restore + Login、double Login、Login + Logout反向完成測試；Auth、Session與persistence regression。
+**Verification required：** Double Login、Login + Logout反向完成測試；Restore + Login UI ordering測試；Auth、Session與persistence regression。
 
 ### Evidence
 
-`AuthBloc`註冊`AuthStarted`、`AuthLoginRequested`與`AuthLogoutRequested`時皆未指定event transformer，handlers可並行執行。三者在await後直接emit結果，沒有operation generation、request identity或latest-operation guard。
+`AuthBloc`註冊`AuthStarted`、`AuthLoginRequested`與`AuthLogoutRequested`時皆未指定跨operation ordering contract。Handlers在await後直接emit結果，沒有operation generation、request identity或latest-operation guard。
 
 `AuthRepositoryImpl.login()`的remote request在`AuthStateMutationCoordinator.runExclusive()`之前執行。Coordinator只序列化完成後的persistence / Session mutation，不保證較新的使用者意圖最後commit。
 
 ### Current contract
 
-較舊restore / login response不得在較新的login / logout後覆蓋UI、persistence或runtime Session。
+較舊login response不得在較新的login / logout意圖後覆蓋UI、persistence或runtime Session。Logout必須使所有較舊login operation失效。
 
 ### Observed behavior
 
-可能情境：Login A先開始，Login B後開始但先完成並commit Session B；Login A較晚完成後仍可commit Session A。Restore、Login與Logout交錯時也沒有明確latest-intent-wins或strictly-sequential contract。
+已確認情境：Login A先開始，Login B後開始但先完成並commit Session B；Login A較晚完成後仍可commit Session A。另一情境是Login remote尚未完成，Logout先清除Session，舊Login之後仍可重新commit Session。
+
+Restore + Login目前只確認為UI ordering / transient-state coverage gap；Repository mutation queue使Restore通常先進入local mutation，因此尚無足夠evidence宣稱Restore會在較新Login commit後覆蓋最終persisted Session。
 
 ### Risk
 
@@ -177,7 +179,15 @@ Auth與Profile Presentation知道Shell有哪些tab及其index mapping。Feature�
 
 ### Recommendation
 
-Audit Review Gate應拍板最小contract：Auth lifecycle events明確sequential；或使用restartable / operation generation；或在Auth orchestration boundary驗證intent generation。Logout需使舊operation失效。
+Audit Review Gate應拍板最小contract：新Login使舊Login失效，Logout立即使所有舊Restore / Login失效，舊operation不得commit persistence、Session或UI。
+
+優先比較：
+
+- operation generation / latest-intent guard。
+- App-owned Auth command coordinator。
+- 單一AuthLifecycleEvent bucket搭配明確transformer。
+
+不能只在不同event type各自加`sequential()`便假設已有跨event type全域ordering；單純strict sequential也可能讓Logout等待慢速Login完成。
 
 不可只依靠UI loading button避免重複event。不建議建立Generic Operation Coordinator framework。
 

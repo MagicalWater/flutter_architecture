@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-2正式review revision：`M18-R01`維持P1並收斂為Auth lifecycle command缺少跨operation latest-intent ordering；confirmed scenarios為Double Login反向完成及Login + Logout反向完成，Restore + Login改列UI ordering coverage gap。
+- 補入Theme / Locale runtime preference flow，確認runtime-first、serialized write、latest snapshot、expected / unexpected reporting與reporter failure均有production contract及test evidence；18-2正式Reviewed / Closed，下一步為18-3 Persistence & Database Audit。
 - 完成Milestone 18-2 Runtime Critical Flow Audit盤點：建立Bootstrap、Auth restore / login / logout、Concurrent 401 / Refresh / Replay、Profile / Guard、Catalog Search / SWR / Refresh / Append / Cache與Failure ownership矩陣，逐項記錄production path、existing test evidence與coverage gap。
 - 新增`docs/audits/milestone_18/18-2_runtime_flows.md`與正式finding`M18-R01`（P1）：AuthBloc restore、login與logout事件使用預設並行處理且缺少operation identity，較舊operation可能覆蓋較新使用者意圖；Phase A只落檔，等待18-2 review與18-6C Gate決定remediation。
 - 完成Milestone 18-1正式review revision：修正App非generated Dart source count為85，將source dependency direction與runtime call flow分開描述，並補記`packages/auth`直接使用Dio、SharedPreferences與SQLite屬Decision 020既有accepted infrastructure boundary。

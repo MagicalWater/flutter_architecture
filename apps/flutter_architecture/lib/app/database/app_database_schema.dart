@@ -2,7 +2,11 @@ import 'package:sqflite/sqflite.dart';
 
 /// App SQLite schema 與 migration 入口。
 abstract final class AppDatabaseSchema {
-  static const int version = 5;
+  static const int version = 6;
+
+  static Future<void> onConfigure(Database db) {
+    return db.execute('PRAGMA foreign_keys = ON');
+  }
 
   static Future<void> onCreate(Database db, int version) async {
     await _createAuthUserTable(db);
@@ -25,6 +29,9 @@ abstract final class AppDatabaseSchema {
     }
     if (oldVersion < 5) {
       await _upgradeAuthUserToSingleActiveRecord(db);
+    }
+    if (oldVersion < 6) {
+      await _removeCatalogCacheOrphans(db);
     }
   }
 
@@ -133,6 +140,29 @@ abstract final class AppDatabaseSchema {
         request_cursor,
         request_limit,
         item_position
+      )
+    ''');
+  }
+
+  static Future<void> _removeCatalogCacheOrphans(
+    DatabaseExecutor db,
+  ) async {
+    final tables = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type = 'table' "
+      "AND name IN ('catalog_cache_page', 'catalog_cache_page_item')",
+    );
+    if (tables.length != 2) return;
+
+    await db.execute('''
+      DELETE FROM catalog_cache_page_item
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM catalog_cache_page
+        WHERE catalog_cache_page.query = catalog_cache_page_item.query
+          AND catalog_cache_page.request_cursor =
+            catalog_cache_page_item.request_cursor
+          AND catalog_cache_page.request_limit =
+            catalog_cache_page_item.request_limit
       )
     ''');
   }

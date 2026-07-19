@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：Audit Review Gate Approved；18-7B Reviewed / Closed，下一步為18-7C Catalog foreign-key enforcement。
+狀態：Audit Review Gate Approved；18-7C Catalog foreign-key enforcement已完成實作、尚待review。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1957,3 +1957,5 @@ Audit Review Gate已通過：9項findings均完成disposition，無Accepted risk
 18-7A已完成並通過review，`M18-R01`正式Resolved：Auth lifecycle command使用generation lease，較新restore / login / logout意圖與外部權威Session clear會使舊operation失效；Repository在persistence與Session commit前驗證lease，AuthBloc將superseded視為control flow。Logout cleanup一旦開始會完整執行，但只有current Logout可清runtime Session。Double Login、Login + Logout、Restore + Login、external Session clear與Logout cleanup交錯regression均已補齊；workspace analyze與389 tests通過。下一步為18-7B。
 
 18-7B已完成並通過review，`M18-P01`正式Resolved：schema version 5以固定`slot = 1`及constraint限制single-active-user；v4 multi-row與無法證明identity的legacy state安全清除。Token payload保存`userId`，restore與refresh均要求identity一致；legacy / mismatch refresh不呼叫remote。Sequential Login A → B → restart restore B、migration→restore與schema constraint regression均已補齊，workspace analyze與400 tests通過。下一步為18-7C。
+
+18-7C已完成實作、尚待review：App-owned SQLite connection透過`onConfigure`啟用foreign keys，schema version升至6並在upgrade清除existing Catalog orphan items。Fresh / upgrade production-style connection已驗證pragma=1、cascade、orphan insert rejection、existing orphan cleanup與`foreign_key_check`；Mock / Real DI graph亦驗證實際Database connection。Workspace analyze與402 tests通過，`M18-P02`尚待review。

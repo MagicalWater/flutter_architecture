@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-7C Catalog foreign-key enforcement實作：App-owned SQLite connection新增`onConfigure`並啟用`PRAGMA foreign_keys = ON`，schema升至version 6；upgrade會清除existing Catalog orphan item rows。
+- 新增fresh / upgrade production-style connection regression，驗證pragma=1、parent delete cascade、orphan insert rejection、existing orphan cleanup與`foreign_key_check`；Mock / Real DI graph亦驗證實際Database connection。Workspace五個package analyze與402 tests全數通過，18-7C尚待review。
 - 完成Milestone 18-7B Auth single-active-user persistence實作：SQLite schema升至version 5，`auth_user`改為固定`slot = 1`的single-record contract；v4單列upgrade保留資料，multi-row因無法證明identity而安全清除。
 - 完成Milestone 18-7B review修訂：Refresh在呼叫remote前驗證stored token `userId`與runtime Session一致，legacy / mismatch token會直接清除Auth state且不送出refresh request；正常fixtures全面補齊identity。
 - 新增Sequential Login A → B → restart只restore B、v4 multi-row + existing token upgrade後restore cleanup，以及schema非法slot / second active row rejection regression。Workspace五個package analyze與400 tests全數通過，`M18-P01`正式Resolved，下一步為18-7C Catalog foreign-key enforcement。

@@ -50,6 +50,7 @@ abstract class RegisterModule {
     return openDatabase(
       path,
       version: AppDatabaseSchema.version,
+      onConfigure: AppDatabaseSchema.onConfigure,
       onCreate: AppDatabaseSchema.onCreate,
       onUpgrade: AppDatabaseSchema.onUpgrade,
     );

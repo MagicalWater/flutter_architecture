@@ -208,6 +208,12 @@ Logout在進入exclusive cleanup前可被取代；cleanup一旦開始會完整�
 
 `StoredAuthTokens`新增stable `userId`，login與refresh rotation均持續保存identity。Restore與Refresh都只接受token `userId`與persisted / runtime user一致的資料；legacy或mismatch token不會呼叫refresh remote，並清除token、user與runtime Session。Regression涵蓋Sequential Login A → B → restart restore B、existing multi-row + token upgrade後restore cleanup及schema constraint。五個workspace package analyze與400項tests全數通過。下一步為18-7C Catalog foreign-key enforcement。
 
+### 18-7C implementation progress
+
+18-7C已完成實作，尚待review。App-owned database open configuration新增`AppDatabaseSchema.onConfigure`，production DI在每次開啟SQLite connection時啟用`PRAGMA foreign_keys = ON`。Schema升至version 6，v5以前upgrade會清除沒有對應parent page的既有Catalog item rows。
+
+Regression涵蓋fresh connection pragma、parent delete cascade、orphan insert rejection、v5 existing orphan cleanup、`foreign_key_check`與Mock / Real DI graph實際connection。Workspace五個package analyze與402項tests全數通過。`M18-P02`仍待18-7C review後才可改為Resolved。
+
 ---
 
 ## 8. Baseline release decision

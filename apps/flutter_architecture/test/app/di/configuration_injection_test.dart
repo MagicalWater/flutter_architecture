@@ -57,6 +57,13 @@ void main() {
     expect(getIt<CatalogClock>(), isA<SystemCatalogClock>());
     expect(getIt<CatalogRepository>(), isA<CatalogRepositoryImpl>());
     expect(getIt<SearchCatalogUseCase>(), isNotNull);
+    expect(
+      (await getIt<Database>().rawQuery('PRAGMA foreign_keys'))
+          .single
+          .values
+          .single,
+      1,
+    );
     await _expectCatalogScopes();
     final mainDio = getIt<Dio>(instanceName: 'mainDio');
     final refreshDio = getIt<Dio>(instanceName: 'refreshDio');
@@ -100,6 +107,13 @@ void main() {
     expect(getIt<CatalogClock>(), isA<SystemCatalogClock>());
     expect(getIt<CatalogRepository>(), isA<CatalogRepositoryImpl>());
     expect(getIt<SearchCatalogUseCase>(), isNotNull);
+    expect(
+      (await getIt<Database>().rawQuery('PRAGMA foreign_keys'))
+          .single
+          .values
+          .single,
+      1,
+    );
     await _expectCatalogScopes();
     expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
     final mainDio = getIt<Dio>(instanceName: 'mainDio');

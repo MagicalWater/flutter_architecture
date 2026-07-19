@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-1正式review revision：修正App非generated Dart source count為85，將source dependency direction與runtime call flow分開描述，並補記`packages/auth`直接使用Dio、SharedPreferences與SQLite屬Decision 020既有accepted infrastructure boundary。
+- 18-1 review重查相對路徑cross-feature import、package cycle、package→App依賴與DI framework洩漏，未發現額外P0 / P1 finding；`M18-A01`維持P1、`M18-A02`維持P2，18-1正式Reviewed / Closed。
 - 完成Milestone 18-1 Architecture & Dependency Audit：建立repository / package / feature inventory、workspace dependency graph、cross-feature import、DI ownership、package export surface、mapper / abstraction與test evidence盤點；確認App仍是唯一Composition Root、package graph無cycle且packages未綁定DI framework。
 - 新增`docs/audits/milestone_18/18-1_architecture_inventory.md`與finding SSOT `findings.md`；正式記錄`M18-A01` ShellPage跨Feature直接依賴AuthBloc（P1）及`M18-A02` Auth / Profile Presentation反向依賴ShellTab（P2），Phase A只落檔，等待Audit Review Gate決定remediation。
 - 完成Milestone 18-0 Planning Review封閉：最終review無未處理P0 / P1規劃finding，P2 / P3均已完成disposition；`findings.md`正式成為所有finding的唯一SSOT，各子階段文件只保存inventory、matrix、evidence與Finding ID引用。

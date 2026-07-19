@@ -35,7 +35,7 @@ packages/design_system/pubspec.yaml
 非 generated Dart source約為：
 
 ```txt
-App                  86
+App                  85
 core                  6
 api_client            24
 auth                  25
@@ -98,28 +98,54 @@ flutter_architecture app
 
 沒有發現 package cycle。
 
-### App layer direction
+### App source dependency direction
 
-Catalog與Profile維持：
+Catalog與Profile目前的source dependency維持：
 
 ```txt
-Presentation
-  ↓
-Domain
-  ↓
-Data implementation
-  ↓
-api_client / core / SQLite
+Presentation ──> Domain
+Data ─────────> Domain
+Data ─────────> api_client / core / SQLite adapters
 ```
 
-Auth維持：
+Domain沒有反向依賴Presentation或Data implementation。
+
+Auth目前的source dependency維持：
 
 ```txt
-App Auth Presentation
+App Auth Presentation ──> packages/auth Domain / Session
+packages/auth Data ─────> packages/auth Domain / Session
+packages/auth Data ─────> api_client / SharedPreferences / SQLite
+```
+
+`packages/auth`本身直接依賴`dio`、`shared_preferences`與`sqflite`，但這些依賴只存在於Auth Data / Infrastructure boundary；Repository、UseCase、Entity與Session contract不直接依賴plugin implementation。Refresh transport classification仍使用`api_client`提供的typed mapper，因此此結構符合Decision 020與Milestone 17既有accepted boundary，不建立finding。
+
+### Runtime call flow
+
+Catalog與Profile主要runtime flow為：
+
+```txt
+Page / Bloc
   ↓
-packages/auth Domain / Session
+UseCase
   ↓
-packages/auth Data
+Repository interface
+  ↓
+Repository implementation
+  ↓
+DataSource / external service
+```
+
+Auth主要runtime flow為：
+
+```txt
+Auth Page / AuthBloc
+  ↓
+Auth UseCase / Session contract
+  ↓
+Auth Repository / Refresh coordinator
+  ↓
+Auth DataSource
   ↓
 api_client / SharedPreferences / SQLite
 ```
@@ -295,3 +321,17 @@ M18-A02 — Auth / Profile presentation反向依賴ShellTab
 ```
 
 本階段只完成audit與落檔，不修改production code。Findings需等18-6C Audit Review Gate統一決定remediation。
+
+---
+
+## 10. 18-1 review closure
+
+Review已完成並封閉18-1：
+
+- 修正App非generated Dart source數量為85。
+- 將source dependency direction與runtime call flow分開描述，避免將Clean Architecture依賴方向誤寫為Domain依賴Data implementation。
+- 補記`packages/auth`直接使用Dio、SharedPreferences與SQLite屬既有accepted infrastructure boundary，不是新finding。
+- 重查相對路徑import、package cycle、package→App依賴與DI framework洩漏，未發現額外P0 / P1 architecture finding。
+- `M18-A01`維持P1，`M18-A02`維持P2。
+
+18-1狀態：Reviewed / Closed。下一個正式階段為18-2 Runtime Critical Flow Audit。

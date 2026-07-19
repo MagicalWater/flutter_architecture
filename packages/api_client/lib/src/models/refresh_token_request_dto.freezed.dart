@@ -35,10 +35,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => Object.hash(runtimeType,refreshToken);
 
-@override
-String toString() {
-  return 'RefreshTokenRequestDto(refreshToken: $refreshToken)';
-}
 
 
 }
@@ -234,10 +230,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => Object.hash(runtimeType,refreshToken);
 
-@override
-String toString() {
-  return 'RefreshTokenRequestDto(refreshToken: $refreshToken)';
-}
 
 
 }

@@ -4,6 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
+import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
@@ -28,6 +31,13 @@ import 'package:sqflite/sqflite.dart';
 /// 這些外部物件需要透過 module 告訴 injectable 如何建立。
 @module
 abstract class RegisterModule {
+  @lazySingleton
+  CatalogCacheDiagnosticSink catalogCacheDiagnosticSink(
+    ErrorReporter errorReporter,
+  ) {
+    return CatalogCacheErrorReporterAdapter(errorReporter);
+  }
+
   @preResolve
   Future<SharedPreferences> get sharedPreferences =>
       SharedPreferences.getInstance();
@@ -197,12 +207,14 @@ abstract class RegisterModule {
     CatalogLocalDataSource localDataSource,
     CatalogCachePolicy cachePolicy,
     CatalogClock clock,
+    CatalogCacheDiagnosticSink diagnosticSink,
   ) {
     return CatalogRepositoryImpl(
       remoteDataSource,
       localDataSource,
       cachePolicy,
       clock,
+      diagnosticSink,
     );
   }
 

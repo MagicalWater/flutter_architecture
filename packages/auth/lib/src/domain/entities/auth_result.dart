@@ -7,7 +7,7 @@ part 'auth_result.freezed.dart';
 ///
 /// token 會被 Repository 寫入 local storage，
 /// 但 AuthBloc 仍需要知道目前登入者是誰。
-@freezed
+@Freezed(toStringOverride: false)
 abstract class AuthResult with _$AuthResult {
   const factory AuthResult({
     required String accessToken,

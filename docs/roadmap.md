@@ -1719,7 +1719,7 @@ Decision 018、Roadmap、Project Context、Backlog 與 CHANGELOG 已完成同步
 
 整理全專案 Exception / Failure 系統，建立 typed、可追蹤、保留 stack trace、區分 expected failure 與 programming error，且不讓敏感資料進入 diagnostic 的錯誤架構。
 
-狀態：In Progress；Milestone 17-1 至 17-4 已完成。
+狀態：Completed；Milestone 17-1 至 17-7 已完成。
 
 核心流程：
 
@@ -1852,26 +1852,50 @@ Audit 關鍵發現：
 
 ### Milestone 17-6：App Uncaught Error 與 Reporting Adapter
 
-狀態：Planned。
+狀態：Completed；17-6A 至 17-6F 已完成。
 
-- [ ] 建立不依賴 App localization 的狹窄 `ErrorReporter` abstraction。
-- [ ] 收窄 Theme / Locale preference Codec、Store 與 serialized write queue 的 catch boundary，區分 recoverable persisted corruption、expected storage failure 與 unexpected programming error。
-- [ ] invalid preference payload fallback 保留安全 non-fatal diagnostic；前一筆 expected write failure 可由 queue 吸收以繼續最新寫入，但 unknown error 不得被吞掉。
-- [ ] 由 App Composition Root 組裝 Debug / Test / Crashlytics-compatible adapter。
-- [ ] 接上 `FlutterError.onError`、`PlatformDispatcher.instance.onError` 與 `BlocObserver.onError`。
-- [ ] 區分 fatal uncaught、unexpected Bloc error與 important non-fatal degraded operation。
-- [ ] Crashlytics implementation 不進可重用 package；是否加入 Firebase dependency於 implementation review 決定。
-- [ ] 驗證 stack trace、context sanitization與 duplicate reporting policy。
+- [x] 建立不依賴 App localization 的狹窄 `ErrorReporter` abstraction。
+- [x] 收窄 Theme / Locale preference Codec、Store 與 serialized write queue 的 catch boundary，區分 recoverable persisted corruption、expected storage failure 與 unexpected programming error。
+- [x] invalid preference payload fallback 保留安全 non-fatal diagnostic；前一筆 expected write failure 可由 queue 吸收以繼續最新寫入，但 unknown error 不得被吞掉。
+- [x] 由 App Composition Root 組裝 Debug / Test-compatible adapter；Crashlytics implementation仍不加入本階段。
+- [x] 接上 `FlutterError.onError`、`PlatformDispatcher.instance.onError` 與 `BlocObserver.onError`。
+- [x] 區分 fatal uncaught、unexpected Bloc / Flutter framework error與 important non-fatal degraded operation。
+- [x] Crashlytics implementation 不進可重用 package；Milestone 17-6維持Debug / Test-compatible adapter，不加入Firebase dependency。
+- [x] 驗證 stack trace、context sanitization與 duplicate reporting policy。
+
+17-6A 已完成：新增App-owned `ErrorReporter`、immutable `ErrorReport`、`ErrorSeverity`與typed `ErrorReportContext`。Context不接受任意Map；`ErrorReport.toString()`與`DebugErrorReporter`只輸出error runtime type及安全source / operation，不展開error或stack trace。Debug adapter會吸收自身sink錯誤，避免reporting造成recursive failure；Recording adapter由test實作保存完整typed report。尚未接Bootstrap、BlocObserver、Theme / Locale、Catalog或Crashlytics。
+
+17-6B 已完成：Theme / Locale preference新增App-local typed boundary。Malformed JSON、unsupported version、invalid schema與SharedPreferences wrong-type value使用 `PreferenceCorruptionException`；PlatformException與`setString == false`使用 `PreferenceStorageException`。Store只將這兩類expected failure降級為fallback diagnostic，StateError、TypeError與其他unknown error原樣拋出。Theme / Locale codec不再使用broad Object catch；serialized write queue與ErrorReporter wiring留待17-6C。Preference / Bootstrap targeted 24 tests與App analyze通過。
+
+17-6B正式review revision已完成：Restore只降級相同preference kind的decode corruption或read storage failure；wrong kind與write failure原樣重拋。新增typed `PreferenceDiagnostic`同時保存原始PreferenceException與實際catch stack trace；Controller restore / write diagnostic改為typed value。`PreferenceStorageException`以read / write named constructors封閉合法operation。Preference / Bootstrap targeted 28 tests與App analyze通過。
+
+17-6C 已完成：Theme / Locale serialized write queue移除前序 broad catch swallowing；expected write failure以degraded severity上報並允許較新snapshot繼續，wrong-kind / unknown error以unexpected severity上報且不寫入UI diagnostic。Restore corruption / storage fallback於bootstrap上報degraded。Catalog新增feature-local `CatalogCacheDiagnosticSink`，Repository在吸收localStorage read / chain revision / write failure前送入sink，再由App adapter轉成safe `ErrorReport`。App Composition Root註冊Debug reporter與Catalog adapter；未加入Firebase。Reporting / Preference / Catalog / DI targeted 66 tests、App analyze與diff check通過。
+
+17-6C正式review revision已完成：Theme / Locale Controller與bootstrap、Catalog Repository的reporting dependency改為顯式required；Preference restore與Catalog diagnostic sink自身失敗均採best-effort隔離，不得阻止fallback、Remote success或App啟動。Catalog sink直接攜帶typed `CatalogCacheOperation`，App adapter不再從cause猜測或默認write；缺少typed details時不送出錯誤operation telemetry。補上reporter / sink throws、operation identity與顯式dependency regression，targeted 81 tests、App analyze與diff check通過。
+
+17-6D 已完成：新增App-owned `AppBlocObserver`，未被Bloc自身轉為typed UI state的錯誤會以unexpected severity、固定bloc source / operation及原始error / stack送入ErrorReporter。Observer不讀取event、state或Bloc內容，Reporter失敗不改變Bloc原有error flow。Bootstrap在任何App Bloc建立前安裝全域observer；manual callback與真正 `Bloc.observer` / Cubit error path regression均已覆蓋。
+
+17-6E 已完成：新增App-owned `AppUncaughtErrorHandler`與global hook installer。Flutter framework error以fatal / flutterFramework context上報，root isolate async error以fatal / platform context上報；兩者保留原始error與可用stack identity。Hook會best-effort隔離Reporter失敗並委派既有Flutter / Platform handler語意，測試可dispose還原global state。Bootstrap在取得ErrorReporter後、runApp前安裝hooks；Bloc rethrow與Platform hook的duplicate resolution明確留待17-6F。
+
+17-6E正式review revision已完成：Flutter framework caught error改為unexpected，僅root isolate uncaught async error維持fatal。Flutter缺少原始stack時使用`StackTrace.empty`，不再以handler位置冒充origin。Global hooks禁止未dispose前重複install；dispose只在目前global handler仍是自身wrapper時還原，避免覆蓋後來接管的外部handler，並維持double-dispose安全。
+
+17-6F 已完成：Composition Root在DI前建立唯一 `DebugErrorReporter` 與 `ErrorReportDeduplicator`，先安裝Flutter / Platform hooks與BlocObserver，再將同一Reporter instance顯式注入GetIt graph。Database factory、AppConfig、DI preResolve、Preference restore與runApp前初始化由`runBootstrapGuarded`統一包覆；failure以fatal bootstrap context上報後保留原error / stack重拋。Duplicate policy採同一event-loop turn的object identity ownership：Bloc或bootstrap先上報後標記原始error，Platform hook只消費同identity標記；不同identity與下一turn重用同object仍正常fatal上報。不使用時間毫秒窗、error字串、runtime type或stack字串去重。Milestone 17-6決定不加入Firebase / Crashlytics dependency，後續production adapter可由App Composition Root替換。
+
+17-6F正式review revision已完成：Duplicate ownership key收窄為同一event-loop turn內的原始error與stack object identity，避免相同exception instance從不同propagation stack再次拋出時被誤刪。Cleanup加入generation ownership，較早排程不得清除較新的同key mark。Widgets binding、global hooks與BlocObserver安裝已移入最外層bootstrap guard；真實重複hook install failure會以fatal bootstrap context上報並保留原錯誤重拋。補上相同error不同stack、generation cleanup及hook install failure regression。
+
+17-6A正式review revision已完成：`ErrorReportContext`改為不可繼承的final value object，operation由任意String收斂為封閉`ErrorReportOperation` enum；`DebugErrorReporter`固定讀取error type、severity、source與operation欄位，不依賴context `toString()`。補強context closure與format isolation regression。
 
 ### Milestone 17-7：Sensitive Data Audit、Regression、文件與完整驗證
 
-狀態：Planned。
+狀態：Completed。
 
-- [ ] Audit exception、failure、cause、context、log 與 `toString()`。
-- [ ] 確認 password、token、Authorization、Cookie、raw body、raw storage payload與敏感 query 不進 diagnostic。
-- [ ] 完成 Auth、Profile、Catalog、Theme、Locale、Route Guard 與 Composition Root regression。
-- [ ] 同步 README、Project Context、Architecture Decisions、Roadmap、Backlog 與 CHANGELOG。
-- [ ] 執行 dependency、generation、analyze、完整 tests 與 development / staging / production bundle builds。
+- [x] Audit exception、failure、cause、context、log 與 `toString()`。
+- [x] 確認 password、token、Authorization、Cookie、raw body、raw storage payload與敏感 query 不進 diagnostic。
+- [x] 完成 Auth、Profile、Catalog、Theme、Locale、Route Guard 與 Composition Root regression。
+- [x] 同步 README、Project Context、Architecture Decisions、Roadmap、Backlog 與 CHANGELOG。
+- [x] 執行 dependency、generation、analyze、完整 tests 與 development / staging / production bundle builds。
+
+17-7已完成：全workspace sensitive diagnostic audit確認AppException、Failure、Catalog / Preference diagnostics、Debug reporter與global entrypoints皆不展開任意cause、request / response body、headers、Cookie、Authorization、raw storage payload、query或Bloc state / event。Audit另發現Refresh request、Login / Refresh response、AuthResult與AuthEvent.loginRequested仍使用Freezed欄位型`toString()`展開credential，現已統一關閉generated override並加入secret sentinel regression。Dependency resolution與App / api_client / auth generation通過；五個package analyze全數通過；完整tests為api_client 43、auth 42、core 4、design_system 43、flutter_architecture 250，合計382項；development / staging / production `flutter build bundle`全部通過。Milestone 17正式完成。
 
 ### Milestone 17 完成定義
 

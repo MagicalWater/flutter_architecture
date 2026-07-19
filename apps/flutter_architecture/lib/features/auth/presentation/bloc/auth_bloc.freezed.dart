@@ -27,10 +27,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => runtimeType.hashCode;
 
-@override
-String toString() {
-  return 'AuthEvent()';
-}
 
 
 }
@@ -204,10 +200,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => runtimeType.hashCode;
 
-@override
-String toString() {
-  return 'AuthEvent.started()';
-}
 
 
 }
@@ -242,10 +234,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => Object.hash(runtimeType,account,password);
 
-@override
-String toString() {
-  return 'AuthEvent.loginRequested(account: $account, password: $password)';
-}
 
 
 }
@@ -304,10 +292,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => runtimeType.hashCode;
 
-@override
-String toString() {
-  return 'AuthEvent.logoutRequested()';
-}
 
 
 }
@@ -336,10 +320,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => runtimeType.hashCode;
 
-@override
-String toString() {
-  return 'AuthEvent.sessionCleared()';
-}
 
 
 }

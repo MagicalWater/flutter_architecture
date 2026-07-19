@@ -760,7 +760,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 ### Milestone 17：Exception & Failure Architecture
 
-狀態：In Progress；Milestone 17-1 至 17-4 已完成。
+狀態：Completed；Milestone 17-1 至 17-7 已完成。
 
 Milestone 17-1 已完成全專案 Exception / Failure audit，並新增 Architecture Decision 020。正式分類為：
 
@@ -844,6 +844,30 @@ Milestone 17-5D 已完成：Catalog Cache localStorage AppException現在攜帶 
 Milestone 17-5E 已完成：Catalog targeted 107 tests、workspace五個package analyze與五個package / app完整333 tests全部通過。Cursor chain、chain revision CAS、SWR、Refresh、Append、revalidation、query switching、cancellation、localized UI、public Cache logout persistence與unknown error preservation均無回歸。Milestone 17-5 Catalog Protocol / Cache Failure Contract正式完成，下一步為17-6 App Uncaught Error與Reporting Adapter implementation review。
 
 Milestone 17-5正式review revision已完成：cursor-chain所有persisted `chain_revision`與`next_cursor`讀取都改走狹窄parser。損壞的第一頁revision可由Remote第一頁replacement清除同query / limit chain並重建；linked revision或Append traversal corruption則清除同chain並安全回null / false。Unknown implementation error仍原樣拋出，沒有重新加入broad TypeError catch。
+
+Milestone 17-6A 已完成：App layer新增不依賴localization或Crashlytics SDK的狹窄 `ErrorReporter` contract。`ErrorReport`保留原始error與stack trace identity，但一般字串輸出只包含runtime type、severity與typed source / operation；context不接受任意Map。Development Debug adapter為best effort且不展開error內容，test Recording adapter可驗證完整report。實際Composition Root、Preference、Catalog、Bloc與uncaught entrypoint wiring留待後續17-6子階段。
+
+Milestone 17-6B 已完成：Theme與Locale preference codec / store / SharedPreferences adapter boundary已收窄。Persisted corruption與storage operational failure各自使用typed `PreferenceCorruptionException` / `PreferenceStorageException`，包含封閉的preference kind與operation；Store只對這兩類採fallback diagnostic，unknown implementation error不再被降級。Runtime-first與serialized write語意尚未改動，write queue reporting留待17-6C。
+
+Milestone 17-6C 已完成：Theme / Locale serialized write queue不再使用 `.catchError((Object _) {})` 吞掉前序錯誤。Expected同kind write failure會保存typed diagnostic、以degraded severity送入ErrorReporter並允許較新snapshot繼續；wrong-kind與unknown write error以unexpected severity上報，不進UI diagnostic，也不阻塞後續寫入。Bootstrap restore fallback會以degraded preferenceRestore上報。Catalog透過feature-local `CatalogCacheDiagnosticSink`維持Feature與App隔離，Repository在吸收localStorage read / chain revision / write failure前上報，App Composition Root以Debug reporter與Catalog adapter組裝；Firebase dependency仍未加入。
+
+17-6C review revision補強best-effort contract：所有production Controller、bootstrap與Catalog Repository都必須顯式注入reporting dependency；Noop只能由測試或刻意呼叫端明確選擇。Preference restore reporter與Catalog sink即使拋錯，也不能阻止fallback controller、Remote success或cache miss後的Remote流程。Catalog sink signature直接包含封閉`CatalogCacheOperation`，adapter不再解析`AppException.cause`猜測operation，也不再將未知情況默認為write。
+
+Milestone 17-6D 已完成：App新增 `AppBlocObserver`，由bootstrap在任何App Bloc建立前指定給 `Bloc.observer`。Bloc未處理錯誤以unexpected severity與固定safe context上報，保留原始error / stack identity，不讀event、state或Bloc內容；Reporter自身失敗會被observer吸收，不改變原有Bloc error propagation。Flutter framework與Platform uncaught hooks仍留待17-6E，duplicate policy於後續entrypoint review統一確認。
+
+Milestone 17-6E 已完成：App新增 `AppUncaughtErrorHandler`與`AppUncaughtErrorHooks`。Flutter framework error與root isolate uncaught async error分別使用fatal severity及封閉flutterFramework / platform context，Reporting失敗不取代原始flow。Global installer會保留並委派既有 `FlutterError.onError` / `PlatformDispatcher.instance.onError` handler，並提供dispose供測試還原。Bootstrap於取得ErrorReporter後、runApp前安裝；DI建立前的bootstrap error與Bloc / Platform duplicate policy留待17-6F。
+
+Milestone 17-6F 已完成並封閉17-6：App Composition Root在DI前建立唯一Debug Reporter與identity-based deduplicator，先安裝global uncaught hooks及BlocObserver，再把同一Reporter instance註冊進GetIt，確保Preference、Catalog與global entrypoints共用相同outlet。`runBootstrapGuarded`涵蓋database factory、config、DI preResolve、preference restore與runApp前初始化，fatal bootstrap failure上報後保留原stack重拋。Bloc與bootstrap若已上報，會在同一event-loop turn以object identity標記；Platform hook只消費相同identity，避免rethrow造成duplicate。不同error identity與下一turn重用同object不受抑制。Milestone 17-6維持Debug / Test-compatible implementation，不加入Firebase或Crashlytics dependency。
+
+17-6F review revision補強propagation ownership：Deduplicator現在同時比較原始error與stack object identity，不將相同exception instance但不同throw stack誤判為duplicate；每次mark具有generation token，舊cleanup不能刪除較新的標記。Bootstrap guard外層已擴大至Widgets binding、global hook與BlocObserver安裝，hook install自身失敗也會走fatal bootstrap report。去重仍不使用error / stack字串、runtime type或任意時間毫秒窗。
+
+Milestone 17-7已完成並封閉Milestone 17：Sensitive Data audit確認exception、failure、cause、typed context、Debug reporter、Catalog / Preference diagnostic與global error entrypoints都不輸出password、token、Authorization、Cookie、raw body、raw storage payload、敏感query或Bloc state / event。修正RefreshTokenRequestDto、LoginResponseDto、RefreshTokenResponseDto、AuthResult與AuthEvent.loginRequested的Freezed欄位型`toString()`，並以secret sentinel tests鎖定Login account / password、access token與refresh token不可進一般字串輸出。Workspace五個package analyze與382項完整tests通過，development / staging / production bundle builds通過；Milestone 17 Exception & Failure Architecture正式完成。
+
+17-6E review revision補強severity與hook lifecycle contract：Flutter framework caught error使用unexpected，Platform root isolate uncaught async error維持fatal；FlutterErrorDetails沒有stack時以`StackTrace.empty`誠實表示未知，不製造reporting handler stack。Installer禁止同時重複安裝；dispose只恢復自己仍持有的wrapper，不覆蓋後來安裝的外部global handler，且可安全重複呼叫。
+
+Milestone 17-6B正式review revision已完成：Theme / Locale Store只接受同kind的decode corruption與read storage failure作為restore fallback；wrong kind或write operation視為contract mismatch並保留原始stack重拋。新增typed `PreferenceDiagnostic`保存error與catch stack trace，Controller diagnostic同步收窄；Storage exception只可透過read / write named constructors建立。
+
+Milestone 17-6A正式review revision已完成：Error reporting context已封閉，不能由外部subclass覆寫 `toString()`；operation由String改為`ErrorReportOperation` enum，阻止敏感內容透過operation注入。Debug adapter固定格式化安全欄位，不再插入整個context物件。
 
 ### Milestone 16：Localization Foundation
 

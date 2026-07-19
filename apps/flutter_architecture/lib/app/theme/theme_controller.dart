@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_architecture/app/error_reporting/error_report.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
 import 'package:flutter_architecture/app/theme/theme_preference_store.dart';
 
@@ -10,21 +13,24 @@ final class ThemeController extends ChangeNotifier {
     required this.registry,
     required ThemePreferenceStore store,
     required ThemePreference initialPreference,
-    Object? restoreDiagnostic,
+    required ErrorReporter errorReporter,
+    PreferenceDiagnostic? restoreDiagnostic,
   }) : _store = store,
+       _errorReporter = errorReporter,
        _preference = initialPreference,
        _diagnostic = restoreDiagnostic;
 
   final DsThemeRegistry registry;
   final ThemePreferenceStore _store;
+  final ErrorReporter _errorReporter;
 
   ThemePreference _preference;
-  Object? _diagnostic;
+  PreferenceDiagnostic? _diagnostic;
   Future<void> _writeTail = Future<void>.value();
   int _revision = 0;
 
   ThemePreference get preference => _preference;
-  Object? get diagnostic => _diagnostic;
+  PreferenceDiagnostic? get diagnostic => _diagnostic;
   DsThemeDefinition get definition => registry.resolve(_preference.themeId);
 
   void selectTheme(DsThemeId themeId) {
@@ -51,19 +57,51 @@ final class ThemeController extends ChangeNotifier {
     notifyListeners();
 
     final snapshot = next;
-    _writeTail = _writeTail
-        .catchError((Object _) {})
-        .then((_) => _store.save(snapshot))
-        .then((_) {
-          if (revision != _revision || _diagnostic == null) return;
-          _diagnostic = null;
-          notifyListeners();
-        })
-        .catchError((Object error) {
-          if (revision != _revision) return;
-          _diagnostic = error;
-          notifyListeners();
-        });
+    _writeTail = _writeTail.then((_) async {
+      try {
+        await _store.save(snapshot);
+        if (revision != _revision || _diagnostic == null) return;
+        _diagnostic = null;
+        notifyListeners();
+      } on PreferenceException catch (error, stackTrace) {
+        final expected =
+            error.preference == PreferenceKind.theme &&
+            error.operation == PreferenceOperation.write;
+        _reportWriteFailure(error, stackTrace, expected: expected);
+        if (!expected || revision != _revision) return;
+        _diagnostic = PreferenceDiagnostic(
+          error: error,
+          stackTrace: stackTrace,
+        );
+        notifyListeners();
+      } catch (error, stackTrace) {
+        _reportWriteFailure(error, stackTrace, expected: false);
+      }
+    });
+  }
+
+  void _reportWriteFailure(
+    Object error,
+    StackTrace stackTrace, {
+    required bool expected,
+  }) {
+    try {
+      _errorReporter.report(
+        ErrorReport(
+          error: error,
+          stackTrace: stackTrace,
+          severity: expected
+              ? ErrorSeverity.degraded
+              : ErrorSeverity.unexpected,
+          context: const ErrorReportContext(
+            source: ErrorReportSource.preference,
+            operation: ErrorReportOperation.preferenceWrite,
+          ),
+        ),
+      );
+    } on Object {
+      // Reporting不得中斷serialized write queue。
+    }
   }
 }
 

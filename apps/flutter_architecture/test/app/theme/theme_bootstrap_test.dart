@@ -1,4 +1,7 @@
 import 'package:design_system/design_system.dart';
+import 'package:flutter_architecture/app/error_reporting/error_report.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:flutter_architecture/app/theme/theme_bootstrap.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
 import 'package:flutter_architecture/app/theme/theme_preference_store.dart';
@@ -31,6 +34,7 @@ void main() {
       final controller = await restoreThemeController(
         registry: registry,
         storage: storage,
+        errorReporter: const NoopErrorReporter(),
       );
 
       expect(controller.preference.themeId, OceanThemeDefinition().id);
@@ -42,18 +46,49 @@ void main() {
   test(
     'read exception starts with fallback and keeps diagnostic without write',
     () async {
-      final storage = _BootstrapStorage(readError: StateError('read failed'));
+      final storage = _BootstrapStorage(
+        readError: const PreferenceStorageException.read(
+          preference: PreferenceKind.theme,
+        ),
+      );
 
       final controller = await restoreThemeController(
         registry: registry,
         storage: storage,
+        errorReporter: const NoopErrorReporter(),
       );
 
       expect(controller.preference, ThemePreference.defaults(registry));
-      expect(controller.diagnostic, isA<StateError>());
+      expect(controller.diagnostic?.error, isA<PreferenceStorageException>());
       expect(storage.writes, isEmpty);
     },
   );
+
+  test('restore reporter failure does not block fallback controller', () async {
+    final storage = _BootstrapStorage(
+      readError: const PreferenceStorageException.read(
+        preference: PreferenceKind.theme,
+      ),
+    );
+
+    final controller = await restoreThemeController(
+      registry: registry,
+      storage: storage,
+      errorReporter: const _ThrowingErrorReporter(),
+    );
+
+    expect(controller.preference, ThemePreference.defaults(registry));
+    expect(controller.diagnostic?.error, isA<PreferenceStorageException>());
+  });
+}
+
+final class _ThrowingErrorReporter implements ErrorReporter {
+  const _ThrowingErrorReporter();
+
+  @override
+  void report(ErrorReport report) {
+    throw StateError('reporter failed');
+  }
 }
 
 final class _BootstrapStorage implements ThemePreferenceStorage {

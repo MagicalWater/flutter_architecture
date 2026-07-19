@@ -5,6 +5,7 @@ import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
@@ -39,10 +40,12 @@ void main() {
       ),
     );
 
-    await configureDependencies(config);
+    const reporter = NoopErrorReporter();
+    await configureDependencies(config, reporter);
 
     expect(getIt<AppConfig>(), same(config));
     expect(getIt<ApiConfig>(), same(config.api));
+    expect(getIt<ErrorReporter>(), same(reporter));
     expect(getIt<AuthApi>(), isA<MockAuthApi>());
     expect(getIt<AuthRefreshApi>(), isA<MockAuthRefreshApi>());
     expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
@@ -83,9 +86,11 @@ void main() {
       ),
     );
 
-    await configureDependencies(config);
+    const reporter = NoopErrorReporter();
+    await configureDependencies(config, reporter);
 
     expect(getIt<AuthApi>(), isNot(isA<MockAuthApi>()));
+    expect(getIt<ErrorReporter>(), same(reporter));
     expect(getIt<AuthRefreshApi>(), isNot(isA<MockAuthRefreshApi>()));
     expect(getIt<ProfileApi>(), isNot(isA<MockProfileApi>()));
     expect(getIt<CatalogApi>(), isNot(isA<MockCatalogApi>()));

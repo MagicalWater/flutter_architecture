@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/app.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/app/theme/theme_controller.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
 import 'package:flutter_architecture/app/theme/theme_preference_store.dart';
@@ -21,6 +22,7 @@ void main() {
         ThemePreferenceCodec(registry),
       ),
       initialPreference: ThemePreference.defaults(registry),
+      errorReporter: const NoopErrorReporter(),
     );
 
     ThemeData? lightTheme;

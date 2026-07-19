@@ -1,28 +1,34 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_architecture/app/error_reporting/error_report.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/app/localization/locale_preference.dart';
 import 'package:flutter_architecture/app/localization/locale_preference_store.dart';
+import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 
 final class LocaleController extends ChangeNotifier {
   LocaleController({
     required LocalePreferenceStore store,
     required AppLocalePreference initialPreference,
-    Object? restoreDiagnostic,
+    required ErrorReporter errorReporter,
+    PreferenceDiagnostic? restoreDiagnostic,
   }) : _store = store,
+       _errorReporter = errorReporter,
        _preference = initialPreference,
        _diagnostic = restoreDiagnostic;
 
   final LocalePreferenceStore _store;
+  final ErrorReporter _errorReporter;
 
   AppLocalePreference _preference;
-  Object? _diagnostic;
+  PreferenceDiagnostic? _diagnostic;
   Future<void> _writeTail = Future<void>.value();
   int _revision = 0;
 
   AppLocalePreference get preference => _preference;
   Locale? get locale => _preference.materialLocale;
-  Object? get diagnostic => _diagnostic;
+  PreferenceDiagnostic? get diagnostic => _diagnostic;
 
   void select(AppLocalePreference preference) {
     if (preference == _preference) return;
@@ -32,19 +38,51 @@ final class LocaleController extends ChangeNotifier {
     notifyListeners();
 
     final snapshot = preference;
-    _writeTail = _writeTail
-        .catchError((Object _) {})
-        .then((_) => _store.save(snapshot))
-        .then((_) {
-          if (revision != _revision || _diagnostic == null) return;
-          _diagnostic = null;
-          notifyListeners();
-        })
-        .catchError((Object error) {
-          if (revision != _revision) return;
-          _diagnostic = error;
-          notifyListeners();
-        });
+    _writeTail = _writeTail.then((_) async {
+      try {
+        await _store.save(snapshot);
+        if (revision != _revision || _diagnostic == null) return;
+        _diagnostic = null;
+        notifyListeners();
+      } on PreferenceException catch (error, stackTrace) {
+        final expected =
+            error.preference == PreferenceKind.locale &&
+            error.operation == PreferenceOperation.write;
+        _reportWriteFailure(error, stackTrace, expected: expected);
+        if (!expected || revision != _revision) return;
+        _diagnostic = PreferenceDiagnostic(
+          error: error,
+          stackTrace: stackTrace,
+        );
+        notifyListeners();
+      } catch (error, stackTrace) {
+        _reportWriteFailure(error, stackTrace, expected: false);
+      }
+    });
+  }
+
+  void _reportWriteFailure(
+    Object error,
+    StackTrace stackTrace, {
+    required bool expected,
+  }) {
+    try {
+      _errorReporter.report(
+        ErrorReport(
+          error: error,
+          stackTrace: stackTrace,
+          severity: expected
+              ? ErrorSeverity.degraded
+              : ErrorSeverity.unexpected,
+          context: const ErrorReportContext(
+            source: ErrorReportSource.preference,
+            operation: ErrorReportOperation.preferenceWrite,
+          ),
+        ),
+      );
+    } on Object {
+      // Reporting不得中斷serialized write queue。
+    }
   }
 
   Future<void> waitForPendingWrites() => _writeTail;

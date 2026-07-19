@@ -18,7 +18,7 @@
 - Milestone 14 Offline Cache：Archived
 - Milestone 15 Design System Foundation：Completed
 - Milestone 16 Localization Foundation：Completed
-- Milestone 17 Exception & Failure Architecture：In Progress（17-1 Audit / Architecture Contract Completed）
+- Milestone 17 Exception & Failure Architecture：Completed
 
 版本變更請參考 `CHANGELOG.md`。
 

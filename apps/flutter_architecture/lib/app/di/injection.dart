@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/di/injection.config.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 
 /// 全域 DI 容器。
 ///
@@ -16,13 +17,17 @@ import 'package:flutter_architecture/app/di/injection.config.dart';
 /// 但 Bloc、UseCase、Repository、DataSource 的建立交給 DI 管理。
 final GetIt getIt = GetIt.instance;
 
-@InjectableInit(ignoreUnregisteredTypes: [ApiConfig])
-Future<void> configureDependencies(AppConfig config) async {
+@InjectableInit(ignoreUnregisteredTypes: [ApiConfig, ErrorReporter])
+Future<void> configureDependencies(
+  AppConfig config,
+  ErrorReporter errorReporter,
+) async {
   if (getIt.isRegistered<AppConfig>()) {
     await getIt.reset();
   }
 
   getIt.registerSingleton<AppConfig>(config);
   getIt.registerSingleton<ApiConfig>(config.api);
+  getIt.registerSingleton<ErrorReporter>(errorReporter);
   await getIt.init();
 }

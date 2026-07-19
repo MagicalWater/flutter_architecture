@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/app/theme/presentation/appearance_selector_dialog.dart';
 import 'package:flutter_architecture/app/theme/presentation/theme_localization.dart';
 import 'package:flutter_architecture/app/theme/theme_controller.dart';
@@ -26,6 +27,7 @@ void main() {
         ThemePreferenceCodec(registry),
       ),
       initialPreference: ThemePreference.defaults(registry),
+      errorReporter: const NoopErrorReporter(),
     );
 
     await tester.pumpWidget(
@@ -80,6 +82,7 @@ void main() {
         ThemePreferenceCodec(registry),
       ),
       initialPreference: ThemePreference.defaults(registry),
+      errorReporter: const NoopErrorReporter(),
     );
 
     await tester.pumpWidget(
@@ -118,6 +121,7 @@ void main() {
         ThemePreferenceCodec(registry),
       ),
       initialPreference: ThemePreference.defaults(registry),
+      errorReporter: const NoopErrorReporter(),
     );
     final locale = ValueNotifier<Locale>(const Locale('en'));
     addTearDown(locale.dispose);

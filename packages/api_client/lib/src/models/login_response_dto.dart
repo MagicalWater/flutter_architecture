@@ -4,7 +4,7 @@ part 'login_response_dto.freezed.dart';
 part 'login_response_dto.g.dart';
 
 /// Login API response DTO。
-@freezed
+@Freezed(toStringOverride: false)
 abstract class LoginResponseDto with _$LoginResponseDto {
   const factory LoginResponseDto({
     required String accessToken,

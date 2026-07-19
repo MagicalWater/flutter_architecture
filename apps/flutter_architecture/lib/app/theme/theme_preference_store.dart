@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:design_system/design_system.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,13 +19,57 @@ final class SharedPreferencesThemePreferenceStorage
   final SharedPreferences _preferences;
 
   @override
-  Future<String?> read() async => _preferences.getString(key);
+  Future<String?> read() async {
+    try {
+      final value = _preferences.get(key);
+      if (value == null || value is String) return value as String?;
+      final stackTrace = StackTrace.current;
+      Error.throwWithStackTrace(
+        PreferenceCorruptionException(
+          preference: PreferenceKind.theme,
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
+      );
+    } on PreferenceException {
+      rethrow;
+    } on PlatformException catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        PreferenceStorageException.read(
+          preference: PreferenceKind.theme,
+          cause: error,
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
+      );
+    }
+  }
 
   @override
   Future<void> write(String value) async {
-    final saved = await _preferences.setString(key, value);
-    if (!saved) {
-      throw StateError('Theme preference could not be persisted.');
+    try {
+      final saved = await _preferences.setString(key, value);
+      if (!saved) {
+        final stackTrace = StackTrace.current;
+        Error.throwWithStackTrace(
+          PreferenceStorageException.write(
+            preference: PreferenceKind.theme,
+            stackTrace: stackTrace,
+          ),
+          stackTrace,
+        );
+      }
+    } on PreferenceException {
+      rethrow;
+    } on PlatformException catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        PreferenceStorageException.write(
+          preference: PreferenceKind.theme,
+          cause: error,
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
+      );
     }
   }
 }
@@ -43,31 +89,41 @@ final class ThemePreferenceCodec {
   }
 
   ThemePreference decode(String? raw) {
-    final fallback = ThemePreference.defaults(registry);
-    if (raw == null) return fallback;
+    if (raw == null) return ThemePreference.defaults(registry);
 
+    late final Object? value;
     try {
-      final value = jsonDecode(raw);
-      if (value is! Map<String, dynamic> || value['version'] != version) {
-        return fallback;
-      }
-
-      final rawThemeId = value['themeId'];
-      final rawMode = value['mode'];
-      final definition = _resolveTheme(rawThemeId);
-      final mode = rawMode is String
-          ? AppThemeMode.values
-                .where((candidate) => candidate.storageValue == rawMode)
-                .firstOrNull
-          : null;
-
-      return ThemePreference(
-        themeId: definition.id,
-        mode: mode ?? AppThemeMode.system,
+      value = jsonDecode(raw);
+    } on FormatException catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        PreferenceCorruptionException(
+          preference: PreferenceKind.theme,
+          cause: error,
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
       );
-    } on Object {
-      return fallback;
     }
+
+    if (value is! Map<String, dynamic> || value['version'] != version) {
+      throw const PreferenceCorruptionException(
+        preference: PreferenceKind.theme,
+      );
+    }
+
+    final rawThemeId = value['themeId'];
+    final rawMode = value['mode'];
+    final definition = _resolveTheme(rawThemeId);
+    final mode = rawMode is String
+        ? AppThemeMode.values
+              .where((candidate) => candidate.storageValue == rawMode)
+              .firstOrNull
+        : null;
+
+    return ThemePreference(
+      themeId: definition.id,
+      mode: mode ?? AppThemeMode.system,
+    );
   }
 
   DsThemeDefinition _resolveTheme(Object? rawThemeId) {
@@ -90,7 +146,7 @@ final class ThemePreferenceRestoreResult {
   });
 
   final ThemePreference preference;
-  final Object? diagnostic;
+  final PreferenceDiagnostic? diagnostic;
 }
 
 final class ThemePreferenceStore {
@@ -104,10 +160,13 @@ final class ThemePreferenceStore {
       return ThemePreferenceRestoreResult(
         preference: _codec.decode(await _storage.read()),
       );
-    } on Object catch (error) {
+    } on PreferenceException catch (error, stackTrace) {
+      if (!_isExpectedThemeRestoreFailure(error)) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
       return ThemePreferenceRestoreResult(
         preference: ThemePreference.defaults(_codec.registry),
-        diagnostic: error,
+        diagnostic: PreferenceDiagnostic(error: error, stackTrace: stackTrace),
       );
     }
   }
@@ -115,4 +174,13 @@ final class ThemePreferenceStore {
   Future<void> save(ThemePreference preference) {
     return _storage.write(_codec.encode(preference));
   }
+}
+
+bool _isExpectedThemeRestoreFailure(PreferenceException error) {
+  return error.preference == PreferenceKind.theme &&
+      switch (error) {
+        PreferenceCorruptionException() => true,
+        PreferenceStorageException(operation: PreferenceOperation.read) => true,
+        PreferenceStorageException() => false,
+      };
 }

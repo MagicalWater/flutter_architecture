@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_architecture/app/localization/locale_preference.dart';
+import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract interface class LocalePreferenceStorage {
@@ -16,13 +18,57 @@ final class SharedPreferencesLocalePreferenceStorage
   final SharedPreferences _preferences;
 
   @override
-  Future<String?> read() async => _preferences.getString(key);
+  Future<String?> read() async {
+    try {
+      final value = _preferences.get(key);
+      if (value == null || value is String) return value as String?;
+      final stackTrace = StackTrace.current;
+      Error.throwWithStackTrace(
+        PreferenceCorruptionException(
+          preference: PreferenceKind.locale,
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
+      );
+    } on PreferenceException {
+      rethrow;
+    } on PlatformException catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        PreferenceStorageException.read(
+          preference: PreferenceKind.locale,
+          cause: error,
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
+      );
+    }
+  }
 
   @override
   Future<void> write(String value) async {
-    final saved = await _preferences.setString(key, value);
-    if (!saved) {
-      throw StateError('Locale preference could not be persisted.');
+    try {
+      final saved = await _preferences.setString(key, value);
+      if (!saved) {
+        final stackTrace = StackTrace.current;
+        Error.throwWithStackTrace(
+          PreferenceStorageException.write(
+            preference: PreferenceKind.locale,
+            stackTrace: stackTrace,
+          ),
+          stackTrace,
+        );
+      }
+    } on PreferenceException {
+      rethrow;
+    } on PlatformException catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        PreferenceStorageException.write(
+          preference: PreferenceKind.locale,
+          cause: error,
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
+      );
     }
   }
 }
@@ -42,22 +88,39 @@ final class LocalePreferenceCodec {
   AppLocalePreference decode(String? raw) {
     if (raw == null) return AppLocalePreference.system;
 
+    late final Object? value;
     try {
-      final value = jsonDecode(raw);
-      if (value is! Map<String, dynamic> || value['version'] != version) {
-        return AppLocalePreference.system;
-      }
-
-      final rawLocale = value['locale'];
-      if (rawLocale is! String) return AppLocalePreference.system;
-
-      return AppLocalePreference.values
-              .where((candidate) => candidate.storageValue == rawLocale)
-              .firstOrNull ??
-          AppLocalePreference.system;
-    } on Object {
-      return AppLocalePreference.system;
+      value = jsonDecode(raw);
+    } on FormatException catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        PreferenceCorruptionException(
+          preference: PreferenceKind.locale,
+          cause: error,
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
+      );
     }
+
+    if (value is! Map<String, dynamic> || value['version'] != version) {
+      throw const PreferenceCorruptionException(
+        preference: PreferenceKind.locale,
+      );
+    }
+
+    final rawLocale = value['locale'];
+    if (rawLocale is! String) {
+      throw const PreferenceCorruptionException(
+        preference: PreferenceKind.locale,
+      );
+    }
+
+    return AppLocalePreference.values
+            .where((candidate) => candidate.storageValue == rawLocale)
+            .firstOrNull ??
+        (throw const PreferenceCorruptionException(
+          preference: PreferenceKind.locale,
+        ));
   }
 }
 
@@ -68,7 +131,7 @@ final class LocalePreferenceRestoreResult {
   });
 
   final AppLocalePreference preference;
-  final Object? diagnostic;
+  final PreferenceDiagnostic? diagnostic;
 }
 
 final class LocalePreferenceStore {
@@ -82,10 +145,13 @@ final class LocalePreferenceStore {
       return LocalePreferenceRestoreResult(
         preference: _codec.decode(await _storage.read()),
       );
-    } on Object catch (error) {
+    } on PreferenceException catch (error, stackTrace) {
+      if (!_isExpectedLocaleRestoreFailure(error)) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
       return LocalePreferenceRestoreResult(
         preference: AppLocalePreference.system,
-        diagnostic: error,
+        diagnostic: PreferenceDiagnostic(error: error, stackTrace: stackTrace),
       );
     }
   }
@@ -93,4 +159,13 @@ final class LocalePreferenceStore {
   Future<void> save(AppLocalePreference preference) {
     return _storage.write(_codec.encode(preference));
   }
+}
+
+bool _isExpectedLocaleRestoreFailure(PreferenceException error) {
+  return error.preference == PreferenceKind.locale &&
+      switch (error) {
+        PreferenceCorruptionException() => true,
+        PreferenceStorageException(operation: PreferenceOperation.read) => true,
+        PreferenceStorageException() => false,
+      };
 }

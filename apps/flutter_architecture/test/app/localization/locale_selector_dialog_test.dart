@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
 import 'package:flutter_architecture/app/localization/locale_preference.dart';
 import 'package:flutter_architecture/app/localization/locale_preference_store.dart';
@@ -16,6 +17,7 @@ void main() {
         const LocalePreferenceCodec(),
       ),
       initialPreference: AppLocalePreference.system,
+      errorReporter: const NoopErrorReporter(),
     );
 
     await tester.pumpWidget(

@@ -20,6 +20,19 @@
 
 ### Added
 
+- 完成 Milestone 17-7 Sensitive Data Audit、Regression與完整驗證：關閉Refresh request、Login / Refresh response、AuthResult與AuthEvent.loginRequested的Freezed欄位型`toString()`，避免account、password、access token與refresh token進入一般log；新增secret sentinel tests。Workspace五個package analyze與382項完整tests、App / api_client / auth generation及development / staging / production bundle builds全部通過，Milestone 17正式完成。
+- 補強Milestone 17最終review revision：關閉`AuthEvent.loginRequested`的Freezed欄位型`toString()`，避免account與password進入Bloc tooling、debug log或測試輸出；新增App secret sentinel regression，並將credential-bearing Freezed model預設禁用欄位型`toString()`寫入Decision 020。
+- 完成 Milestone 17-6C Serialized Write Queue與Non-fatal Reporting：Theme / Locale expected write failure以degraded上報並允許latest snapshot續寫，unknown error以unexpected上報且不再被吞掉；Catalog Cache fallback透過feature-local sink與App adapter送入ErrorReporter；Composition Root註冊Debug reporter，未加入Firebase。
+- 完成 Milestone 17-6D BlocObserver：新增App-owned `AppBlocObserver`，未處理Bloc錯誤以unexpected與固定safe context送入ErrorReporter；bootstrap在任何App Bloc建立前安裝全域observer，Reporter失敗不改變原有Bloc error flow。
+- 完成 Milestone 17-6E Flutter / Platform uncaught hooks：新增App-owned uncaught handler與global installer，Flutter framework與root isolate async error以fatal及固定safe context上報；保留既有handler語意、隔離Reporter失敗，duplicate policy留待17-6F。
+- 完成 Milestone 17-6F Composition Root、Bootstrap Error與Duplicate Policy：Reporter在DI前建立並以同一instance注入GetIt，bootstrap初始化失敗以fatal與原stack上報後重拋；Bloc／bootstrap到Platform的duplicate採同event-loop turn object identity消費，不使用字串或時間毫秒窗。Milestone 17-6不加入Firebase／Crashlytics dependency。
+- 補強17-6F正式review revision：duplicate key改為error＋stack object identity並加入generation cleanup ownership；Widgets binding、global hooks與BlocObserver安裝納入最外層bootstrap guard，真實hook install failure也會以fatal bootstrap context上報。
+- 補強17-6E正式review revision：Flutter framework severity改為unexpected、null stack改用`StackTrace.empty`；global hooks禁止重複install，dispose採wrapper identity保護，不覆蓋較新的外部handler。
+- 補強17-6C正式review revision：reporting dependency改為顯式required，Preference restore與Catalog reporter failure採best-effort隔離；Catalog operation由Feature直接typed傳遞，不再從cause猜測或默認write。Targeted 81 tests、App analyze與diff check通過。
+- 完成Milestone 17-6B正式review revision：Preference restore驗證kind / operation identity，wrong kind與write failure不再降級；新增typed diagnostic保存error與catch stack trace，Storage exception以read / write named constructors封閉。
+- 完成 Milestone 17-6B Theme / Locale Preference Error Boundary：新增typed corruption / storage exception，移除codec與store的broad Object catch；invalid persisted payload與expected SharedPreferences failure可fallback，unknown error原樣拋出。
+- 完成 Milestone 17-6A正式review revision：封閉`ErrorReportContext`、將operation改為`ErrorReportOperation` enum，並讓Debug adapter固定格式化safe欄位，避免任意字串或context `toString()`洩漏敏感內容。
+- 完成 Milestone 17-6A Error Reporting Contract：新增App-owned `ErrorReporter`、immutable `ErrorReport`、severity與typed safe context；Debug adapter不展開error / stack內容且不向外拋出，Recording adapter由test提供。
 - 完成 Milestone 17-5正式review revision：補齊cursor-chain persisted corruption parsing與repair；第一頁revision損壞可重建，linked revision / Append traversal損壞會清除相同query / limit chain並安全拒絕寫入；新增四組regression。
 - 完成 Milestone 17-5E完整Regression：Catalog targeted 107 tests、workspace五個package analyze與五個package / app完整333 tests全部通過；cursor chain、chain revision、SWR、Refresh、Append、revalidation、UI與Logout persistence無回歸，Milestone 17-5正式完成。
 - 完成 Milestone 17-5D Reporting-ready Diagnostic Preparation：新增安全的 Catalog Cache operation details，涵蓋read/write/append/chain revision/delete/corruption與expired cleanup；不保存query、cursor token、item、SQL或raw row，實際Reporter wiring留待17-6。

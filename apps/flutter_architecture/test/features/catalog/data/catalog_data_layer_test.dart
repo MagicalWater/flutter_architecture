@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_remote_data_source.dart';
@@ -290,6 +291,7 @@ CatalogRepositoryImpl _repository(
     localDataSource,
     CatalogCachePolicy(),
     const SystemCatalogClock(),
+    const NoopCatalogCacheDiagnosticSink(),
   );
 }
 

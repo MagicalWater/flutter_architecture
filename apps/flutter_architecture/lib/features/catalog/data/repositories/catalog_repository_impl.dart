@@ -1,5 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_remote_data_source.dart';
@@ -18,12 +20,14 @@ class CatalogRepositoryImpl implements CatalogRepository {
     this._localDataSource,
     this._cachePolicy,
     this._clock,
+    this._diagnosticSink,
   );
 
   final CatalogRemoteDataSource _remoteDataSource;
   final CatalogLocalDataSource _localDataSource;
   final CatalogCachePolicy _cachePolicy;
   final CatalogClock _clock;
+  final CatalogCacheDiagnosticSink _diagnosticSink;
 
   @override
   Stream<Result<CatalogPageSnapshot>> watchCatalog({
@@ -134,6 +138,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       if (error.kind != AppExceptionKind.localStorage) {
         Error.throwWithStackTrace(error, stackTrace);
       }
+      _reportCacheFailure(error, stackTrace);
       // Catalog Cache 是可重建 read model；已知 storage 寫入失敗不覆蓋
       // Remote success。其他 typed identity 不得被降級。
     }
@@ -161,6 +166,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       );
     } on AppException catch (error, stackTrace) {
       if (error.kind == AppExceptionKind.localStorage) {
+        _reportCacheFailure(error, stackTrace);
         return null;
       }
       Error.throwWithStackTrace(error, stackTrace);
@@ -182,6 +188,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       );
     } on AppException catch (error, stackTrace) {
       if (error.kind == AppExceptionKind.localStorage) {
+        _reportCacheFailure(error, stackTrace);
         return null;
       }
       Error.throwWithStackTrace(error, stackTrace);
@@ -199,6 +206,20 @@ class CatalogRepositoryImpl implements CatalogRepository {
   }
 
   DateTime _nowUtc() => _clock.nowUtc();
+
+  void _reportCacheFailure(AppException error, StackTrace stackTrace) {
+    final cause = error.cause;
+    if (cause is! CatalogCacheFailureDetails) return;
+    try {
+      _diagnosticSink.report(
+        error: error,
+        stackTrace: stackTrace,
+        operation: cause.operation,
+      );
+    } on Object {
+      // Diagnostic sink不得改變Catalog fallback或Remote success。
+    }
+  }
 
   void _validateRequest({
     required String? cursor,

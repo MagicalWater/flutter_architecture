@@ -1,6 +1,9 @@
+import 'package:flutter_architecture/app/error_reporting/error_report.dart';
 import 'package:flutter_architecture/app/localization/locale_bootstrap.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/app/localization/locale_preference.dart';
 import 'package:flutter_architecture/app/localization/locale_preference_store.dart';
+import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,7 +14,10 @@ void main() {
       raw: codec.encode(AppLocalePreference.traditionalChinese),
     );
 
-    final controller = await restoreLocaleController(storage: storage);
+    final controller = await restoreLocaleController(
+      storage: storage,
+      errorReporter: const NoopErrorReporter(),
+    );
 
     expect(controller.preference, AppLocalePreference.traditionalChinese);
     expect(controller.diagnostic, isNull);
@@ -23,25 +29,61 @@ void main() {
     () async {
       final storage = _RecordingLocaleStorage(raw: 'invalid-json');
 
-      final controller = await restoreLocaleController(storage: storage);
+      final controller = await restoreLocaleController(
+        storage: storage,
+        errorReporter: const NoopErrorReporter(),
+      );
 
       expect(controller.preference, AppLocalePreference.system);
-      expect(controller.diagnostic, isNull);
+      expect(
+        controller.diagnostic?.error,
+        isA<PreferenceCorruptionException>(),
+      );
       expect(storage.writeCount, 0);
     },
   );
 
   test('restoreLocaleController keeps read failure as diagnostic', () async {
     final storage = _RecordingLocaleStorage(
-      readError: StateError('read failed'),
+      readError: const PreferenceStorageException.read(
+        preference: PreferenceKind.locale,
+      ),
     );
 
-    final controller = await restoreLocaleController(storage: storage);
+    final controller = await restoreLocaleController(
+      storage: storage,
+      errorReporter: const NoopErrorReporter(),
+    );
 
     expect(controller.preference, AppLocalePreference.system);
-    expect(controller.diagnostic, isA<StateError>());
+    expect(controller.diagnostic?.error, isA<PreferenceStorageException>());
     expect(storage.writeCount, 0);
   });
+
+  test('restore reporter failure does not block fallback controller', () async {
+    final storage = _RecordingLocaleStorage(
+      readError: const PreferenceStorageException.read(
+        preference: PreferenceKind.locale,
+      ),
+    );
+
+    final controller = await restoreLocaleController(
+      storage: storage,
+      errorReporter: const _ThrowingErrorReporter(),
+    );
+
+    expect(controller.preference, AppLocalePreference.system);
+    expect(controller.diagnostic?.error, isA<PreferenceStorageException>());
+  });
+}
+
+final class _ThrowingErrorReporter implements ErrorReporter {
+  const _ThrowingErrorReporter();
+
+  @override
+  void report(ErrorReport report) {
+    throw StateError('reporter failed');
+  }
 }
 
 final class _RecordingLocaleStorage implements LocalePreferenceStorage {

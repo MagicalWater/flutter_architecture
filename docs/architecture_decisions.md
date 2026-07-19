@@ -2601,7 +2601,7 @@ Design System 顯示已 localized String
 
 **狀態：** Accepted
 
-**實作狀態：** Milestone 17-1 Audit / Architecture Contract、17-2 Typed Result Failure Channel、17-3 Typed AppException / Transport Boundary與17-4 Auth Local State / Session Lifecycle已完成；Catalog Cache diagnostic與App uncaught reporting尚待Milestone 17-5至17-7實作。
+**實作狀態：** Milestone 17-1至17-7已全部完成。Typed Result、AppException / Failure、Auth lifecycle、Catalog protocol / cache boundary、Preference diagnostics、App uncaught reporting、Composition Root、duplicate policy與Sensitive Data audit均已落地；完整381項tests與三環境bundle build已通過。Firebase / Crashlytics dependency未加入，可由未來App-owned production adapter替換Debug implementation。
 
 ### 背景
 
@@ -2850,6 +2850,8 @@ Exception、Failure、cause、context、log 與 `toString()` 不得包含：
 - cursor 是否存在，但不保存 cursor value。
 
 `AppException.toString()` / `Failure.toString()` 不得直接展開任意 `cause.toString()`。
+
+任何持有 credential、secret 或可直接識別使用者登入資料的 Freezed class / union，預設不得使用欄位型 `toString()`。例如 password、access token、refresh token、OTP、PIN、recovery code、private key 或 device-binding secret；應使用 `@Freezed(toStringOverride: false)`，除非另有經review的安全摘要，而且摘要不得包含原始credential值。
 
 ### 非目標
 

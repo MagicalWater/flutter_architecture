@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'refresh_token_response_dto.freezed.dart';
 part 'refresh_token_response_dto.g.dart';
 
-@freezed
+@Freezed(toStringOverride: false)
 abstract class RefreshTokenResponseDto with _$RefreshTokenResponseDto {
   const factory RefreshTokenResponseDto({
     required String accessToken,

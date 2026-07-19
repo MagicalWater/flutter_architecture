@@ -4,6 +4,8 @@ import 'package:api_client/api_client.dart';
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_remote_data_source.dart';
@@ -757,18 +759,94 @@ void main() {
       emitsError(same(error)),
     );
   });
+
+  test('Cache localStorage fallback 會在吸收前送入 diagnostic sink', () async {
+    final error = AppException(
+      kind: AppExceptionKind.localStorage,
+      message: 'cache unavailable',
+      stackTrace: StackTrace.current,
+      cause: const CatalogCacheFailureDetails(
+        operation: CatalogCacheOperation.readPage,
+        isQueryEmpty: true,
+        hasCursor: false,
+        limit: 20,
+        originalError: 'database unavailable',
+      ),
+    );
+    final sink = _RecordingCatalogCacheDiagnosticSink();
+    final repository = _repository(
+      _RecordingCatalogApi(),
+      _ThrowingCatalogLocalDataSource(database, readPageError: error),
+      clock,
+      diagnosticSink: sink,
+    );
+
+    final results = await repository
+        .watchCatalog(
+          query: '',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.initial,
+        )
+        .toList();
+
+    expect(results, hasLength(1));
+    expect(sink.errors, <AppException>[error]);
+    expect(sink.stackTraces, hasLength(1));
+    expect(sink.operations, <CatalogCacheOperation>[
+      CatalogCacheOperation.readPage,
+    ]);
+  });
+
+  test(
+    'Diagnostic sink failure does not block cache miss remote fallback',
+    () async {
+      final error = AppException(
+        kind: AppExceptionKind.localStorage,
+        message: 'cache unavailable',
+        cause: const CatalogCacheFailureDetails(
+          operation: CatalogCacheOperation.readPage,
+          isQueryEmpty: true,
+          hasCursor: false,
+          limit: 20,
+          originalError: 'database unavailable',
+        ),
+      );
+      final repository = _repository(
+        _RecordingCatalogApi(),
+        _ThrowingCatalogLocalDataSource(database, readPageError: error),
+        clock,
+        diagnosticSink: const _ThrowingCatalogCacheDiagnosticSink(),
+      );
+
+      final results = await repository
+          .watchCatalog(
+            query: '',
+            cursor: null,
+            limit: 20,
+            policy: CatalogLoadPolicy.initial,
+          )
+          .toList();
+
+      expect(results, hasLength(1));
+      expect(_success(results.single).source, CatalogDataSource.remote);
+    },
+  );
 }
 
 CatalogRepositoryImpl _repository(
   CatalogApi api,
   CatalogLocalDataSource local,
-  CatalogClock clock,
-) {
+  CatalogClock clock, {
+  CatalogCacheDiagnosticSink diagnosticSink =
+      const NoopCatalogCacheDiagnosticSink(),
+}) {
   return CatalogRepositoryImpl(
     CatalogRemoteDataSource(api),
     local,
     CatalogCachePolicy(),
     clock,
+    diagnosticSink,
   );
 }
 
@@ -917,5 +995,37 @@ class _ThrowingCatalogLocalDataSource extends CatalogLocalDataSource {
     final error = replacePageError;
     if (error != null) throw error;
     return super.replacePage(page, resetFollowingPages: resetFollowingPages);
+  }
+}
+
+final class _RecordingCatalogCacheDiagnosticSink
+    implements CatalogCacheDiagnosticSink {
+  final List<AppException> errors = <AppException>[];
+  final List<StackTrace> stackTraces = <StackTrace>[];
+  final List<CatalogCacheOperation> operations = <CatalogCacheOperation>[];
+
+  @override
+  void report({
+    required AppException error,
+    required StackTrace stackTrace,
+    required CatalogCacheOperation operation,
+  }) {
+    errors.add(error);
+    stackTraces.add(stackTrace);
+    operations.add(operation);
+  }
+}
+
+final class _ThrowingCatalogCacheDiagnosticSink
+    implements CatalogCacheDiagnosticSink {
+  const _ThrowingCatalogCacheDiagnosticSink();
+
+  @override
+  void report({
+    required AppException error,
+    required StackTrace stackTrace,
+    required CatalogCacheOperation operation,
+  }) {
+    throw StateError('diagnostic sink failed');
   }
 }

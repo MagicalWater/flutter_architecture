@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_architecture/app/localization/app_locale_resolution.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
 import 'package:flutter_architecture/app/localization/locale_preference.dart';
 import 'package:flutter_architecture/app/localization/locale_preference_store.dart';
+import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,16 +17,19 @@ void main() {
     }
   });
 
-  test('LocalePreferenceCodec falls back to system for invalid payloads', () {
-    for (final raw in <String?>[
-      null,
+  test('LocalePreferenceCodec rejects invalid payloads as corruption', () {
+    expect(codec.decode(null), AppLocalePreference.system);
+    for (final raw in <String>[
       '',
       '{}',
       '{"version":2,"locale":"en"}',
       '{"version":1,"locale":"unknown"}',
       'not-json',
     ]) {
-      expect(codec.decode(raw), AppLocalePreference.system);
+      expect(
+        () => codec.decode(raw),
+        throwsA(isA<PreferenceCorruptionException>()),
+      );
     }
   });
 
@@ -39,12 +44,39 @@ void main() {
 
   test('store exposes read failures as non-blocking diagnostic', () async {
     final result = await LocalePreferenceStore(
-      _MemoryLocaleStorage(readError: StateError('read failed')),
+      _MemoryLocaleStorage(
+        readError: const PreferenceStorageException.read(
+          preference: PreferenceKind.locale,
+        ),
+      ),
       codec,
     ).restore();
 
     expect(result.preference, AppLocalePreference.system);
-    expect(result.diagnostic, isA<StateError>());
+    expect(result.diagnostic?.error, isA<PreferenceStorageException>());
+  });
+
+  test('corrupted payload falls back with typed diagnostic', () async {
+    final result = await LocalePreferenceStore(
+      _MemoryLocaleStorage(initialValue: 'not-json'),
+      codec,
+    ).restore();
+
+    expect(result.preference, AppLocalePreference.system);
+    expect(result.diagnostic?.error, isA<PreferenceCorruptionException>());
+    expect(result.diagnostic?.stackTrace, isNot(StackTrace.empty));
+  });
+
+  test('unknown restore error is not downgraded', () async {
+    final error = StateError('implementation bug');
+
+    await expectLater(
+      LocalePreferenceStore(
+        _MemoryLocaleStorage(readError: error),
+        codec,
+      ).restore(),
+      throwsA(same(error)),
+    );
   });
 
   test('controller updates runtime before persistence completes', () async {
@@ -52,6 +84,7 @@ void main() {
     final controller = LocaleController(
       store: LocalePreferenceStore(storage, codec),
       initialPreference: AppLocalePreference.system,
+      errorReporter: const NoopErrorReporter(),
     );
 
     controller.select(AppLocalePreference.traditionalChinese);
@@ -74,6 +107,7 @@ void main() {
     final controller = LocaleController(
       store: LocalePreferenceStore(storage, codec),
       initialPreference: AppLocalePreference.system,
+      errorReporter: const NoopErrorReporter(),
     );
 
     controller.select(AppLocalePreference.english);
@@ -97,11 +131,12 @@ void main() {
     final controller = LocaleController(
       store: LocalePreferenceStore(storage, codec),
       initialPreference: AppLocalePreference.system,
+      errorReporter: const NoopErrorReporter(),
     );
 
     controller.select(AppLocalePreference.english);
     await controller.waitForPendingWrites();
-    expect(controller.diagnostic, isA<StateError>());
+    expect(controller.diagnostic?.error, isA<PreferenceStorageException>());
 
     controller.select(AppLocalePreference.traditionalChinese);
     await controller.waitForPendingWrites();
@@ -113,19 +148,49 @@ void main() {
       AppLocalePreference.traditionalChinese,
     );
   });
+
+  test('Locale restore 不降級 Theme typed failure', () async {
+    final error = const PreferenceStorageException.read(
+      preference: PreferenceKind.theme,
+    );
+
+    await expectLater(
+      LocalePreferenceStore(
+        _MemoryLocaleStorage(readError: error),
+        codec,
+      ).restore(),
+      throwsA(same(error)),
+    );
+  });
+
+  test('Locale restore 不降級 write failure', () async {
+    final error = const PreferenceStorageException.write(
+      preference: PreferenceKind.locale,
+    );
+
+    await expectLater(
+      LocalePreferenceStore(
+        _MemoryLocaleStorage(readError: error),
+        codec,
+      ).restore(),
+      throwsA(same(error)),
+    );
+  });
 }
 
 final class _MemoryLocaleStorage implements LocalePreferenceStorage {
   _MemoryLocaleStorage({
     this.readError,
+    this.initialValue,
     this.blockWrites = false,
     this.failFirstWrite = false,
   });
 
   final Object? readError;
+  final String? initialValue;
   final bool blockWrites;
   final bool failFirstWrite;
-  final List<String> values = <String>[];
+  late final List<String> values = <String>[?initialValue];
   final List<Completer<void>> _pendingWrites = <Completer<void>>[];
   Completer<void>? _pendingWriteSignal;
   int _writeCount = 0;
@@ -140,7 +205,9 @@ final class _MemoryLocaleStorage implements LocalePreferenceStorage {
   Future<void> write(String value) async {
     _writeCount += 1;
     if (failFirstWrite && _writeCount == 1) {
-      throw StateError('write failed');
+      throw const PreferenceStorageException.write(
+        preference: PreferenceKind.locale,
+      );
     }
     if (blockWrites) {
       final completer = Completer<void>();

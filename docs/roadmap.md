@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：18-6 Documentation & Provisional Baseline Assessment Reviewed / Closed；下一步為Audit Review Gate。
+狀態：Audit Review Gate Approved；下一步為18-7 Approved Remediation。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1952,4 +1952,4 @@ Audit Review Gate
 
 18-6已完成並通過review：VERSION、README與CHANGELOG current baseline一致為1.1.0，但Milestone 15至17仍屬Unreleased；provisional decision為現在不發布，`1.2.0`只作候選版本。新增`M18-D01`（P1）、`M18-D02`（P2）、`M18-D03`（P3）；`M18-C01`與`M18-D01`必須共用同一platform disposition。Current authoritative文件需使用一致platform evidence terminology，歷史紀錄原則上保留並補註；D02與D03主要留到18-8 final documentation。下一步進入Audit Review Gate。
 
-18-6 audit已完成，尚待review：VERSION、README與CHANGELOG的current baseline均為1.1.0，版本來源一致，但1.1.0只正式封存至Milestone 14，Milestone 15至17仍屬Unreleased。新增`M18-D01`（P1）：README「可直接作為企業專案起點」與無任何可執行platform project的現況不一致；`M18-D02`（P2）：早期文件將Web dependency preparation描述為scaffold或runtime成果；`M18-D03`（P3）：Backlog混列已完成與future項目。Provisional decision為現在不發布；若Gate與remediation完成且無breaking scope，傾向1.2.0 MINOR。VERSION未修改。
+Audit Review Gate已通過：9項findings均完成disposition，無Accepted risk。核准`M18-A01`、`M18-A02`、`M18-R01`、`M18-P01`、`M18-P02`、`M18-C01`與`M18-D01`進入approved remediation / final documentation；`M18-D02`與`M18-D03`延後至18-8。平台scope只承諾Android為Supported target候選，iOS、Web、Windows、macOS與Linux維持Dependency-ready。現在不發布baseline，`1.2.0`維持provisional candidate。下一步為18-7A Auth lifecycle latest-intent ordering。

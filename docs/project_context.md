@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0至18-6均已完成並通過review；下一步為Audit Review Gate。VERSION、README與CHANGELOG current baseline均為1.1.0，但1.1.0只封存至Milestone 14，Milestone 15至17仍屬Unreleased。新增`M18-D01` README企業模板定位與無可執行platform project落差（P1）、`M18-D02` Web scaffold / runtime evidence terminology不精確（P2）及`M18-D03` Backlog混列completed與future scope（P3）；`M18-C01`與`M18-D01`必須共用同一platform disposition。Provisional decision為目前不發布，`1.2.0`只作18-8可重新評估的候選版本。Current authoritative文件需使用一致platform evidence terminology，歷史紀錄原則上保留並補註；D02與D03主要留到18-8 final documentation。Milestone仍處於Phase A結束點，未修改production code或VERSION。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
+目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。Audit Review Gate已通過，下一步進入18-7 Approved Remediation。Gate未接受任何P1 risk，核准Auth ordering、single-active-user persistence、Catalog foreign-key、跨Feature boundary與Android scaffold remediation。Android是唯一Supported target候選；iOS、Web、Windows、macOS與Linux維持Dependency-ready。`M18-D02/D03`延後至18-8 final documentation。現在不發布baseline，VERSION維持1.1.0，`1.2.0`僅為provisional candidate。正式Gate決議位於`docs/audits/milestone_18/remediation_decision.md`。
 
 ### Milestone 17：Exception & Failure Architecture
 

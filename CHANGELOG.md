@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18 Audit Review Gate：9項findings均完成disposition，無Accepted risk。核准Auth lifecycle ordering、single-active-user persistence、Catalog foreign-key、跨Feature boundary、Android scaffold與README定位修正；Web terminology與Backlog整理延後至18-8。
+- 平台scope採最小可交付策略：Android為唯一Supported target候選，iOS、Web、Windows、macOS與Linux維持Dependency-ready。現在不發布baseline，VERSION維持1.1.0，`1.2.0`只保留為provisional candidate；下一步進入18-7A Auth lifecycle latest-intent ordering。
 - 完成Milestone 18-6正式review revision：`M18-C01`與`M18-D01`必須共用同一platform disposition，README Quick Start / `flutter run`需依最終平台決策同步；`M18-D02`改以current authoritative文件與ADR clarification為主，不全面重寫歷史紀錄，`M18-D02/D03`主要target phase收斂為18-8。
 - 新baseline release條件改為全部tracked workspace regression與新增targeted tests通過，本次audit既有382 tests不得無理由遺失；`1.2.0`維持provisional candidate而非承諾版本。18-6正式Reviewed / Closed，下一步進入Audit Review Gate。
 - 完成Milestone 18-6 Documentation & Provisional Baseline Assessment：確認VERSION、README與CHANGELOG current baseline一致為1.1.0，但1.1.0只封存至Milestone 14，Milestone 15至17仍屬Unreleased；Phase A不修改VERSION。

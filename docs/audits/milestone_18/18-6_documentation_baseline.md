@@ -2,7 +2,7 @@
 
 ## 狀態
 
-Completed audit；尚待review，尚未進入Audit Review Gate或remediation。
+Reviewed / Closed；尚未進入Audit Review Gate或remediation。
 
 本文件保存README、ADR、Roadmap、Backlog、Project Context、CHANGELOG與VERSION的一致性證據，以及Template Baseline的provisional判定。所有正式finding的唯一Single Source of Truth為`docs/audits/milestone_18/findings.md`。
 
@@ -61,7 +61,7 @@ Milestone 2C歷史完成語意
   Flutter Web不再因databaseFactory未初始化而白畫面
 ```
 
-實際上repository從未有完整Web runner；只有Web SQLite assets與conditional initializer。這些句子應改成「Web dependency preparation / SQLite assets」，並保留當時未取得browser runtime evidence的限制。
+實際上repository從未有完整Web runner；只有Web SQLite assets與conditional initializer。Current authoritative documents應改用「Web dependency preparation / SQLite assets」與現在的evidence taxonomy；Accepted ADR可補充current evidence clarification。Archive、historical CHANGELOG與舊Milestone紀錄原則上保留，不全面重寫歷史事實。
 
 正式記錄為`M18-D02`。這是文件準確性問題，不代表database initializer設計本身失效。
 
@@ -109,7 +109,7 @@ Backlog仍在「第二階段可以考慮」列出：
 
 其中ADR、測試範例與Localization均已有大量實作；Localization雖有完成註記，仍與未完成項目混列。Backlog同時保留已排入且已完成的Milestone 10、12至17。
 
-這不會導致runtime錯誤，但會降低Backlog作為「尚未做」清單的可信度。正式記錄為`M18-D03`（P3），建議在18-7或18-8將completed / deferred / future ideas分開，而不是持續累積註解。
+這不會導致runtime錯誤，但會降低Backlog作為「尚未做」清單的可信度。正式記錄為`M18-D03`（P3），建議在18-8 final documentation將completed / deferred / future ideas分開，而不是持續累積註解。
 
 ---
 
@@ -163,7 +163,7 @@ Do not release now
 
 ### Version after approved remediation
 
-若Gate核准並完成必要remediation，provisional version recommendation為：
+若Gate核准並完成必要remediation，provisional version candidate為：
 
 ```txt
 1.2.0 (MINOR)
@@ -184,7 +184,7 @@ Do not release now
 3. Gate逐平台拍板Supported / Verification pending / Dependency-ready / Not supported。
 4. README首頁、run instructions、platform matrix與build terminology一致。
 5. VERSION、README、CHANGELOG與release validation同步。
-6. 382項既有regression與新增targeted tests通過。
+6. 全部tracked workspace regression與新增targeted tests通過；本次audit既有382 tests不得無理由遺失。
 7. 對所有Supported target取得release artifact與runtime smoke；Dependency-ready平台不得被宣稱Supported。
 
 CI/CD目前仍是Deferred，不是既有baseline capability。若Gate將automatic verification列為release條件，需明確納入approved remediation。
@@ -195,6 +195,6 @@ CI/CD目前仍是Deferred，不是既有baseline capability。若Gate將automati
 
 目前文件大部分能追蹤Milestone 1至17的決策與歷史，VERSION surfaces也一致；主要問題是current README產品定位與實際無platform scaffold的差距、早期Web scaffold / runtime措辭不精確，以及Backlog混入已完成項目。
 
-本階段新增`M18-D01`、`M18-D02`與`M18-D03`。Provisional baseline decision為現在不發布；若Gate與remediation完成且沒有新的breaking scope，傾向發布`1.2.0`。
+本階段新增`M18-D01`、`M18-D02`與`M18-D03`。`M18-C01`與`M18-D01`必須共用同一份platform disposition，避免實際capability與README定位產生不同決策。Provisional baseline decision為現在不發布；若Gate與remediation完成且沒有新的breaking scope，`1.2.0`為候選版本，最終仍由18-8決定。
 
-本階段只完成audit與落檔，不修改current documentation claims、production code或VERSION。下一步為18-6 Review，之後才可進入Audit Review Gate。
+本階段只完成audit與review修訂，不修改current documentation claims、production code或VERSION。下一步進入Audit Review Gate。

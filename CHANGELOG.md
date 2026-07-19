@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-6正式review revision：`M18-C01`與`M18-D01`必須共用同一platform disposition，README Quick Start / `flutter run`需依最終平台決策同步；`M18-D02`改以current authoritative文件與ADR clarification為主，不全面重寫歷史紀錄，`M18-D02/D03`主要target phase收斂為18-8。
+- 新baseline release條件改為全部tracked workspace regression與新增targeted tests通過，本次audit既有382 tests不得無理由遺失；`1.2.0`維持provisional candidate而非承諾版本。18-6正式Reviewed / Closed，下一步進入Audit Review Gate。
 - 完成Milestone 18-6 Documentation & Provisional Baseline Assessment：確認VERSION、README與CHANGELOG current baseline一致為1.1.0，但1.1.0只封存至Milestone 14，Milestone 15至17仍屬Unreleased；Phase A不修改VERSION。
 - 新增`M18-D01`（P1）README企業模板定位與無可執行platform project落差、`M18-D02`（P2）早期Web scaffold / runtime evidence terminology不精確、`M18-D03`（P3）Backlog混列completed與future scope。Provisional decision為現在不發布；若Gate與approved remediation完成且沒有breaking scope，傾向1.2.0 MINOR，下一步為18-6 review。
 - 完成Milestone 18-5正式review revision：將Complete限定為declared component contract，明確區分Dio / SQLite / Widget host integration與application integration，並精確拆分`M18-A01` Shell startup ownership及`M18-A02` navigation transition coverage。

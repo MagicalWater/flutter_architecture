@@ -367,7 +367,7 @@ Audit Review Gate應逐平台拍板Template Baseline disposition，例如Support
 
 **Target phase：** 18-7 candidate
 
-**Verification required：** README首頁與run instructions、platform capability matrix、tracked scaffold及artifact evidence一致。
+**Verification required：** README首頁、Quick Start與run instructions、platform capability matrix、tracked scaffold及artifact evidence一致；`M18-C01`與本finding使用同一份platform disposition。
 
 ### Evidence
 
@@ -389,7 +389,7 @@ Architecture、Dart application layer與component tests成熟，但repository缺
 
 ### Recommendation
 
-Gate應先拍板正式平台集合。若建立平台，README需列出Supported / pending / Dependency-ready矩陣與實際命令；若不建立平台，首頁需明確定位為Dart / architecture starter並把platform generation列為使用者前置步驟。
+Gate應先拍板正式平台集合，並讓`M18-C01`與本finding共用同一份platform disposition。若建立平台，README需列出Supported / pending / Dependency-ready矩陣、必要host與可直接執行的實際命令；若不建立平台，首頁需明確定位為Dart / architecture starter，把platform generation列為Quick Start前置步驟，並提醒`flutter create`可能產生或覆蓋platform files。
 
 文件降級不能取代`M18-R01`與`M18-P01`等Auth correctness remediation。
 
@@ -411,7 +411,7 @@ Gate應先拍板正式平台集合。若建立平台，README需列出Supported 
 
 **Disposition：** Pending Audit Review Gate
 
-**Target phase：** 18-7 candidate
+**Target phase：** 18-8 candidate
 
 **Verification required：** Current README、ADR、Project Context與Roadmap使用一致的scaffold / component / artifact / runtime terminology。
 
@@ -435,7 +435,7 @@ Conditional database factory與Web assets已完成，但較早文件的「Web sc
 
 ### Recommendation
 
-保留歷史決策背景，但修正current ADR摘要、Project Context與Roadmap current summary，將其描述為Web dependency preparation / SQLite assets；bundle結果使用framework compilation terminology。
+保留歷史決策背景。Current README、Project Context、Roadmap current summary與baseline release notes使用Web dependency preparation / SQLite assets與framework compilation terminology；Accepted ADR可補充current evidence clarification。Archive、historical CHANGELOG與舊Milestone紀錄原則上不全面重寫。
 
 ### Disposition rationale
 
@@ -455,7 +455,7 @@ Conditional database factory與Web assets已完成，但較早文件的「Web sc
 
 **Disposition：** Pending Audit Review Gate
 
-**Target phase：** 18-7或18-8 candidate
+**Target phase：** 18-8 candidate
 
 **Verification required：** Backlog只保留future / deferred scope，completed items移至Roadmap、Project Context或archive。
 

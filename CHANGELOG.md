@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-7A Auth lifecycle latest-intent ordering實作：`AuthStateMutationCoordinator`新增generation lease，restore / login / logout開始時取得operation；較新意圖會使舊operation在persistence與Session commit前失效，`AuthLifecycleOperationSuperseded`維持control flow，AuthBloc不將其轉為Failure或覆蓋較新UI。
+- 新增Double Login反向完成與Login + Logout反向完成regression，驗證舊Login不會覆蓋最新tokens、user或runtime Session；workspace五個package analyze與384 tests全數通過。18-7A尚待review。
 - 完成Milestone 18 Audit Review Gate：9項findings均完成disposition，無Accepted risk。核准Auth lifecycle ordering、single-active-user persistence、Catalog foreign-key、跨Feature boundary、Android scaffold與README定位修正；Web terminology與Backlog整理延後至18-8。
 - 平台scope採最小可交付策略：Android為唯一Supported target候選，iOS、Web、Windows、macOS與Linux維持Dependency-ready。現在不發布baseline，VERSION維持1.1.0，`1.2.0`只保留為provisional candidate；下一步進入18-7A Auth lifecycle latest-intent ordering。
 - 完成Milestone 18-6正式review revision：`M18-C01`與`M18-D01`必須共用同一platform disposition，README Quick Start / `flutter run`需依最終平台決策同步；`M18-D02`改以current authoritative文件與ADR clarification為主，不全面重寫歷史紀錄，`M18-D02/D03`主要target phase收斂為18-8。

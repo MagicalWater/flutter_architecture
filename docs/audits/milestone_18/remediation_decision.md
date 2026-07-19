@@ -196,6 +196,12 @@ Android為唯一Supported target候選；在18-8驗證完成前仍不得視為�
 
 每個子階段需獨立review與targeted regression。不得因Android scaffold加入Native Flavor、Firebase、Crashlytics、CI/CD或其他五平台runner。
 
+### 18-7A implementation progress
+
+18-7A已完成實作，尚待review。`AuthStateMutationCoordinator`現在提供lifecycle generation lease；restore、login與logout開始時取得operation，較新的command會使舊operation失效。Repository在remote completion、persistence mutation與runtime Session commit前驗證lease；被取代時丟出`AuthLifecycleOperationSuperseded` control flow，AuthBloc靜默忽略舊結果，不轉成Failure或覆蓋較新UI。
+
+新增Double Login反向完成與Login + Logout反向完成regression，驗證舊Login不會覆蓋最新user、tokens或Session。Workspace五個package analyze與384項tests全數通過。`M18-R01`仍待18-7A review後才可改為Resolved。
+
 ---
 
 ## 8. Baseline release decision

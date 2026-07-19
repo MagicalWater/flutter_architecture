@@ -60,6 +60,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     late final Result<AuthUser?> result;
     try {
       result = await _restoreSessionUseCase.execute();
+    } on AuthLifecycleOperationSuperseded {
+      return;
     } catch (error, stackTrace) {
       emit(state.copyWith(isLoading: false));
       Error.throwWithStackTrace(error, stackTrace);
@@ -95,6 +97,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         account: event.account,
         password: event.password,
       );
+    } on AuthLifecycleOperationSuperseded {
+      return;
     } catch (error, stackTrace) {
       emit(state.copyWith(isLoading: false));
       Error.throwWithStackTrace(error, stackTrace);
@@ -131,6 +135,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     late final Result<void> result;
     try {
       result = await _logoutUseCase.execute();
+    } on AuthLifecycleOperationSuperseded {
+      return;
     } catch (error, stackTrace) {
       emit(state.copyWith(isLoading: false));
       Error.throwWithStackTrace(error, stackTrace);

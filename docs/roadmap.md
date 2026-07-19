@@ -1953,3 +1953,5 @@ Audit Review Gate
 18-6已完成並通過review：VERSION、README與CHANGELOG current baseline一致為1.1.0，但Milestone 15至17仍屬Unreleased；provisional decision為現在不發布，`1.2.0`只作候選版本。新增`M18-D01`（P1）、`M18-D02`（P2）、`M18-D03`（P3）；`M18-C01`與`M18-D01`必須共用同一platform disposition。Current authoritative文件需使用一致platform evidence terminology，歷史紀錄原則上保留並補註；D02與D03主要留到18-8 final documentation。下一步進入Audit Review Gate。
 
 Audit Review Gate已通過：9項findings均完成disposition，無Accepted risk。核准`M18-A01`、`M18-A02`、`M18-R01`、`M18-P01`、`M18-P02`、`M18-C01`與`M18-D01`進入approved remediation / final documentation；`M18-D02`與`M18-D03`延後至18-8。平台scope只承諾Android為Supported target候選，iOS、Web、Windows、macOS與Linux維持Dependency-ready。現在不發布baseline，`1.2.0`維持provisional candidate。下一步為18-7A Auth lifecycle latest-intent ordering。
+
+18-7A已完成實作、尚待review：Auth lifecycle command使用generation lease，較新restore / login / logout意圖會使舊operation失效；Repository在persistence與Session commit前驗證lease，AuthBloc將superseded視為control flow。新增Double Login與Login + Logout反向完成regression；workspace analyze與384 tests通過。

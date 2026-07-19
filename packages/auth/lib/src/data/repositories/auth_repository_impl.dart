@@ -44,6 +44,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String account,
     required String password,
   }) async {
+    final operation = _mutationCoordinator.beginLifecycleOperation();
     try {
       final response = await _remoteDataSource.login(
         account: account,
@@ -54,6 +55,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final user = result.user;
 
       await _mutationCoordinator.runExclusive(() async {
+        operation.throwIfSuperseded();
         try {
           await _localDataSource.saveTokens(
             StoredAuthTokens(
@@ -61,8 +63,14 @@ class AuthRepositoryImpl implements AuthRepository {
               refreshToken: result.refreshToken,
             ),
           );
+          operation.throwIfSuperseded();
           await _localDataSource.saveUser(AuthUserModel.fromEntity(user));
+          operation.throwIfSuperseded();
         } catch (error, stackTrace) {
+          if (error is AuthLifecycleOperationSuperseded) {
+            await _clearLocalAuthStateBestEffort();
+            Error.throwWithStackTrace(error, stackTrace);
+          }
           await _clearLocalAuthStateBestEffort();
           _sessionManager.clear();
           Error.throwWithStackTrace(error, stackTrace);
@@ -86,10 +94,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<AuthUser?>> restoreSession() async {
+    final operation = _mutationCoordinator.beginLifecycleOperation();
     try {
       return await _mutationCoordinator.runExclusive(() async {
+        operation.throwIfSuperseded();
         final tokens = await _localDataSource.readTokens();
+        operation.throwIfSuperseded();
         final user = await _localDataSource.readUser();
+        operation.throwIfSuperseded();
 
         if (tokens == null || user == null) {
           await _clearLocalAuthStateBestEffort();
@@ -106,7 +118,9 @@ class AuthRepositoryImpl implements AuthRepository {
       });
     } on CorruptedAuthTokensException {
       await _mutationCoordinator.runExclusive(() async {
+        operation.throwIfSuperseded();
         await _clearLocalAuthStateBestEffort();
+        operation.throwIfSuperseded();
         _sessionManager.clear();
       });
       return const Success(null);
@@ -125,8 +139,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<void>> logout() async {
+    final operation = _mutationCoordinator.beginLifecycleOperation();
     try {
       await _mutationCoordinator.runExclusive(() async {
+        operation.throwIfSuperseded();
         Object? expectedError;
         StackTrace? expectedStackTrace;
         Object? unexpectedError;
@@ -145,15 +161,25 @@ class AuthRepositoryImpl implements AuthRepository {
 
         try {
           await _localDataSource.clearUser();
+          operation.throwIfSuperseded();
         } catch (error, stackTrace) {
+          if (error is AuthLifecycleOperationSuperseded) {
+            Error.throwWithStackTrace(error, stackTrace);
+          }
           captureError(error, stackTrace);
         }
         try {
           await _localDataSource.clearTokens();
+          operation.throwIfSuperseded();
         } catch (error, stackTrace) {
+          if (error is AuthLifecycleOperationSuperseded) {
+            Error.throwWithStackTrace(error, stackTrace);
+          }
           captureError(error, stackTrace);
         } finally {
-          _sessionManager.clear();
+          if (operation.isCurrent) {
+            _sessionManager.clear();
+          }
         }
         final capturedUnexpectedError = unexpectedError;
         if (capturedUnexpectedError != null) {

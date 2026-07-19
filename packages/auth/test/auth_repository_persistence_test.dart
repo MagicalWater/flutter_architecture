@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:auth/src/data/data_sources/auth_local_store.dart';
@@ -6,6 +8,91 @@ import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('Double Login 反向完成時只允許最新 Login commit', () async {
+    final sessionManager = SessionManager();
+    final local = _FakeAuthLocalStore();
+    final api = _ControlledAuthApi();
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(api),
+      local,
+      sessionManager,
+      AuthStateMutationCoordinator(),
+    );
+
+    final loginA = repository.login(account: 'account-a', password: 'password');
+    final loginB = repository.login(account: 'account-b', password: 'password');
+
+    api.completeLogin(
+      'account-b',
+      const LoginResponseDto(
+        accessToken: 'access-b',
+        refreshToken: 'refresh-b',
+        userId: 'user-b',
+        userName: 'User B',
+      ),
+    );
+    final resultB = await loginB;
+
+    api.completeLogin(
+      'account-a',
+      const LoginResponseDto(
+        accessToken: 'access-a',
+        refreshToken: 'refresh-a',
+        userId: 'user-a',
+        userName: 'User A',
+      ),
+    );
+
+    await expectLater(
+      loginA,
+      throwsA(isA<AuthLifecycleOperationSuperseded>()),
+    );
+    expect(resultB, isA<Success<AuthResult>>());
+    expect(local.tokens?.accessToken, 'access-b');
+    expect(local.user?.id, 'user-b');
+    expect(sessionManager.currentSession?.userId, 'user-b');
+  });
+
+  test('Logout 會使尚未完成的舊 Login 失效', () async {
+    final sessionManager = SessionManager()
+      ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
+    final local = _FakeAuthLocalStore()
+      ..tokens = const StoredAuthTokens(
+        accessToken: 'old-token',
+        refreshToken: 'old-refresh',
+      )
+      ..user = const AuthUserModel(id: 'old-user', name: 'Old User');
+    final api = _ControlledAuthApi();
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(api),
+      local,
+      sessionManager,
+      AuthStateMutationCoordinator(),
+    );
+
+    final login = repository.login(account: 'account-a', password: 'password');
+    final logoutResult = await repository.logout();
+
+    api.completeLogin(
+      'account-a',
+      const LoginResponseDto(
+        accessToken: 'access-a',
+        refreshToken: 'refresh-a',
+        userId: 'user-a',
+        userName: 'User A',
+      ),
+    );
+
+    await expectLater(
+      login,
+      throwsA(isA<AuthLifecycleOperationSuperseded>()),
+    );
+    expect(logoutResult, isA<Success<void>>());
+    expect(local.tokens, isNull);
+    expect(local.user, isNull);
+    expect(sessionManager.currentSession, isNull);
+  });
+
   test('Login 保存 User 失敗時會補償清除本地狀態與 runtime Session', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
@@ -212,6 +299,25 @@ void main() {
     expect(local.clearTokensCalls, 1);
     expect(sessionManager.currentSession, isNull);
   });
+}
+
+class _ControlledAuthApi implements AuthApi {
+  final Map<String, Completer<LoginResponseDto>> _requests = {};
+
+  @override
+  Future<LoginResponseDto> login(LoginRequestDto request) {
+    final completer = Completer<LoginResponseDto>();
+    _requests[request.account] = completer;
+    return completer.future;
+  }
+
+  void completeLogin(String account, LoginResponseDto response) {
+    final completer = _requests[account];
+    if (completer == null) {
+      throw StateError('No pending login for $account');
+    }
+    completer.complete(response);
+  }
 }
 
 class _FakeAuthLocalStore implements AuthLocalStore {

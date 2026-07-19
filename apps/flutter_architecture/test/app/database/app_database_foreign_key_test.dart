@@ -34,7 +34,7 @@ void main() {
     );
   });
 
-  test('v5 upgrade清除existing orphan並啟用foreign keys', () async {
+  test('v5 upgrade保留合法cache、清除orphan並完整啟用foreign keys', () async {
     final directory = await databaseFactoryFfi.getDatabasesPath();
     final path = '$directory/catalog-foreign-key-v5-upgrade.db';
     await databaseFactoryFfi.deleteDatabase(path);
@@ -49,7 +49,15 @@ void main() {
         },
       ),
     );
+    await old.insert('catalog_cache_page', _pageRow());
     await old.insert('catalog_cache_page_item', _itemRow());
+    await old.insert(
+      'catalog_cache_page_item',
+      _itemRow(
+        query: 'orphan',
+        itemId: 'orphan-item',
+      ),
+    );
     await old.close();
 
     final upgraded = await databaseFactoryFfi.openDatabase(
@@ -63,8 +71,28 @@ void main() {
     addTearDown(upgraded.close);
 
     expect((await upgraded.rawQuery('PRAGMA foreign_keys')).single.values.single, 1);
-    expect(await upgraded.query('catalog_cache_page_item'), isEmpty);
+    expect(await upgraded.query('catalog_cache_page'), hasLength(1));
+    expect(await upgraded.query('catalog_cache_page_item'), hasLength(1));
+    expect(
+      (await upgraded.query('catalog_cache_page_item')).single['item_id'],
+      'item-1',
+    );
     expect(await upgraded.rawQuery('PRAGMA foreign_key_check'), isEmpty);
+
+    await upgraded.delete(
+      'catalog_cache_page',
+      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
+      whereArgs: const <Object?>['flutter', '', 20],
+    );
+    expect(await upgraded.query('catalog_cache_page_item'), isEmpty);
+
+    await expectLater(
+      upgraded.insert(
+        'catalog_cache_page_item',
+        _itemRow(query: 'new-orphan', itemId: 'new-orphan-item'),
+      ),
+      throwsA(isA<DatabaseException>()),
+    );
   });
 }
 
@@ -77,11 +105,15 @@ Map<String, Object?> _pageRow() => <String, Object?>{
       'chain_revision': 0,
     };
 
-Map<String, Object?> _itemRow() => const <String, Object?>{
-      'query': 'flutter',
+Map<String, Object?> _itemRow({
+  String query = 'flutter',
+  String itemId = 'item-1',
+}) =>
+    <String, Object?>{
+      'query': query,
       'request_cursor': '',
       'request_limit': 20,
-      'item_id': 'item-1',
+      'item_id': itemId,
       'item_position': 0,
       'item_name': 'Item',
       'item_description': 'Description',

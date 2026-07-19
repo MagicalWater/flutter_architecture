@@ -208,11 +208,11 @@ Logout在進入exclusive cleanup前可被取代；cleanup一旦開始會完整�
 
 `StoredAuthTokens`新增stable `userId`，login與refresh rotation均持續保存identity。Restore與Refresh都只接受token `userId`與persisted / runtime user一致的資料；legacy或mismatch token不會呼叫refresh remote，並清除token、user與runtime Session。Regression涵蓋Sequential Login A → B → restart restore B、existing multi-row + token upgrade後restore cleanup及schema constraint。五個workspace package analyze與400項tests全數通過。下一步為18-7C Catalog foreign-key enforcement。
 
-### 18-7C implementation progress
+### 18-7C reviewed outcome
 
-18-7C已完成實作，尚待review。App-owned database open configuration新增`AppDatabaseSchema.onConfigure`，production DI在每次開啟SQLite connection時啟用`PRAGMA foreign_keys = ON`。Schema升至version 6，v5以前upgrade會清除沒有對應parent page的既有Catalog item rows。
+18-7C已完成並通過review，`M18-P02`正式Resolved。App-owned database open configuration新增`AppDatabaseSchema.onConfigure`，production DI在每次開啟SQLite connection時啟用`PRAGMA foreign_keys = ON`。Schema升至version 6，v5以前upgrade會清除沒有對應parent page的既有Catalog item rows。
 
-Regression涵蓋fresh connection pragma、parent delete cascade、orphan insert rejection、v5 existing orphan cleanup、`foreign_key_check`與Mock / Real DI graph實際connection。Workspace五個package analyze與402項tests全數通過。`M18-P02`仍待18-7C review後才可改為Resolved。
+Regression涵蓋fresh connection pragma、parent delete cascade與orphan insert rejection；v5 upgrade同時驗證合法parent-child保留、existing orphan cleanup、upgrade後cascade與新orphan rejection，以及`foreign_key_check`。DI graph驗證Composition Root提供的Database connection已啟用foreign keys，不將Mock / Real兩次檢查描述為兩個獨立connection lifecycle。Workspace五個package analyze與402項tests全數通過。下一步為18-7D App / Feature boundary remediation。
 
 ---
 

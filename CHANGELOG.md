@@ -20,6 +20,7 @@
 
 ### Added
 
+- 完成Milestone 18-7C review修訂並關閉`M18-P02`：v5 upgrade regression同時驗證合法parent-child保留、existing orphan清除、upgrade後cascade與新orphan rejection，並維持`foreign_key_check`為空；DI evidence收斂為Composition Root提供的Database已啟用foreign keys。Workspace analyze與402 tests全數通過，下一步為18-7D App / Feature boundary remediation。
 - 完成Milestone 18-7C Catalog foreign-key enforcement實作：App-owned SQLite connection新增`onConfigure`並啟用`PRAGMA foreign_keys = ON`，schema升至version 6；upgrade會清除existing Catalog orphan item rows。
 - 新增fresh / upgrade production-style connection regression，驗證pragma=1、parent delete cascade、orphan insert rejection、existing orphan cleanup與`foreign_key_check`；Mock / Real DI graph亦驗證實際Database connection。Workspace五個package analyze與402 tests全數通過，18-7C尚待review。
 - 完成Milestone 18-7B Auth single-active-user persistence實作：SQLite schema升至version 5，`auth_user`改為固定`slot = 1`的single-record contract；v4單列upgrade保留資料，multi-row因無法證明identity而安全清除。

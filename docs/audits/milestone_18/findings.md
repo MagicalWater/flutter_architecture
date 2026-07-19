@@ -12,7 +12,7 @@
 
 **Severity：** P1
 
-**Status：** Confirmed
+**Status：** Resolved
 
 **Baseline blocking：** Yes，除非在Audit Review Gate明確修正、降級既有architecture claim或記錄Accepted risk。
 
@@ -259,13 +259,13 @@ Verification涵蓋schema非法slot / second row rejection、Sequential Login A �
 
 **Severity：** P2
 
-**Status：** Confirmed
+**Status：** Resolved
 
-**Baseline blocking：** No，但發布新baseline前必須有明確disposition。
+**Baseline blocking：** No，已於18-7C完成remediation與review verification。
 
-**Disposition：** Approved remediation；18-7C implementation complete，pending review
+**Disposition：** Resolved in 18-7C
 
-**Target phase：** 18-7C
+**Target phase：** Completed
 
 **Verification required：** Production-style openDatabase pragma test、fresh install與upgrade connection、parent delete cascade、orphan child insert rejection、既有orphan cleanup / rejection與Catalog regression。
 
@@ -297,7 +297,7 @@ Schema宣告的referential integrity應在production database connection實際�
 
 18-7C已將App-owned production database connection接上`AppDatabaseSchema.onConfigure`，每次開啟連線都執行`PRAGMA foreign_keys = ON`。Schema升至version 6；upgrade會在constraint enforcement下清除既有`catalog_cache_page_item` orphan rows，不只啟用pragma。
 
-Regression涵蓋fresh production-style connection的pragma、parent delete cascade與orphan child insert rejection；v5 existing orphan upgrade後確認item被清除且`PRAGMA foreign_key_check`為空。DI Composition Root亦直接驗證Mock / Real graph建立的Database皆啟用foreign keys。Workspace五個package analyze與402項tests全數通過，仍待18-7C review後才能標記Resolved。
+Regression涵蓋fresh production-style connection的pragma、parent delete cascade與orphan child insert rejection；v5 upgrade同時驗證合法parent-child保留、existing orphan清除、upgrade connection的cascade與新orphan rejection，以及`PRAGMA foreign_key_check`為空。DI Composition Root驗證其提供的Database connection已啟用foreign keys；該證據不宣稱Mock / Real tests必然代表兩次獨立connection lifecycle。Workspace五個package analyze與402項tests全數通過。
 
 ---
 

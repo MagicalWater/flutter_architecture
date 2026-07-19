@@ -1,3 +1,5 @@
+- 完成Milestone 18-7E Review與18-8 final validation：在Android 35 Google APIs x86_64 emulator成功安裝並啟動release APK，驗證bootstrap、Mock Login、Profile、Catalog顯示與搜尋、Protected Route、Theme / Locale持久化、force-stop後Auth restore與Logout。
+- Android app data已實際建立`FlutterSharedPreferences.xml`與`flutter_architecture.db`；SharedPreferences保存Ocean Dark與`zh_TW`。`M18-C01`正式Resolved，Android提升為Supported，其餘五平台維持Dependency-ready，README capability matrix與Quick Start同步更新。
 - 完成Milestone 18-7E Android scaffold與artifact foundation實作：新增tracked Flutter `.metadata`與唯一Android runner，固定`com.example.flutterarchitecture` application ID / namespace、Flutter-managed SDK levels、Java 17、AndroidX、Internet permission與V2 embedding。
 - Windows host已成功建立debug APK與約55.9 MB release APK；新增Android scaffold contract regression，workspace analyze與410 tests全數通過。因Pub Cache與workspace位於不同Windows磁碟，Android baseline關閉Kotlin incremental compilation以避免cross-root cache失敗。Android仍待18-7E review與18-8實機runtime smoke，不提前標記Supported。
 - 完成Milestone 18-7D review修訂並關閉`M18-A01/A02`：Auth coordinator延後至Router首個frame後啟動，補上initial authenticated reconciliation與dispose guard；Auth destination改以root `replaceAll`維持單一Shell並移除Protected等上層route。

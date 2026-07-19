@@ -226,6 +226,12 @@ Authentication transition由App composition layer映射，並以root `replaceAll
 
 Windows host已成功建立debug APK與release APK；release APK約55.9 MB。Kotlin incremental compilation因Pub Cache位於`C:`、workspace位於`D:`會觸發cross-root cache問題，因此Android baseline明確設定`kotlin.incremental=false`以維持Windows clone build可重現。新增Android scaffold contract regression，workspace analyze與410項tests全數通過。Android仍為Supported target候選，實機／模擬器application smoke與README final positioning留到18-8。
 
+### 18-8 final validation outcome
+
+Android 35 Google APIs x86_64 emulator已完成application runtime smoke。Release APK可安裝並啟動，MainActivity保持resumed且logcat無App fatal error；Mock Login成功導向Profile，Catalog可顯示並以`Dart`搜尋過濾，Authenticated狀態可開啟Protected Route。Theme切換為Ocean Dark、Locale切換為`zh_TW`後，force-stop / restart仍恢復繁體中文Profile與登入Session；SharedPreferences實際保存`themeId=ocean`、`mode=dark`與`locale=zh_TW`，SQLite實際建立`flutter_architecture.db`。Logout後返回Login。
+
+因此Android正式標記Supported，`M18-C01`Resolved。iOS、Web、Windows、macOS與Linux維持Dependency-ready，沒有新增runner或artifact claim。README已同步capability matrix、Android Quick Start、placeholder application ID與debug signing責任。
+
 ---
 
 ## 8. Baseline release decision

@@ -307,13 +307,13 @@ Regression涵蓋fresh production-style connection的pragma、parent delete casca
 
 **Severity：** P1
 
-**Status：** Confirmed
+**Status：** Resolved
 
-**Baseline blocking：** Yes，除非在Audit Review Gate建立並驗證至少正式承諾的平台scaffold，或明確將Template Baseline降級為不含可執行platform project的Dart / architecture starter。
+**Baseline blocking：** No，Android scaffold、release artifact與runtime smoke已完成驗證。
 
-**Disposition：** Approved remediation；18-7E scaffold與artifact foundation complete，pending review與18-8 runtime validation
+**Disposition：** Resolved in 18-7E / 18-8
 
-**Target phase：** 18-7E implementation；18-8 final runtime validation
+**Target phase：** Completed
 
 **Verification required：** 逐平台disposition、tracked scaffold inventory、對應host release artifact build、必要native configuration、plugin / database / SharedPreferences initialization、bootstrap與核心runtime smoke。
 
@@ -359,7 +359,7 @@ Audit Review Gate應逐平台拍板Template Baseline disposition，例如Support
 
 Audit Review Gate已核准Android為唯一Supported target候選。18-7E已建立tracked Android scaffold、Flutter metadata、固定application ID、Java 17、Flutter-managed SDK levels、Internet permission、V2 embedding與本地release artifact設定；Windows host已成功建立debug APK與release APK。新增static scaffold contract regression，workspace analyze與410項tests全數通過。
 
-Android目前仍不是正式Supported：實機／模擬器上的bootstrap、plugin initialization、Mock login、Catalog、Theme / Locale、restart restore與logout smoke保留至18-8。iOS、Web、Windows、macOS與Linux仍維持Dependency-ready，沒有新增runner。
+18-8已在Android 35 Google APIs x86_64 emulator完成runtime smoke：release APK啟動、bootstrap、Mock Login、Profile、Catalog顯示與搜尋、Protected Route、Theme / Locale持久化、force-stop後Auth restore、Logout→Login均通過；Android app data中實際建立`FlutterSharedPreferences.xml`與`flutter_architecture.db`。Android正式提升為Supported；iOS、Web、Windows、macOS與Linux維持Dependency-ready。
 
 ---
 

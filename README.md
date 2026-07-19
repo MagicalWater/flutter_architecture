@@ -19,6 +19,20 @@
 - Milestone 15 Design System Foundation：Completed
 - Milestone 16 Localization Foundation：Completed
 - Milestone 17 Exception & Failure Architecture：Completed
+- Milestone 18 Template Baseline Holistic Audit：Completed
+
+平台能力：
+
+| Platform | Capability |
+|---|---|
+| Android | Supported |
+| iOS | Dependency-ready |
+| Web | Dependency-ready |
+| Windows | Dependency-ready |
+| macOS | Dependency-ready |
+| Linux | Dependency-ready |
+
+目前只有 Android 包含 tracked runner、release artifact 與 runtime smoke 證據。其他平台的 Dart dependency 與 conditional implementation 已準備，但 repository 不包含可直接執行的 runner。
 
 版本變更請參考 `CHANGELOG.md`。
 
@@ -103,12 +117,14 @@ Authenticated request 由 Main Dio 加入 access token；401 refresh 使用獨�
 Development Mock：
 
 ```bash
+cd apps/flutter_architecture
 flutter run
 ```
 
 Development Real API：
 
 ```bash
+cd apps/flutter_architecture
 flutter run \
   --dart-define=API_MODE=real \
   --dart-define=API_BASE_URL=https://api.example.com
@@ -117,6 +133,7 @@ flutter run \
 Staging：
 
 ```bash
+cd apps/flutter_architecture
 flutter run \
   -t lib/main_staging.dart \
   --dart-define=API_MODE=real \
@@ -126,6 +143,7 @@ flutter run \
 Production：
 
 ```bash
+cd apps/flutter_architecture
 flutter run \
   -t lib/main_production.dart \
   --dart-define=API_MODE=real \
@@ -140,6 +158,8 @@ flutter run \
 - Real API 必須明確提供 `API_BASE_URL`。
 - URL 只允許 HTTP / HTTPS；production 強制 HTTPS，並拒絕 mock.local、localhost、loopback 與 `.invalid` URL。
 - Dart entrypoint 是 App Environment 的唯一來源，不使用 `APP_ENV` dart-define。
+- 預設 Android application ID 是模板 placeholder：`com.example.flutterarchitecture`。建立正式產品時必須替換 application ID、namespace、Kotlin package、App label 與 signing configuration。
+- Repository 的 release build 使用 debug signing，只用於本地 artifact verification，不可直接當作正式上架簽名。
 
 ### Storage
 
@@ -423,8 +443,10 @@ dart run melos run build_runner
 dart run melos run analyze
 dart run melos exec -- flutter test
 cd apps/flutter_architecture
-flutter build bundle
+flutter build apk --release
 ```
+
+目前 Android runtime smoke 已驗證：bootstrap、Mock Login、Login → Profile、Catalog 顯示與搜尋、Protected Route、Theme / Locale 持久化、restart Auth restore、Logout，以及 Android 上實際建立 SharedPreferences 與 SQLite database。
 
 ---
 
@@ -437,7 +459,7 @@ cd apps/flutter_architecture
 dart run sqflite_common_ffi_web:setup
 ```
 
-若 app 尚未建立 web 平台資料夾：
+Web 目前是 Dependency-ready，repository 不包含 tracked Web runner。要在自己的分支提升為可執行 Web application，可先建立 runner：
 
 ```bash
 cd apps/flutter_architecture

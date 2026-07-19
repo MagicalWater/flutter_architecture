@@ -194,3 +194,95 @@ Audit Review Gate應拍板最小contract：新Login使舊Login失效，Logout立
 ### Disposition rationale
 
 目前先保留Pending。依Milestone 18 contract，在18-6C前不得修改production code。
+
+---
+
+## M18-P01 — auth_user多列造成token-user identity mismatch
+
+**Area：** Persistence / Auth Identity Consistency
+
+**Severity：** P1
+
+**Status：** Confirmed
+
+**Baseline blocking：** Yes，除非在Audit Review Gate修正auth user single-record / identity contract或明確降級Auth persistence capability。
+
+**Disposition：** Pending Audit Review Gate
+
+**Target phase：** 18-7 candidate
+
+**Verification required：** 不同user sequential login、double login、restore、logout與migration regression。
+
+### Evidence
+
+`auth_user`以`id`為primary key，因此可同時保存多個不同user。`saveUser()`使用replace，只替換同ID row；`readUser()`則對整張table執行`limit: 1`，沒有order或token user identity條件。
+
+Token pair保存在單一SharedPreferences key，payload沒有user ID。不同帳號登入後，SQLite可能保留多個user row；後續restore可把目前token pair與任意舊user配對。
+
+### Current contract
+
+Persisted token、persisted user與runtime Session必須代表同一auth identity。模板目前只支援單一active Session，不宣告multi-account persistence。
+
+### Observed behavior
+
+Sequential account switch即可觸發：先登入User A，再登入User B，token key被B覆蓋，但`auth_user`同時保留A與B；restart後`readUser(limit: 1)`結果沒有identity保證。
+
+### Risk
+
+- Session userId可能與access / refresh token實際subject不同。
+- Profile、Guard與diagnostic context可能使用錯誤user identity。
+- 問題可跨restart持續，且不依賴並行event。
+
+### Recommendation
+
+Audit Review Gate應拍板最小single-active-user persistence contract，例如在保存新user前transactionally清空table，或使用固定single-row identity；若token payload可安全保存stable user ID，也可在restore時做explicit match。
+
+不建議為此建立multi-account framework。
+
+### Disposition rationale
+
+目前先保留Pending。這是可造成auth identity錯配的baseline correctness問題，Phase A不修改production code。
+
+---
+
+## M18-P02 — Catalog foreign key未在production connection啟用
+
+**Area：** Persistence / SQLite Constraint Enforcement
+
+**Severity：** P2
+
+**Status：** Confirmed
+
+**Baseline blocking：** No，但發布新baseline前必須有明確disposition。
+
+**Disposition：** Pending Audit Review Gate
+
+**Target phase：** 18-7 candidate
+
+**Verification required：** Production-style openDatabase pragma test、parent delete cascade / orphan prevention與Catalog regression。
+
+### Evidence
+
+`catalog_cache_page_item`宣告composite foreign key與`ON DELETE CASCADE`，但App的`openDatabase()`沒有`onConfigure`執行`PRAGMA foreign_keys = ON`。
+
+### Current contract
+
+Schema宣告的referential integrity應在production database connection實際生效，或文件與DDL不應暗示依賴未啟用的constraint。
+
+### Observed behavior
+
+現有Catalog DataSource會手動先刪items再刪page，因此已知流程通常不依賴cascade；但新的直接parent delete、migration或maintenance path可能留下orphan item。
+
+### Risk
+
+- Schema與runtime行為不一致。
+- 未來維護者可能依賴`ON DELETE CASCADE`，卻得到orphan rows。
+- Tests沒有驗證production connection的foreign key pragma。
+
+### Recommendation
+
+在App-owneddatabase connection configuration明確啟用foreign keys，並加入production-style pragma與cascade regression；或若刻意不使用foreign key enforcement，移除DDL中的誤導性constraint並維持manual cleanup contract。
+
+### Disposition rationale
+
+目前先保留Pending。現有production paths有manual cleanup，故severity為P2而非P1。

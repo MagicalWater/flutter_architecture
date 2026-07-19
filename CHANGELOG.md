@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-3 Persistence & Database Audit：盤點SharedPreferences keys、SQLite schema version 4、v1 / v2 / v3 migrations、Auth split-store persistence、Catalog transaction / chain revision / corruption recovery與platform database factory。
+- 新增正式finding`M18-P01`（P1）：`auth_user`可保存多個不同user，但restore使用無排序`limit: 1`，不同帳號登入後可能把目前token與舊user配對；新增`M18-P02`（P2）：Catalog DDL宣告foreign key cascade，但production connection未啟用`PRAGMA foreign_keys`。Phase A只落檔，等待18-3 review與Audit Review Gate。
 - 完成Milestone 18-2正式review revision：`M18-R01`維持P1並收斂為Auth lifecycle command缺少跨operation latest-intent ordering；confirmed scenarios為Double Login反向完成及Login + Logout反向完成，Restore + Login改列UI ordering coverage gap。
 - 補入Theme / Locale runtime preference flow，確認runtime-first、serialized write、latest snapshot、expected / unexpected reporting與reporter failure均有production contract及test evidence；18-2正式Reviewed / Closed，下一步為18-3 Persistence & Database Audit。
 - 完成Milestone 18-2 Runtime Critical Flow Audit盤點：建立Bootstrap、Auth restore / login / logout、Concurrent 401 / Refresh / Replay、Profile / Guard、Catalog Search / SWR / Refresh / Append / Cache與Failure ownership矩陣，逐項記錄production path、existing test evidence與coverage gap。

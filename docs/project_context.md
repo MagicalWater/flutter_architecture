@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前正式工作目標：Milestone 18 Template Baseline Holistic Audit。此階段以目前 `main` 最終程式碼為準，進行 Architecture、runtime critical flows、SQLite persistence、platform capability、test strategy、文件與版本的橫向基線審查。Audit 期間只盤點、驗證與提出 findings，未經 review 與拍板前不修改 production code。正式 audit contract 位於 `docs/audits/milestone_18_holistic_audit.md`。
+目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。Milestone完整範圍包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline review；目前只進行18-0 Planning Review，尚未開始production code修改。正式contract、capability taxonomy、finding規則與18-0至18-8子階段位於`docs/audits/milestone_18_holistic_audit.md`。
 
 ### Milestone 17：Exception & Failure Architecture
 

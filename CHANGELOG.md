@@ -20,6 +20,9 @@
 
 ### Added
 
+- 完成Milestone 18規劃第一輪review revision：將完整Milestone收斂為Phase A Audit、Audit Review Gate與Phase B approved work，新增18-0 Planning Review及18-8 Final Validation / Baseline Release；Gate通過前禁止production code修改與版本升級。
+- 補強Milestone 18 capability taxonomy與finding disposition：新增Verification pending，平台evidence分為repository、dependency、scaffold、static、host build、runtime與external-host verification；P0必須Resolved，P1需Resolved、capability降級或經Gate記錄Accepted risk。
+- 定義`docs/audits/milestone_18/`固定輸出結構，18-1至18-4同步收集test evidence，18-5只彙總test strategy；18-6拆為文件一致性、provisional baseline assessment與正式Audit Review Gate。
 - 規劃 Milestone 18 Template Baseline Holistic Audit：以目前 `main` 最終程式碼為準，橫向審查 Architecture與dependency boundary、runtime critical flows、`sqflite` / SQLite persistence、六平台capability、test strategy、文件與Template Baseline版本；audit期間只盤點、驗證與提出findings，未經review與拍板前不修改production code。
 - 新增 `docs/audits/milestone_18_holistic_audit.md`，定義Supported / Scaffold only / Dependency-ready / Not supported capability taxonomy、P0至P3 severity、finding格式與18-1至18-7正式子階段；不預設改用Drift，也不將`flutter build bundle`視為Android `appbundle`驗證。
 - 完成 Milestone 17-7 Sensitive Data Audit、Regression與完整驗證：關閉Refresh request、Login / Refresh response、AuthResult與AuthEvent.loginRequested的Freezed欄位型`toString()`，避免account、password、access token與refresh token進入一般log；新增secret sentinel tests。Workspace五個package analyze與382項完整tests、App / api_client / auth generation及development / staging / production bundle builds全部通過，Milestone 17正式完成。

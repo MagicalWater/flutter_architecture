@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。Audit Review Gate已通過；18-7A Auth lifecycle latest-intent ordering已完成實作、尚待review。Auth repository lifecycle command現在使用generation lease，較新restore / login / logout會使舊operation失效；superseded只作control flow，不進Failure或覆蓋較新Bloc state。Double Login與Login + Logout反向完成regression已加入，workspace analyze與384 tests通過。Gate其餘核准項目仍待18-7B至18-7E；Android是唯一Supported target候選，其餘五平台維持Dependency-ready。VERSION維持1.1.0，`1.2.0`僅為provisional candidate。正式Gate決議位於`docs/audits/milestone_18/remediation_decision.md`。
+目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。Audit Review Gate已通過；18-7A Auth lifecycle latest-intent ordering已完成並通過review，`M18-R01`正式Resolved。Auth lifecycle command使用generation lease，較新restore / login / logout與外部權威Session clear會使舊operation失效；superseded只作control flow，不進Failure或覆蓋較新Bloc state。Logout cleanup一旦開始會完整執行，但只有current Logout可清runtime Session。Double Login、Login + Logout、Restore + Login、external Session clear及Logout cleanup交錯regression已加入，workspace analyze與389 tests通過。下一步為18-7B Auth single-active-user persistence。Android是唯一Supported target候選，其餘五平台維持Dependency-ready。VERSION維持1.1.0，`1.2.0`僅為provisional candidate。正式Gate決議位於`docs/audits/milestone_18/remediation_decision.md`。
 
 ### Milestone 17：Exception & Failure Architecture
 

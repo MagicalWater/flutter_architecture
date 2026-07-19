@@ -198,9 +198,9 @@ Android為唯一Supported target候選；在18-8驗證完成前仍不得視為�
 
 ### 18-7A implementation progress
 
-18-7A已完成實作，尚待review。`AuthStateMutationCoordinator`現在提供lifecycle generation lease；restore、login與logout開始時取得operation，較新的command會使舊operation失效。Repository在remote completion、persistence mutation與runtime Session commit前驗證lease；被取代時丟出`AuthLifecycleOperationSuperseded` control flow，AuthBloc靜默忽略舊結果，不轉成Failure或覆蓋較新UI。
+18-7A已完成並通過review，`M18-R01`正式Resolved。`AuthStateMutationCoordinator`提供lifecycle generation lease；restore、login與logout開始時取得operation，較新的command會使舊operation失效。外部權威Session clear也會invalidate舊operation。Repository在remote completion、persistence mutation與runtime Session commit前驗證lease；被取代時丟出`AuthLifecycleOperationSuperseded` control flow，AuthBloc靜默忽略舊結果，不轉成Failure或覆蓋較新UI。
 
-新增Double Login反向完成與Login + Logout反向完成regression，驗證舊Login不會覆蓋最新user、tokens或Session。Workspace五個package analyze與384項tests全數通過。`M18-R01`仍待18-7A review後才可改為Resolved。
+Logout在進入exclusive cleanup前可被取代；cleanup一旦開始會完整執行user與token cleanup，但只有current Logout可清runtime Session。Regression涵蓋Double Login、Login + Logout、Restore + Login UI ordering、external Session clear，以及Logout cleanup與較新Login交錯。Workspace五個package analyze與389項tests全數通過。下一步為18-7B Auth single-active-user persistence。
 
 ---
 

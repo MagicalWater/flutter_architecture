@@ -211,6 +211,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.RestoreSessionUseCase>(),
         gh<_i662.LogoutUseCase>(),
         gh<_i662.SessionManager>(),
+        gh<_i662.AuthStateMutationCoordinator>(),
       ),
     );
     return this;

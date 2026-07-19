@@ -93,6 +93,54 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
+  test('Logout cleanup 一旦開始會完成，但不會清除較新 Login 的 Session', () async {
+    final sessionManager = SessionManager()
+      ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
+    final local = _BlockingLogoutAuthLocalStore()
+      ..tokens = const StoredAuthTokens(
+        accessToken: 'old-token',
+        refreshToken: 'old-refresh',
+      )
+      ..user = const AuthUserModel(id: 'old-user', name: 'Old User');
+    final api = _ControlledAuthApi();
+    final mutationCoordinator = AuthStateMutationCoordinator();
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(api),
+      local,
+      sessionManager,
+      mutationCoordinator,
+    );
+
+    final logout = repository.logout();
+    await local.clearUserStarted;
+
+    final login = repository.login(account: 'account-b', password: 'password');
+    api.completeLogin(
+      'account-b',
+      const LoginResponseDto(
+        accessToken: 'access-b',
+        refreshToken: 'refresh-b',
+        userId: 'user-b',
+        userName: 'User B',
+      ),
+    );
+
+    local.releaseClearUser();
+
+    await expectLater(
+      logout,
+      throwsA(isA<AuthLifecycleOperationSuperseded>()),
+    );
+    final loginResult = await login;
+
+    expect(loginResult, isA<Success<AuthResult>>());
+    expect(local.clearUserCalls, 1);
+    expect(local.clearTokensCalls, 1);
+    expect(local.tokens?.accessToken, 'access-b');
+    expect(local.user?.id, 'user-b');
+    expect(sessionManager.currentSession?.userId, 'user-b');
+  });
+
   test('Login 保存 User 失敗時會補償清除本地狀態與 runtime Session', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
@@ -416,5 +464,21 @@ class _FakeAuthLocalStore implements AuthLocalStore {
       );
     }
     user = null;
+  }
+}
+
+class _BlockingLogoutAuthLocalStore extends _FakeAuthLocalStore {
+  final Completer<void> _clearUserStarted = Completer<void>();
+  final Completer<void> _clearUserRelease = Completer<void>();
+
+  Future<void> get clearUserStarted => _clearUserStarted.future;
+
+  void releaseClearUser() => _clearUserRelease.complete();
+
+  @override
+  Future<void> clearUser() async {
+    if (!_clearUserStarted.isCompleted) _clearUserStarted.complete();
+    await _clearUserRelease.future;
+    await super.clearUser();
   }
 }

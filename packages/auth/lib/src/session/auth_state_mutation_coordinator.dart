@@ -10,6 +10,14 @@ class AuthStateMutationCoordinator {
     return AuthLifecycleOperation._(this, _lifecycleGeneration);
   }
 
+  /// 使目前仍在執行的 restore / login / logout operation 失效。
+  ///
+  /// 用於權威 Session clear 等不需要啟動新 Repository mutation，
+  /// 但必須阻止舊 lifecycle operation 重新 commit Session 的情境。
+  void invalidateLifecycleOperations() {
+    _lifecycleGeneration += 1;
+  }
+
   bool _isCurrent(int generation) => generation == _lifecycleGeneration;
 
   Future<T> runExclusive<T>(Future<T> Function() action) {

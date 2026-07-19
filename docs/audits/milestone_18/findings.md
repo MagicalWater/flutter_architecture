@@ -144,13 +144,13 @@ Auth與Profile Presentation知道Shell有哪些tab及其index mapping。Feature�
 
 **Severity：** P1
 
-**Status：** Confirmed
+**Status：** Resolved
 
-**Baseline blocking：** Yes，除非在Audit Review Gate修正、明確限制可接受的event concurrency contract，或記錄Accepted risk。
+**Baseline blocking：** No，已於18-7A完成remediation與review verification。
 
-**Disposition：** Pending Audit Review Gate
+**Disposition：** Resolved in 18-7A
 
-**Target phase：** 18-7 candidate
+**Target phase：** Completed
 
 **Verification required：** Double Login、Login + Logout反向完成測試；Restore + Login UI ordering測試；Auth、Session與persistence regression。
 
@@ -193,7 +193,11 @@ Audit Review Gate應拍板最小contract：新Login使舊Login失效，Logout立
 
 ### Disposition rationale
 
-目前先保留Pending。依Milestone 18 contract，在18-6C前不得修改production code。
+18-7A採用`AuthStateMutationCoordinator` lifecycle generation lease。較新的restore / login / logout會使舊operation失效；外部權威Session clear亦會invalidate舊operation。Repository在remote completion、persistence與runtime Session commit boundary驗證lease，superseded維持control flow，不轉Failure或覆蓋較新Bloc state。
+
+Logout在進入exclusive cleanup前可被取代；一旦cleanup開始，仍會完整執行user與token cleanup，但只有current Logout可以清除runtime Session，完成後若已被較新operation取代則回傳superseded control flow。
+
+Verification涵蓋Double Login反向完成、Login + Logout反向完成、Restore + Login transient UI ordering、external Session clear invalidation，以及Logout cleanup與較新Login交錯。Workspace五個package analyze與389項tests全數通過。
 
 ---
 

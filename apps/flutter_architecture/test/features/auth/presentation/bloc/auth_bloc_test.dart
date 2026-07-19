@@ -10,11 +10,13 @@ void main() {
     test('Login 成功後進入 authenticated state', () async {
       final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(sessionManager);
+      final mutationCoordinator = AuthStateMutationCoordinator();
       final bloc = AuthBloc(
         LoginUseCase(repository),
         RestoreSessionUseCase(repository),
         LogoutUseCase(repository),
         sessionManager,
+        mutationCoordinator,
       );
       addTearDown(bloc.close);
       addTearDown(sessionManager.dispose);
@@ -52,11 +54,13 @@ void main() {
           Failure(message: 'login failed'),
         ),
       );
+      final mutationCoordinator = AuthStateMutationCoordinator();
       final bloc = AuthBloc(
         LoginUseCase(repository),
         RestoreSessionUseCase(repository),
         LogoutUseCase(repository),
         sessionManager,
+        mutationCoordinator,
       );
       addTearDown(bloc.close);
       addTearDown(sessionManager.dispose);
@@ -93,6 +97,7 @@ void main() {
         loginError: unknownError,
       );
       late AuthBloc bloc;
+      final mutationCoordinator = AuthStateMutationCoordinator();
       final errors = <Object>[];
       final errorCaptured = Completer<void>();
 
@@ -102,6 +107,7 @@ void main() {
           RestoreSessionUseCase(repository),
           LogoutUseCase(repository),
           sessionManager,
+          mutationCoordinator,
         );
         bloc.add(
           const AuthEvent.loginRequested(
@@ -127,11 +133,13 @@ void main() {
     test('Logout 成功後清除 authenticated user', () async {
       final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(sessionManager);
+      final mutationCoordinator = AuthStateMutationCoordinator();
       final bloc = AuthBloc(
         LoginUseCase(repository),
         RestoreSessionUseCase(repository),
         LogoutUseCase(repository),
         sessionManager,
+        mutationCoordinator,
       );
       addTearDown(bloc.close);
       addTearDown(sessionManager.dispose);
@@ -169,11 +177,13 @@ void main() {
           Failure(message: 'logout failed'),
         ),
       );
+      final mutationCoordinator = AuthStateMutationCoordinator();
       final bloc = AuthBloc(
         LoginUseCase(repository),
         RestoreSessionUseCase(repository),
         LogoutUseCase(repository),
         sessionManager,
+        mutationCoordinator,
       );
       addTearDown(bloc.close);
       addTearDown(sessionManager.dispose);
@@ -212,11 +222,13 @@ void main() {
       final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(sessionManager);
       await repository.login(account: 'demo', password: 'password');
+      final mutationCoordinator = AuthStateMutationCoordinator();
       final bloc = AuthBloc(
         LoginUseCase(repository),
         RestoreSessionUseCase(repository),
         LogoutUseCase(repository),
         sessionManager,
+        mutationCoordinator,
       );
       addTearDown(bloc.close);
       addTearDown(sessionManager.dispose);
@@ -239,14 +251,178 @@ void main() {
       );
     });
 
-    test('SessionManager 被其他 feature 清空時，AuthBloc 會同步清除 user', () async {
+    test('Double Login 反向完成時不會讓舊結果覆蓋最新 UI state', () async {
       final sessionManager = SessionManager();
-      final repository = _FakeAuthRepository(sessionManager);
+      final mutationCoordinator = AuthStateMutationCoordinator();
+      final repository = _ControlledAuthRepository(
+        sessionManager,
+        mutationCoordinator,
+      );
       final bloc = AuthBloc(
         LoginUseCase(repository),
         RestoreSessionUseCase(repository),
         LogoutUseCase(repository),
         sessionManager,
+        mutationCoordinator,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      final states = <AuthState>[];
+      final subscription = bloc.stream.listen(states.add);
+      addTearDown(subscription.cancel);
+
+      bloc.add(
+        const AuthEvent.loginRequested(account: 'user-a', password: 'password'),
+      );
+      await repository.loginStarted('user-a');
+
+      bloc.add(
+        const AuthEvent.loginRequested(account: 'user-b', password: 'password'),
+      );
+      await repository.loginStarted('user-b');
+
+      repository.completeLogin('user-b');
+      await bloc.stream.firstWhere((state) => state.user?.id == 'user-b');
+
+      repository.completeLogin('user-a');
+      await repository.loginFinished('user-a');
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.isLoading, isFalse);
+      expect(bloc.state.user?.id, 'user-b');
+      expect(
+        states.where((state) => state.user?.id == 'user-a'),
+        isEmpty,
+      );
+    });
+
+    test('Logout 完成後舊 Login 不會重新建立 authenticated UI state', () async {
+      final sessionManager = SessionManager();
+      final mutationCoordinator = AuthStateMutationCoordinator();
+      final repository = _ControlledAuthRepository(
+        sessionManager,
+        mutationCoordinator,
+      );
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+        mutationCoordinator,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      final states = <AuthState>[];
+      final subscription = bloc.stream.listen(states.add);
+      addTearDown(subscription.cancel);
+
+      bloc.add(
+        const AuthEvent.loginRequested(account: 'user-a', password: 'password'),
+      );
+      await repository.loginStarted('user-a');
+
+      bloc.add(const AuthEvent.logoutRequested());
+      await repository.logoutFinished;
+      await bloc.stream.firstWhere(
+        (state) => !state.isLoading && !state.isAuthenticated,
+      );
+
+      repository.completeLogin('user-a');
+      await repository.loginFinished('user-a');
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.isLoading, isFalse);
+      expect(bloc.state.isAuthenticated, isFalse);
+      expect(states.where((state) => state.user?.id == 'user-a'), isEmpty);
+    });
+
+    test('較新 Login 接管 Restore loading 與最終 UI state', () async {
+      final sessionManager = SessionManager();
+      final mutationCoordinator = AuthStateMutationCoordinator();
+      final repository = _ControlledAuthRepository(
+        sessionManager,
+        mutationCoordinator,
+      );
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+        mutationCoordinator,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      bloc.add(const AuthEvent.started());
+      await repository.restoreStarted;
+
+      bloc.add(
+        const AuthEvent.loginRequested(account: 'user-b', password: 'password'),
+      );
+      await repository.loginStarted('user-b');
+
+      repository.completeRestore();
+      await repository.restoreFinished;
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.isLoading, isTrue);
+      expect(bloc.state.user, isNull);
+
+      repository.completeLogin('user-b');
+      await bloc.stream.firstWhere((state) => state.user?.id == 'user-b');
+
+      expect(bloc.state.isLoading, isFalse);
+      expect(bloc.state.user?.id, 'user-b');
+    });
+
+    test('外部 Session clear 會使尚未完成的舊 Login 失效', () async {
+      final sessionManager = SessionManager();
+      final mutationCoordinator = AuthStateMutationCoordinator();
+      final repository = _ControlledAuthRepository(
+        sessionManager,
+        mutationCoordinator,
+      );
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+        mutationCoordinator,
+      );
+      addTearDown(bloc.close);
+      addTearDown(sessionManager.dispose);
+
+      bloc.add(
+        const AuthEvent.loginRequested(account: 'user-a', password: 'password'),
+      );
+      await repository.loginStarted('user-a');
+      expect(bloc.state.isLoading, isTrue);
+
+      sessionManager.clear();
+      await bloc.stream.firstWhere(
+        (state) => !state.isLoading && !state.isAuthenticated,
+      );
+
+      repository.completeLogin('user-a');
+      await repository.loginFinished('user-a');
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.isAuthenticated, isFalse);
+      expect(sessionManager.currentSession, isNull);
+    });
+
+    test('SessionManager 被其他 feature 清空時，AuthBloc 會同步清除 user', () async {
+      final sessionManager = SessionManager();
+      final repository = _FakeAuthRepository(sessionManager);
+      final mutationCoordinator = AuthStateMutationCoordinator();
+      final bloc = AuthBloc(
+        LoginUseCase(repository),
+        RestoreSessionUseCase(repository),
+        LogoutUseCase(repository),
+        sessionManager,
+        mutationCoordinator,
       );
       addTearDown(bloc.close);
       addTearDown(sessionManager.dispose);
@@ -285,6 +461,95 @@ void main() {
       );
     });
   });
+}
+
+class _ControlledAuthRepository implements AuthRepository {
+  _ControlledAuthRepository(this._sessionManager, this._mutationCoordinator);
+
+  final SessionManager _sessionManager;
+  final AuthStateMutationCoordinator _mutationCoordinator;
+  final Map<String, Completer<void>> _loginCompletions = {};
+  final Map<String, Completer<void>> _loginStarted = {};
+  final Map<String, Completer<void>> _loginFinished = {};
+  final Completer<void> _restoreCompletion = Completer<void>();
+  final Completer<void> _restoreStarted = Completer<void>();
+  final Completer<void> _restoreFinished = Completer<void>();
+  final Completer<void> _logoutFinished = Completer<void>();
+
+  Future<void> loginStarted(String account) =>
+      (_loginStarted[account] ??= Completer<void>()).future;
+
+  Future<void> loginFinished(String account) =>
+      (_loginFinished[account] ??= Completer<void>()).future;
+
+  void completeLogin(String account) {
+    (_loginCompletions[account] ??= Completer<void>()).complete();
+  }
+
+  Future<void> get restoreStarted => _restoreStarted.future;
+  Future<void> get restoreFinished => _restoreFinished.future;
+  Future<void> get logoutFinished => _logoutFinished.future;
+
+  void completeRestore() => _restoreCompletion.complete();
+
+  @override
+  Future<Result<AuthResult>> login({
+    required String account,
+    required String password,
+  }) async {
+    final operation = _mutationCoordinator.beginLifecycleOperation();
+    final started = _loginStarted[account] ??= Completer<void>();
+    if (!started.isCompleted) started.complete();
+
+    try {
+      await (_loginCompletions[account] ??= Completer<void>()).future;
+      operation.throwIfSuperseded();
+
+      final user = AuthUser(id: account, name: account);
+      _sessionManager.setAuthenticated(
+        accessToken: 'access-$account',
+        userId: account,
+      );
+      return Success(
+        AuthResult(
+          accessToken: 'access-$account',
+          refreshToken: 'refresh-$account',
+          user: user,
+        ),
+      );
+    } finally {
+      final finished = _loginFinished[account] ??= Completer<void>();
+      if (!finished.isCompleted) finished.complete();
+    }
+  }
+
+  @override
+  Future<Result<void>> logout() async {
+    final operation = _mutationCoordinator.beginLifecycleOperation();
+    operation.throwIfSuperseded();
+    _sessionManager.clear();
+    if (!_logoutFinished.isCompleted) _logoutFinished.complete();
+    return const Success(null);
+  }
+
+  @override
+  Future<Result<AuthUser?>> restoreSession() async {
+    final operation = _mutationCoordinator.beginLifecycleOperation();
+    if (!_restoreStarted.isCompleted) _restoreStarted.complete();
+
+    try {
+      await _restoreCompletion.future;
+      operation.throwIfSuperseded();
+      const user = AuthUser(id: 'restored-user', name: 'Restored User');
+      _sessionManager.setAuthenticated(
+        accessToken: 'restored-token',
+        userId: user.id,
+      );
+      return const Success(user);
+    } finally {
+      if (!_restoreFinished.isCompleted) _restoreFinished.complete();
+    }
+  }
 }
 
 class _FakeAuthRepository implements AuthRepository {

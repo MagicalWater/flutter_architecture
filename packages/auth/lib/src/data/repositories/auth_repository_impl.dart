@@ -161,20 +161,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
         try {
           await _localDataSource.clearUser();
-          operation.throwIfSuperseded();
         } catch (error, stackTrace) {
-          if (error is AuthLifecycleOperationSuperseded) {
-            Error.throwWithStackTrace(error, stackTrace);
-          }
           captureError(error, stackTrace);
         }
         try {
           await _localDataSource.clearTokens();
-          operation.throwIfSuperseded();
         } catch (error, stackTrace) {
-          if (error is AuthLifecycleOperationSuperseded) {
-            Error.throwWithStackTrace(error, stackTrace);
-          }
           captureError(error, stackTrace);
         } finally {
           if (operation.isCurrent) {
@@ -188,6 +180,7 @@ class AuthRepositoryImpl implements AuthRepository {
             unexpectedStackTrace!,
           );
         }
+        operation.throwIfSuperseded();
         final capturedExpectedError = expectedError;
         if (capturedExpectedError != null) {
           Error.throwWithStackTrace(

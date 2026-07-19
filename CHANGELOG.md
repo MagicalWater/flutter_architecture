@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-7A正式review revision並關閉`M18-R01`：補齊Double Login、Login + Logout、Restore + Login UI ordering與external Session clear的Bloc-level regression；外部權威Session clear現在會invalidate舊lifecycle operation。
+- Logout cleanup語意正式收斂：進入exclusive cleanup前可被取代，一旦開始會完整執行user與token cleanup，但只有current Logout可清runtime Session；新增與較新Login交錯regression。Workspace五個package analyze與389 tests全數通過，下一步為18-7B Auth single-active-user persistence。
 - 完成Milestone 18-7A Auth lifecycle latest-intent ordering實作：`AuthStateMutationCoordinator`新增generation lease，restore / login / logout開始時取得operation；較新意圖會使舊operation在persistence與Session commit前失效，`AuthLifecycleOperationSuperseded`維持control flow，AuthBloc不將其轉為Failure或覆蓋較新UI。
 - 新增Double Login反向完成與Login + Logout反向完成regression，驗證舊Login不會覆蓋最新tokens、user或runtime Session；workspace五個package analyze與384 tests全數通過。18-7A尚待review。
 - 完成Milestone 18 Audit Review Gate：9項findings均完成disposition，無Accepted risk。核准Auth lifecycle ordering、single-active-user persistence、Catalog foreign-key、跨Feature boundary、Android scaffold與README定位修正；Web terminology與Backlog整理延後至18-8。

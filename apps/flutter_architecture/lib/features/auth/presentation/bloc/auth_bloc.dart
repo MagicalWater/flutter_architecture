@@ -33,6 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this._restoreSessionUseCase,
     this._logoutUseCase,
     this._sessionManager,
+    this._mutationCoordinator,
   ) : super(AuthState.initial()) {
     on<AuthStarted>(_onStarted);
     on<AuthLoginRequested>(_onLoginRequested);
@@ -40,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSessionCleared>(_onSessionCleared);
 
     _sessionSubscription = _sessionManager.sessionStream.listen((session) {
-      if (session == null && state.isAuthenticated) {
+      if (session == null && (state.isAuthenticated || state.isLoading)) {
         add(const AuthEvent.sessionCleared());
       }
     });
@@ -50,6 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RestoreSessionUseCase _restoreSessionUseCase;
   final LogoutUseCase _logoutUseCase;
   final SessionManager _sessionManager;
+  final AuthStateMutationCoordinator _mutationCoordinator;
   late final StreamSubscription<AuthSession?> _sessionSubscription;
 
   Future<void> _onStarted(AuthStarted event, Emitter<AuthState> emit) async {
@@ -121,6 +123,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onSessionCleared(AuthSessionCleared event, Emitter<AuthState> emit) {
+    _mutationCoordinator.invalidateLifecycleOperations();
     emit(AuthState.initial());
   }
 

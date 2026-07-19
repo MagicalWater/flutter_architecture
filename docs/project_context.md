@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0至18-5均已完成並通過review；下一個正式階段為18-6 Documentation & Provisional Baseline Assessment。Workspace共有53個tracked test files，本次Windows host完整執行5個packages共382 tests全數通過。18-5 review明確限制Complete只代表declared component contract，拆分`M18-A01` startup ownership與`M18-A02` navigation transition coverage，並將Bootstrap orchestration及Catalog offline full journey列為無observed defect的application matrix gaps；沒有新增test-only finding。平台測試依Gate正式承諾的平台集合展開，CI/CD維持Milestone 11 Deferred。Milestone目前仍只進行Phase A Audit，尚未修改production code。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
+目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0至18-5均已完成並通過review；18-6 Documentation & Provisional Baseline Assessment已完成盤點，下一步為18-6 review。VERSION、README與CHANGELOG current baseline均為1.1.0，但1.1.0只封存至Milestone 14，Milestone 15至17仍屬Unreleased。新增`M18-D01` README企業模板定位與無可執行platform project落差（P1）、`M18-D02` Web scaffold / runtime evidence terminology不精確（P2）及`M18-D03` Backlog混列completed與future scope（P3）。Provisional decision為目前不發布；若Gate與remediation完成且沒有breaking scope，傾向1.2.0 MINOR。Milestone仍只進行Phase A Audit，未修改production code或VERSION。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
 
 ### Milestone 17：Exception & Failure Architecture
 

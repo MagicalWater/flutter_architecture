@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：18-5 Test Capability Matrix Reviewed / Closed；下一步為18-6 Documentation & Provisional Baseline Assessment。
+狀態：18-6 Documentation & Provisional Baseline Assessment Completed；下一步為18-6 Review。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1949,3 +1949,5 @@ Audit Review Gate
 18-4已完成並通過review：App沒有Android、iOS、Windows、macOS、Linux或完整Web runner scaffold，只有Web SQLite assets。六平台目前全部分類為Dependency-ready；Windows FFI tests只算component evidence，`flutter build bundle`只算framework compilation，Web與Windows artifact build均因project未配置而失敗。`M18-C01`維持P1；Audit Review Gate必須逐平台拍板disposition，且單純生成runner最多只到Scaffold only，Supported仍需獨立release artifact與runtime verification。下一步為18-5。
 
 18-5已完成並通過review：盤點53個tracked test files並在Windows host執行5個workspace packages完整regression，共382 tests全數通過。Review將Complete收斂為declared component contract，明確區分Dio / SQLite / Widget host integration與application integration，並精確拆分`M18-A01` startup ownership與`M18-A02` navigation transition coverage。Bootstrap orchestration及Catalog offline full journey列為application matrix gaps，因尚無observed production defect而不新增finding；平台測試依Gate正式承諾的平台集合展開。CI/CD維持Milestone 11 Deferred。下一步為18-6。
+
+18-6 audit已完成，尚待review：VERSION、README與CHANGELOG的current baseline均為1.1.0，版本來源一致，但1.1.0只正式封存至Milestone 14，Milestone 15至17仍屬Unreleased。新增`M18-D01`（P1）：README「可直接作為企業專案起點」與無任何可執行platform project的現況不一致；`M18-D02`（P2）：早期文件將Web dependency preparation描述為scaffold或runtime成果；`M18-D03`（P3）：Backlog混列已完成與future項目。Provisional decision為現在不發布；若Gate與remediation完成且無breaking scope，傾向1.2.0 MINOR。VERSION未修改。

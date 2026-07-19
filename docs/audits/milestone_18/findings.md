@@ -350,3 +350,136 @@ Audit Review Gate應逐平台拍板Template Baseline disposition，例如Support
 ### Disposition rationale
 
 目前先保留Pending。這是baseline capability問題而非單一native設定bug，Phase A不得執行`flutter create`修改repository。
+
+---
+
+## M18-D01 — README企業模板定位未揭露無可執行platform project
+
+**Area：** Documentation / Product Positioning
+
+**Severity：** P1
+
+**Status：** Confirmed
+
+**Baseline blocking：** Yes，除非建立並驗證正式承諾的平台，或明確將模板定位降級為不含可執行platform project的Dart / architecture starter。
+
+**Disposition：** Pending Audit Review Gate
+
+**Target phase：** 18-7 candidate
+
+**Verification required：** README首頁與run instructions、platform capability matrix、tracked scaffold及artifact evidence一致。
+
+### Evidence
+
+README將repository描述為「可直接作為企業專案起點的Flutter Enterprise Template」，並提供一般`flutter run`命令；但App沒有任何完整platform runner，clone後無法直接build或run application。Web段落雖說明可自行執行`flutter create`，首頁與一般run instructions沒有同步揭露整體capability只有Dependency-ready。
+
+### Current contract
+
+Current product positioning必須清楚區分architecture starter、tracked runnable application與Supported platform，不得要求讀者從歷史段落推導重要限制。
+
+### Observed behavior
+
+Architecture、Dart application layer與component tests成熟，但repository缺少所有platform projects。README的第一印象高於實際可直接使用的application capability。
+
+### Risk
+
+- 使用者可能預期clone後可直接`flutter run`或建立artifact。
+- Enterprise template定位可能被誤解為已有native baseline、identifier、permissions與plugin runtime驗證。
+- README與`M18-C01` capability matrix不一致。
+
+### Recommendation
+
+Gate應先拍板正式平台集合。若建立平台，README需列出Supported / pending / Dependency-ready矩陣與實際命令；若不建立平台，首頁需明確定位為Dart / architecture starter並把platform generation列為使用者前置步驟。
+
+文件降級不能取代`M18-R01`與`M18-P01`等Auth correctness remediation。
+
+### Disposition rationale
+
+目前先保留Pending。這是current baseline positioning問題，應與`M18-C01`一起處理。
+
+---
+
+## M18-D02 — 早期文件將Web dependency preparation描述為完整scaffold或runtime成果
+
+**Area：** Documentation / Platform Evidence Terminology
+
+**Severity：** P2
+
+**Status：** Confirmed
+
+**Baseline blocking：** No，但發布新baseline前必須有明確disposition。
+
+**Disposition：** Pending Audit Review Gate
+
+**Target phase：** 18-7 candidate
+
+**Verification required：** Current README、ADR、Project Context與Roadmap使用一致的scaffold / component / artifact / runtime terminology。
+
+### Evidence
+
+Decision 014寫「目前只有Dart / Flutter Web scaffold」，但tracked Web只有SQLite service worker與WASM assets，沒有完整runner。Milestone 2C部分歷史語意描述Web不再白畫面，但沒有browser application runtime evidence。
+
+### Current contract
+
+Platform evidence必須區分dependency preparation、tracked scaffold、framework compilation、artifact build與runtime smoke。
+
+### Observed behavior
+
+Conditional database factory與Web assets已完成，但較早文件的「Web scaffold」與runtime完成語意超過實際evidence。
+
+### Risk
+
+- 後續讀者可能把Web assets誤認為完整Web platform project。
+- 歷史build文字可能被誤認為platform artifact或browser smoke。
+- Platform capability review容易重複產生錯誤假設。
+
+### Recommendation
+
+保留歷史決策背景，但修正current ADR摘要、Project Context與Roadmap current summary，將其描述為Web dependency preparation / SQLite assets；bundle結果使用framework compilation terminology。
+
+### Disposition rationale
+
+目前先保留Pending。這是文件準確性與evidence taxonomy問題，不代表SQLite implementation失效。
+
+---
+
+## M18-D03 — Backlog混列已完成與未完成能力
+
+**Area：** Documentation / Planning Hygiene
+
+**Severity：** P3
+
+**Status：** Confirmed
+
+**Baseline blocking：** No。
+
+**Disposition：** Pending Audit Review Gate
+
+**Target phase：** 18-7或18-8 candidate
+
+**Verification required：** Backlog只保留future / deferred scope，completed items移至Roadmap、Project Context或archive。
+
+### Evidence
+
+Backlog的「第二階段可以考慮」仍列出ADR、完整Unit / Bloc / Repository Test範例與Localizations；其中前兩者已有實作，Localization已由Milestone 16完成但仍與future items混列。文件也保留多個已完成Milestone於「已排入正式Roadmap」區段。
+
+### Current contract
+
+Backlog應表達尚未承諾或Deferred的future scope，已完成工作由Roadmap、Project Context與archive保存。
+
+### Observed behavior
+
+讀者必須依括號註解與其他文件判斷項目是否仍待辦，Backlog不再是可靠的未完成清單。
+
+### Risk
+
+- 新對話或維護者可能重複規劃已完成能力。
+- Future scope優先級被歷史項目稀釋。
+
+### Recommendation
+
+將Backlog整理為Future ideas、Deferred commitments與explicitly not planned；移除或移轉completed項目，不需要建立複雜issue tracker格式。
+
+### Disposition rationale
+
+目前先保留Pending。屬低風險文件維護問題，可在final documentation同步時處理。

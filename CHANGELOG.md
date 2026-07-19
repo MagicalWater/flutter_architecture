@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-6 Documentation & Provisional Baseline Assessment：確認VERSION、README與CHANGELOG current baseline一致為1.1.0，但1.1.0只封存至Milestone 14，Milestone 15至17仍屬Unreleased；Phase A不修改VERSION。
+- 新增`M18-D01`（P1）README企業模板定位與無可執行platform project落差、`M18-D02`（P2）早期Web scaffold / runtime evidence terminology不精確、`M18-D03`（P3）Backlog混列completed與future scope。Provisional decision為現在不發布；若Gate與approved remediation完成且沒有breaking scope，傾向1.2.0 MINOR，下一步為18-6 review。
 - 完成Milestone 18-5正式review revision：將Complete限定為declared component contract，明確區分Dio / SQLite / Widget host integration與application integration，並精確拆分`M18-A01` Shell startup ownership及`M18-A02` navigation transition coverage。
 - Bootstrap orchestration與Catalog offline full journey改列為尚無observed production defect的application matrix gaps；平台artifact / runtime tests依Audit Review Gate正式承諾的平台集合展開。18-5正式Reviewed / Closed，未新增test-only finding，下一步為18-6 Documentation & Provisional Baseline Assessment。
 - 完成Milestone 18-5 Test Capability Matrix盤點：彙總53個tracked test files，Windows host完整執行5個workspace packages共382 tests全數通過，並將能力映射至unit、repository、SQLite、Bloc、Widget、Golden、integration與platform build evidence。

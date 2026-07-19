@@ -70,7 +70,7 @@ Audit Review Gate
 Phase B — Approved work only
 
 18-7 Approved Remediation
-18-8 Final Validation, Documentation & Baseline Release
+18-8 Final Validation, Documentation & Baseline Decision
 ```
 
 18-7 與 18-8 不得在 Audit Review Gate 前開始。
@@ -239,6 +239,10 @@ docs/audits/milestone_18/
 
 各檔案應在對應子階段首次需要時建立，不預先建立空白 placeholder。
 
+`findings.md` 是所有正式 finding 的唯一 Single Source of Truth。各子階段文件只保存 inventory、matrix、evidence、分析過程與 Finding ID 引用，不複製完整 finding 內容。
+
+`remediation_decision.md` 只保存 Audit Review Gate 對各 Finding ID 的 disposition、理由、target phase與verification要求；不得另行改寫finding內容。
+
 Roadmap只保存目前階段、重要結論與完成摘要；歷史細節移入audit文件或`docs/archive/`。
 
 ---
@@ -318,7 +322,14 @@ Roadmap只保存目前階段、重要結論與完成摘要；歷史細節移入a
 
 - Milestone contract無Audit-only與release scope矛盾。
 - Audit Review Gate與18-7 / 18-8進入條件明確。
+- 最終planning review沒有未處理的P0 / P1規劃finding。
+- 所有P2 / P3規劃finding已有明確disposition。
+- `findings.md`與各子階段文件的SSOT責任已拍板。
+- Roadmap、Project Context與CHANGELOG已同步為18-0 Completed。
+- 下一個正式階段已設定為18-1 Architecture & Dependency Audit。
 - 尚未開始production code修改。
+
+18-0最終review結論：Completed。第一輪review與最終review未留下P0 / P1規劃finding；P2 / P3均已透過本文件revision完成處理。下一個正式階段為18-1。
 
 ### Milestone 18-1 — Architecture & Dependency Audit
 
@@ -404,13 +415,13 @@ Baseline release decision
 - 每個remediation保留原finding ID、targeted verification與review紀錄。
 - 不在本階段直接宣告baseline發布完成。
 
-### Milestone 18-8 — Final Validation, Documentation & Baseline Release
+### Milestone 18-8 — Final Validation, Documentation & Baseline Decision
 
 - Review 18-7所有實際修改與finding disposition。
 - 執行完整regression、host可用platform build與必要artifact驗證。
 - 同步README、Project Context、ADR、Roadmap、Backlog、CHANGELOG與VERSION。
-- 依Audit Review Gate與最終證據決定是否發布新Template Baseline。
-- 完成封存、commit與push。
+- 依Audit Review Gate與最終證據決定發布新Template Baseline，或維持目前版本並記錄理由。
+- 只有決定發布時才更新VERSION與建立release封存；無論是否發布，都要完成最終decision、commit與push。
 
 ---
 
@@ -440,4 +451,4 @@ Baseline release decision
 - 18-7只處理Approved remediation list。
 - Supported platform與build語意有可重現證據；無法在目前host驗證者被誠實標為Verification pending或其他較低能力層級。
 - README、Project Context、ADR、Roadmap、Backlog、CHANGELOG與VERSION一致。
-- 18-8完成最終驗證、文件同步、版本決策與封存。
+- 18-8完成最終驗證、文件同步與baseline decision；若決定發布，再完成版本更新與release封存。

@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：Planning；目前進行18-0 Planning Review。
+狀態：18-0 Planning Review Completed；下一步為18-1 Architecture & Dependency Audit。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1935,7 +1935,7 @@ docs/audits/milestone_18_holistic_audit.md
 18-6 Documentation & Provisional Baseline Assessment
 Audit Review Gate
 18-7 Approved Remediation
-18-8 Final Validation, Documentation & Baseline Release
+18-8 Final Validation, Documentation & Baseline Decision
 ```
 
-目前先完成18-0，review並拍板Milestone範圍、Phase、finding格式、P0至P3 disposition、Supported / Verification pending / Scaffold only / Dependency-ready / Not supported taxonomy、固定輸出檔案與Gate進入條件。18-0文件revision完成前不開始18-1。
+18-0已完成：Milestone範圍、Phase、finding格式、P0至P3 disposition、Supported / Verification pending / Scaffold only / Dependency-ready / Not supported taxonomy、固定輸出檔案、`findings.md` SSOT責任與Gate進入條件均已拍板。最終planning review沒有未處理的P0 / P1 finding；下一步正式開始18-1。

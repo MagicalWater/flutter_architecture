@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-0 Planning Review封閉：最終review無未處理P0 / P1規劃finding，P2 / P3均已完成disposition；`findings.md`正式成為所有finding的唯一SSOT，各子階段文件只保存inventory、matrix、evidence與Finding ID引用。
+- 將18-8收斂為Final Validation, Documentation & Baseline Decision；最終可決定發布新baseline或維持現有版本並記錄理由，只有決定發布時才更新VERSION與建立release封存。Roadmap與Project Context已切換至18-1 Architecture & Dependency Audit。
 - 完成Milestone 18規劃第一輪review revision：將完整Milestone收斂為Phase A Audit、Audit Review Gate與Phase B approved work，新增18-0 Planning Review及18-8 Final Validation / Baseline Release；Gate通過前禁止production code修改與版本升級。
 - 補強Milestone 18 capability taxonomy與finding disposition：新增Verification pending，平台evidence分為repository、dependency、scaffold、static、host build、runtime與external-host verification；P0必須Resolved，P1需Resolved、capability降級或經Gate記錄Accepted risk。
 - 定義`docs/audits/milestone_18/`固定輸出結構，18-1至18-4同步收集test evidence，18-5只彙總test strategy；18-6拆為文件一致性、provisional baseline assessment與正式Audit Review Gate。

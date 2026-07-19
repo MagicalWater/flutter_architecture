@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0至18-2已完成並通過review；18-3 Persistence & Database Audit已完成盤點，下一步為18-3 review。18-3確認schema / migration與Catalog transaction foundation整體健全，並新增`M18-P01` Auth persisted token-user identity mismatch（P1）及`M18-P02` SQLite foreign key未啟用（P2）。Milestone目前仍只進行Phase A Audit，尚未修改production code。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
+目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0至18-3均已完成並通過review；下一個正式階段為18-4 Platform Capability & Build Audit。18-3正式finding為`M18-P01` Auth persisted token-user identity mismatch（P1）及`M18-P02` SQLite foreign key未啟用（P2）。Review確認P01 remediation必須處理future writes、既有multi-row資料與restore identity validation，P02若啟用constraint則必須處理既有orphan rows；Phase A尚未修改production code。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
 
 ### Milestone 17：Exception & Failure Architecture
 

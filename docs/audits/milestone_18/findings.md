@@ -211,7 +211,7 @@ Audit Review Gate應拍板最小contract：新Login使舊Login失效，Logout立
 
 **Target phase：** 18-7 candidate
 
-**Verification required：** 不同user sequential login、double login、restore、logout與migration regression。
+**Verification required：** 不同user sequential login、double login、正常single-user restore、既有multi-row database upgrade / restore、row count異常cleanup、logout與migration regression。
 
 ### Evidence
 
@@ -237,6 +237,8 @@ Sequential account switch即可觸發：先登入User A，再登入User B，toke
 
 Audit Review Gate應拍板最小single-active-user persistence contract，例如在保存新user前transactionally清空table，或使用固定single-row identity；若token payload可安全保存stable user ID，也可在restore時做explicit match。
 
+Remediation必須同時處理future writes與existing persisted rows。既有資料若出現multi-row或無法證明token-user identity，restore應安全清理或拒絕建立Session。只加入`ORDER BY`只能穩定選row，不能證明identity，因此不構成有效修正。
+
 不建議為此建立multi-account framework。
 
 ### Disposition rationale
@@ -259,7 +261,7 @@ Audit Review Gate應拍板最小single-active-user persistence contract，例如
 
 **Target phase：** 18-7 candidate
 
-**Verification required：** Production-style openDatabase pragma test、parent delete cascade / orphan prevention與Catalog regression。
+**Verification required：** Production-style openDatabase pragma test、fresh install與upgrade connection、parent delete cascade、orphan child insert rejection、既有orphan cleanup / rejection與Catalog regression。
 
 ### Evidence
 
@@ -282,6 +284,8 @@ Schema宣告的referential integrity應在production database connection實際�
 ### Recommendation
 
 在App-owneddatabase connection configuration明確啟用foreign keys，並加入production-style pragma與cascade regression；或若刻意不使用foreign key enforcement，移除DDL中的誤導性constraint並維持manual cleanup contract。
+
+若選擇啟用foreign key，必須另外處理upgrade前已存在的orphan rows；`PRAGMA foreign_keys = ON`不會自動修復既有資料。可透過migration cleanup、`foreign_key_check`驗證或明確拒絕不一致database，但需保留可測試的contract。
 
 ### Disposition rationale
 

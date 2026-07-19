@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-3正式review revision：`M18-P01`維持P1，補強既有multi-row auth資料、restore identity validation與排除僅加`ORDER BY`的無效修正；`M18-P02`維持P2，補強啟用foreign key後的existing orphan cleanup / rejection、fresh install與upgrade connection verification。
+- 18-3正式標記Reviewed / Closed；fresh schema snapshot需驗證tables、columns、indexes、schema version、foreign key pragma與single-active-user contract，後續納入18-5 test matrix。下一步進入18-4 Platform Capability & Build Audit。
 - 完成Milestone 18-3 Persistence & Database Audit：盤點SharedPreferences keys、SQLite schema version 4、v1 / v2 / v3 migrations、Auth split-store persistence、Catalog transaction / chain revision / corruption recovery與platform database factory。
 - 新增正式finding`M18-P01`（P1）：`auth_user`可保存多個不同user，但restore使用無排序`limit: 1`，不同帳號登入後可能把目前token與舊user配對；新增`M18-P02`（P2）：Catalog DDL宣告foreign key cascade，但production connection未啟用`PRAGMA foreign_keys`。Phase A只落檔，等待18-3 review與Audit Review Gate。
 - 完成Milestone 18-2正式review revision：`M18-R01`維持P1並收斂為Auth lifecycle command缺少跨operation latest-intent ordering；confirmed scenarios為Double Login反向完成及Login + Logout反向完成，Restore + Login改列UI ordering coverage gap。

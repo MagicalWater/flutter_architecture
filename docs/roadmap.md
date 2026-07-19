@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：18-3 Persistence & Database Audit Completed；下一步為18-3 Review。
+狀態：18-3 Persistence & Database Audit Reviewed / Closed；下一步為18-4 Platform Capability & Build Audit。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1944,4 +1944,4 @@ Audit Review Gate
 
 18-2已完成並通過review：Bootstrap、Refresh / Replay、Profile / Guard、Catalog Search / SWR / Refresh / Append / Cache、Theme / Locale runtime preference與Failure ownership整體具備強runtime guard及test evidence。正式finding`M18-R01`維持P1，但收斂為Auth lifecycle command缺少跨operation latest-intent ordering；confirmed scenarios為Double Login反向完成及Login + Logout反向完成，Restore + Login只保留為UI ordering coverage gap。
 
-18-3 audit已完成，尚待review：schema version 4與v1 / v2 / v3 migration、Auth split-store persistence、Catalog transaction / chain revision / corruption recovery及platform database factory已完成盤點。新增`M18-P01`（P1）：`auth_user`允許多列但restore只讀任意一列，可能把新token與舊user配對；新增`M18-P02`（P2）：Catalog DDL宣告foreign key cascade，但production connection未啟用SQLite foreign key enforcement。Phase A只落檔，未修改production code。
+18-3已完成並通過review：schema version 4與v1 / v2 / v3 migration、Auth split-store persistence、Catalog transaction / chain revision / corruption recovery及platform database factory已完成盤點。`M18-P01`維持P1，Phase B remediation必須同時處理future writes、既有multi-row資料與restore identity validation；只加入`ORDER BY`不構成修正。`M18-P02`維持P2，若啟用foreign key必須同時處理既有orphan rows，不能只加入pragma。Phase A只落檔，未修改production code。下一步為18-4。

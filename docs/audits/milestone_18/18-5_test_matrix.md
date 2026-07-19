@@ -2,7 +2,7 @@
 
 ## 狀態
 
-Completed audit；尚待review，尚未進入remediation。
+Reviewed / Closed；尚未進入remediation。
 
 本文件彙總18-1至18-4已收集的test evidence，將模板能力映射至unit、repository、Bloc、SQLite、Widget、Golden、integration與platform build。所有正式finding的唯一Single Source of Truth為`docs/audits/milestone_18/findings.md`。
 
@@ -45,8 +45,8 @@ Repository包含1個Design System gallery golden fixture；沒有`integration_te
 本階段使用：
 
 ```txt
-Complete
-  目前contract的主要正常、failure與重要edge paths均有直接evidence。
+Complete for declared component contract
+  目前明確宣告的component / package contract，其主要正常、failure與重要edge paths均有直接evidence；不代表application runner、device、browser或process-level journey已完成。
 
 Partial
   核心contract有測試，但仍缺跨層、跨process或特定scenario。
@@ -74,10 +74,10 @@ Intentionally unsupported / deferred
 | Exception / Failure | mapper、Result、sensitive `toString` | expected / unknown propagation | Bloc observer與loading cleanup | localized failure surfaces | global hook component tests，無real runner | Complete at component level |
 | Bootstrap | fatal guard、hook installer、Theme / Locale restore | DI dependencies分別驗證 | N/A | App smoke | 無完整production `bootstrap()` orchestration test | Partial |
 | Auth login / restore / logout | repository compensation與typed failure | split-store fake boundary | 個別AuthBloc flows | Login UI與callback | 無跨Bloc / persistence full journey | Partial；`M18-R01`、`M18-P01` |
-| Concurrent 401 / refresh / replay | request eligibility與metadata | token rotation / invalidation | single-flight與session generation | N/A | Dio adapter-level integration | Complete |
+| Concurrent 401 / refresh / replay | request eligibility與metadata | token rotation / invalidation | single-flight與session generation | N/A | Dio adapter component integration；無application runner integration | Complete for package / adapter contract |
 | Profile / Guard | mapper與repository | Session identity checks | stale response、account switch | Profile states | Guard tests存在，無完整expiration navigation journey | Partial |
 | Catalog initial / SWR | mapper與repository policy | SQLite page round-trip、cache fallback | debounce、switching、generation | loading / error / empty / content | 無page→repository offline journey | Strong partial |
-| Catalog refresh / append | repository chain policy | transaction、rollback、migration、revision、corruption | exhaust、cancellation、late result、cursor cycle | refresh lifecycle | 無real app offline runtime | Complete at component level |
+| Catalog refresh / append | repository chain policy | transaction、rollback、migration、revision、corruption | exhaust、cancellation、late result、cursor cycle | refresh lifecycle | 無real app offline runtime | Complete for repository / Bloc / SQLite component contract |
 | Theme / Locale | codec、store、controller、resolution | SharedPreferences adapters | serialized writes | selector runtime switching、render matrix | bootstrap分別測試，無platform persistence smoke | Strong partial |
 | Design System | tokens、registry、ThemeData contract | N/A | N/A | primitive、state surfaces、accessibility、1 golden | golden只在目前host render | Complete for declared component contract |
 | Platform capability | conditional initializer static design | Windows-host FFI component tests | N/A | N/A | 六平台均無artifact / runtime tests | Missing for application platform support；`M18-C01` |
@@ -106,10 +106,15 @@ Expected operational failure、unexpected error、reporter failure isolation、F
 
 ## 5. Coverage gaps mapped to findings
 
+### Shell startup ownership
+
+- 缺少防止Shell再次跨Feature import AuthBloc的architecture regression，以及startup ownership調整後的Shell / Auth restore組合測試。
+- 對應`M18-A01`。
+
 ### Architecture navigation boundaries
 
 - Login成功切Profile tab與Profile logout切Login tab缺少跨feature integration test。
-- 對應`M18-A01`與`M18-A02`，不建立新的test-only finding。
+- 對應`M18-A02`，不建立新的test-only finding。
 
 ### Auth lifecycle ordering
 
@@ -128,14 +133,25 @@ Expected operational failure、unexpected error、reporter failure isolation、F
 
 ### Platform application capability
 
-- 缺六平台tracked runner、artifact build、plugin registration與runtime smoke。
-- 對應`M18-C01`，不是單純增加`integration_test`即可解決。
+- 目前六平台都缺tracked runner、artifact build、plugin registration與runtime smoke。
+- 對應`M18-C01`，不是單純增加`integration_test`即可解決。Gate列為Supported target的平台必須補artifact與runtime verification；維持Dependency-ready的平台不要求application tests，但文件不得宣稱Supported。
+
+### Bootstrap orchestration
+
+- 缺少單一測試驗證完整production `bootstrap()`順序、hook installation、DI、preference restore與`runApp`條件。
+- 此缺口維持Partial，不建立formal finding：各子契約與source ordering已有直接evidence，尚未發現observed correctness defect。
+- 若Gate承諾可執行platform baseline，應納入18-7或18-8的application smoke verification。
+
+### Catalog offline application journey
+
+- 缺少Page → Bloc → Repository → SQLite cache → offline fallback的完整application journey。
+- 此為application matrix gap，不代表已確認新的Catalog correctness defect；是否補測取決於`M18-C01`的正式平台scope。
 
 ---
 
 ## 6. Cross-layer integration assessment
 
-目前多數測試是高品質component integration：使用real SQLite FFI、real Bloc stream、real widget tree或Dio adapter，但沒有可執行platform runner，所以不存在真正的device / browser application integration test。
+目前多數測試是高品質component integration：使用real SQLite FFI、real Bloc stream、real widget tree或Dio adapter，但沒有可執行platform runner，所以不存在真正的device / browser application integration test。這些component integration evidence不得外推為plugin registration、application lifecycle或platform runtime evidence。
 
 Phase B若建立正式承諾平台，最低journey應包含：
 
@@ -186,6 +202,6 @@ Repository沒有tracked CI workflow，但Roadmap與Backlog已明確將Milestone 
 
 現有test foundation成熟，完整workspace regression為382 tests全數通過。主要優勢是critical concurrency、persistence與failure boundaries有直接evidence；主要缺口是既有findings對應的Auth ordering / identity、foreign key connection contract，以及完全缺少platform application artifact與runtime journey。
 
-本階段沒有新增正式finding。18-5的缺口均已由`M18-A01`、`M18-A02`、`M18-R01`、`M18-P01`、`M18-P02`與`M18-C01`承載，或屬明確Deferred的CI/CD。
+本階段沒有新增正式finding。Auth、architecture、persistence與platform缺口由`M18-A01`、`M18-A02`、`M18-R01`、`M18-P01`、`M18-P02`與`M18-C01`承載；Bootstrap orchestration與Catalog offline full journey屬未觀察到production defect的application matrix gaps，待正式平台scope決定是否納入18-7 / 18-8；CI/CD則屬明確Deferred。
 
-本階段只完成audit與落檔，不修改production或test code。下一步為18-5 Review。
+本階段只完成audit、review與落檔，不修改production或test code。下一步為18-6 Documentation & Provisional Baseline Assessment。

@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-5正式review revision：將Complete限定為declared component contract，明確區分Dio / SQLite / Widget host integration與application integration，並精確拆分`M18-A01` Shell startup ownership及`M18-A02` navigation transition coverage。
+- Bootstrap orchestration與Catalog offline full journey改列為尚無observed production defect的application matrix gaps；平台artifact / runtime tests依Audit Review Gate正式承諾的平台集合展開。18-5正式Reviewed / Closed，未新增test-only finding，下一步為18-6 Documentation & Provisional Baseline Assessment。
 - 完成Milestone 18-5 Test Capability Matrix盤點：彙總53個tracked test files，Windows host完整執行5個workspace packages共382 tests全數通過，並將能力映射至unit、repository、SQLite、Bloc、Widget、Golden、integration與platform build evidence。
 - Refresh / Replay、Catalog concurrency / persistence、Failure reporting與Design System component contract具強coverage；跨feature navigation、Auth ordering / persisted identity、foreign key connection與platform application journey缺口均由既有findings承載，未新增test-only finding。CI/CD依Milestone 11維持Deferred，下一步為18-5 review。
 - 完成Milestone 18-4正式review revision：明確區分component evidence、application artifact evidence與application runtime evidence；Windows FFI tests及`flutter build bundle`不得被視為platform App支援。

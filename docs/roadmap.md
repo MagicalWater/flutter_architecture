@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：18-4 Platform Capability & Build Audit Completed；下一步為18-4 Review。
+狀態：18-4 Platform Capability & Build Audit Reviewed / Closed；下一步為18-5 Test Capability Matrix。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1946,4 +1946,4 @@ Audit Review Gate
 
 18-3已完成並通過review：schema version 4與v1 / v2 / v3 migration、Auth split-store persistence、Catalog transaction / chain revision / corruption recovery及platform database factory已完成盤點。`M18-P01`維持P1，Phase B remediation必須同時處理future writes、既有multi-row資料與restore identity validation；只加入`ORDER BY`不構成修正。`M18-P02`維持P2，若啟用foreign key必須同時處理既有orphan rows，不能只加入pragma。Phase A只落檔，未修改production code。下一步為18-4。
 
-18-4 audit已完成，尚待review：App沒有Android、iOS、Windows、macOS、Linux或完整Web runner scaffold，只有Web SQLite assets。Windows host的`flutter build bundle --release`成功，但Web與Windows artifact build均因project未配置而失敗；六平台目前全部分類為Dependency-ready。新增`M18-C01`（P1），等待review與Audit Review Gate決定正式承諾的平台集合或baseline capability降級。
+18-4已完成並通過review：App沒有Android、iOS、Windows、macOS、Linux或完整Web runner scaffold，只有Web SQLite assets。六平台目前全部分類為Dependency-ready；Windows FFI tests只算component evidence，`flutter build bundle`只算framework compilation，Web與Windows artifact build均因project未配置而失敗。`M18-C01`維持P1；Audit Review Gate必須逐平台拍板disposition，且單純生成runner最多只到Scaffold only，Supported仍需獨立release artifact與runtime verification。下一步為18-5。

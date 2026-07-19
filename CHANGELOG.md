@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-4正式review revision：明確區分component evidence、application artifact evidence與application runtime evidence；Windows FFI tests及`flutter build bundle`不得被視為platform App支援。
+- `M18-C01`維持P1；Audit Review Gate必須逐平台拍板Supported target、Verification pending target、維持Dependency-ready或Not supported。單純執行`flutter create`最多只到Scaffold only，每個承諾平台仍需獨立release artifact、native configuration與runtime smoke；18-4正式Reviewed / Closed，下一步為18-5 Test Capability Matrix。
 - 完成Milestone 18-4 Platform Capability & Build Audit：盤點Android、iOS、Web、Windows、macOS與Linux的tracked scaffold、dependencies、static compatibility、host build及runtime evidence；六平台目前均分類為Dependency-ready。
 - 新增正式finding`M18-C01`（P1）：App沒有任何完整Flutter platform runner，Web只保存SQLite assets；Windows host的bundle compilation成功，但Web與Windows artifact build因project未配置而失敗。Phase A不執行`flutter create`，等待18-4 review與Audit Review Gate拍板正式平台承諾。
 - 完成Milestone 18-3正式review revision：`M18-P01`維持P1，補強既有multi-row auth資料、restore identity validation與排除僅加`ORDER BY`的無效修正；`M18-P02`維持P2，補強啟用foreign key後的existing orphan cleanup / rejection、fresh install與upgrade connection verification。

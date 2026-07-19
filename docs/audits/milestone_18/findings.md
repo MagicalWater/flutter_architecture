@@ -307,17 +307,17 @@ Schema宣告的referential integrity應在production database connection實際�
 
 **Target phase：** 18-7 candidate
 
-**Verification required：** Tracked scaffold inventory、對應host artifact build、必要native configuration、database initialization與runtime smoke。
+**Verification required：** 逐平台disposition、tracked scaffold inventory、對應host release artifact build、必要native configuration、plugin / database / SharedPreferences initialization、bootstrap與核心runtime smoke。
 
 ### Evidence
 
-`apps/flutter_architecture`沒有`android/`、`ios/`、`windows/`、`macos/`、`linux/`或完整`web/`runner scaffold，也沒有`.metadata`。Web只tracked `sqflite_sw.js`與`sqlite3.wasm`。
+`apps/flutter_architecture`沒有`android/`、`ios/`、`windows/`、`macos/`、`linux/`或完整`web/`runner scaffold。`.metadata`亦不存在，但只作為repository inventory輔助證據；真正阻擋artifact的是runner與platform build configuration缺失。Web只tracked `sqflite_sw.js`與`sqlite3.wasm`。
 
 Windows host實測：
 
 ```txt
 flutter build bundle --release
-  success，但只建立Flutter bundle
+  success，但只屬framework / Dart bundle compilation evidence
 
 flutter build web --release
   This project is not configured for the web.
@@ -343,9 +343,9 @@ App的Dart code、plugin dependencies與conditional database factory具跨平台
 
 ### Recommendation
 
-Audit Review Gate應拍板Template Baseline承諾的平台集合。對承諾的平台建立tracked scaffold、固定必要native configuration並取得artifact / runtime evidence；不承諾的平台維持Dependency-ready並在README與capability matrix明示。
+Audit Review Gate應逐平台拍板Template Baseline disposition，例如Supported target、Verification pending target、維持Dependency-ready或Not supported。對承諾的平台建立tracked scaffold、固定必要native configuration並取得artifact / runtime evidence；不承諾的平台維持較低能力分類並在README與capability matrix明示。
 
-不應為了宣稱六平台一次性生成所有runner後便直接標記Supported；每個平台仍需獨立build與runtime verification。
+單純執行`flutter create . --platforms ...`最多只取得Scaffold only，不能直接標記Supported。每個平台仍需獨立驗證dependency resolution、generated code、release artifact、identifier / permissions / entitlements / deployment target、plugin registration、database factory、SharedPreferences、bootstrap / routing、Theme / Locale restore、Mock API核心流程與runtime smoke。
 
 ### Disposition rationale
 

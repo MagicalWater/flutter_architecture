@@ -2,7 +2,7 @@
 
 ## 狀態
 
-Completed audit；尚待review，尚未進入remediation。
+Reviewed / Closed；尚未進入remediation。
 
 本文件保存六平台scaffold、dependency、static compatibility、host build與runtime evidence。所有正式finding的唯一Single Source of Truth為`docs/audits/milestone_18/findings.md`。
 
@@ -11,6 +11,19 @@ Completed audit；尚待review，尚未進入remediation。
 ## 1. Evidence taxonomy
 
 本階段依Milestone 18 contract區分repository evidence、dependency declaration、tracked scaffold、static compatibility、host-available build、runtime smoke與external-host verification。
+
+Review後進一步把platform evidence拆成三層，避免component test被誤讀為application capability：
+
+```txt
+Component evidence
+  package、database adapter或conditional initializer在host test中的證據。
+
+Application artifact evidence
+  對應platform runner可產生APK / AAB / Web output / desktop executable等artifact。
+
+Application runtime evidence
+  實際啟動App並驗證bootstrap、plugin registration、database、preferences與核心flow。
+```
 
 Capability只可使用Supported、Verification pending、Scaffold only、Dependency-ready與Not supported。
 
@@ -27,7 +40,7 @@ web/       runner scaffold absent
 windows/   absent
 macos/     absent
 linux/     absent
-.metadata  absent
+.metadata  absent（輔助inventory，不是artifact失敗的核心原因）
 ```
 
 Tracked Web檔案只有SQLite runtime assets：
@@ -53,7 +66,7 @@ Dart / package boundary具備跨平台設計，但缺少任何可建立artifact�
 
 Audit host：Windows，Flutter 3.41.6 stable，Dart 3.11.4。
 
-`flutter build bundle --release`成功，但此命令只建立Flutter asset / kernel bundle，不是Android `.aab`、APK、Web或Desktop application artifact。
+`flutter build bundle --release`成功；此結果只屬framework / Dart bundle compilation evidence，證明Dart、generated references、assets與部分conditional imports可編譯，不是Android `.aab`、APK、Web或Desktop application artifact。
 
 `flutter build web --release`失敗：
 
@@ -73,12 +86,12 @@ Android、iOS、macOS與Linux同樣缺少tracked scaffold。本階段沒有執�
 
 ## 5. Six-platform capability matrix
 
-| Platform | Dependency / static design | Tracked scaffold | Artifact evidence | Runtime evidence | Classification |
+| Platform | Component evidence | Tracked scaffold | Application artifact evidence | Application runtime evidence | Classification |
 |---|---|---|---|---|---|
 | Android | sqflite native path與Dart code相容設計 | 無 | 無 | 無 | Dependency-ready |
 | iOS | sqflite native path與Dart code相容設計 | 無 | 無 | 無 | Dependency-ready |
 | Web | Web database initializer與SQLite assets存在 | 無完整Web runner | Web build明確失敗 | 無browser smoke | Dependency-ready |
-| Windows | FFI initializer與Windows-host SQLite tests存在 | 無 | Windows build明確失敗 | 只有FFI database component evidence | Dependency-ready |
+| Windows | FFI initializer與Windows-host SQLite component tests | 無 | Windows build明確失敗 | 無Windows App runtime smoke | Dependency-ready |
 | macOS | FFI initializer與dependency存在 | 無 | 無；需macOS host | 無 | Dependency-ready |
 | Linux | FFI initializer與dependency存在 | 無 | 無 | 無 | Dependency-ready |
 
@@ -104,7 +117,7 @@ README、Project Context、ADR與archive已明確記錄App只有Dart / SQLite We
 
 ## 8. Test evidence與coverage gaps
 
-Existing evidence：workspace tests可在Windows host執行、Windows FFI SQLite tests涵蓋schema與migration、conditional initializer避免Web static import `dart:io`、bundle compilation成功。
+Existing component / framework evidence：workspace tests可在Windows host執行、Windows FFI SQLite tests涵蓋schema與migration、conditional initializer避免Web static import `dart:io`、framework bundle compilation成功。
 
 Coverage gaps：六平台均無runner、沒有platform artifact、沒有browser SQLite smoke、沒有mobile runtime smoke，也沒有完整Desktop App runtime smoke。
 
@@ -113,6 +126,10 @@ Coverage gaps：六平台均無runner、沒有platform artifact、沒有browser 
 ## 9. Finding
 
 `M18-C01`：App沒有任何tracked Flutter platform scaffold，六平台目前全部只能分類為Dependency-ready；模板不能直接建立或執行platform artifact。
+
+Audit Review Gate必須逐平台拍板disposition，例如Supported target、Verification pending target、維持Dependency-ready或Not supported，不能只做一個籠統的「加入platform scaffold」決定。
+
+單純執行`flutter create . --platforms ...`最多只能先取得Scaffold only；要提升為Supported，仍需每個平台獨立驗證dependency resolution、generated code、release artifact、native configuration、database factory、SharedPreferences、bootstrap / routing、Theme / Locale restore、Mock API核心流程與runtime smoke。
 
 ---
 
@@ -129,4 +146,4 @@ macOS    Dependency-ready
 Linux    Dependency-ready
 ```
 
-本階段只完成audit與落檔，不執行`flutter create`，也不修改production scaffold。Finding需等Audit Review Gate決定建立哪些platform projects，或正式將Template Baseline能力限制為Dart / architecture starter。
+本階段已完成audit與review，不執行`flutter create`，也不修改production scaffold。Finding需等Audit Review Gate逐平台決定Supported target、Verification pending target、維持Dependency-ready或Not supported；或正式將Template Baseline能力限制為Dart / architecture starter。

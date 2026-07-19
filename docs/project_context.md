@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0至18-3均已完成並通過review；18-4 Platform Capability & Build Audit已完成盤點，下一步為18-4 review。App目前沒有任何tracked Flutter platform runner，只有Web SQLite assets；`flutter build bundle`成功，但Web與Windows artifact build明確因project未配置而失敗。六平台全部分類為Dependency-ready，新增`M18-C01`（P1）。Milestone目前仍只進行Phase A Audit，尚未修改production code。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
+目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。18-0至18-4均已完成並通過review；下一個正式階段為18-5 Test Capability Matrix。App目前沒有任何tracked Flutter platform runner，只有Web SQLite assets；六平台全部分類為Dependency-ready。Review明確區分component、application artifact與application runtime evidence：Windows FFI tests及`flutter build bundle`不能代表Windows或Android App支援。正式finding`M18-C01`維持P1，Gate需逐平台拍板disposition；單純生成runner最多只到Scaffold only。Milestone目前仍只進行Phase A Audit，尚未修改production code。正式contract位於`docs/audits/milestone_18_holistic_audit.md`，各階段evidence與finding SSOT位於`docs/audits/milestone_18/`。
 
 ### Milestone 17：Exception & Failure Architecture
 

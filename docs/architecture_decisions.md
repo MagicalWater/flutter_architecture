@@ -2601,7 +2601,7 @@ Design System 顯示已 localized String
 
 **狀態：** Accepted
 
-**實作狀態：** Milestone 17-1至17-7已全部完成。Typed Result、AppException / Failure、Auth lifecycle、Catalog protocol / cache boundary、Preference diagnostics、App uncaught reporting、Composition Root、duplicate policy與Sensitive Data audit均已落地；完整381項tests與三環境bundle build已通過。Firebase / Crashlytics dependency未加入，可由未來App-owned production adapter替換Debug implementation。
+**實作狀態：** Milestone 17-1至17-7已全部完成。Typed Result、AppException / Failure、Auth lifecycle、Catalog protocol / cache boundary、Preference diagnostics、App uncaught reporting、Composition Root、duplicate policy與Sensitive Data audit均已落地；完整382項tests與三環境bundle build已通過。Firebase / Crashlytics dependency未加入，可由未來App-owned production adapter替換Debug implementation。
 
 ### 背景
 
@@ -2832,7 +2832,7 @@ abstract interface class ErrorReporter {
 - Packages 不直接依賴 Firebase Crashlytics、App localization 或 router。
 - framework entrypoint 分別處理 `FlutterError.onError`、`PlatformDispatcher.instance.onError` 與 `BlocObserver.onError`，不是建立一個接管所有決策的 Global Error Handler。
 - expected UI failure 通常不重複 report；unexpected error與重要 degraded-mode failure 才進 reporting。
-- Crashlytics 是否立即加入 dependency 可在 Milestone 17-6 implementation review 決定；adapter boundary 必須先成立。
+- Crashlytics 是否立即加入 dependency 原留待 Milestone 17-6 implementation review；最終決定為本階段不加入 Firebase / Crashlytics dependency，只保留 App-owned adapter boundary，未來由 production Composition Root 替換 Debug implementation。
 
 ### Sensitive data contract
 

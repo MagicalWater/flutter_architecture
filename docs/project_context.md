@@ -756,7 +756,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 最近完成目標：Milestone 16 Localization Foundation。
 
-目前正式工作目標：Milestone 17 Exception & Failure Architecture。
+目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存；下一個正式工作目標尚待全專案盤點後決定。
 
 ### Milestone 17：Exception & Failure Architecture
 
@@ -817,7 +817,7 @@ Milestone 17 正式順序：
 17-7 Sensitive Data Audit、Regression、文件與完整驗證
 ```
 
-Milestone 17 不建立 Global Error Handler、Generic Exception / Failure Mapper framework、每個 HTTP status class或全域 backend code enum。Crashlytics 先建立 App-owned adapter boundary，是否立即加入 Firebase dependency留待 17-6 implementation review。
+Milestone 17 不建立 Global Error Handler、Generic Exception / Failure Mapper framework、每個 HTTP status class或全域 backend code enum。Crashlytics 先建立 App-owned adapter boundary；17-6最終決定本階段不加入 Firebase / Crashlytics dependency，未來可由 App Composition Root 提供production adapter。
 
 Milestone 17-2 實作前 review 已拍板：17-2 只將 `FailureResult.error: Object` 與 `Result.when` failure callback 收斂為 `Failure`，並移除 Auth / Profile Bloc 的 `Object → Failure` fallback。Failure subclass taxonomy 延後至 17-3，與 typed AppException identity 同步落地，避免先依模糊字串 code 猜測類型。
 
@@ -855,9 +855,9 @@ Milestone 17-6C 已完成：Theme / Locale serialized write queue不再使用 `.
 
 Milestone 17-6D 已完成：App新增 `AppBlocObserver`，由bootstrap在任何App Bloc建立前指定給 `Bloc.observer`。Bloc未處理錯誤以unexpected severity與固定safe context上報，保留原始error / stack identity，不讀event、state或Bloc內容；Reporter自身失敗會被observer吸收，不改變原有Bloc error propagation。Flutter framework與Platform uncaught hooks仍留待17-6E，duplicate policy於後續entrypoint review統一確認。
 
-Milestone 17-6E 已完成：App新增 `AppUncaughtErrorHandler`與`AppUncaughtErrorHooks`。Flutter framework error與root isolate uncaught async error分別使用fatal severity及封閉flutterFramework / platform context，Reporting失敗不取代原始flow。Global installer會保留並委派既有 `FlutterError.onError` / `PlatformDispatcher.instance.onError` handler，並提供dispose供測試還原。Bootstrap於取得ErrorReporter後、runApp前安裝；DI建立前的bootstrap error與Bloc / Platform duplicate policy留待17-6F。
+Milestone 17-6E 已完成：App新增 `AppUncaughtErrorHandler`與`AppUncaughtErrorHooks`。Flutter framework error使用unexpected severity，root isolate uncaught async error使用fatal severity，兩者皆使用封閉flutterFramework / platform context；Reporting失敗不取代原始flow。Global installer會保留並委派既有 `FlutterError.onError` / `PlatformDispatcher.instance.onError` handler，並提供dispose供測試還原。Bootstrap於取得ErrorReporter後、runApp前安裝；DI建立前的bootstrap error與Bloc / Platform duplicate policy留待17-6F。
 
-Milestone 17-6F 已完成並封閉17-6：App Composition Root在DI前建立唯一Debug Reporter與identity-based deduplicator，先安裝global uncaught hooks及BlocObserver，再把同一Reporter instance註冊進GetIt，確保Preference、Catalog與global entrypoints共用相同outlet。`runBootstrapGuarded`涵蓋database factory、config、DI preResolve、preference restore與runApp前初始化，fatal bootstrap failure上報後保留原stack重拋。Bloc與bootstrap若已上報，會在同一event-loop turn以object identity標記；Platform hook只消費相同identity，避免rethrow造成duplicate。不同error identity與下一turn重用同object不受抑制。Milestone 17-6維持Debug / Test-compatible implementation，不加入Firebase或Crashlytics dependency。
+Milestone 17-6F 已完成並封閉17-6：App Composition Root在DI前建立唯一Debug Reporter與identity-based deduplicator，先安裝global uncaught hooks及BlocObserver，再把同一Reporter instance註冊進GetIt，確保Preference、Catalog與global entrypoints共用相同outlet。`runBootstrapGuarded`涵蓋database factory、config、DI preResolve、preference restore與runApp前初始化，fatal bootstrap failure上報後保留原stack重拋。Bloc與bootstrap若已成功上報，會在同一event-loop turn以error object identity＋stack object identity標記；Platform hook只消費相同propagation pair，避免rethrow造成duplicate。相同error但不同stack、不同error identity與下一turn重新出現都不受抑制；cleanup另使用generation ownership，避免較舊cleanup刪除較新的標記。Milestone 17-6維持Debug / Test-compatible implementation，不加入Firebase或Crashlytics dependency。
 
 17-6F review revision補強propagation ownership：Deduplicator現在同時比較原始error與stack object identity，不將相同exception instance但不同throw stack誤判為duplicate；每次mark具有generation token，舊cleanup不能刪除較新的標記。Bootstrap guard外層已擴大至Widgets binding、global hook與BlocObserver安裝，hook install自身失敗也會走fatal bootstrap report。去重仍不使用error / stack字串、runtime type或任意時間毫秒窗。
 
@@ -992,7 +992,7 @@ Auth API 已完成：
 - 已新增 Retrofit request test，驗證 `POST /auth/login`、JSON request serialization 與 response DTO parsing。
 - `LoginRequestDto` 明確宣告 `toJson()` contract，確保 Retrofit generator 產生正確的 request serialization。
 - Login response mapper 位於 `packages/auth` data layer。
-- Milestone 9 的 Login transport path 由 `packages/api_client` 辨識 DioException 並轉換 AppException；Milestone 12 後新增的 Auth Refresh path 目前由 `packages/auth` 的 `AuthRefreshRemoteDataSource` 直接捕捉 DioException 做 refresh-specific status 分類，後續由 Milestone 17-3 / 17-4 統一 review boundary。
+- Milestone 9 的 Login transport path 由 `packages/api_client` 辨識 DioException 並轉換 AppException；Milestone 12 後新增的 Auth Refresh path仍由 `packages/auth` 保有refresh-specific lifecycle分類，但Dio operational identity已統一透過`packages/api_client` typed mapper，401 / 403、temporary failure、protocol與unknown error boundary已由Milestone 17-3 / 17-4完成review與收斂。
 
 DI 與環境切換已完成：
 

@@ -833,6 +833,18 @@ Milestone 17-4C 已完成：Auth Refresh Interceptor 只對 typed lifecycle resu
 
 Milestone 17-4D 已完成：AuthRepository catch boundary已完成review與收窄。Login繼續映射 remote / local expected AppException；Restore與Logout只消化local storage operational failure，其他 typed identity或unknown error原樣拋出。Restore failure不清 runtime Session；Logout cleanup即使失敗仍完成其餘cleanup並清runtime Session。正式review revision修正多重cleanup error的優先級：unexpected / non-localStorage error優先於expected localStorage failure，避免programming error被第一個operational failure掩蓋。Workspace analyze與五個 package / app完整 tests通過，Milestone 17-4正式完成。
 
+Milestone 17-5A 已完成：Catalog LocalDataSource 只將 SQLite `DatabaseException` 視為 expected local storage failure。Persisted row corruption 由狹窄 parser / validator辨識，刪除受影響 page後回傳 Cache miss；未知 TypeError與其他 programming error原樣拋出。Local API contract violation改為 ArgumentError / StateError，不再偽裝成 protocol或data corruption AppException。Pagination、cursor chain、chain revision與Repository fallback尚未改動，下一步為17-5B Repository Cache Fallback Boundary。
+
+Milestone 17-5B 已完成：Catalog Repository的 Cache read、linked chain revision與 Cache write fallback只吸收 typed localStorage failure。protocol、dataCorruption與其他 AppException保留原始identity與stack trace進入Stream error channel；unknown error同樣不降級。Remote expected failure mapping與Cache side-effect已拆開，避免Cache contract error被誤轉為普通Catalog Failure。Catalog Repository / Data layer targeted 37 tests與 App analyze通過。
+
+Milestone 17-5C 已完成：Catalog external protocol、persisted corruption與internal invariant已明確分離。Remote malformed item與non-advancing cursor建立 typed protocol diagnostic並保存 stack trace；Bloc偵測多節點cursor cycle時使用 `FailureKind.protocol`。LocalDataSource呼叫契約錯誤仍使用 `ArgumentError` / `StateError`，不轉成AppException或Failure。
+
+Milestone 17-5D 已完成：Catalog Cache localStorage AppException現在攜帶 feature-local `CatalogCacheFailureDetails`，以安全方式描述read、write、append、chain revision、delete、corruption cleanup與expired cleanup operation。Context只暴露query是否為空、cursor是否存在與limit；不保存query、cursor token、item、SQL或raw row。原始SQLite error與stack trace仍保留，實際ErrorReporter接線留待17-6。
+
+Milestone 17-5E 已完成：Catalog targeted 107 tests、workspace五個package analyze與五個package / app完整333 tests全部通過。Cursor chain、chain revision CAS、SWR、Refresh、Append、revalidation、query switching、cancellation、localized UI、public Cache logout persistence與unknown error preservation均無回歸。Milestone 17-5 Catalog Protocol / Cache Failure Contract正式完成，下一步為17-6 App Uncaught Error與Reporting Adapter implementation review。
+
+Milestone 17-5正式review revision已完成：cursor-chain所有persisted `chain_revision`與`next_cursor`讀取都改走狹窄parser。損壞的第一頁revision可由Remote第一頁replacement清除同query / limit chain並重建；linked revision或Append traversal corruption則清除同chain並安全回null / false。Unknown implementation error仍原樣拋出，沒有重新加入broad TypeError catch。
+
 ### Milestone 16：Localization Foundation
 
 狀態：Completed；Milestone 16-1 至 16-7 已完成。

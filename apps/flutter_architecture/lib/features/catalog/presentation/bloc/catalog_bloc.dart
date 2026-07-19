@@ -285,8 +285,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
             state.copyWith(
               isLoadingMore: false,
               appendFailure: const Failure(
+                kind: FailureKind.protocol,
                 message: 'Catalog 分頁 cursor 形成循環',
-                code: 'cyclic_catalog_cursor',
+                diagnosticCode: 'cyclic_catalog_cursor',
               ),
             ),
           );

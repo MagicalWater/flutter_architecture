@@ -7,6 +7,7 @@ import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_page_response_dto_mapper.dart';
 import 'package:flutter_architecture/features/catalog/data/models/catalog_cache_page_entity.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
+import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page_snapshot.dart';
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 
@@ -80,61 +81,71 @@ class CatalogRepositoryImpl implements CatalogRepository {
     required int limit,
     required int? expectedChainRevision,
   }) async {
+    late final CatalogPage page;
     try {
       final response = await _remoteDataSource.searchCatalog(
         query: query,
         cursor: cursor,
         limit: limit,
       );
-      final page = response.toDomain();
+      page = response.toDomain();
 
       if (cursor != null &&
           cursor.trim().isNotEmpty &&
           page.nextCursor == cursor) {
-        throw const AppException(
-          kind: AppExceptionKind.protocol,
-          message: 'Catalog pagination cursor 無法前進',
-          code: 'non_advancing_catalog_cursor',
+        final stackTrace = StackTrace.current;
+        Error.throwWithStackTrace(
+          AppException(
+            kind: AppExceptionKind.protocol,
+            message: 'Catalog pagination cursor 無法前進',
+            diagnosticCode: 'non_advancing_catalog_cursor',
+            stackTrace: stackTrace,
+          ),
+          stackTrace,
         );
       }
-
-      final updatedAt = _nowUtc();
-      try {
-        final cachePage = page.toCacheEntity(
-          query: query,
-          requestCursor: cursor,
-          requestLimit: limit,
-          updatedAt: updatedAt,
-          chainRevision: expectedChainRevision ?? 0,
-        );
-        if (cursor == null) {
-          await _localDataSource.replacePage(
-            cachePage,
-            resetFollowingPages: true,
-          );
-        } else {
-          await _localDataSource.replaceAppendPageIfLinked(
-            cachePage,
-            expectedChainRevision: expectedChainRevision,
-          );
-        }
-      } on AppException {
-        // Catalog Cache 是可重建 read model；寫入失敗不覆蓋 Remote success。
-      }
-
-      return Success(
-        CatalogPageSnapshot(
-          page: page,
-          source: CatalogDataSource.remote,
-          freshness: CatalogFreshness.fresh,
-          lastUpdatedAt: updatedAt,
-        ),
-      );
     } on AppException catch (error) {
       return FailureResult(
         mapAppExceptionToFailure(error, fallbackMessage: '取得 Catalog 失敗'),
       );
     }
+
+    final updatedAt = _nowUtc();
+    try {
+      final cachePage = page.toCacheEntity(
+        query: query,
+        requestCursor: cursor,
+        requestLimit: limit,
+        updatedAt: updatedAt,
+        chainRevision: expectedChainRevision ?? 0,
+      );
+      if (cursor == null) {
+        await _localDataSource.replacePage(
+          cachePage,
+          resetFollowingPages: true,
+        );
+      } else {
+        await _localDataSource.replaceAppendPageIfLinked(
+          cachePage,
+          expectedChainRevision: expectedChainRevision,
+        );
+      }
+    } on AppException catch (error, stackTrace) {
+      if (error.kind != AppExceptionKind.localStorage) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+      // Catalog Cache 是可重建 read model；已知 storage 寫入失敗不覆蓋
+      // Remote success。其他 typed identity 不得被降級。
+    }
+
+    return Success(
+      CatalogPageSnapshot(
+        page: page,
+        source: CatalogDataSource.remote,
+        freshness: CatalogFreshness.fresh,
+        lastUpdatedAt: updatedAt,
+      ),
+    );
   }
 
   Future<int?> _readLinkedChainRevision({
@@ -148,8 +159,11 @@ class CatalogRepositoryImpl implements CatalogRepository {
         cursor: cursor,
         limit: limit,
       );
-    } on AppException {
-      return null;
+    } on AppException catch (error, stackTrace) {
+      if (error.kind == AppExceptionKind.localStorage) {
+        return null;
+      }
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 
@@ -166,8 +180,11 @@ class CatalogRepositoryImpl implements CatalogRepository {
         now: _nowUtc(),
         retainFor: _cachePolicy.retainFor,
       );
-    } on AppException {
-      return null;
+    } on AppException catch (error, stackTrace) {
+      if (error.kind == AppExceptionKind.localStorage) {
+        return null;
+      }
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 

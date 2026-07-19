@@ -20,6 +20,12 @@
 
 ### Added
 
+- 完成 Milestone 17-5正式review revision：補齊cursor-chain persisted corruption parsing與repair；第一頁revision損壞可重建，linked revision / Append traversal損壞會清除相同query / limit chain並安全拒絕寫入；新增四組regression。
+- 完成 Milestone 17-5E完整Regression：Catalog targeted 107 tests、workspace五個package analyze與五個package / app完整333 tests全部通過；cursor chain、chain revision、SWR、Refresh、Append、revalidation、UI與Logout persistence無回歸，Milestone 17-5正式完成。
+- 完成 Milestone 17-5D Reporting-ready Diagnostic Preparation：新增安全的 Catalog Cache operation details，涵蓋read/write/append/chain revision/delete/corruption與expired cleanup；不保存query、cursor token、item、SQL或raw row，實際Reporter wiring留待17-6。
+- 完成 Milestone 17-5C Protocol / Invariant Contract：Remote malformed item與non-advancing cursor改用 typed protocol diagnostic並保存stack trace；Bloc cursor cycle改為 `FailureKind.protocol`；Local API misuse維持programming error channel。
+- 完成 Milestone 17-5B Repository Cache Fallback Boundary：Catalog Cache read、linked chain revision與write只吸收 typed localStorage failure；protocol、dataCorruption與unknown error不再被降級或被Remote success掩蓋，Remote failure mapping與Cache side-effect正式分離。
+- 完成 Milestone 17-5A Catalog Local Error Boundary：SQLite `DatabaseException` 映射為 typed localStorage；persisted row corruption採狹窄repair path；unknown TypeError / programming error不再降級；Local API misuse改為 ArgumentError / StateError fail fast。
 - 完成 Milestone 17-4正式review revision：Logout多重cleanup failure改為unexpected / non-localStorage error優先於expected localStorage failure，仍保證所有cleanup與runtime Session清除；新增unknown與protocol雙重失敗regression。
 - 完成 Milestone 17-4D 與整體 Auth lifecycle regression：AuthRepository Restore / Logout 只消化 typed local storage failure，unexpected typed identity原樣拋出；Logout cleanup失敗仍完成其餘cleanup並清runtime Session。Workspace analyze與五個 package / app完整 tests全數通過，Milestone 17-4正式完成。
 - 完成 Milestone 17-4C Interceptor Error Preservation：expected refresh lifecycle result仍保留原始 401；unexpected refresher / replay error改以 `DioExceptionType.unknown` 保留原始 error與 stack trace，不再退回第一次 401。

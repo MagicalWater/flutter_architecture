@@ -24,17 +24,18 @@ extension CatalogPageResponseDtoMapper on CatalogPageResponseDto {
 extension CatalogItemDtoMapper on CatalogItemDto {
   CatalogItem toDomain() {
     if (id.trim().isEmpty || name.trim().isEmpty) {
-      throw const AppException(
-        kind: AppExceptionKind.protocol,
-        message: 'Catalog response 欄位不完整',
-        code: 'malformed_catalog_response',
+      final stackTrace = StackTrace.current;
+      Error.throwWithStackTrace(
+        AppException(
+          kind: AppExceptionKind.protocol,
+          message: 'Catalog response 欄位不完整',
+          diagnosticCode: 'malformed_catalog_response',
+          stackTrace: stackTrace,
+        ),
+        stackTrace,
       );
     }
 
-    return CatalogItem(
-      id: id,
-      name: name,
-      description: description,
-    );
+    return CatalogItem(id: id, name: name, description: description);
   }
 }

@@ -485,7 +485,8 @@ void main() {
     await _waitUntil(() => !bloc.state.isLoadingMore);
 
     expect(bloc.state.nextCursor, 'cursor-2');
-    expect(bloc.state.appendFailure?.code, 'cyclic_catalog_cursor');
+    expect(bloc.state.appendFailure?.kind, FailureKind.protocol);
+    expect(bloc.state.appendFailure?.diagnosticCode, 'cyclic_catalog_cursor');
     expect(bloc.state.items.map((item) => item.id), <String>[
       'item-initial',
       'item-append-1',

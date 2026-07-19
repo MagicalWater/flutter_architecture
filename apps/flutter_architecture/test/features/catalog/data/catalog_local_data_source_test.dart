@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache_page_mapper.dart';
 import 'package:flutter_architecture/features/catalog/data/models/catalog_cache_item_entity.dart';
@@ -120,13 +123,7 @@ void main() {
         now: DateTime.utc(2026, 7, 17),
         retainFor: const Duration(days: 7),
       ),
-      throwsA(
-        isA<AppException>().having(
-          (error) => error.code,
-          'code',
-          'invalid_catalog_cache_cursor',
-        ),
-      ),
+      throwsArgumentError,
     );
   });
 
@@ -140,13 +137,7 @@ void main() {
         ),
         resetFollowingPages: true,
       ),
-      throwsA(
-        isA<AppException>().having(
-          (error) => error.code,
-          'code',
-          'invalid_catalog_cache_chain_reset',
-        ),
-      ),
+      throwsStateError,
     );
   });
 
@@ -164,13 +155,7 @@ void main() {
         ),
         resetFollowingPages: false,
       ),
-      throwsA(
-        isA<AppException>().having(
-          (error) => error.code,
-          'code',
-          'non_advancing_catalog_cache_cursor',
-        ),
-      ),
+      throwsArgumentError,
     );
   });
 
@@ -263,13 +248,7 @@ void main() {
         ),
         resetFollowingPages: true,
       ),
-      throwsA(
-        isA<AppException>().having(
-          (error) => error.code,
-          'code',
-          'invalid_catalog_cache_item_position',
-        ),
-      ),
+      throwsArgumentError,
     );
 
     final cached = await _read(dataSource, '', null, 20, now);
@@ -378,6 +357,152 @@ void main() {
     expect(await database.query('catalog_cache_page_item'), isEmpty);
   });
 
+  test('persisted row 型別損壞會刪除 page 並視為 cache miss', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      _page(query: '', cursor: null, updatedAt: now),
+      resetFollowingPages: true,
+    );
+    await database.update('catalog_cache_page', <String, Object?>{
+      'updated_at': 'invalid',
+    });
+
+    final cached = await _read(dataSource, '', null, 20, now);
+
+    expect(cached, isNull);
+    expect(await database.query('catalog_cache_page'), isEmpty);
+    expect(await database.query('catalog_cache_page_item'), isEmpty);
+  });
+
+  test('第一頁舊 chain revision 損壞時 replacement 會重建該 chain', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      _page(query: 'flutter', cursor: null, updatedAt: now),
+      resetFollowingPages: true,
+    );
+    await dataSource.replacePage(
+      _page(query: 'flutter', cursor: 'cursor-1', updatedAt: now),
+      resetFollowingPages: false,
+    );
+    await database.update(
+      'catalog_cache_page',
+      <String, Object?>{'chain_revision': 'invalid'},
+      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
+      whereArgs: <Object?>['flutter', '', 20],
+    );
+
+    final revision = await dataSource.replacePage(
+      _page(
+        query: 'flutter',
+        cursor: null,
+        updatedAt: now.add(const Duration(minutes: 1)),
+      ),
+      resetFollowingPages: true,
+    );
+
+    expect(revision, 1);
+    expect(await _read(dataSource, 'flutter', null, 20, now), isNotNull);
+    expect(await _read(dataSource, 'flutter', 'cursor-1', 20, now), isNull);
+  });
+
+  test('readLinkedChainRevision 遇到損壞 revision 會清除 chain 並回 null', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      _page(query: 'flutter', cursor: null, updatedAt: now),
+      resetFollowingPages: true,
+    );
+    await database.update(
+      'catalog_cache_page',
+      <String, Object?>{'chain_revision': 'invalid'},
+      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
+      whereArgs: <Object?>['flutter', '', 20],
+    );
+
+    final revision = await dataSource.readLinkedChainRevision(
+      query: 'flutter',
+      cursor: 'cursor-next',
+      limit: 20,
+    );
+
+    expect(revision, isNull);
+    expect(await _read(dataSource, 'flutter', null, 20, now), isNull);
+  });
+
+  test('Append chain revision 損壞時拒絕寫入並清除 chain', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      _page(query: 'flutter', cursor: null, updatedAt: now),
+      resetFollowingPages: true,
+    );
+    await database.update(
+      'catalog_cache_page',
+      <String, Object?>{'chain_revision': 'invalid'},
+      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
+      whereArgs: <Object?>['flutter', '', 20],
+    );
+
+    final written = await dataSource.replaceAppendPageIfLinked(
+      CatalogCachePageEntity(
+        query: 'flutter',
+        requestCursor: 'cursor-next',
+        requestLimit: 20,
+        nextCursor: 'cursor-after',
+        updatedAt: now,
+        items: const <CatalogCacheItemEntity>[],
+      ),
+    );
+
+    expect(written, isFalse);
+    expect(await _read(dataSource, 'flutter', null, 20, now), isNull);
+    expect(await _read(dataSource, 'flutter', 'cursor-next', 20, now), isNull);
+  });
+
+  test('Append next cursor 型別損壞時拒絕寫入並清除 chain', () async {
+    final now = DateTime.utc(2026, 7, 17);
+    await dataSource.replacePage(
+      _page(query: 'flutter', cursor: null, updatedAt: now),
+      resetFollowingPages: true,
+    );
+    await database.update(
+      'catalog_cache_page',
+      <String, Object?>{
+        'next_cursor': Uint8List.fromList(<int>[1, 2, 3]),
+      },
+      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
+      whereArgs: <Object?>['flutter', '', 20],
+    );
+
+    final written = await dataSource.replaceAppendPageIfLinked(
+      CatalogCachePageEntity(
+        query: 'flutter',
+        requestCursor: 'cursor-next',
+        requestLimit: 20,
+        nextCursor: 'cursor-after',
+        updatedAt: now,
+        items: const <CatalogCacheItemEntity>[],
+      ),
+    );
+
+    expect(written, isFalse);
+    expect(await _read(dataSource, 'flutter', null, 20, now), isNull);
+  });
+
+  test('unknown TypeError 不會被映射為 localStorage 或 corruption', () async {
+    final error = TypeError();
+    final source = CatalogLocalDataSource(_ThrowingDatabase(error));
+
+    await expectLater(
+      source.readPage(
+        query: '',
+        cursor: null,
+        limit: 20,
+        now: DateTime.utc(2026, 7, 17),
+        retainFor: const Duration(days: 7),
+      ),
+      throwsA(same(error)),
+    );
+  });
+
   test('readPage SQLite failure 會映射為 AppException', () async {
     await database.close();
 
@@ -390,13 +515,48 @@ void main() {
         retainFor: const Duration(days: 7),
       ),
       throwsA(
-        isA<AppException>().having(
-          (error) => error.message,
-          'message',
-          '讀取 Catalog Cache 失敗',
-        ),
+        isA<AppException>()
+            .having((error) => error.message, 'message', '讀取 Catalog Cache 失敗')
+            .having(
+              (error) => (error.cause! as CatalogCacheFailureDetails).operation,
+              'operation',
+              CatalogCacheOperation.readPage,
+            )
+            .having(
+              (error) =>
+                  (error.cause! as CatalogCacheFailureDetails).isQueryEmpty,
+              'isQueryEmpty',
+              isTrue,
+            )
+            .having(
+              (error) => (error.cause! as CatalogCacheFailureDetails).hasCursor,
+              'hasCursor',
+              isFalse,
+            )
+            .having(
+              (error) => (error.cause! as CatalogCacheFailureDetails).limit,
+              'limit',
+              20,
+            ),
       ),
     );
+  });
+
+  test('Cache diagnostic 不展開 query cursor 或原始 SQLite error', () {
+    final details = CatalogCacheFailureDetails(
+      operation: CatalogCacheOperation.writeAppendPage,
+      isQueryEmpty: false,
+      hasCursor: true,
+      limit: 20,
+      originalError: StateError('sensitive raw sqlite context'),
+    );
+
+    final text = details.toString();
+
+    expect(text, contains('writeAppendPage'));
+    expect(text, contains('hasCursor: true'));
+    expect(text, isNot(contains('sensitive raw sqlite context')));
+    expect(text, isNot(contains('cursor-token')));
   });
 
   test('transaction 失敗時保留 replacement 前的完整 page', () async {
@@ -592,6 +752,17 @@ void main() {
     await version4.close();
     await databaseFactoryFfi.deleteDatabase(databasePath);
   });
+}
+
+final class _ThrowingDatabase implements Database {
+  _ThrowingDatabase(this.error);
+
+  final Object error;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    throw error;
+  }
 }
 
 Future<CatalogCachePageEntity?> _read(

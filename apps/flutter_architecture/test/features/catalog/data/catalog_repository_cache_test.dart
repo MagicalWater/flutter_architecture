@@ -8,6 +8,7 @@ import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.d
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_remote_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache_page_mapper.dart';
+import 'package:flutter_architecture/features/catalog/data/models/catalog_cache_page_entity.dart';
 import 'package:flutter_architecture/features/catalog/data/repositories/catalog_repository_impl.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart';
@@ -577,6 +578,100 @@ void main() {
     expect(_success(results.single).source, CatalogDataSource.remote);
   });
 
+  test('Cache read 非 localStorage AppException 不會被降級成 Cache miss', () async {
+    final error = AppException(
+      kind: AppExceptionKind.protocol,
+      message: 'cache read contract violation',
+      stackTrace: StackTrace.current,
+    );
+    final repository = _repository(
+      _RecordingCatalogApi(),
+      _ThrowingCatalogLocalDataSource(database, readPageError: error),
+      clock,
+    );
+
+    await expectLater(
+      repository.watchCatalog(
+        query: '',
+        cursor: null,
+        limit: 20,
+        policy: CatalogLoadPolicy.initial,
+      ),
+      emitsError(same(error)),
+    );
+  });
+
+  test('Chain revision 非 localStorage AppException 不會被降級成 null', () async {
+    final error = AppException(
+      kind: AppExceptionKind.dataCorruption,
+      message: 'chain revision corruption escaped repair',
+      stackTrace: StackTrace.current,
+    );
+    final repository = _repository(
+      _RecordingCatalogApi(),
+      _ThrowingCatalogLocalDataSource(
+        database,
+        readLinkedChainRevisionError: error,
+      ),
+      clock,
+    );
+
+    await expectLater(
+      repository.watchCatalog(
+        query: '',
+        cursor: 'cursor-1',
+        limit: 20,
+        policy: CatalogLoadPolicy.append,
+      ),
+      emitsError(same(error)),
+    );
+  });
+
+  test(
+    'Cache write 非 localStorage AppException 不會被 Remote success 掩蓋',
+    () async {
+      final error = AppException(
+        kind: AppExceptionKind.protocol,
+        message: 'cache write contract violation',
+        stackTrace: StackTrace.current,
+      );
+      final repository = _repository(
+        _RecordingCatalogApi(),
+        _ThrowingCatalogLocalDataSource(database, replacePageError: error),
+        clock,
+      );
+
+      await expectLater(
+        repository.watchCatalog(
+          query: '',
+          cursor: null,
+          limit: 20,
+          policy: CatalogLoadPolicy.refresh,
+        ),
+        emitsError(same(error)),
+      );
+    },
+  );
+
+  test('Cache unknown error 維持 Stream error channel', () async {
+    final error = StateError('cache implementation bug');
+    final repository = _repository(
+      _RecordingCatalogApi(),
+      _ThrowingCatalogLocalDataSource(database, readPageError: error),
+      clock,
+    );
+
+    await expectLater(
+      repository.watchCatalog(
+        query: '',
+        cursor: null,
+        limit: 20,
+        policy: CatalogLoadPolicy.initial,
+      ),
+      emitsError(same(error)),
+    );
+  });
+
   test('policy 與 cursor 不合法時 fail fast', () async {
     final repository = _repository(_RecordingCatalogApi(), local, clock);
 
@@ -765,5 +860,62 @@ class _ControlledCatalogApi implements CatalogApi {
 
   void complete(int index, CatalogPageResponseDto response) {
     _completers[index].complete(response);
+  }
+}
+
+class _ThrowingCatalogLocalDataSource extends CatalogLocalDataSource {
+  _ThrowingCatalogLocalDataSource(
+    super.database, {
+    this.readPageError,
+    this.readLinkedChainRevisionError,
+    this.replacePageError,
+  });
+
+  final Object? readPageError;
+  final Object? readLinkedChainRevisionError;
+  final Object? replacePageError;
+
+  @override
+  Future<CatalogCachePageEntity?> readPage({
+    required String query,
+    required String? cursor,
+    required int limit,
+    required DateTime now,
+    required Duration retainFor,
+  }) async {
+    final error = readPageError;
+    if (error != null) throw error;
+    return super.readPage(
+      query: query,
+      cursor: cursor,
+      limit: limit,
+      now: now,
+      retainFor: retainFor,
+    );
+  }
+
+  @override
+  Future<int?> readLinkedChainRevision({
+    required String query,
+    required String cursor,
+    required int limit,
+  }) async {
+    final error = readLinkedChainRevisionError;
+    if (error != null) throw error;
+    return super.readLinkedChainRevision(
+      query: query,
+      cursor: cursor,
+      limit: limit,
+    );
+  }
+
+  @override
+  Future<int> replacePage(
+    CatalogCachePageEntity page, {
+    required bool resetFollowingPages,
+  }) async {
+    final error = replacePageError;
+    if (error != null) throw error;
+    return super.replacePage(page, resetFollowingPages: resetFollowingPages);
   }
 }

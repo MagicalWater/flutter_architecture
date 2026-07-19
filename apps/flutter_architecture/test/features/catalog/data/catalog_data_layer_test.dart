@@ -92,11 +92,14 @@ void main() {
     expect(
       dto.toDomain,
       throwsA(
-        isA<AppException>().having(
-          (error) => error.code,
-          'code',
-          'malformed_catalog_response',
-        ),
+        isA<AppException>()
+            .having((error) => error.kind, 'kind', AppExceptionKind.protocol)
+            .having(
+              (error) => error.diagnosticCode,
+              'diagnosticCode',
+              'malformed_catalog_response',
+            )
+            .having((error) => error.stackTrace, 'stackTrace', isNotNull),
       ),
     );
   });
@@ -174,7 +177,9 @@ void main() {
       failure: (value) => value,
     );
 
-    expect(failure.code, 'non_advancing_catalog_cursor');
+    expect(failure.kind, FailureKind.protocol);
+    expect(failure.diagnosticCode, 'non_advancing_catalog_cursor');
+    expect(failure.stackTrace, isNotNull);
     expect(failure.message, '取得 Catalog 失敗');
   });
 

@@ -1829,14 +1829,26 @@ Audit 關鍵發現：
 
 ### Milestone 17-5：Catalog Protocol / Cache Failure Contract
 
-狀態：Planned。
+狀態：Completed；17-5A 至 17-5E 已完成。
 
-- [ ] 區分 cache unavailable、corruption、transaction failure與 unknown implementation error。
-- [ ] 建立 external protocol violation identity，保留 internal invariant error channel。
-- [ ] non-blocking cache read / write / cleanup failure加入 non-fatal reporting。
-- [ ] 保持 initial / refresh / append / revalidation operation context與 localized mapping。
-- [ ] 不建立 Generic Cache / Pagination failure framework。
-- [ ] 完整驗證 cursor chain、chain revision、SWR、refresh、append與 revalidation regression。
+- [x] 區分 cache unavailable、corruption、transaction failure與 unknown implementation error。
+- [x] 建立 external protocol violation identity，保留 internal invariant error channel。
+- [x] 為 non-blocking cache read / write / cleanup failure準備安全、reporting-ready diagnostic；實際 ErrorReporter wiring留待17-6。
+- [x] 保持 initial / refresh / append / revalidation operation context與 localized mapping。
+- [x] 不建立 Generic Cache / Pagination failure framework。
+- [x] 完整驗證 cursor chain、chain revision、SWR、refresh、append與 revalidation regression。
+
+17-5A 已完成：`CatalogLocalDataSource` 的 SQLite boundary 已收窄。只有 `DatabaseException` 會映射為 `AppExceptionKind.localStorage`；persisted row 的欄位型別、cursor、item 與 position corruption 會透過狹窄 corruption path刪除受影響 page並視為 Cache miss。未知 `TypeError` / `StateError` 不再被降級成 localStorage或 corruption。Local API misuse（空 cursor、非法 limit、非第一頁 chain reset、Append缺少 cursor、寫入 page invariant）改為 `ArgumentError` / `StateError` fail fast。Local targeted 20 tests、Catalog Repository / Data layer 33 tests與 App analyze通過。
+
+17-5B 已完成：`CatalogRepositoryImpl` 的 Cache read、linked chain revision與 Cache write只吸收 `AppExceptionKind.localStorage`，維持可重建 read-model 的 non-blocking fallback。`dataCorruption`、`protocol`與其他 typed AppException不再被降級成 Cache miss、null revision或 Remote success；unknown error維持 Stream error channel。Remote expected failure mapping與 Cache side-effect已拆成兩個階段，避免 Cache contract error被外層 Remote AppException catch轉成普通 Failure。Catalog Repository / Data layer targeted 37 tests與 App analyze通過。
+
+17-5C 已完成：Catalog external protocol、persisted corruption與internal invariant identity已收斂。Malformed Remote item與non-advancing Remote cursor使用 `AppExceptionKind.protocol + diagnosticCode`並保存 stack trace；Bloc偵測跨頁cursor cycle時建立 `FailureKind.protocol + cyclic_catalog_cursor`。Local API misuse維持 `ArgumentError` / `StateError` programming error channel，不進 expected Failure。Catalog Data / Repository / Bloc targeted 69 tests與 App analyze通過。
+
+17-5D 已完成：新增 feature-local `CatalogCacheFailureDetails` 與 `CatalogCacheOperation`，為 Cache read、first-page write、page write、append write、chain revision read、delete、corruption cleanup與expired cleanup建立安全 operation identity。Diagnostic只保存 query是否為空、cursor是否存在與limit，不保存query、cursor token、item、SQL或raw row；原始SQLite error identity保留於details但 `toString()` 不展開。實際 non-fatal reporter與Composition Root wiring留待17-6。Catalog Data / Repository targeted 58 tests與 App analyze通過。
+
+17-5E 已完成：Catalog LocalDataSource、Repository、Data mapper、Bloc、Widget與Refresh targeted 107 tests全部通過；workspace五個package analyze全數通過。完整tests結果為 api_client 42、auth 41、core 4、design_system 43、flutter_architecture 203，合計333 tests。Fresh / stale / expired、future timestamp、Cache read/write fallback、corruption repair、unknown error channel、Remote protocol、cursor chain、chain revision CAS、Refresh重用cursor、stale Append late-write、SWR、Refresh / Append emission、query switching、cancellation、localized UI與Logout保留public Cache均無回歸。Milestone 17-5正式完成。
+
+正式review revision已完成：所有cursor-chain persisted欄位改用狹窄parser。第一頁舊revision損壞時會在同一transaction清除相同query / limit chain並以revision 1重建；linked revision與Append traversal遇到revision或next cursor corruption時會清除同chain，回傳null / false，不讓private corruption sentinel或TypeError逃出Local boundary。新增四組regression，Catalog Local / Repository / Data targeted 62 tests與App analyze通過。
 
 ### Milestone 17-6：App Uncaught Error 與 Reporting Adapter
 

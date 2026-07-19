@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：Audit Review Gate Approved；18-7A Reviewed / Closed，下一步為18-7B Auth single-active-user persistence。
+狀態：Audit Review Gate Approved；18-7B Auth single-active-user persistence已完成實作、尚待review。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1955,3 +1955,5 @@ Audit Review Gate
 Audit Review Gate已通過：9項findings均完成disposition，無Accepted risk。核准`M18-A01`、`M18-A02`、`M18-R01`、`M18-P01`、`M18-P02`、`M18-C01`與`M18-D01`進入approved remediation / final documentation；`M18-D02`與`M18-D03`延後至18-8。平台scope只承諾Android為Supported target候選，iOS、Web、Windows、macOS與Linux維持Dependency-ready。現在不發布baseline，`1.2.0`維持provisional candidate。下一步為18-7A Auth lifecycle latest-intent ordering。
 
 18-7A已完成並通過review，`M18-R01`正式Resolved：Auth lifecycle command使用generation lease，較新restore / login / logout意圖與外部權威Session clear會使舊operation失效；Repository在persistence與Session commit前驗證lease，AuthBloc將superseded視為control flow。Logout cleanup一旦開始會完整執行，但只有current Logout可清runtime Session。Double Login、Login + Logout、Restore + Login、external Session clear與Logout cleanup交錯regression均已補齊；workspace analyze與389 tests通過。下一步為18-7B。
+
+18-7B已完成實作、尚待review：schema version升至5，`auth_user`使用固定`slot = 1`限制single-active-user；v4單列資料可保留，multi-row資料安全清除。Token payload新增`userId`，login與refresh均保存identity；restore要求token與user identity一致，legacy或mismatch資料會完整清理。Workspace analyze與395 tests通過，`M18-P01`尚待review。

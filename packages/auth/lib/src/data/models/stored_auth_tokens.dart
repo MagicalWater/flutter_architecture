@@ -2,6 +2,7 @@ class StoredAuthTokens {
   const StoredAuthTokens({
     required this.accessToken,
     required this.refreshToken,
+    this.userId,
     this.accessTokenExpiresAt,
     this.refreshTokenExpiresAt,
   });
@@ -9,6 +10,7 @@ class StoredAuthTokens {
   factory StoredAuthTokens.fromJson(Map<String, Object?> json) {
     final accessToken = json['accessToken'];
     final refreshToken = json['refreshToken'];
+    final userId = json['userId'];
     if (accessToken is! String || accessToken.isEmpty ||
         refreshToken is! String || refreshToken.isEmpty) {
       throw const FormatException('Invalid auth token pair');
@@ -16,6 +18,7 @@ class StoredAuthTokens {
     return StoredAuthTokens(
       accessToken: accessToken,
       refreshToken: refreshToken,
+      userId: userId is String && userId.isNotEmpty ? userId : null,
       accessTokenExpiresAt: _readDateTime(json['accessTokenExpiresAt']),
       refreshTokenExpiresAt: _readDateTime(json['refreshTokenExpiresAt']),
     );
@@ -23,6 +26,7 @@ class StoredAuthTokens {
 
   final String accessToken;
   final String refreshToken;
+  final String? userId;
   final DateTime? accessTokenExpiresAt;
   final DateTime? refreshTokenExpiresAt;
 
@@ -34,6 +38,7 @@ class StoredAuthTokens {
   Map<String, Object?> toJson() => <String, Object?>{
         'accessToken': accessToken,
         'refreshToken': refreshToken,
+        'userId': userId,
         'accessTokenExpiresAt': accessTokenExpiresAt?.toUtc().toIso8601String(),
         'refreshTokenExpiresAt': refreshTokenExpiresAt?.toUtc().toIso8601String(),
       };

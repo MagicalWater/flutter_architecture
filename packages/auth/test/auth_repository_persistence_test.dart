@@ -178,6 +178,75 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
+  test('Restore 遇到legacy token缺少userId時會清除本地狀態', () async {
+    final sessionManager = SessionManager();
+    final local = _FakeAuthLocalStore()
+      ..tokens = const StoredAuthTokens(
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+      )
+      ..user = const AuthUserModel(id: 'user-001', name: 'User');
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(MockAuthApi()),
+      local,
+      sessionManager,
+      AuthStateMutationCoordinator(),
+    );
+
+    final result = await repository.restoreSession();
+
+    expect(result, isA<Success<AuthUser?>>());
+    expect(local.tokens, isNull);
+    expect(local.user, isNull);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  test('Restore 遇到token與user identity不一致時會清除本地狀態', () async {
+    final sessionManager = SessionManager();
+    final local = _FakeAuthLocalStore()
+      ..tokens = const StoredAuthTokens(
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        userId: 'user-token',
+      )
+      ..user = const AuthUserModel(id: 'user-row', name: 'User');
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(MockAuthApi()),
+      local,
+      sessionManager,
+      AuthStateMutationCoordinator(),
+    );
+
+    final result = await repository.restoreSession();
+
+    expect(result, isA<Success<AuthUser?>>());
+    expect(local.tokens, isNull);
+    expect(local.user, isNull);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  test('Restore token與user identity一致時建立相同user Session', () async {
+    final sessionManager = SessionManager();
+    final local = _FakeAuthLocalStore()
+      ..tokens = const StoredAuthTokens(
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        userId: 'user-001',
+      )
+      ..user = const AuthUserModel(id: 'user-001', name: 'User');
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(MockAuthApi()),
+      local,
+      sessionManager,
+      AuthStateMutationCoordinator(),
+    );
+
+    final result = await repository.restoreSession();
+
+    expect(result, isA<Success<AuthUser?>>());
+    expect(sessionManager.currentSession?.userId, 'user-001');
+  });
+
   test('Restore 遇到已知 local storage failure 時保留 runtime Session 並回傳 Failure', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'runtime-token', userId: 'runtime-user');

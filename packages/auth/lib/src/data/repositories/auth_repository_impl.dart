@@ -61,6 +61,7 @@ class AuthRepositoryImpl implements AuthRepository {
             StoredAuthTokens(
               accessToken: result.accessToken,
               refreshToken: result.refreshToken,
+              userId: user.id,
             ),
           );
           operation.throwIfSuperseded();
@@ -104,6 +105,12 @@ class AuthRepositoryImpl implements AuthRepository {
         operation.throwIfSuperseded();
 
         if (tokens == null || user == null) {
+          await _clearLocalAuthStateBestEffort();
+          _sessionManager.clear();
+          return const Success(null);
+        }
+
+        if (tokens.userId == null || tokens.userId != user.id) {
           await _clearLocalAuthStateBestEffort();
           _sessionManager.clear();
           return const Success(null);

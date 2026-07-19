@@ -202,6 +202,12 @@ Android為唯一Supported target候選；在18-8驗證完成前仍不得視為�
 
 Logout在進入exclusive cleanup前可被取代；cleanup一旦開始會完整執行user與token cleanup，但只有current Logout可清runtime Session。Regression涵蓋Double Login、Login + Logout、Restore + Login UI ordering、external Session clear，以及Logout cleanup與較新Login交錯。Workspace五個package analyze與389項tests全數通過。下一步為18-7B Auth single-active-user persistence。
 
+### 18-7B implementation progress
+
+18-7B已完成實作，尚待review。SQLite schema升至version 5，`auth_user`改為固定`slot = 1`的single-active-user record；future writes以同一slot replace，無法再累積多個user rows。v4 upgrade若只有一列則保留並轉換；若存在multi-row則因無法證明token identity而安全清空。
+
+`StoredAuthTokens`新增stable `userId`，login與refresh rotation均持續保存identity。Restore只在token `userId`與SQLite user ID一致時建立Session；legacy token缺少identity或兩者不一致時會清除token、user與runtime Session。Targeted migration / restore tests及五個workspace package analyze、395項tests全數通過。`M18-P01`仍待18-7B review後才可改為Resolved。
+
 ---
 
 ## 8. Baseline release decision

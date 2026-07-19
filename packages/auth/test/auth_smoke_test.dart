@@ -34,12 +34,14 @@ void main() {
     const tokens = StoredAuthTokens(
       accessToken: 'access-token',
       refreshToken: 'refresh-token',
+      userId: 'user-001',
     );
 
     final restored = StoredAuthTokens.fromJson(tokens.toJson());
 
     expect(restored.accessToken, tokens.accessToken);
     expect(restored.refreshToken, tokens.refreshToken);
+    expect(restored.userId, tokens.userId);
   });
 
   test('Session generation 在建立與清除 Session 時遞增，更新 token 時保持不變', () {

@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 
 /// App SQLite schema 與 migration 入口。
 abstract final class AppDatabaseSchema {
-  static const int version = 4;
+  static const int version = 5;
 
   static Future<void> onCreate(Database db, int version) async {
     await _createAuthUserTable(db);
@@ -23,15 +23,46 @@ abstract final class AppDatabaseSchema {
     if (oldVersion < 4) {
       await _addCatalogChainRevision(db);
     }
+    if (oldVersion < 5) {
+      await _upgradeAuthUserToSingleActiveRecord(db);
+    }
   }
 
   static Future<void> _createAuthUserTable(DatabaseExecutor db) {
     return db.execute('''
       CREATE TABLE auth_user (
-        id TEXT PRIMARY KEY,
+        slot INTEGER PRIMARY KEY CHECK (slot = 1),
+        id TEXT NOT NULL UNIQUE,
         name TEXT NOT NULL
       )
     ''');
+  }
+
+  static Future<void> _upgradeAuthUserToSingleActiveRecord(
+    DatabaseExecutor db,
+  ) async {
+    final tables = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+      const <Object?>['auth_user'],
+    );
+    if (tables.isEmpty) {
+      await _createAuthUserTable(db);
+      return;
+    }
+
+    final rows = await db.query('auth_user');
+    await db.execute('ALTER TABLE auth_user RENAME TO auth_user_legacy');
+    await _createAuthUserTable(db);
+
+    if (rows.length == 1) {
+      await db.insert('auth_user', <String, Object?>{
+        'slot': 1,
+        'id': rows.single['id'],
+        'name': rows.single['name'],
+      });
+    }
+
+    await db.execute('DROP TABLE auth_user_legacy');
   }
 
   static Future<void> _createCatalogCacheTables(DatabaseExecutor db) async {

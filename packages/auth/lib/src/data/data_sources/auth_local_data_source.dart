@@ -105,7 +105,7 @@ class AuthLocalDataSource
     await _guardLocal(
       () => _database.insert(
         _userTable,
-        user.toJson(),
+        <String, Object?>{'slot': 1, ...user.toJson()},
         conflictAlgorithm: ConflictAlgorithm.replace,
       ),
       message: '儲存登入使用者失敗',
@@ -115,7 +115,12 @@ class AuthLocalDataSource
   @override
   Future<AuthUserModel?> readUser() async {
     final rows = await _guardLocal(
-      () => _database.query(_userTable, limit: 1),
+      () => _database.query(
+        _userTable,
+        where: 'slot = ?',
+        whereArgs: const <Object?>[1],
+        limit: 1,
+      ),
       message: '讀取登入使用者失敗',
     );
 

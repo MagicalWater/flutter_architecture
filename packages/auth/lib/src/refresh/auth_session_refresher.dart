@@ -131,6 +131,7 @@ class AuthSessionRefresher implements AuthRefresher {
             StoredAuthTokens(
               accessToken: response.accessToken,
               refreshToken: response.refreshToken,
+              userId: inFlight.userId,
               accessTokenExpiresAt: response.accessTokenExpiresAt,
               refreshTokenExpiresAt: response.refreshTokenExpiresAt,
             ),

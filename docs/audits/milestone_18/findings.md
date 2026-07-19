@@ -16,9 +16,9 @@
 
 **Baseline blocking：** Yes，除非在Audit Review Gate明確修正、降級既有architecture claim或記錄Accepted risk。
 
-**Disposition：** Pending Audit Review Gate
+**Disposition：** Approved remediation；pending 18-7D
 
-**Target phase：** 18-7 candidate
+**Target phase：** 18-7D
 
 **Verification required：** Architecture import scan、Shell startup behavior regression、完整App tests。
 
@@ -211,9 +211,9 @@ Verification涵蓋Double Login反向完成、Login + Logout反向完成、Restor
 
 **Baseline blocking：** Yes，除非在Audit Review Gate修正auth user single-record / identity contract或明確降級Auth persistence capability。
 
-**Disposition：** Pending Audit Review Gate
+**Disposition：** Approved remediation；18-7B implementation complete，pending review
 
-**Target phase：** 18-7 candidate
+**Target phase：** 18-7B
 
 **Verification required：** 不同user sequential login、double login、正常single-user restore、既有multi-row database upgrade / restore、row count異常cleanup、logout與migration regression。
 

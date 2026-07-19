@@ -207,13 +207,13 @@ Verification涵蓋Double Login反向完成、Login + Logout反向完成、Restor
 
 **Severity：** P1
 
-**Status：** Confirmed
+**Status：** Resolved
 
-**Baseline blocking：** Yes，除非在Audit Review Gate修正auth user single-record / identity contract或明確降級Auth persistence capability。
+**Baseline blocking：** No，已於18-7B完成remediation與review verification。
 
-**Disposition：** Approved remediation；18-7B implementation complete，pending review
+**Disposition：** Resolved in 18-7B
 
-**Target phase：** 18-7B
+**Target phase：** Completed
 
 **Verification required：** 不同user sequential login、double login、正常single-user restore、既有multi-row database upgrade / restore、row count異常cleanup、logout與migration regression。
 
@@ -247,7 +247,9 @@ Remediation必須同時處理future writes與existing persisted rows。既有資
 
 ### Disposition rationale
 
-目前先保留Pending。這是可造成auth identity錯配的baseline correctness問題，Phase A不修改production code。
+18-7B將`auth_user`升級為固定`slot = 1`的single-active-user schema，token payload保存stable `userId`，restore與refresh都要求token identity和runtime / persisted user一致。Legacy、mismatch與existing multi-row狀態會安全清除，不建立或延續Session。
+
+Verification涵蓋schema非法slot / second row rejection、Sequential Login A → B → restart restore B、v4 single-row與multi-row migration、existing token + multi-row upgrade後restore cleanup、legacy / mismatch refresh不呼叫remote，以及完整Auth / Catalog migration regression。Workspace五個package analyze與400項tests全數通過。
 
 ---
 

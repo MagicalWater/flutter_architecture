@@ -92,7 +92,10 @@ class AuthSessionRefresher implements AuthRefresher {
       if (!_isSameSession(inFlight.generation, inFlight.userId)) {
         return const AuthRefreshSessionChanged();
       }
-      if (stored == null || stored.isRefreshTokenExpired) {
+      if (stored == null ||
+          stored.userId == null ||
+          stored.userId != inFlight.userId ||
+          stored.isRefreshTokenExpired) {
         final invalidated = await _invalidateSessionBestEffort(
           generation: inFlight.generation,
           userId: inFlight.userId,

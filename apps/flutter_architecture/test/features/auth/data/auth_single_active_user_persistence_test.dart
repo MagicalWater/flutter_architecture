@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:auth/src/data/models/auth_user_model.dart';
+import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -115,4 +119,158 @@ void main() {
 
     expect(await upgraded.query('auth_user'), isEmpty);
   });
+
+  test('schema拒絕非法slot與第二個active row', () async {
+    final database = await databaseFactoryFfi.openDatabase(
+      inMemoryDatabasePath,
+      options: OpenDatabaseOptions(
+        version: AppDatabaseSchema.version,
+        onCreate: AppDatabaseSchema.onCreate,
+      ),
+    );
+    addTearDown(database.close);
+
+    await expectLater(
+      database.insert('auth_user', <String, Object?>{
+        'slot': 2,
+        'id': 'user-a',
+        'name': 'User A',
+      }),
+      throwsA(isA<DatabaseException>()),
+    );
+    await database.insert('auth_user', <String, Object?>{
+      'slot': 1,
+      'id': 'user-a',
+      'name': 'User A',
+    });
+    await expectLater(
+      database.insert('auth_user', <String, Object?>{
+        'slot': 1,
+        'id': 'user-b',
+        'name': 'User B',
+      }),
+      throwsA(isA<DatabaseException>()),
+    );
+  });
+
+  test('v4 multi-row與existing token升級後restore會清除全部auth state', () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      'auth.tokens': jsonEncode(<String, Object?>{
+        'accessToken': 'legacy-access',
+        'refreshToken': 'legacy-refresh',
+      }),
+    });
+    final preferences = await SharedPreferences.getInstance();
+    final path = await databaseFactoryFfi.getDatabasesPath();
+    final databasePath = '$path/auth-multi-row-restore-v4-upgrade.db';
+    await databaseFactoryFfi.deleteDatabase(databasePath);
+    addTearDown(() => databaseFactoryFfi.deleteDatabase(databasePath));
+
+    final old = await databaseFactoryFfi.openDatabase(
+      databasePath,
+      options: OpenDatabaseOptions(
+        version: 4,
+        onCreate: (db, version) async {
+          await db.execute('CREATE TABLE auth_user (id TEXT PRIMARY KEY, name TEXT NOT NULL)');
+        },
+      ),
+    );
+    await old.insert('auth_user', <String, Object?>{'id': 'user-a', 'name': 'User A'});
+    await old.insert('auth_user', <String, Object?>{'id': 'user-b', 'name': 'User B'});
+    await old.close();
+
+    final upgraded = await databaseFactoryFfi.openDatabase(
+      databasePath,
+      options: OpenDatabaseOptions(
+        version: AppDatabaseSchema.version,
+        onUpgrade: AppDatabaseSchema.onUpgrade,
+      ),
+    );
+    addTearDown(upgraded.close);
+    final local = AuthLocalDataSource(preferences, upgraded);
+    final session = SessionManager();
+    addTearDown(session.dispose);
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(_SequencedAuthApi(const <LoginResponseDto>[])),
+      local,
+      session,
+      AuthStateMutationCoordinator(),
+    );
+
+    final result = await repository.restoreSession();
+
+    expect(result, isA<Success<AuthUser?>>());
+    expect(await local.readTokens(), isNull);
+    expect(await local.readUser(), isNull);
+    expect(session.currentSession, isNull);
+  });
+
+  test('Sequential Login A再Login B後restart只restore User B', () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final preferences = await SharedPreferences.getInstance();
+    final database = await databaseFactoryFfi.openDatabase(
+      inMemoryDatabasePath,
+      options: OpenDatabaseOptions(
+        version: AppDatabaseSchema.version,
+        onCreate: AppDatabaseSchema.onCreate,
+      ),
+    );
+    addTearDown(database.close);
+    final local = AuthLocalDataSource(preferences, database);
+    final firstSession = SessionManager();
+    addTearDown(firstSession.dispose);
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(
+        _SequencedAuthApi(const <LoginResponseDto>[
+          LoginResponseDto(
+            accessToken: 'access-a',
+            refreshToken: 'refresh-a',
+            userId: 'user-a',
+            userName: 'User A',
+          ),
+          LoginResponseDto(
+            accessToken: 'access-b',
+            refreshToken: 'refresh-b',
+            userId: 'user-b',
+            userName: 'User B',
+          ),
+        ]),
+      ),
+      local,
+      firstSession,
+      AuthStateMutationCoordinator(),
+    );
+
+    await repository.login(account: 'a', password: 'password');
+    await repository.login(account: 'b', password: 'password');
+
+    final restartedSession = SessionManager();
+    addTearDown(restartedSession.dispose);
+    final restartedRepository = AuthRepositoryImpl(
+      AuthRemoteDataSource(_SequencedAuthApi(const <LoginResponseDto>[])),
+      local,
+      restartedSession,
+      AuthStateMutationCoordinator(),
+    );
+    final restored = await restartedRepository.restoreSession();
+
+    expect(restored, isA<Success<AuthUser?>>());
+    expect((restored as Success<AuthUser?>).data?.id, 'user-b');
+    expect((await local.readTokens())?.userId, 'user-b');
+    expect((await local.readUser())?.id, 'user-b');
+    expect(restartedSession.currentSession?.userId, 'user-b');
+    expect(await database.query('auth_user'), hasLength(1));
+  });
+}
+
+class _SequencedAuthApi implements AuthApi {
+  _SequencedAuthApi(this.responses);
+
+  final List<LoginResponseDto> responses;
+  int _index = 0;
+
+  @override
+  Future<LoginResponseDto> login(LoginRequestDto request) async {
+    return responses[_index++];
+  }
 }

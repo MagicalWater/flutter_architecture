@@ -108,6 +108,45 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
+  test('Legacy token缺少userId時不呼叫remote並清除auth state', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore()
+      ..tokens = const StoredAuthTokens(
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+      );
+    final api = _FakeAuthRefreshApi();
+    final refresher = _createRefresher(api, localStore, sessionManager);
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(api.callCount, 0);
+    expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  test('Token userId與runtime Session不一致時不呼叫remote並清除auth state', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore()
+      ..tokens = const StoredAuthTokens(
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        userId: 'other-user',
+      );
+    final api = _FakeAuthRefreshApi();
+    final refresher = _createRefresher(api, localStore, sessionManager);
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(api.callCount, 0);
+    expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
   for (final type in <DioExceptionType>[
     DioExceptionType.connectionTimeout,
     DioExceptionType.sendTimeout,
@@ -278,6 +317,7 @@ void main() {
     localStore.tokens = const StoredAuthTokens(
       accessToken: 'account-b-token',
       refreshToken: 'account-b-refresh-token',
+      userId: 'user-002',
     );
     final second = refresher.refresh(failedAccessToken: 'account-b-token');
 
@@ -316,6 +356,7 @@ void main() {
         const StoredAuthTokens(
           accessToken: 'account-b-token',
           refreshToken: 'account-b-refresh-token',
+          userId: 'user-002',
         ),
       );
       sessionManager.setAuthenticated(
@@ -408,6 +449,7 @@ void main() {
     localStore.tokens = const StoredAuthTokens(
       accessToken: 'account-b-token',
       refreshToken: 'account-b-refresh-token',
+      userId: 'user-002',
     );
     responseCompleter.completeError(
       DioException(
@@ -541,6 +583,7 @@ class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
   StoredAuthTokens? tokens = const StoredAuthTokens(
     accessToken: 'access-token',
     refreshToken: 'refresh-token',
+    userId: 'user-001',
   );
 
   @override

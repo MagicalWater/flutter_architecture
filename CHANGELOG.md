@@ -21,7 +21,8 @@
 ### Added
 
 - 完成Milestone 18-7B Auth single-active-user persistence實作：SQLite schema升至version 5，`auth_user`改為固定`slot = 1`的single-record contract；v4單列upgrade保留資料，multi-row因無法證明identity而安全清除。
-- `StoredAuthTokens`新增`userId`，login與refresh rotation持續保存identity；restore只在token與SQLite user一致時建立Session，legacy token或identity mismatch會清除完整Auth state。Workspace五個package analyze與395 tests全數通過，18-7B尚待review。
+- 完成Milestone 18-7B review修訂：Refresh在呼叫remote前驗證stored token `userId`與runtime Session一致，legacy / mismatch token會直接清除Auth state且不送出refresh request；正常fixtures全面補齊identity。
+- 新增Sequential Login A → B → restart只restore B、v4 multi-row + existing token upgrade後restore cleanup，以及schema非法slot / second active row rejection regression。Workspace五個package analyze與400 tests全數通過，`M18-P01`正式Resolved，下一步為18-7C Catalog foreign-key enforcement。
 - 完成Milestone 18-7A正式review revision並關閉`M18-R01`：補齊Double Login、Login + Logout、Restore + Login UI ordering與external Session clear的Bloc-level regression；外部權威Session clear現在會invalidate舊lifecycle operation。
 - Logout cleanup語意正式收斂：進入exclusive cleanup前可被取代，一旦開始會完整執行user與token cleanup，但只有current Logout可清runtime Session；新增與較新Login交錯regression。Workspace五個package analyze與389 tests全數通過，下一步為18-7B Auth single-active-user persistence。
 - 完成Milestone 18-7A Auth lifecycle latest-intent ordering實作：`AuthStateMutationCoordinator`新增generation lease，restore / login / logout開始時取得operation；較新意圖會使舊operation在persistence與Session commit前失效，`AuthLifecycleOperationSuperseded`維持control flow，AuthBloc不將其轉為Failure或覆蓋較新UI。

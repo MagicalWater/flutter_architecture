@@ -45,7 +45,10 @@ class AuthLocalDataSource
           jsonEncode(tokens.toJson()),
         );
         if (!success) {
-          throw const AppException(message: '儲存 token pair 失敗');
+          throw const AppException(
+            kind: AppExceptionKind.localStorage,
+            message: '儲存 token pair 失敗',
+          );
         }
       },
       message: '儲存 token pair 失敗',
@@ -87,7 +90,10 @@ class AuthLocalDataSource
         final tokensRemoved = await _preferences.remove(_tokensKey);
         final legacyRemoved = await _preferences.remove(_legacyAccessTokenKey);
         if (!tokensRemoved || !legacyRemoved) {
-          throw const AppException(message: '清除 token pair 失敗');
+          throw const AppException(
+            kind: AppExceptionKind.localStorage,
+            message: '清除 token pair 失敗',
+          );
         }
       },
       message: '清除 token pair 失敗',
@@ -138,7 +144,12 @@ class AuthLocalDataSource
       rethrow;
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(
-        AppException(message: message, cause: error),
+        AppException(
+          kind: AppExceptionKind.localStorage,
+          message: message,
+          cause: error,
+          stackTrace: stackTrace,
+        ),
         stackTrace,
       );
     }

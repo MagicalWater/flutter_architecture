@@ -1,3 +1,5 @@
+import 'package:core/src/errors/failure.dart';
+
 /// 表示一個操作結果。
 ///
 /// ## 為什麼需要 Result？
@@ -12,11 +14,12 @@ sealed class Result<T> {
   /// 根據目前結果執行對應 callback。
   R when<R>({
     required R Function(T data) success,
-    required R Function(Object error) failure,
+    required R Function(Failure failure) failure,
   }) {
+    final onFailure = failure;
     return switch (this) {
       Success<T>(:final data) => success(data),
-      FailureResult<T>(:final error) => failure(error),
+      FailureResult<T>(:final failure) => onFailure(failure),
     };
   }
 }
@@ -30,7 +33,7 @@ final class Success<T> extends Result<T> {
 
 /// 失敗結果。
 final class FailureResult<T> extends Result<T> {
-  const FailureResult(this.error);
+  const FailureResult(this.failure);
 
-  final Object error;
+  final Failure failure;
 }

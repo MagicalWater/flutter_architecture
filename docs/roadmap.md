@@ -1712,3 +1712,163 @@ Decision 018、Roadmap、Project Context、Backlog 與 CHANGELOG 已完成同步
 - 日期顯示 locale-aware，Data / Cache timestamp 維持 UTC。
 - 本 Milestone 未擴張為全域 Failure / Exception 重構或 Generic Preference Framework。
 - analyze、test 與三環境 bundle build 全部通過。
+
+---
+
+## Milestone 17：Exception & Failure Architecture
+
+整理全專案 Exception / Failure 系統，建立 typed、可追蹤、保留 stack trace、區分 expected failure 與 programming error，且不讓敏感資料進入 diagnostic 的錯誤架構。
+
+狀態：In Progress；Milestone 17-1 至 17-4 已完成。
+
+核心流程：
+
+```txt
+Infrastructure / Transport Exception
+  ↓ DataSource typed mapping
+AppException
+  ↓ Repository operation mapping
+Failure
+  ↓ Result / Bloc
+Feature Presentation localized message
+
+Unexpected error
+  ↓ 保留 error + stack trace
+Framework / Bloc / App reporting boundary
+```
+
+限制：
+
+- App 仍是唯一 Composition Root。
+- 不建立 `GlobalErrorHandler.handleEverything()`。
+- 不建立過度抽象的 Generic Exception / Failure Mapper framework。
+- 不為每個 HTTP status 建立 class。
+- 不把所有 backend business code 做成全域 enum。
+- Feature Presentation 繼續負責 localized user-facing copy。
+- Unknown programming error 不可被吞掉或轉成普通 Failure。
+- 不破壞 Auth Session、Concurrent 401、Pagination、SWR、Offline Cache 與既有 regression。
+
+### Milestone 17-1：Exception / Failure 現況 Audit 與 Architecture Contract
+
+狀態：Completed；只完成 audit、Decision 020 與正式規劃，未修改 production code。
+
+- [x] 盤點 production source 的 `throw`、`rethrow`、`catch`、`on ... catch` 與 `Error.throwWithStackTrace`。
+- [x] 盤點 `AppException`、`Failure`、`FailureResult`、`Result` 定義、建立點與 mapping。
+- [x] 盤點 `error.toString()`、`.message`、HTTP status 與 error code 判斷。
+- [x] 盤點 Dio、backend response、SharedPreferences、SQLite、serialization、cache corruption 與 preference fallback。
+- [x] 盤點 Refresh Token、Concurrent 401、Session generation、session expired、temporarily unavailable 與 localStateFailure。
+- [x] 盤點 Catalog cursor protocol、pagination、SWR、refresh、append 與 revalidation failure。
+- [x] 確認 CatalogBloc 已保留 unknown Stream error stack trace；Auth / Profile Bloc 仍可能將非 Failure 降級。
+- [x] 確認 Refresh subsystem 與 interceptor 存在吞掉 unknown error 的 `catch (_)` 路徑。
+- [x] 確認 App 尚無 Flutter / Platform / Bloc 統一 reporting adapter boundary。
+- [x] 拍板 expected operational failure、unexpected error、cancellation、protocol violation 與 session lifecycle result 的分類規則。
+- [x] 拍板 retryability、session clearing、cache fallback、reporting 與 sensitive data contract。
+- [x] 新增 Architecture Decision 020。
+
+Audit 關鍵發現：
+
+- Critical：`FailureResult.error` 是 `Object`，expected failure channel 沒有型別保證。
+- Critical：Auth / Profile Bloc 使用 `error.toString()` fallback，可能把 programming error 轉成普通 Failure。
+- Critical：AuthSessionRefresher / AuthRefreshInterceptor 的廣泛 catch 可能隱藏 stack trace與真正原因。
+- Critical：目前沒有 Flutter framework、platform async、Bloc 與 non-fatal degraded-mode reporting entrypoint。
+- Important：HTTP status、backend code、transport kind與 protocol identity 共用模糊 code。
+- Important：一般 transport mapper 位於 `packages/api_client`，但 Auth Refresh data source 直接依賴 Dio 做 status 分類；17-3 / 17-4 需明確收斂此例外 boundary。
+- Important：Theme / Locale preference Codec、Store 與 write queue 廣泛捕捉 `Object`；invalid payload 靜默 fallback，unknown error 可能被降級成 preference diagnostic。
+- Important：AppException / Failure 的 `toString()` 會展開 cause，存在 sensitive data 風險。
+- Important：Catalog Cache、Theme 與 Locale fallback policy 正確，但缺少 non-fatal reporting outlet。
+
+### Milestone 17-2：Typed Result Failure Channel
+
+狀態：Completed。
+
+- [x] 將 `FailureResult<T>` 收斂為只接受 typed `Failure`。
+- [x] 暫不建立 Failure subclass taxonomy；只先封閉 typed Failure channel。
+- [x] 更新 `Result.when` failure callback type。
+- [x] 移除 Auth / Profile Bloc 的 `error.toString()` fallback。
+- [x] 補上 unknown error 不會降級為 Failure 的 Core / Bloc regression。
+- [x] 保持 Milestone 16 feature-local localized failure mapping。
+
+完成定義：任意 `Object` 無法進入 expected failure channel；Auth / Profile Bloc 只處理 `Failure`，unknown thrown error 保留 framework error flow；localized mapping 與 feature operation context 不變。
+
+完成實作：`FailureResult<T>` 欄位已由 `Object error` 改為 `Failure failure`，`Result.when` failure callback 亦收斂為 `Failure`。Auth / Profile Bloc 已移除 `_asFailure(Object)` 與 `error.toString()` fallback；unexpected error 會先清除 loading state，再以原始 stack trace 重新拋出。Catalog Bloc 同步移除因 typed channel 而永遠不成立的 runtime type check。Core、Auth 與 Profile regression 驗證 unknown `StateError` 不會寫入 Failure state，並保留 Bloc framework error flow。Workspace analyze 與五個 package / app 完整 tests 全部通過。
+
+### Milestone 17-3：Typed AppException 與 Transport / Backend Boundary
+
+狀態：Completed。
+
+- [x] 建立最小 AppException taxonomy與 safe diagnostic context。
+- [x] 依 typed AppException identity 同步建立最小 shared Failure taxonomy，不建立 operation-specific class 笛卡兒積。
+- [x] 分離 transport kind、HTTP status、backend code 與 diagnostic code。
+- [x] 保留原始 stack trace；非已知第三方 operational exception 原樣拋出。
+- [x] 收斂一般 Dio mapping、malformed success response與 cancellation identity contract。
+- [x] 不為每個 HTTP status 建 class，不建立全域 backend code enum。
+- [x] 補 sensitive request query / cause 不進 exception diagnostic 的 tests。
+
+完成實作：Core 新增 `AppExceptionKind`、`TransportExceptionKind` 與 `FailureKind`；`AppException` / `Failure` 分離 `httpStatus`、`backendCode`、`diagnosticCode` 並保存 stack trace。`code` 僅保留為相容 constructor / getter，新 production HTTP 判斷已改用 `httpStatus`。api_client 將 Dio type 映射為 Core-owned enum、只保存 URI path 不保存 query，且 unknown error 原樣拋出。Auth local storage、Catalog protocol / corruption建立點已補 typed identity；Auth Refresh 的 lifecycle mapping仍留待 17-4。Workspace analyze 與五個 package / app 完整 tests 全部通過。
+
+### Milestone 17-4：Auth Local State 與 Session Lifecycle
+
+狀態：Completed。
+
+- [x] 收窄 Auth Repository、AuthSessionRefresher與 AuthRefreshInterceptor 的 catch。
+- [x] `localStateFailure` 只由 typed local operational exception 產生；read storage failure 保留 Session，save storage failure清除 Session。
+- [x] Auth Refresh remote boundary 使用 typed transport identity；401 / 403 視為 session expired，其餘 transport / HTTP / malformed response 視為 temporary unavailable，TypeError / unknown error 原樣拋出。
+- [x] unknown refresh / replay error保留原始 error與 stack trace，不再降級成原始 401；Reporting integration留待 17-6。
+- [x] 修訂目前將 unknown local error 鎖定為 `localStateFailure`、將 refresher `StateError` 鎖定為原始 401 的既有 regression tests。
+- [x] 集中 Auth subsystem 的 session clearing contract，不建立 global handler。
+- [x] 保留 concurrent 401 single-flight、generation / userId identity與 safe replay。
+- [x] 驗證 401 / 403、timeout、5xx、storage failure、cleanup failure與 unknown error。
+
+17-4A 完成實作：`AuthSessionRefresher` 只將 `AppExceptionKind.localStorage` 視為 expected local operational failure。讀取 Token Pair 的已知 storage failure 回傳 `localStateFailure` 但不清除 Session；保存 rotated Token Pair 的已知 storage failure執行 best-effort cleanup並清除 Session。unknown read / save error 保留原始 error與 stack trace重新拋出，不再降級、不再登出。Auth targeted 19 tests與 package analyze通過。
+
+17-4B 完成實作：api_client 新增可重用的 `mapDioException` typed mapper，Auth Refresh RemoteDataSource 不再自行直接依 Dio status建立模糊例外。401 / 403 轉為 invalid refresh credential；400 / 408 / 429 / 5xx、connection / send / receive timeout、connection error與 bad certificate轉為 temporary unavailable且不清 Session。空 token與 FormatException以 protocol diagnostic表示；TypeError / unknown error原樣拋出。Auth Refresh targeted 27 tests、api_client smoke tests與兩個 package analyze通過。
+
+17-4C 完成實作：`AuthRefreshInterceptor` 對 expected non-success lifecycle result仍保留原始 401且不 replay；unexpected refresher與 replay error改以 `DioExceptionType.unknown` 傳遞，`error` 保留原始物件、`stackTrace` 保留來源，不再偽裝成第一次 401。新增兩條 regression，api_client完整 42 tests與 analyze通過。
+
+17-4D 完成實作與驗證：AuthRepository Login保留 remote / local typed AppException mapping；Restore與Logout只消化 `AppExceptionKind.localStorage`，其他 typed identity與 unknown error保留原始 stack重新拋出。Restore local storage failure不清 runtime Session；Logout無論第一個 cleanup為 known或unknown error，都繼續第二個 cleanup並清除 runtime Session。正式review revision補強多重cleanup failure優先級：unexpected / non-localStorage error優先於expected localStorage failure，避免programming error被降級掩蓋。Auth targeted 41 tests、workspace analyze與五個 package / app完整 tests全部通過。剩餘 broad catch只存在明確 best-effort cleanup helper，non-fatal reporting留待17-6。
+
+### Milestone 17-5：Catalog Protocol / Cache Failure Contract
+
+狀態：Planned。
+
+- [ ] 區分 cache unavailable、corruption、transaction failure與 unknown implementation error。
+- [ ] 建立 external protocol violation identity，保留 internal invariant error channel。
+- [ ] non-blocking cache read / write / cleanup failure加入 non-fatal reporting。
+- [ ] 保持 initial / refresh / append / revalidation operation context與 localized mapping。
+- [ ] 不建立 Generic Cache / Pagination failure framework。
+- [ ] 完整驗證 cursor chain、chain revision、SWR、refresh、append與 revalidation regression。
+
+### Milestone 17-6：App Uncaught Error 與 Reporting Adapter
+
+狀態：Planned。
+
+- [ ] 建立不依賴 App localization 的狹窄 `ErrorReporter` abstraction。
+- [ ] 收窄 Theme / Locale preference Codec、Store 與 serialized write queue 的 catch boundary，區分 recoverable persisted corruption、expected storage failure 與 unexpected programming error。
+- [ ] invalid preference payload fallback 保留安全 non-fatal diagnostic；前一筆 expected write failure 可由 queue 吸收以繼續最新寫入，但 unknown error 不得被吞掉。
+- [ ] 由 App Composition Root 組裝 Debug / Test / Crashlytics-compatible adapter。
+- [ ] 接上 `FlutterError.onError`、`PlatformDispatcher.instance.onError` 與 `BlocObserver.onError`。
+- [ ] 區分 fatal uncaught、unexpected Bloc error與 important non-fatal degraded operation。
+- [ ] Crashlytics implementation 不進可重用 package；是否加入 Firebase dependency於 implementation review 決定。
+- [ ] 驗證 stack trace、context sanitization與 duplicate reporting policy。
+
+### Milestone 17-7：Sensitive Data Audit、Regression、文件與完整驗證
+
+狀態：Planned。
+
+- [ ] Audit exception、failure、cause、context、log 與 `toString()`。
+- [ ] 確認 password、token、Authorization、Cookie、raw body、raw storage payload與敏感 query 不進 diagnostic。
+- [ ] 完成 Auth、Profile、Catalog、Theme、Locale、Route Guard 與 Composition Root regression。
+- [ ] 同步 README、Project Context、Architecture Decisions、Roadmap、Backlog 與 CHANGELOG。
+- [ ] 執行 dependency、generation、analyze、完整 tests 與 development / staging / production bundle builds。
+
+### Milestone 17 完成定義
+
+- Expected operational failure 使用 typed AppException → typed Failure → Result。
+- Unknown programming / system error 不被吞掉、不轉普通 Failure，且保留 stack trace。
+- Cancellation、external protocol violation、internal invariant與 session lifecycle result 有明確分類。
+- Feature operation context 與 shared failure identity 維持分離。
+- Retry、session clearing、cache fallback與 reporting owner 明確。
+- App 是唯一 reporting Composition Root，packages不直接依賴 Crashlytics或 App localization。
+- Sensitive data 不進 exception、failure、cause、log或 `toString()`。
+- Auth Session、Concurrent 401、Pagination、SWR、Offline Cache與 Localization regression 全部通過。
+- analyze、test與 development / staging / production build全部通過。

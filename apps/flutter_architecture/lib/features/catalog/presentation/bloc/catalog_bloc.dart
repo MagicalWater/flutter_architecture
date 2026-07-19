@@ -145,9 +145,6 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
                 );
               },
               failure: (error) {
-                if (error is! Failure) {
-                  throw error;
-                }
                 if (hasDisplayableSnapshot) {
                   isAwaitingRevalidation = false;
                   emit(
@@ -306,10 +303,6 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         );
       },
       failure: (error) {
-        if (error is! Failure) {
-          emit(state.copyWith(isLoadingMore: false));
-          throw error;
-        }
         emit(state.copyWith(isLoadingMore: false, appendFailure: error));
       },
     );
@@ -391,10 +384,6 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         );
       },
       failure: (error) {
-        if (error is! Failure) {
-          emit(state.copyWith(isRefreshing: false));
-          throw error;
-        }
         emit(state.copyWith(isRefreshing: false, refreshFailure: error));
       },
     );

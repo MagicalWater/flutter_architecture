@@ -110,7 +110,10 @@ class AuthRepositoryImpl implements AuthRepository {
         _sessionManager.clear();
       });
       return const Success(null);
-    } on AppException catch (error) {
+    } on AppException catch (error, stackTrace) {
+      if (error.kind != AppExceptionKind.localStorage) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
       return FailureResult(
         mapAppExceptionToFailure(
           error,
@@ -124,28 +127,54 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<void>> logout() async {
     try {
       await _mutationCoordinator.runExclusive(() async {
-        Object? firstError;
-        StackTrace? firstStackTrace;
+        Object? expectedError;
+        StackTrace? expectedStackTrace;
+        Object? unexpectedError;
+        StackTrace? unexpectedStackTrace;
+
+        void captureError(Object error, StackTrace stackTrace) {
+          if (error is AppException &&
+              error.kind == AppExceptionKind.localStorage) {
+            expectedError ??= error;
+            expectedStackTrace ??= stackTrace;
+            return;
+          }
+          unexpectedError ??= error;
+          unexpectedStackTrace ??= stackTrace;
+        }
+
         try {
           await _localDataSource.clearUser();
         } catch (error, stackTrace) {
-          firstError = error;
-          firstStackTrace = stackTrace;
+          captureError(error, stackTrace);
         }
         try {
           await _localDataSource.clearTokens();
         } catch (error, stackTrace) {
-          firstError ??= error;
-          firstStackTrace ??= stackTrace;
+          captureError(error, stackTrace);
         } finally {
           _sessionManager.clear();
         }
-        if (firstError != null) {
-          Error.throwWithStackTrace(firstError, firstStackTrace!);
+        final capturedUnexpectedError = unexpectedError;
+        if (capturedUnexpectedError != null) {
+          Error.throwWithStackTrace(
+            capturedUnexpectedError,
+            unexpectedStackTrace!,
+          );
+        }
+        final capturedExpectedError = expectedError;
+        if (capturedExpectedError != null) {
+          Error.throwWithStackTrace(
+            capturedExpectedError,
+            expectedStackTrace!,
+          );
         }
       });
       return const Success(null);
-    } on AppException catch (error) {
+    } on AppException catch (error, stackTrace) {
+      if (error.kind != AppExceptionKind.localStorage) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
       return FailureResult(
         mapAppExceptionToFailure(
           error,

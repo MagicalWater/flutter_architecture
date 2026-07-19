@@ -129,9 +129,13 @@ void main() {
   });
 
   test('Transport mapper 會把 DioException 轉為 AppException', () {
-    final request = RequestOptions(path: '/auth/login', method: 'POST');
+    final request = RequestOptions(
+      path: '/auth/login?token=secret',
+      method: 'POST',
+    );
     final error = DioException(
       requestOptions: request,
+      type: DioExceptionType.badResponse,
       response: Response<void>(
         requestOptions: request,
         statusCode: 503,
@@ -142,13 +146,29 @@ void main() {
       () => rethrowMappedTransportException(error, StackTrace.current),
       throwsA(
         isA<AppException>()
-            .having((value) => value.code, 'code', '503')
+            .having(
+              (value) => value.kind,
+              'kind',
+              AppExceptionKind.transport,
+            )
+            .having(
+              (value) => value.transportKind,
+              'transport kind',
+              TransportExceptionKind.response,
+            )
+            .having((value) => value.httpStatus, 'HTTP status', 503)
+            .having((value) => value.stackTrace, 'stack trace', isNotNull)
             .having(
               (value) => value.cause,
               'safe cause',
               isA<TransportFailureDetails>()
                   .having((details) => details.method, 'method', 'POST')
-                  .having((details) => details.path, 'path', '/auth/login'),
+                  .having((details) => details.path, 'path', '/auth/login')
+                  .having(
+                    (details) => details.type,
+                    'type',
+                    TransportExceptionKind.response,
+                  ),
             ),
       ),
     );

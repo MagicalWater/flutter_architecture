@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:core/core.dart';
 
 /// 可安全帶入診斷資訊的 transport failure 摘要。
 ///
@@ -14,15 +15,15 @@ class TransportFailureDetails {
   factory TransportFailureDetails.fromDioException(DioException error) {
     return TransportFailureDetails(
       method: error.requestOptions.method,
-      path: error.requestOptions.path,
-      type: error.type.name,
+      path: error.requestOptions.uri.path,
+      type: mapDioExceptionType(error.type),
       statusCode: error.response?.statusCode,
     );
   }
 
   final String method;
   final String path;
-  final String type;
+  final TransportExceptionKind type;
   final int? statusCode;
 
   @override
@@ -30,4 +31,18 @@ class TransportFailureDetails {
     return 'TransportFailureDetails('
         'method: $method, path: $path, type: $type, statusCode: $statusCode)';
   }
+}
+
+TransportExceptionKind mapDioExceptionType(DioExceptionType type) {
+  return switch (type) {
+    DioExceptionType.connectionTimeout =>
+      TransportExceptionKind.connectionTimeout,
+    DioExceptionType.sendTimeout => TransportExceptionKind.sendTimeout,
+    DioExceptionType.receiveTimeout => TransportExceptionKind.receiveTimeout,
+    DioExceptionType.connectionError => TransportExceptionKind.connection,
+    DioExceptionType.badCertificate => TransportExceptionKind.badCertificate,
+    DioExceptionType.cancel => TransportExceptionKind.cancelled,
+    DioExceptionType.badResponse => TransportExceptionKind.response,
+    DioExceptionType.unknown => TransportExceptionKind.unknown,
+  };
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
@@ -46,7 +48,9 @@ void main() {
       final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(
         sessionManager,
-        loginResult: const FailureResult<AuthResult>('login failed'),
+        loginResult: const FailureResult<AuthResult>(
+          Failure(message: 'login failed'),
+        ),
       );
       final bloc = AuthBloc(
         LoginUseCase(repository),
@@ -79,6 +83,45 @@ void main() {
           ],
         ),
       );
+    });
+
+    test('Login unknown error 保留 framework error flow，不降級為 Failure', () async {
+      final sessionManager = SessionManager();
+      final unknownError = StateError('login unknown');
+      final repository = _FakeAuthRepository(
+        sessionManager,
+        loginError: unknownError,
+      );
+      late AuthBloc bloc;
+      final errors = <Object>[];
+      final errorCaptured = Completer<void>();
+
+      await runZonedGuarded(() async {
+        bloc = AuthBloc(
+          LoginUseCase(repository),
+          RestoreSessionUseCase(repository),
+          LogoutUseCase(repository),
+          sessionManager,
+        );
+        bloc.add(
+          const AuthEvent.loginRequested(
+            account: 'demo',
+            password: 'password',
+          ),
+        );
+        await errorCaptured.future.timeout(const Duration(seconds: 1));
+      }, (error, stackTrace) {
+        errors.add(error);
+        if (!errorCaptured.isCompleted) errorCaptured.complete();
+      });
+
+      expect(errors, contains(same(unknownError)));
+      expect(bloc.state.isLoading, isFalse);
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.failureOperation, isNull);
+
+      await bloc.close();
+      await sessionManager.dispose();
     });
 
     test('Logout 成功後清除 authenticated user', () async {
@@ -122,7 +165,9 @@ void main() {
       final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(
         sessionManager,
-        logoutResult: const FailureResult<void>('logout failed'),
+        logoutResult: const FailureResult<void>(
+          Failure(message: 'logout failed'),
+        ),
       );
       final bloc = AuthBloc(
         LoginUseCase(repository),
@@ -247,11 +292,13 @@ class _FakeAuthRepository implements AuthRepository {
     this._sessionManager, {
     this.loginResult,
     this.logoutResult,
+    this.loginError,
   });
 
   final SessionManager _sessionManager;
   final Result<AuthResult>? loginResult;
   final Result<void>? logoutResult;
+  final Object? loginError;
   AuthUser? _cachedUser;
 
   @override
@@ -259,6 +306,11 @@ class _FakeAuthRepository implements AuthRepository {
     required String account,
     required String password,
   }) async {
+    final configuredError = loginError;
+    if (configuredError != null) {
+      throw configuredError;
+    }
+
     final configuredResult = loginResult;
     if (configuredResult != null) {
       return configuredResult;

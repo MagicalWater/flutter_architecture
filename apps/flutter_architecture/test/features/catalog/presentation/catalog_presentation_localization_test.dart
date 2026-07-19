@@ -18,7 +18,7 @@ void main() {
       localizedCatalogFailure(
         l10n,
         failure: const Failure(
-          code: '408',
+          httpStatus: 408,
           message: 'diagnostic timeout detail',
         ),
         surface: CatalogFailureSurface.initial,
@@ -28,7 +28,10 @@ void main() {
     expect(
       localizedCatalogFailure(
         l10n,
-        failure: const Failure(code: '429', message: 'diagnostic rate detail'),
+        failure: const Failure(
+          httpStatus: 429,
+          message: 'diagnostic rate detail',
+        ),
         surface: CatalogFailureSurface.append,
       ),
       'Too many catalog requests. Please try again later.',
@@ -37,7 +40,7 @@ void main() {
 
   test('uses a surface-specific fallback for unknown codes', () async {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    const failure = Failure(code: '599', message: 'must not reach UI');
+    const failure = Failure(httpStatus: 599, message: 'must not reach UI');
 
     expect(
       localizedCatalogFailure(

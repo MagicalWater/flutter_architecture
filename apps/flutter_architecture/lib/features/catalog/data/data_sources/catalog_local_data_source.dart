@@ -91,6 +91,7 @@ class CatalogLocalDataSource {
     _validatePage(page);
     if (resetFollowingPages && page.requestCursor != null) {
       throw const AppException(
+        kind: AppExceptionKind.protocol,
         message: '只有 Catalog 第一頁可以重設 cursor chain',
         code: 'invalid_catalog_cache_chain_reset',
       );
@@ -184,6 +185,7 @@ class CatalogLocalDataSource {
     _validatePage(page);
     if (page.requestCursor == null) {
       throw const AppException(
+        kind: AppExceptionKind.protocol,
         message: 'Catalog Append Cache 必須提供 request cursor',
         code: 'invalid_catalog_append_cache_cursor',
       );
@@ -368,6 +370,7 @@ class CatalogLocalDataSource {
   void _validateCursor(String? cursor) {
     if (cursor != null && cursor.trim().isEmpty) {
       throw const AppException(
+        kind: AppExceptionKind.dataCorruption,
         message: 'Catalog Cache cursor 不可為空字串',
         code: 'invalid_catalog_cache_cursor',
       );
@@ -378,6 +381,7 @@ class CatalogLocalDataSource {
     _validateOptionalCursor(page.nextCursor);
     if (page.requestCursor != null && page.nextCursor == page.requestCursor) {
       throw const AppException(
+        kind: AppExceptionKind.dataCorruption,
         message: 'Catalog Cache cursor 無法前進',
         code: 'non_advancing_catalog_cache_cursor',
       );
@@ -387,12 +391,14 @@ class CatalogLocalDataSource {
     for (final item in page.items) {
       if (item.id.trim().isEmpty || item.name.trim().isEmpty) {
         throw const AppException(
+          kind: AppExceptionKind.dataCorruption,
           message: 'Catalog Cache item 欄位不合法',
           code: 'invalid_catalog_cache_item',
         );
       }
       if (item.position < 0 || !positions.add(item.position)) {
         throw const AppException(
+          kind: AppExceptionKind.dataCorruption,
           message: 'Catalog Cache item position 不合法',
           code: 'invalid_catalog_cache_item_position',
         );
@@ -402,6 +408,7 @@ class CatalogLocalDataSource {
     for (var index = 0; index < page.items.length; index++) {
       if (!positions.contains(index)) {
         throw const AppException(
+          kind: AppExceptionKind.dataCorruption,
           message: 'Catalog Cache item position 必須連續',
           code: 'invalid_catalog_cache_item_position',
         );
@@ -412,6 +419,7 @@ class CatalogLocalDataSource {
   void _validateLimit(int limit) {
     if (limit <= 0) {
       throw const AppException(
+        kind: AppExceptionKind.protocol,
         message: 'Catalog Cache limit 必須大於 0',
         code: 'invalid_catalog_cache_limit',
       );
@@ -421,6 +429,7 @@ class CatalogLocalDataSource {
   void _validateOptionalCursor(String? cursor) {
     if (cursor != null && cursor.trim().isEmpty) {
       throw const AppException(
+        kind: AppExceptionKind.dataCorruption,
         message: 'Catalog Cache next cursor 不可為空字串',
         code: 'invalid_catalog_cache_next_cursor',
       );
@@ -467,7 +476,12 @@ class CatalogLocalDataSource {
       rethrow;
     } catch (error, stackTrace) {
       Error.throwWithStackTrace(
-        AppException(message: message, cause: error),
+        AppException(
+          kind: AppExceptionKind.localStorage,
+          message: message,
+          cause: error,
+          stackTrace: stackTrace,
+        ),
         stackTrace,
       );
     }

@@ -171,7 +171,7 @@ void main() {
 
     final failure = result.when(
       success: (_) => throw StateError('unexpected success'),
-      failure: (value) => value as Failure,
+      failure: (value) => value,
     );
 
     expect(failure.code, 'non_advancing_catalog_cursor');
@@ -181,7 +181,12 @@ void main() {
   test('CatalogRepository 會把 AppException 轉為 domain Failure', () async {
     final repository = _repository(
       const _ThrowingCatalogApi(
-        AppException(message: 'API failed', code: '503'),
+        AppException(
+          kind: AppExceptionKind.transport,
+          message: 'API failed',
+          transportKind: TransportExceptionKind.response,
+          httpStatus: 503,
+        ),
       ),
       localDataSource,
     );
@@ -197,7 +202,7 @@ void main() {
 
     final failure = result.when(
       success: (_) => throw StateError('unexpected success'),
-      failure: (value) => value as Failure,
+      failure: (value) => value,
     );
 
     expect(failure.message, '取得 Catalog 失敗');
@@ -229,7 +234,7 @@ void main() {
 
       final failure = result.when(
         success: (_) => throw StateError('unexpected success'),
-        failure: (value) => value as Failure,
+        failure: (value) => value,
       );
 
       expect(failure.code, 'malformed_catalog_response');

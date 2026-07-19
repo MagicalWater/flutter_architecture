@@ -80,6 +80,42 @@ void main() {
       expect(profileRepository.getProfileCallCount, 1);
     });
 
+    test('Profile unknown error 保留 framework error flow，不降級為 Failure', () async {
+      final unknownError = StateError('profile unknown');
+      final profileRepository = _FakeProfileRepository(error: unknownError);
+      final authRepository = _FakeAuthRepository();
+      final sessionManager = SessionManager();
+      late ProfileBloc bloc;
+      final errors = <Object>[];
+      final errorCaptured = Completer<void>();
+
+      sessionManager.setAuthenticated(
+        accessToken: 'access-token',
+        userId: 'user-1',
+      );
+
+      await runZonedGuarded(() async {
+        bloc = ProfileBloc(
+          GetProfileUseCase(profileRepository),
+          LogoutUseCase(authRepository),
+          sessionManager,
+        );
+        bloc.add(const ProfileEvent.requested());
+        await errorCaptured.future.timeout(const Duration(seconds: 1));
+      }, (error, stackTrace) {
+        errors.add(error);
+        if (!errorCaptured.isCompleted) errorCaptured.complete();
+      });
+
+      expect(errors, contains(same(unknownError)));
+      expect(bloc.state.isLoading, isFalse);
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.failureOperation, isNull);
+
+      await bloc.close();
+      await sessionManager.dispose();
+    });
+
     test('Session expiration 會同步清除 Profile UI state', () async {
       final profileRepository = _FakeProfileRepository();
       final authRepository = _FakeAuthRepository();
@@ -228,14 +264,19 @@ void main() {
 }
 
 class _FakeProfileRepository implements ProfileRepository {
-  _FakeProfileRepository({this.response});
+  _FakeProfileRepository({this.response, this.error});
 
   final Completer<Result<Profile>>? response;
+  final Object? error;
   int getProfileCallCount = 0;
 
   @override
   Future<Result<Profile>> getProfile() async {
     getProfileCallCount += 1;
+    final configuredError = error;
+    if (configuredError != null) {
+      throw configuredError;
+    }
     final pending = response;
     if (pending != null) {
       return pending.future;

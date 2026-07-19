@@ -9,10 +9,10 @@ String localizedCatalogFailure(
   required Failure failure,
   required CatalogFailureSurface surface,
 }) {
-  if (failure.code == '408') {
+  if (failure.httpStatus == 408) {
     return l10n.catalogRequestTimeoutMessage;
   }
-  if (failure.code == '429') {
+  if (failure.httpStatus == 429) {
     return l10n.catalogRateLimitedMessage;
   }
 

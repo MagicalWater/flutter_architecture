@@ -92,6 +92,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
           cursor.trim().isNotEmpty &&
           page.nextCursor == cursor) {
         throw const AppException(
+          kind: AppExceptionKind.protocol,
           message: 'Catalog pagination cursor 無法前進',
           code: 'non_advancing_catalog_cursor',
         );

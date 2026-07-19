@@ -756,6 +756,83 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 最近完成目標：Milestone 16 Localization Foundation。
 
+目前正式工作目標：Milestone 17 Exception & Failure Architecture。
+
+### Milestone 17：Exception & Failure Architecture
+
+狀態：In Progress；Milestone 17-1 至 17-4 已完成。
+
+Milestone 17-1 已完成全專案 Exception / Failure audit，並新增 Architecture Decision 020。正式分類為：
+
+```txt
+Expected operational failure
+  → typed AppException → typed Failure → Result
+
+Unexpected programming / system error
+  → 保留原始 error + stack trace
+  → 不轉 Failure
+
+Cancellation
+  → control flow
+
+External protocol violation
+  → typed protocol failure + non-fatal reporting
+
+Internal invariant violation
+  → programming error
+
+Session lifecycle result
+  → typed AuthRefreshResult
+```
+
+Audit 的 Critical findings：
+
+- `FailureResult.error` 仍為 `Object`，expected failure channel 尚未封閉。
+- Auth / Profile Bloc 遇到非 Failure 時會使用 `error.toString()` 重新包裝，可能吞掉 programming error與 stack trace。
+- AuthSessionRefresher / AuthRefreshInterceptor 存在廣泛 `catch (_)`，unknown error 可能被降級為 localStateFailure、temporarilyUnavailable或原始 401。
+- Bootstrap 尚未建立 Flutter framework、platform async、Bloc與 non-fatal degraded operation 的 reporting adapter boundary。
+- Milestone 9 的一般 Auth / Profile / Catalog transport mapping 已集中於 `packages/api_client`，但 Milestone 12 新增的 `AuthRefreshRemoteDataSource` 目前直接捕捉 `DioException` 做 401 / 403 分類；此例外 boundary 需於 17-3 / 17-4 明確收斂或記錄，不再沿用「packages/auth 完全不依賴 Dio」的舊敘述。
+- Theme / Locale preference Codec、Store 與 serialized write queue 廣泛捕捉 `Object`；invalid payload 目前靜默 fallback，unknown codec / persistence error 也可能被降級成 non-blocking diagnostic。
+- 既有 Auth Refresh tests 明確鎖定「unknown local error → localStateFailure」與「refresher StateError → 原始 401」行為；17-4 必須主動修訂這些舊 regression expectation，而不是只新增測試。
+
+已拍板保留的正確設計：
+
+- App 是唯一 Composition Root。
+- RemoteDataSource 隔離 Dio，Repository 只映射已知 AppException。
+- Catalog expected failure 使用 Result，unknown Stream error保留 error channel與 stack trace。
+- Catalog Cache read / write failure維持 non-blocking fallback，但後續需加入 non-fatal reporting。
+- AuthRefreshResult 的 success、sessionExpired、temporarilyUnavailable、sessionChanged與 localStateFailure維持 typed lifecycle result。
+- Session generation / userId、concurrent 401 single-flight、safe replay、Pagination、SWR與 Offline Cache contract不得破壞。
+- Failure identity 與 feature operation context分離；Feature Presentation 繼續負責 localized copy。
+
+Milestone 17 正式順序：
+
+```txt
+17-1 Audit 與 Architecture Contract（Completed）
+17-2 Typed Result Failure Channel（Completed）
+17-3 Typed AppException 與 Transport / Backend Boundary（Completed）
+17-4 Auth Local State 與 Session Lifecycle（Completed）
+17-5 Catalog Protocol / Cache Failure Contract
+17-6 App Uncaught Error、Reporting Adapter 與 App Preference Error Boundary
+17-7 Sensitive Data Audit、Regression、文件與完整驗證
+```
+
+Milestone 17 不建立 Global Error Handler、Generic Exception / Failure Mapper framework、每個 HTTP status class或全域 backend code enum。Crashlytics 先建立 App-owned adapter boundary，是否立即加入 Firebase dependency留待 17-6 implementation review。
+
+Milestone 17-2 實作前 review 已拍板：17-2 只將 `FailureResult.error: Object` 與 `Result.when` failure callback 收斂為 `Failure`，並移除 Auth / Profile Bloc 的 `Object → Failure` fallback。Failure subclass taxonomy 延後至 17-3，與 typed AppException identity 同步落地，避免先依模糊字串 code 猜測類型。
+
+Milestone 17-2 已完成：`FailureResult<T>` 現在只持有 `Failure`，`Result.when` failure callback 為 typed `Failure`；Auth / Profile Bloc 已移除 `error.toString()` fallback，unexpected error 會先清除 loading state，再保留原始 stack trace 進入 framework error flow。Catalog Bloc 的冗餘 runtime type checks 與測試中的舊 casts亦已清理。新增 Core typed channel test，以及 Auth / Profile unknown `StateError` 不寫入 Failure state、不殘留 loading 的 regression。Workspace analyze 與五個 package / app 完整 tests 全部通過。
+
+Milestone 17-3 已完成：Core 採 `AppExceptionKind`、`TransportExceptionKind`、`FailureKind` 的單一 model + typed kind 設計，分離 `httpStatus`、`backendCode`、`diagnosticCode` 並保存 stack trace。api_client 將 Dio type 映射成 Core enum，只保留 URI path、不保存 query，unknown error原樣拋出；`AppException.toString()` / `Failure.toString()` 不再展開 cause。Auth / Profile / Catalog Presentation 的 HTTP policy 已由字串 code 遷移到 `httpStatus`。`code` 只保留相容橋接；Auth Refresh session lifecycle 決策留待 17-4。
+
+Milestone 17-4A 已完成：Auth Refresh local state boundary 已收窄。known token read storage failure回傳 `AuthRefreshLocalStateFailure` 並保留目前 Session；known rotated-token save storage failure執行 cleanup並清除 Session；unknown local read / save error原樣拋出且不清 Session。Concurrent refresh、Session identity與 mutation coordinator contract未改變。
+
+Milestone 17-4B 已完成：Refresh remote boundary改用 api_client typed Dio mapper。401 / 403明確映射為 invalid credential；temporary transport / HTTP failure與 malformed response保留 Session並回傳 temporary unavailable；FormatException建立 protocol diagnostic，TypeError與其他 unexpected error不再降級。新增 408、429、send / receive timeout、bad certificate與 unknown TypeError regression。
+
+Milestone 17-4C 已完成：Auth Refresh Interceptor 只對 typed lifecycle result保留原始 401；unexpected refresher / replay error改以 `DioExceptionType.unknown` 傳遞，並保存 original error object與 stack trace，不再被第一次 401掩蓋。Single-flight、generation / userId identity、safe replay與 replay-once contract維持不變。
+
+Milestone 17-4D 已完成：AuthRepository catch boundary已完成review與收窄。Login繼續映射 remote / local expected AppException；Restore與Logout只消化local storage operational failure，其他 typed identity或unknown error原樣拋出。Restore failure不清 runtime Session；Logout cleanup即使失敗仍完成其餘cleanup並清runtime Session。正式review revision修正多重cleanup error的優先級：unexpected / non-localStorage error優先於expected localStorage failure，避免programming error被第一個operational failure掩蓋。Workspace analyze與五個 package / app完整 tests通過，Milestone 17-4正式完成。
+
 ### Milestone 16：Localization Foundation
 
 狀態：Completed；Milestone 16-1 至 16-7 已完成。
@@ -879,7 +956,7 @@ Auth API 已完成：
 - 已新增 Retrofit request test，驗證 `POST /auth/login`、JSON request serialization 與 response DTO parsing。
 - `LoginRequestDto` 明確宣告 `toJson()` contract，確保 Retrofit generator 產生正確的 request serialization。
 - Login response mapper 位於 `packages/auth` data layer。
-- DioException 的辨識與 AppException 轉換留在 `packages/api_client`，`packages/auth` 不直接依賴 Dio。
+- Milestone 9 的 Login transport path 由 `packages/api_client` 辨識 DioException 並轉換 AppException；Milestone 12 後新增的 Auth Refresh path 目前由 `packages/auth` 的 `AuthRefreshRemoteDataSource` 直接捕捉 DioException 做 refresh-specific status 分類，後續由 Milestone 17-3 / 17-4 統一 review boundary。
 
 DI 與環境切換已完成：
 

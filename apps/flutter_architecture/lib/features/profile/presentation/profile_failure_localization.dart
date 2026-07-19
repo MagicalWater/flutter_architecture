@@ -7,7 +7,7 @@ String localizedProfileFailure(
   required Failure failure,
   required ProfileFailureOperation operation,
 }) {
-  if (operation == ProfileFailureOperation.load && failure.code == '401') {
+  if (operation == ProfileFailureOperation.load && failure.httpStatus == 401) {
     return l10n.profileSessionExpiredMessage;
   }
 

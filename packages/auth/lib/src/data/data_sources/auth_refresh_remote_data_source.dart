@@ -1,6 +1,7 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/exceptions/invalid_refresh_credential_exception.dart';
 import 'package:auth/src/data/exceptions/temporary_refresh_exception.dart';
+import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 
 class AuthRefreshRemoteDataSource {
@@ -14,29 +15,51 @@ class AuthRefreshRemoteDataSource {
         RefreshTokenRequestDto(refreshToken: refreshToken),
       );
       if (response.accessToken.isEmpty || response.refreshToken.isEmpty) {
-        throw const TemporaryRefreshException();
+        final stackTrace = StackTrace.current;
+        Error.throwWithStackTrace(
+          TemporaryRefreshException(
+            cause: AppException(
+              kind: AppExceptionKind.protocol,
+              message: 'Malformed refresh response',
+              diagnosticCode: 'malformed_refresh_response',
+              stackTrace: stackTrace,
+            ),
+            stackTrace: stackTrace,
+          ),
+          stackTrace,
+        );
       }
       return response;
     } on DioException catch (error, stackTrace) {
-      final statusCode = error.response?.statusCode;
-      if (statusCode == 401 || statusCode == 403) {
+      final transport = mapDioException(error, stackTrace);
+      if (transport.httpStatus == 401 || transport.httpStatus == 403) {
         Error.throwWithStackTrace(
-          InvalidRefreshCredentialException(cause: error),
+          InvalidRefreshCredentialException(
+            cause: transport,
+            stackTrace: stackTrace,
+          ),
           stackTrace,
         );
       }
       Error.throwWithStackTrace(
-        TemporaryRefreshException(cause: error),
+        TemporaryRefreshException(
+          cause: transport,
+          stackTrace: stackTrace,
+        ),
         stackTrace,
       );
     } on FormatException catch (error, stackTrace) {
       Error.throwWithStackTrace(
-        TemporaryRefreshException(cause: error),
-        stackTrace,
-      );
-    } on TypeError catch (error, stackTrace) {
-      Error.throwWithStackTrace(
-        TemporaryRefreshException(cause: error),
+        TemporaryRefreshException(
+          cause: AppException(
+            kind: AppExceptionKind.protocol,
+            message: 'Malformed refresh response',
+            diagnosticCode: 'malformed_refresh_response',
+            cause: error,
+            stackTrace: stackTrace,
+          ),
+          stackTrace: stackTrace,
+        ),
         stackTrace,
       );
     }

@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('maps profile 401 to localized expired-session copy', () async {
     final l10n = await AppLocalizations.delegate.load(const Locale('zh', 'TW'));
-    const failure = Failure(code: '401', message: 'diagnostic only');
+    const failure = Failure(httpStatus: 401, message: 'diagnostic only');
 
     expect(
       localizedProfileFailure(
@@ -22,7 +22,7 @@ void main() {
 
   test('does not treat profile 403 as an expired session', () async {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    const failure = Failure(code: '403', message: 'forbidden diagnostic');
+    const failure = Failure(httpStatus: 403, message: 'forbidden diagnostic');
 
     expect(
       localizedProfileFailure(
@@ -36,7 +36,7 @@ void main() {
 
   test('uses operation-specific generic fallback for unknown codes', () async {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    const failure = Failure(code: '599', message: 'technical detail');
+    const failure = Failure(httpStatus: 599, message: 'technical detail');
 
     expect(
       localizedProfileFailure(

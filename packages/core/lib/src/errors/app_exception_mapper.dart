@@ -11,8 +11,33 @@ Failure mapAppExceptionToFailure(
   required String fallbackMessage,
 }) {
   return Failure(
+    kind: _mapFailureKind(exception),
     message: fallbackMessage,
-    code: exception.code,
+    httpStatus: exception.httpStatus,
+    backendCode: exception.backendCode,
+    diagnosticCode: exception.diagnosticCode,
     cause: exception.cause ?? exception,
+    stackTrace: exception.stackTrace,
   );
+}
+
+FailureKind _mapFailureKind(AppException exception) {
+  return switch (exception.kind) {
+    AppExceptionKind.transport => switch (exception.transportKind) {
+        TransportExceptionKind.connectionTimeout ||
+        TransportExceptionKind.sendTimeout ||
+        TransportExceptionKind.receiveTimeout ||
+        TransportExceptionKind.connection ||
+        TransportExceptionKind.badCertificate ||
+        TransportExceptionKind.unknown => FailureKind.network,
+        TransportExceptionKind.response ||
+        TransportExceptionKind.cancelled ||
+        null => FailureKind.service,
+      },
+    AppExceptionKind.backend => FailureKind.service,
+    AppExceptionKind.localStorage || AppExceptionKind.dataCorruption =>
+      FailureKind.localState,
+    AppExceptionKind.protocol => FailureKind.protocol,
+    AppExceptionKind.session => FailureKind.authentication,
+  };
 }

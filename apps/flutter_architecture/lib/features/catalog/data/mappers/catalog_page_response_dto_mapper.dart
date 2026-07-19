@@ -25,6 +25,7 @@ extension CatalogItemDtoMapper on CatalogItemDto {
   CatalogItem toDomain() {
     if (id.trim().isEmpty || name.trim().isEmpty) {
       throw const AppException(
+        kind: AppExceptionKind.protocol,
         message: 'Catalog response 欄位不完整',
         code: 'malformed_catalog_response',
       );

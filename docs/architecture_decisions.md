@@ -2594,3 +2594,268 @@ Design System 顯示已 localized String
 - Generic Localization Service、Generic Error Localization Service 或 Generic Preference Framework。
 - Design System 依賴 App generated localization。
 - Remote language pack、server content 自動翻譯、timezone / currency preference、完整 region settings 或完整 RTL。
+
+---
+
+## Decision 020：Exception、Failure、Unexpected Error 與 Reporting 責任邊界
+
+**狀態：** Accepted
+
+**實作狀態：** Milestone 17-1 Audit / Architecture Contract、17-2 Typed Result Failure Channel、17-3 Typed AppException / Transport Boundary與17-4 Auth Local State / Session Lifecycle已完成；Catalog Cache diagnostic與App uncaught reporting尚待Milestone 17-5至17-7實作。
+
+### 背景
+
+Milestone 16 已將 `Failure.message` 改為 diagnostic / fallback contract，並由 Auth、Profile 與 Catalog Presentation 依 `Failure + operation context` 建立 localized user-facing copy。
+
+目前專案也已存在以下正確基礎：
+
+```txt
+DioException
+  ↓ RemoteDataSource
+AppException
+  ↓ Repository
+Failure
+  ↓ Result / Bloc
+Feature Presentation localized copy
+```
+
+Milestone 17-1 全專案 audit 當時發現以下結構性問題；其中前兩項已由 Milestone 17-2 修正，其餘留待 17-3 至 17-7：
+
+- `FailureResult.error` 仍為 `Object`，expected failure channel 沒有型別保證。
+- Auth / Profile Bloc 對非 `Failure` 使用 `error.toString()` 重新包裝，可能將 programming error 降級成普通 Failure。
+- Refresh Token 與 Interceptor 路徑存在多個 `catch (_)`，unknown error 可能被降級為 `localStateFailure`、`temporarilyUnavailable` 或原始 401。
+- `AppException` / `Failure` 只有 message、code、cause，HTTP status、backend code、transport kind、local storage、corruption、protocol 與 session identity 尚未明確分類。
+- 一般 RemoteDataSource 使用 `packages/api_client` transport mapper，但 Auth Refresh data source 目前直接依賴 Dio 做 refresh-specific status 分類，transport ownership 尚未完全一致。
+- Theme / Locale preference Codec、Store 與 serialized write queue 目前廣泛捕捉 `Object`；invalid payload 會靜默 fallback，unknown codec / persistence programming error 也可能被降級成 non-blocking diagnostic。
+- `AppException.toString()` / `Failure.toString()` 直接展開 cause，存在敏感資料進入一般 log 的風險。
+- App 尚未建立 Flutter framework、platform async、Bloc 與 non-fatal degraded operation 的 reporting adapter boundary。
+
+### 核心分類
+
+錯誤流程正式分成五種不同語意，不得互相冒充：
+
+```txt
+Expected operational failure
+  → typed AppException
+  → typed Failure
+  → Result<T>
+
+Unexpected programming / system error
+  → 保留原始 error + stack trace
+  → 不轉 Failure
+  → uncaught / reporting boundary
+
+Cancellation
+  → control flow
+  → 預設不產生 user-facing Failure
+
+Protocol violation
+  → external contract violation：typed AppException / Failure + reporting
+  → internal invariant violation：programming error，直接拋出
+
+Session lifecycle result
+  → typed result
+  → 不冒充 Exception 或 Failure
+```
+
+### Result 與 Failure contract
+
+- `FailureResult<T>` 的失敗值必須收斂為 `Failure`，不可繼續接受任意 `Object`。
+- Bloc 不得使用 `error.toString()` 將 unknown error 轉成 Failure。
+- Failure 提供跨 feature 可重用的 stable identity；operation context 仍由各 Feature Bloc / Presentation 保存。
+- 不建立 `CatalogAppendTimeoutFailure`、`ProfileLoadTimeoutFailure` 這類 operation × failure class 笛卡兒積。
+- `Failure.message` 維持 diagnostic / fallback，不直接作為 localized UI copy。
+- Feature Presentation 繼續負責 localized message、surface、action 與 retry UX。
+
+第一版 Failure taxonomy 的候選語意類別控制在少量穩定範圍：
+
+```txt
+Failure
+├─ NetworkFailure
+├─ ServiceFailure
+├─ AuthenticationFailure
+├─ LocalStateFailure
+└─ ProtocolFailure
+```
+
+上述名稱描述的是穩定語意；Milestone 17-3 已採單一 immutable model + typed `kind` enum，不建立 subclass tree。
+
+Milestone 17-2 只先封閉 `Result` failure channel，確保 `FailureResult<T>` 與 `Result.when` 的 failure callback 只接受 `Failure`，並移除 Bloc 的 `Object → Failure` fallback。
+
+Milestone 17-2 已完成上述 contract：production Repository 原有 Failure 建立流程不變，Auth / Profile Bloc 不再進行 runtime wrapping，Catalog Bloc 的舊防禦型 type check 亦已移除；unknown thrown error 維持 framework error channel。
+
+Milestone 17-3 已完成 typed kind shape：`AppExceptionKind`、`TransportExceptionKind` 與 `FailureKind` 分離 transport、HTTP status、backend code、diagnostic code、local storage、corruption、protocol 與 session identity。`code` 僅保留作相容橋接，新 production policy不得再依字串猜 HTTP status。不建立 Generic Failure framework。
+
+### AppException contract
+
+DataSource / Infrastructure boundary 將第三方 exception 隔離成少量 typed `AppException` category：
+
+```txt
+AppException
+├─ TransportException
+├─ BackendException
+├─ LocalStorageException
+├─ DataCorruptionException
+├─ ProtocolException
+└─ SessionException
+```
+
+規則：
+
+- 不為每個 HTTP status 建立一個 class。
+- HTTP status、backend code 與 transport kind 必須是不同欄位 / identity，不再共用單一模糊 `code` 語意。
+- Backend business code 不建立全域 enum；只有實際擁有該語意的 feature / bounded context 才做局部 interpretation。
+- DataSource 只捕捉其能明確分類的第三方 operational exception；其他 error 使用原始 stack trace 重新拋出。
+- typed AppException 保存安全 diagnostic context 與原始 stack trace；不得把 request body、token、password 或 raw storage payload放入 context。
+
+### Exception → Failure mapping responsibility
+
+```txt
+Infrastructure / DataSource
+  - 隔離 Dio、SQLite、SharedPreferences、serialization 等第三方 exception
+  - 建立 typed AppException
+  - 保存 stack trace
+  - 加入安全 diagnostic context
+
+Repository
+  - 只捕捉已知 AppException
+  - 依業務 operation 映射 typed Failure
+  - 決定 compensation、cache fallback 與 local cleanup
+  - unknown error 原樣拋出
+
+UseCase
+  - 表達業務行為與參數規則
+  - 通常不重新映射 technical failure
+
+Bloc
+  - expected Failure 寫入 state
+  - unexpected error 可先清理 loading state，再保留 stack trace 重新拋出
+
+Feature Presentation
+  - 使用 shared Failure identity + feature operation context
+  - 產生 localized user-facing copy 與 action
+```
+
+不得建立：
+
+```txt
+GlobalErrorHandler.handleEverything()
+GlobalExceptionMapper.mapAnything()
+GenericRepositoryFailureMapper<T>
+```
+
+允許在擁有語意的 boundary 附近建立小型純 mapper，例如 transport mapper、Auth mapper 或 Catalog mapper。
+
+### Cancellation 與 protocol violation
+
+- Query switching、subscription cancellation、navigation disposal 等預期 cancellation 是 control flow，不進一般 Failure，也不預設 reporting。
+- Dio cancellation 只有在 operation contract 明確需要呈現時才可映射為 Failure。
+- API response 缺必要欄位、malformed success response、non-advancing cursor 等外部 contract violation，映射為 `ProtocolException` / `ProtocolFailure`，使用 generic localized fallback 並進行 non-fatal reporting。
+- Repository / Bloc 自身宣告的 Stream emission contract 被 implementation 破壞，屬 internal invariant violation，使用 `StateError` 等 programming error，禁止轉普通 Failure。
+
+### Auth Session lifecycle
+
+既有 sealed `AuthRefreshResult` 保留：
+
+```txt
+success
+sessionExpired
+temporarilyUnavailable
+sessionChanged
+localStateFailure
+```
+
+規則：
+
+- `sessionChanged` 是 race-resolution result，不是 Failure。
+- 只有 refresh credential 明確失效、credential 缺失 / 過期、auth local state corruption 或 explicit logout 可清除 Session。
+- timeout、connection error、429、5xx、一般 temporary backend failure 不清除 Session。
+- `localStateFailure` 只可由 typed local operational exception 產生；unknown error 不得降級成此 result。
+- Concurrent 401 single-flight、generation / userId identity、safe replay 與跨 Session race protection不得破壞。
+
+### Cache 與 preference degraded-mode
+
+Catalog Cache 與 Theme / Locale preference 的 non-blocking policy 保留，但「不阻斷 UI」不等於「完全吞掉 error」。
+
+```txt
+Expected Cache read failure
+  → non-fatal report
+  → Remote fallback
+
+Expected Cache write failure
+  → non-fatal report
+  → 保留 Remote success
+
+Cache corruption
+  → 清除受影響的可重建資料
+  → non-fatal report
+  → Remote fallback
+
+Unknown Cache implementation error
+  → unexpected error
+  → 不得靜默忽略
+```
+
+Theme / Locale preference read failure可 fallback，write failure不回滾 runtime；兩者仍需保留安全 diagnostic 並透過 non-fatal reporting adapter 觀測。
+
+Preference Codec / Store 需另外遵守：
+
+- 已知的 unsupported version、invalid stored value 或 malformed persisted payload 可視為 recoverable corruption，fallback 至預設值並保留 non-fatal diagnostic。
+- serialized write queue 可吸收「前一筆已分類的 expected persistence failure」，讓後續較新 snapshot 繼續保存，但不得吞掉任意 unknown error。
+- Codec、registry interaction 或 controller invariant 的 programming error 不得因 `on Object` / `catchError(Object)` 被降級成普通 preference diagnostic。
+
+### Retryability 與 policy owner
+
+不在 `Failure` 上加入全域 `isRetryable`、`shouldClearSession`、`shouldReport` 等萬用 boolean，因為同一 failure 在不同 operation 的處理可能不同。
+
+- Connection、timeout、408、部分 5xx 預設可由 feature operation明確 retry。
+- 429 依 Retry-After / operation policy 決定。
+- Invalid credential、authorization denied、protocol violation 不自動無限 retry。
+- Repository 不建立隱式全域 retry；retry 必須由擁有 operation 語意的 interceptor、repository coordination 或 presentation workflow 明確 opt-in。
+
+### Logging、reporting 與 Composition Root
+
+建立狹窄 reporting abstraction，例如：
+
+```dart
+abstract interface class ErrorReporter {
+  void report(
+    Object error,
+    StackTrace stackTrace, {
+    ErrorSeverity severity,
+    SafeDiagnosticContext? context,
+  });
+}
+```
+
+- App 是唯一 Composition Root，負責組裝 Debug、Test、Crashlytics 或 Composite adapter。
+- Packages 不直接依賴 Firebase Crashlytics、App localization 或 router。
+- framework entrypoint 分別處理 `FlutterError.onError`、`PlatformDispatcher.instance.onError` 與 `BlocObserver.onError`，不是建立一個接管所有決策的 Global Error Handler。
+- expected UI failure 通常不重複 report；unexpected error與重要 degraded-mode failure 才進 reporting。
+- Crashlytics 是否立即加入 dependency 可在 Milestone 17-6 implementation review 決定；adapter boundary 必須先成立。
+
+### Sensitive data contract
+
+Exception、Failure、cause、context、log 與 `toString()` 不得包含：
+
+- password、access token、refresh token、Authorization header、Cookie。
+-完整 request / response body。
+- raw SharedPreferences auth payload、SQLite row content。
+- 非必要 PII 或敏感 URL query parameter。
+
+允許的 safe diagnostic context包括：
+
+- operation name、HTTP method、sanitized path template、HTTP status、backend code、transport kind。
+- session generation、`hasSession`、resource identity、cache operation、page limit。
+- cursor 是否存在，但不保存 cursor value。
+
+`AppException.toString()` / `Failure.toString()` 不得直接展開任意 `cause.toString()`。
+
+### 非目標
+
+- 不建立 Global Error Handler 或 Generic Exception / Failure Mapper framework。
+- 不為每個 HTTP status 建 class。
+- 不將所有 backend business code 建為全域 enum。
+- 不讓 Design System、Domain、Data 或 Repository 依賴 App localization。
+- 不改變 App 作為唯一 Composition Root。
+- 不在本 Decision 直接修改 Auth Session、Pagination、SWR、Offline Cache 或既有 regression 行為。

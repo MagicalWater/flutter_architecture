@@ -52,7 +52,7 @@ void main() {
 
     final message = result.when(
       success: (_) => 'unexpected success',
-      failure: (failure) => (failure as Failure).message,
+      failure: (failure) => failure.message,
     );
 
     expect(message, 'Profile retrieval failed.');

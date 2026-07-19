@@ -327,9 +327,10 @@ void main() {
     });
   }
 
-  test('refresh implementation 抛出异常时保留原始 401', () async {
+  test('refresh implementation 拋出 unexpected error 時保留原始錯誤', () async {
     final provider = _MutableTokenProvider(_session('old-token'));
-    final refresher = _FakeRefresher(() async => throw StateError('boom'));
+    final error = StateError('refresh implementation failed');
+    final refresher = _FakeRefresher(() async => throw error);
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
       baseUrl: 'https://example.test',
@@ -347,7 +348,62 @@ void main() {
           },
         ),
       ),
-      throwsA(isA<DioException>()),
+      throwsA(
+        isA<DioException>()
+            .having((value) => value.type, 'type', DioExceptionType.unknown)
+            .having((value) => value.error, 'original error', same(error))
+            .having((value) => value.stackTrace, 'stack trace', isNotNull),
+      ),
+    );
+
+    expect(refresher.callCount, 1);
+    expect(adapter.totalCalls, 1);
+  });
+
+  test('replay 發生 unexpected error 時不會退回原始 401', () async {
+    final provider = _MutableTokenProvider(_session('old-token'));
+    final replayError = StateError('replay interceptor failed');
+    final refresher = _FakeRefresher(() async {
+      provider.current = _session('new-token');
+      return const AuthRefreshSuccess();
+    });
+    final adapter = _AuthAdapter();
+    final dio = AppDioFactory().createMain(
+      baseUrl: 'https://example.test',
+      tokenProvider: provider,
+      authRefresher: refresher,
+    )..httpClientAdapter = adapter;
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          if (options.extra[RequestExtras.authRetryCount] == 1) {
+            throw replayError;
+          }
+          handler.next(options);
+        },
+      ),
+    );
+
+    await expectLater(
+      dio.get<dynamic>(
+        '/profile',
+        options: Options(
+          extra: {
+            RequestExtras.requiresAuth: true,
+            RequestExtras.allowAuthReplay: true,
+          },
+        ),
+      ),
+      throwsA(
+        isA<DioException>()
+            .having((value) => value.type, 'type', DioExceptionType.unknown)
+            .having(
+              (value) => value.error,
+              'original error',
+              same(replayError),
+            )
+            .having((value) => value.stackTrace, 'stack trace', isNotNull),
+      ),
     );
 
     expect(refresher.callCount, 1);

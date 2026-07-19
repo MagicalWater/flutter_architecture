@@ -20,6 +20,24 @@
 
 ### Added
 
+- 完成 Milestone 17-4正式review revision：Logout多重cleanup failure改為unexpected / non-localStorage error優先於expected localStorage failure，仍保證所有cleanup與runtime Session清除；新增unknown與protocol雙重失敗regression。
+- 完成 Milestone 17-4D 與整體 Auth lifecycle regression：AuthRepository Restore / Logout 只消化 typed local storage failure，unexpected typed identity原樣拋出；Logout cleanup失敗仍完成其餘cleanup並清runtime Session。Workspace analyze與五個 package / app完整 tests全數通過，Milestone 17-4正式完成。
+- 完成 Milestone 17-4C Interceptor Error Preservation：expected refresh lifecycle result仍保留原始 401；unexpected refresher / replay error改以 `DioExceptionType.unknown` 保留原始 error與 stack trace，不再退回第一次 401。
+- 完成 Milestone 17-4B Remote Refresh Classification：Auth Refresh 改用 typed Dio mapper，401 / 403 映射 invalid credential；400 / 408 / 429 / 5xx與 timeout / connection / certificate failure保留 Session並回傳 temporary unavailable；malformed response標記 protocol diagnostic，TypeError不再降級。
+- 完成 Milestone 17-4A Auth Local State Boundary：`localStateFailure` 只由 typed local storage exception產生；read storage failure保留 Session，save storage failure清除 Session，unknown read / save error原樣拋出且不登出。
+- 完成 Milestone 17-3 Typed AppException / Transport Boundary：新增 `AppExceptionKind`、`TransportExceptionKind`、`FailureKind`，分離 HTTP status、backend code、diagnostic code並保存 stack trace。
+- api_client 現在將 Dio type 映射為 Core-owned transport identity、只保存 URI path不保存 query；AppException / Failure 的 `toString()` 不再展開 cause，Auth / Profile / Catalog HTTP localization policy 改讀 typed `httpStatus`。
+- 完成 Milestone 17-2 Typed Result Failure Channel：`FailureResult<T>` 與 `Result.when` failure callback 已收斂為 typed `Failure`，Auth / Profile Bloc 移除 `Object → Failure` / `error.toString()` fallback。
+- 新增 Core typed failure channel 與 Auth / Profile unknown error regression；Catalog Bloc 移除已不可能成立的 runtime Failure type checks，Workspace analyze 與五個 package / app 完整 tests 全部通過。
+- 完成 Milestone 17-1 Exception / Failure 現況 Audit 與 Architecture Contract；新增 Architecture Decision 020，正式區分 expected operational failure、unexpected error、cancellation、external protocol violation、internal invariant 與 session lifecycle result。
+- Milestone 17 規劃將 `FailureResult.error: Object` 收斂為 typed Failure channel，並於後續建立最小 AppException / Failure taxonomy；Feature Presentation 繼續負責 localized user-facing copy。
+- 完成 Milestone 17-2 實作前 review：17-2 只封閉 `Result` failure channel 與移除 Bloc 的 `Object → Failure` fallback；Failure taxonomy 延後至 17-3，與 typed AppException identity 一起設計。
+- Audit 確認 Auth / Profile Bloc 的 `error.toString()` fallback、Refresh subsystem 的廣泛 `catch (_)`、缺少 uncaught reporting entrypoint與 `toString()` 展開 cause 是主要風險；本階段只落檔，不修改 production code。
+- Audit 同時記錄一般 transport mapper 位於 `packages/api_client`，但 Auth Refresh data source 目前直接依賴 Dio 做 status 分類；此 boundary 留待 Milestone 17-3 / 17-4 收斂。
+- 第三輪完整 review 補入 Theme / Locale preference error boundary：Codec、Store 與 serialized write queue 的廣泛 `Object` catch 需區分 recoverable corruption、expected persistence failure 與 unexpected programming error。
+- Review 同時確認既有 Auth Refresh tests 正在鎖定 unknown error 降級行為；Milestone 17-4 需明確更新舊 expectation，不能只在現有 contract 上追加測試。
+- 拍板 App 作為唯一 ErrorReporter / Crashlytics-compatible adapter Composition Root；不建立 Global Error Handler、Generic Exception Mapper、每個 HTTP status class或全域 backend code enum。
+- 拍板 retryability、session clearing、Catalog Cache / Theme / Locale degraded-mode reporting與 sensitive diagnostic context contract；password、token、Authorization、raw body與 raw storage payload不得進 exception、failure、cause、log或 `toString()`。
 - 完成 Milestone 16-7：production text、Tooltip、Semantics、Dialog、Navigation、page-state surface、failure path 與 dependency boundary audit；README、Catalog feature 文件、Project Context、Architecture Decision、Roadmap 與 Backlog 已同步。
 - Localization regression 採 Theme render matrix、English / `zh_TW` runtime switching、feature-local mapping 與既有 Auth / Profile / Catalog business flow 的分層驗證，避免建立完整 Theme × Locale 笛卡兒積。
 - 修正 Design System localization boundary：`DsButtonContent` 不再拼接固定英文 `in progress` semantics；未提供專用 progress label 時重用呼叫方已 localized 的 label。

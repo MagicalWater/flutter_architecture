@@ -9,6 +9,7 @@ import 'package:auth/src/data/exceptions/temporary_refresh_exception.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/session/session_manager.dart';
 import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
+import 'package:core/core.dart';
 
 class AuthSessionRefresher implements AuthRefresher {
   AuthSessionRefresher(
@@ -109,12 +110,11 @@ class AuthSessionRefresher implements AuthRefresher {
       return invalidated
           ? const AuthRefreshSessionExpired()
           : const AuthRefreshSessionChanged();
-    } catch (_) {
-      final invalidated = await _invalidateSessionBestEffort(
-        generation: inFlight.generation,
-        userId: inFlight.userId,
-      );
-      return invalidated
+    } on AppException catch (error, stackTrace) {
+      if (error.kind != AppExceptionKind.localStorage) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+      return _isSameSession(inFlight.generation, inFlight.userId)
           ? const AuthRefreshLocalStateFailure()
           : const AuthRefreshSessionChanged();
     }
@@ -135,7 +135,10 @@ class AuthSessionRefresher implements AuthRefresher {
               refreshTokenExpiresAt: response.refreshTokenExpiresAt,
             ),
           );
-        } catch (_) {
+        } on AppException catch (error, stackTrace) {
+          if (error.kind != AppExceptionKind.localStorage) {
+            Error.throwWithStackTrace(error, stackTrace);
+          }
           await _invalidateSessionBestEffortUnlocked();
           return const AuthRefreshLocalStateFailure();
         }

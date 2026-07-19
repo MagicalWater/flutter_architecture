@@ -49,8 +49,15 @@ class AuthRefreshInterceptor extends Interceptor {
       refreshResult = await _authRefresher.refresh(
         failedAccessToken: failedToken,
       );
-    } catch (_) {
-      handler.next(err);
+    } catch (error, stackTrace) {
+      handler.reject(
+        DioException(
+          requestOptions: request,
+          type: DioExceptionType.unknown,
+          error: error,
+          stackTrace: stackTrace,
+        ),
+      );
       return;
     }
 
@@ -141,8 +148,15 @@ class AuthRefreshInterceptor extends Interceptor {
       handler.resolve(await _dio.fetch<dynamic>(replay));
     } on DioException catch (replayError) {
       handler.next(replayError);
-    } catch (_) {
-      handler.next(originalError);
+    } catch (error, stackTrace) {
+      handler.reject(
+        DioException(
+          requestOptions: replay,
+          type: DioExceptionType.unknown,
+          error: error,
+          stackTrace: stackTrace,
+        ),
+      );
     }
   }
 }

@@ -147,7 +147,12 @@ void main() {
     await _write(local, clock.nowUtc().subtract(const Duration(hours: 1)));
     final repository = _repository(
       _RecordingCatalogApi(
-        error: const AppException(message: 'down', code: '503'),
+        error: const AppException(
+          kind: AppExceptionKind.transport,
+          message: 'down',
+          transportKind: TransportExceptionKind.response,
+          httpStatus: 503,
+        ),
       ),
       local,
       clock,

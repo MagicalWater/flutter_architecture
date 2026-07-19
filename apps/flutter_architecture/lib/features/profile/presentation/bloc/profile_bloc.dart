@@ -81,7 +81,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       ),
     );
 
-    final result = await _getProfileUseCase.execute();
+    late final Result<Profile> result;
+    try {
+      result = await _getProfileUseCase.execute();
+    } catch (error, stackTrace) {
+      emit(state.copyWith(isLoading: false));
+      Error.throwWithStackTrace(error, stackTrace);
+    }
 
     final currentSession = _sessionManager.currentSession;
     if (currentSession == null ||
@@ -108,7 +114,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           state.copyWith(
             isLoading: false,
             isAuthenticated: true,
-            failure: _asFailure(error),
+            failure: error,
             failureOperation: ProfileFailureOperation.load,
           ),
         );
@@ -124,7 +130,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       state.copyWith(isLoading: true, failure: null, failureOperation: null),
     );
 
-    final result = await _logoutUseCase.execute();
+    late final Result<void> result;
+    try {
+      result = await _logoutUseCase.execute();
+    } catch (error, stackTrace) {
+      emit(state.copyWith(isLoading: false));
+      Error.throwWithStackTrace(error, stackTrace);
+    }
 
     result.when(
       success: (_) {
@@ -134,7 +146,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(
           state.copyWith(
             isLoading: false,
-            failure: _asFailure(error),
+            failure: error,
             failureOperation: ProfileFailureOperation.logout,
           ),
         );
@@ -159,10 +171,4 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     await _sessionSubscription.cancel();
     return super.close();
   }
-}
-
-Failure _asFailure(Object error) {
-  return error is Failure
-      ? error
-      : Failure(message: error.toString(), cause: error);
 }

@@ -12,7 +12,7 @@ void main() {
       const Locale('zh', 'TW'),
     );
     const failure = Failure(
-      code: '401',
+      httpStatus: 401,
       message: 'server diagnostic must not reach UI',
     );
 
@@ -36,7 +36,10 @@ void main() {
 
   test('does not treat login 403 as invalid credentials', () async {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    const failure = Failure(code: '403', message: 'account may be forbidden');
+    const failure = Failure(
+      httpStatus: 403,
+      message: 'account may be forbidden',
+    );
 
     expect(
       localizedAuthFailure(
@@ -52,7 +55,7 @@ void main() {
     'uses operation-specific localized fallback for unknown codes',
     () async {
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-      const failure = Failure(code: '599', message: 'technical detail');
+      const failure = Failure(httpStatus: 599, message: 'technical detail');
 
       expect(
         localizedAuthFailure(

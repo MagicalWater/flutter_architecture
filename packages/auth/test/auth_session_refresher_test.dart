@@ -110,7 +110,10 @@ void main() {
 
   for (final type in <DioExceptionType>[
     DioExceptionType.connectionTimeout,
+    DioExceptionType.sendTimeout,
+    DioExceptionType.receiveTimeout,
     DioExceptionType.connectionError,
+    DioExceptionType.badCertificate,
   ]) {
     test('$type 會保留 Session 並回傳 temporarilyUnavailable', () async {
       final sessionManager = _authenticatedSession();
@@ -143,6 +146,25 @@ void main() {
     expect(localStore.clearUserCalls, 0);
     expect(sessionManager.currentSession?.accessToken, 'access-token');
   });
+
+  for (final statusCode in <int>[400, 408, 429, 503]) {
+    test('HTTP $statusCode 會保留 Session 並回傳 temporarilyUnavailable', () async {
+      final sessionManager = _authenticatedSession();
+      final localStore = _FakeRefreshLocalStore();
+      final refresher = _createRefresher(
+        _FakeAuthRefreshApi(statusCode: statusCode),
+        localStore,
+        sessionManager,
+      );
+
+      final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+      expect(result, isA<AuthRefreshTemporarilyUnavailable>());
+      expect(localStore.clearTokensCalls, 0);
+      expect(localStore.clearUserCalls, 0);
+      expect(sessionManager.currentSession, isNotNull);
+    });
+  }
 
   test('Refresh 期間 Session identity 改變時丟棄舊 response', () async {
     final sessionManager = _authenticatedSession();
@@ -182,7 +204,24 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
-  test('讀取 Token Pair 發生未知錯誤時清除 Session 並回傳 localStateFailure', () async {
+  test('讀取 Token Pair 發生已知 storage 錯誤時保留 Session 並回傳 localStateFailure', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore(failReadTokens: true);
+    final refresher = _createRefresher(
+      _FakeAuthRefreshApi(),
+      localStore,
+      sessionManager,
+    );
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshLocalStateFailure>());
+    expect(localStore.clearTokensCalls, 0);
+    expect(localStore.clearUserCalls, 0);
+    expect(sessionManager.currentSession, isNotNull);
+  });
+
+  test('讀取 Token Pair 發生未知錯誤時不清 Session 並保留原始錯誤', () async {
     final sessionManager = _authenticatedSession();
     final localStore = _FakeRefreshLocalStore(failReadTokensUnknown: true);
     final refresher = _createRefresher(
@@ -191,15 +230,17 @@ void main() {
       sessionManager,
     );
 
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
+    await expectLater(
+      refresher.refresh(failedAccessToken: 'access-token'),
+      throwsA(isA<StateError>()),
+    );
 
-    expect(result, isA<AuthRefreshLocalStateFailure>());
-    expect(localStore.clearTokensCalls, 1);
-    expect(localStore.clearUserCalls, 1);
-    expect(sessionManager.currentSession, isNull);
+    expect(localStore.clearTokensCalls, 0);
+    expect(localStore.clearUserCalls, 0);
+    expect(sessionManager.currentSession, isNotNull);
   });
 
-  test('保存 Token Pair 發生未知錯誤時清除 Session 並回傳 localStateFailure', () async {
+  test('保存 Token Pair 發生未知錯誤時不清 Session 並保留原始錯誤', () async {
     final sessionManager = _authenticatedSession();
     final localStore = _FakeRefreshLocalStore(failSaveTokensUnknown: true);
     final refresher = _createRefresher(
@@ -208,12 +249,14 @@ void main() {
       sessionManager,
     );
 
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
+    await expectLater(
+      refresher.refresh(failedAccessToken: 'access-token'),
+      throwsA(isA<StateError>()),
+    );
 
-    expect(result, isA<AuthRefreshLocalStateFailure>());
-    expect(localStore.clearTokensCalls, 1);
-    expect(localStore.clearUserCalls, 1);
-    expect(sessionManager.currentSession, isNull);
+    expect(localStore.clearTokensCalls, 0);
+    expect(localStore.clearUserCalls, 0);
+    expect(sessionManager.currentSession, isNotNull);
   });
 
   test('新 Session 不會加入舊 Session 的 in-flight refresh', () async {
@@ -290,22 +333,6 @@ void main() {
     expect(sessionManager.currentSession?.userId, 'user-002');
   });
 
-  test('HTTP 400 不會清除 Session', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore();
-    final refresher = _createRefresher(
-      _FakeAuthRefreshApi(statusCode: 400),
-      localStore,
-      sessionManager,
-    );
-
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-    expect(result, isA<AuthRefreshTemporarilyUnavailable>());
-    expect(localStore.clearTokensCalls, 0);
-    expect(sessionManager.currentSession, isNotNull);
-  });
-
   test('Malformed 200 response 不會清除 Session', () async {
     final sessionManager = _authenticatedSession();
     final localStore = _FakeRefreshLocalStore();
@@ -324,6 +351,42 @@ void main() {
 
     expect(result, isA<AuthRefreshTemporarilyUnavailable>());
     expect(localStore.clearTokensCalls, 0);
+    expect(sessionManager.currentSession, isNotNull);
+  });
+
+  test('FormatException 會視為 remote protocol failure 並保留 Session', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore();
+    final refresher = _createRefresher(
+      _FakeAuthRefreshApi(error: const FormatException('bad payload')),
+      localStore,
+      sessionManager,
+    );
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshTemporarilyUnavailable>());
+    expect(localStore.clearTokensCalls, 0);
+    expect(sessionManager.currentSession, isNotNull);
+  });
+
+  test('TypeError 不會降級為 temporary failure，並保留 Session', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore();
+    final error = TypeError();
+    final refresher = _createRefresher(
+      _FakeAuthRefreshApi(error: error),
+      localStore,
+      sessionManager,
+    );
+
+    await expectLater(
+      refresher.refresh(failedAccessToken: 'access-token'),
+      throwsA(same(error)),
+    );
+
+    expect(localStore.clearTokensCalls, 0);
+    expect(localStore.clearUserCalls, 0);
     expect(sessionManager.currentSession, isNotNull);
   });
 
@@ -392,6 +455,7 @@ class _FakeAuthRefreshApi implements AuthRefreshApi {
     this.completer,
     this.response,
     this.errorType,
+    this.error,
   });
 
   static const successResponse = RefreshTokenResponseDto(
@@ -403,6 +467,7 @@ class _FakeAuthRefreshApi implements AuthRefreshApi {
   final Completer<RefreshTokenResponseDto>? completer;
   final RefreshTokenResponseDto? response;
   final DioExceptionType? errorType;
+  final Object? error;
   int callCount = 0;
 
   @override
@@ -410,6 +475,10 @@ class _FakeAuthRefreshApi implements AuthRefreshApi {
     RefreshTokenRequestDto request,
   ) async {
     callCount += 1;
+    final thrownError = error;
+    if (thrownError != null) {
+      throw thrownError;
+    }
     final type = errorType;
     if (type != null) {
       throw DioException(
@@ -448,6 +517,7 @@ class _SequencedAuthRefreshApi implements AuthRefreshApi {
 class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
   _FakeRefreshLocalStore({
     this.failSaveTokens = false,
+    this.failReadTokens = false,
     this.failReadTokensUnknown = false,
     this.failSaveTokensUnknown = false,
     this.blockSaveTokens = false,
@@ -456,6 +526,7 @@ class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
   });
 
   final bool failSaveTokens;
+  final bool failReadTokens;
   final bool failReadTokensUnknown;
   final bool failSaveTokensUnknown;
   final bool blockSaveTokens;
@@ -474,6 +545,12 @@ class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
 
   @override
   Future<StoredAuthTokens?> readTokens() async {
+    if (failReadTokens) {
+      throw const AppException(
+        kind: AppExceptionKind.localStorage,
+        message: 'read tokens failed',
+      );
+    }
     if (failReadTokensUnknown) {
       throw StateError('read tokens failed');
     }
@@ -488,7 +565,10 @@ class _FakeRefreshLocalStore implements AuthRefreshLocalStore {
       await allowSave.future;
     }
     if (failSaveTokens) {
-      throw const AppException(message: 'save tokens failed');
+      throw const AppException(
+        kind: AppExceptionKind.localStorage,
+        message: 'save tokens failed',
+      );
     }
     if (failSaveTokensUnknown) {
       throw StateError('save tokens failed');

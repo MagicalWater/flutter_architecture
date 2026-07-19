@@ -7,7 +7,7 @@ String localizedAuthFailure(
   required Failure failure,
   required AuthFailureOperation operation,
 }) {
-  if (operation == AuthFailureOperation.login && failure.code == '401') {
+  if (operation == AuthFailureOperation.login && failure.httpStatus == 401) {
     return l10n.authInvalidCredentialsMessage;
   }
 

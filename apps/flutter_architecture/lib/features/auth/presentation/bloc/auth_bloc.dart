@@ -57,7 +57,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       state.copyWith(isLoading: true, failure: null, failureOperation: null),
     );
 
-    final result = await _restoreSessionUseCase.execute();
+    late final Result<AuthUser?> result;
+    try {
+      result = await _restoreSessionUseCase.execute();
+    } catch (error, stackTrace) {
+      emit(state.copyWith(isLoading: false));
+      Error.throwWithStackTrace(error, stackTrace);
+    }
 
     result.when(
       success: (user) {
@@ -67,7 +73,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             isLoading: false,
-            failure: _asFailure(error),
+            failure: error,
             failureOperation: AuthFailureOperation.restore,
           ),
         );
@@ -83,10 +89,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       state.copyWith(isLoading: true, failure: null, failureOperation: null),
     );
 
-    final result = await _loginUseCase.execute(
-      account: event.account,
-      password: event.password,
-    );
+    late final Result<AuthResult> result;
+    try {
+      result = await _loginUseCase.execute(
+        account: event.account,
+        password: event.password,
+      );
+    } catch (error, stackTrace) {
+      emit(state.copyWith(isLoading: false));
+      Error.throwWithStackTrace(error, stackTrace);
+    }
 
     result.when(
       success: (authResult) {
@@ -96,7 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             isLoading: false,
-            failure: _asFailure(error),
+            failure: error,
             failureOperation: AuthFailureOperation.login,
           ),
         );
@@ -116,7 +128,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       state.copyWith(isLoading: true, failure: null, failureOperation: null),
     );
 
-    final result = await _logoutUseCase.execute();
+    late final Result<void> result;
+    try {
+      result = await _logoutUseCase.execute();
+    } catch (error, stackTrace) {
+      emit(state.copyWith(isLoading: false));
+      Error.throwWithStackTrace(error, stackTrace);
+    }
 
     result.when(
       success: (_) {
@@ -126,7 +144,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             isLoading: false,
-            failure: _asFailure(error),
+            failure: error,
             failureOperation: AuthFailureOperation.logout,
           ),
         );
@@ -139,10 +157,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await _sessionSubscription.cancel();
     return super.close();
   }
-}
-
-Failure _asFailure(Object error) {
-  return error is Failure
-      ? error
-      : Failure(message: error.toString(), cause: error);
 }

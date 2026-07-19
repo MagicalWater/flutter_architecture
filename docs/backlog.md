@@ -12,11 +12,11 @@
 
 - ADR：Architecture Decision Record。
 - Unit Test / Bloc Test / Repository Test 完整範例。
-- API Error Mapping 進階版。
+- API Error Mapping 進階版。（已排入 Milestone 17 Exception & Failure Architecture）
 - WebSocket。
 - Notification feature。
 - Payment feature。
-- Firebase Crashlytics。
+- Firebase Crashlytics。（Milestone 17-6 先建立 adapter boundary，是否加入 dependency 於 implementation review 決定）
 - Analytics。
 - Native Flavor：Android productFlavors、iOS Schemes、applicationId、bundle identifier 與原生 App 名稱切換。
 - Localizations。（已由 Milestone 16 Localization Foundation 完成）
@@ -32,8 +32,10 @@
 - Milestone 13：Pagination + Search Debounce。
 - Milestone 14：Offline Cache。
 - Milestone 15：Design System Foundation。
+- Milestone 16：Localization Foundation。
+- Milestone 17：Exception & Failure Architecture。
 
-Milestone 10、12、13 與 15 已完成；Milestone 11 維持 Deferred，Milestone 14 已完成後封存其 roadmap 細節。
+Milestone 10、12、13、15 與 16 已完成；Milestone 11 維持 Deferred，Milestone 14 已完成後封存其 roadmap 細節。Milestone 17-1 Audit 與 Architecture Contract 已完成，17-2 至 17-7 尚待實作。
 
 ## 範圍規則
 

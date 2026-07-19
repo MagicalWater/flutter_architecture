@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/profile/domain/entities/profile.dart';
 import 'package:flutter_architecture/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:flutter_architecture/features/profile/presentation/profile_failure_localization.dart';
-import 'package:flutter_architecture/features/shell/presentation/shell_tab.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
@@ -32,12 +31,6 @@ class ProfilePage extends HookWidget {
       profileBloc.add(const ProfileEvent.requested());
       return null;
     }, const <Object?>[]);
-
-    useBlocListener<ProfileBloc, ProfileState>(profileBloc, (_, state, _) {
-      if (state.logoutSucceeded) {
-        context.tabsRouter.setActiveIndex(ShellTab.login.index);
-      }
-    });
 
     return ProfileView(
       isAuthenticated: profileState.isAuthenticated,

@@ -12,11 +12,11 @@
 
 **Severity：** P1
 
-**Status：** Resolved
+**Status：** Confirmed
 
 **Baseline blocking：** Yes，除非在Audit Review Gate明確修正、降級既有architecture claim或記錄Accepted risk。
 
-**Disposition：** Approved remediation；pending 18-7D
+**Disposition：** Approved remediation；18-7D implementation complete，pending review
 
 **Target phase：** 18-7D
 
@@ -64,7 +64,7 @@ Audit Review Gate應選擇並拍板其中一種最小方案：
 
 ### Disposition rationale
 
-目前先保留Pending。問題已確認，但依Milestone 18 contract，在18-6C前不得修改production code。
+18-7D已將Auth startup提升至`ArchitectureApp`擁有的`AuthNavigationCoordinator`。Coordinator先訂閱Auth state，再觸發`AuthStarted`；`ShellPage`不再import或取得`AuthBloc`，只保留Shell自身tabs與navigation chrome責任。Architecture import scan、startup ordering coordinator test、workspace regression與App bundle均已通過，仍待18-7D review後標記Resolved。
 
 ---
 
@@ -78,9 +78,9 @@ Audit Review Gate應選擇並拍板其中一種最小方案：
 
 **Baseline blocking：** No，但發布新baseline前必須有明確disposition。
 
-**Disposition：** Pending Audit Review Gate
+**Disposition：** Approved remediation；18-7D implementation complete，pending review
 
-**Target phase：** 18-7 candidate
+**Target phase：** 18-7D
 
 **Verification required：** Login success tab transition、Profile logout tab transition、router mapping與Shell navigation regression。
 
@@ -134,7 +134,7 @@ Auth與Profile Presentation知道Shell有哪些tab及其index mapping。Feature�
 
 ### Disposition rationale
 
-目前先保留Pending。這是明確耦合但未造成核心流程失效，適合在Audit Review Gate與M18-A01一起決定最小remediation。
+18-7D移除Login與Profile Presentation對`ShellTab`及`tabsRouter.setActiveIndex()`的依賴。App-owned coordinator只依AuthBloc權威authentication transition產生typed destination，再由App route mapping建立`ShellRoute(LoginRoute / ProfileRoute)`；Profile logout透過Session清除使AuthBloc轉為未登入，不再自行知道Shell tab identity。Targeted tests涵蓋restore前先訂閱、login success、logout / session clear、重複state不導航與route mapping；workspace regression與App bundle已通過，仍待review後標記Resolved。
 
 ---
 

@@ -2861,3 +2861,51 @@ Exception、Failure、cause、context、log 與 `toString()` 不得包含：
 - 不讓 Design System、Domain、Data 或 Repository 依賴 App localization。
 - 不改變 App 作為唯一 Composition Root。
 - 不在本 Decision 直接修改 Auth Session、Pagination、SWR、Offline Cache 或既有 regression 行為。
+
+---
+
+## Decision 021：Auth Startup 與跨 Feature Navigation 由 App Composition Layer 擁有
+
+**狀態：** Accepted
+
+**實作狀態：** Milestone 18-7D implementation complete，pending review。
+
+### 背景
+
+Milestone 18 Architecture Audit確認兩個邊界問題：
+
+- `ShellPage`直接取得`AuthBloc`並送出`AuthStarted`，使Shell presentation承擔Auth startup ownership。
+- `LoginPage`與`ProfilePage`直接依賴`ShellTab`及tab index，讓Auth / Profile presentation反向知道Shell navigation identity。
+
+### 決策
+
+Auth startup與Auth state到Shell destination的映射提升至App composition layer：
+
+```txt
+ArchitectureApp
+  ↓ start
+AuthNavigationCoordinator
+  ↓ AuthStarted
+AuthBloc
+  ↓ authoritative authentication transition
+AuthNavigationDestination
+  ↓ App-owned route mapping
+ShellRoute(LoginRoute / ProfileRoute)
+```
+
+規則：
+
+- App啟動時由App-owned coordinator觸發Auth restore；Shell不得dispatch Auth lifecycle event。
+- Auth feature只表達login result與Auth state，不import `ShellTab`或tab index。
+- Profile feature只表達logout result；Session清除後由AuthBloc權威狀態變化驅動App navigation。
+- Login成功的`unauthenticated → authenticated`映射至Profile destination。
+- 已登入狀態轉為未登入時映射至Login destination。
+- 相同authentication identity不重複導航；loading或failure field改變不構成navigation intent。
+- 具體`ShellRoute` child mapping只存在App router / composition boundary。
+
+### 非目標
+
+- 不建立Generic Navigation Coordinator framework。
+- 不讓Domain或可重用package依賴AutoRoute。
+- 不改變Shell使用`AutoTabsRouter`管理使用者手動tab切換的責任。
+- 不讓AuthBloc直接操作Router。

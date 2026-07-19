@@ -5,11 +5,9 @@ import 'package:flutter_architecture/app/localization/presentation/locale_select
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/app/theme/presentation/appearance_selector_dialog.dart';
 import 'package:flutter_architecture/app/theme/theme_controller.dart';
-import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_architecture/features/shell/presentation/shell_tab.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooked_bloc/hooked_bloc.dart';
 
 /// ShellPage，也就是需求中的 A 頁面。
 ///
@@ -31,13 +29,7 @@ class ShellPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authBloc = useBloc<AuthBloc>();
     final l10n = AppLocalizations.of(context);
-
-    useEffect(() {
-      authBloc.add(const AuthEvent.started());
-      return null;
-    }, const <Object?>[]);
 
     return AutoTabsRouter(
       routes: const <PageRouteInfo>[

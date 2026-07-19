@@ -20,6 +20,8 @@
 
 ### Added
 
+- 完成Milestone 18-7D App / Feature boundary remediation實作：新增App-owned `AuthNavigationCoordinator`與Decision 021，由`ArchitectureApp`先訂閱Auth state再觸發restore；Shell不再直接依賴或dispatch AuthBloc。
+- Login與Profile Presentation不再import `ShellTab`或直接設定tab index；App composition layer將unauthenticated → authenticated映射到Profile，authenticated → unauthenticated映射到Login，相同authentication state不重複導航。新增4項targeted tests，architecture import scan、workspace analyze、406 tests與App bundle通過，`M18-A01/A02`尚待18-7D review。
 - 完成Milestone 18-7C review修訂並關閉`M18-P02`：v5 upgrade regression同時驗證合法parent-child保留、existing orphan清除、upgrade後cascade與新orphan rejection，並維持`foreign_key_check`為空；DI evidence收斂為Composition Root提供的Database已啟用foreign keys。Workspace analyze與402 tests全數通過，下一步為18-7D App / Feature boundary remediation。
 - 完成Milestone 18-7C Catalog foreign-key enforcement實作：App-owned SQLite connection新增`onConfigure`並啟用`PRAGMA foreign_keys = ON`，schema升至version 6；upgrade會清除existing Catalog orphan item rows。
 - 新增fresh / upgrade production-style connection regression，驗證pragma=1、parent delete cascade、orphan insert rejection、existing orphan cleanup與`foreign_key_check`；Mock / Real DI graph亦驗證實際Database connection。Workspace五個package analyze與402 tests全數通過，18-7C尚待review。

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
 import 'package:flutter_architecture/app/localization/app_locale_resolution.dart';
+import 'package:flutter_architecture/app/navigation/auth_navigation_coordinator.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/app/theme/theme_controller.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
+import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 
 /// App 入口 Widget。
@@ -30,11 +32,27 @@ class ArchitectureApp extends StatefulWidget {
 
 class _ArchitectureAppState extends State<ArchitectureApp> {
   late final AppRouter _router;
+  late final AuthNavigationCoordinator _authNavigationCoordinator;
 
   @override
   void initState() {
     super.initState();
     _router = getIt<AppRouter>();
+    final authBloc = getIt<AuthBloc>();
+    _authNavigationCoordinator = AuthNavigationCoordinator(
+      initialState: authBloc.state,
+      states: authBloc.stream,
+      restoreSession: () => authBloc.add(const AuthEvent.started()),
+      navigate: (destination) {
+        _router.navigate(routeForAuthDestination(destination));
+      },
+    )..start();
+  }
+
+  @override
+  void dispose() {
+    _authNavigationCoordinator.dispose();
+    super.dispose();
   }
 
   @override

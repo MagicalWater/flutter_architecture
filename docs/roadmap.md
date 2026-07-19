@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：Audit Review Gate Approved；18-7D App / Feature boundary remediation已完成實作、尚待review。
+狀態：Audit Review Gate Approved；18-7D Reviewed / Closed，下一步為18-7E Android platform scaffold與application smoke foundation。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1960,4 +1960,4 @@ Audit Review Gate已通過：9項findings均完成disposition，無Accepted risk
 
 18-7C已完成並通過review，`M18-P02`正式Resolved：App-owned SQLite connection透過`onConfigure`啟用foreign keys，schema version升至6並在upgrade清除existing Catalog orphan items。Fresh connection驗證pragma=1、cascade與orphan insert rejection；v5 upgrade驗證合法cache保留、orphan清除、upgrade後cascade與新orphan rejection，以及`foreign_key_check`。DI graph驗證Composition Root提供的Database已啟用foreign keys；workspace analyze與402 tests通過。下一步為18-7D。
 
-18-7D已完成實作、尚待review：Auth startup與authentication navigation transition提升至App-owned `AuthNavigationCoordinator`。Shell不再依賴AuthBloc；Login / Profile不再依賴ShellTab或tab index。App mapping將login success導向Profile、authenticated → unauthenticated導向Login，且相同authentication state不重複導航。新增Decision 021與4項targeted tests；architecture import scan、workspace analyze、406 tests及App bundle通過，`M18-A01/A02`尚待review。
+18-7D已完成並通過review，`M18-A01/A02`正式Resolved：Auth startup與authentication navigation transition提升至App-owned `AuthNavigationCoordinator`，並延後至Router首個frame掛載後啟動。Shell不再依賴AuthBloc；Login / Profile不再依賴ShellTab。App以root `replaceAll`維持單一Shell並映射Login / Profile destination。Regression涵蓋initial authenticated、dispose guard、Login→Profile、Protected→Login與single-Shell；workspace analyze、409 tests及App bundle通過。下一步為18-7E。

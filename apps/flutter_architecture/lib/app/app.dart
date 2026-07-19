@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
@@ -33,6 +35,7 @@ class ArchitectureApp extends StatefulWidget {
 class _ArchitectureAppState extends State<ArchitectureApp> {
   late final AppRouter _router;
   late final AuthNavigationCoordinator _authNavigationCoordinator;
+  bool _authNavigationStarted = false;
 
   @override
   void initState() {
@@ -44,9 +47,14 @@ class _ArchitectureAppState extends State<ArchitectureApp> {
       states: authBloc.stream,
       restoreSession: () => authBloc.add(const AuthEvent.started()),
       navigate: (destination) {
-        _router.navigate(routeForAuthDestination(destination));
+        unawaited(reconcileAuthDestination(_router, destination));
       },
-    )..start();
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _authNavigationStarted) return;
+      _authNavigationStarted = true;
+      _authNavigationCoordinator.start();
+    });
   }
 
   @override

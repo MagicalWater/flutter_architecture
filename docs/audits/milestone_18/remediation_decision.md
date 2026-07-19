@@ -214,11 +214,11 @@ Logout在進入exclusive cleanup前可被取代；cleanup一旦開始會完整�
 
 Regression涵蓋fresh connection pragma、parent delete cascade與orphan insert rejection；v5 upgrade同時驗證合法parent-child保留、existing orphan cleanup、upgrade後cascade與新orphan rejection，以及`foreign_key_check`。DI graph驗證Composition Root提供的Database connection已啟用foreign keys，不將Mock / Real兩次檢查描述為兩個獨立connection lifecycle。Workspace五個package analyze與402項tests全數通過。下一步為18-7D App / Feature boundary remediation。
 
-### 18-7D implementation progress
+### 18-7D reviewed outcome
 
-18-7D已完成實作，尚待review。新增App-owned `AuthNavigationCoordinator`與Decision 021；`ArchitectureApp`在init時先訂閱AuthBloc state，再觸發restore。`ShellPage`不再import / dispatch AuthBloc，Login與Profile Presentation也不再import `ShellTab`或直接操作`tabsRouter`。
+18-7D已完成並通過review，`M18-A01`與`M18-A02`正式Resolved。新增App-owned `AuthNavigationCoordinator`與Decision 021；`ArchitectureApp`在Router首個frame掛載後啟動Coordinator，先訂閱AuthBloc state，再觸發restore。`ShellPage`不再import / dispatch AuthBloc，Login與Profile Presentation也不再import `ShellTab`或直接操作`tabsRouter`。
 
-Authentication transition由App composition layer映射：未登入轉已登入導向`ShellRoute(ProfileRoute)`；已登入轉未登入導向`ShellRoute(LoginRoute)`；相同authentication狀態不重複導航。Targeted 4項tests、architecture import scan、workspace五個package analyze、406項tests與App bundle均通過。`M18-A01/A02`仍待18-7D review後才可標記Resolved。
+Authentication transition由App composition layer映射，並以root `replaceAll`維持單一Shell：已登入導向`ShellRoute(ProfileRoute)`，未登入導向`ShellRoute(LoginRoute)`。Regression涵蓋startup ordering、initial authenticated reconciliation、dispose guard、相同state不重複導航，以及mounted AppRouter的Login→Profile、Protected→Login與single-Shell contract。Workspace五個package analyze、409項tests與App bundle均通過。下一步為18-7E Android platform scaffold與application smoke foundation。
 
 ---
 

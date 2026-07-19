@@ -2868,7 +2868,7 @@ Exception、Failure、cause、context、log 與 `toString()` 不得包含：
 
 **狀態：** Accepted
 
-**實作狀態：** Milestone 18-7D implementation complete，pending review。
+**實作狀態：** Milestone 18-7D Reviewed / Closed。
 
 ### 背景
 
@@ -2902,6 +2902,8 @@ ShellRoute(LoginRoute / ProfileRoute)
 - 已登入狀態轉為未登入時映射至Login destination。
 - 相同authentication identity不重複導航；loading或failure field改變不構成navigation intent。
 - 具體`ShellRoute` child mapping只存在App router / composition boundary。
+- Coordinator只在Router首個frame掛載後啟動，避免快速restore在Router mount前導航。
+- Auth destination以root `replaceAll`重整為單一`ShellRoute`，確保Protected等root route會在失去登入狀態時被移除。
 
 ### 非目標
 

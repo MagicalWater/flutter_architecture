@@ -1,3 +1,5 @@
+- 完成Milestone 18-7D review修訂並關閉`M18-A01/A02`：Auth coordinator延後至Router首個frame後啟動，補上initial authenticated reconciliation與dispose guard；Auth destination改以root `replaceAll`維持單一Shell並移除Protected等上層route。
+- 新增mounted `ArchitectureApp + AppRouter` regression，直接驗證Login→Profile、Protected→Login及single-Shell contract。Workspace analyze、409 tests與App bundle全數通過，下一步為18-7E Android platform scaffold與application smoke foundation。
 # Changelog
 
 本文件記錄 Flutter Enterprise Architecture Template 的版本變更。

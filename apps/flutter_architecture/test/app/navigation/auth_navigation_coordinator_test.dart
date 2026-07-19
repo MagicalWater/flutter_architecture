@@ -56,6 +56,7 @@ void main() {
     addTearDown(coordinator.dispose);
 
     coordinator.start();
+    destinations.clear();
     states.add(AuthState.initial());
     await Future<void>.delayed(Duration.zero);
 
@@ -87,6 +88,54 @@ void main() {
           failureOperation: null,
         ),
       );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(destinations, isEmpty);
+  });
+
+  test('initial authenticated會在start時reconcile到Profile', () {
+    final destinations = <AuthNavigationDestination>[];
+    final coordinator = AuthNavigationCoordinator(
+      initialState: const AuthState(
+        isLoading: false,
+        user: AuthUser(id: 'user-1', name: 'User'),
+        failure: null,
+        failureOperation: null,
+      ),
+      states: const Stream<AuthState>.empty(),
+      restoreSession: () {},
+      navigate: destinations.add,
+    );
+    addTearDown(coordinator.dispose);
+
+    coordinator.start();
+
+    expect(destinations, <AuthNavigationDestination>[
+      AuthNavigationDestination.profile,
+    ]);
+  });
+
+  test('dispose後已排程state不再觸發navigation', () async {
+    final states = StreamController<AuthState>();
+    addTearDown(states.close);
+    final destinations = <AuthNavigationDestination>[];
+    final coordinator = AuthNavigationCoordinator(
+      initialState: AuthState.initial(),
+      states: states.stream,
+      restoreSession: () {},
+      navigate: destinations.add,
+    );
+
+    coordinator.start();
+    await coordinator.dispose();
+    states.add(
+      const AuthState(
+        isLoading: false,
+        user: AuthUser(id: 'user-1', name: 'User'),
+        failure: null,
+        failureOperation: null,
+      ),
+    );
     await Future<void>.delayed(Duration.zero);
 
     expect(destinations, isEmpty);

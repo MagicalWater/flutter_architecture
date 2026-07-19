@@ -220,6 +220,12 @@ Regression涵蓋fresh connection pragma、parent delete cascade與orphan insert 
 
 Authentication transition由App composition layer映射，並以root `replaceAll`維持單一Shell：已登入導向`ShellRoute(ProfileRoute)`，未登入導向`ShellRoute(LoginRoute)`。Regression涵蓋startup ordering、initial authenticated reconciliation、dispose guard、相同state不重複導航，以及mounted AppRouter的Login→Profile、Protected→Login與single-Shell contract。Workspace五個package analyze、409項tests與App bundle均通過。下一步為18-7E Android platform scaffold與application smoke foundation。
 
+### 18-7E implementation progress
+
+18-7E已完成Android scaffold與artifact foundation，尚待review。`apps/flutter_architecture`新增tracked `.metadata`與唯一Android runner；application ID / namespace固定為`com.example.flutterarchitecture`，使用Flutter-managed compile / target / min SDK、Java 17、AndroidX、V2 embedding與main manifest Internet permission。Release build暫用debug signing，只供template local artifact verification，正式產品必須替換。
+
+Windows host已成功建立debug APK與release APK；release APK約55.9 MB。Kotlin incremental compilation因Pub Cache位於`C:`、workspace位於`D:`會觸發cross-root cache問題，因此Android baseline明確設定`kotlin.incremental=false`以維持Windows clone build可重現。新增Android scaffold contract regression，workspace analyze與410項tests全數通過。Android仍為Supported target候選，實機／模擬器application smoke與README final positioning留到18-8。
+
 ---
 
 ## 8. Baseline release decision

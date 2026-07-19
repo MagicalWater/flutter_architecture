@@ -1,3 +1,5 @@
+- 完成Milestone 18-7E Android scaffold與artifact foundation實作：新增tracked Flutter `.metadata`與唯一Android runner，固定`com.example.flutterarchitecture` application ID / namespace、Flutter-managed SDK levels、Java 17、AndroidX、Internet permission與V2 embedding。
+- Windows host已成功建立debug APK與約55.9 MB release APK；新增Android scaffold contract regression，workspace analyze與410 tests全數通過。因Pub Cache與workspace位於不同Windows磁碟，Android baseline關閉Kotlin incremental compilation以避免cross-root cache失敗。Android仍待18-7E review與18-8實機runtime smoke，不提前標記Supported。
 - 完成Milestone 18-7D review修訂並關閉`M18-A01/A02`：Auth coordinator延後至Router首個frame後啟動，補上initial authenticated reconciliation與dispose guard；Auth destination改以root `replaceAll`維持單一Shell並移除Protected等上層route。
 - 新增mounted `ArchitectureApp + AppRouter` regression，直接驗證Login→Profile、Protected→Login及single-Shell contract。Workspace analyze、409 tests與App bundle全數通過，下一步為18-7E Android platform scaffold與application smoke foundation。
 # Changelog

@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：Audit Review Gate Approved；18-7D Reviewed / Closed，下一步為18-7E Android platform scaffold與application smoke foundation。
+狀態：Audit Review Gate Approved；18-7E Android scaffold與artifact foundation已完成實作、尚待review。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1961,3 +1961,5 @@ Audit Review Gate已通過：9項findings均完成disposition，無Accepted risk
 18-7C已完成並通過review，`M18-P02`正式Resolved：App-owned SQLite connection透過`onConfigure`啟用foreign keys，schema version升至6並在upgrade清除existing Catalog orphan items。Fresh connection驗證pragma=1、cascade與orphan insert rejection；v5 upgrade驗證合法cache保留、orphan清除、upgrade後cascade與新orphan rejection，以及`foreign_key_check`。DI graph驗證Composition Root提供的Database已啟用foreign keys；workspace analyze與402 tests通過。下一步為18-7D。
 
 18-7D已完成並通過review，`M18-A01/A02`正式Resolved：Auth startup與authentication navigation transition提升至App-owned `AuthNavigationCoordinator`，並延後至Router首個frame掛載後啟動。Shell不再依賴AuthBloc；Login / Profile不再依賴ShellTab。App以root `replaceAll`維持單一Shell並映射Login / Profile destination。Regression涵蓋initial authenticated、dispose guard、Login→Profile、Protected→Login與single-Shell；workspace analyze、409 tests及App bundle通過。下一步為18-7E。
+
+18-7E已完成Android scaffold與artifact foundation實作、尚待review：新增tracked `.metadata`、Android Gradle / Kotlin runner、`com.example.flutterarchitecture` application ID、Flutter-managed SDK levels、Java 17、Internet permission、V2 embedding與local release artifact signing。Windows host成功建立debug APK與約55.9 MB release APK；新增Android scaffold contract test，workspace analyze與410 tests通過。Android仍為Supported target候選，實機runtime smoke與README final capability定位留到18-8。

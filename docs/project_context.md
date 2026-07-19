@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。Audit Review Gate已通過；18-7A至18-7D均已Reviewed / Closed，`M18-R01`、`M18-P01`、`M18-P02`、`M18-A01`與`M18-A02`正式Resolved。Auth startup與跨Feature navigation由App-owned `AuthNavigationCoordinator`負責，於Router首個frame後啟動並以單一Shell root reconciliation映射Login / Profile；Shell、Auth與Profile的反向Presentation依賴已移除。Workspace analyze、409 tests與App bundle通過。下一步為18-7E Android platform scaffold與application smoke foundation。Android是唯一Supported target候選，其餘五平台維持Dependency-ready。VERSION維持1.1.0，`1.2.0`僅為provisional candidate。正式Gate決議位於`docs/audits/milestone_18/remediation_decision.md`。
+目前正式工作目標：Milestone 18 Template Baseline Holistic Audit & Release Review。Audit Review Gate已通過；18-7A至18-7D均已Reviewed / Closed，`M18-R01`、`M18-P01`、`M18-P02`、`M18-A01`與`M18-A02`正式Resolved。18-7E已完成Android scaffold與artifact foundation實作、尚待review：App新增tracked `.metadata`與Android runner，application ID為`com.example.flutterarchitecture`，Windows host已成功建立debug與release APK，workspace analyze與410 tests通過。Android仍只是唯一Supported target候選；實機runtime smoke與README final positioning留到18-8，其餘五平台維持Dependency-ready。VERSION維持1.1.0，`1.2.0`僅為provisional candidate。正式Gate決議位於`docs/audits/milestone_18/remediation_decision.md`。
 
 ### Milestone 17：Exception & Failure Architecture
 

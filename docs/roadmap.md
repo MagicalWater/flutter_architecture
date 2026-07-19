@@ -1913,7 +1913,7 @@ Audit 關鍵發現：
 
 ## Milestone 18：Template Baseline Holistic Audit & Release Review
 
-狀態：18-0 Planning Review Completed；下一步為18-1 Architecture & Dependency Audit。
+狀態：18-1 Architecture & Dependency Audit Completed；下一步為18-2 Runtime Critical Flow Audit。
 
 Milestone 18 不逐個重播Milestone 1至17，而是以目前`main`最終程式碼為準，進行橫向基線審查。完整Milestone包含Phase A Audit、Audit Review Gate、經核准的Phase B remediation與最終baseline release review；在Gate通過前只盤點、驗證與提出findings，不修改production code，也不升級Template Baseline Version。
 
@@ -1938,4 +1938,6 @@ Audit Review Gate
 18-8 Final Validation, Documentation & Baseline Decision
 ```
 
-18-0已完成：Milestone範圍、Phase、finding格式、P0至P3 disposition、Supported / Verification pending / Scaffold only / Dependency-ready / Not supported taxonomy、固定輸出檔案、`findings.md` SSOT責任與Gate進入條件均已拍板。最終planning review沒有未處理的P0 / P1 finding；下一步正式開始18-1。
+18-0已完成：Milestone範圍、Phase、finding格式、P0至P3 disposition、Supported / Verification pending / Scaffold only / Dependency-ready / Not supported taxonomy、固定輸出檔案、`findings.md` SSOT責任與Gate進入條件均已拍板。
+
+18-1已完成：App仍是唯一Composition Root，workspace package graph無cycle，packages未綁定DI framework，App-local Feature維持主要layer方向，mapper與abstraction沒有明顯過早generic化。正式finding為`M18-A01` ShellPage跨Feature直接依賴AuthBloc（P1）及`M18-A02` Auth / Profile Presentation反向依賴ShellTab（P2）；目前只落檔，等待18-6C Gate統一決定remediation。下一步為18-2 Runtime Critical Flow Audit。

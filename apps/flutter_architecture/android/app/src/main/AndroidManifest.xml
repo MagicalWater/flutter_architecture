@@ -2,6 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:allowBackup="false"
         android:label="Flutter Architecture"
         android:name="${applicationName}"
         android:icon="@drawable/ic_launcher">

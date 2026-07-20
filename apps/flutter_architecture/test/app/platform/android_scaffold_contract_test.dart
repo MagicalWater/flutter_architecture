@@ -14,7 +14,7 @@ void main() {
     ).readAsStringSync();
 
     expect(buildFile, contains('applicationId = "com.example.flutterarchitecture"'));
-    expect(buildFile, contains('minSdk = flutter.minSdkVersion'));
+    expect(buildFile, contains('minSdk = 23'));
     expect(buildFile, contains('targetSdk = flutter.targetSdkVersion'));
     expect(manifest, contains('android.permission.INTERNET'));
     expect(manifest, contains('android:value="2"'));

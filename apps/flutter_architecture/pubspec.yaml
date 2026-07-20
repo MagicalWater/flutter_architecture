@@ -26,6 +26,7 @@ dependencies:
   dio: ^5.7.0
   flutter_bloc: ^9.1.1
   flutter_hooks: ^0.21.0
+  flutter_secure_storage: ^10.3.1
   freezed_annotation: ^3.1.0
   get_it: ^9.2.1
   hooked_bloc: ^1.7.0

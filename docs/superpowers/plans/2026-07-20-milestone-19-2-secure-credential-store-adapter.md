@@ -110,7 +110,7 @@ Repository與Refresher仍解析default binding。DI test必須證明Secure Store
 - Modify: `apps/flutter_architecture/android/app/build.gradle.kts`
 - Create: `apps/flutter_architecture/test/app/platform/secure_storage_android_contract_test.dart`
 
-- [ ] **Step 1：先寫failing Android contract test**
+- [x] **Step 1：先寫failing Android contract test**
 
 驗證：
 
@@ -119,7 +119,7 @@ Repository與Refresher仍解析default binding。DI test必須證明Secure Store
 - Android app minimum SDK固定為23。
 - 不加入biometric permission或biometric-specific設定。
 
-- [ ] **Step 2：執行failing test**
+- [x] **Step 2：執行failing test**
 
 ```bash
 cd apps/flutter_architecture
@@ -128,11 +128,11 @@ flutter test test/app/platform/secure_storage_android_contract_test.dart
 
 Expected：FAIL，因dependency與backup policy尚未加入。
 
-- [ ] **Step 3：加入App-only dependency與最小Android設定**
+- [x] **Step 3：加入App-only dependency與最小Android設定**
 
 加入`flutter_secure_storage: ^10.3.1`。設定`android:allowBackup="false"`並將App minimum SDK固定為23；不修改package dependency、不加入biometric permission。
 
-- [ ] **Step 4：執行dependency resolution與contract test**
+- [x] **Step 4：執行dependency resolution與contract test**
 
 ```bash
 dart pub get
@@ -140,11 +140,13 @@ cd apps/flutter_architecture
 flutter test test/app/platform/secure_storage_android_contract_test.dart
 ```
 
-- [ ] **Step 5：Commit**
+- [x] **Step 5：Commit**
 
 ```bash
 git commit -m "build(auth): 加入Secure Storage App依賴"
 ```
+
+Task 1執行結果：先以contract test確認缺少dependency而進入RED；其後App加入`flutter_secure_storage: ^10.3.1`、Android minimum SDK固定為23、manifest設定`android:allowBackup="false"`，且未加入biometric permission。新舊Android contract tests共2項通過，App analyze無問題；`packages/`沒有新增Secure Storage dependency。
 
 ---
 

@@ -271,11 +271,11 @@ Task 2 implementation review：Passed after revision。
 - Create: `apps/flutter_architecture/test/features/auth/data/stores/sqflite_auth_user_store_test.dart`
 - Modify: `apps/flutter_architecture/test/features/auth/data/auth_single_active_user_persistence_test.dart`
 
-- [ ] **Step 1：先寫SQLite adapter tests**
+- [x] **Step 1：先寫SQLite adapter tests**
 
 覆蓋：slot不存在、write replace、A後寫B只讀B、clear、SQLite operational failure mapping、model mapping與unknown error不降級成absence。
 
-- [ ] **Step 2：執行failing test**
+- [x] **Step 2：執行failing test**
 
 ```bash
 cd apps/flutter_architecture
@@ -284,7 +284,7 @@ flutter test test/features/auth/data/stores/sqflite_auth_user_store_test.dart
 
 Expected：FAIL。
 
-- [ ] **Step 3：實作`SqfliteAuthUserStore`**
+- [x] **Step 3：實作`SqfliteAuthUserStore`**
 
 固定使用既有schema：
 
@@ -297,11 +297,11 @@ static const _slot = 1;
 
 Adapter直接在App boundary完成SQLite row與公開`AuthUser`之間的mapping；`AuthUserModel`維持`packages/auth`內部實作細節，不成為store contract。
 
-- [ ] **Step 4：更新single-active-user persistence test wiring**
+- [x] **Step 4：更新single-active-user persistence test wiring**
 
-以三個App adapter取代`AuthLocalDataSource`，保留所有既有scenario與assertion。
+本 Task 先將直接操作user persistence的scenario切換為`SqfliteAuthUserStore`。涉及`AuthRepositoryImpl` constructor的整合scenario必須等Task 4改為三個store boundary後再切換，避免Task 3提前修改Repository production contract；既有scenario與assertion維持通過。
 
-- [ ] **Step 5：執行SQLite與persistence tests**
+- [x] **Step 5：執行SQLite與persistence tests**
 
 ```bash
 cd apps/flutter_architecture
@@ -311,7 +311,7 @@ flutter test test/features/auth/data/auth_single_active_user_persistence_test.da
 
 Expected：PASS。
 
-- [ ] **Step 6：Commit**
+- [x] **Step 6：Commit**
 
 ```bash
 git add apps/flutter_architecture/lib/features/auth/data/stores/sqflite_auth_user_store.dart apps/flutter_architecture/test/features/auth/data/stores/sqflite_auth_user_store_test.dart apps/flutter_architecture/test/features/auth/data/auth_single_active_user_persistence_test.dart

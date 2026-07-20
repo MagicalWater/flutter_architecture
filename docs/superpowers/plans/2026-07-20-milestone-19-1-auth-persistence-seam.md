@@ -515,6 +515,8 @@ Expected：`packages/auth`無plugin import；舊型別無production consumer。
 
 Task 6執行結果：三個store interface由App-owned adapters以lazy singleton組裝；Repository與Refresher均由同一組GetIt singleton dependencies建立。`packages/auth`已移除SharedPreferences／sqflite dependencies、舊`AuthLocalDataSource`與舊public export。受影響App persistence tests已改用三個新adapters。
 
+Task 6 implementation review：production wiring無P0／P1 finding。補強DI graph regression，不只驗證store interface本身為singleton，也透過同一組GetIt stores寫入credential與User，確認Repository可restore該資料，並確認Refresher會將rotated credential寫回同一個store instance。如此可防止未來Repository／Refresher factory繞過DI container自行建立adapter而測試仍誤通過。
+
 - [x] **Step 7：Commit**
 
 ```bash

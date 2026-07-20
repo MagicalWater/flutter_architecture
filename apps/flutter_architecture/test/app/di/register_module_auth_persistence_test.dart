@@ -1,5 +1,6 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
+import 'package:core/core.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
@@ -64,5 +65,36 @@ void main() {
 
     expect(getIt<AuthRepository>(), isA<AuthRepositoryImpl>());
     expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
+
+    final credentialStore = getIt<AuthCredentialStore>();
+    final userStore = getIt<AuthUserStore>();
+    await credentialStore.writeCredential(
+      const StoredAuthTokens(
+        accessToken: 'shared-access-token',
+        refreshToken: 'shared-refresh-token',
+        userId: 'shared-user',
+      ),
+    );
+    await userStore.writeUser(
+      const AuthUser(id: 'shared-user', name: 'Shared User'),
+    );
+
+    final restoreResult = await getIt<AuthRepository>().restoreSession();
+    expect(restoreResult, isA<Success<AuthUser?>>());
+    expect(
+      getIt<SessionManager>().currentSession?.accessToken,
+      'shared-access-token',
+    );
+
+    final refreshResult = await getIt<AuthRefresher>().refresh(
+      failedAccessToken: 'shared-access-token',
+    );
+    expect(refreshResult, isA<AuthRefreshSuccess>());
+    final refreshedCredential = await credentialStore.readCredential();
+    expect(refreshedCredential, isA<AuthCredentialReadPresent>());
+    expect(
+      (refreshedCredential as AuthCredentialReadPresent).tokens.accessToken,
+      'mock-refreshed-access-token',
+    );
   });
 }

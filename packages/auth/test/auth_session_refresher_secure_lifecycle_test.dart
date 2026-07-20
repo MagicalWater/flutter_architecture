@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'dart:async';
 
 import 'package:api_client/api_client.dart';
@@ -7,6 +9,17 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('refresher production shape remains single and nonnullable', () {
+    final source = File(
+      'lib/src/refresh/auth_session_refresher.dart',
+    ).readAsStringSync();
+
+    expect(source, contains('AuthSessionRefresher('));
+    expect(source, isNot(contains('factory AuthSessionRefresher')));
+    expect(source, isNot(contains('_SecureLifecycleAuthSessionRefresher')));
+    expect(source, isNot(contains('AuthLifecycleDiagnosticSink?')));
+  });
+
   test('secure refresh persists rotated pair before runtime token', () async {
     final operations = <String>[];
     final store = _Store(operations);

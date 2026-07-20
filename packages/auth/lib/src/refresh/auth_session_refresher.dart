@@ -17,23 +17,14 @@ import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
 import 'package:core/core.dart';
 
 class AuthSessionRefresher implements AuthRefresher {
-  factory AuthSessionRefresher(
-    AuthRefreshRemoteDataSource remoteDataSource,
-    AuthCredentialStore credentialStore,
-    AuthLegacyCredentialStore legacyCredentialStore,
-    AuthUserStore userStore,
-    SessionManager sessionManager,
-    AuthStateMutationCoordinator mutationCoordinator,
-    AuthLifecycleDiagnosticSink diagnosticSink,
-  ) = _SecureLifecycleAuthSessionRefresher;
-
-  AuthSessionRefresher._(
+  AuthSessionRefresher(
     this._remoteDataSource,
     this._credentialStore,
     this._legacyCredentialStore,
     this._userStore,
     this._sessionManager,
     this._mutationCoordinator,
+    this._diagnosticSink,
   );
 
   final AuthRefreshRemoteDataSource _remoteDataSource;
@@ -42,6 +33,7 @@ class AuthSessionRefresher implements AuthRefresher {
   final AuthUserStore _userStore;
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
+  final AuthLifecycleDiagnosticSink _diagnosticSink;
 
   _InFlightRefresh? _inFlight;
 
@@ -96,92 +88,6 @@ class AuthSessionRefresher implements AuthRefresher {
     }
   }
 
-  Future<AuthRefreshResult> _performRefresh(_InFlightRefresh inFlight) async {
-    late final StoredAuthTokens tokens;
-    try {
-      final stored = await _mutationCoordinator.runExclusive(() async {
-        if (!_isSameSession(inFlight.generation, inFlight.userId)) {
-          return null;
-        }
-        final credential = await _credentialStore.readCredential();
-        if (credential is! AuthCredentialReadPresent) {
-          return null;
-        }
-        final tokens = credential.tokens;
-        if (tokens.userId == null ||
-            tokens.userId != inFlight.userId ||
-            tokens.isRefreshTokenExpired) {
-          return null;
-        }
-        final user = await _userStore.readUser();
-        if (user == null || user.id != inFlight.userId) {
-          return null;
-        }
-        return tokens;
-      });
-      if (!_isSameSession(inFlight.generation, inFlight.userId)) {
-        return const AuthRefreshSessionChanged();
-      }
-      if (stored == null) {
-        final invalidated = await _invalidateSessionBestEffort(
-          generation: inFlight.generation,
-          userId: inFlight.userId,
-        );
-        return invalidated
-            ? const AuthRefreshSessionExpired()
-            : const AuthRefreshSessionChanged();
-      }
-      tokens = stored;
-    } on AppException catch (error, stackTrace) {
-      if (error.kind != AppExceptionKind.localStorage) {
-        Error.throwWithStackTrace(error, stackTrace);
-      }
-      return _isSameSession(inFlight.generation, inFlight.userId)
-          ? const AuthRefreshLocalStateFailure()
-          : const AuthRefreshSessionChanged();
-    }
-
-    try {
-      final response = await _remoteDataSource.refresh(tokens.refreshToken);
-      return _mutationCoordinator.runExclusive(() async {
-        if (!_isSameSession(inFlight.generation, inFlight.userId)) {
-          return const AuthRefreshSessionChanged();
-        }
-
-        try {
-          await _credentialStore.writeCredential(
-            StoredAuthTokens(
-              accessToken: response.accessToken,
-              refreshToken: response.refreshToken,
-              userId: inFlight.userId,
-              accessTokenExpiresAt: response.accessTokenExpiresAt,
-              refreshTokenExpiresAt: response.refreshTokenExpiresAt,
-            ),
-          );
-        } on AppException catch (error, stackTrace) {
-          if (error.kind != AppExceptionKind.localStorage) {
-            Error.throwWithStackTrace(error, stackTrace);
-          }
-          await _invalidateSessionBestEffortUnlocked();
-          return const AuthRefreshLocalStateFailure();
-        }
-
-        _sessionManager.updateAccessToken(response.accessToken);
-        return const AuthRefreshSuccess();
-      });
-    } on InvalidRefreshCredentialException {
-      final invalidated = await _invalidateSessionBestEffort(
-        generation: inFlight.generation,
-        userId: inFlight.userId,
-      );
-      return invalidated
-          ? const AuthRefreshSessionExpired()
-          : const AuthRefreshSessionChanged();
-    } on TemporaryRefreshException {
-      return const AuthRefreshTemporarilyUnavailable();
-    }
-  }
-
   bool _isSameSession(int generation, String userId) {
     final current = _sessionManager.currentSession;
     return current != null &&
@@ -189,55 +95,6 @@ class AuthSessionRefresher implements AuthRefresher {
         current.userId == userId;
   }
 
-  Future<bool> _invalidateSessionBestEffort({
-    required int generation,
-    required String userId,
-  }) async {
-    return _mutationCoordinator.runExclusive(() async {
-      if (!_isSameSession(generation, userId)) {
-        return false;
-      }
-      await _invalidateSessionBestEffortUnlocked();
-      return true;
-    });
-  }
-
-  Future<void> _invalidateSessionBestEffortUnlocked() async {
-    try {
-      await _credentialStore.clearCredential();
-    } catch (_) {}
-    try {
-      await _legacyCredentialStore.clearLegacyCredential();
-    } catch (_) {}
-    try {
-      await _userStore.clearUser();
-    } catch (_) {}
-    _sessionManager.clear();
-  }
-}
-
-final class _SecureLifecycleAuthSessionRefresher extends AuthSessionRefresher {
-  // ignore: use_super_parameters
-  _SecureLifecycleAuthSessionRefresher(
-    AuthRefreshRemoteDataSource remoteDataSource,
-    AuthCredentialStore credentialStore,
-    AuthLegacyCredentialStore legacyCredentialStore,
-    AuthUserStore userStore,
-    SessionManager sessionManager,
-    AuthStateMutationCoordinator mutationCoordinator,
-    this._diagnosticSink,
-  ) : super._(
-        remoteDataSource,
-        credentialStore,
-        legacyCredentialStore,
-        userStore,
-        sessionManager,
-        mutationCoordinator,
-      );
-
-  final AuthLifecycleDiagnosticSink _diagnosticSink;
-
-  @override
   Future<AuthRefreshResult> _performRefresh(_InFlightRefresh inFlight) async {
     late final StoredAuthTokens tokens;
     try {

@@ -264,6 +264,8 @@ git commit -m "refactor(di): 原子切換Auth credential authority"
 
 Task 6執行結果：App default `AuthCredentialStore`已改綁`FlutterSecureAuthCredentialStore` singleton，named `secureAuthCredentialStore` binding完整移除；`AuthLegacyCredentialStore`仍由SharedPreferences legacy adapter提供。Repository、Refresher與Migration Coordinator均從同一default Secure singleton取得authority與同一lifecycle diagnostic sink。Package API同步移除`secureLifecycle` transitional constructors：`AuthRepositoryImpl`改為唯一8依賴Secure constructor，`AuthSessionRefresher` default constructor直接代表Secure lifecycle，不保留nullable dependency或runtime authority flag。Generated DI graph由build_runner重建。Auth package完整124項、App DI與persistence targeted 9項、package／app analyze及App bundle均通過。
 
+Task 6 implementation review：通過。Review發現Refresher雖已移除public transitional constructor，但仍保留redirecting factory與私有`_SecureLifecycleAuthSessionRefresher`過渡subclass，與Repository已完成的單一implementation shape不一致。已將Secure refresh、rotation、passive invalidation與diagnostic reporting完整折回`AuthSessionRefresher`本體，現在Repository與Refresher皆為單一class、單一constructor、nonnullable collaborator，不再保留任何Task 2至Task 5 transitional implementation path。
+
 ## Task 7 — 19-4 regression與implementation review gate
 
 **Files**

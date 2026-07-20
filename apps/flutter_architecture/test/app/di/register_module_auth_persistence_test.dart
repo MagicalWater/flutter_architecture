@@ -6,10 +6,11 @@ import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
-import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -23,6 +24,7 @@ void main() {
 
   setUp(() {
     SharedPreferences.setMockInitialValues(<String, Object>{});
+    FlutterSecureStorage.setMockInitialValues(<String, String>{});
   });
 
   tearDown(() async {
@@ -42,7 +44,7 @@ void main() {
 
     expect(
       getIt<AuthCredentialStore>(),
-      isA<SharedPreferencesAuthCredentialStore>(),
+      isA<FlutterSecureAuthCredentialStore>(),
     );
     expect(
       getIt<AuthLegacyCredentialStore>(),

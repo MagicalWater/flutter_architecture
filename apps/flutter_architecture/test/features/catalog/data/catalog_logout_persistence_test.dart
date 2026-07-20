@@ -44,6 +44,12 @@ void main() {
       userStore,
       sessionManager,
       AuthStateMutationCoordinator(),
+      AuthCredentialMigrationCoordinator(
+        credentialStore,
+        legacyCredentialStore,
+        userStore,
+      ),
+      const _NoopLifecycleDiagnosticSink(),
     );
     final catalogLocal = CatalogLocalDataSource(database);
     final updatedAt = DateTime.utc(2026, 7, 17, 6);
@@ -93,4 +99,12 @@ void main() {
     expect(cached, isNotNull);
     expect(cached!.items.single.id, 'public-item');
   });
+}
+
+final class _NoopLifecycleDiagnosticSink
+    implements AuthLifecycleDiagnosticSink {
+  const _NoopLifecycleDiagnosticSink();
+
+  @override
+  void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {}
 }

@@ -6,7 +6,6 @@ import 'package:auth/src/data/lifecycle/auth_lifecycle_cleanup_policy.dart';
 import 'package:auth/src/data/migration/auth_credential_migration_coordinator.dart';
 import 'package:auth/src/data/migration/auth_credential_migration_result.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
-import 'package:auth/src/data/stores/auth_credential_read_result.dart';
 import 'package:auth/src/data/stores/auth_credential_store.dart';
 import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
 import 'package:auth/src/data/stores/auth_user_store.dart';
@@ -40,18 +39,9 @@ class AuthRepositoryImpl implements AuthRepository {
     this._userStore,
     this._sessionManager,
     this._mutationCoordinator,
+    this._migrationCoordinator,
+    this._diagnosticSink,
   );
-
-  factory AuthRepositoryImpl.secureLifecycle(
-    AuthRemoteDataSource remoteDataSource,
-    AuthCredentialStore credentialStore,
-    AuthLegacyCredentialStore legacyCredentialStore,
-    AuthUserStore userStore,
-    SessionManager sessionManager,
-    AuthStateMutationCoordinator mutationCoordinator,
-    AuthCredentialMigrationCoordinator migrationCoordinator,
-    AuthLifecycleDiagnosticSink diagnosticSink,
-  ) = _SecureLifecycleAuthRepositoryImpl;
 
   final AuthRemoteDataSource _remoteDataSource;
   final AuthCredentialStore _credentialStore;
@@ -59,6 +49,8 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthUserStore _userStore;
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
+  final AuthCredentialMigrationCoordinator _migrationCoordinator;
+  final AuthLifecycleDiagnosticSink _diagnosticSink;
 
   @override
   Future<Result<AuthResult>> login({
@@ -112,12 +104,26 @@ class AuthRepositoryImpl implements AuthRepository {
       await _userStore.writeUser(user);
       operation.throwIfSuperseded();
     } catch (error, stackTrace) {
-      await _clearLocalAuthStateBestEffort();
-      if (error is! AuthLifecycleOperationSuperseded) {
-        _sessionManager.clear();
+      final cleanup = await AuthLifecycleCleanupPolicy(
+        secureCredentialStore: _credentialStore,
+        legacyCredentialStore: _legacyCredentialStore,
+        userStore: _userStore,
+      ).clearAllUnlocked();
+      cleanup.throwIfUnexpected();
+      if (error is AuthLifecycleOperationSuperseded) {
+        Error.throwWithStackTrace(error, stackTrace);
       }
+      _sessionManager.clear();
+      if (!_isExpectedLocalStorage(error)) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+      cleanup.throwIfFailed();
       Error.throwWithStackTrace(error, stackTrace);
     }
+  }
+
+  bool _isExpectedLocalStorage(Object error) {
+    return error is AppException && error.kind == AppExceptionKind.localStorage;
   }
 
   @override
@@ -168,14 +174,16 @@ class AuthRepositoryImpl implements AuthRepository {
 
   void _reportDiagnosticsBestEffort(
     Iterable<AuthLifecycleDiagnostic> diagnostics,
-  ) {}
+  ) {
+    try {
+      _diagnosticSink.reportAll(diagnostics);
+    } on Object {
+      // Reporting不得改變合法restore結果。
+    }
+  }
 
   Future<AuthCredentialMigrationResult> _resolveRestoreUnlocked() {
-    return _LegacyRestoreResolver(
-      _credentialStore,
-      _legacyCredentialStore,
-      _userStore,
-    ).resolveUnlocked();
+    return _migrationCoordinator.resolveUnlocked();
   }
 
   @override
@@ -209,70 +217,6 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
   }
-
-  Future<void> _clearLocalAuthStateBestEffort() async {
-    try {
-      await _credentialStore.clearCredential();
-    } catch (_) {}
-    try {
-      await _legacyCredentialStore.clearLegacyCredential();
-    } catch (_) {}
-    try {
-      await _userStore.clearUser();
-    } catch (_) {}
-  }
-}
-
-abstract interface class _AuthSessionRestoreResolver {
-  Future<AuthCredentialMigrationResult> resolveUnlocked();
-}
-
-final class _LegacyRestoreResolver implements _AuthSessionRestoreResolver {
-  const _LegacyRestoreResolver(
-    this._credentialStore,
-    this._legacyCredentialStore,
-    this._userStore,
-  );
-
-  final AuthCredentialStore _credentialStore;
-  final AuthLegacyCredentialStore _legacyCredentialStore;
-  final AuthUserStore _userStore;
-
-  @override
-  Future<AuthCredentialMigrationResult> resolveUnlocked() async {
-    final credential = await _credentialStore.readCredential();
-    if (credential is AuthCredentialReadAbsent ||
-        credential is AuthCredentialReadCorrupted) {
-      await _clearBestEffort();
-      return AuthCredentialMigrationUnauthenticated();
-    }
-
-    final user = await _userStore.readUser();
-    if (user == null) {
-      await _clearBestEffort();
-      return AuthCredentialMigrationUnauthenticated();
-    }
-
-    final tokens = (credential as AuthCredentialReadPresent).tokens;
-    if (tokens.userId == null || tokens.userId != user.id) {
-      await _clearBestEffort();
-      return AuthCredentialMigrationUnauthenticated();
-    }
-
-    return AuthCredentialMigrationResolved(tokens: tokens, user: user);
-  }
-
-  Future<void> _clearBestEffort() async {
-    try {
-      await _credentialStore.clearCredential();
-    } catch (_) {}
-    try {
-      await _legacyCredentialStore.clearLegacyCredential();
-    } catch (_) {}
-    try {
-      await _userStore.clearUser();
-    } catch (_) {}
-  }
 }
 
 final class _AuthRestoreOutcome {
@@ -280,76 +224,4 @@ final class _AuthRestoreOutcome {
 
   final AuthUser? user;
   final List<AuthLifecycleDiagnostic> diagnostics;
-}
-
-final class _SecureLifecycleAuthRepositoryImpl extends AuthRepositoryImpl {
-  const _SecureLifecycleAuthRepositoryImpl(
-    super.remoteDataSource,
-    super.credentialStore,
-    super.legacyCredentialStore,
-    super.userStore,
-    super.sessionManager,
-    super.mutationCoordinator,
-    this._migrationCoordinator,
-    this._diagnosticSink,
-  );
-
-  final AuthCredentialMigrationCoordinator _migrationCoordinator;
-  final AuthLifecycleDiagnosticSink _diagnosticSink;
-
-  @override
-  Future<void> _persistLoginUnlocked(
-    AuthLifecycleOperation operation,
-    AuthResult result,
-    AuthUser user,
-  ) async {
-    try {
-      await _credentialStore.writeCredential(
-        StoredAuthTokens(
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
-          userId: user.id,
-        ),
-      );
-      operation.throwIfSuperseded();
-      await _userStore.writeUser(user);
-      operation.throwIfSuperseded();
-    } catch (error, stackTrace) {
-      final cleanup = await AuthLifecycleCleanupPolicy(
-        secureCredentialStore: _credentialStore,
-        legacyCredentialStore: _legacyCredentialStore,
-        userStore: _userStore,
-      ).clearAllUnlocked();
-      cleanup.throwIfUnexpected();
-      if (error is AuthLifecycleOperationSuperseded) {
-        Error.throwWithStackTrace(error, stackTrace);
-      }
-      _sessionManager.clear();
-      if (!_isExpectedLocalStorage(error)) {
-        Error.throwWithStackTrace(error, stackTrace);
-      }
-      cleanup.throwIfFailed();
-      Error.throwWithStackTrace(error, stackTrace);
-    }
-  }
-
-  bool _isExpectedLocalStorage(Object error) {
-    return error is AppException && error.kind == AppExceptionKind.localStorage;
-  }
-
-  @override
-  Future<AuthCredentialMigrationResult> _resolveRestoreUnlocked() {
-    return _migrationCoordinator.resolveUnlocked();
-  }
-
-  @override
-  void _reportDiagnosticsBestEffort(
-    Iterable<AuthLifecycleDiagnostic> diagnostics,
-  ) {
-    try {
-      _diagnosticSink.reportAll(diagnostics);
-    } on Object {
-      // Reporting不得改變合法restore結果。
-    }
-  }
 }

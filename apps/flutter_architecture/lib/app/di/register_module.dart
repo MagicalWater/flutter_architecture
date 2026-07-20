@@ -8,7 +8,6 @@ import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_rep
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
-import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
@@ -85,17 +84,11 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
-  auth.AuthCredentialStore authCredentialStore(SharedPreferences preferences) =>
-      SharedPreferencesAuthCredentialStore(preferences);
-
-  @lazySingleton
   FlutterSecureStorage get flutterSecureStorage => const FlutterSecureStorage();
 
-  @Named('secureAuthCredentialStore')
   @lazySingleton
-  auth.AuthCredentialStore secureAuthCredentialStore(
-    FlutterSecureStorage storage,
-  ) => FlutterSecureAuthCredentialStore(storage);
+  auth.AuthCredentialStore authCredentialStore(FlutterSecureStorage storage) =>
+      FlutterSecureAuthCredentialStore(storage);
 
   @lazySingleton
   auth.AuthLegacyCredentialStore authLegacyCredentialStore(
@@ -108,7 +101,6 @@ abstract class RegisterModule {
 
   @lazySingleton
   auth.AuthCredentialMigrationCoordinator authCredentialMigrationCoordinator(
-    @Named('secureAuthCredentialStore')
     auth.AuthCredentialStore secureCredentialStore,
     auth.AuthLegacyCredentialStore legacyCredentialStore,
     auth.AuthUserStore userStore,
@@ -140,6 +132,7 @@ abstract class RegisterModule {
     auth.AuthUserStore userStore,
     auth.SessionManager sessionManager,
     auth.AuthStateMutationCoordinator mutationCoordinator,
+    AuthMigrationErrorReporterAdapter diagnosticSink,
   ) {
     return auth.AuthSessionRefresher(
       remoteDataSource,
@@ -148,6 +141,7 @@ abstract class RegisterModule {
       userStore,
       sessionManager,
       mutationCoordinator,
+      diagnosticSink,
     );
   }
 
@@ -173,6 +167,8 @@ abstract class RegisterModule {
     auth.AuthUserStore userStore,
     auth.SessionManager sessionManager,
     auth.AuthStateMutationCoordinator mutationCoordinator,
+    auth.AuthCredentialMigrationCoordinator migrationCoordinator,
+    AuthMigrationErrorReporterAdapter diagnosticSink,
   ) {
     return auth.AuthRepositoryImpl(
       remoteDataSource,
@@ -181,6 +177,8 @@ abstract class RegisterModule {
       userStore,
       sessionManager,
       mutationCoordinator,
+      migrationCoordinator,
+      diagnosticSink,
     );
   }
 

@@ -247,20 +247,22 @@ Task 5 implementation review：通過。Review確認shared cleanup policy在Logo
 
 **Contract**
 
-- [ ] Default `AuthCredentialStore`改綁Secure adapter。
-- [ ] 移除只為19-2 / 19-3過渡使用的named Secure requirement，或將named binding收斂為無重複authority的明確shape。
-- [ ] Repository、Refresher與Migration Coordinator取得同一Secure singleton instance。
-- [ ] `AuthLegacyCredentialStore`仍綁SharedPreferences legacy adapter。
-- [ ] Legacy資料可由Restore migration一次升級；Login與Refresh不再寫SharedPreferences credential。
-- [ ] DI tests以不同Secure／Legacy資料證明authority已完整切換，沒有半套graph。
-- [ ] App graph切換後移除Task 2至Task 5的transitional legacy constructor / collaborator path；不得留下optional dependency或runtime authority flag。
-- [ ] Generated code只由build_runner產生。
+- [x] Default `AuthCredentialStore`改綁Secure adapter。
+- [x] 移除只為19-2 / 19-3過渡使用的named Secure requirement，或將named binding收斂為無重複authority的明確shape。
+- [x] Repository、Refresher與Migration Coordinator取得同一Secure singleton instance。
+- [x] `AuthLegacyCredentialStore`仍綁SharedPreferences legacy adapter。
+- [x] Legacy資料可由Restore migration一次升級；Login與Refresh不再寫SharedPreferences credential。
+- [x] DI tests以不同Secure／Legacy資料證明authority已完整切換，沒有半套graph。
+- [x] App graph切換後移除Task 2至Task 5的transitional legacy constructor / collaborator path；不得留下optional dependency或runtime authority flag。
+- [x] Generated code只由build_runner產生。
 
 建議commit：
 
 ```bash
 git commit -m "refactor(di): 原子切換Auth credential authority"
 ```
+
+Task 6執行結果：App default `AuthCredentialStore`已改綁`FlutterSecureAuthCredentialStore` singleton，named `secureAuthCredentialStore` binding完整移除；`AuthLegacyCredentialStore`仍由SharedPreferences legacy adapter提供。Repository、Refresher與Migration Coordinator均從同一default Secure singleton取得authority與同一lifecycle diagnostic sink。Package API同步移除`secureLifecycle` transitional constructors：`AuthRepositoryImpl`改為唯一8依賴Secure constructor，`AuthSessionRefresher` default constructor直接代表Secure lifecycle，不保留nullable dependency或runtime authority flag。Generated DI graph由build_runner重建。Auth package完整124項、App DI與persistence targeted 9項、package／app analyze及App bundle均通過。
 
 ## Task 7 — 19-4 regression與implementation review gate
 

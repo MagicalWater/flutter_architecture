@@ -17,16 +17,7 @@ import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
 import 'package:core/core.dart';
 
 class AuthSessionRefresher implements AuthRefresher {
-  AuthSessionRefresher(
-    this._remoteDataSource,
-    this._credentialStore,
-    this._legacyCredentialStore,
-    this._userStore,
-    this._sessionManager,
-    this._mutationCoordinator,
-  );
-
-  factory AuthSessionRefresher.secureLifecycle(
+  factory AuthSessionRefresher(
     AuthRefreshRemoteDataSource remoteDataSource,
     AuthCredentialStore credentialStore,
     AuthLegacyCredentialStore legacyCredentialStore,
@@ -35,6 +26,15 @@ class AuthSessionRefresher implements AuthRefresher {
     AuthStateMutationCoordinator mutationCoordinator,
     AuthLifecycleDiagnosticSink diagnosticSink,
   ) = _SecureLifecycleAuthSessionRefresher;
+
+  AuthSessionRefresher._(
+    this._remoteDataSource,
+    this._credentialStore,
+    this._legacyCredentialStore,
+    this._userStore,
+    this._sessionManager,
+    this._mutationCoordinator,
+  );
 
   final AuthRefreshRemoteDataSource _remoteDataSource;
   final AuthCredentialStore _credentialStore;
@@ -217,15 +217,23 @@ class AuthSessionRefresher implements AuthRefresher {
 }
 
 final class _SecureLifecycleAuthSessionRefresher extends AuthSessionRefresher {
+  // ignore: use_super_parameters
   _SecureLifecycleAuthSessionRefresher(
-    super.remoteDataSource,
-    super.credentialStore,
-    super.legacyCredentialStore,
-    super.userStore,
-    super.sessionManager,
-    super.mutationCoordinator,
+    AuthRefreshRemoteDataSource remoteDataSource,
+    AuthCredentialStore credentialStore,
+    AuthLegacyCredentialStore legacyCredentialStore,
+    AuthUserStore userStore,
+    SessionManager sessionManager,
+    AuthStateMutationCoordinator mutationCoordinator,
     this._diagnosticSink,
-  );
+  ) : super._(
+        remoteDataSource,
+        credentialStore,
+        legacyCredentialStore,
+        userStore,
+        sessionManager,
+        mutationCoordinator,
+      );
 
   final AuthLifecycleDiagnosticSink _diagnosticSink;
 

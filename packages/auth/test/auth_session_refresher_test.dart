@@ -552,7 +552,16 @@ AuthSessionRefresher _createRefresher(
     localStore,
     sessionManager,
     coordinator ?? AuthStateMutationCoordinator(),
+    const _NoopLifecycleDiagnosticSink(),
   );
+}
+
+final class _NoopLifecycleDiagnosticSink
+    implements AuthLifecycleDiagnosticSink {
+  const _NoopLifecycleDiagnosticSink();
+
+  @override
+  void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {}
 }
 
 class _FakeAuthRefreshApi implements AuthRefreshApi {
@@ -697,7 +706,10 @@ class _FakeRefreshLocalStore
   Future<void> clearCredential() async {
     clearTokensCalls += 1;
     if (failClearTokens) {
-      throw StateError('clear tokens failed');
+      throw const AppException(
+        kind: AppExceptionKind.localStorage,
+        message: 'clear tokens failed',
+      );
     }
     tokens = null;
   }
@@ -729,7 +741,10 @@ class _FakeRefreshLocalStore
   Future<void> clearUser() async {
     clearUserCalls += 1;
     if (failClearUser) {
-      throw StateError('clear user failed');
+      throw const AppException(
+        kind: AppExceptionKind.localStorage,
+        message: 'clear user failed',
+      );
     }
     user = null;
   }

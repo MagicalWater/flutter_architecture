@@ -112,7 +112,7 @@ void main() {
       ..setAuthenticated(accessToken: 'existing', userId: 'existing-user');
     operations.clear();
     final mutationCoordinator = AuthStateMutationCoordinator();
-    final repository = AuthRepositoryImpl.secureLifecycle(
+    final repository = AuthRepositoryImpl(
       AuthRemoteDataSource(MockAuthApi()),
       secure,
       legacy,
@@ -144,7 +144,7 @@ void main() {
     final userStore = _UserStore(operations);
     final session = _TrackingSessionManager(operations);
     final api = _ControlledAuthApi();
-    final repository = AuthRepositoryImpl.secureLifecycle(
+    final repository = AuthRepositoryImpl(
       AuthRemoteDataSource(api),
       secure,
       legacy,
@@ -189,7 +189,7 @@ AuthRepositoryImpl _repository(
   AuthUserStore userStore,
   SessionManager session,
 ) {
-  return AuthRepositoryImpl.secureLifecycle(
+  return AuthRepositoryImpl(
     AuthRemoteDataSource(MockAuthApi()),
     secure,
     legacy,

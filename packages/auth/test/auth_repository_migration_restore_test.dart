@@ -20,11 +20,11 @@ void main() {
     ).readAsStringSync();
 
     expect(source, contains('const AuthRepositoryImpl('));
-    expect(source, contains('factory AuthRepositoryImpl.secureLifecycle('));
     expect(source, isNot(contains('AuthCredentialMigrationCoordinator?')));
     expect(source, isNot(contains('AuthLifecycleDiagnosticSink?')));
-    expect(source, isNot(contains('factory AuthRepositoryImpl(')));
-    expect(source, contains('extends AuthRepositoryImpl'));
+    expect(source, isNot(contains('secureLifecycle')));
+    expect(source, contains('this._migrationCoordinator'));
+    expect(source, contains('this._diagnosticSink'));
   });
 
   test(
@@ -173,7 +173,7 @@ AuthRepositoryImpl _repository(
   AuthLifecycleDiagnosticSink sink, {
   AuthStateMutationCoordinator? mutationCoordinator,
 }) {
-  return AuthRepositoryImpl.secureLifecycle(
+  return AuthRepositoryImpl(
     AuthRemoteDataSource(MockAuthApi()),
     secure,
     legacy,

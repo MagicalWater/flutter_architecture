@@ -4,9 +4,10 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
-import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -14,6 +15,10 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
+
+  setUp(() {
+    FlutterSecureStorage.setMockInitialValues(<String, String>{});
+  });
 
   test('sequential user writes只保留最新active user', () async {
     final database = await databaseFactoryFfi.openDatabase(
@@ -195,7 +200,9 @@ void main() {
       ),
     );
     addTearDown(upgraded.close);
-    final credentialStore = SharedPreferencesAuthCredentialStore(preferences);
+    final credentialStore = FlutterSecureAuthCredentialStore(
+      const FlutterSecureStorage(),
+    );
     final legacyCredentialStore = SharedPreferencesAuthLegacyCredentialStore(
       preferences,
     );
@@ -209,6 +216,12 @@ void main() {
       userStore,
       session,
       AuthStateMutationCoordinator(),
+      AuthCredentialMigrationCoordinator(
+        credentialStore,
+        legacyCredentialStore,
+        userStore,
+      ),
+      const _NoopLifecycleDiagnosticSink(),
     );
 
     final result = await repository.restoreSession();
@@ -233,7 +246,9 @@ void main() {
       ),
     );
     addTearDown(database.close);
-    final credentialStore = SharedPreferencesAuthCredentialStore(preferences);
+    final credentialStore = FlutterSecureAuthCredentialStore(
+      const FlutterSecureStorage(),
+    );
     final legacyCredentialStore = SharedPreferencesAuthLegacyCredentialStore(
       preferences,
     );
@@ -262,6 +277,12 @@ void main() {
       userStore,
       firstSession,
       AuthStateMutationCoordinator(),
+      AuthCredentialMigrationCoordinator(
+        credentialStore,
+        legacyCredentialStore,
+        userStore,
+      ),
+      const _NoopLifecycleDiagnosticSink(),
     );
 
     await repository.login(account: 'a', password: 'password');
@@ -276,6 +297,12 @@ void main() {
       userStore,
       restartedSession,
       AuthStateMutationCoordinator(),
+      AuthCredentialMigrationCoordinator(
+        credentialStore,
+        legacyCredentialStore,
+        userStore,
+      ),
+      const _NoopLifecycleDiagnosticSink(),
     );
     final restored = await restartedRepository.restoreSession();
 
@@ -299,4 +326,12 @@ class _SequencedAuthApi implements AuthApi {
   Future<LoginResponseDto> login(LoginRequestDto request) async {
     return responses[_index++];
   }
+}
+
+final class _NoopLifecycleDiagnosticSink
+    implements AuthLifecycleDiagnosticSink {
+  const _NoopLifecycleDiagnosticSink();
+
+  @override
+  void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {}
 }

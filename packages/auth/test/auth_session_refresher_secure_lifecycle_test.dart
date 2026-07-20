@@ -223,7 +223,7 @@ AuthSessionRefresher _refresher(
   AuthStateMutationCoordinator? coordinator,
   AuthLifecycleDiagnosticSink? sink,
 }) {
-  return AuthSessionRefresher.secureLifecycle(
+  return AuthSessionRefresher(
     AuthRefreshRemoteDataSource(api),
     store,
     store,

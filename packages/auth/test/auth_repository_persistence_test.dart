@@ -175,11 +175,9 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
-  test('Restore credential absent時不讀User store並直接清理', () async {
+  test('Restore credential與User皆 absent時不執行破壞性清理', () async {
     final sessionManager = SessionManager();
-    final local = _FakeAuthPersistenceStores(
-      readUserError: StateError('user store must not be read'),
-    );
+    final local = _FakeAuthPersistenceStores();
     final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
@@ -190,9 +188,9 @@ void main() {
     final result = await repository.restoreSession();
 
     expect(result, isA<Success<AuthUser?>>());
-    expect(local.clearTokensCalls, 1);
-    expect(local.clearLegacyCredentialCalls, 1);
-    expect(local.clearUserCalls, 1);
+    expect(local.clearTokensCalls, 0);
+    expect(local.clearLegacyCredentialCalls, 0);
+    expect(local.clearUserCalls, 0);
     expect(sessionManager.currentSession, isNull);
   });
 
@@ -346,6 +344,8 @@ void main() {
       local,
       sessionManager,
       AuthStateMutationCoordinator(),
+      AuthCredentialMigrationCoordinator(local, local, local),
+      const _NoopLifecycleDiagnosticSink(),
     );
 
     final result = await repository.logout();
@@ -365,7 +365,7 @@ void main() {
       ..setAuthenticated(accessToken: 'token', userId: 'user-001');
     operations.clear();
     final local = _OrderedAuthPersistenceStores(operations);
-    final repository = AuthRepositoryImpl.secureLifecycle(
+    final repository = AuthRepositoryImpl(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       local,
@@ -523,6 +523,8 @@ AuthRepositoryImpl _repository(
     local,
     sessionManager,
     mutationCoordinator,
+    AuthCredentialMigrationCoordinator(local, local, local),
+    const _NoopLifecycleDiagnosticSink(),
   );
 }
 

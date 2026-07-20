@@ -1225,7 +1225,15 @@ App Composition Root綁定共享lazy singleton instances
 - Auth package 56 tests、App auth / DI targeted 45 tests與workspace完整437 tests通過；workspace analyze與App bundle build通過。
 - 未新增`flutter_secure_storage`、migration policy、Android Native設定或VERSION變更。
 
-Milestone 19-2 Secure Credential Store Adapter已完成並通過implementation review；目前正式下一步為Milestone 19-3 SharedPreferences Legacy Migration。
+Milestone 19-2 Secure Credential Store Adapter已完成並通過implementation review；目前已進入Milestone 19-3 SharedPreferences Legacy Migration規劃階段。
+
+Milestone 19-3詳細implementation plan已建立：
+
+```txt
+docs/superpowers/plans/2026-07-20-milestone-19-3-shared-preferences-legacy-migration.md
+```
+
+19-3計畫建立`AuthCredentialMigrationCoordinator`作為唯一migration policy owner，完整測試Secure × Legacy × User decision matrix、write/read-back/cleanup順序、partial migration re-entry、identity validation與cleanup failure ownership。Coordinator不依賴`SessionManager`或`AuthStateMutationCoordinator`；App DI只建立named Secure dependency shape，Repository與Refresher仍保持SharedPreferences authority。計畫尚待review，未修改production code、generated DI或VERSION。
 
 Milestone 19-2詳細implementation plan已建立：
 

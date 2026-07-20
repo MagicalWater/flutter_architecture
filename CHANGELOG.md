@@ -25,6 +25,7 @@
 - 完成Milestone 19-0 Planning Review與最終文件一致性review，新增Threat Model、Secure × Legacy × User decision matrix、migration owner、typed credential read taxonomy、cleanup / reporting contract與六項planning findings；P1 findings已取得approved disposition，但仍待implementation與tests正式關閉。
 - 建立並review Milestone 19-1 Auth Persistence Seam詳細implementation plan，明確拆分typed store contract、App-owned SharedPreferences / SQLite adapter、Repository / Refresher rewiring、DI與regression gate。
 - 建立並review Milestone 19-2 Secure Credential Store Adapter implementation plan，明確定義App-only `flutter_secure_storage: ^10.3.1`、single logical payload、typed read / failure mapping、named Secure DI binding、Android minimum SDK 23、App-wide backup disable與artifact gate。
+- 建立Milestone 19-3 SharedPreferences Legacy Migration implementation plan，拆分migration public contract、destructive matrix、Secure authority cleanup、write/read-back validation、named DI與concurrency regression gate。
 - 完成Milestone 19-1 Auth Persistence Seam：新增Auth-specific credential、legacy與user store contracts及sealed read taxonomy；將SharedPreferences / SQLite adapters與plugin ownership移至App layer；Repository與Refresher改用三個明確store boundaries；移除舊`AuthLocalDataSource`、聚合local-store介面與`packages/auth`的plugin dependencies。
 - 完成Milestone 19-2 Secure Credential Store Adapter：App加入`flutter_secure_storage: ^10.3.1`、App-owned Secure adapter、single logical Token Pair payload、typed corruption / operational failure mapping、named Secure DI binding與Android artifact contract。
 

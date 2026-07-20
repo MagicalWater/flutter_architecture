@@ -1993,7 +1993,7 @@ Milestone 21 — Biometric-gated Local Session Unlock
 
 ## Milestone 19：Secure Credential Storage & Migration
 
-狀態：19-0 Completed / Archived；19-1 Completed / Reviewed；19-2 Completed / Reviewed；下一步為19-3。
+狀態：19-0 Completed / Archived；19-1 Completed / Reviewed；19-2 Completed / Reviewed；19-3 Planning。
 
 ### 目標
 
@@ -2062,6 +2062,14 @@ Plan review已拍板：使用stable `flutter_secure_storage: ^10.3.1`；Android 
 19-2 implementation review已通過：App新增`flutter_secure_storage: ^10.3.1`、App-owned Secure credential adapter、single logical Token Pair payload、typed corruption與窄範圍plugin failure mapping。Named `secureAuthCredentialStore`與底層`FlutterSecureStorage`皆為lazy singleton；default SharedPreferences authority、Repository與Refresher wiring維持不變。Android採`minSdk = maxOf(flutter.minSdkVersion, 23)`與App-wide `allowBackup=false`；release merged manifest實際minSdk 24、targetSdk 36，且沒有Biometric / Fingerprint permission。Workspace analyze、465項tests與release APK build通過；VERSION維持1.2.0。下一步為19-3 SharedPreferences Legacy Migration。
 
 ### Milestone 19-3：SharedPreferences Legacy Migration
+
+詳細implementation plan：
+
+```txt
+docs/superpowers/plans/2026-07-20-milestone-19-3-shared-preferences-legacy-migration.md
+```
+
+目前狀態：Implementation plan已建立，待plan review；尚未修改migration production code或credential authority。
 
 - [ ] `auth.tokens`只有在Token Pair完整且userId可驗證時才允許migration。
 - [ ] `auth.accessToken`缺少Refresh Token與identity，只允許安全清除，不得升級為有效Session。

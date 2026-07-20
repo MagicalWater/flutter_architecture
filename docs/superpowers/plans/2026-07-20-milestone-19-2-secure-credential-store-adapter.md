@@ -148,6 +148,8 @@ git commit -m "build(auth): 加入Secure Storage App依賴"
 
 Task 1執行結果：先以contract test確認缺少dependency而進入RED；其後App加入`flutter_secure_storage: ^10.3.1`、Android minimum SDK固定為23、manifest設定`android:allowBackup="false"`，且未加入biometric permission。新舊Android contract tests共2項通過，App analyze無問題；`packages/`沒有新增Secure Storage dependency。
 
+Task 1 implementation review：通過。Dependency ownership、minimum SDK、App-wide backup policy與source contract均符合plan；未改動DI或Auth lifecycle。Merged manifest的最終permission evidence留到Task 5 Android artifact review驗證。
+
 ---
 
 ## Task 2：Secure adapter happy path與typed corruption
@@ -158,7 +160,7 @@ Task 1執行結果：先以contract test確認缺少dependency而進入RED；其
 - Create: `apps/flutter_architecture/test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart`
 - Modify: `apps/flutter_architecture/pubspec.yaml` dev dependency（若測試需要直接實作platform interface fake）
 
-- [ ] **Step 1：先寫adapter failing tests**
+- [x] **Step 1：先寫adapter failing tests**
 
 至少覆蓋：
 
@@ -173,29 +175,31 @@ Task 1執行結果：先以contract test確認缺少dependency而進入RED；其
 - clear idempotent。
 - adapter / result diagnostic不包含secret sentinel。
 
-- [ ] **Step 2：執行RED**
+- [x] **Step 2：執行RED**
 
 ```bash
 cd apps/flutter_architecture
 flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart
 ```
 
-- [ ] **Step 3：實作最小Secure adapter**
+- [x] **Step 3：實作最小Secure adapter**
 
 Adapter constructor接受`FlutterSecureStorage`，只依賴public `auth` contracts，不import `package:auth/src/...`。Happy-path可使用`FlutterSecureStorage.setMockInitialValues()`；failure-path若需控制platform result，App test可顯式加入相容的`flutter_secure_storage_platform_interface` dev dependency並安裝test fake，不建立production generic wrapper。
 
-- [ ] **Step 4：執行GREEN與analyze**
+- [x] **Step 4：執行GREEN與analyze**
 
 ```bash
 flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart
 dart analyze .
 ```
 
-- [ ] **Step 5：Commit**
+- [x] **Step 5：Commit**
 
 ```bash
 git commit -m "feat(auth): 建立Secure credential adapter"
 ```
+
+Task 2執行結果：新增App-owned `FlutterSecureAuthCredentialStore`，以單一`auth.tokens` JSON payload保存完整Token Pair。Read明確區分absence、valid present與malformed / incomplete corruption；Secure payload要求非空白`userId`，write也會在plugin呼叫前拒絕缺失或空白identity，避免主動寫入下一次必定corrupted的資料。Happy path、round-trip、單key write、absence、8類corruption、invalid write identity、idempotent clear與secret-safe result diagnostics共17項tests通過；plugin failure mapping保留Task 3處理。
 
 ---
 

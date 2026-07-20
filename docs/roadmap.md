@@ -1967,3 +1967,165 @@ Audit Review Gate已通過：9項findings均完成disposition，無Accepted risk
 18-7E已通過review並封存。18-8 final validation在Android 35 Google APIs x86_64 emulator完成release APK runtime smoke：bootstrap、Mock Login、Profile、Catalog顯示與搜尋、Protected Route、Ocean Dark與`zh_TW`持久化、force-stop後Auth restore、SharedPreferences / SQLite實體建立與Logout均通過。Android正式提升為Supported，`M18-C01`Resolved；iOS、Web、Windows、macOS與Linux維持Dependency-ready。README capability matrix與Quick Start已同步。
 
 Milestone 18 final release review已完成：`M18-D01`、`M18-D02`與`M18-D03`關閉，Decision 014補充Web evidence clarification，Backlog只保留future / deferred scope。9項findings全部Resolved；workspace analyze、410 tests與55.9 MB release APK重新驗證通過。Template Baseline正式發布為1.2.0並封存Milestone 18。
+
+---
+
+## Authentication Security & Step-Up Verification Initiative
+
+狀態：Milestone 19-0 Planning Review已通過。
+
+原候選方向已依 Architecture Decision 022 拆分為三個獨立 Milestone：
+
+```txt
+Milestone 19 — Secure Credential Storage & Migration
+  ↓
+Milestone 20 — OTP Step-Up Authentication
+  ↓
+Milestone 21 — Biometric-gated Local Session Unlock
+```
+
+拆分原則：
+
+- 先固定 credential-at-rest 與 migration source of truth，再擴張 server authentication state machine。
+- OTP 完成並封存後，才導入 local biometric unlock，避免 local unlock 與未完成的 server authentication contract混在一起。
+- 每個 Milestone 都有獨立 Planning Review、implementation review、regression、文件同步與 baseline decision。
+- 未經各 Milestone review拍板，不新增相關dependency、Native設定或 VERSION變更。
+
+## Milestone 19：Secure Credential Storage & Migration
+
+狀態：19-0 Completed；尚未開始 production implementation。下一階段為19-1 Auth Persistence Seam。
+
+### 目標
+
+- 將 Access Token 與 Refresh Token 從 SharedPreferences 遷移至 platform secure storage。
+- AuthUser 等非 credential 資料維持 SQLite。
+- 建立可重入、安全、identity-aware 的 legacy migration。
+- 保留 Login、Restore、Refresh rotation、Logout、Session generation、latest-intent與concurrent 401既有保證。
+
+### Milestone 19-0：Scope、Threat Model與Architecture Contract
+
+- [x] 盤點 credential asset、attacker capability、資料生命週期與平台承諾。
+- [x] 拍板 credential / legacy / user store abstraction與App-owned adapter boundary。
+- [x] 定義 Secure / Legacy / User 組合矩陣與 source of truth。
+- [x] 定義 migration write、read-back、cleanup、retry與corruption policy。
+- [x] 定義 migration與Login / Restore / Refresh / Logout concurrency contract。
+- [x] 定義 sensitive diagnostic與non-fatal reporting contract。
+- [x] Planning Review Gate通過前未新增dependency或修改production code。
+
+完成定義：Decision 022與Milestone 19 planning findings完成review，所有P0 / P1 finding有明確disposition，Secure Storage dependency與adapter shape經拍板。
+
+19-0正式review與最終文件一致性review已完成：新增`docs/audits/milestone_19_planning_review.md`，以現況source evidence建立Threat Model、Store boundary、typed read taxonomy、Secure × Legacy × User decision matrix、migration owner、禁止nested mutation lock、cleanup / reporting contract與六項planning findings。Decision 022升為Accepted；各P1 finding已取得approved disposition但仍待implementation與tests關閉。Milestone 19不採persistent migration marker，Secure unavailable不得fallback Legacy。下一步為19-1。
+
+### Milestone 19-1：Auth Persistence Seam
+
+- [ ] 在`packages/auth`建立Auth-specific credential、legacy與user store abstraction。
+- [ ] Credential read使用`absent / present / corrupted` sealed result；operational unavailable仍以typed `AppException`表達。
+- [ ] 拆除`AuthLocalDataSource`同時承擔SharedPreferences、SQLite與migration的過度集中責任。
+- [ ] 將SharedPreferences與SQLite plugin implementation移至App layer，完成後移除`packages/auth`對`shared_preferences`與`sqflite`的直接依賴。
+- [ ] 維持App為唯一Composition Root。
+- [ ] 先以既有storage adapter驗證boundary，不在本階段改變runtime behavior。
+- [ ] 不建立Generic Key-Value Store或Generic Secure Store framework。
+
+完成定義：現有Login / Restore / Refresh / Logout行為在新seam下完全等價，package沒有新增Flutter plugin或DI framework依賴。
+
+### Milestone 19-2：Secure Credential Store Adapter
+
+- [ ] `flutter_secure_storage`只加入App dependency。
+- [ ] App layer提供Secure credential adapter並注入`packages/auth` abstraction。
+- [ ] Token Pair維持單一logical payload，包含userId與expiration metadata。
+- [ ] plugin / platform operational failure映射為typed local-storage failure。
+- [ ] Credential absence、corruption與storage unavailable不得混為同一結果。
+- [ ] 完成Android artifact build與adapter tests。
+
+完成定義：Secure adapter、typed failure mapping與DI shape可獨立建立及測試，但尚不提前切換production source of truth；Domain與package contract不暴露plugin或平台型別。
+
+### Milestone 19-3：SharedPreferences Legacy Migration
+
+- [ ] `auth.tokens`只有在Token Pair完整且userId可驗證時才允許migration。
+- [ ] `auth.accessToken`缺少Refresh Token與identity，只允許安全清除，不得升級為有效Session。
+- [ ] Secure無資料且Legacy合法時，先寫Secure、read-back驗證，再刪Legacy。
+- [ ] Secure write failure不得刪除Legacy。
+- [ ] Secure成功但Legacy cleanup失敗時，Secure成為權威並於後續重試cleanup。
+- [ ] Secure合法且與SQLite User identity一致時由Secure優先，Legacy mismatch或corruption只觸發Legacy cleanup。
+- [ ] Secure與SQLite User identity mismatch不得猜測，安全清除完整Auth state。
+- [ ] Corruption、partial migration與re-entry有明確typed behavior。
+- [ ] 不建立persistent migration marker；只依Secure、Legacy與User真實store state推導migration phase。
+- [ ] Migration與Refresh rotation / Login / Logout共用mutation coordination。
+- [ ] `AuthCredentialMigrationCoordinator`不自行取得lock；Lifecycle owner只取得一次exclusive ownership，禁止nested `runExclusive`。
+
+完成定義：所有Secure × Legacy × User主要組合有測試；migration可重入且舊credential不會覆蓋rotated或較新Session credential。
+
+### Milestone 19-4：Auth Lifecycle Integration
+
+- [ ] Login保存Secure Token Pair與SQLite User成功後才建立Session。
+- [ ] Restore以Secure Store為credential source of truth並驗證user identity。
+- [ ] Refresh rotation只更新Secure Token Pair，persistence-first語意不變。
+- [ ] Logout與passive invalidation分別嘗試清除Secure credential、Legacy credential與User。
+- [ ] Expected / unexpected cleanup failure優先級維持Decision 020 contract。
+- [ ] latest-intent、single-flight、generation與safe replay regression不得退化。
+
+完成定義：Login、Restore、Refresh、Logout、Session expiration與account switch全部使用新credential boundary，且不會建立partial runtime Session。
+
+### Milestone 19-5：Security Review、Android Smoke與封存
+
+- [ ] Audit exception、failure、reporting、log與`toString()`，確認credential不外洩。
+- [ ] 執行workspace analyze與完整tests；既有410 tests不得無理由遺失。
+- [ ] 建立Android release artifact。
+- [ ] 在Android runtime驗證login、restart restore、refresh rotation、migration與logout cleanup。
+- [ ] 同步README、Project Context、Architecture Decisions、Roadmap、Backlog與CHANGELOG。
+- [ ] Final review後才決定是否更新Template Baseline VERSION。
+
+### Milestone 19 非目標
+
+- OTP。
+- Biometric Prompt。
+- Device Binding。
+- Passkey。
+- Theme、Locale或一般preference遷移至Secure Storage。
+
+## Milestone 20：OTP Step-Up Authentication
+
+狀態：Planned；必須等待Milestone 19完成、review並封存。
+
+正式子階段：
+
+```txt
+20-0 OTP Contract、Threat Model與State Machine
+20-1 API、DTO、Mapper與Stateful Mock
+20-2 Domain、Repository與UseCase
+20-3 Bloc Concurrency與Latest Challenge Ordering
+20-4 OTP UI、Navigation與Protected Route
+20-5 Security Review、Regression與封存
+```
+
+完成定義摘要：
+
+- Login result為`authenticated`或`otpChallenge` typed union。
+- OTP完成前不保存credential、不建立Session、不通過Protected Route。
+- challenge expiration、masked destination、resend cooldown、invalid code、too many attempts與replacement有typed contract。
+- 舊Login / Verify / Resend response不得覆蓋最新Auth intent或active challenge。
+- Mock API可完整演示；Real API不假設SMS provider。
+
+## Milestone 21：Biometric-gated Local Session Unlock
+
+狀態：Planned；必須等待Milestone 20完成、review並封存。
+
+正式子階段：
+
+```txt
+21-0 Threat Model、Unlock Policy與Architecture Contract
+21-1 Local User Presence Abstraction與App Adapter
+21-2 Enable / Disable Workflow
+21-3 Startup Unlock、Restore與Refresh Orchestration
+21-4 Unlock UI、Navigation與Lifecycle Concurrency
+21-5 Android Native Configuration、Runtime Smoke與封存
+```
+
+完成定義摘要：
+
+- Biometric只驗證本機user presence，不冒充Server authentication。
+- Locked階段SessionManager維持unauthenticated。
+- Prompt成功後才允許讀取credential、restore或refresh Session。
+- 不保存biometric資料，不實作cryptographic Device Binding。
+- `local_auth`只由App layer依賴；Android需真實Native configuration、release artifact與runtime smoke。
+- iOS與其他平台不因dependency-ready就宣稱runtime support。

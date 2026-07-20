@@ -1156,3 +1156,63 @@ docs/conversation_rules.md
 ```
 
 閱讀後依照 `docs/roadmap.md` 與 `CHANGELOG.md` 判斷下一個目標。
+
+---
+
+## 下一個正式方向：Authentication Security Initiative
+
+狀態：Milestone 19-0 Planning Review與最終文件一致性review已完成；尚未修改production code。
+
+原候選Milestone 19「Authentication Security & Step-Up Verification」已正式拆分為：
+
+```txt
+Milestone 19 — Secure Credential Storage & Migration
+Milestone 20 — OTP Step-Up Authentication
+Milestone 21 — Biometric-gated Local Session Unlock
+```
+
+拆分理由：
+
+- Secure Storage屬於credential-at-rest與migration問題。
+- OTP屬於Server authentication state machine。
+- Biometric屬於local device user-presence gating與Android runtime問題。
+- 三者的威脅模型、失敗後果、API contract、Native evidence與rollback邊界不同，不應綁成單一implementation batch。
+
+Architecture Decision 022已建立上述依賴順序與責任邊界。App仍是唯一Composition Root；`flutter_secure_storage`與`local_auth`只允許由App layer依賴並實作adapter，`packages/auth`只定義純Dart、Auth-specific狹窄abstraction。
+
+Milestone 19-0正式review文件為：
+
+```txt
+docs/audits/milestone_19_planning_review.md
+```
+
+Review拍板：
+
+- Credential read採`absent / present / corrupted` sealed result；Secure operational unavailable不得當成absence或fallback Legacy。
+- `AuthCredentialMigrationCoordinator`是唯一migration policy owner，但Lifecycle owner必須先取得一次exclusive ownership；禁止nested `runExclusive`。
+- Milestone 19不建立persistent migration marker，以Secure、Legacy與User真實store state推導migration phase。
+- Secure已驗證且只剩Legacy cleanup failure時允許restore，並non-fatal report與後續重試。
+- Interactive Logout與passive invalidation都清除runtime Session並嘗試清除Secure、Legacy與User；unknown error不得被空catch吞掉。
+
+目前正式下一步為Milestone 19-1 Auth Persistence Seam：
+
+```txt
+建立Auth-specific store abstraction
+  ↓
+拆分AuthLocalDataSource責任
+  ↓
+將既有SharedPreferences / SQLite adapter移至App layer
+  ↓
+維持現有runtime behavior等價
+  ↓
+19-1 Implementation Review
+```
+
+19-1限制：
+
+- 不新增`flutter_secure_storage`。
+- 不切換credential source of truth。
+- 不修改Android Native設定。
+- 不更新VERSION。
+
+Milestone 20與21目前只保存正式scope、依賴順序、子階段與完成定義；必須等待前一Milestone完成、review並封存後才開始production implementation。

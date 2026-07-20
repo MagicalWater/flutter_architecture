@@ -18,7 +18,20 @@
 
 ## [Unreleased]
 
-目前沒有未發布變更。
+### Added
+
+- 規劃 Authentication Security & Step-Up Verification initiative，正式拆分為 Milestone 19 Secure Credential Storage & Migration、Milestone 20 OTP Step-Up Authentication 與 Milestone 21 Biometric-gated Local Session Unlock。
+- 新增 Architecture Decision 022，定義三個 Milestone 的依賴順序、package / App boundary、review gate、非目標與版本規則。
+- 完成Milestone 19-0 Planning Review與最終文件一致性review，新增Threat Model、Secure × Legacy × User decision matrix、migration owner、typed credential read taxonomy、cleanup / reporting contract與六項planning findings；P1 findings已取得approved disposition，但仍待implementation與tests正式關閉。
+
+### Changed
+
+- 下一個正式方向改為先完成 Secure Credential Storage 與 SharedPreferences legacy migration；OTP 與 Android Biometric runtime 分別延後至後續獨立 Milestone。
+- Decision 022由Proposed升為Accepted；Milestone 19不採persistent migration marker，並明確禁止nested Auth mutation lock與Secure unavailable時fallback Legacy。
+
+### Notes
+
+- 本次只完成Milestone拆分落檔與Milestone 19-0 Planning Review；未修改 production code、dependency、Native 設定或 VERSION。
 
 ---
 

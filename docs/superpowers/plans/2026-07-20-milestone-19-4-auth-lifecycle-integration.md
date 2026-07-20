@@ -131,21 +131,23 @@ Task 1 implementation review：發現Coordinator仍產生舊`AuthCredentialMigra
 
 **Contract**
 
-- [ ] Restore在單一`runExclusive`內呼叫`resolveUnlocked()`。
-- [ ] `AuthCredentialMigrationUnauthenticated`清runtime Session並回`Success(null)`。
-- [ ] `AuthCredentialMigrationResolved`在lock內驗證operation仍current並建立Session；immutable diagnostics帶出lock後才逐項report。
-- [ ] Reporter failure不阻止合法restore，且reporting不發生在mutation lock內。
-- [ ] Secure unavailable、migration write/read-back failure映射typed local-storage／data-corruption Failure，不fallback Legacy Session。
-- [ ] Unknown error保留原error與stack。
-- [ ] Restore不再自行重複實作Secure / Legacy / User decision matrix。
-- [ ] 同一exclusive section內不nested lock。
-- [ ] App production DI仍選擇舊SharedPreferences restore path；新Secure restore path只由targeted tests驗證，待Task 6原子啟用。
+- [x] Restore在單一`runExclusive`內呼叫`resolveUnlocked()`。
+- [x] `AuthCredentialMigrationUnauthenticated`清runtime Session並回`Success(null)`。
+- [x] `AuthCredentialMigrationResolved`在lock內驗證operation仍current並建立Session；immutable diagnostics帶出lock後才逐項report。
+- [x] Reporter failure不阻止合法restore，且reporting不發生在mutation lock內。
+- [x] Secure unavailable、migration write/read-back failure映射typed local-storage／data-corruption Failure，不fallback Legacy Session。
+- [x] Unknown error保留原error與stack。
+- [x] Restore不再自行重複實作Secure / Legacy / User decision matrix。
+- [x] 同一exclusive section內不nested lock。
+- [x] App production DI仍選擇舊SharedPreferences restore path；新Secure restore path只由targeted tests驗證，待Task 6原子啟用。
 
 建議commit：
 
 ```bash
 git commit -m "feat(auth): 整合restore credential migration"
 ```
+
+Task 2執行結果：`AuthRepositoryImpl`新增非nullable transitional `secureLifecycle` constructor，透過private restore resolver strategy整合`AuthCredentialMigrationCoordinator.resolveUnlocked()`；既有default constructor仍使用Legacy resolver，App DI與production SharedPreferences restore authority未切換。Migration resolution與latest-intent check、Session commit都位於同一exclusive section；resolved / unauthenticated diagnostics以immutable outcome帶出lock後才交給sink，reporter failure不改變合法restore。`localStorage`與`dataCorruption`均映射Restore Failure，unknown error保留identity，較新Logout可使blocked migration restore superseded。RED為secureLifecycle constructor缺失及dataCorruption仍被重拋；GREEN新migration restore 6項、既有Repository與Coordinator targeted合計64項，Auth analyze通過。
 
 ## Task 3 — Login Secure persistence與compensation
 

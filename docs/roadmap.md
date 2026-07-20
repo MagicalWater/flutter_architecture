@@ -2091,7 +2091,7 @@ Plan review已固定：resolution以immutable diagnostics list承載多個safe c
 
 ### Milestone 19-4：Auth Lifecycle Integration
 
-目前狀態：Implementation planning；詳細plan已建立，待plan review後才進入Task 1。
+目前狀態：Implementation plan review已通過，可進入Task 1。
 
 詳細implementation plan：
 
@@ -2099,7 +2099,9 @@ Plan review已固定：resolution以immutable diagnostics list承載多個safe c
 docs/superpowers/plans/2026-07-20-milestone-19-4-auth-lifecycle-integration.md
 ```
 
-19-4採分階段原子切換：先建立package-owned diagnostic sink與共用cleanup policy，再依序整合Restore、Login、Refresh、Logout；只有所有lifecycle contract與tests完成後，才在單一DI Task將default `AuthCredentialStore`由SharedPreferences切換為Secure，避免半套authority。
+19-4採分階段原子切換：先建立package-owned lifecycle diagnostic與共用cleanup policy，再依序完成Restore、Login、Refresh、Logout的新Secure lifecycle path；Task 6前App DI不得選用新path，只有所有contract與tests完成後，才在單一DI Task將default `AuthCredentialStore`由SharedPreferences切換為Secure並移除transitional legacy path，避免半套authority。
+
+Plan review已固定：migration-only diagnostic不足以表達Secure / User cleanup，改為Auth lifecycle diagnostic taxonomy；App reporter不得在mutation lock內呼叫；Login compensation受operation ownership保護；passive invalidation遇expected或unknown cleanup failure都必須先完成runtime Session expiration。無Open P0 / P1 planning issue。
 
 - [ ] Login保存Secure Token Pair與SQLite User成功後才建立Session。
 - [ ] Restore以Secure Store為credential source of truth並驗證user identity。

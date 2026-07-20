@@ -1233,7 +1233,9 @@ Milestone 19-4詳細implementation plan已建立：
 docs/superpowers/plans/2026-07-20-milestone-19-4-auth-lifecycle-integration.md
 ```
 
-19-4將migration policy正式整合至Restore，並將Login、Refresh、Logout與passive invalidation切換至Secure credential lifecycle。為避免半套runtime authority，default `AuthCredentialStore`的DI切換延後到Repository與Refresher行為及tests都完成後一次執行。Plan同時要求package-owned狹窄diagnostic sink、Secure / Legacy / User統一cleanup priority、caller-owned單一exclusive section、latest-intent / single-flight / generation regression與506項以上完整test gate。VERSION維持1.2.0；尚未開始19-4 production修改。
+19-4將migration policy正式整合至Restore，並將Login、Refresh、Logout與passive invalidation切換至Secure credential lifecycle。為避免半套runtime authority，Task 2至Task 5的新Secure lifecycle path在Task 6前不得由App DI選用；Task 6一次切換Repository、Refresher與Migration Coordinator至同一Secure singleton後，必須移除transitional legacy path。Plan同時要求Auth lifecycle diagnostic taxonomy、Secure / Legacy / User統一cleanup priority、caller-owned單一exclusive section、latest-intent / single-flight / generation regression與506項以上完整test gate。VERSION維持1.2.0；尚未開始19-4 production修改。
+
+19-4 implementation plan review已通過：diagnostic contract由migration-only擴充為Auth lifecycle diagnostic，可區分migration Legacy、Secure、Legacy與User cleanup；App reporter不得在mutation lock內呼叫。Login compensation需受operation ownership保護，較舊operation不得blind clear較新state；passive invalidation無論expected或unknown cleanup failure都先完成runtime Session expiration。無Open P0 / P1 planning issue，下一步為Task 1。
 
 Milestone 19-3詳細implementation plan已建立：
 

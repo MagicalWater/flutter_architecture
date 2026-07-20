@@ -1,6 +1,6 @@
 # Milestone 19-4 — Auth Lifecycle Integration Implementation Plan
 
-狀態：Draft，待implementation plan review。
+狀態：Passed；implementation plan review已通過。
 
 ## Goal
 
@@ -57,11 +57,19 @@ Legacy SharedPreferences adapter仍以`AuthLegacyCredentialStore`存在，只負
 
 ### Diagnostic ownership
 
-Migration cleanup diagnostic必須由Auth lifecycle owner逐項交給App-owned reporter adapter。
+Migration與lifecycle cleanup diagnostic必須由Auth lifecycle owner逐項交給App-owned reporter adapter。
 
-為維持package純Dart boundary，`packages/auth`新增狹窄diagnostic sink contract；App adapter實作該contract。Contract只接受`AuthCredentialMigrationDiagnostic`，不暴露`ErrorReport`、Crashlytics或plugin型別。
+為維持package純Dart boundary，`packages/auth`新增Auth-specific lifecycle diagnostic與狹窄sink contract；App adapter實作該contract。Diagnostic必須能區分migration Legacy cleanup、Secure cleanup、Legacy cleanup與User cleanup，並只保存operation、原error與caught stack，不暴露`ErrorReport`、Crashlytics或plugin型別。
 
 Reporter failure不得改變Restore結果，也不得阻止後續diagnostic。
+
+Reporter不得在持有Auth mutation ownership時呼叫。Lifecycle owner應在exclusive section內完成store resolution、latest-intent / generation驗證與Session commit，將immutable diagnostics帶出lock後再逐項report，避免外部reporting I/O延長或重入Auth lock。
+
+### Transitional implementation boundary
+
+Task 2至Task 5可以完成Secure lifecycle production code與targeted tests，但App production graph在Task 6前必須維持既有SharedPreferences authority，且不得選用新Secure lifecycle path。
+
+若Repository或Refresher constructor shape需要提前演進，必須使用明確的transitional constructor / collaborator，讓App DI仍選擇舊path；Task 6一次切換App graph後立即移除transitional legacy path。不得以optional dependency、runtime flag或nullable migration coordinator維持雙重production behavior。
 
 ### Cleanup priority
 
@@ -83,7 +91,8 @@ unknown / unexpected error
 
 **Files**
 
-- Add: `packages/auth/lib/src/data/migration/auth_credential_migration_diagnostic_sink.dart`
+- Add: `packages/auth/lib/src/data/lifecycle/auth_lifecycle_diagnostic.dart`
+- Add: `packages/auth/lib/src/data/lifecycle/auth_lifecycle_diagnostic_sink.dart`
 - Modify: `packages/auth/lib/auth.dart`
 - Add/Modify: Auth lifecycle cleanup helper files under `packages/auth/lib/src/data/`
 - Modify: `packages/auth/test/auth_repository_persistence_test.dart`
@@ -93,8 +102,9 @@ unknown / unexpected error
 
 **Contract**
 
-- [ ] Package新增單一狹窄migration diagnostic sink abstraction。
-- [ ] App adapter實作sink並逐項上報fixed safe context。
+- [ ] Package新增Auth-specific lifecycle diagnostic與單一狹窄sink abstraction。
+- [ ] Diagnostic operation至少區分migration Legacy cleanup、Secure cleanup、Legacy cleanup與User cleanup。
+- [ ] App adapter實作sink並逐項上報fixed safe context；不得把raw plugin message或credential payload放入context。
 - [ ] 建立Auth-specific cleanup accumulator/helper，統一Secure / Legacy / User全部嘗試與error priority。
 - [ ] Helper不取得mutation lock、不修改SessionManager、不依賴App reporter。
 - [ ] Interactive與passive caller可明確選擇rethrow或report policy，不使用空catch。
@@ -112,18 +122,20 @@ git commit -m "refactor(auth): 建立lifecycle cleanup與diagnostic boundary"
 
 - Modify: `packages/auth/lib/src/data/repositories/auth_repository_impl.dart`
 - Modify: `packages/auth/test/auth_repository_persistence_test.dart`
-- Modify: App DI source / generated graph tests as needed
+- Add/Modify: transitional Secure lifecycle collaborator或明確constructor path
+- Modify: package tests；App DI不得在本Task切換到新path
 
 **Contract**
 
 - [ ] Restore在單一`runExclusive`內呼叫`resolveUnlocked()`。
 - [ ] `AuthCredentialMigrationUnauthenticated`清runtime Session並回`Success(null)`。
-- [ ] `AuthCredentialMigrationResolved`先逐項report diagnostics，再驗證operation仍current，最後才建立Session。
-- [ ] Reporter failure不阻止合法restore。
+- [ ] `AuthCredentialMigrationResolved`在lock內驗證operation仍current並建立Session；immutable diagnostics帶出lock後才逐項report。
+- [ ] Reporter failure不阻止合法restore，且reporting不發生在mutation lock內。
 - [ ] Secure unavailable、migration write/read-back failure映射typed local-storage／data-corruption Failure，不fallback Legacy Session。
 - [ ] Unknown error保留原error與stack。
 - [ ] Restore不再自行重複實作Secure / Legacy / User decision matrix。
 - [ ] 同一exclusive section內不nested lock。
+- [ ] App production DI仍選擇舊SharedPreferences restore path；新Secure restore path只由targeted tests驗證，待Task 6原子啟用。
 
 建議commit：
 
@@ -140,13 +152,14 @@ git commit -m "feat(auth): 整合restore credential migration"
 
 **Contract**
 
-- [ ] Login只寫Secure credential，不寫Legacy credential。
+- [ ] 新Secure lifecycle path只寫其注入的Secure credential authority，不寫Legacy credential。
 - [ ] 寫入順序固定為Secure credential → User → Session commit。
 - [ ] 任一必要persistence失敗都不得建立Session。
 - [ ] User write failure或latest-intent superseded時嘗試清Secure、Legacy與User。
 - [ ] Compensation全部stores都嘗試，unknown優先於expected local-storage error。
-- [ ] 較舊Login不得清除或覆寫較新Login已commit的state。
+- [ ] Compensation必須受operation ownership保護；較舊Login不得以blind clear清除或覆寫較新Login已commit的state。
 - [ ] Double Login、Login + Logout、account switch與existing latest-intent tests維持通過。
+- [ ] App production DI在Task 6前仍選擇舊path；不得因本Task讓Login先於Restore / Refresh切換authority。
 
 建議commit：
 
@@ -163,14 +176,15 @@ git commit -m "feat(auth): 切換login至Secure credential persistence"
 
 **Contract**
 
-- [ ] Refresh只從Secure credential讀取完整Token Pair。
-- [ ] Rotation只寫Secure credential，維持persistence-first後才更新Session access token。
+- [ ] 新Secure lifecycle path只從其注入的Secure credential authority讀取完整Token Pair。
+- [ ] Rotation只寫同一注入authority，維持persistence-first後才更新Session access token。
 - [ ] Refresh前驗證stored userId、SQLite User與runtime Session一致。
 - [ ] Invalid refresh、credential corruption／absence與identity mismatch觸發passive invalidation。
 - [ ] Passive invalidation嘗試清Secure、Legacy與User，再清runtime Session。
-- [ ] Expected cleanup failure不阻止Session expired語意，逐項non-fatal report。
-- [ ] Unknown cleanup error保留identity / stack並進既有unexpected reporting flow。
+- [ ] Expected cleanup failure不阻止Session expired語意；先清runtime Session，再於lock外逐項non-fatal report。
+- [ ] Unknown cleanup error也必須先完成runtime Session expiration，再保留identity / stack進既有unexpected reporting flow。
 - [ ] Concurrent 401 single-flight、generation、cross-session與safe replay regression不得退化。
+- [ ] App production DI在Task 6前仍選擇舊Refresher path。
 
 建議commit：
 
@@ -194,6 +208,7 @@ git commit -m "feat(auth): 切換refresh與passive invalidation至Secure"
 - [ ] Expected cleanup failure映射Logout Failure，但不得恢復Session。
 - [ ] Unknown error保留error / stack。
 - [ ] Logout與較新Login交錯的latest-intent regression不得退化。
+- [ ] App production DI在Task 6前仍選擇舊Repository path；本Task不得單獨完成authority switch。
 
 建議commit：
 
@@ -218,6 +233,7 @@ git commit -m "refactor(auth): 收斂Secure logout cleanup policy"
 - [ ] `AuthLegacyCredentialStore`仍綁SharedPreferences legacy adapter。
 - [ ] Legacy資料可由Restore migration一次升級；Login與Refresh不再寫SharedPreferences credential。
 - [ ] DI tests以不同Secure／Legacy資料證明authority已完整切換，沒有半套graph。
+- [ ] App graph切換後移除Task 2至Task 5的transitional legacy constructor / collaborator path；不得留下optional dependency或runtime authority flag。
 - [ ] Generated code只由build_runner產生。
 
 建議commit：
@@ -268,4 +284,15 @@ git commit -m "docs(auth): 封存 Milestone 19-4 lifecycle integration"
 - App DI一次性完成authority switch，沒有default / named雙重production authority。
 - Workspace analyze、完整tests與App bundle通過。
 - 未加入OTP、Biometric、Device Binding、額外Native permission或VERSION變更。
+
+## Plan Review 結論
+
+狀態：Passed。
+
+- `M19-4-PLAN01`：原diagnostic sink只接受`AuthCredentialMigrationDiagnostic`，無法表達Secure與User cleanup failure。已改為Auth-specific lifecycle diagnostic，operation至少涵蓋migration Legacy、Secure、Legacy與User cleanup。
+- `M19-4-PLAN02`：原Restore契約要求在mutation lock內先report diagnostics，可能讓App reporter I/O延長或重入Auth lock。已固定lock內只做resolution、current check與Session commit，immutable diagnostics帶出lock後才report。
+- `M19-4-PLAN03`：原Task 2至Task 5會修改Repository / Refresher production behavior，但authority switch延至Task 6，可能形成Restore、Login與Refresh使用不同authority的中間graph。已新增transitional implementation boundary：App DI在Task 6前不得選用新Secure lifecycle path，Task 6一次切換後立即移除legacy transitional path。
+- `M19-4-PLAN04`：原Login compensation只要求清三個stores，未限制較舊operation不得blind clear較新Login state。已要求compensation受operation ownership保護，並以反向完成與account switch tests證明舊operation不能清除新state。
+- `M19-4-PLAN05`：原passive invalidation對unknown cleanup error只寫重拋，未固定runtime Session expiration先後。已固定expected與unknown cleanup failure都先完成Session expiration；expected在lock外report，unknown保留identity / stack進unexpected flow。
+- 無Open P0 / P1 planning issue；可以進入Task 1 implementation。
 

@@ -7,7 +7,6 @@ export 'src/data/lifecycle/auth_lifecycle_cleanup_policy.dart';
 export 'src/data/lifecycle/auth_lifecycle_diagnostic.dart';
 export 'src/data/lifecycle/auth_lifecycle_diagnostic_sink.dart';
 export 'src/data/migration/auth_credential_migration_coordinator.dart';
-export 'src/data/migration/auth_credential_migration_diagnostic.dart';
 export 'src/data/migration/auth_credential_migration_result.dart';
 export 'src/data/models/stored_auth_tokens.dart';
 export 'src/data/repositories/auth_repository_impl.dart';

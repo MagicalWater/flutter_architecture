@@ -11,8 +11,8 @@ void main() {
     userId: 'user-1',
   );
   const user = AuthUser(id: 'user-1', name: 'User');
-  final diagnostic = AuthCredentialMigrationDiagnostic(
-    operation: AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+  final diagnostic = AuthLifecycleDiagnostic(
+    operation: AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
     error: StateError('plugin-secret'),
     stackTrace: StackTrace.current,
   );
@@ -20,7 +20,7 @@ void main() {
   test(
     'migration result exposes closed variants with immutable diagnostics',
     () {
-      final sourceDiagnostics = <AuthCredentialMigrationDiagnostic>[diagnostic];
+      final sourceDiagnostics = <AuthLifecycleDiagnostic>[diagnostic];
       final unauthenticated = AuthCredentialMigrationUnauthenticated(
         diagnostics: sourceDiagnostics,
       );
@@ -47,8 +47,8 @@ void main() {
   test('migration diagnostic preserves error and stack identity', () {
     final error = StateError('plugin-secret');
     final stackTrace = StackTrace.current;
-    final value = AuthCredentialMigrationDiagnostic(
-      operation: AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+    final value = AuthLifecycleDiagnostic(
+      operation: AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
       error: error,
       stackTrace: stackTrace,
     );
@@ -62,12 +62,12 @@ void main() {
     () {
       final values = <Object>[
         AuthCredentialMigrationUnauthenticated(
-          diagnostics: <AuthCredentialMigrationDiagnostic>[diagnostic],
+          diagnostics: <AuthLifecycleDiagnostic>[diagnostic],
         ),
         AuthCredentialMigrationResolved(
           tokens: tokens,
           user: user,
-          diagnostics: <AuthCredentialMigrationDiagnostic>[diagnostic],
+          diagnostics: <AuthLifecycleDiagnostic>[diagnostic],
         ),
         diagnostic,
       ];
@@ -471,7 +471,7 @@ void main() {
         final diagnostic = resolved.diagnostics.single;
         expect(
           diagnostic.operation,
-          AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+          AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
         );
         expect(diagnostic.error, same(failure));
         expect(diagnostic.stackTrace, same(failureStack));

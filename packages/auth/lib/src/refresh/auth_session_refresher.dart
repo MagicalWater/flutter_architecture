@@ -94,19 +94,22 @@ class AuthSessionRefresher implements AuthRefresher {
         if (credential is! AuthCredentialReadPresent) {
           return null;
         }
+        final tokens = credential.tokens;
+        if (tokens.userId == null ||
+            tokens.userId != inFlight.userId ||
+            tokens.isRefreshTokenExpired) {
+          return null;
+        }
         final user = await _userStore.readUser();
         if (user == null || user.id != inFlight.userId) {
           return null;
         }
-        return credential.tokens;
+        return tokens;
       });
       if (!_isSameSession(inFlight.generation, inFlight.userId)) {
         return const AuthRefreshSessionChanged();
       }
-      if (stored == null ||
-          stored.userId == null ||
-          stored.userId != inFlight.userId ||
-          stored.isRefreshTokenExpired) {
+      if (stored == null) {
         final invalidated = await _invalidateSessionBestEffort(
           generation: inFlight.generation,
           userId: inFlight.userId,

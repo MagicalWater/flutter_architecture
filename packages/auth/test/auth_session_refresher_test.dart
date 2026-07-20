@@ -113,7 +113,7 @@ void main() {
 
   test('Legacy token缺少userId時不呼叫remote並清除auth state', () async {
     final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore()
+    final localStore = _FakeRefreshLocalStore(failReadUserUnknown: true)
       ..tokens = const StoredAuthTokens(
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
@@ -126,6 +126,30 @@ void main() {
     expect(result, isA<AuthRefreshSessionExpired>());
     expect(api.callCount, 0);
     expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  test('Refresh Token過期時不讀User store並直接失效Session', () async {
+    final sessionManager = _authenticatedSession();
+    final localStore = _FakeRefreshLocalStore(failReadUserUnknown: true)
+      ..tokens = StoredAuthTokens(
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        userId: 'user-001',
+        refreshTokenExpiresAt: DateTime.now().subtract(
+          const Duration(minutes: 1),
+        ),
+      );
+    final api = _FakeAuthRefreshApi();
+    final refresher = _createRefresher(api, localStore, sessionManager);
+
+    final result = await refresher.refresh(failedAccessToken: 'access-token');
+
+    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(api.callCount, 0);
+    expect(localStore.clearTokensCalls, 1);
+    expect(localStore.clearLegacyCredentialCalls, 1);
     expect(localStore.clearUserCalls, 1);
     expect(sessionManager.currentSession, isNull);
   });
@@ -605,6 +629,7 @@ class _FakeRefreshLocalStore
     this.failClearTokens = false,
     this.failClearUser = false,
     this.corruptedCredential = false,
+    this.failReadUserUnknown = false,
   });
 
   final bool failSaveTokens;
@@ -615,6 +640,7 @@ class _FakeRefreshLocalStore
   final bool failClearTokens;
   final bool failClearUser;
   final bool corruptedCredential;
+  final bool failReadUserUnknown;
   int saveTokensCalls = 0;
   int clearTokensCalls = 0;
   int clearLegacyCredentialCalls = 0;
@@ -687,7 +713,12 @@ class _FakeRefreshLocalStore
   }
 
   @override
-  Future<AuthUser?> readUser() async => user;
+  Future<AuthUser?> readUser() async {
+    if (failReadUserUnknown) {
+      throw StateError('user store must not be read');
+    }
+    return user;
+  }
 
   @override
   Future<void> writeUser(AuthUser user) async {

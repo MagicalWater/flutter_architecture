@@ -450,6 +450,13 @@ git add packages/auth/lib/src/refresh/auth_session_refresher.dart packages/auth/
 git commit -m "refactor(auth): 拆分Refresh持久化依賴"
 ```
 
+### Task 5 implementation review
+
+- Review發現P1：credential缺少`userId`或Refresh Token已過期時，原流程仍先讀`AuthUserStore`；若User store同時故障，會錯誤回傳`AuthRefreshLocalStateFailure`，而不是依既定契約失效Session。
+- 已調整為先驗證credential identity與expiration，只有可進入refresh的credential才讀persisted User。
+- 已新增缺少`userId`與Refresh Token過期時「不得讀User store」的regression。
+- Targeted refresher tests 32項、Auth package完整tests 56項與analyze均通過；無Open P0／P1 finding。
+
 ---
 
 ## Task 6：Composition Root與dependency cleanup

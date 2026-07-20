@@ -137,6 +137,8 @@ git commit -m "feat(auth): 實作migration destructive matrix"
 
 Task 2執行結果：完成unauthenticated與destructive matrix。Secure corrupted不讀Legacy便直接清Secure / Legacy / User；Secure present但缺User或identity mismatch時依矩陣清理；Secure absent時處理all absent、orphan User、Legacy corrupted、Legacy缺User與identity mismatch。Destructive cleanup會嘗試所有指定store，只有全部成功才回unauthenticated；多個failure採第一個unknown優先，其次第一個`AppExceptionKind.localStorage`，並以`Error.throwWithStackTrace`保留實際caught stack。Secure valid且User一致與Legacy可migration成功路徑仍由Task 3 / 4實作。Targeted tests增為14項，Auth analyze通過。
 
+Task 2 implementation review：通過。Review補強Secure read unavailable會立即保留原error / caught stack並停止，不讀Legacy、User或執行cleanup；expected destructive cleanup failure也明確驗證實際caught stack identity。Targeted tests增為15項，Auth analyze重新通過。
+
 ## Task 3 — Secure authority與Legacy cleanup pending
 
 **Files**

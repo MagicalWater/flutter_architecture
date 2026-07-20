@@ -202,6 +202,35 @@ void main() {
       expect(stores.user.clearCalls, 1);
     });
 
+    test('secure read failure stops before legacy and user reads', () async {
+      final failure = AppException(
+        kind: AppExceptionKind.localStorage,
+        message: 'secure unavailable',
+      );
+      final failureStack = StackTrace.current;
+      final stores = _MigrationStores(
+        legacyResult: const AuthCredentialReadPresent(tokens),
+        user: user,
+      )
+        ..secure.readError = failure
+        ..secure.readStackTrace = failureStack;
+
+      try {
+        await stores.coordinator.resolveUnlocked();
+        fail('Expected secure read failure');
+      } catch (error, stackTrace) {
+        expect(error, same(failure));
+        expect(stackTrace, same(failureStack));
+      }
+
+      expect(stores.secure.readCalls, 1);
+      expect(stores.legacy.readCalls, 0);
+      expect(stores.user.readCalls, 0);
+      expect(stores.secure.clearCalls, 0);
+      expect(stores.legacy.clearCalls, 0);
+      expect(stores.user.clearCalls, 0);
+    });
+
     test(
       'destructive cleanup attempts all and preserves unknown priority',
       () async {
@@ -234,21 +263,26 @@ void main() {
       },
     );
 
-    test('expected cleanup failure is rethrown after all attempts', () async {
+    test('expected cleanup failure keeps caught stack after all attempts', () async {
       final failure = AppException(
         kind: AppExceptionKind.localStorage,
         message: 'expected',
-        stackTrace: StackTrace.current,
       );
+      final failureStack = StackTrace.current;
       final stores = _MigrationStores(
         secureResult: const AuthCredentialReadCorrupted(),
         user: user,
-      )..secure.clearError = failure;
+      )
+        ..secure.clearError = failure
+        ..secure.clearStackTrace = failureStack;
 
-      await expectLater(
-        stores.coordinator.resolveUnlocked(),
-        throwsA(same(failure)),
-      );
+      try {
+        await stores.coordinator.resolveUnlocked();
+        fail('Expected cleanup failure');
+      } catch (error, stackTrace) {
+        expect(error, same(failure));
+        expect(stackTrace, same(failureStack));
+      }
       expect(stores.secure.clearCalls, 1);
       expect(stores.legacy.clearCalls, 1);
       expect(stores.user.clearCalls, 1);
@@ -327,12 +361,22 @@ final class _RecordingCredentialStore
   _RecordingCredentialStore(this.result);
 
   AuthCredentialReadResult result;
+  int readCalls = 0;
+  Object? readError;
+  StackTrace? readStackTrace;
 
   @override
   Future<void> clearCredential() => clearRecorded();
 
   @override
-  Future<AuthCredentialReadResult> readCredential() async => result;
+  Future<AuthCredentialReadResult> readCredential() async {
+    readCalls += 1;
+    final error = readError;
+    if (error != null) {
+      Error.throwWithStackTrace(error, readStackTrace ?? StackTrace.current);
+    }
+    return result;
+  }
 
   @override
   Future<void> writeCredential(StoredAuthTokens tokens) async {}
@@ -362,12 +406,16 @@ final class _RecordingUserStore
   _RecordingUserStore(this.value);
 
   AuthUser? value;
+  int readCalls = 0;
 
   @override
   Future<void> clearUser() => clearRecorded();
 
   @override
-  Future<AuthUser?> readUser() async => value;
+  Future<AuthUser?> readUser() async {
+    readCalls += 1;
+    return value;
+  }
 
   @override
   Future<void> writeUser(AuthUser user) async => value = user;

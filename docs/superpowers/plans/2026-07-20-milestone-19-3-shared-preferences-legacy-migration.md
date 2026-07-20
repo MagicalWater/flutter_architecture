@@ -117,23 +117,25 @@ Task 1 implementation review：通過。Review補強真正的defensive-copy regr
 - Modify: `packages/auth/lib/src/data/migration/auth_credential_migration_coordinator.dart`
 - Modify: `packages/auth/test/auth_credential_migration_coordinator_test.dart`
 
-- [ ] `S absent / L absent / U absent`回傳unauthenticated，不做寫入。
-- [ ] orphan User會被清除。
-- [ ] Legacy corrupted會清Legacy；只有orphan User時一併清除。
-- [ ] Legacy identity mismatch會清Legacy與User。
-- [ ] Secure present但User absent會清Secure與Legacy。
-- [ ] Secure與User identity mismatch會清Secure、Legacy與User。
-- [ ] Secure corrupted時清完整Auth state且不得讀Legacy建立Session。
-- [ ] 舊單一`auth.accessToken`由Legacy adapter維持corrupted／cleanup語意，不得migration。
-- [ ] destructive cleanup必須各自嘗試，unknown error優先於expected local-storage error。
-- [ ] destructive cleanup只有全部成功才回unauthenticated；只要有expected cleanup failure就向外拋出，而不是回成功resolution。
-- [ ] 多個cleanup failure時固定採unknown優先，其次第一個expected local-storage error，並驗證實際caught stack identity。
+- [x] `S absent / L absent / U absent`回傳unauthenticated，不做寫入。
+- [x] orphan User會被清除。
+- [x] Legacy corrupted會清Legacy；只有orphan User時一併清除。
+- [x] Legacy identity mismatch會清Legacy與User。
+- [x] Secure present但User absent會清Secure與Legacy。
+- [x] Secure與User identity mismatch會清Secure、Legacy與User。
+- [x] Secure corrupted時清完整Auth state且不得讀Legacy建立Session。
+- [x] 舊單一`auth.accessToken`由Legacy adapter維持corrupted／cleanup語意，不得migration。
+- [x] destructive cleanup必須各自嘗試，unknown error優先於expected local-storage error。
+- [x] destructive cleanup只有全部成功才回unauthenticated；只要有expected cleanup failure就向外拋出，而不是回成功resolution。
+- [x] 多個cleanup failure時固定採unknown優先，其次第一個expected local-storage error，並驗證實際caught stack identity。
 
 Commit：
 
 ```bash
 git commit -m "feat(auth): 實作migration destructive matrix"
 ```
+
+Task 2執行結果：完成unauthenticated與destructive matrix。Secure corrupted不讀Legacy便直接清Secure / Legacy / User；Secure present但缺User或identity mismatch時依矩陣清理；Secure absent時處理all absent、orphan User、Legacy corrupted、Legacy缺User與identity mismatch。Destructive cleanup會嘗試所有指定store，只有全部成功才回unauthenticated；多個failure採第一個unknown優先，其次第一個`AppExceptionKind.localStorage`，並以`Error.throwWithStackTrace`保留實際caught stack。Secure valid且User一致與Legacy可migration成功路徑仍由Task 3 / 4實作。Targeted tests增為14項，Auth analyze通過。
 
 ## Task 3 — Secure authority與Legacy cleanup pending
 

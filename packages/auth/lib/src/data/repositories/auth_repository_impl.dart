@@ -106,16 +106,17 @@ class AuthRepositoryImpl implements AuthRepository {
         operation.throwIfSuperseded();
         final credential = await _credentialStore.readCredential();
         operation.throwIfSuperseded();
-        final user = await _userStore.readUser();
-        operation.throwIfSuperseded();
 
-        if (credential is AuthCredentialReadAbsent || user == null) {
+        if (credential is AuthCredentialReadAbsent ||
+            credential is AuthCredentialReadCorrupted) {
           await _clearLocalAuthStateBestEffort();
           _sessionManager.clear();
           return const Success(null);
         }
 
-        if (credential is AuthCredentialReadCorrupted) {
+        final user = await _userStore.readUser();
+        operation.throwIfSuperseded();
+        if (user == null) {
           await _clearLocalAuthStateBestEffort();
           _sessionManager.clear();
           return const Success(null);

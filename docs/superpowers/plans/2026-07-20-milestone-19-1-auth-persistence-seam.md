@@ -389,6 +389,14 @@ git add packages/auth/lib/src/data/repositories/auth_repository_impl.dart packag
 git commit -m "refactor(auth): 拆分Repository持久化依賴"
 ```
 
+Task 4 implementation review：Passed after fix。
+
+- Review發現Restore在判斷credential `absent / corrupted`前先讀User store，會讓User store故障阻斷已知不一致狀態的cleanup。
+- 已調整為先分支credential taxonomy；`absent / corrupted`不讀User store，直接嘗試清除credential、legacy與user並回`Success(null)`。
+- 新增兩項regression，鎖住corrupted與absent即使User store read會拋unexpected error，也不得執行readUser。
+- Login、Logout、identity mismatch、single-lock、latest-intent與cleanup error priority均維持既有語意。
+- Repository targeted 17 tests、Auth package完整53 tests、analyze、format與`git diff --check`均通過；無Open P0 / P1 review finding。
+
 ---
 
 ## Task 5：Refresher改用Credential與User stores

@@ -155,7 +155,10 @@ void main() {
 
   test('Restore 遇到損壞 Token Pair 時會清除本地狀態並視為未登入', () async {
     final sessionManager = SessionManager();
-    final local = _FakeAuthLocalStore(corruptedTokens: true);
+    final local = _FakeAuthLocalStore(
+      corruptedTokens: true,
+      readUserError: StateError('user store must not be read'),
+    );
     final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
@@ -167,6 +170,28 @@ void main() {
 
     expect(result, isA<Success<AuthUser?>>());
     expect(local.clearTokensCalls, 1);
+    expect(local.clearLegacyCredentialCalls, 1);
+    expect(local.clearUserCalls, 1);
+    expect(sessionManager.currentSession, isNull);
+  });
+
+  test('Restore credential absent時不讀User store並直接清理', () async {
+    final sessionManager = SessionManager();
+    final local = _FakeAuthLocalStore(
+      readUserError: StateError('user store must not be read'),
+    );
+    final repository = _repository(
+      AuthRemoteDataSource(MockAuthApi()),
+      local,
+      sessionManager,
+      AuthStateMutationCoordinator(),
+    );
+
+    final result = await repository.restoreSession();
+
+    expect(result, isA<Success<AuthUser?>>());
+    expect(local.clearTokensCalls, 1);
+    expect(local.clearLegacyCredentialCalls, 1);
     expect(local.clearUserCalls, 1);
     expect(sessionManager.currentSession, isNull);
   });
@@ -472,6 +497,7 @@ class _FakeAuthLocalStore
     this.corruptedTokens = false,
     this.failReadTokens = false,
     this.readTokensError,
+    this.readUserError,
     this.clearUserError,
     this.clearTokensError,
   });
@@ -483,6 +509,7 @@ class _FakeAuthLocalStore
   final bool corruptedTokens;
   final bool failReadTokens;
   final Object? readTokensError;
+  final Object? readUserError;
   final Object? clearUserError;
   final Object? clearTokensError;
 
@@ -543,7 +570,11 @@ class _FakeAuthLocalStore
   }
 
   @override
-  Future<AuthUser?> readUser() async => user;
+  Future<AuthUser?> readUser() async {
+    final error = readUserError;
+    if (error != null) throw error;
+    return user;
+  }
 
   @override
   Future<AuthCredentialReadResult> readLegacyCredential() async {

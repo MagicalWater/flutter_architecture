@@ -222,6 +222,8 @@ git commit -m "refactor(di): 組裝credential migration policy"
 
 Task 5執行結果：新增App-owned `AuthMigrationErrorReporterAdapter`，接受整組migration diagnostics並逐項建立`degraded` report，context固定為`authMigration / authMigrationLegacyCleanup`；每項保留原error與caught stack identity，但safe `ErrorReport.toString()`不展開plugin message、Token或storage payload。單一reporter call失敗會被吸收且不阻止後續diagnostic。App DI將`AuthCredentialMigrationCoordinator`與adapter註冊為lazy singleton；Coordinator明確注入named `secureAuthCredentialStore`、default `AuthLegacyCredentialStore`與`AuthUserStore`。Generated graph中Repository與Refresher仍取得default `AuthCredentialStore`，production authority維持SharedPreferences。RED為DI graph尚未產生Coordinator registration；GREEN adapter與DI targeted tests共3項通過，App analyze通過。
 
+Task 5 implementation review：通過。Review補強DI integration regression：在default SharedPreferences credential仍為absent、named Secure store持有credential且User identity一致時，直接呼叫registered Coordinator必須回傳Secure credential；此行為證明Coordinator實際注入named Secure store，而不只依賴generated source inspection。原有Repository restore仍看不到Secure-only credential，後續Repository / Refresher仍只操作default store，production authority未提前切換。Targeted tests共3項重新通過，App analyze重新通過。
+
 ## Task 6 — Concurrency contract與19-3 regression gate
 
 **Files**

@@ -84,6 +84,17 @@ void main() {
       expect((restoreResult as Success<AuthUser?>).data, isNull);
       expect(getIt<SessionManager>().currentSession, isNull);
 
+      await getIt<AuthUserStore>().writeUser(
+        const AuthUser(id: 'secure-only-user', name: 'Secure User'),
+      );
+      final migrationResult = await coordinator.resolveUnlocked();
+      expect(migrationResult, isA<AuthCredentialMigrationResolved>());
+      final migrationResolved =
+          migrationResult as AuthCredentialMigrationResolved;
+      expect(migrationResolved.tokens.accessToken, 'secure-only-access');
+      expect(migrationResolved.tokens.refreshToken, 'secure-only-refresh');
+      expect(migrationResolved.user.id, 'secure-only-user');
+
       expect(getIt<AuthRepository>(), isA<AuthRepositoryImpl>());
       expect(getIt<api_client.AuthRefresher>(), isA<AuthSessionRefresher>());
 

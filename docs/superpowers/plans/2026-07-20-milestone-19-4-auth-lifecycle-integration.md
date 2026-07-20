@@ -218,19 +218,21 @@ Task 4 implementation review：通過。Review發現初版會把unknown cleanup�
 
 **Contract**
 
-- [ ] Logout在單一exclusive section內分別嘗試清Secure、Legacy與User。
-- [ ] Runtime Session無論cleanup結果都必須清除；較新lifecycle已接管時不得清其Session。
-- [ ] 所有cleanup都嘗試完成後才依unknown → expected local-storage優先權向外表達。
-- [ ] Expected cleanup failure映射Logout Failure，但不得恢復Session。
-- [ ] Unknown error保留error / stack。
-- [ ] Logout與較新Login交錯的latest-intent regression不得退化。
-- [ ] App production DI在Task 6前仍選擇舊Repository path；本Task不得單獨完成authority switch。
+- [x] Logout在單一exclusive section內分別嘗試清Secure、Legacy與User。
+- [x] Runtime Session無論cleanup結果都必須清除；較新lifecycle已接管時不得清其Session。
+- [x] 所有cleanup都嘗試完成後才依unknown → expected local-storage優先權向外表達。
+- [x] Expected cleanup failure映射Logout Failure，但不得恢復Session。
+- [x] Unknown error保留error / stack。
+- [x] Logout與較新Login交錯的latest-intent regression不得退化。
+- [x] App production DI在Task 6前仍選擇舊Repository path；本Task不得單獨完成authority switch。
 
 建議commit：
 
 ```bash
 git commit -m "refactor(auth): 收斂Secure logout cleanup policy"
 ```
+
+Task 5執行結果：Repository Logout移除手寫三組try/catch accumulator，改在單一caller-owned exclusive section內直接使用Task 1 `AuthLifecycleCleanupPolicy`，固定依Secure credential、Legacy credential、User順序全部嘗試。若operation仍current，無論cleanup結果都先清runtime Session；unknown cleanup error優先保留identity與stack，之後才檢查superseded control flow與expected local-storage failure。既有Logout＋較新Login交錯、expected／unknown／protocol priority regression維持通過，並新增明確cleanup順序測試。App production DI與credential authority未切換。
 
 ## Task 6 — Atomic DI authority switch
 

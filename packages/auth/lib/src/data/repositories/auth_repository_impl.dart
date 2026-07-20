@@ -184,53 +184,17 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await _mutationCoordinator.runExclusive(() async {
         operation.throwIfSuperseded();
-        Object? expectedError;
-        StackTrace? expectedStackTrace;
-        Object? unexpectedError;
-        StackTrace? unexpectedStackTrace;
-
-        void captureError(Object error, StackTrace stackTrace) {
-          if (error is AppException &&
-              error.kind == AppExceptionKind.localStorage) {
-            expectedError ??= error;
-            expectedStackTrace ??= stackTrace;
-            return;
-          }
-          unexpectedError ??= error;
-          unexpectedStackTrace ??= stackTrace;
+        final cleanup = await AuthLifecycleCleanupPolicy(
+          secureCredentialStore: _credentialStore,
+          legacyCredentialStore: _legacyCredentialStore,
+          userStore: _userStore,
+        ).clearAllUnlocked();
+        if (operation.isCurrent) {
+          _sessionManager.clear();
         }
-
-        try {
-          await _userStore.clearUser();
-        } catch (error, stackTrace) {
-          captureError(error, stackTrace);
-        }
-        try {
-          await _credentialStore.clearCredential();
-        } catch (error, stackTrace) {
-          captureError(error, stackTrace);
-        }
-        try {
-          await _legacyCredentialStore.clearLegacyCredential();
-        } catch (error, stackTrace) {
-          captureError(error, stackTrace);
-        } finally {
-          if (operation.isCurrent) {
-            _sessionManager.clear();
-          }
-        }
-        final capturedUnexpectedError = unexpectedError;
-        if (capturedUnexpectedError != null) {
-          Error.throwWithStackTrace(
-            capturedUnexpectedError,
-            unexpectedStackTrace!,
-          );
-        }
+        cleanup.throwIfUnexpected();
         operation.throwIfSuperseded();
-        final capturedExpectedError = expectedError;
-        if (capturedExpectedError != null) {
-          Error.throwWithStackTrace(capturedExpectedError, expectedStackTrace!);
-        }
+        cleanup.throwIfFailed();
       });
       return const Success(null);
     } on AppException catch (error, stackTrace) {

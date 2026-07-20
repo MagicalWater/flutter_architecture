@@ -333,6 +333,32 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
+  test('Logout cleanup 順序固定為 credential、legacy、user', () async {
+    final operations = <String>[];
+    final sessionManager = _TrackingSessionManager(operations)
+      ..setAuthenticated(accessToken: 'token', userId: 'user-001');
+    operations.clear();
+    final local = _OrderedAuthPersistenceStores(operations);
+    final repository = AuthRepositoryImpl(
+      AuthRemoteDataSource(MockAuthApi()),
+      local,
+      local,
+      local,
+      sessionManager,
+      AuthStateMutationCoordinator(),
+    );
+
+    final result = await repository.logout();
+
+    expect(result, isA<Success<void>>());
+    expect(operations, <String>[
+      'credential.clear',
+      'legacy.clear',
+      'user.clear',
+      'session.clear',
+    ]);
+  });
+
   test('Login persistence 發生未知錯誤時仍補償清除並保留原始錯誤', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
@@ -623,5 +649,56 @@ class _BlockingLogoutAuthPersistenceStores extends _FakeAuthPersistenceStores {
     if (!_clearUserStarted.isCompleted) _clearUserStarted.complete();
     await _clearUserRelease.future;
     await super.clearUser();
+  }
+}
+
+final class _OrderedAuthPersistenceStores
+    implements AuthCredentialStore, AuthLegacyCredentialStore, AuthUserStore {
+  _OrderedAuthPersistenceStores(this.operations);
+
+  final List<String> operations;
+
+  @override
+  Future<AuthCredentialReadResult> readCredential() async =>
+      const AuthCredentialReadAbsent();
+
+  @override
+  Future<void> writeCredential(StoredAuthTokens tokens) async {}
+
+  @override
+  Future<void> clearCredential() async {
+    operations.add('credential.clear');
+  }
+
+  @override
+  Future<AuthCredentialReadResult> readLegacyCredential() async =>
+      const AuthCredentialReadAbsent();
+
+  @override
+  Future<void> clearLegacyCredential() async {
+    operations.add('legacy.clear');
+  }
+
+  @override
+  Future<AuthUser?> readUser() async => null;
+
+  @override
+  Future<void> writeUser(AuthUser user) async {}
+
+  @override
+  Future<void> clearUser() async {
+    operations.add('user.clear');
+  }
+}
+
+final class _TrackingSessionManager extends SessionManager {
+  _TrackingSessionManager(this.operations);
+
+  final List<String> operations;
+
+  @override
+  void clear() {
+    operations.add('session.clear');
+    super.clear();
   }
 }

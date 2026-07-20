@@ -254,6 +254,13 @@ git add apps/flutter_architecture/lib/features/auth/data/stores apps/flutter_arc
 git commit -m "refactor(auth): 將SharedPreferences持久化移至App"
 ```
 
+Task 2 implementation review：Passed after revision。
+
+- Credential與Legacy adapter維持App-owned plugin boundary，尚未接入DI或改變runtime authority。
+- `absent / present / corrupted` taxonomy、single-access-token cleanup、idempotent clear與敏感diagnostic均由15項adapter tests鎖定。
+- Review發現`clearLegacyCredential()`原先只保留第一個錯誤，可能讓先發生的expected failure遮蔽後續unknown error；已改為兩個key都嘗試清除，並依Decision 020優先保留unknown error。
+- App analyze、format與`git diff --check`通過；無Open P0 / P1 review finding。
+
 ---
 
 ## Task 3：建立SQLite AuthUser adapter

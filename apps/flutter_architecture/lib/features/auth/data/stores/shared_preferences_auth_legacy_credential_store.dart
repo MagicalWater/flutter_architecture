@@ -48,8 +48,21 @@ final class SharedPreferencesAuthLegacyCredentialStore
 
   @override
   Future<void> clearLegacyCredential() async {
-    Object? firstError;
-    StackTrace? firstStackTrace;
+    Object? expectedError;
+    StackTrace? expectedStackTrace;
+    Object? unexpectedError;
+    StackTrace? unexpectedStackTrace;
+
+    void captureError(Object error, StackTrace stackTrace) {
+      if (error is AppException &&
+          error.kind == AppExceptionKind.localStorage) {
+        expectedError ??= error;
+        expectedStackTrace ??= stackTrace;
+        return;
+      }
+      unexpectedError ??= error;
+      unexpectedStackTrace ??= stackTrace;
+    }
 
     Future<void> remove(String key) async {
       try {
@@ -61,28 +74,21 @@ final class SharedPreferencesAuthLegacyCredentialStore
           );
         }
       } catch (error, stackTrace) {
-        firstError ??= error;
-        firstStackTrace ??= stackTrace;
+        captureError(error, stackTrace);
       }
     }
 
     await remove(_tokenPairKey);
     await remove(_singleAccessTokenKey);
 
-    final error = firstError;
-    if (error == null) return;
-    if (error is AppException) {
-      Error.throwWithStackTrace(error, firstStackTrace!);
+    final capturedUnexpectedError = unexpectedError;
+    if (capturedUnexpectedError != null) {
+      Error.throwWithStackTrace(capturedUnexpectedError, unexpectedStackTrace!);
     }
-    Error.throwWithStackTrace(
-      AppException(
-        kind: AppExceptionKind.localStorage,
-        message: '清除舊 Auth credential 失敗',
-        cause: error,
-        stackTrace: firstStackTrace,
-      ),
-      firstStackTrace!,
-    );
+    final capturedExpectedError = expectedError;
+    if (capturedExpectedError != null) {
+      Error.throwWithStackTrace(capturedExpectedError, expectedStackTrace!);
+    }
   }
 }
 

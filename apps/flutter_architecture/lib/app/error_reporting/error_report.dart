@@ -8,6 +8,7 @@ enum ErrorReportSource {
   preference,
   catalogCache,
   authMigration,
+  authLifecycle,
 }
 
 enum ErrorReportOperation {
@@ -21,6 +22,9 @@ enum ErrorReportOperation {
   catalogCacheWrite,
   catalogCacheCleanup,
   authMigrationLegacyCleanup,
+  authSecureCleanup,
+  authLegacyCleanup,
+  authUserCleanup,
 }
 
 /// 可安全送往 reporting adapter 的封閉 context。

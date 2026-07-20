@@ -102,19 +102,21 @@ unknown / unexpected error
 
 **Contract**
 
-- [ ] Package新增Auth-specific lifecycle diagnostic與單一狹窄sink abstraction。
-- [ ] Diagnostic operation至少區分migration Legacy cleanup、Secure cleanup、Legacy cleanup與User cleanup。
-- [ ] App adapter實作sink並逐項上報fixed safe context；不得把raw plugin message或credential payload放入context。
-- [ ] 建立Auth-specific cleanup accumulator/helper，統一Secure / Legacy / User全部嘗試與error priority。
-- [ ] Helper不取得mutation lock、不修改SessionManager、不依賴App reporter。
-- [ ] Interactive與passive caller可明確選擇rethrow或report policy，不使用空catch。
-- [ ] Error與caught stack identity均有tests。
+- [x] Package新增Auth-specific lifecycle diagnostic與單一狹窄sink abstraction。
+- [x] Diagnostic operation至少區分migration Legacy cleanup、Secure cleanup、Legacy cleanup與User cleanup。
+- [x] App adapter實作sink並逐項上報fixed safe context；不得把raw plugin message或credential payload放入context。
+- [x] 建立Auth-specific cleanup accumulator/helper，統一Secure / Legacy / User全部嘗試與error priority。
+- [x] Helper不取得mutation lock、不修改SessionManager、不依賴App reporter。
+- [x] Interactive與passive caller可明確選擇rethrow或report policy，不使用空catch。
+- [x] Error與caught stack identity均有tests。
 
 建議commit：
 
 ```bash
 git commit -m "refactor(auth): 建立lifecycle cleanup與diagnostic boundary"
 ```
+
+Task 1執行結果：新增純Dart `AuthLifecycleDiagnostic`、四種封閉operation與`AuthLifecycleDiagnosticSink`；App reporter adapter正式實作sink，逐項映射migration Legacy、Secure、Legacy與User cleanup safe context，保留原error / caught stack且reporter failure不阻止後續項目。新增`AuthLifecycleCleanupPolicy.clearAllUnlocked()`，固定依序嘗試Secure、Legacy與User三個stores，回傳immutable diagnostics；`AuthLifecycleCleanupResult`提供interactive `throwIfFailed()`與passive `throwIfUnexpected()`，unknown優先於expected `localStorage`，不取得lock、不修改SessionManager、不依賴App reporter。RED為新contract不存在；GREEN package targeted 5項、App adapter 2項與兩側analyze通過。Repository與Refresher尚未改用新policy，留待Task 2至5逐步整合。
 
 ## Task 2 — Restore整合migration resolution
 

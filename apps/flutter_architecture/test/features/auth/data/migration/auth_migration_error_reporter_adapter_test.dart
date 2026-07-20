@@ -10,50 +10,74 @@ void main() {
     final adapter = AuthMigrationErrorReporterAdapter(reporter);
     final firstError = StateError('plugin-secret-1');
     final secondError = StateError('plugin-secret-2');
+    final thirdError = StateError('plugin-secret-3');
+    final fourthError = StateError('plugin-secret-4');
     final firstStack = StackTrace.current;
     final secondStack = StackTrace.current;
 
-    adapter.reportAll(<AuthCredentialMigrationDiagnostic>[
-      AuthCredentialMigrationDiagnostic(
-        operation: AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+    adapter.reportAll(<AuthLifecycleDiagnostic>[
+      AuthLifecycleDiagnostic(
+        operation: AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
         error: firstError,
         stackTrace: firstStack,
       ),
-      AuthCredentialMigrationDiagnostic(
-        operation: AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+      AuthLifecycleDiagnostic(
+        operation: AuthLifecycleDiagnosticOperation.secureCleanup,
         error: secondError,
         stackTrace: secondStack,
       ),
+      AuthLifecycleDiagnostic(
+        operation: AuthLifecycleDiagnosticOperation.legacyCleanup,
+        error: thirdError,
+        stackTrace: StackTrace.current,
+      ),
+      AuthLifecycleDiagnostic(
+        operation: AuthLifecycleDiagnosticOperation.userCleanup,
+        error: fourthError,
+        stackTrace: StackTrace.current,
+      ),
     ]);
 
-    expect(reporter.reports, hasLength(2));
+    expect(reporter.reports, hasLength(4));
     expect(reporter.reports[0].error, same(firstError));
     expect(reporter.reports[0].stackTrace, same(firstStack));
     expect(reporter.reports[1].error, same(secondError));
     expect(reporter.reports[1].stackTrace, same(secondStack));
     for (final report in reporter.reports) {
       expect(report.severity, ErrorSeverity.degraded);
-      expect(report.context.source, ErrorReportSource.authMigration);
-      expect(
-        report.context.operation,
-        ErrorReportOperation.authMigrationLegacyCleanup,
-      );
+      expect(report.context.source, ErrorReportSource.authLifecycle);
       expect(report.toString(), isNot(contains('plugin-secret')));
     }
+    expect(
+      reporter.reports[0].context.operation,
+      ErrorReportOperation.authMigrationLegacyCleanup,
+    );
+    expect(
+      reporter.reports[1].context.operation,
+      ErrorReportOperation.authSecureCleanup,
+    );
+    expect(
+      reporter.reports[2].context.operation,
+      ErrorReportOperation.authLegacyCleanup,
+    );
+    expect(
+      reporter.reports[3].context.operation,
+      ErrorReportOperation.authUserCleanup,
+    );
   });
 
   test('reporter failure不阻止後續diagnostic上報', () {
     final reporter = _RecordingReporter(throwOnCall: 1);
     final adapter = AuthMigrationErrorReporterAdapter(reporter);
 
-    adapter.reportAll(<AuthCredentialMigrationDiagnostic>[
-      AuthCredentialMigrationDiagnostic(
-        operation: AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+    adapter.reportAll(<AuthLifecycleDiagnostic>[
+      AuthLifecycleDiagnostic(
+        operation: AuthLifecycleDiagnosticOperation.legacyCleanup,
         error: StateError('first'),
         stackTrace: StackTrace.current,
       ),
-      AuthCredentialMigrationDiagnostic(
-        operation: AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+      AuthLifecycleDiagnostic(
+        operation: AuthLifecycleDiagnosticOperation.userCleanup,
         error: StateError('second'),
         stackTrace: StackTrace.current,
       ),

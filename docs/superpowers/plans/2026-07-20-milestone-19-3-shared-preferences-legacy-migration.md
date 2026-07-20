@@ -108,6 +108,8 @@ git commit -m "feat(auth): 建立credential migration contract"
 
 Task 1執行結果：新增兩個sealed resolution variants，兩者皆持有defensive-copy後的immutable diagnostics list；resolved variant持有完整`StoredAuthTokens`與`AuthUser`，但result / diagnostic `toString()`不展開credential或原始error message。`AuthCredentialMigrationDiagnostic`保留typed operation、原始error與stack供後續App adapter明確使用。Coordinator constructor只接受Secure credential、Legacy credential與User三個Auth-specific stores，`resolveUnlocked()` public shape已建立，尚未實作Task 2 decision matrix。RED因所有migration types不存在而失敗；GREEN targeted 4 tests與Auth analyze通過。
 
+Task 1 implementation review：通過。Review補強真正的defensive-copy regression：建構resolution後清空呼叫端原始diagnostics list，resolution內容仍保持不變；並鎖定diagnostic保留原始error與stack identity。Public contract未提前依賴SessionManager、mutation coordinator、plugin或DI，`resolveUnlocked()`尚未接入任何runtime graph。
+
 ## Task 2 — Unauthenticated與destructive decision matrix
 
 **Files**

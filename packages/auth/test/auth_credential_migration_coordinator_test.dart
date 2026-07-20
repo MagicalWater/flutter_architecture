@@ -19,14 +19,17 @@ void main() {
   test(
     'migration result exposes closed variants with immutable diagnostics',
     () {
+      final sourceDiagnostics = <AuthCredentialMigrationDiagnostic>[diagnostic];
       final unauthenticated = AuthCredentialMigrationUnauthenticated(
-        diagnostics: <AuthCredentialMigrationDiagnostic>[diagnostic],
+        diagnostics: sourceDiagnostics,
       );
       final resolved = AuthCredentialMigrationResolved(
         tokens: tokens,
         user: user,
-        diagnostics: <AuthCredentialMigrationDiagnostic>[diagnostic],
+        diagnostics: sourceDiagnostics,
       );
+
+      sourceDiagnostics.clear();
 
       expect(unauthenticated, isA<AuthCredentialMigrationResult>());
       expect(resolved, isA<AuthCredentialMigrationResult>());
@@ -39,6 +42,19 @@ void main() {
       expect(() => resolved.diagnostics.clear(), throwsUnsupportedError);
     },
   );
+
+  test('migration diagnostic preserves error and stack identity', () {
+    final error = StateError('plugin-secret');
+    final stackTrace = StackTrace.current;
+    final value = AuthCredentialMigrationDiagnostic(
+      operation: AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+      error: error,
+      stackTrace: stackTrace,
+    );
+
+    expect(value.error, same(error));
+    expect(value.stackTrace, same(stackTrace));
+  });
 
   test(
     'migration result and diagnostic toString do not expose credentials',

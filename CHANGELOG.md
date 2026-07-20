@@ -24,15 +24,17 @@
 - 新增 Architecture Decision 022，定義三個 Milestone 的依賴順序、package / App boundary、review gate、非目標與版本規則。
 - 完成Milestone 19-0 Planning Review與最終文件一致性review，新增Threat Model、Secure × Legacy × User decision matrix、migration owner、typed credential read taxonomy、cleanup / reporting contract與六項planning findings；P1 findings已取得approved disposition，但仍待implementation與tests正式關閉。
 - 建立並review Milestone 19-1 Auth Persistence Seam詳細implementation plan，明確拆分typed store contract、App-owned SharedPreferences / SQLite adapter、Repository / Refresher rewiring、DI與regression gate。
+- 完成Milestone 19-1 Auth Persistence Seam：新增Auth-specific credential、legacy與user store contracts及sealed read taxonomy；將SharedPreferences / SQLite adapters與plugin ownership移至App layer；Repository與Refresher改用三個明確store boundaries；移除舊`AuthLocalDataSource`、聚合local-store介面與`packages/auth`的plugin dependencies。
 
 ### Changed
 
 - 下一個正式方向改為先完成 Secure Credential Storage 與 SharedPreferences legacy migration；OTP 與 Android Biometric runtime 分別延後至後續獨立 Milestone。
 - Decision 022由Proposed升為Accepted；Milestone 19不採persistent migration marker，並明確禁止nested Auth mutation lock與Secure unavailable時fallback Legacy。
+- Auth persistence DI由App唯一Composition Root顯式綁定三個lazy singleton stores；SharedPreferences仍維持19-1 production credential authority，未提前加入Secure Storage或migration policy。
 
 ### Notes
 
-- Milestone 19-0已以commit `07b5d89`封存並推送；目前只完成19-1 implementation plan，未修改 production code、dependency、Native 設定或 VERSION。
+- Milestone 19-1 implementation review已通過；workspace analyze、437項完整tests與App bundle build全數通過。未修改Native設定或VERSION，下一步為Milestone 19-2 Secure Credential Store Adapter。
 
 ---
 

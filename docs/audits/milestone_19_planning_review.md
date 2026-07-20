@@ -224,18 +224,20 @@ Diagnostic不得包含Token、raw payload、SharedPreferences value、Secure Sto
 ### M19-PR02 — Mutation coordinator不可重入
 
 - Severity：P1。
-- Status：Disposition approved；待19-1 / 19-3 / 19-4 implementation與tests關閉。
+- Status：19-1 implementation evidence complete；待19-3 / 19-4完整關閉。
 - Risk：migration或cleanup helper在exclusive action中再次等待`runExclusive`會self-deadlock。
 - Disposition：明確禁止nested lock；使用已持有ownership的`...Unlocked` helper。
 - Target：19-1 / 19-3 / 19-4。
+- 19-1 Evidence：Repository與Refresher複合mutation只取得一次`runExclusive`，cleanup使用既有ownership下的helper；concurrency、latest-intent、single-flight與cross-session tests通過。
 
 ### M19-PR03 — Absence、corruption與unavailable taxonomy不足
 
 - Severity：P1。
-- Status：Disposition approved；待19-1 / 19-2 implementation與tests關閉。
+- Status：19-1 implementation evidence complete；待19-2 Secure adapter完整關閉。
 - Risk：把Secure unavailable當成absence會錯誤fallback Legacy並建立Session。
 - Disposition：採sealed read result；operational unavailable仍拋typed AppException。
 - Target：19-1 / 19-2。
+- 19-1 Evidence：`AuthCredentialReadAbsent / Present / Corrupted`已成為公開sealed taxonomy；SharedPreferences adapter只將payload validation映射為corrupted，plugin operational failure維持`AppExceptionKind.localStorage`並保留cause與stack。
 
 ### M19-PR04 — Persistent marker增加第四個非原子狀態
 
@@ -274,3 +276,16 @@ Milestone 19-0 Planning Review通過。
 - 下一個正式階段為Milestone 19-1 Auth Persistence Seam。
 
 19-1不得提前加入`flutter_secure_storage`或改變runtime authority；它只建立新boundary、搬移既有SharedPreferences / SQLite adapter ownership並維持行為等價。
+
+## 19-1 Implementation Review Update
+
+Milestone 19-1已完成並通過implementation review。
+
+- 三個Auth-specific store contracts與typed read taxonomy已建立。
+- SharedPreferences / SQLite adapters與plugin dependency已移至App；`packages/auth`保持純Dart orchestration boundary。
+- 舊`AuthLocalDataSource`、`AuthLocalStore`、`AuthRefreshLocalStore`與`AuthTokenStorage`已移除。
+- Repository與Refresher由App Composition Root取得相同lazy singleton stores。
+- SharedPreferences仍是19-1 credential authority；未加入Secure adapter、migration policy、Native設定或VERSION變更。
+- Workspace analyze、437項完整tests與App bundle build通過。
+
+下一步為Milestone 19-2；M19-PR03須待Secure adapter實作後完整關閉，其他跨階段finding依原Target持續追蹤。

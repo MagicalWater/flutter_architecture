@@ -1993,7 +1993,7 @@ Milestone 21 — Biometric-gated Local Session Unlock
 
 ## Milestone 19：Secure Credential Storage & Migration
 
-狀態：19-0 Completed / Archived；19-1詳細implementation plan已完成review，尚未開始production implementation。
+狀態：19-0 Completed / Archived；19-1 Completed / Reviewed；下一步為19-2。
 
 ### 目標
 
@@ -2026,15 +2026,17 @@ docs/superpowers/plans/2026-07-20-milestone-19-1-auth-persistence-seam.md
 
 Plan review已通過：19-1只建立typed store contract、將既有SharedPreferences / SQLite adapter移至App layer、更新Repository / Refresher依賴與DI graph，並保持runtime behavior等價。不得提前加入Secure Storage、migration policy、Native設定或VERSION變更。
 
-- [ ] 在`packages/auth`建立Auth-specific credential、legacy與user store abstraction。
-- [ ] Credential read使用`absent / present / corrupted` sealed result；operational unavailable仍以typed `AppException`表達。
-- [ ] 拆除`AuthLocalDataSource`同時承擔SharedPreferences、SQLite與migration的過度集中責任。
-- [ ] 將SharedPreferences與SQLite plugin implementation移至App layer，完成後移除`packages/auth`對`shared_preferences`與`sqflite`的直接依賴。
-- [ ] 維持App為唯一Composition Root。
-- [ ] 先以既有storage adapter驗證boundary，不在本階段改變runtime behavior。
-- [ ] 不建立Generic Key-Value Store或Generic Secure Store framework。
+- [x] 在`packages/auth`建立Auth-specific credential、legacy與user store abstraction。
+- [x] Credential read使用`absent / present / corrupted` sealed result；operational unavailable仍以typed `AppException`表達。
+- [x] 拆除`AuthLocalDataSource`同時承擔SharedPreferences、SQLite與migration的過度集中責任。
+- [x] 將SharedPreferences與SQLite plugin implementation移至App layer，並移除`packages/auth`對`shared_preferences`與`sqflite`的直接依賴。
+- [x] 維持App為唯一Composition Root。
+- [x] 以既有storage authority驗證boundary，未在本階段改變runtime behavior。
+- [x] 未建立Generic Key-Value Store或Generic Secure Store framework。
 
 完成定義：現有Login / Restore / Refresh / Logout行為在新seam下完全等價，package沒有新增Flutter plugin或DI framework依賴。
+
+19-1 implementation review已通過：SharedPreferences仍為production credential authority；SQLite仍保存公開`AuthUser`；Repository與Refresher共用App-owned singleton stores，且沒有nested mutation lock。Auth targeted tests為56項、App auth / DI targeted tests為45項；workspace五個packages共437項tests與analyze全數通過，App `flutter build bundle`成功。未加入`flutter_secure_storage`、migration、OTP、Biometric、Native設定或VERSION變更。
 
 ### Milestone 19-2：Secure Credential Store Adapter
 

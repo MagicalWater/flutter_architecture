@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
@@ -97,6 +99,48 @@ void main() {
     },
   );
 
+  test(
+    'mixed passive cleanup reports expected once then throws unknown outside lock',
+    () async {
+      final unknown = StateError('user cleanup bug');
+      final operations = <String>[];
+      final store = _Store(
+        operations,
+        secureClearError: const AppException(
+          kind: AppExceptionKind.localStorage,
+          message: 'secure cleanup failed',
+        ),
+        userClearError: unknown,
+      );
+      final session = _Session(operations)
+        ..setAuthenticated(accessToken: 'old-access', userId: 'user-1');
+      operations.clear();
+      final coordinator = _TrackingCoordinator();
+      final sink = _Sink(() {
+        expect(coordinator.isHeld, isFalse);
+        expect(session.currentSession, isNull);
+      });
+      final refresher = _refresher(
+        store,
+        session,
+        _Api(statusCode: 401),
+        coordinator: coordinator,
+        sink: sink,
+      );
+
+      await expectLater(
+        refresher.refresh(failedAccessToken: 'old-access'),
+        throwsA(same(unknown)),
+      );
+
+      expect(sink.diagnostics, hasLength(1));
+      expect(
+        sink.diagnostics.single.operation,
+        AuthLifecycleDiagnosticOperation.secureCleanup,
+      );
+    },
+  );
+
   test('secure identity mismatch skips remote and expires session', () async {
     final operations = <String>[];
     final store = _Store(operations)
@@ -142,6 +186,34 @@ void main() {
       expect(sink.diagnostics, hasLength(1));
     },
   );
+
+  test('old secure refresh 401 cannot clear newer session state', () async {
+    final operations = <String>[];
+    final store = _Store(operations);
+    final session = _Session(operations)
+      ..setAuthenticated(accessToken: 'old-access', userId: 'user-1');
+    operations.clear();
+    final api = _ControlledApi();
+    final refresher = _refresher(store, session, api);
+
+    final refresh = refresher.refresh(failedAccessToken: 'old-access');
+    await api.started;
+    session.clear();
+    session.setAuthenticated(accessToken: 'new-access', userId: 'user-2');
+    store.tokens = const StoredAuthTokens(
+      accessToken: 'new-access',
+      refreshToken: 'new-refresh',
+      userId: 'user-2',
+    );
+    store.user = const AuthUser(id: 'user-2', name: 'New User');
+    operations.clear();
+    api.completeUnauthorized();
+
+    expect(await refresh, isA<AuthRefreshSessionChanged>());
+    expect(session.currentSession?.userId, 'user-2');
+    expect(store.tokens?.userId, 'user-2');
+    expect(operations.where((value) => value.endsWith('.clear')), isEmpty);
+  });
 }
 
 AuthSessionRefresher _refresher(
@@ -187,11 +259,41 @@ final class _Api implements AuthRefreshApi {
   }
 }
 
+final class _ControlledApi implements AuthRefreshApi {
+  final Completer<void> _started = Completer<void>();
+  final Completer<RefreshTokenResponseDto> _response =
+      Completer<RefreshTokenResponseDto>();
+
+  Future<void> get started => _started.future;
+
+  @override
+  Future<RefreshTokenResponseDto> refresh(RefreshTokenRequestDto request) {
+    _started.complete();
+    return _response.future;
+  }
+
+  void completeUnauthorized() {
+    final options = RequestOptions(path: '/auth/refresh');
+    _response.completeError(
+      DioException(
+        requestOptions: options,
+        response: Response<void>(requestOptions: options, statusCode: 401),
+      ),
+    );
+  }
+}
+
 final class _Store
     implements AuthCredentialStore, AuthLegacyCredentialStore, AuthUserStore {
-  _Store(this.operations, {this.secureClearError, this.writeError});
+  _Store(
+    this.operations, {
+    this.secureClearError,
+    this.userClearError,
+    this.writeError,
+  });
   final List<String> operations;
   final Object? secureClearError;
+  final Object? userClearError;
   final Object? writeError;
   StoredAuthTokens? tokens = const StoredAuthTokens(
     accessToken: 'old-access',
@@ -246,6 +348,8 @@ final class _Store
   @override
   Future<void> clearUser() async {
     operations.add('user.clear');
+    final error = userClearError;
+    if (error != null) throw error;
     user = null;
   }
 }

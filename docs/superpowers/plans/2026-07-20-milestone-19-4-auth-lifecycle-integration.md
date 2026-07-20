@@ -206,6 +206,8 @@ git commit -m "feat(auth): 切換refresh與passive invalidation至Secure"
 
 Task 4執行結果：新增非nullable transitional `AuthSessionRefresher.secureLifecycle`，以同library私有Secure subclass保留既有single-flight、generation與cross-session協調骨架，只覆寫credential resolution、rotation與passive invalidation。Secure path只讀寫注入的Secure Token Pair，先驗證stored userId、SQLite User與runtime Session identity，再呼叫remote；rotation persistence成功後才更新runtime access token。Invalid refresh、credential absence／corruption／expiry與identity mismatch均在caller-owned exclusive section內使用Task 1 cleanup policy依序清Secure、Legacy、User並清Session；immutable diagnostics帶出lock後report。Expected cleanup failure仍回SessionExpired／LocalStateFailure，unknown cleanup error在Session清除後保留identity與stack拋出。App production DI與default Refresher constructor未切換。
 
+Task 4 implementation review：通過。Review發現初版會把unknown cleanup也送入non-fatal diagnostic sink後再重拋，造成App reporter可能重複記錄；rotation cleanup的unknown亦在mutation lock內直接拋出，使同批expected diagnostics無法帶出。已統一為immutable cleanup outcome離開lock後處理：sink只接收expected `localStorage` diagnostics，之後再於lock外保留identity與stack重拋unknown。混合expected＋unknown cleanup regression證明expected只上報一次、unknown不進non-fatal sink、Session已清除且report／throw都發生在lock外；另補Secure path直接cross-session 401 regression，確認舊refresh不清除較新Session與Secure credential。
+
 ## Task 5 — Logout destructive cleanup
 
 **Files**

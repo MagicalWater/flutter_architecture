@@ -291,17 +291,15 @@ final class _SecureLifecycleAuthSessionRefresher extends AuthSessionRefresher {
           }
           final cleanup = await _clearSecureAuthStateUnlocked();
           _sessionManager.clear();
-          cleanup.throwIfUnexpected();
           return _SecureRefreshOutcome(
             result: const AuthRefreshLocalStateFailure(),
-            diagnostics: cleanup.diagnostics,
+            cleanup: cleanup,
           );
         }
         _sessionManager.updateAccessToken(response.accessToken);
         return const _SecureRefreshOutcome(result: AuthRefreshSuccess());
       });
-      _reportBestEffort(outcome.diagnostics);
-      return outcome.result;
+      return _completeOutcome(outcome);
     } on InvalidRefreshCredentialException {
       return _invalidateSecureSession(
         generation: inFlight.generation,
@@ -324,15 +322,9 @@ final class _SecureLifecycleAuthSessionRefresher extends AuthSessionRefresher {
       }
       final cleanup = await _clearSecureAuthStateUnlocked();
       _sessionManager.clear();
-      return _SecureRefreshOutcome(
-        result: expiredResult,
-        diagnostics: cleanup.diagnostics,
-        unexpectedError: cleanup.hasUnexpectedFailure ? cleanup : null,
-      );
+      return _SecureRefreshOutcome(result: expiredResult, cleanup: cleanup);
     });
-    _reportBestEffort(outcome.diagnostics);
-    outcome.unexpectedError?.throwIfUnexpected();
-    return outcome.result;
+    return _completeOutcome(outcome);
   }
 
   Future<AuthLifecycleCleanupResult> _clearSecureAuthStateUnlocked() {
@@ -343,9 +335,24 @@ final class _SecureLifecycleAuthSessionRefresher extends AuthSessionRefresher {
     ).clearAllUnlocked();
   }
 
-  void _reportBestEffort(Iterable<AuthLifecycleDiagnostic> diagnostics) {
+  AuthRefreshResult _completeOutcome(_SecureRefreshOutcome outcome) {
+    final cleanup = outcome.cleanup;
+    if (cleanup == null) return outcome.result;
+    _reportExpectedBestEffort(cleanup.diagnostics);
+    cleanup.throwIfUnexpected();
+    return outcome.result;
+  }
+
+  void _reportExpectedBestEffort(
+    Iterable<AuthLifecycleDiagnostic> diagnostics,
+  ) {
+    final expected = diagnostics.where((diagnostic) {
+      final error = diagnostic.error;
+      return error is AppException &&
+          error.kind == AppExceptionKind.localStorage;
+    });
     try {
-      _diagnosticSink.reportAll(diagnostics);
+      _diagnosticSink.reportAll(expected);
     } on Object {
       // Passive invalidation reporting不得改變Session expiration語意。
     }
@@ -353,15 +360,10 @@ final class _SecureLifecycleAuthSessionRefresher extends AuthSessionRefresher {
 }
 
 final class _SecureRefreshOutcome {
-  const _SecureRefreshOutcome({
-    required this.result,
-    this.diagnostics = const <AuthLifecycleDiagnostic>[],
-    this.unexpectedError,
-  });
+  const _SecureRefreshOutcome({required this.result, this.cleanup});
 
   final AuthRefreshResult result;
-  final List<AuthLifecycleDiagnostic> diagnostics;
-  final AuthLifecycleCleanupResult? unexpectedError;
+  final AuthLifecycleCleanupResult? cleanup;
 }
 
 final class _InFlightRefresh {

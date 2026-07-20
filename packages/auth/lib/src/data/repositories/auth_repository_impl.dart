@@ -32,25 +32,14 @@ import 'package:core/core.dart';
 ///
 /// RepositoryImpl 負責協調遠端與本地資料來源。
 class AuthRepositoryImpl implements AuthRepository {
-  factory AuthRepositoryImpl(
-    AuthRemoteDataSource remoteDataSource,
-    AuthCredentialStore credentialStore,
-    AuthLegacyCredentialStore legacyCredentialStore,
-    AuthUserStore userStore,
-    SessionManager sessionManager,
-    AuthStateMutationCoordinator mutationCoordinator,
-  ) {
-    return AuthRepositoryImpl._(
-      remoteDataSource,
-      credentialStore,
-      legacyCredentialStore,
-      userStore,
-      sessionManager,
-      mutationCoordinator,
-      _LegacyRestoreResolver(credentialStore, legacyCredentialStore, userStore),
-      const _NoopAuthLifecycleDiagnosticSink(),
-    );
-  }
+  const AuthRepositoryImpl(
+    this._remoteDataSource,
+    this._credentialStore,
+    this._legacyCredentialStore,
+    this._userStore,
+    this._sessionManager,
+    this._mutationCoordinator,
+  );
 
   factory AuthRepositoryImpl.secureLifecycle(
     AuthRemoteDataSource remoteDataSource,
@@ -61,29 +50,7 @@ class AuthRepositoryImpl implements AuthRepository {
     AuthStateMutationCoordinator mutationCoordinator,
     AuthCredentialMigrationCoordinator migrationCoordinator,
     AuthLifecycleDiagnosticSink diagnosticSink,
-  ) {
-    return AuthRepositoryImpl._(
-      remoteDataSource,
-      credentialStore,
-      legacyCredentialStore,
-      userStore,
-      sessionManager,
-      mutationCoordinator,
-      _MigrationRestoreResolver(migrationCoordinator),
-      diagnosticSink,
-    );
-  }
-
-  const AuthRepositoryImpl._(
-    this._remoteDataSource,
-    this._credentialStore,
-    this._legacyCredentialStore,
-    this._userStore,
-    this._sessionManager,
-    this._mutationCoordinator,
-    this._restoreResolver,
-    this._diagnosticSink,
-  );
+  ) = _SecureLifecycleAuthRepositoryImpl;
 
   final AuthRemoteDataSource _remoteDataSource;
   final AuthCredentialStore _credentialStore;
@@ -91,8 +58,6 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthUserStore _userStore;
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
-  final _AuthSessionRestoreResolver _restoreResolver;
-  final AuthLifecycleDiagnosticSink _diagnosticSink;
 
   @override
   Future<Result<AuthResult>> login({
@@ -154,7 +119,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final outcome = await _mutationCoordinator.runExclusive(() async {
         operation.throwIfSuperseded();
-        final resolution = await _restoreResolver.resolveUnlocked();
+        final resolution = await _resolveRestoreUnlocked();
         operation.throwIfSuperseded();
 
         if (resolution is AuthCredentialMigrationUnauthenticated) {
@@ -196,12 +161,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   void _reportDiagnosticsBestEffort(
     Iterable<AuthLifecycleDiagnostic> diagnostics,
-  ) {
-    try {
-      _diagnosticSink.reportAll(diagnostics);
-    } on Object {
-      // Reporting不得改變合法restore結果。
-    }
+  ) {}
+
+  Future<AuthCredentialMigrationResult> _resolveRestoreUnlocked() {
+    return _LegacyRestoreResolver(
+      _credentialStore,
+      _legacyCredentialStore,
+      _userStore,
+    ).resolveUnlocked();
   }
 
   @override
@@ -289,17 +256,6 @@ abstract interface class _AuthSessionRestoreResolver {
   Future<AuthCredentialMigrationResult> resolveUnlocked();
 }
 
-final class _MigrationRestoreResolver implements _AuthSessionRestoreResolver {
-  const _MigrationRestoreResolver(this._coordinator);
-
-  final AuthCredentialMigrationCoordinator _coordinator;
-
-  @override
-  Future<AuthCredentialMigrationResult> resolveUnlocked() {
-    return _coordinator.resolveUnlocked();
-  }
-}
-
 final class _LegacyRestoreResolver implements _AuthSessionRestoreResolver {
   const _LegacyRestoreResolver(
     this._credentialStore,
@@ -355,10 +311,34 @@ final class _AuthRestoreOutcome {
   final List<AuthLifecycleDiagnostic> diagnostics;
 }
 
-final class _NoopAuthLifecycleDiagnosticSink
-    implements AuthLifecycleDiagnosticSink {
-  const _NoopAuthLifecycleDiagnosticSink();
+final class _SecureLifecycleAuthRepositoryImpl extends AuthRepositoryImpl {
+  const _SecureLifecycleAuthRepositoryImpl(
+    super.remoteDataSource,
+    super.credentialStore,
+    super.legacyCredentialStore,
+    super.userStore,
+    super.sessionManager,
+    super.mutationCoordinator,
+    this._migrationCoordinator,
+    this._diagnosticSink,
+  );
+
+  final AuthCredentialMigrationCoordinator _migrationCoordinator;
+  final AuthLifecycleDiagnosticSink _diagnosticSink;
 
   @override
-  void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {}
+  Future<AuthCredentialMigrationResult> _resolveRestoreUnlocked() {
+    return _migrationCoordinator.resolveUnlocked();
+  }
+
+  @override
+  void _reportDiagnosticsBestEffort(
+    Iterable<AuthLifecycleDiagnostic> diagnostics,
+  ) {
+    try {
+      _diagnosticSink.reportAll(diagnostics);
+    } on Object {
+      // Reporting不得改變合法restore結果。
+    }
+  }
 }

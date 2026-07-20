@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
@@ -12,6 +13,19 @@ void main() {
     userId: 'user-1',
   );
   const user = AuthUser(id: 'user-1', name: 'User');
+
+  test('restore authority constructors remain explicit and nonnullable', () {
+    final source = File(
+      'lib/src/data/repositories/auth_repository_impl.dart',
+    ).readAsStringSync();
+
+    expect(source, contains('const AuthRepositoryImpl('));
+    expect(source, contains('factory AuthRepositoryImpl.secureLifecycle('));
+    expect(source, isNot(contains('AuthCredentialMigrationCoordinator?')));
+    expect(source, isNot(contains('AuthLifecycleDiagnosticSink?')));
+    expect(source, isNot(contains('factory AuthRepositoryImpl(')));
+    expect(source, contains('extends AuthRepositoryImpl'));
+  });
 
   test(
     'secure restore commits session and reports diagnostics best effort',

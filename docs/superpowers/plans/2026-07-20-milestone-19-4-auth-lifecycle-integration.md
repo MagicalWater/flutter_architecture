@@ -149,6 +149,8 @@ git commit -m "feat(auth): 整合restore credential migration"
 
 Task 2執行結果：`AuthRepositoryImpl`新增非nullable transitional `secureLifecycle` constructor，透過private restore resolver strategy整合`AuthCredentialMigrationCoordinator.resolveUnlocked()`；既有default constructor仍使用Legacy resolver，App DI與production SharedPreferences restore authority未切換。Migration resolution與latest-intent check、Session commit都位於同一exclusive section；resolved / unauthenticated diagnostics以immutable outcome帶出lock後才交給sink，reporter failure不改變合法restore。`localStorage`與`dataCorruption`均映射Restore Failure，unknown error保留identity，較新Logout可使blocked migration restore superseded。RED為secureLifecycle constructor缺失及dataCorruption仍被重拋；GREEN新migration restore 6項、既有Repository與Coordinator targeted合計64項，Auth analyze通過。
 
+Task 2 implementation review：通過。Review發現初版為導入strategy將原本public `const AuthRepositoryImpl`改成factory，造成不必要的package API退化。Dart const initializer不能以constructor參數建立內嵌strategy，因此最終shape保留原default generative const constructor；named `secureLifecycle` factory明確redirect到同library私有Secure subclass。Default class固定Legacy restore，Secure subclass以nonnullable Migration Coordinator與diagnostic sink覆寫restore/report boundary，不使用nullable dependency或runtime authority flag。新增source contract regression鎖定constructor shape。Restore reporting仍在lock外，latest-intent / Session commit仍在同一exclusive section；targeted tests與analyze通過。
+
 ## Task 3 — Login Secure persistence與compensation
 
 **Files**

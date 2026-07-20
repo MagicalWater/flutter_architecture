@@ -1225,7 +1225,7 @@ App Composition Root綁定共享lazy singleton instances
 - Auth package 56 tests、App auth / DI targeted 45 tests與workspace完整437 tests通過；workspace analyze與App bundle build通過。
 - 未新增`flutter_secure_storage`、migration policy、Android Native設定或VERSION變更。
 
-Milestone 19-3 SharedPreferences Legacy Migration已完成並通過implementation review；目前下一步為Milestone 19-4 Auth Lifecycle Integration。
+Milestone 19-4 Auth Lifecycle Integration已完成並通過implementation review gate；目前下一步為Milestone 19-5 Security Review、Android Smoke與封存。
 
 Milestone 19-4詳細implementation plan已建立：
 
@@ -1233,9 +1233,9 @@ Milestone 19-4詳細implementation plan已建立：
 docs/superpowers/plans/2026-07-20-milestone-19-4-auth-lifecycle-integration.md
 ```
 
-19-4將migration policy正式整合至Restore，並將Login、Refresh、Logout與passive invalidation切換至Secure credential lifecycle。為避免半套runtime authority，Task 2至Task 5的新Secure lifecycle path在Task 6前不得由App DI選用；Task 6一次切換Repository、Refresher與Migration Coordinator至同一Secure singleton後，必須移除transitional legacy path。Plan同時要求Auth lifecycle diagnostic taxonomy、Secure / Legacy / User統一cleanup priority、caller-owned單一exclusive section、latest-intent / single-flight / generation regression與506項以上完整test gate。VERSION維持1.2.0；尚未開始19-4 production修改。
+19-4已將migration policy正式整合至Restore，並將Login、Refresh、Logout與passive invalidation全部切換至Secure credential lifecycle。Package新增Auth lifecycle diagnostic taxonomy與共用cleanup policy；Restore migration resolution、latest-intent check與Session commit位於同一exclusive ownership，diagnostics只在lock外report。Login固定Secure credential → SQLite User → Session，Refresh rotation固定Secure persistence-first；destructive與passive cleanup皆依Secure、Legacy、User順序全部嘗試，unknown與expected failure依Decision 020表達。
 
-19-4 implementation plan review已通過：diagnostic contract由migration-only擴充為Auth lifecycle diagnostic，可區分migration Legacy、Secure、Legacy與User cleanup；App reporter不得在mutation lock內呼叫。Login compensation需受operation ownership保護，較舊operation不得blind clear較新state；passive invalidation無論expected或unknown cleanup failure都先完成runtime Session expiration。無Open P0 / P1 planning issue，下一步為Task 1。
+App Composition Root已原子切換default `AuthCredentialStore`為`FlutterSecureAuthCredentialStore` singleton；Repository、Refresher與Migration Coordinator共用同一Secure authority，named Secure binding與所有transitional constructor / subclass均已移除。Legacy SharedPreferences只保留migration與cleanup責任。Workspace五個packages共536項tests與analyze全數通過，App `flutter build bundle`成功；VERSION維持1.2.0，未加入OTP、Biometric、Device Binding或額外Native permission。完整review無Open P0 / P1；M19-PR01、M19-PR02與M19-PR06已關閉，M19-PR05留至19-5 Android runtime evidence。
 
 Milestone 19-3詳細implementation plan已建立：
 

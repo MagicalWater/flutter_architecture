@@ -2091,7 +2091,7 @@ Plan review已固定：resolution以immutable diagnostics list承載多個safe c
 
 ### Milestone 19-4：Auth Lifecycle Integration
 
-目前狀態：Implementation plan review已通過，可進入Task 1。
+目前狀態：Completed；implementation review gate已通過。
 
 詳細implementation plan：
 
@@ -2103,14 +2103,16 @@ docs/superpowers/plans/2026-07-20-milestone-19-4-auth-lifecycle-integration.md
 
 Plan review已固定：migration-only diagnostic不足以表達Secure / User cleanup，改為Auth lifecycle diagnostic taxonomy；App reporter不得在mutation lock內呼叫；Login compensation受operation ownership保護；passive invalidation遇expected或unknown cleanup failure都必須先完成runtime Session expiration。無Open P0 / P1 planning issue。
 
-- [ ] Login保存Secure Token Pair與SQLite User成功後才建立Session。
-- [ ] Restore以Secure Store為credential source of truth並驗證user identity。
-- [ ] Refresh rotation只更新Secure Token Pair，persistence-first語意不變。
-- [ ] Logout與passive invalidation分別嘗試清除Secure credential、Legacy credential與User。
-- [ ] Expected / unexpected cleanup failure優先級維持Decision 020 contract。
-- [ ] latest-intent、single-flight、generation與safe replay regression不得退化。
+- [x] Login保存Secure Token Pair與SQLite User成功後才建立Session。
+- [x] Restore以Secure Store為credential source of truth並驗證user identity。
+- [x] Refresh rotation只更新Secure Token Pair，persistence-first語意不變。
+- [x] Logout與passive invalidation分別嘗試清除Secure credential、Legacy credential與User。
+- [x] Expected / unexpected cleanup failure優先級維持Decision 020 contract。
+- [x] latest-intent、single-flight、generation與safe replay regression不得退化。
 
 完成定義：Login、Restore、Refresh、Logout、Session expiration與account switch全部使用新credential boundary，且不會建立partial runtime Session。
+
+19-4 implementation review gate已通過：package-owned lifecycle diagnostic與共用cleanup policy已整合至Restore、Login、Refresh、Logout與passive invalidation；Restore migration與Session commit位於同一caller-owned exclusive ownership，diagnostics只在lock外report。Login與Refresh維持persistence-first，latest-intent、single-flight、generation、cross-session與safe replay均無退化。App DI已一次性將default `AuthCredentialStore`切換為`FlutterSecureAuthCredentialStore`，Repository、Refresher與Migration Coordinator共用同一Secure singleton；named Secure binding及transitional constructors / subclasses均已移除，Legacy SharedPreferences只剩migration與cleanup責任。Workspace analyze、536項完整tests與App bundle通過，VERSION維持1.2.0。M19-PR01、M19-PR02、M19-PR06正式Closed；下一步為19-5。
 
 ### Milestone 19-5：Security Review、Android Smoke與封存
 

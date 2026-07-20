@@ -216,21 +216,23 @@ Diagnostic不得包含Token、raw payload、SharedPreferences value、Secure Sto
 ### M19-PR01 — Migration缺少唯一owner
 
 - Severity：P1。
-- Status：19-3 implementation evidence complete；待19-4 lifecycle integration完整關閉。
+- Status：Closed；19-3與19-4 implementation evidence complete。
 - Risk：Repository、Refresher與adapter各自判斷migration會造成重複政策、authority不一致與競態。
 - Disposition：由`AuthCredentialMigrationCoordinator`作唯一policy owner；Lifecycle owner取得exclusive ownership。
 - Target：19-3 / 19-4。
 - 19-3 Evidence：`AuthCredentialMigrationCoordinator`已成為唯一Secure × Legacy × User migration policy owner，constructor只接受三個Auth-specific stores；decision matrix、Secure authority、Legacy migration、read-back validation、rollback與cleanup pending均由同一owner處理。App DI以named Secure store組裝Coordinator，但Repository與Refresher仍維持default SharedPreferences authority。
+- 19-4 Evidence：Restore由Repository在唯一caller-owned exclusive section內呼叫`resolveUnlocked()`，resolution、latest-intent驗證與Session commit同屬一個ownership；App DI已原子切換為單一default Secure authority，Repository、Refresher與Coordinator共用同一Secure singleton，named與transitional authority path均已移除。
 
 ### M19-PR02 — Mutation coordinator不可重入
 
 - Severity：P1。
-- Status：19-1與19-3 implementation evidence complete；待19-4 lifecycle integration完整關閉。
+- Status：Closed；19-1、19-3與19-4 implementation evidence complete。
 - Risk：migration或cleanup helper在exclusive action中再次等待`runExclusive`會self-deadlock。
 - Disposition：明確禁止nested lock；使用已持有ownership的`...Unlocked` helper。
 - Target：19-1 / 19-3 / 19-4。
 - 19-1 Evidence：Repository與Refresher複合mutation只取得一次`runExclusive`，cleanup使用既有ownership下的helper；concurrency、latest-intent、single-flight與cross-session tests通過。
 - 19-3 Evidence：Migration公開入口固定為`resolveUnlocked()`，production source不依賴`AuthStateMutationCoordinator`且不包含`runExclusive`。Guard fake證明呼叫方只取得一次exclusive ownership、所有store access均發生在ownership內，nested ownership次數為0；同一Coordinator instance可由真實store state重入，不保存跨呼叫mutable authority state。
+- 19-4 Evidence：Restore、Login、Refresh rotation、Logout與passive invalidation均由lifecycle owner取得一次exclusive ownership，所有migration與cleanup helper使用`...Unlocked` contract；latest-intent、single-flight、generation、cross-session與反向完成regression全數通過，未發現nested lock或self-deadlock path。
 
 ### M19-PR03 — Absence、corruption與unavailable taxonomy不足
 
@@ -261,11 +263,12 @@ Diagnostic不得包含Token、raw payload、SharedPreferences value、Secure Sto
 ### M19-PR06 — Cleanup failure ownership不足
 
 - Severity：P1。
-- Status：19-3 migration cleanup evidence complete；待19-4 lifecycle cleanup完整關閉。
+- Status：Closed；19-3 migration與19-4 lifecycle cleanup evidence complete。
 - Risk：沿用空catch會吞掉Secure cleanup failure與unknown error，且不同flow可能產生不同Session語意。
 - Disposition：區分interactive、passive與post-migration cleanup；固定return、report與rethrow規則。
 - Target：19-3 / 19-4。
 - 19-3 Evidence：Destructive migration cleanup會嘗試所有指定stores，unknown優先於expected local-storage error，只有全部成功才回unauthenticated。Secure write / read-back failure會保留Legacy並rollback無法驗證的Secure資料；rollback failure優先於原始錯誤。Secure已驗證後Legacy cleanup expected failure是唯一可降級為resolved + safe diagnostic的情境，unknown error仍保留identity / stack重拋。App adapter逐項上報所有diagnostics且單一reporter failure不阻止後續項目。
+- 19-4 Evidence：共用`AuthLifecycleCleanupPolicy`固定依Secure、Legacy、User順序嘗試全部cleanup。Interactive Login / Logout以unknown優先、expected local-storage映射Failure；passive invalidation先清runtime Session，再於lock外只上報expected diagnostics，unknown保留identity與caught stack進unexpected flow。Reporter failure不改變合法Restore或Session expiration語意。
 
 ---
 
@@ -322,3 +325,17 @@ Milestone 19-3已完成並通過implementation review。
 - Workspace analyze、506項完整tests與App bundle build通過；Android scaffold contract同步為`maxOf(flutter.minSdkVersion, 23)`；VERSION維持1.2.0。
 
 M19-PR01、M19-PR02與M19-PR06均完成19-3 evidence，但涉及Login / Restore / Refresh / Logout lifecycle ownership的部分仍依原Target保留至19-4完整關閉。下一步為Milestone 19-4 Auth Lifecycle Integration。
+
+## 19-4 Implementation Review Update
+
+Milestone 19-4已完成並通過implementation review gate。
+
+- `AuthLifecycleDiagnostic`與`AuthLifecycleCleanupPolicy`成為Restore、Login、Refresh、Logout與passive invalidation共用的typed diagnostic / cleanup boundary。
+- Restore在單一exclusive ownership內完成migration resolution、latest-intent驗證與Session commit；diagnostics以immutable outcome帶出lock後上報。
+- Login固定Secure credential → SQLite User → runtime Session，persistence failure與superseded compensation受operation ownership保護。
+- Refresh固定讀寫Secure Token Pair並維持persistence-first；passive invalidation完成三store cleanup與Session expiration後，才在lock外report expected diagnostics或重拋unknown。
+- Logout固定依Secure、Legacy、User順序全部嘗試，只有current operation可清runtime Session。
+- App DI已原子切換為單一default Secure credential authority；Repository、Refresher與Migration Coordinator共用同一Secure singleton，named binding及所有transitional constructors / subclasses均已移除。
+- Workspace五個packages共536項tests與analyze全數通過，App `flutter build bundle`成功；VERSION維持1.2.0。
+
+M19-PR01、M19-PR02與M19-PR06正式Closed。M19-PR05依原Target保留至19-5 Android runtime evidence；下一步為Milestone 19-5 Security Review、Android Smoke與封存。

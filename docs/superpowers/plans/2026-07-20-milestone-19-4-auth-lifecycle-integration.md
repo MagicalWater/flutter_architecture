@@ -276,23 +276,25 @@ Task 6 implementation review：通過。Review發現Refresher雖已移除public 
 - Modify: `CHANGELOG.md`
 - Modify: this plan
 
-- [ ] Auth Repository targeted tests通過。
-- [ ] Auth Refresher targeted tests通過。
-- [ ] Migration、adapter與DI targeted tests通過。
-- [ ] latest-intent、single-flight、generation、cross-session、safe replay全部通過。
-- [ ] Workspace analyze通過。
-- [ ] Workspace完整tests不得低於19-3的506項。
-- [ ] App `flutter build bundle`通過。
-- [ ] Source / generated graph scan確認Repository、Refresher、Migration共用Secure authority。
-- [ ] 完整19-4 implementation review無Open P0 / P1。
-- [ ] 更新M19-PR01、M19-PR02與M19-PR06並完整關閉；M19-PR05留至19-5 runtime evidence。
-- [ ] VERSION維持1.2.0。
+- [x] Auth Repository targeted tests通過。
+- [x] Auth Refresher targeted tests通過。
+- [x] Migration、adapter與DI targeted tests通過。
+- [x] latest-intent、single-flight、generation、cross-session、safe replay全部通過。
+- [x] Workspace analyze通過。
+- [x] Workspace完整tests不得低於19-3的506項。
+- [x] App `flutter build bundle`通過。
+- [x] Source / generated graph scan確認Repository、Refresher、Migration共用Secure authority。
+- [x] 完整19-4 implementation review無Open P0 / P1。
+- [x] 更新M19-PR01、M19-PR02與M19-PR06並完整關閉；M19-PR05留至19-5 runtime evidence。
+- [x] VERSION維持1.2.0。
 
 封存commit：
 
 ```bash
 git commit -m "docs(auth): 封存 Milestone 19-4 lifecycle integration"
 ```
+
+Task 7執行結果：Auth Repository、Refresher、Migration、adapter與DI targeted regressions全數通過；latest-intent、single-flight、generation、cross-session、safe replay與account-switch coverage無退化。Workspace五個packages analyze成功，完整tests為api_client 43、auth 125、core 4、design_system 43、flutter_architecture 321，合計536項，高於19-3 baseline 506項。App `flutter build bundle`成功；source與generated graph scan確認只有一個default Secure `AuthCredentialStore`，Repository、Refresher與Migration Coordinator共用該singleton，沒有named或transitional authority path。完整19-4 implementation review無Open P0 / P1；M19-PR01、M19-PR02、M19-PR06已關閉，M19-PR05保留至19-5。VERSION維持1.2.0。
 
 ## 19-4 Review Gate
 

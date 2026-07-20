@@ -201,10 +201,12 @@ void main() {
         try {
           await _invoke(operation, store);
           fail('Expected AppException');
-        } on AppException catch (error) {
+        } on AppException catch (error, stackTrace) {
           expect(error.kind, AppExceptionKind.localStorage);
           expect(error.cause, same(failure));
           expect(error.stackTrace, same(originStack));
+          expect(stackTrace, same(originStack));
+          expect(error.message, operation.expectedFailureMessage);
           expect(error.toString(), isNot(contains('access-secret')));
           expect(error.toString(), isNot(contains('refresh-secret')));
         }
@@ -225,10 +227,12 @@ void main() {
     try {
       await store.readCredential();
       fail('Expected AppException');
-    } on AppException catch (error) {
+    } on AppException catch (error, stackTrace) {
       expect(error.kind, AppExceptionKind.localStorage);
       expect(error.cause, same(failure));
       expect(error.stackTrace, same(originStack));
+      expect(stackTrace, same(originStack));
+      expect(error.message, '讀取 Secure Auth credential 失敗');
     }
   });
 
@@ -245,7 +249,13 @@ void main() {
     );
     final store = _createStore();
 
-    await expectLater(store.writeCredential(_tokens), throwsA(same(failure)));
+    try {
+      await store.writeCredential(_tokens);
+      fail('Expected existing AppException');
+    } catch (error, stackTrace) {
+      expect(error, same(failure));
+      expect(stackTrace, same(failure.stackTrace));
+    }
   });
 
   for (final failure in <Object>[
@@ -290,6 +300,14 @@ const _tokens = StoredAuthTokens(
 );
 
 enum _SecureOperation { read, write, delete }
+
+extension on _SecureOperation {
+  String get expectedFailureMessage => switch (this) {
+    _SecureOperation.read => '讀取 Secure Auth credential 失敗',
+    _SecureOperation.write => '儲存 Secure Auth credential 失敗',
+    _SecureOperation.delete => '清除 Secure Auth credential 失敗',
+  };
+}
 
 Future<void> _invoke(
   _SecureOperation operation,

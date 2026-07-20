@@ -1227,6 +1227,14 @@ App Composition Root綁定共享lazy singleton instances
 
 Milestone 19-3 SharedPreferences Legacy Migration已完成並通過implementation review；目前下一步為Milestone 19-4 Auth Lifecycle Integration。
 
+Milestone 19-4詳細implementation plan已建立：
+
+```txt
+docs/superpowers/plans/2026-07-20-milestone-19-4-auth-lifecycle-integration.md
+```
+
+19-4將migration policy正式整合至Restore，並將Login、Refresh、Logout與passive invalidation切換至Secure credential lifecycle。為避免半套runtime authority，default `AuthCredentialStore`的DI切換延後到Repository與Refresher行為及tests都完成後一次執行。Plan同時要求package-owned狹窄diagnostic sink、Secure / Legacy / User統一cleanup priority、caller-owned單一exclusive section、latest-intent / single-flight / generation regression與506項以上完整test gate。VERSION維持1.2.0；尚未開始19-4 production修改。
+
 Milestone 19-3詳細implementation plan已建立：
 
 ```txt

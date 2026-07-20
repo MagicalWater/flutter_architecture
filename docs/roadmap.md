@@ -2091,7 +2091,15 @@ Plan review已固定：resolution以immutable diagnostics list承載多個safe c
 
 ### Milestone 19-4：Auth Lifecycle Integration
 
-目前狀態：Next；19-3已Completed / Reviewed，可開始implementation planning。
+目前狀態：Implementation planning；詳細plan已建立，待plan review後才進入Task 1。
+
+詳細implementation plan：
+
+```txt
+docs/superpowers/plans/2026-07-20-milestone-19-4-auth-lifecycle-integration.md
+```
+
+19-4採分階段原子切換：先建立package-owned diagnostic sink與共用cleanup policy，再依序整合Restore、Login、Refresh、Logout；只有所有lifecycle contract與tests完成後，才在單一DI Task將default `AuthCredentialStore`由SharedPreferences切換為Secure，避免半套authority。
 
 - [ ] Login保存Secure Token Pair與SQLite User成功後才建立Session。
 - [ ] Restore以Secure Store為credential source of truth並驗證user identity。

@@ -130,6 +130,55 @@ void main() {
     expect(guard.isHeld, isFalse);
   });
 
+  test(
+    'migration store access fails when caller does not own exclusivity',
+    () async {
+      final guard = _ExclusiveGuard();
+      final coordinator = AuthCredentialMigrationCoordinator(
+        _GuardedCredentialStore(guard, const AuthCredentialReadPresent(tokens)),
+        _GuardedLegacyStore(guard, const AuthCredentialReadAbsent()),
+        _GuardedUserStore(guard, user),
+      );
+
+      await expectLater(
+        coordinator.resolveUnlocked(),
+        throwsA(isA<StateError>()),
+      );
+      expect(guard.runExclusiveCalls, 0);
+    },
+  );
+
+  test('same coordinator re-evaluates a changed authority state', () async {
+    const secondTokens = StoredAuthTokens(
+      accessToken: 'second-access',
+      refreshToken: 'second-refresh',
+      userId: 'user-2',
+    );
+    const secondUser = AuthUser(id: 'user-2', name: 'Second User');
+    final stores = _MigrationStores(
+      secureResult: const AuthCredentialReadPresent(tokens),
+      user: user,
+    );
+    final coordinator = stores.coordinator;
+
+    final first = await coordinator.resolveUnlocked();
+    expect(first, isA<AuthCredentialMigrationResolved>());
+    expect((first as AuthCredentialMigrationResolved).tokens, same(tokens));
+
+    stores.secure.result = const AuthCredentialReadAbsent();
+    stores.legacy.result = const AuthCredentialReadPresent(secondTokens);
+    stores.user.value = secondUser;
+
+    final second = await coordinator.resolveUnlocked();
+
+    expect(second, isA<AuthCredentialMigrationResolved>());
+    final resolved = second as AuthCredentialMigrationResolved;
+    expect(resolved.tokens, same(secondTokens));
+    expect(resolved.user, same(secondUser));
+    expect(stores.secure.writeCalls, 1);
+    expect(stores.legacy.clearCalls, 1);
+  });
+
   group('unauthenticated and destructive matrix', () {
     test(
       'all stores absent returns unauthenticated without mutation',

@@ -255,6 +255,8 @@ git commit -m "docs(auth): 封存 Milestone 19-3 legacy migration"
 
 Task 6執行結果：新增exclusive guard regression，所有migration store access都要求呼叫方已持有ownership，整次resolution只有一次`runExclusive`且nested count為0。既有cleanup-pending與partial migration tests使用同一Coordinator instance連續resolve，證明不使用persistent marker或跨呼叫mutable authority state。Auth migration targeted tests共39項、App adapter / DI targeted tests共3項。Workspace analyze通過；完整tests採序列package gate重跑，`api_client 43 + auth 95 + core 4 + design_system 43 + app 321 = 506`項全數通過，高於19-2的465項基準。App `flutter build bundle`成功。Gate過程發現19-2 Android scaffold test仍期待過期literal `minSdk = 23`，已同步為正式contract `maxOf(flutter.minSdkVersion, 23)`。完整19-3 review無Open P0 / P1 implementation issue；M19-PR01、M19-PR02與M19-PR06補入19-3 evidence，涉及runtime lifecycle切換的部分保留至19-4。VERSION確認維持1.2.0。
 
+Task 6 implementation review：通過。Review補強兩項contract evidence：直接呼叫`resolveUnlocked()`而未持有caller-owned exclusivity時，guarded store會立即失敗，且Coordinator不會自行取得lock；同一Coordinator instance先解析Secure authority，再將真實store state切換為另一位User的Legacy-only eligible state，第二次resolve會重新執行Legacy→Secure migration並回傳新authority，證明沒有保存跨呼叫authority decision。Auth migration targeted tests增為41項，Auth analyze重新通過。
+
 ## 19-3 Review Gate
 
 必須全部成立才能進入19-4：

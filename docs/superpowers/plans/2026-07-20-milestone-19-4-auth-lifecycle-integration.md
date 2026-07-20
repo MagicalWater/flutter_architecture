@@ -177,6 +177,8 @@ git commit -m "feat(auth): 切換login至Secure credential persistence"
 
 Task 3執行結果：Secure lifecycle subclass覆寫Login persistence hook，固定在caller-owned exclusive section內依序寫入Secure credential與SQLite User，最後才由Repository commit runtime Session；Legacy store從不接收write。任一persistence或superseded failure都使用Task 1 `AuthLifecycleCleanupPolicy`依序嘗試清Secure、Legacy與User，再清runtime Session；cleanup unknown error優先於原始expected persistence failure。Secure path專屬tests覆蓋寫入順序、User write補償、unknown cleanup priority與Double Login反向完成，證明較舊Login不會blind clear較新已commit state。App production DI仍使用default Legacy constructor，未切換authority。
 
+Task 3 implementation review：通過。Review發現初版會讓expected cleanup failure覆蓋原始unknown persistence error，且superseded compensation會無條件清除runtime Session。已明確收斂優先權：unknown cleanup最高；其後superseded control flow與原始unknown persistence error；只有原始expected local-storage failure時，expected cleanup failure才可成為primary。Superseded compensation仍清Secure／Legacy／User，但不清除不屬於舊Login的runtime Session。新增原始unknown對expected cleanup與mid-persistence superseded兩項regression。
+
 ## Task 4 — Refresh Secure rotation與passive invalidation
 
 **Files**

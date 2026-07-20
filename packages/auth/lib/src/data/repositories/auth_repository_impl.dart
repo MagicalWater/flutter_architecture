@@ -356,10 +356,21 @@ final class _SecureLifecycleAuthRepositoryImpl extends AuthRepositoryImpl {
         legacyCredentialStore: _legacyCredentialStore,
         userStore: _userStore,
       ).clearAllUnlocked();
+      cleanup.throwIfUnexpected();
+      if (error is AuthLifecycleOperationSuperseded) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
       _sessionManager.clear();
+      if (!_isExpectedLocalStorage(error)) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
       cleanup.throwIfFailed();
       Error.throwWithStackTrace(error, stackTrace);
     }
+  }
+
+  bool _isExpectedLocalStorage(Object error) {
+    return error is AppException && error.kind == AppExceptionKind.localStorage;
   }
 
   @override

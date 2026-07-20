@@ -81,6 +81,62 @@ void main() {
     },
   );
 
+  test(
+    'original unknown persistence error outranks expected cleanup failure',
+    () async {
+      final original = StateError('user write bug');
+      final expectedCleanup = const AppException(
+        kind: AppExceptionKind.localStorage,
+        message: 'secure cleanup failed',
+      );
+      final repository = _repository(
+        _CredentialStore(<String>[], clearError: expectedCleanup),
+        _LegacyStore(<String>[]),
+        _UserStore(<String>[], writeError: original),
+        _TrackingSessionManager(<String>[]),
+      );
+
+      await expectLater(
+        repository.login(account: 'demo', password: 'password'),
+        throwsA(same(original)),
+      );
+    },
+  );
+
+  test('superseded compensation preserves existing runtime session', () async {
+    final operations = <String>[];
+    final secure = _CredentialStore(operations);
+    final legacy = _LegacyStore(operations);
+    final userStore = _BlockingUserStore(operations);
+    final session = _TrackingSessionManager(operations)
+      ..setAuthenticated(accessToken: 'existing', userId: 'existing-user');
+    operations.clear();
+    final mutationCoordinator = AuthStateMutationCoordinator();
+    final repository = AuthRepositoryImpl.secureLifecycle(
+      AuthRemoteDataSource(MockAuthApi()),
+      secure,
+      legacy,
+      userStore,
+      session,
+      mutationCoordinator,
+      AuthCredentialMigrationCoordinator(secure, legacy, userStore),
+      const _NoopSink(),
+    );
+
+    final login = repository.login(account: 'demo', password: 'password');
+    await userStore.writeStarted;
+    mutationCoordinator.beginLifecycleOperation();
+    userStore.releaseWrite();
+
+    await expectLater(login, throwsA(isA<AuthLifecycleOperationSuperseded>()));
+    expect(session.currentSession?.userId, 'existing-user');
+    expect(
+      operations,
+      containsAll(<String>['secure.clear', 'legacy.clear', 'user.clear']),
+    );
+    expect(operations, isNot(contains('session.clear')));
+  });
+
   test('older secure login cannot clear newer committed state', () async {
     final operations = <String>[];
     final secure = _CredentialStore(operations);
@@ -200,6 +256,24 @@ final class _UserStore implements AuthUserStore {
   @override
   Future<void> clearUser() async {
     operations.add('user.clear');
+  }
+}
+
+final class _BlockingUserStore extends _UserStore {
+  _BlockingUserStore(super.operations);
+
+  final Completer<void> _writeStarted = Completer<void>();
+  final Completer<void> _writeRelease = Completer<void>();
+
+  Future<void> get writeStarted => _writeStarted.future;
+
+  void releaseWrite() => _writeRelease.complete();
+
+  @override
+  Future<void> writeUser(AuthUser user) async {
+    operations.add('user.write');
+    if (!_writeStarted.isCompleted) _writeStarted.complete();
+    await _writeRelease.future;
   }
 }
 

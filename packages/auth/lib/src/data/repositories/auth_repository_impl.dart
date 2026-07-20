@@ -2,6 +2,7 @@ import 'package:auth/src/data/data_sources/auth_remote_data_source.dart';
 import 'package:auth/src/data/mappers/login_response_dto_mapper.dart';
 import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
 import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic_sink.dart';
+import 'package:auth/src/data/lifecycle/auth_lifecycle_cleanup_policy.dart';
 import 'package:auth/src/data/migration/auth_credential_migration_coordinator.dart';
 import 'package:auth/src/data/migration/auth_credential_migration_result.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
@@ -76,26 +77,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       await _mutationCoordinator.runExclusive(() async {
         operation.throwIfSuperseded();
-        try {
-          await _credentialStore.writeCredential(
-            StoredAuthTokens(
-              accessToken: result.accessToken,
-              refreshToken: result.refreshToken,
-              userId: user.id,
-            ),
-          );
-          operation.throwIfSuperseded();
-          await _userStore.writeUser(user);
-          operation.throwIfSuperseded();
-        } catch (error, stackTrace) {
-          if (error is AuthLifecycleOperationSuperseded) {
-            await _clearLocalAuthStateBestEffort();
-            Error.throwWithStackTrace(error, stackTrace);
-          }
-          await _clearLocalAuthStateBestEffort();
-          _sessionManager.clear();
-          Error.throwWithStackTrace(error, stackTrace);
-        }
+        await _persistLoginUnlocked(operation, result, user);
         _sessionManager.setAuthenticated(
           accessToken: result.accessToken,
           userId: user.id,
@@ -110,6 +92,31 @@ class AuthRepositoryImpl implements AuthRepository {
           fallbackMessage: 'Authentication login failed.',
         ),
       );
+    }
+  }
+
+  Future<void> _persistLoginUnlocked(
+    AuthLifecycleOperation operation,
+    AuthResult result,
+    AuthUser user,
+  ) async {
+    try {
+      await _credentialStore.writeCredential(
+        StoredAuthTokens(
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+          userId: user.id,
+        ),
+      );
+      operation.throwIfSuperseded();
+      await _userStore.writeUser(user);
+      operation.throwIfSuperseded();
+    } catch (error, stackTrace) {
+      await _clearLocalAuthStateBestEffort();
+      if (error is! AuthLifecycleOperationSuperseded) {
+        _sessionManager.clear();
+      }
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 
@@ -325,6 +332,35 @@ final class _SecureLifecycleAuthRepositoryImpl extends AuthRepositoryImpl {
 
   final AuthCredentialMigrationCoordinator _migrationCoordinator;
   final AuthLifecycleDiagnosticSink _diagnosticSink;
+
+  @override
+  Future<void> _persistLoginUnlocked(
+    AuthLifecycleOperation operation,
+    AuthResult result,
+    AuthUser user,
+  ) async {
+    try {
+      await _credentialStore.writeCredential(
+        StoredAuthTokens(
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+          userId: user.id,
+        ),
+      );
+      operation.throwIfSuperseded();
+      await _userStore.writeUser(user);
+      operation.throwIfSuperseded();
+    } catch (error, stackTrace) {
+      final cleanup = await AuthLifecycleCleanupPolicy(
+        secureCredentialStore: _credentialStore,
+        legacyCredentialStore: _legacyCredentialStore,
+        userStore: _userStore,
+      ).clearAllUnlocked();
+      _sessionManager.clear();
+      cleanup.throwIfFailed();
+      Error.throwWithStackTrace(error, stackTrace);
+    }
+  }
 
   @override
   Future<AuthCredentialMigrationResult> _resolveRestoreUnlocked() {

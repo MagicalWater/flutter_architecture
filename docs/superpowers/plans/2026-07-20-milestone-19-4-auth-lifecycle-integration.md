@@ -160,20 +160,22 @@ Task 2 implementation review：通過。Review發現初版為導入strategy將�
 
 **Contract**
 
-- [ ] 新Secure lifecycle path只寫其注入的Secure credential authority，不寫Legacy credential。
-- [ ] 寫入順序固定為Secure credential → User → Session commit。
-- [ ] 任一必要persistence失敗都不得建立Session。
-- [ ] User write failure或latest-intent superseded時嘗試清Secure、Legacy與User。
-- [ ] Compensation全部stores都嘗試，unknown優先於expected local-storage error。
-- [ ] Compensation必須受operation ownership保護；較舊Login不得以blind clear清除或覆寫較新Login已commit的state。
-- [ ] Double Login、Login + Logout、account switch與existing latest-intent tests維持通過。
-- [ ] App production DI在Task 6前仍選擇舊path；不得因本Task讓Login先於Restore / Refresh切換authority。
+- [x] 新Secure lifecycle path只寫其注入的Secure credential authority，不寫Legacy credential。
+- [x] 寫入順序固定為Secure credential → User → Session commit。
+- [x] 任一必要persistence失敗都不得建立Session。
+- [x] User write failure或latest-intent superseded時嘗試清Secure、Legacy與User。
+- [x] Compensation全部stores都嘗試，unknown優先於expected local-storage error。
+- [x] Compensation必須受operation ownership保護；較舊Login不得以blind clear清除或覆寫較新Login已commit的state。
+- [x] Double Login、Login + Logout、account switch與existing latest-intent tests維持通過。
+- [x] App production DI在Task 6前仍選擇舊path；不得因本Task讓Login先於Restore / Refresh切換authority。
 
 建議commit：
 
 ```bash
 git commit -m "feat(auth): 切換login至Secure credential persistence"
 ```
+
+Task 3執行結果：Secure lifecycle subclass覆寫Login persistence hook，固定在caller-owned exclusive section內依序寫入Secure credential與SQLite User，最後才由Repository commit runtime Session；Legacy store從不接收write。任一persistence或superseded failure都使用Task 1 `AuthLifecycleCleanupPolicy`依序嘗試清Secure、Legacy與User，再清runtime Session；cleanup unknown error優先於原始expected persistence failure。Secure path專屬tests覆蓋寫入順序、User write補償、unknown cleanup priority與Double Login反向完成，證明較舊Login不會blind clear較新已commit state。App production DI仍使用default Legacy constructor，未切換authority。
 
 ## Task 4 — Refresh Secure rotation與passive invalidation
 

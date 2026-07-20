@@ -122,6 +122,33 @@ void main() {
     });
   }
 
+  for (final tokens in <StoredAuthTokens>[
+    const StoredAuthTokens(
+      accessToken: '',
+      refreshToken: 'refresh-secret',
+      userId: 'user-001',
+    ),
+    const StoredAuthTokens(
+      accessToken: 'access-secret',
+      refreshToken: '',
+      userId: 'user-001',
+    ),
+  ]) {
+    test('writeCredential rejects an incomplete Token Pair', () async {
+      final storage = const FlutterSecureStorage();
+      final store = FlutterSecureAuthCredentialStore(storage);
+
+      try {
+        store.writeCredential(tokens);
+        fail('Expected ArgumentError');
+      } on ArgumentError catch (error) {
+        expect(error.toString(), isNot(contains('access-secret')));
+        expect(error.toString(), isNot(contains('refresh-secret')));
+      }
+      expect(await storage.readAll(), isEmpty);
+    });
+  }
+
   test('clearCredential is idempotent', () async {
     FlutterSecureStorage.setMockInitialValues(<String, String>{
       'auth.tokens': jsonEncode(_validPayload),

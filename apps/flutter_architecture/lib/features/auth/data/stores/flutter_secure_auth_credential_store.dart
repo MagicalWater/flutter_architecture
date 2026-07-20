@@ -25,6 +25,9 @@ final class FlutterSecureAuthCredentialStore implements AuthCredentialStore {
 
   @override
   Future<void> writeCredential(StoredAuthTokens tokens) {
+    if (tokens.accessToken.isEmpty || tokens.refreshToken.isEmpty) {
+      throw ArgumentError('必須包含完整Token Pair', 'tokens');
+    }
     final userId = tokens.userId;
     if (userId == null || userId.trim().isEmpty) {
       throw ArgumentError.value(userId, 'tokens.userId', '必須是有效identity');

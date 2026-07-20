@@ -201,6 +201,8 @@ git commit -m "feat(auth): 建立Secure credential adapter"
 
 Task 2執行結果：新增App-owned `FlutterSecureAuthCredentialStore`，以單一`auth.tokens` JSON payload保存完整Token Pair。Read明確區分absence、valid present與malformed / incomplete corruption；Secure payload要求非空白`userId`，write也會在plugin呼叫前拒絕缺失或空白identity，避免主動寫入下一次必定corrupted的資料。Happy path、round-trip、單key write、absence、8類corruption、invalid write identity、idempotent clear與secret-safe result diagnostics共17項tests通過；plugin failure mapping保留Task 3處理。
 
+Task 2 implementation review：修正write-side必要欄位驗證缺口。`StoredAuthTokens` constructor為legacy相容允許空字串Token，但Secure adapter不得寫入下一次read必定corrupted的payload；現已在plugin呼叫前拒絕空Access / Refresh Token，且validation error不攜帶credential object或secret value。Secure adapter targeted tests增為19項，App analyze與diff check通過；Task 3 plugin failure mapping仍未提前實作。
+
 ---
 
 ## Task 3：Plugin failure mapping與error identity review

@@ -103,7 +103,11 @@ final class AuthCredentialMigrationCoordinator {
       return AuthCredentialMigrationUnauthenticated();
     }
 
-    await _secureCredentialStore.writeCredential(legacyTokens);
+    try {
+      await _secureCredentialStore.writeCredential(legacyTokens);
+    } catch (error, stackTrace) {
+      await _rollbackUnverifiedSecure(error, stackTrace);
+    }
 
     AuthCredentialReadResult readBack;
     try {

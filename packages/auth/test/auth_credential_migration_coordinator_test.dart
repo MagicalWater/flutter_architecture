@@ -523,7 +523,7 @@ void main() {
           expect(stackTrace, same(failureStack));
         }
         expect(stores.legacy.clearCalls, 0);
-        expect(stores.secure.clearCalls, 0);
+        expect(stores.secure.clearCalls, 1);
       },
     );
 
@@ -546,7 +546,37 @@ void main() {
         expect(stackTrace, same(failureStack));
       }
       expect(stores.legacy.clearCalls, 0);
+      expect(stores.secure.clearCalls, 1);
     });
+
+    test(
+      'write failure rollback error outranks original write error',
+      () async {
+        final writeFailure = AppException(
+          kind: AppExceptionKind.localStorage,
+          message: 'write unavailable',
+        );
+        final rollbackFailure = StateError('rollback failed');
+        final rollbackStack = StackTrace.current;
+        final stores =
+            _MigrationStores(
+                legacyResult: const AuthCredentialReadPresent(tokens),
+                user: user,
+              )
+              ..secure.writeError = writeFailure
+              ..secure.clearError = rollbackFailure
+              ..secure.clearStackTrace = rollbackStack;
+
+        try {
+          await stores.coordinator.resolveUnlocked();
+          fail('Expected rollback failure');
+        } catch (error, stackTrace) {
+          expect(error, same(rollbackFailure));
+          expect(stackTrace, same(rollbackStack));
+        }
+        expect(stores.legacy.clearCalls, 0);
+      },
+    );
 
     final invalidReadBackCases = <String, AuthCredentialReadResult>{
       'absent': const AuthCredentialReadAbsent(),

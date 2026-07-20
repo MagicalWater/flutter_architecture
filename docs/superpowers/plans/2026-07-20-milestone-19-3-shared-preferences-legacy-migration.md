@@ -192,6 +192,8 @@ git commit -m "feat(auth): 完成legacy migration read-back驗證"
 
 Task 4執行結果：完成Legacy→Secure migration。只有Secure absent、Legacy valid、User存在且identity一致時才依序write Secure、read-back、比較access / refresh token、userId與兩個expiration欄位，驗證成功後才清Legacy並resolved。Secure write expected / unknown failure均保留Legacy與原error / caught stack；read-back absent、corrupted或任一欄位mismatch建立`AppExceptionKind.dataCorruption`與固定`auth_secure_migration_read_back_invalid` diagnostic code，先嘗試rollback Secure後重拋。Read-back operational failure同樣rollback Secure且不得fallback或刪Legacy。Rollback failure優先於原始validation / operational error，unknown與expected local-storage皆保留identity / stack。Secure已驗證後Legacy cleanup expected failure沿用Task 3 cleanup-pending diagnostic；partial state下一次由Secure authority分支只重試Legacy cleanup，不重寫Secure。RED為10個Task 4 tests停在Legacy migration stub；GREEN targeted tests增為37項，Auth analyze通過。
 
+Task 4 implementation review：發現Secure write可能在底層已完成部分寫入後才回報failure，原實作直接重拋而未清除無法驗證的Secure資料，違反已拍板的write / read-back failure cleanup contract。已修正write expected與unknown failure都先嘗試rollback Secure，再依rollback error優先於原始write error的規則向外拋出；Legacy在所有路徑都保留。Targeted tests增為38項，Auth analyze重新通過。
+
 ## Task 5 — App diagnostic adapter與named DI shape
 
 **Files**

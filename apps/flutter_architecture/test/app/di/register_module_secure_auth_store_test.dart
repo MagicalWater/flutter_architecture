@@ -6,6 +6,7 @@ import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -47,10 +48,16 @@ void main() {
       final secureStore = getIt<AuthCredentialStore>(
         instanceName: 'secureAuthCredentialStore',
       );
+      final coordinator = getIt<AuthCredentialMigrationCoordinator>();
 
       expect(defaultStore, isA<SharedPreferencesAuthCredentialStore>());
       expect(secureStore, isA<FlutterSecureAuthCredentialStore>());
       expect(identical(defaultStore, secureStore), isFalse);
+      expect(
+        identical(coordinator, getIt<AuthCredentialMigrationCoordinator>()),
+        isTrue,
+      );
+      expect(getIt<AuthMigrationErrorReporterAdapter>(), isNotNull);
       expect(
         identical(
           secureStore,

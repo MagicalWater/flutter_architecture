@@ -18,6 +18,8 @@ import 'package:flutter_architecture/app/error_reporting/error_reporter.dart'
     as _i1041;
 import 'package:flutter_architecture/app/router/app_router.dart' as _i787;
 import 'package:flutter_architecture/app/router/auth_guard.dart' as _i997;
+import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart'
+    as _i112;
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart'
     as _i1024;
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart'
@@ -112,6 +114,20 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i46.ApiConfig>(),
       ),
       instanceName: 'refreshDio',
+    );
+    gh.lazySingleton<_i662.AuthCredentialMigrationCoordinator>(
+      () => registerModule.authCredentialMigrationCoordinator(
+        gh<_i662.AuthCredentialStore>(
+          instanceName: 'secureAuthCredentialStore',
+        ),
+        gh<_i662.AuthLegacyCredentialStore>(),
+        gh<_i662.AuthUserStore>(),
+      ),
+    );
+    gh.lazySingleton<_i112.AuthMigrationErrorReporterAdapter>(
+      () => registerModule.authMigrationErrorReporterAdapter(
+        gh<_i1041.ErrorReporter>(),
+      ),
     );
     gh.lazySingleton<_i460.CatalogCacheDiagnosticSink>(
       () =>

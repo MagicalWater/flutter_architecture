@@ -205,20 +205,22 @@ Task 4 implementation review：發現Secure write可能在底層已完成部分�
 - Create: `apps/flutter_architecture/test/features/auth/data/migration/auth_migration_error_reporter_adapter_test.dart`
 - Create: `apps/flutter_architecture/test/app/di/register_module_auth_migration_test.dart`
 
-- [ ] 建立Auth migration cleanup的固定safe reporting operation/context。
-- [ ] Adapter接受一組diagnostics並逐項上報；不得因只處理單一detail而遺失同次resolution的其他diagnostic。
-- [ ] Reporter adapter不得包含Token、raw payload、SharedPreferences value、Secure value或plugin message。
-- [ ] `AuthCredentialMigrationCoordinator`以lazy singleton組裝。
-- [ ] DI明確使用named `secureAuthCredentialStore`、default Legacy store與User store。
-- [ ] default `AuthCredentialStore`仍是SharedPreferences。
-- [ ] Repository與Refresherconstructor graph不得加入migration coordinator，也不得改用Secure store。
-- [ ] DI tests以不同資料寫入default與named stores，證明production authority沒有提前切換。
+- [x] 建立Auth migration cleanup的固定safe reporting operation/context。
+- [x] Adapter接受一組diagnostics並逐項上報；不得因只處理單一detail而遺失同次resolution的其他diagnostic。
+- [x] Reporter adapter不得包含Token、raw payload、SharedPreferences value、Secure value或plugin message。
+- [x] `AuthCredentialMigrationCoordinator`以lazy singleton組裝。
+- [x] DI明確使用named `secureAuthCredentialStore`、default Legacy store與User store。
+- [x] default `AuthCredentialStore`仍是SharedPreferences。
+- [x] Repository與Refresherconstructor graph不得加入migration coordinator，也不得改用Secure store。
+- [x] DI tests以不同資料寫入default與named stores，證明production authority沒有提前切換。
 
 Commit：
 
 ```bash
 git commit -m "refactor(di): 組裝credential migration policy"
 ```
+
+Task 5執行結果：新增App-owned `AuthMigrationErrorReporterAdapter`，接受整組migration diagnostics並逐項建立`degraded` report，context固定為`authMigration / authMigrationLegacyCleanup`；每項保留原error與caught stack identity，但safe `ErrorReport.toString()`不展開plugin message、Token或storage payload。單一reporter call失敗會被吸收且不阻止後續diagnostic。App DI將`AuthCredentialMigrationCoordinator`與adapter註冊為lazy singleton；Coordinator明確注入named `secureAuthCredentialStore`、default `AuthLegacyCredentialStore`與`AuthUserStore`。Generated graph中Repository與Refresher仍取得default `AuthCredentialStore`，production authority維持SharedPreferences。RED為DI graph尚未產生Coordinator registration；GREEN adapter與DI targeted tests共3項通過，App analyze通過。
 
 ## Task 6 — Concurrency contract與19-3 regression gate
 

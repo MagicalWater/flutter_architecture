@@ -6,6 +6,7 @@ import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
@@ -36,6 +37,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// 這些外部物件需要透過 module 告訴 injectable 如何建立。
 @module
 abstract class RegisterModule {
+  @lazySingleton
+  AuthMigrationErrorReporterAdapter authMigrationErrorReporterAdapter(
+    ErrorReporter errorReporter,
+  ) => AuthMigrationErrorReporterAdapter(errorReporter);
+
   @lazySingleton
   CatalogCacheDiagnosticSink catalogCacheDiagnosticSink(
     ErrorReporter errorReporter,
@@ -99,6 +105,20 @@ abstract class RegisterModule {
   @lazySingleton
   auth.AuthUserStore authUserStore(Database database) =>
       SqfliteAuthUserStore(database);
+
+  @lazySingleton
+  auth.AuthCredentialMigrationCoordinator authCredentialMigrationCoordinator(
+    @Named('secureAuthCredentialStore')
+    auth.AuthCredentialStore secureCredentialStore,
+    auth.AuthLegacyCredentialStore legacyCredentialStore,
+    auth.AuthUserStore userStore,
+  ) {
+    return auth.AuthCredentialMigrationCoordinator(
+      secureCredentialStore,
+      legacyCredentialStore,
+      userStore,
+    );
+  }
 
   @lazySingleton
   auth.AuthRemoteDataSource authRemoteDataSource(api_client.AuthApi authApi) {

@@ -171,24 +171,26 @@ Task 3 implementation review：通過。Review將Legacy matching / different / c
 - Modify: `packages/auth/lib/src/data/migration/auth_credential_migration_coordinator.dart`
 - Modify: `packages/auth/test/auth_credential_migration_coordinator_test.dart`
 
-- [ ] `S absent / L valid / U identity一致`依序write Secure → read-back → validate → clear Legacy → resolved。
-- [ ] write前後不得修改SessionManager。
-- [ ] Secure write expected failure保留Legacy且向外拋typed local-storage failure。
-- [ ] Secure write unknown error保留原error與stack。
-- [ ] read-back absent、corrupted或payload不一致都視為validation failure。
-- [ ] payload equality比較Token Pair、userId與兩個expiration metadata全部欄位。
-- [ ] read-back validation failure建立`AppExceptionKind.dataCorruption`與固定`auth_secure_migration_read_back_invalid` diagnostic code。
-- [ ] read-back validation failure不得刪Legacy，並嘗試清除無法驗證的Secure寫入。
-- [ ] read-back operational unavailable不得fallback Legacy或刪Legacy。
-- [ ] rollback cleanup失敗優先權固定為unknown → expected local-storage →原始validation failure；所有error與stack identity均有tests。
-- [ ] Secure已驗證後Legacy cleanup expected failure仍resolved並標記cleanup pending。
-- [ ] partial state可重入：Secure已存在且Legacy仍存在時不重寫Secure，只重試Legacy cleanup。
+- [x] `S absent / L valid / U identity一致`依序write Secure → read-back → validate → clear Legacy → resolved。
+- [x] write前後不得修改SessionManager。
+- [x] Secure write expected failure保留Legacy且向外拋typed local-storage failure。
+- [x] Secure write unknown error保留原error與stack。
+- [x] read-back absent、corrupted或payload不一致都視為validation failure。
+- [x] payload equality比較Token Pair、userId與兩個expiration metadata全部欄位。
+- [x] read-back validation failure建立`AppExceptionKind.dataCorruption`與固定`auth_secure_migration_read_back_invalid` diagnostic code。
+- [x] read-back validation failure不得刪Legacy，並嘗試清除無法驗證的Secure寫入。
+- [x] read-back operational unavailable不得fallback Legacy或刪Legacy。
+- [x] rollback cleanup失敗優先權固定為unknown → expected local-storage →原始validation failure；所有error與stack identity均有tests。
+- [x] Secure已驗證後Legacy cleanup expected failure仍resolved並標記cleanup pending。
+- [x] partial state可重入：Secure已存在且Legacy仍存在時不重寫Secure，只重試Legacy cleanup。
 
 Commit：
 
 ```bash
 git commit -m "feat(auth): 完成legacy migration read-back驗證"
 ```
+
+Task 4執行結果：完成Legacy→Secure migration。只有Secure absent、Legacy valid、User存在且identity一致時才依序write Secure、read-back、比較access / refresh token、userId與兩個expiration欄位，驗證成功後才清Legacy並resolved。Secure write expected / unknown failure均保留Legacy與原error / caught stack；read-back absent、corrupted或任一欄位mismatch建立`AppExceptionKind.dataCorruption`與固定`auth_secure_migration_read_back_invalid` diagnostic code，先嘗試rollback Secure後重拋。Read-back operational failure同樣rollback Secure且不得fallback或刪Legacy。Rollback failure優先於原始validation / operational error，unknown與expected local-storage皆保留identity / stack。Secure已驗證後Legacy cleanup expected failure沿用Task 3 cleanup-pending diagnostic；partial state下一次由Secure authority分支只重試Legacy cleanup，不重寫Secure。RED為10個Task 4 tests停在Legacy migration stub；GREEN targeted tests增為37項，Auth analyze通過。
 
 ## Task 5 — App diagnostic adapter與named DI shape
 

@@ -1,5 +1,6 @@
 import 'package:auth/src/data/migration/auth_credential_migration_result.dart';
 import 'package:auth/src/data/migration/auth_credential_migration_diagnostic.dart';
+import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/data/stores/auth_credential_read_result.dart';
 import 'package:auth/src/data/stores/auth_credential_store.dart';
 import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
@@ -102,7 +103,51 @@ final class AuthCredentialMigrationCoordinator {
       return AuthCredentialMigrationUnauthenticated();
     }
 
-    throw UnimplementedError('Legacy migration is not implemented.');
+    await _secureCredentialStore.writeCredential(legacyTokens);
+
+    AuthCredentialReadResult readBack;
+    try {
+      readBack = await _secureCredentialStore.readCredential();
+    } catch (error, stackTrace) {
+      await _rollbackUnverifiedSecure(error, stackTrace);
+    }
+
+    if (readBack is! AuthCredentialReadPresent ||
+        !_sameTokens(readBack.tokens, legacyTokens)) {
+      final validationError = AppException(
+        kind: AppExceptionKind.dataCorruption,
+        message: 'Secure credential migration read-back validation failed.',
+        diagnosticCode: 'auth_secure_migration_read_back_invalid',
+      );
+      await _rollbackUnverifiedSecure(validationError, StackTrace.current);
+    }
+
+    final diagnostics = await _clearLegacyAfterSecureAuthority();
+    return AuthCredentialMigrationResolved(
+      tokens: legacyTokens,
+      user: user,
+      diagnostics: diagnostics,
+    );
+  }
+
+  bool _sameTokens(StoredAuthTokens left, StoredAuthTokens right) {
+    return left.accessToken == right.accessToken &&
+        left.refreshToken == right.refreshToken &&
+        left.userId == right.userId &&
+        left.accessTokenExpiresAt == right.accessTokenExpiresAt &&
+        left.refreshTokenExpiresAt == right.refreshTokenExpiresAt;
+  }
+
+  Future<Never> _rollbackUnverifiedSecure(
+    Object originalError,
+    StackTrace originalStackTrace,
+  ) async {
+    try {
+      await _secureCredentialStore.clearCredential();
+    } catch (rollbackError, rollbackStackTrace) {
+      Error.throwWithStackTrace(rollbackError, rollbackStackTrace);
+    }
+    Error.throwWithStackTrace(originalError, originalStackTrace);
   }
 
   Future<List<AuthCredentialMigrationDiagnostic>>

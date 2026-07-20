@@ -466,6 +466,259 @@ void main() {
       },
     );
   });
+
+  group('legacy migration and read-back validation', () {
+    final expiringTokens = StoredAuthTokens(
+      accessToken: 'legacy-access',
+      refreshToken: 'legacy-refresh',
+      userId: 'user-1',
+      accessTokenExpiresAt: DateTime.utc(2030, 1, 2),
+      refreshTokenExpiresAt: DateTime.utc(2030, 2, 3),
+    );
+
+    test('writes secure, validates full payload, then clears legacy', () async {
+      final stores = _MigrationStores(
+        legacyResult: AuthCredentialReadPresent(expiringTokens),
+        user: user,
+      );
+
+      final result = await stores.coordinator.resolveUnlocked();
+
+      expect(result, isA<AuthCredentialMigrationResolved>());
+      final resolved = result as AuthCredentialMigrationResolved;
+      expect(resolved.tokens, same(expiringTokens));
+      expect(resolved.user, same(user));
+      expect(resolved.diagnostics, isEmpty);
+      expect(stores.operations, <String>[
+        'secure.read',
+        'legacy.read',
+        'user.read',
+        'secure.write',
+        'secure.read',
+        'legacy.clear',
+      ]);
+    });
+
+    test(
+      'expected secure write failure preserves legacy and caught stack',
+      () async {
+        final failure = AppException(
+          kind: AppExceptionKind.localStorage,
+          message: 'write unavailable',
+        );
+        final failureStack = StackTrace.current;
+        final stores =
+            _MigrationStores(
+                legacyResult: const AuthCredentialReadPresent(tokens),
+                user: user,
+              )
+              ..secure.writeError = failure
+              ..secure.writeStackTrace = failureStack;
+
+        try {
+          await stores.coordinator.resolveUnlocked();
+          fail('Expected secure write failure');
+        } catch (error, stackTrace) {
+          expect(error, same(failure));
+          expect(stackTrace, same(failureStack));
+        }
+        expect(stores.legacy.clearCalls, 0);
+        expect(stores.secure.clearCalls, 0);
+      },
+    );
+
+    test('unknown secure write failure preserves original identity', () async {
+      final failure = StateError('write bug');
+      final failureStack = StackTrace.current;
+      final stores =
+          _MigrationStores(
+              legacyResult: const AuthCredentialReadPresent(tokens),
+              user: user,
+            )
+            ..secure.writeError = failure
+            ..secure.writeStackTrace = failureStack;
+
+      try {
+        await stores.coordinator.resolveUnlocked();
+        fail('Expected secure write failure');
+      } catch (error, stackTrace) {
+        expect(error, same(failure));
+        expect(stackTrace, same(failureStack));
+      }
+      expect(stores.legacy.clearCalls, 0);
+    });
+
+    final invalidReadBackCases = <String, AuthCredentialReadResult>{
+      'absent': const AuthCredentialReadAbsent(),
+      'corrupted': const AuthCredentialReadCorrupted(),
+      'access token mismatch': const AuthCredentialReadPresent(
+        StoredAuthTokens(
+          accessToken: 'different',
+          refreshToken: 'refresh-secret',
+          userId: 'user-1',
+        ),
+      ),
+      'refresh token mismatch': const AuthCredentialReadPresent(
+        StoredAuthTokens(
+          accessToken: 'access-secret',
+          refreshToken: 'different',
+          userId: 'user-1',
+        ),
+      ),
+      'user identity mismatch': const AuthCredentialReadPresent(
+        StoredAuthTokens(
+          accessToken: 'access-secret',
+          refreshToken: 'refresh-secret',
+          userId: 'user-2',
+        ),
+      ),
+      'access expiration mismatch': AuthCredentialReadPresent(
+        StoredAuthTokens(
+          accessToken: 'legacy-access',
+          refreshToken: 'legacy-refresh',
+          userId: 'user-1',
+          accessTokenExpiresAt: DateTime.utc(2031, 1, 2),
+          refreshTokenExpiresAt: DateTime.utc(2030, 2, 3),
+        ),
+      ),
+      'expiration mismatch': AuthCredentialReadPresent(
+        StoredAuthTokens(
+          accessToken: 'legacy-access',
+          refreshToken: 'legacy-refresh',
+          userId: 'user-1',
+          accessTokenExpiresAt: DateTime.utc(2030, 1, 2),
+          refreshTokenExpiresAt: DateTime.utc(2031, 2, 3),
+        ),
+      ),
+    };
+    for (final entry in invalidReadBackCases.entries) {
+      test('invalid read-back ${entry.key} rolls back secure', () async {
+        final legacyTokens = entry.key.contains('expiration')
+            ? expiringTokens
+            : tokens;
+        final stores = _MigrationStores(
+          legacyResult: AuthCredentialReadPresent(legacyTokens),
+          user: user,
+        )..secure.postWriteResult = entry.value;
+
+        try {
+          await stores.coordinator.resolveUnlocked();
+          fail('Expected read-back validation failure');
+        } on AppException catch (error) {
+          expect(error.kind, AppExceptionKind.dataCorruption);
+          expect(
+            error.diagnosticCode,
+            'auth_secure_migration_read_back_invalid',
+          );
+        }
+        expect(stores.secure.clearCalls, 1);
+        expect(stores.legacy.clearCalls, 0);
+      });
+    }
+
+    test(
+      'read-back operational failure keeps legacy and rolls back secure',
+      () async {
+        final failure = AppException(
+          kind: AppExceptionKind.localStorage,
+          message: 'read unavailable',
+        );
+        final failureStack = StackTrace.current;
+        final stores =
+            _MigrationStores(
+                legacyResult: const AuthCredentialReadPresent(tokens),
+                user: user,
+              )
+              ..secure.readErrorAfterCalls = 1
+              ..secure.readError = failure
+              ..secure.readStackTrace = failureStack;
+
+        try {
+          await stores.coordinator.resolveUnlocked();
+          fail('Expected read-back operational failure');
+        } catch (error, stackTrace) {
+          expect(error, same(failure));
+          expect(stackTrace, same(failureStack));
+        }
+        expect(stores.secure.clearCalls, 1);
+        expect(stores.legacy.clearCalls, 0);
+      },
+    );
+
+    test(
+      'rollback unknown error outranks original validation failure',
+      () async {
+        final rollback = StateError('rollback bug');
+        final rollbackStack = StackTrace.current;
+        final stores =
+            _MigrationStores(
+                legacyResult: const AuthCredentialReadPresent(tokens),
+                user: user,
+              )
+              ..secure.postWriteResult = const AuthCredentialReadAbsent()
+              ..secure.clearError = rollback
+              ..secure.clearStackTrace = rollbackStack;
+
+        try {
+          await stores.coordinator.resolveUnlocked();
+          fail('Expected rollback failure');
+        } catch (error, stackTrace) {
+          expect(error, same(rollback));
+          expect(stackTrace, same(rollbackStack));
+        }
+        expect(stores.legacy.clearCalls, 0);
+      },
+    );
+
+    test(
+      'rollback local-storage error outranks original validation failure',
+      () async {
+        final rollback = AppException(
+          kind: AppExceptionKind.localStorage,
+          message: 'rollback unavailable',
+        );
+        final rollbackStack = StackTrace.current;
+        final stores =
+            _MigrationStores(
+                legacyResult: const AuthCredentialReadPresent(tokens),
+                user: user,
+              )
+              ..secure.postWriteResult = const AuthCredentialReadAbsent()
+              ..secure.clearError = rollback
+              ..secure.clearStackTrace = rollbackStack;
+
+        try {
+          await stores.coordinator.resolveUnlocked();
+          fail('Expected rollback failure');
+        } catch (error, stackTrace) {
+          expect(error, same(rollback));
+          expect(stackTrace, same(rollbackStack));
+        }
+        expect(stores.legacy.clearCalls, 0);
+      },
+    );
+
+    test(
+      'verified secure with legacy cleanup failure resolves pending',
+      () async {
+        final cleanup = AppException(
+          kind: AppExceptionKind.localStorage,
+          message: 'cleanup pending',
+        );
+        final stores = _MigrationStores(
+          legacyResult: const AuthCredentialReadPresent(tokens),
+          user: user,
+        )..legacy.clearError = cleanup;
+
+        final result = await stores.coordinator.resolveUnlocked();
+
+        expect(result, isA<AuthCredentialMigrationResolved>());
+        expect(result.diagnostics, hasLength(1));
+        expect(result.diagnostics.single.error, same(cleanup));
+        expect(stores.secure.writeCalls, 1);
+      },
+    );
+  });
 }
 
 final class _CredentialStore implements AuthCredentialStore {
@@ -507,11 +760,17 @@ final class _MigrationStores {
     AuthCredentialReadResult secureResult = const AuthCredentialReadAbsent(),
     AuthCredentialReadResult legacyResult = const AuthCredentialReadAbsent(),
     AuthUser? user,
-  }) : secure = _RecordingCredentialStore(secureResult),
-       legacy = _RecordingLegacyStore(legacyResult),
-       user = _RecordingUserStore(user);
+  }) : secure = _RecordingCredentialStore(secureResult, <String>[]),
+       operations = <String>[],
+       legacy = _RecordingLegacyStore(legacyResult, <String>[]),
+       user = _RecordingUserStore(user, <String>[]) {
+    secure.operations = operations;
+    legacy.operations = operations;
+    this.user.operations = operations;
+  }
 
   final _RecordingCredentialStore secure;
+  final List<String> operations;
   final _RecordingLegacyStore legacy;
   final _RecordingUserStore user;
 
@@ -536,22 +795,32 @@ base mixin _RecordingClearStore {
 final class _RecordingCredentialStore
     with _RecordingClearStore
     implements AuthCredentialStore {
-  _RecordingCredentialStore(this.result);
+  _RecordingCredentialStore(this.result, this.operations);
 
   AuthCredentialReadResult result;
+  List<String> operations;
   int readCalls = 0;
   Object? readError;
   StackTrace? readStackTrace;
+  int? readErrorAfterCalls;
   int writeCalls = 0;
+  Object? writeError;
+  StackTrace? writeStackTrace;
+  AuthCredentialReadResult? postWriteResult;
 
   @override
-  Future<void> clearCredential() => clearRecorded();
+  Future<void> clearCredential() {
+    operations.add('secure.clear');
+    return clearRecorded();
+  }
 
   @override
   Future<AuthCredentialReadResult> readCredential() async {
     readCalls += 1;
+    operations.add('secure.read');
     final error = readError;
-    if (error != null) {
+    if (error != null &&
+        (readErrorAfterCalls == null || readCalls > readErrorAfterCalls!)) {
       Error.throwWithStackTrace(error, readStackTrace ?? StackTrace.current);
     }
     return result;
@@ -560,25 +829,36 @@ final class _RecordingCredentialStore
   @override
   Future<void> writeCredential(StoredAuthTokens tokens) async {
     writeCalls += 1;
+    operations.add('secure.write');
+    final error = writeError;
+    if (error != null) {
+      Error.throwWithStackTrace(error, writeStackTrace ?? StackTrace.current);
+    }
+    result = postWriteResult ?? AuthCredentialReadPresent(tokens);
   }
 }
 
 final class _RecordingLegacyStore
     with _RecordingClearStore
     implements AuthLegacyCredentialStore {
-  _RecordingLegacyStore(this.result);
+  _RecordingLegacyStore(this.result, this.operations);
 
   AuthCredentialReadResult result;
+  List<String> operations;
   int readCalls = 0;
   Object? readError;
   StackTrace? readStackTrace;
 
   @override
-  Future<void> clearLegacyCredential() => clearRecorded();
+  Future<void> clearLegacyCredential() {
+    operations.add('legacy.clear');
+    return clearRecorded();
+  }
 
   @override
   Future<AuthCredentialReadResult> readLegacyCredential() async {
     readCalls += 1;
+    operations.add('legacy.read');
     final error = readError;
     if (error != null) {
       Error.throwWithStackTrace(error, readStackTrace ?? StackTrace.current);
@@ -590,17 +870,22 @@ final class _RecordingLegacyStore
 final class _RecordingUserStore
     with _RecordingClearStore
     implements AuthUserStore {
-  _RecordingUserStore(this.value);
+  _RecordingUserStore(this.value, this.operations);
 
   AuthUser? value;
+  List<String> operations;
   int readCalls = 0;
 
   @override
-  Future<void> clearUser() => clearRecorded();
+  Future<void> clearUser() {
+    operations.add('user.clear');
+    return clearRecorded();
+  }
 
   @override
   Future<AuthUser?> readUser() async {
     readCalls += 1;
+    operations.add('user.read');
     return value;
   }
 

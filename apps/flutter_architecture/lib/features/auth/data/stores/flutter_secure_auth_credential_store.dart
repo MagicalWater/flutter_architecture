@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:auth/auth.dart';
+import 'package:core/core.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// 以 platform secure storage 保存完整Auth Token Pair的App-owned adapter。
@@ -16,7 +18,10 @@ final class FlutterSecureAuthCredentialStore implements AuthCredentialStore {
 
   @override
   Future<AuthCredentialReadResult> readCredential() async {
-    final raw = await _storage.read(key: _credentialKey);
+    final raw = await _runStorageOperation(
+      message: '讀取 Secure Auth credential 失敗',
+      operation: () => _storage.read(key: _credentialKey),
+    );
     if (raw == null) {
       return const AuthCredentialReadAbsent();
     }
@@ -30,17 +35,54 @@ final class FlutterSecureAuthCredentialStore implements AuthCredentialStore {
     }
     final userId = tokens.userId;
     if (userId == null || userId.trim().isEmpty) {
-      throw ArgumentError.value(userId, 'tokens.userId', '必須是有效identity');
+      throw ArgumentError('必須包含有效identity', 'tokens.userId');
     }
-    return _storage.write(
-      key: _credentialKey,
-      value: jsonEncode(tokens.toJson()),
+    return _runStorageOperation(
+      message: '儲存 Secure Auth credential 失敗',
+      operation: () => _storage.write(
+        key: _credentialKey,
+        value: jsonEncode(tokens.toJson()),
+      ),
     );
   }
 
   @override
   Future<void> clearCredential() {
-    return _storage.delete(key: _credentialKey);
+    return _runStorageOperation(
+      message: '清除 Secure Auth credential 失敗',
+      operation: () => _storage.delete(key: _credentialKey),
+    );
+  }
+}
+
+Future<T> _runStorageOperation<T>({
+  required String message,
+  required Future<T> Function() operation,
+}) async {
+  try {
+    return await operation();
+  } on AppException {
+    rethrow;
+  } on PlatformException catch (error, stackTrace) {
+    Error.throwWithStackTrace(
+      AppException(
+        kind: AppExceptionKind.localStorage,
+        message: message,
+        cause: error,
+        stackTrace: stackTrace,
+      ),
+      stackTrace,
+    );
+  } on MissingPluginException catch (error, stackTrace) {
+    Error.throwWithStackTrace(
+      AppException(
+        kind: AppExceptionKind.localStorage,
+        message: message,
+        cause: error,
+        stackTrace: stackTrace,
+      ),
+      stackTrace,
+    );
   }
 }
 

@@ -212,7 +212,7 @@ Task 2 implementation review：修正write-side必要欄位驗證缺口。`Store
 - Modify: `apps/flutter_architecture/lib/features/auth/data/stores/flutter_secure_auth_credential_store.dart`
 - Modify: `apps/flutter_architecture/test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart`
 
-- [ ] **Step 1：新增failing failure tests**
+- [x] **Step 1：新增failing failure tests**
 
 覆蓋read / write / delete的plugin failure：
 
@@ -225,11 +225,11 @@ Task 2 implementation review：修正write-side必要欄位驗證缺口。`Store
 - 已是`AppException`時原樣rethrow，不重複包裝。
 - 其他unknown programming error保持unexpected，不被降級成local-storage、corruption或absence。
 
-- [ ] **Step 2：完成最小failure mapping**
+- [x] **Step 2：完成最小failure mapping**
 
 只捕捉明確的Secure Storage operational exception種類；禁止catch-all後統一包成local-storage。Payload decode corruption在typed result內處理，非plugin的`StateError`、`TypeError`等保持原始error與stack。
 
-- [ ] **Step 3：執行targeted regression**
+- [x] **Step 3：執行targeted regression**
 
 ```bash
 cd apps/flutter_architecture
@@ -237,11 +237,13 @@ flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store
 dart analyze .
 ```
 
-- [ ] **Step 4：Commit**
+- [x] **Step 4：Commit**
 
 ```bash
 git commit -m "fix(auth): 補強Secure Storage錯誤邊界"
 ```
+
+Task 3執行結果：App test新增`flutter_secure_storage_platform_interface` test-only直接依賴，透過可控platform fake覆蓋read / write / delete。`PlatformException`與`MissingPluginException`會映射為`AppExceptionKind.localStorage`，保留原始cause與origin stack identity；既有`AppException`原樣rethrow，`StateError`與`TypeError`等unknown programming error保持原始error與stack。固定diagnostic message不包含plugin message、raw payload或credential sentinel。Secure adapter targeted tests增為26項，App analyze與diff check通過。
 
 ---
 

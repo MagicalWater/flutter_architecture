@@ -1,15 +1,23 @@
 import 'dart:convert';
 
 import 'package:auth/auth.dart';
+import 'package:core/core.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  final originalPlatform = FlutterSecureStoragePlatform.instance;
 
   setUp(() {
     FlutterSecureStorage.setMockInitialValues(<String, String>{});
+  });
+
+  tearDown(() {
+    FlutterSecureStoragePlatform.instance = originalPlatform;
   });
 
   test(
@@ -172,6 +180,96 @@ void main() {
     expect(result.toString(), isNot(contains('access-secret')));
     expect(result.toString(), isNot(contains('refresh-secret')));
   });
+
+  for (final operation in _SecureOperation.values) {
+    test(
+      '${operation.name} PlatformException becomes local storage failure',
+      () async {
+        final originStack = StackTrace.current;
+        final failure = PlatformException(
+          code: 'secure_storage_unavailable',
+          message: 'access-secret refresh-secret',
+        );
+        FlutterSecureStoragePlatform.instance =
+            _ControlledSecureStoragePlatform(
+              operation: operation,
+              error: failure,
+              stackTrace: originStack,
+            );
+        final store = _createStore();
+
+        try {
+          await _invoke(operation, store);
+          fail('Expected AppException');
+        } on AppException catch (error) {
+          expect(error.kind, AppExceptionKind.localStorage);
+          expect(error.cause, same(failure));
+          expect(error.stackTrace, same(originStack));
+          expect(error.toString(), isNot(contains('access-secret')));
+          expect(error.toString(), isNot(contains('refresh-secret')));
+        }
+      },
+    );
+  }
+
+  test('MissingPluginException becomes local storage failure', () async {
+    final originStack = StackTrace.current;
+    final failure = MissingPluginException('secure storage unavailable');
+    FlutterSecureStoragePlatform.instance = _ControlledSecureStoragePlatform(
+      operation: _SecureOperation.read,
+      error: failure,
+      stackTrace: originStack,
+    );
+    final store = _createStore();
+
+    try {
+      await store.readCredential();
+      fail('Expected AppException');
+    } on AppException catch (error) {
+      expect(error.kind, AppExceptionKind.localStorage);
+      expect(error.cause, same(failure));
+      expect(error.stackTrace, same(originStack));
+    }
+  });
+
+  test('existing AppException is rethrown unchanged', () async {
+    final failure = AppException(
+      kind: AppExceptionKind.protocol,
+      message: 'existing failure',
+      stackTrace: StackTrace.current,
+    );
+    FlutterSecureStoragePlatform.instance = _ControlledSecureStoragePlatform(
+      operation: _SecureOperation.write,
+      error: failure,
+      stackTrace: failure.stackTrace!,
+    );
+    final store = _createStore();
+
+    await expectLater(store.writeCredential(_tokens), throwsA(same(failure)));
+  });
+
+  for (final failure in <Object>[
+    StateError('programming error'),
+    TypeError(),
+  ]) {
+    test('${failure.runtimeType} keeps original error and stack', () async {
+      final originStack = StackTrace.current;
+      FlutterSecureStoragePlatform.instance = _ControlledSecureStoragePlatform(
+        operation: _SecureOperation.delete,
+        error: failure,
+        stackTrace: originStack,
+      );
+      final store = _createStore();
+
+      try {
+        await store.clearCredential();
+        fail('Expected original error');
+      } catch (error, stackTrace) {
+        expect(error, same(failure));
+        expect(stackTrace, same(originStack));
+      }
+    });
+  }
 }
 
 const _validPayload = <String, Object?>{
@@ -184,3 +282,78 @@ const _validPayload = <String, Object?>{
 
 FlutterSecureAuthCredentialStore _createStore() =>
     const FlutterSecureAuthCredentialStore(FlutterSecureStorage());
+
+const _tokens = StoredAuthTokens(
+  accessToken: 'access-secret',
+  refreshToken: 'refresh-secret',
+  userId: 'user-001',
+);
+
+enum _SecureOperation { read, write, delete }
+
+Future<void> _invoke(
+  _SecureOperation operation,
+  FlutterSecureAuthCredentialStore store,
+) async {
+  switch (operation) {
+    case _SecureOperation.read:
+      await store.readCredential();
+    case _SecureOperation.write:
+      await store.writeCredential(_tokens);
+    case _SecureOperation.delete:
+      await store.clearCredential();
+  }
+}
+
+final class _ControlledSecureStoragePlatform
+    extends FlutterSecureStoragePlatform {
+  _ControlledSecureStoragePlatform({
+    required this.operation,
+    required this.error,
+    required this.stackTrace,
+  });
+
+  final _SecureOperation operation;
+  final Object error;
+  final StackTrace stackTrace;
+
+  Never _throwIf(_SecureOperation current) {
+    if (operation != current) {
+      throw StateError('Unexpected operation: $current');
+    }
+    Error.throwWithStackTrace(error, stackTrace);
+  }
+
+  @override
+  Future<void> delete({
+    required String key,
+    required Map<String, String> options,
+  }) async => _throwIf(_SecureOperation.delete);
+
+  @override
+  Future<void> deleteAll({required Map<String, String> options}) async {}
+
+  @override
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async => _throwIf(_SecureOperation.read);
+
+  @override
+  Future<Map<String, String>> readAll({
+    required Map<String, String> options,
+  }) async => const <String, String>{};
+
+  @override
+  Future<void> write({
+    required String key,
+    required String value,
+    required Map<String, String> options,
+  }) async => _throwIf(_SecureOperation.write);
+
+  @override
+  Future<bool> containsKey({
+    required String key,
+    required Map<String, String> options,
+  }) async => false;
+}

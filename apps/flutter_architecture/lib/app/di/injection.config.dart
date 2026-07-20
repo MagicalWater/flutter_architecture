@@ -46,6 +46,7 @@ import 'package:flutter_architecture/features/profile/domain/use_cases/get_profi
     as _i474;
 import 'package:flutter_architecture/features/profile/presentation/bloc/profile_bloc.dart'
     as _i173;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
@@ -68,6 +69,9 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.lazySingleton<_i633.AppDioFactory>(() => registerModule.appDioFactory);
+    gh.lazySingleton<_i558.FlutterSecureStorage>(
+      () => registerModule.flutterSecureStorage,
+    );
     gh.lazySingleton<_i662.SessionManager>(() => registerModule.sessionManager);
     gh.lazySingleton<_i662.AuthStateMutationCoordinator>(
       () => registerModule.authStateMutationCoordinator,
@@ -84,6 +88,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i633.AuthTokenProvider>(
       () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
+    );
+    gh.lazySingleton<_i662.AuthCredentialStore>(
+      () => registerModule.secureAuthCredentialStore(
+        gh<_i558.FlutterSecureStorage>(),
+      ),
+      instanceName: 'secureAuthCredentialStore',
     );
     gh.lazySingleton<_i662.AuthCredentialStore>(
       () => registerModule.authCredentialStore(gh<_i460.SharedPreferences>()),

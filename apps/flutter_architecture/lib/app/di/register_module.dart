@@ -6,6 +6,7 @@ import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
@@ -23,6 +24,7 @@ import 'package:injectable/injectable.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Injectable Module。
 ///
@@ -79,6 +81,15 @@ abstract class RegisterModule {
   @lazySingleton
   auth.AuthCredentialStore authCredentialStore(SharedPreferences preferences) =>
       SharedPreferencesAuthCredentialStore(preferences);
+
+  @lazySingleton
+  FlutterSecureStorage get flutterSecureStorage => const FlutterSecureStorage();
+
+  @Named('secureAuthCredentialStore')
+  @lazySingleton
+  auth.AuthCredentialStore secureAuthCredentialStore(
+    FlutterSecureStorage storage,
+  ) => FlutterSecureAuthCredentialStore(storage);
 
   @lazySingleton
   auth.AuthLegacyCredentialStore authLegacyCredentialStore(

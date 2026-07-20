@@ -1,0 +1,80 @@
+import 'package:api_client/api_client.dart' as api_client;
+import 'package:auth/auth.dart';
+import 'package:core/core.dart';
+import 'package:flutter_architecture/app/config/api_config.dart';
+import 'package:flutter_architecture/app/config/app_config.dart';
+import 'package:flutter_architecture/app/config/app_environment.dart';
+import 'package:flutter_architecture/app/di/injection.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  });
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    FlutterSecureStorage.setMockInitialValues(<String, String>{});
+  });
+
+  tearDown(() async {
+    await getIt.reset();
+  });
+
+  test(
+    'Secure credential store以named singleton組裝且不切換production authority',
+    () async {
+      final config = AppConfig(
+        environment: AppEnvironment.development,
+        api: ApiConfig(
+          mode: ApiMode.mock,
+          baseUri: Uri.parse('https://mock.local'),
+        ),
+      );
+
+      await configureDependencies(config, const NoopErrorReporter());
+
+      final defaultStore = getIt<AuthCredentialStore>();
+      final secureStore = getIt<AuthCredentialStore>(
+        instanceName: 'secureAuthCredentialStore',
+      );
+
+      expect(defaultStore, isA<SharedPreferencesAuthCredentialStore>());
+      expect(secureStore, isA<FlutterSecureAuthCredentialStore>());
+      expect(identical(defaultStore, secureStore), isFalse);
+      expect(
+        identical(
+          secureStore,
+          getIt<AuthCredentialStore>(instanceName: 'secureAuthCredentialStore'),
+        ),
+        isTrue,
+      );
+
+      await secureStore.writeCredential(
+        const StoredAuthTokens(
+          accessToken: 'secure-only-access',
+          refreshToken: 'secure-only-refresh',
+          userId: 'secure-only-user',
+        ),
+      );
+
+      final restoreResult = await getIt<AuthRepository>().restoreSession();
+
+      expect(restoreResult, isA<Success<AuthUser?>>());
+      expect((restoreResult as Success<AuthUser?>).data, isNull);
+      expect(getIt<SessionManager>().currentSession, isNull);
+
+      expect(getIt<AuthRepository>(), isA<AuthRepositoryImpl>());
+      expect(getIt<api_client.AuthRefresher>(), isA<AuthSessionRefresher>());
+    },
+  );
+}

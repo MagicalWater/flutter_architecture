@@ -257,7 +257,7 @@ Task 3 implementation review：通過。確認`flutter_secure_storage` 10.3.1公
 - Generate: `apps/flutter_architecture/lib/app/di/injection.config.dart`
 - Create: `apps/flutter_architecture/test/app/di/register_module_secure_auth_store_test.dart`
 
-- [ ] **Step 1：先寫failing DI test**
+- [x] **Step 1：先寫failing DI test**
 
 驗證：
 
@@ -267,18 +267,18 @@ Task 3 implementation review：通過。確認`flutter_secure_storage` 10.3.1公
 - Repository與Refresher仍使用default SharedPreferences authority。
 - Secure Store寫入不會被現有Repository restore讀取。
 
-- [ ] **Step 2：執行RED**
+- [x] **Step 2：執行RED**
 
 ```bash
 cd apps/flutter_architecture
 flutter test test/app/di/register_module_secure_auth_store_test.dart
 ```
 
-- [ ] **Step 3：更新RegisterModule並生成DI**
+- [x] **Step 3：更新RegisterModule並生成DI**
 
 提供`FlutterSecureStorage`與named Secure `AuthCredentialStore` binding；禁止手動修改generated source。
 
-- [ ] **Step 4：執行generation與DI tests**
+- [x] **Step 4：執行generation與DI tests**
 
 ```bash
 dart run melos run build_runner
@@ -287,11 +287,13 @@ flutter test test/app/di/register_module_secure_auth_store_test.dart
 flutter test test/app/di/register_module_auth_persistence_test.dart
 ```
 
-- [ ] **Step 5：Commit**
+- [x] **Step 5：Commit**
 
 ```bash
 git commit -m "refactor(di): 組裝Secure credential adapter"
 ```
+
+Task 4執行結果：App Composition Root新增`FlutterSecureStorage` lazy singleton與named `secureAuthCredentialStore` lazy singleton binding，default `AuthCredentialStore`仍維持`SharedPreferencesAuthCredentialStore`。DI regression確認named Secure Store可解析且instance identity穩定；只寫入Secure Store時，現有`AuthRepository.restoreSession()`仍回傳未登入，證明Repository與Refresher尚未切換production authority。Generated DI由build_runner產生，非相關Bloc generated noise已還原；新舊DI tests共2項、App analyze與diff check通過。
 
 ---
 

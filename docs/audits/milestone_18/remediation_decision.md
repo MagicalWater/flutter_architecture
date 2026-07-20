@@ -237,15 +237,13 @@ Android 35 Google APIs x86_64 emulator已完成application runtime smoke。Relea
 ## 8. Baseline release decision
 
 ```txt
-Current baseline         1.1.0
+Current baseline         1.2.0
 Release now              No
-Provisional candidate    1.2.0 MINOR
+Released baseline        1.2.0 MINOR
 Final decision           18-8
 ```
 
-1.2.0只是provisional candidate。只有在approved remediation、完整regression、Android artifact / runtime evidence與final documentation完成後，18-8才可決定發布。
-
-若Android未達Supported、P1未Resolved或文件能力高於證據，則維持1.1.0並記錄不發布理由。
+Approved remediation、完整regression、Android artifact／runtime evidence與final documentation均已完成；9項findings全部Resolved，因此正式發布Template Baseline 1.2.0。
 
 ---
 
@@ -253,4 +251,4 @@ Final decision           18-8
 
 Audit Review Gate通過。Phase A結束，允許進入18-7 Approved Remediation，但只限本文件列出的scope。
 
-Production code、tests與Android scaffold可從18-7開始修改；VERSION仍維持1.1.0，直到18-8 final decision。
+Production code、tests、Android scaffold與final documentation已完成；VERSION於Milestone 18 release revision正式更新為1.2.0。

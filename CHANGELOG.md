@@ -1,9 +1,3 @@
-- 完成Milestone 18-7E Review與18-8 final validation：在Android 35 Google APIs x86_64 emulator成功安裝並啟動release APK，驗證bootstrap、Mock Login、Profile、Catalog顯示與搜尋、Protected Route、Theme / Locale持久化、force-stop後Auth restore與Logout。
-- Android app data已實際建立`FlutterSharedPreferences.xml`與`flutter_architecture.db`；SharedPreferences保存Ocean Dark與`zh_TW`。`M18-C01`正式Resolved，Android提升為Supported，其餘五平台維持Dependency-ready，README capability matrix與Quick Start同步更新。
-- 完成Milestone 18-7E Android scaffold與artifact foundation實作：新增tracked Flutter `.metadata`與唯一Android runner，固定`com.example.flutterarchitecture` application ID / namespace、Flutter-managed SDK levels、Java 17、AndroidX、Internet permission與V2 embedding。
-- Windows host已成功建立debug APK與約55.9 MB release APK；新增Android scaffold contract regression，workspace analyze與410 tests全數通過。因Pub Cache與workspace位於不同Windows磁碟，Android baseline關閉Kotlin incremental compilation以避免cross-root cache失敗。Android仍待18-7E review與18-8實機runtime smoke，不提前標記Supported。
-- 完成Milestone 18-7D review修訂並關閉`M18-A01/A02`：Auth coordinator延後至Router首個frame後啟動，補上initial authenticated reconciliation與dispose guard；Auth destination改以root `replaceAll`維持單一Shell並移除Protected等上層route。
-- 新增mounted `ArchitectureApp + AppRouter` regression，直接驗證Login→Profile、Protected→Login及single-Shell contract。Workspace analyze、409 tests與App bundle全數通過，下一步為18-7E Android platform scaffold與application smoke foundation。
 # Changelog
 
 本文件記錄 Flutter Enterprise Architecture Template 的版本變更。
@@ -23,6 +17,40 @@
 ---
 
 ## [Unreleased]
+
+目前沒有未發布變更。
+
+---
+
+## [1.2.0] - 2026-07-20
+
+### Added
+
+- 新增tracked Android runner與Flutter `.metadata`，固定template application ID / namespace、Java 17、AndroidX、Internet permission、V2 embedding與Android artifact build baseline。
+- 新增App-owned Auth navigation coordinator、Android scaffold contract與mounted AppRouter regression。
+
+### Changed
+
+- Auth lifecycle採latest-intent ordering；Auth persistence收斂為single-active-user；Catalog SQLite正式啟用foreign-key enforcement。
+- Shell、Auth與Profile跨Feature navigation ownership提升至App composition layer。
+- README新增platform capability matrix；Android標記Supported，iOS、Web、Windows、macOS與Linux標記Dependency-ready。
+- Decision 014補充Web evidence terminology；Backlog整理為future、deferred與explicitly not planned scope。
+
+### Fixed
+
+- 關閉Milestone 18全部9項findings：`M18-A01`、`M18-A02`、`M18-R01`、`M18-P01`、`M18-P02`、`M18-C01`、`M18-D01`、`M18-D02`與`M18-D03`。
+- Android 35 emulator完成release APK runtime smoke；SharedPreferences、SQLite、Mock Login、Catalog、Protected Route、Theme / Locale、restart restore與Logout均通過。
+
+### Verification
+
+- Workspace analyze全部通過。
+- Workspace tests共410項全部通過。
+- Android release APK建立成功，約55.9 MB。
+- Android runtime smoke通過。
+
+---
+
+### Milestone 15–18 detailed changes
 
 ### Added
 

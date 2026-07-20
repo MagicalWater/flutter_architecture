@@ -590,7 +590,9 @@ Domain Model 使用不帶 `Dto` 的業務名稱。
 
 Milestone 9 已建立 `ApiConfig`、`ApiMode` 與 Mock / Retrofit implementation selection，但目前設定解析仍由 DI module 內部直接讀取 `String.fromEnvironment`。
 
-專案目前只有 Dart / Flutter Web scaffold，尚未建立 Android、iOS、macOS、Windows 或 Linux platform scaffold，因此本階段不適合直接導入 Android productFlavors、iOS Schemes、applicationId、bundle identifier 或原生 App 名稱切換。
+專案當時只有Dart application與Flutter Web SQLite dependency preparation assets，尚未建立完整Android、iOS、Web、macOS、Windows或Linux platform runner，因此本階段不適合直接導入Android productFlavors、iOS Schemes、applicationId、bundle identifier或原生App名稱切換。
+
+Milestone 18 evidence clarification：上述歷史背景中的Web preparation不代表tracked Web runner、Web artifact或browser runtime evidence。Current baseline只有Android為Supported；Web與其餘平台維持Dependency-ready。
 
 ### 決策
 

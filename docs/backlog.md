@@ -1,48 +1,31 @@
 # Backlog
 
-這裡記錄未來可以加入，但第一階段 MVP 不實作的內容。
+本文件只記錄尚未承諾、延後處理或明確不在目前baseline範圍內的工作。已完成能力由Roadmap、Project Context、Architecture Decisions與CHANGELOG保存，不再重複列入Backlog。
 
-目的：
+## Future ideas
 
-- 好想法不要忘記。
-- 目前範圍不要失控。
-- 先把核心模板完成。
-
-## 第二階段可以考慮
-
-- ADR：Architecture Decision Record。
-- Unit Test / Bloc Test / Repository Test 完整範例。
-- API Error Mapping 進階版。（Milestone 17 Exception & Failure Architecture 已完成）
-- WebSocket。
+- WebSocket application example。
 - Notification feature。
 - Payment feature。
-- Firebase Crashlytics production adapter。（Milestone 17已建立App-owned boundary，本階段未加入Firebase dependency）
-- Analytics。
-- Native Flavor：Android productFlavors、iOS Schemes、applicationId、bundle identifier 與原生 App 名稱切換。
-- Localizations。（已由 Milestone 16 Localization Foundation 完成）
-- 完整 Feature 新增指南。
-- 常見錯誤文件。
-- 架構演進文件。
+- Analytics adapter與事件治理範例。
+- Firebase Crashlytics production adapter；目前僅有App-owned error reporting boundary，不引入Firebase dependency。
+- Native Flavor：Android productFlavors、iOS Schemes、applicationId、bundle identifier與原生App名稱切換。
+- 完整Feature新增指南。
+- 常見錯誤與除錯指南。
+- 架構演進與migration指南。
 
-## 已排入正式 Roadmap
+## Deferred commitments
 
-- Milestone 10：App Configuration 與 Environment 基礎。
-- Milestone 11：CI/CD（Deferred，目前不實作）。
-- Milestone 12：Refresh Token + Concurrent 401 Handling。
-- Milestone 13：Pagination + Search Debounce。
-- Milestone 14：Offline Cache。
-- Milestone 15：Design System Foundation。
-- Milestone 16：Localization Foundation。
-- Milestone 17：Exception & Failure Architecture。
+- CI/CD：Milestone 11維持Deferred，需另行決定host、signing、secret management與release channel。
+- iOS、Web、Windows、macOS與Linux runner、artifact與runtime support；目前只承諾Android Supported，其餘平台維持Dependency-ready。
 
-Milestone 10、12、13、15、16與17已完成；Milestone 11維持Deferred，Milestone 14已完成後封存其roadmap細節。
+## Explicitly not planned in current baseline
 
-## 範圍規則
+- Generic Navigation Service或通用Coordinator framework。
+- Generic Cache／Generic Pagination framework。
+- 所有API自動寫入SQLite的generic HTTP cache。
+- 未經產品需求支持的Firebase、支付、通知或analytics依賴。
 
-第一階段只處理：
+## Scope rule
 
-```txt
-Auth + Profile + Protected Route
-```
-
-如果新想法不直接服務這個流程，就先放在這份 Backlog。
+新項目若尚未進入正式Roadmap、沒有明確acceptance criteria或會擴大platform／infrastructure承諾，先放在本文件，不直接修改baseline。

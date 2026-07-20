@@ -369,13 +369,13 @@ Audit Review Gate已核准Android為唯一Supported target候選。18-7E已建�
 
 **Severity：** P1
 
-**Status：** Confirmed
+**Status：** Resolved
 
-**Baseline blocking：** Yes，除非建立並驗證正式承諾的平台，或明確將模板定位降級為不含可執行platform project的Dart / architecture starter。
+**Baseline blocking：** No，README與Android Supported evidence已完成對齊。
 
-**Disposition：** Pending Audit Review Gate
+**Disposition：** Resolved in 18-7E / 18-8
 
-**Target phase：** 18-7 candidate
+**Target phase：** Completed
 
 **Verification required：** README首頁、Quick Start與run instructions、platform capability matrix、tracked scaffold及artifact evidence一致；`M18-C01`與本finding使用同一份platform disposition。
 
@@ -405,7 +405,7 @@ Gate應先拍板正式平台集合，並讓`M18-C01`與本finding共用同一份
 
 ### Disposition rationale
 
-目前先保留Pending。這是current baseline positioning問題，應與`M18-C01`一起處理。
+README首頁、Quick Start、platform matrix、placeholder application ID、debug signing限制與Android runtime evidence已同步；`M18-D01`與`M18-C01`共用相同platform disposition並正式關閉。
 
 ---
 
@@ -415,13 +415,13 @@ Gate應先拍板正式平台集合，並讓`M18-C01`與本finding共用同一份
 
 **Severity：** P2
 
-**Status：** Confirmed
+**Status：** Resolved
 
-**Baseline blocking：** No，但發布新baseline前必須有明確disposition。
+**Baseline blocking：** No，current authoritative文件與Decision 014 clarification已完成。
 
-**Disposition：** Pending Audit Review Gate
+**Disposition：** Resolved in 18-8 final documentation
 
-**Target phase：** 18-8 candidate
+**Target phase：** Completed
 
 **Verification required：** Current README、ADR、Project Context與Roadmap使用一致的scaffold / component / artifact / runtime terminology。
 
@@ -449,7 +449,7 @@ Conditional database factory與Web assets已完成，但較早文件的「Web sc
 
 ### Disposition rationale
 
-目前先保留Pending。這是文件準確性與evidence taxonomy問題，不代表SQLite implementation失效。
+README、Project Context與Roadmap current summary已統一使用Dependency-ready、tracked runner、artifact與runtime terminology；Decision 014補充歷史Web preparation不代表完整runner或runtime evidence。歷史CHANGELOG與archive內容保留。
 
 ---
 
@@ -459,13 +459,13 @@ Conditional database factory與Web assets已完成，但較早文件的「Web sc
 
 **Severity：** P3
 
-**Status：** Confirmed
+**Status：** Resolved
 
 **Baseline blocking：** No。
 
-**Disposition：** Pending Audit Review Gate
+**Disposition：** Resolved in 18-8 final documentation
 
-**Target phase：** 18-8 candidate
+**Target phase：** Completed
 
 **Verification required：** Backlog只保留future / deferred scope，completed items移至Roadmap、Project Context或archive。
 
@@ -492,4 +492,4 @@ Backlog應表達尚未承諾或Deferred的future scope，已完成工作由Roadm
 
 ### Disposition rationale
 
-目前先保留Pending。屬低風險文件維護問題，可在final documentation同步時處理。
+Backlog已整理為Future ideas、Deferred commitments與Explicitly not planned；已完成Milestone與既有能力移回Roadmap、Project Context、Architecture Decisions及CHANGELOG保存。

@@ -758,7 +758,7 @@ Milestone 15-7 已完成：App-local Theme preference、Version 1 JSON persisten
 
 目前狀態：Milestone 17 Exception & Failure Architecture 已完成並封存。
 
-目前Milestone 18 Template Baseline Holistic Audit & Release Review已完成final validation。18-7A至18-7E均Reviewed / Closed，`M18-R01`、`M18-P01`、`M18-P02`、`M18-A01`、`M18-A02`與`M18-C01`正式Resolved。Android已有tracked runner、debug / release APK artifact與Android 35 emulator runtime smoke；bootstrap、Mock Login、Catalog、Protected Route、Theme / Locale持久化、restart Auth restore、SharedPreferences / SQLite與Logout均通過，因此Android正式為Supported。iOS、Web、Windows、macOS與Linux維持Dependency-ready。README capability matrix已同步。VERSION仍為1.1.0，是否發布1.2.0需進入最終release decision。
+Milestone 18 Template Baseline Holistic Audit & Release Review已完成並封存，Template Baseline正式為1.2.0。18-7A至18-7E均Reviewed / Closed，9項findings全部Resolved。Android已有tracked runner、debug / release APK artifact與Android 35 emulator runtime smoke；bootstrap、Mock Login、Catalog、Protected Route、Theme / Locale持久化、restart Auth restore、SharedPreferences / SQLite與Logout均通過，因此Android為Supported。iOS、Web、Windows、macOS與Linux維持Dependency-ready。Decision 014已補充Web evidence clarification，Backlog只保留future / deferred scope。
 
 ### Milestone 17：Exception & Failure Architecture
 

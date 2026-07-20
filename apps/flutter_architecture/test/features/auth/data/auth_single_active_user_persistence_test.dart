@@ -4,6 +4,8 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -193,12 +195,18 @@ void main() {
       ),
     );
     addTearDown(upgraded.close);
-    final local = AuthLocalDataSource(preferences, upgraded);
+    final credentialStore = SharedPreferencesAuthCredentialStore(preferences);
+    final legacyCredentialStore = SharedPreferencesAuthLegacyCredentialStore(
+      preferences,
+    );
+    final userStore = SqfliteAuthUserStore(upgraded);
     final session = SessionManager();
     addTearDown(session.dispose);
     final repository = AuthRepositoryImpl(
       AuthRemoteDataSource(_SequencedAuthApi(const <LoginResponseDto>[])),
-      local,
+      credentialStore,
+      legacyCredentialStore,
+      userStore,
       session,
       AuthStateMutationCoordinator(),
     );
@@ -206,8 +214,11 @@ void main() {
     final result = await repository.restoreSession();
 
     expect(result, isA<Success<AuthUser?>>());
-    expect(await local.readTokens(), isNull);
-    expect(await local.readUser(), isNull);
+    expect(
+      await credentialStore.readCredential(),
+      isA<AuthCredentialReadAbsent>(),
+    );
+    expect(await userStore.readUser(), isNull);
     expect(session.currentSession, isNull);
   });
 
@@ -222,7 +233,11 @@ void main() {
       ),
     );
     addTearDown(database.close);
-    final local = AuthLocalDataSource(preferences, database);
+    final credentialStore = SharedPreferencesAuthCredentialStore(preferences);
+    final legacyCredentialStore = SharedPreferencesAuthLegacyCredentialStore(
+      preferences,
+    );
+    final userStore = SqfliteAuthUserStore(database);
     final firstSession = SessionManager();
     addTearDown(firstSession.dispose);
     final repository = AuthRepositoryImpl(
@@ -242,7 +257,9 @@ void main() {
           ),
         ]),
       ),
-      local,
+      credentialStore,
+      legacyCredentialStore,
+      userStore,
       firstSession,
       AuthStateMutationCoordinator(),
     );
@@ -254,7 +271,9 @@ void main() {
     addTearDown(restartedSession.dispose);
     final restartedRepository = AuthRepositoryImpl(
       AuthRemoteDataSource(_SequencedAuthApi(const <LoginResponseDto>[])),
-      local,
+      credentialStore,
+      legacyCredentialStore,
+      userStore,
       restartedSession,
       AuthStateMutationCoordinator(),
     );
@@ -262,8 +281,9 @@ void main() {
 
     expect(restored, isA<Success<AuthUser?>>());
     expect((restored as Success<AuthUser?>).data?.id, 'user-b');
-    expect((await local.readTokens())?.userId, 'user-b');
-    expect((await local.readUser())?.id, 'user-b');
+    final credential = await credentialStore.readCredential();
+    expect((credential as AuthCredentialReadPresent).tokens.userId, 'user-b');
+    expect((await userStore.readUser())?.id, 'user-b');
     expect(restartedSession.currentSession?.userId, 'user-b');
     expect(await database.query('auth_user'), hasLength(1));
   });

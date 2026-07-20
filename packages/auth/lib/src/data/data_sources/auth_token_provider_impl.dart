@@ -14,7 +14,7 @@ import 'package:auth/src/session/session_manager.dart';
 ///   ↓
 /// AuthTokenProviderImpl  ← 目前所在位置
 ///   ↓
-/// AuthLocalDataSource
+/// AuthCredentialStore
 ///   ↓
 /// SharedPreferences
 /// ```

@@ -6,6 +6,9 @@ import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
@@ -74,12 +77,17 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
-  auth.AuthLocalDataSource authLocalDataSource(
+  auth.AuthCredentialStore authCredentialStore(SharedPreferences preferences) =>
+      SharedPreferencesAuthCredentialStore(preferences);
+
+  @lazySingleton
+  auth.AuthLegacyCredentialStore authLegacyCredentialStore(
     SharedPreferences preferences,
-    Database database,
-  ) {
-    return auth.AuthLocalDataSource(preferences, database);
-  }
+  ) => SharedPreferencesAuthLegacyCredentialStore(preferences);
+
+  @lazySingleton
+  auth.AuthUserStore authUserStore(Database database) =>
+      SqfliteAuthUserStore(database);
 
   @lazySingleton
   auth.AuthRemoteDataSource authRemoteDataSource(api_client.AuthApi authApi) {
@@ -96,13 +104,17 @@ abstract class RegisterModule {
   @lazySingleton
   api_client.AuthRefresher authRefresher(
     auth.AuthRefreshRemoteDataSource remoteDataSource,
-    auth.AuthLocalDataSource localDataSource,
+    auth.AuthCredentialStore credentialStore,
+    auth.AuthLegacyCredentialStore legacyCredentialStore,
+    auth.AuthUserStore userStore,
     auth.SessionManager sessionManager,
     auth.AuthStateMutationCoordinator mutationCoordinator,
   ) {
     return auth.AuthSessionRefresher(
       remoteDataSource,
-      localDataSource,
+      credentialStore,
+      legacyCredentialStore,
+      userStore,
       sessionManager,
       mutationCoordinator,
     );
@@ -125,13 +137,17 @@ abstract class RegisterModule {
   @lazySingleton
   auth.AuthRepository authRepository(
     auth.AuthRemoteDataSource remoteDataSource,
-    auth.AuthLocalDataSource localDataSource,
+    auth.AuthCredentialStore credentialStore,
+    auth.AuthLegacyCredentialStore legacyCredentialStore,
+    auth.AuthUserStore userStore,
     auth.SessionManager sessionManager,
     auth.AuthStateMutationCoordinator mutationCoordinator,
   ) {
     return auth.AuthRepositoryImpl(
       remoteDataSource,
-      localDataSource,
+      credentialStore,
+      legacyCredentialStore,
+      userStore,
       sessionManager,
       mutationCoordinator,
     );

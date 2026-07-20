@@ -2,6 +2,9 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache_page_mapper.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
@@ -27,12 +30,18 @@ void main() {
     );
     addTearDown(database.close);
 
-    final authLocal = AuthLocalDataSource(preferences, database);
+    final credentialStore = SharedPreferencesAuthCredentialStore(preferences);
+    final legacyCredentialStore = SharedPreferencesAuthLegacyCredentialStore(
+      preferences,
+    );
+    final userStore = SqfliteAuthUserStore(database);
     final sessionManager = SessionManager();
     addTearDown(sessionManager.dispose);
     final authRepository = AuthRepositoryImpl(
       AuthRemoteDataSource(MockAuthApi()),
-      authLocal,
+      credentialStore,
+      legacyCredentialStore,
+      userStore,
       sessionManager,
       AuthStateMutationCoordinator(),
     );
@@ -68,8 +77,11 @@ void main() {
     final logout = await authRepository.logout();
     expect(logout, isA<Success<void>>());
     expect(sessionManager.currentSession, isNull);
-    expect(await authLocal.readTokens(), isNull);
-    expect(await authLocal.readUser(), isNull);
+    expect(
+      await credentialStore.readCredential(),
+      isA<AuthCredentialReadAbsent>(),
+    );
+    expect(await userStore.readUser(), isNull);
 
     final cached = await catalogLocal.readPage(
       query: '',

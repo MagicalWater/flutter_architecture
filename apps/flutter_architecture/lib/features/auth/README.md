@@ -34,7 +34,9 @@ AuthRepositoryImpl
   │     ├── MockAuthApi
   │     └── _AuthApi（Retrofit generated）
   │
-  └── AuthLocalDataSource
+  ├── SharedPreferencesAuthCredentialStore
+  ├── SharedPreferencesAuthLegacyCredentialStore
+  └── SqfliteAuthUserStore
   ↓
 SharedPreferences + SQLite
   ↓

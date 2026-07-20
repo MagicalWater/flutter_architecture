@@ -76,11 +76,22 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.catalogCachePolicy,
     );
     gh.lazySingleton<_i401.CatalogClock>(() => registerModule.catalogClock);
+    gh.lazySingleton<_i662.AuthUserStore>(
+      () => registerModule.authUserStore(gh<_i779.Database>()),
+    );
     gh.lazySingleton<_i538.CatalogLocalDataSource>(
       () => registerModule.catalogLocalDataSource(gh<_i779.Database>()),
     );
     gh.lazySingleton<_i633.AuthTokenProvider>(
       () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
+    );
+    gh.lazySingleton<_i662.AuthCredentialStore>(
+      () => registerModule.authCredentialStore(gh<_i460.SharedPreferences>()),
+    );
+    gh.lazySingleton<_i662.AuthLegacyCredentialStore>(
+      () => registerModule.authLegacyCredentialStore(
+        gh<_i460.SharedPreferences>(),
+      ),
     );
     gh.lazySingleton<_i997.AuthGuard>(
       () => _i997.AuthGuard(gh<_i662.SessionManager>()),
@@ -91,12 +102,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i46.ApiConfig>(),
       ),
       instanceName: 'refreshDio',
-    );
-    gh.lazySingleton<_i662.AuthLocalDataSource>(
-      () => registerModule.authLocalDataSource(
-        gh<_i460.SharedPreferences>(),
-        gh<_i779.Database>(),
-      ),
     );
     gh.lazySingleton<_i460.CatalogCacheDiagnosticSink>(
       () =>
@@ -119,7 +124,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i633.AuthRefresher>(
       () => registerModule.authRefresher(
         gh<_i662.AuthRefreshRemoteDataSource>(),
-        gh<_i662.AuthLocalDataSource>(),
+        gh<_i662.AuthCredentialStore>(),
+        gh<_i662.AuthLegacyCredentialStore>(),
+        gh<_i662.AuthUserStore>(),
         gh<_i662.SessionManager>(),
         gh<_i662.AuthStateMutationCoordinator>(),
       ),
@@ -163,10 +170,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i662.AuthRepository>(
       () => registerModule.authRepository(
         gh<_i662.AuthRemoteDataSource>(),
-        gh<_i662.AuthLocalDataSource>(),
+        gh<_i662.AuthCredentialStore>(),
+        gh<_i662.AuthLegacyCredentialStore>(),
+        gh<_i662.AuthUserStore>(),
         gh<_i662.SessionManager>(),
         gh<_i662.AuthStateMutationCoordinator>(),
       ),
+    );
+    gh.factory<_i662.LoginUseCase>(
+      () => registerModule.loginUseCase(gh<_i662.AuthRepository>()),
+    );
+    gh.factory<_i662.LogoutUseCase>(
+      () => registerModule.logoutUseCase(gh<_i662.AuthRepository>()),
+    );
+    gh.factory<_i662.RestoreSessionUseCase>(
+      () => registerModule.restoreSessionUseCase(gh<_i662.AuthRepository>()),
     );
     gh.lazySingleton<_i1035.CatalogRepository>(
       () => registerModule.catalogRepository(
@@ -186,25 +204,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i474.GetProfileUseCase>(
       () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()),
     );
-    gh.factory<_i771.CatalogBloc>(
-      () => registerModule.catalogBloc(gh<_i877.SearchCatalogUseCase>()),
-    );
-    gh.factory<_i662.LoginUseCase>(
-      () => registerModule.loginUseCase(gh<_i662.AuthRepository>()),
-    );
-    gh.factory<_i662.LogoutUseCase>(
-      () => registerModule.logoutUseCase(gh<_i662.AuthRepository>()),
-    );
-    gh.factory<_i662.RestoreSessionUseCase>(
-      () => registerModule.restoreSessionUseCase(gh<_i662.AuthRepository>()),
-    );
-    gh.factory<_i173.ProfileBloc>(
-      () => _i173.ProfileBloc(
-        gh<_i474.GetProfileUseCase>(),
-        gh<_i662.LogoutUseCase>(),
-        gh<_i662.SessionManager>(),
-      ),
-    );
     gh.lazySingleton<_i1024.AuthBloc>(
       () => _i1024.AuthBloc(
         gh<_i662.LoginUseCase>(),
@@ -212,6 +211,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.LogoutUseCase>(),
         gh<_i662.SessionManager>(),
         gh<_i662.AuthStateMutationCoordinator>(),
+      ),
+    );
+    gh.factory<_i771.CatalogBloc>(
+      () => registerModule.catalogBloc(gh<_i877.SearchCatalogUseCase>()),
+    );
+    gh.factory<_i173.ProfileBloc>(
+      () => _i173.ProfileBloc(
+        gh<_i474.GetProfileUseCase>(),
+        gh<_i662.LogoutUseCase>(),
+        gh<_i662.SessionManager>(),
       ),
     );
     return this;

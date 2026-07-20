@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Double Login 反向完成時只允許最新 Login commit', () async {
     final sessionManager = SessionManager();
-    final local = _FakeAuthLocalStore();
+    final local = _FakeAuthPersistenceStores();
     final api = _ControlledAuthApi();
     final repository = _repository(
       AuthRemoteDataSource(api),
@@ -51,7 +51,7 @@ void main() {
   test('Logout 會使尚未完成的舊 Login 失效', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
-    final local = _FakeAuthLocalStore()
+    final local = _FakeAuthPersistenceStores()
       ..tokens = const StoredAuthTokens(
         accessToken: 'old-token',
         refreshToken: 'old-refresh',
@@ -88,7 +88,7 @@ void main() {
   test('Logout cleanup 一旦開始會完成，但不會清除較新 Login 的 Session', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
-    final local = _BlockingLogoutAuthLocalStore()
+    final local = _BlockingLogoutAuthPersistenceStores()
       ..tokens = const StoredAuthTokens(
         accessToken: 'old-token',
         refreshToken: 'old-refresh',
@@ -133,7 +133,7 @@ void main() {
   test('Login 保存 User 失敗時會補償清除本地狀態與 runtime Session', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
-    final local = _FakeAuthLocalStore(failSaveUser: true);
+    final local = _FakeAuthPersistenceStores(failSaveUser: true);
     final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
@@ -155,7 +155,7 @@ void main() {
 
   test('Restore 遇到損壞 Token Pair 時會清除本地狀態並視為未登入', () async {
     final sessionManager = SessionManager();
-    final local = _FakeAuthLocalStore(
+    final local = _FakeAuthPersistenceStores(
       corruptedTokens: true,
       readUserError: StateError('user store must not be read'),
     );
@@ -177,7 +177,7 @@ void main() {
 
   test('Restore credential absent時不讀User store並直接清理', () async {
     final sessionManager = SessionManager();
-    final local = _FakeAuthLocalStore(
+    final local = _FakeAuthPersistenceStores(
       readUserError: StateError('user store must not be read'),
     );
     final repository = _repository(
@@ -198,7 +198,7 @@ void main() {
 
   test('Restore 遇到legacy token缺少userId時會清除本地狀態', () async {
     final sessionManager = SessionManager();
-    final local = _FakeAuthLocalStore()
+    final local = _FakeAuthPersistenceStores()
       ..tokens = const StoredAuthTokens(
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
@@ -221,7 +221,7 @@ void main() {
 
   test('Restore 遇到token與user identity不一致時會清除本地狀態', () async {
     final sessionManager = SessionManager();
-    final local = _FakeAuthLocalStore()
+    final local = _FakeAuthPersistenceStores()
       ..tokens = const StoredAuthTokens(
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
@@ -245,7 +245,7 @@ void main() {
 
   test('Restore token與user identity一致時建立相同user Session', () async {
     final sessionManager = SessionManager();
-    final local = _FakeAuthLocalStore()
+    final local = _FakeAuthPersistenceStores()
       ..tokens = const StoredAuthTokens(
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
@@ -273,7 +273,7 @@ void main() {
           accessToken: 'runtime-token',
           userId: 'runtime-user',
         );
-      final local = _FakeAuthLocalStore(failReadTokens: true);
+      final local = _FakeAuthPersistenceStores(failReadTokens: true);
       final repository = _repository(
         AuthRemoteDataSource(MockAuthApi()),
         local,
@@ -298,7 +298,7 @@ void main() {
       message: 'unexpected restore protocol failure',
       stackTrace: StackTrace.current,
     );
-    final local = _FakeAuthLocalStore(readTokensError: unexpected);
+    final local = _FakeAuthPersistenceStores(readTokensError: unexpected);
     final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
@@ -316,7 +316,7 @@ void main() {
   test('Logout 第一個 cleanup 失敗時仍執行第二個並清除 runtime Session', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'token', userId: 'user-001');
-    final local = _FakeAuthLocalStore(failClearUser: true);
+    final local = _FakeAuthPersistenceStores(failClearUser: true);
     final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
@@ -336,7 +336,9 @@ void main() {
   test('Login persistence 發生未知錯誤時仍補償清除並保留原始錯誤', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
-    final local = _FakeAuthLocalStore(failSaveUserWithUnknownError: true);
+    final local = _FakeAuthPersistenceStores(
+      failSaveUserWithUnknownError: true,
+    );
     final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
@@ -357,7 +359,9 @@ void main() {
   test('Logout 第一個 cleanup 發生未知錯誤時仍執行第二個並保留原始錯誤', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'token', userId: 'user-001');
-    final local = _FakeAuthLocalStore(failClearUserWithUnknownError: true);
+    final local = _FakeAuthPersistenceStores(
+      failClearUserWithUnknownError: true,
+    );
     final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
@@ -382,7 +386,7 @@ void main() {
         message: 'unexpected logout failure',
         stackTrace: StackTrace.current,
       );
-      final local = _FakeAuthLocalStore(clearUserError: unexpected);
+      final local = _FakeAuthPersistenceStores(clearUserError: unexpected);
       final repository = _repository(
         AuthRemoteDataSource(MockAuthApi()),
         local,
@@ -403,7 +407,7 @@ void main() {
     () async {
       final sessionManager = SessionManager()
         ..setAuthenticated(accessToken: 'token', userId: 'user-001');
-      final local = _FakeAuthLocalStore(
+      final local = _FakeAuthPersistenceStores(
         failClearUser: true,
         clearTokensError: StateError('clear tokens unknown failure'),
       );
@@ -432,7 +436,7 @@ void main() {
         message: 'clear tokens protocol failure',
         stackTrace: StackTrace.current,
       );
-      final local = _FakeAuthLocalStore(
+      final local = _FakeAuthPersistenceStores(
         failClearUser: true,
         clearTokensError: protocolError,
       );
@@ -454,7 +458,7 @@ void main() {
 
 AuthRepositoryImpl _repository(
   AuthRemoteDataSource remoteDataSource,
-  _FakeAuthLocalStore local,
+  _FakeAuthPersistenceStores local,
   SessionManager sessionManager,
   AuthStateMutationCoordinator mutationCoordinator,
 ) {
@@ -487,9 +491,9 @@ class _ControlledAuthApi implements AuthApi {
   }
 }
 
-class _FakeAuthLocalStore
+class _FakeAuthPersistenceStores
     implements AuthCredentialStore, AuthLegacyCredentialStore, AuthUserStore {
-  _FakeAuthLocalStore({
+  _FakeAuthPersistenceStores({
     this.failSaveUser = false,
     this.failClearUser = false,
     this.failSaveUserWithUnknownError = false,
@@ -606,7 +610,7 @@ class _FakeAuthLocalStore
   }
 }
 
-class _BlockingLogoutAuthLocalStore extends _FakeAuthLocalStore {
+class _BlockingLogoutAuthPersistenceStores extends _FakeAuthPersistenceStores {
   final Completer<void> _clearUserStarted = Completer<void>();
   final Completer<void> _clearUserRelease = Completer<void>();
 

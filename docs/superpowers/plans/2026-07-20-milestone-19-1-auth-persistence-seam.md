@@ -470,11 +470,11 @@ git commit -m "refactor(auth): 拆分Refresh持久化依賴"
 - Modify: `packages/auth/pubspec.yaml`
 - Delete: `packages/auth/lib/src/data/data_sources/auth_local_data_source.dart`
 
-- [ ] **Step 1：先寫DI graph test**
+- [x] **Step 1：先寫DI graph test**
 
 驗證三個store的concrete binding、singleton ownership，以及Repository與Refresher取得相同instances。
 
-- [ ] **Step 2：執行failing DI test**
+- [x] **Step 2：執行failing DI test**
 
 ```bash
 cd apps/flutter_architecture
@@ -483,15 +483,15 @@ flutter test test/app/di/register_module_auth_persistence_test.dart
 
 Expected：FAIL。
 
-- [ ] **Step 3：更新`RegisterModule`**
+- [x] **Step 3：更新`RegisterModule`**
 
 移除`AuthLocalDataSource`factory，新增三個lazy singleton binding並修改Repository / Refresher factory。
 
-- [ ] **Step 4：移除package plugin dependencies與舊exports**
+- [x] **Step 4：移除package plugin dependencies與舊exports**
 
 從`packages/auth/pubspec.yaml`移除`shared_preferences`與`sqflite`；從public export移除舊local data source與store，新增新contracts。
 
-- [ ] **Step 5：執行dependency resolution與generation**
+- [x] **Step 5：執行dependency resolution與generation**
 
 ```bash
 dart pub get
@@ -500,7 +500,7 @@ dart run melos run build_runner
 
 Expected：成功更新lockfile與generated DI；禁止手動修改generated source。
 
-- [ ] **Step 6：執行DI與package boundary驗證**
+- [x] **Step 6：執行DI與package boundary驗證**
 
 ```bash
 cd apps/flutter_architecture
@@ -513,7 +513,9 @@ git grep -n "AuthLocalDataSource\|AuthLocalStore\|AuthRefreshLocalStore\|AuthTok
 
 Expected：`packages/auth`無plugin import；舊型別無production consumer。
 
-- [ ] **Step 7：Commit**
+Task 6執行結果：三個store interface由App-owned adapters以lazy singleton組裝；Repository與Refresher均由同一組GetIt singleton dependencies建立。`packages/auth`已移除SharedPreferences／sqflite dependencies、舊`AuthLocalDataSource`與舊public export。受影響App persistence tests已改用三個新adapters。
+
+- [x] **Step 7：Commit**
 
 ```bash
 git add packages/auth apps/flutter_architecture/lib/app/di apps/flutter_architecture/test/app/di pubspec.lock

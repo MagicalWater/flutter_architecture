@@ -92,19 +92,21 @@ AuthCredentialMigrationResolved(tokens, user, diagnostics)
 - Modify: `packages/auth/lib/auth.dart`
 - Create: `packages/auth/test/auth_credential_migration_coordinator_test.dart`
 
-- [ ] 先建立failing contract tests。
-- [ ] 定義sealed resolution與safe diagnostic shape。
-- [ ] 兩個resolution variant都持有immutable diagnostics list；預設為empty，且可安全承載多個diagnostic。
-- [ ] Coordinator只接受三個Auth-specific stores，不接受plugin、DI或SessionManager型別。
-- [ ] 公開方法命名明確表達呼叫方已持有exclusive ownership，例如`resolveUnlocked()`。
-- [ ] Coordinator不得依賴`AuthStateMutationCoordinator`。
-- [ ] 驗證所有result / diagnostic `toString()`不含credential sentinel。
+- [x] 先建立failing contract tests。
+- [x] 定義sealed resolution與safe diagnostic shape。
+- [x] 兩個resolution variant都持有immutable diagnostics list；預設為empty，且可安全承載多個diagnostic。
+- [x] Coordinator只接受三個Auth-specific stores，不接受plugin、DI或SessionManager型別。
+- [x] 公開方法命名明確表達呼叫方已持有exclusive ownership，例如`resolveUnlocked()`。
+- [x] Coordinator不得依賴`AuthStateMutationCoordinator`。
+- [x] 驗證所有result / diagnostic `toString()`不含credential sentinel。
 
 Commit：
 
 ```bash
 git commit -m "feat(auth): 建立credential migration contract"
 ```
+
+Task 1執行結果：新增兩個sealed resolution variants，兩者皆持有defensive-copy後的immutable diagnostics list；resolved variant持有完整`StoredAuthTokens`與`AuthUser`，但result / diagnostic `toString()`不展開credential或原始error message。`AuthCredentialMigrationDiagnostic`保留typed operation、原始error與stack供後續App adapter明確使用。Coordinator constructor只接受Secure credential、Legacy credential與User三個Auth-specific stores，`resolveUnlocked()` public shape已建立，尚未實作Task 2 decision matrix。RED因所有migration types不存在而失敗；GREEN targeted 4 tests與Auth analyze通過。
 
 ## Task 2 — Unauthenticated與destructive decision matrix
 

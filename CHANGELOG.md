@@ -23,6 +23,7 @@
 - 規劃 Authentication Security & Step-Up Verification initiative，正式拆分為 Milestone 19 Secure Credential Storage & Migration、Milestone 20 OTP Step-Up Authentication 與 Milestone 21 Biometric-gated Local Session Unlock。
 - 新增 Architecture Decision 022，定義三個 Milestone 的依賴順序、package / App boundary、review gate、非目標與版本規則。
 - 完成Milestone 19-0 Planning Review與最終文件一致性review，新增Threat Model、Secure × Legacy × User decision matrix、migration owner、typed credential read taxonomy、cleanup / reporting contract與六項planning findings；P1 findings已取得approved disposition，但仍待implementation與tests正式關閉。
+- 建立並review Milestone 19-1 Auth Persistence Seam詳細implementation plan，明確拆分typed store contract、App-owned SharedPreferences / SQLite adapter、Repository / Refresher rewiring、DI與regression gate。
 
 ### Changed
 
@@ -31,7 +32,7 @@
 
 ### Notes
 
-- 本次只完成Milestone拆分落檔與Milestone 19-0 Planning Review；未修改 production code、dependency、Native 設定或 VERSION。
+- Milestone 19-0已以commit `07b5d89`封存並推送；目前只完成19-1 implementation plan，未修改 production code、dependency、Native 設定或 VERSION。
 
 ---
 

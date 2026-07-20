@@ -1194,7 +1194,15 @@ Review拍板：
 - Secure已驗證且只剩Legacy cleanup failure時允許restore，並non-fatal report與後續重試。
 - Interactive Logout與passive invalidation都清除runtime Session並嘗試清除Secure、Legacy與User；unknown error不得被空catch吞掉。
 
-目前正式下一步為Milestone 19-1 Auth Persistence Seam：
+Milestone 19-0已由commit `07b5d89 docs(auth): 封存 Milestone 19-0 規劃審查`提交並推送至`origin/main`。
+
+Milestone 19-1詳細implementation plan已建立並完成review：
+
+```txt
+docs/superpowers/plans/2026-07-20-milestone-19-1-auth-persistence-seam.md
+```
+
+目前正式下一步為依照plan實作Milestone 19-1 Auth Persistence Seam：
 
 ```txt
 建立Auth-specific store abstraction

@@ -1993,7 +1993,7 @@ Milestone 21 — Biometric-gated Local Session Unlock
 
 ## Milestone 19：Secure Credential Storage & Migration
 
-狀態：19-0 Completed；尚未開始 production implementation。下一階段為19-1 Auth Persistence Seam。
+狀態：19-0 Completed / Archived；19-1詳細implementation plan已完成review，尚未開始production implementation。
 
 ### 目標
 
@@ -2017,6 +2017,14 @@ Milestone 21 — Biometric-gated Local Session Unlock
 19-0正式review與最終文件一致性review已完成：新增`docs/audits/milestone_19_planning_review.md`，以現況source evidence建立Threat Model、Store boundary、typed read taxonomy、Secure × Legacy × User decision matrix、migration owner、禁止nested mutation lock、cleanup / reporting contract與六項planning findings。Decision 022升為Accepted；各P1 finding已取得approved disposition但仍待implementation與tests關閉。Milestone 19不採persistent migration marker，Secure unavailable不得fallback Legacy。下一步為19-1。
 
 ### Milestone 19-1：Auth Persistence Seam
+
+詳細implementation plan：
+
+```txt
+docs/superpowers/plans/2026-07-20-milestone-19-1-auth-persistence-seam.md
+```
+
+Plan review已通過：19-1只建立typed store contract、將既有SharedPreferences / SQLite adapter移至App layer、更新Repository / Refresher依賴與DI graph，並保持runtime behavior等價。不得提前加入Secure Storage、migration policy、Native設定或VERSION變更。
 
 - [ ] 在`packages/auth`建立Auth-specific credential、legacy與user store abstraction。
 - [ ] Credential read使用`absent / present / corrupted` sealed result；operational unavailable仍以typed `AppException`表達。

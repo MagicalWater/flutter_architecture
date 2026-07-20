@@ -1225,7 +1225,7 @@ App Composition Root綁定共享lazy singleton instances
 - Auth package 56 tests、App auth / DI targeted 45 tests與workspace完整437 tests通過；workspace analyze與App bundle build通過。
 - 未新增`flutter_secure_storage`、migration policy、Android Native設定或VERSION變更。
 
-Milestone 19-2 Secure Credential Store Adapter已完成並通過implementation review；目前已進入Milestone 19-3 SharedPreferences Legacy Migration規劃階段。
+Milestone 19-3 SharedPreferences Legacy Migration已完成並通過implementation review；目前下一步為Milestone 19-4 Auth Lifecycle Integration。
 
 Milestone 19-3詳細implementation plan已建立：
 
@@ -1233,7 +1233,11 @@ Milestone 19-3詳細implementation plan已建立：
 docs/superpowers/plans/2026-07-20-milestone-19-3-shared-preferences-legacy-migration.md
 ```
 
-19-3計畫建立`AuthCredentialMigrationCoordinator`作為唯一migration policy owner，完整測試Secure × Legacy × User decision matrix、write/read-back/cleanup順序、partial migration re-entry、identity validation與cleanup failure ownership。Coordinator不依賴`SessionManager`或`AuthStateMutationCoordinator`；App DI只建立named Secure dependency shape，Repository與Refresher仍保持SharedPreferences authority。Plan review已通過，並固定immutable diagnostics list、destructive cleanup成功條件、完整payload read-back equality、`dataCorruption` validation failure與rollback error優先權；尚未修改production code、generated DI或VERSION。
+19-3實作已建立`AuthCredentialMigrationCoordinator`作為唯一migration policy owner，完整覆蓋Secure × Legacy × User decision matrix、destructive cleanup、Secure authority、Legacy cleanup pending、write/read-back/cleanup順序、partial migration re-entry、identity validation與cleanup failure ownership。Resolution使用immutable diagnostics list；read-back比較完整Token Pair、userId與兩個expiration欄位，validation failure固定為`AppExceptionKind.dataCorruption`與`auth_secure_migration_read_back_invalid`，plugin operational failure保持`localStorage`。Write或read-back失敗會保留Legacy並嘗試rollback Secure；rollback error優先於原始錯誤。
+
+Coordinator公開入口為`resolveUnlocked()`，不依賴`SessionManager`或`AuthStateMutationCoordinator`。Guard fake證明呼叫方只取得一次exclusive ownership，Coordinator不取得nested lock；同一instance re-entry只依Secure、Legacy與User真實store state，不使用persistent marker或跨呼叫mutable authority state。App新增migration diagnostic reporter adapter與fixed safe context，逐項上報所有diagnostics且reporter failure不阻止後續項目。DI以named Secure store組裝Coordinator，但Repository與Refresher仍保持default SharedPreferences authority，production source of truth尚未切換。
+
+19-3 regression gate：Auth migration targeted 39項、App adapter / DI targeted 3項；workspace五個packages共506項tests與analyze全數通過，App `flutter build bundle`成功。同步修正Android scaffold contract test，使其符合19-2已核准的`minSdk = maxOf(flutter.minSdkVersion, 23)`。VERSION維持1.2.0，未加入OTP、Biometric、Device Binding或額外Native permission。下一步為19-4，由Login / Restore / Refresh / Logout lifecycle owner在單一exclusive section內整合migration與Secure authority切換。
 
 Milestone 19-2詳細implementation plan已建立：
 

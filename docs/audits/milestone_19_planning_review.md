@@ -216,19 +216,21 @@ Diagnostic不得包含Token、raw payload、SharedPreferences value、Secure Sto
 ### M19-PR01 — Migration缺少唯一owner
 
 - Severity：P1。
-- Status：Disposition approved；待19-3 / 19-4 implementation與tests關閉。
+- Status：19-3 implementation evidence complete；待19-4 lifecycle integration完整關閉。
 - Risk：Repository、Refresher與adapter各自判斷migration會造成重複政策、authority不一致與競態。
 - Disposition：由`AuthCredentialMigrationCoordinator`作唯一policy owner；Lifecycle owner取得exclusive ownership。
 - Target：19-3 / 19-4。
+- 19-3 Evidence：`AuthCredentialMigrationCoordinator`已成為唯一Secure × Legacy × User migration policy owner，constructor只接受三個Auth-specific stores；decision matrix、Secure authority、Legacy migration、read-back validation、rollback與cleanup pending均由同一owner處理。App DI以named Secure store組裝Coordinator，但Repository與Refresher仍維持default SharedPreferences authority。
 
 ### M19-PR02 — Mutation coordinator不可重入
 
 - Severity：P1。
-- Status：19-1 implementation evidence complete；待19-3 / 19-4完整關閉。
+- Status：19-1與19-3 implementation evidence complete；待19-4 lifecycle integration完整關閉。
 - Risk：migration或cleanup helper在exclusive action中再次等待`runExclusive`會self-deadlock。
 - Disposition：明確禁止nested lock；使用已持有ownership的`...Unlocked` helper。
 - Target：19-1 / 19-3 / 19-4。
 - 19-1 Evidence：Repository與Refresher複合mutation只取得一次`runExclusive`，cleanup使用既有ownership下的helper；concurrency、latest-intent、single-flight與cross-session tests通過。
+- 19-3 Evidence：Migration公開入口固定為`resolveUnlocked()`，production source不依賴`AuthStateMutationCoordinator`且不包含`runExclusive`。Guard fake證明呼叫方只取得一次exclusive ownership、所有store access均發生在ownership內，nested ownership次數為0；同一Coordinator instance可由真實store state重入，不保存跨呼叫mutable authority state。
 
 ### M19-PR03 — Absence、corruption與unavailable taxonomy不足
 
@@ -259,10 +261,11 @@ Diagnostic不得包含Token、raw payload、SharedPreferences value、Secure Sto
 ### M19-PR06 — Cleanup failure ownership不足
 
 - Severity：P1。
-- Status：Disposition approved；待19-3 / 19-4 implementation與tests關閉。
+- Status：19-3 migration cleanup evidence complete；待19-4 lifecycle cleanup完整關閉。
 - Risk：沿用空catch會吞掉Secure cleanup failure與unknown error，且不同flow可能產生不同Session語意。
 - Disposition：區分interactive、passive與post-migration cleanup；固定return、report與rethrow規則。
 - Target：19-3 / 19-4。
+- 19-3 Evidence：Destructive migration cleanup會嘗試所有指定stores，unknown優先於expected local-storage error，只有全部成功才回unauthenticated。Secure write / read-back failure會保留Legacy並rollback無法驗證的Secure資料；rollback failure優先於原始錯誤。Secure已驗證後Legacy cleanup expected failure是唯一可降級為resolved + safe diagnostic的情境，unknown error仍保留identity / stack重拋。App adapter逐項上報所有diagnostics且單一reporter failure不阻止後續項目。
 
 ---
 
@@ -304,3 +307,18 @@ Milestone 19-2已完成並通過implementation review。
 - Workspace analyze、465項完整tests與release APK build通過；未加入migration、OTP、Biometric runtime或VERSION變更。
 
 M19-PR03已關閉；M19-PR05完成19-2 evidence，保留至19-5 runtime evidence後完整關閉。下一步為Milestone 19-3。
+
+## 19-3 Implementation Review Update
+
+Milestone 19-3已完成並通過implementation review。
+
+- `AuthCredentialMigrationCoordinator`是唯一migration policy owner，且不依賴DI framework、plugin、`SessionManager`或mutation coordinator。
+- Secure × Legacy × User decision matrix、Secure unavailable / corrupted不得fallback、destructive cleanup、Secure authority與Legacy cleanup pending均有typed tests。
+- Legacy migration固定遵守write Secure → read-back →完整payload validation → clear Legacy；write / read-back failure保留Legacy並嘗試rollback Secure。
+- Read-back validation比較Access Token、Refresh Token、userId與兩個expiration欄位；state validation failure使用固定`dataCorruption` diagnostic code，plugin operational failure保持`localStorage`。
+- App-owned diagnostic adapter逐項上報immutable diagnostics，使用固定safe context，不展開credential或plugin message。
+- App DI以named Secure store組裝Coordinator，但Repository與Refresher仍使用default SharedPreferences credential store，production authority尚未切換。
+- Guard fake與同instance re-entry regression證明Coordinator不取得nested lock、不使用persistent marker，也不保存跨呼叫mutable authority state。
+- Workspace analyze、506項完整tests與App bundle build通過；Android scaffold contract同步為`maxOf(flutter.minSdkVersion, 23)`；VERSION維持1.2.0。
+
+M19-PR01、M19-PR02與M19-PR06均完成19-3 evidence，但涉及Login / Restore / Refresh / Logout lifecycle ownership的部分仍依原Target保留至19-4完整關閉。下一步為Milestone 19-4 Auth Lifecycle Integration。

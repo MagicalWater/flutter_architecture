@@ -28,6 +28,8 @@
 - 建立並review Milestone 19-3 SharedPreferences Legacy Migration implementation plan，拆分migration public contract、destructive matrix、Secure authority cleanup、write/read-back validation、named DI與concurrency regression gate。
 - 完成Milestone 19-1 Auth Persistence Seam：新增Auth-specific credential、legacy與user store contracts及sealed read taxonomy；將SharedPreferences / SQLite adapters與plugin ownership移至App layer；Repository與Refresher改用三個明確store boundaries；移除舊`AuthLocalDataSource`、聚合local-store介面與`packages/auth`的plugin dependencies。
 - 完成Milestone 19-2 Secure Credential Store Adapter：App加入`flutter_secure_storage: ^10.3.1`、App-owned Secure adapter、single logical Token Pair payload、typed corruption / operational failure mapping、named Secure DI binding與Android artifact contract。
+- 完成Milestone 19-3 SharedPreferences Legacy Migration：新增唯一`AuthCredentialMigrationCoordinator`、sealed resolution與immutable diagnostics，實作Secure × Legacy × User decision matrix、Secure authority、Legacy→Secure write / read-back validation、rollback與cleanup pending policy。
+- 新增App-owned Auth migration diagnostic reporter adapter與fixed safe reporting context；DI以named Secure store、Legacy store與User store組裝migration coordinator。
 
 ### Changed
 
@@ -37,11 +39,14 @@
 - 19-2 plan review固定Secure adapter只以named binding存在；default SharedPreferences authority不變，plugin operational exception與unknown programming error分流處理。
 - Android Secure Storage minimum SDK contract改為`maxOf(flutter.minSdkVersion, 23)`，避免Flutter build upgrader覆寫literal設定，同時允許Flutter未來提高最低版本；App-wide backup維持停用。
 - 19-3 plan review固定resolution使用immutable diagnostics list；destructive cleanup未完整成功時不得回成功unauthenticated；read-back validation比較完整Token Pair與metadata，validation state failure、plugin operational failure及rollback cleanup error採明確typed priority。
+- Migration Coordinator固定使用`resolveUnlocked()`，不自行取得Auth mutation lock；guard與re-entry regression證明不使用nested lock、persistent marker或跨呼叫mutable authority state。
+- Android scaffold contract test同步19-2核准設定，驗證`minSdk = maxOf(flutter.minSdkVersion, 23)`而非過期literal contract。
 
 ### Notes
 
 - Milestone 19-1 implementation review已通過；workspace analyze、437項完整tests與App bundle build全數通過。未修改Native設定或VERSION，下一步為Milestone 19-2 Secure Credential Store Adapter。
 - Milestone 19-2 implementation review已通過；workspace analyze、465項完整tests與release APK build全數通過。Release manifest實際minSdk 24、targetSdk 36、backup disabled，且沒有Biometric / Fingerprint permission；default SharedPreferences authority未切換，VERSION維持1.2.0，下一步為Milestone 19-3 SharedPreferences Legacy Migration。
+- Milestone 19-3 implementation review已通過；Auth migration targeted 39項、App adapter / DI targeted 3項、workspace analyze、506項完整tests與App bundle build全數通過。Repository與Refresher仍使用default SharedPreferences authority，VERSION維持1.2.0，下一步為Milestone 19-4 Auth Lifecycle Integration。
 
 ---
 

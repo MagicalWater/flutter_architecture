@@ -108,6 +108,28 @@ void main() {
     },
   );
 
+  test('caller owns the only exclusive section around migration', () async {
+    final guard = _ExclusiveGuard();
+    final secure = _GuardedCredentialStore(
+      guard,
+      const AuthCredentialReadPresent(tokens),
+    );
+    final legacy = _GuardedLegacyStore(guard, const AuthCredentialReadAbsent());
+    final userStore = _GuardedUserStore(guard, user);
+    final coordinator = AuthCredentialMigrationCoordinator(
+      secure,
+      legacy,
+      userStore,
+    );
+
+    final result = await guard.runExclusive(coordinator.resolveUnlocked);
+
+    expect(result, isA<AuthCredentialMigrationResolved>());
+    expect(guard.runExclusiveCalls, 1);
+    expect(guard.nestedRunExclusiveCalls, 0);
+    expect(guard.isHeld, isFalse);
+  });
+
   group('unauthenticated and destructive matrix', () {
     test(
       'all stores absent returns unauthenticated without mutation',
@@ -783,6 +805,98 @@ final class _UserStore implements AuthUserStore {
 
   @override
   Future<void> writeUser(AuthUser user) async {}
+}
+
+final class _ExclusiveGuard {
+  bool isHeld = false;
+  int runExclusiveCalls = 0;
+  int nestedRunExclusiveCalls = 0;
+
+  Future<T> runExclusive<T>(Future<T> Function() action) async {
+    runExclusiveCalls += 1;
+    if (isHeld) {
+      nestedRunExclusiveCalls += 1;
+      throw StateError('Nested exclusive ownership is forbidden.');
+    }
+    isHeld = true;
+    try {
+      return await action();
+    } finally {
+      isHeld = false;
+    }
+  }
+
+  void assertHeld() {
+    if (!isHeld) {
+      throw StateError('Migration store accessed without ownership.');
+    }
+  }
+}
+
+final class _GuardedCredentialStore implements AuthCredentialStore {
+  _GuardedCredentialStore(this.guard, this.result);
+
+  final _ExclusiveGuard guard;
+  AuthCredentialReadResult result;
+
+  @override
+  Future<void> clearCredential() async => guard.assertHeld();
+
+  @override
+  Future<AuthCredentialReadResult> readCredential() async {
+    guard.assertHeld();
+    return result;
+  }
+
+  @override
+  Future<void> writeCredential(StoredAuthTokens tokens) async {
+    guard.assertHeld();
+    result = AuthCredentialReadPresent(tokens);
+  }
+}
+
+final class _GuardedLegacyStore implements AuthLegacyCredentialStore {
+  _GuardedLegacyStore(this.guard, this.result);
+
+  final _ExclusiveGuard guard;
+  AuthCredentialReadResult result;
+
+  @override
+  Future<void> clearLegacyCredential() async {
+    guard.assertHeld();
+    result = const AuthCredentialReadAbsent();
+  }
+
+  @override
+  Future<AuthCredentialReadResult> readLegacyCredential() async {
+    guard.assertHeld();
+    return result;
+  }
+}
+
+final class _GuardedUserStore implements AuthUserStore {
+  _GuardedUserStore(this.guard, this.value);
+
+  final _ExclusiveGuard guard;
+  AuthUser? value;
+
+  @override
+  Future<void> clearUser() async {
+    guard.assertHeld();
+    value = null;
+  }
+
+  @override
+  Future<AuthUser?> readUser() async {
+    guard.assertHeld();
+    return value;
+  }
+
+  @override
+  Future<void> writeUser(AuthUser user) async {
+    guard.assertHeld();
+    value = user;
+  }
 }
 
 final class _MigrationStores {

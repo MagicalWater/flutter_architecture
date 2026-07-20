@@ -2069,25 +2069,29 @@ Plan review已拍板：使用stable `flutter_secure_storage: ^10.3.1`；Android 
 docs/superpowers/plans/2026-07-20-milestone-19-3-shared-preferences-legacy-migration.md
 ```
 
-目前狀態：Implementation plan review已通過，可進入Task 1；尚未修改migration production code或credential authority。
+目前狀態：Completed / Reviewed。
 
 Plan review已固定：resolution以immutable diagnostics list承載多個safe cleanup evidence；destructive cleanup只有全部成功才回unauthenticated，expected／unknown failure均在嘗試所有cleanup後依優先權重拋；read-back validation比較完整Token Pair、userId與expiration metadata，validation state failure使用`AppExceptionKind.dataCorruption`與固定safe diagnostic code，plugin operational failure仍維持`localStorage`。
 
-- [ ] `auth.tokens`只有在Token Pair完整且userId可驗證時才允許migration。
-- [ ] `auth.accessToken`缺少Refresh Token與identity，只允許安全清除，不得升級為有效Session。
-- [ ] Secure無資料且Legacy合法時，先寫Secure、read-back驗證，再刪Legacy。
-- [ ] Secure write failure不得刪除Legacy。
-- [ ] Secure成功但Legacy cleanup失敗時，Secure成為權威並於後續重試cleanup。
-- [ ] Secure合法且與SQLite User identity一致時由Secure優先，Legacy mismatch或corruption只觸發Legacy cleanup。
-- [ ] Secure與SQLite User identity mismatch不得猜測，安全清除完整Auth state。
-- [ ] Corruption、partial migration與re-entry有明確typed behavior。
-- [ ] 不建立persistent migration marker；只依Secure、Legacy與User真實store state推導migration phase。
-- [ ] Migration與Refresh rotation / Login / Logout共用mutation coordination。
-- [ ] `AuthCredentialMigrationCoordinator`不自行取得lock；Lifecycle owner只取得一次exclusive ownership，禁止nested `runExclusive`。
+- [x] `auth.tokens`只有在Token Pair完整且userId可驗證時才允許migration。
+- [x] `auth.accessToken`缺少Refresh Token與identity，只允許安全清除，不得升級為有效Session。
+- [x] Secure無資料且Legacy合法時，先寫Secure、read-back驗證，再刪Legacy。
+- [x] Secure write failure不得刪除Legacy。
+- [x] Secure成功但Legacy cleanup失敗時，Secure成為權威並於後續重試cleanup。
+- [x] Secure合法且與SQLite User identity一致時由Secure優先，Legacy mismatch或corruption只觸發Legacy cleanup。
+- [x] Secure與SQLite User identity mismatch不得猜測，安全清除完整Auth state。
+- [x] Corruption、partial migration與re-entry有明確typed behavior。
+- [x] 不建立persistent migration marker；只依Secure、Legacy與User真實store state推導migration phase。
+- [x] Migration policy提供`resolveUnlocked()`，由19-4 lifecycle owner整合至既有mutation coordination。
+- [x] `AuthCredentialMigrationCoordinator`不自行取得lock；guard regression證明呼叫方只取得一次exclusive ownership，禁止nested `runExclusive`。
 
 完成定義：所有Secure × Legacy × User主要組合有測試；migration可重入且舊credential不會覆蓋rotated或較新Session credential。
 
+19-3 implementation review已通過：新增唯一migration policy owner、sealed resolution與immutable diagnostics；完成Secure × Legacy × User matrix、destructive cleanup、Secure authority、Legacy cleanup pending、Legacy→Secure write / read-back /完整payload validation與rollback priority。App-owned reporter adapter逐項上報safe diagnostics；DI以named Secure store組裝Coordinator，但Repository與Refresher仍維持default SharedPreferences authority。Guard fake與同instance re-entry tests確認Coordinator不取得nested lock、不使用persistent marker且不保存mutable authority state。Workspace analyze、506項完整tests與App bundle build通過；VERSION維持1.2.0。下一步為19-4 Auth Lifecycle Integration。
+
 ### Milestone 19-4：Auth Lifecycle Integration
+
+目前狀態：Next；19-3已Completed / Reviewed，可開始implementation planning。
 
 - [ ] Login保存Secure Token Pair與SQLite User成功後才建立Session。
 - [ ] Restore以Secure Store為credential source of truth並驗證user identity。

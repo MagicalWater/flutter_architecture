@@ -318,6 +318,15 @@ git add apps/flutter_architecture/lib/features/auth/data/stores/sqflite_auth_use
 git commit -m "refactor(auth): 將使用者持久化移至App"
 ```
 
+Task 3 implementation review：Passed。
+
+- `SqfliteAuthUserStore`只依賴公開`AuthUserStore`與Domain `AuthUser`，未暴露`AuthUserModel`或package internal型別。
+- Adapter固定使用既有`auth_user` table與`slot = 1`，未修改schema、database version或migration。
+- `ConflictAlgorithm.replace`維持single-active-user語意；A後寫B只保留B，且資料庫仍只有一列。
+- 只有SQLite `DatabaseException`映射為typed local-storage `AppException`並保留cause / stack；row mapping型別錯誤維持unexpected，不降級成absence。
+- Repository整合案例仍保留舊`AuthLocalDataSource` wiring，待Task 4 constructor rewiring時一起切換，未提前跨Task改production contract。
+- SQLite adapter 5 tests、single-active-user persistence 6 tests、App analyze與`git diff --check`均通過；無Open P0 / P1 review finding。
+
 ---
 
 ## Task 4：Repository改用新store boundaries

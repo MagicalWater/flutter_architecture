@@ -408,11 +408,11 @@ Task 4 implementation review：Passed after fix。
 - Delete after migration: `packages/auth/lib/src/data/data_sources/auth_refresh_local_store.dart`
 - Delete after migration: `packages/auth/lib/src/session/auth_token_storage.dart`
 
-- [ ] **Step 1：先改refresher tests為新store fakes**
+- [x] **Step 1：先改refresher tests為新store fakes**
 
 鎖定：present才refresh；absent、corrupted、missing userId、identity mismatch、expired refresh token維持expiration語意；rotation persistence-first；passive invalidation清三個store；single-flight與cross-session tests不得減少。
 
-- [ ] **Step 2：執行failing refresher tests**
+- [x] **Step 2：執行failing refresher tests**
 
 ```bash
 dart run melos exec --scope=auth -- flutter test test/auth_session_refresher_test.dart
@@ -420,7 +420,7 @@ dart run melos exec --scope=auth -- flutter test test/auth_session_refresher_tes
 
 Expected：FAIL。
 
-- [ ] **Step 3：修改Refresher constructor與flow**
+- [x] **Step 3：修改Refresher constructor與flow**
 
 ```dart
 AuthSessionRefresher(
@@ -435,7 +435,7 @@ AuthSessionRefresher(
 
 M19-PR06的non-fatal reporting完整收斂留到19-4，不在19-1混入行為變更。
 
-- [ ] **Step 4：執行refresher tests**
+- [x] **Step 4：執行refresher tests**
 
 ```bash
 dart run melos exec --scope=auth -- flutter test test/auth_session_refresher_test.dart
@@ -443,7 +443,7 @@ dart run melos exec --scope=auth -- flutter test test/auth_session_refresher_tes
 
 Expected：PASS。
 
-- [ ] **Step 5：Commit**
+- [x] **Step 5：Commit**
 
 ```bash
 git add packages/auth/lib/src/refresh/auth_session_refresher.dart packages/auth/test/auth_session_refresher_test.dart packages/auth/lib/src/data/data_sources/auth_refresh_local_store.dart packages/auth/lib/src/session/auth_token_storage.dart

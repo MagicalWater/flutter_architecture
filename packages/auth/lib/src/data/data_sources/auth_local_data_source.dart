@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/data/exceptions/corrupted_auth_tokens_exception.dart';
-import 'package:auth/src/data/data_sources/auth_refresh_local_store.dart';
-import 'package:auth/src/session/auth_token_storage.dart';
 import 'package:core/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -21,7 +19,7 @@ import 'package:sqflite/sqflite.dart';
 /// - profile 存在 SQLite。
 ///
 /// 這樣可以示範兩種常見本地持久化方式。
-class AuthLocalDataSource implements AuthTokenStorage, AuthRefreshLocalStore {
+class AuthLocalDataSource {
   const AuthLocalDataSource(this._preferences, this._database);
 
   static const String _tokensKey = 'auth.tokens';
@@ -31,7 +29,6 @@ class AuthLocalDataSource implements AuthTokenStorage, AuthRefreshLocalStore {
   final SharedPreferences _preferences;
   final Database _database;
 
-  @override
   Future<void> saveTokens(StoredAuthTokens tokens) async {
     await _guardLocal(() async {
       final success = await _preferences.setString(
@@ -47,7 +44,6 @@ class AuthLocalDataSource implements AuthTokenStorage, AuthRefreshLocalStore {
     }, message: '儲存 token pair 失敗');
   }
 
-  @override
   Future<StoredAuthTokens?> readTokens() async {
     return _guardLocal(() async {
       final raw = _preferences.getString(_tokensKey);
@@ -72,7 +68,6 @@ class AuthLocalDataSource implements AuthTokenStorage, AuthRefreshLocalStore {
     }, message: '讀取 token pair 失敗');
   }
 
-  @override
   Future<void> clearTokens() async {
     await _guardLocal(() async {
       final tokensRemoved = await _preferences.remove(_tokensKey);
@@ -114,7 +109,6 @@ class AuthLocalDataSource implements AuthTokenStorage, AuthRefreshLocalStore {
     return AuthUserModel.fromJson(rows.first);
   }
 
-  @override
   Future<void> clearUser() async {
     await _guardLocal(() => _database.delete(_userTable), message: '清除登入使用者失敗');
   }

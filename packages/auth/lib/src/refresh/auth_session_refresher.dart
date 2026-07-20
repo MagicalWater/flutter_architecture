@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:api_client/api_client.dart';
-import 'package:auth/src/data/data_sources/auth_refresh_local_store.dart';
 import 'package:auth/src/data/data_sources/auth_refresh_remote_data_source.dart';
-import 'package:auth/src/data/exceptions/corrupted_auth_tokens_exception.dart';
 import 'package:auth/src/data/exceptions/invalid_refresh_credential_exception.dart';
 import 'package:auth/src/data/exceptions/temporary_refresh_exception.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
+import 'package:auth/src/data/stores/auth_credential_read_result.dart';
+import 'package:auth/src/data/stores/auth_credential_store.dart';
+import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
+import 'package:auth/src/data/stores/auth_user_store.dart';
 import 'package:auth/src/session/session_manager.dart';
 import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
 import 'package:core/core.dart';
@@ -14,13 +16,17 @@ import 'package:core/core.dart';
 class AuthSessionRefresher implements AuthRefresher {
   AuthSessionRefresher(
     this._remoteDataSource,
-    this._localStore,
+    this._credentialStore,
+    this._legacyCredentialStore,
+    this._userStore,
     this._sessionManager,
     this._mutationCoordinator,
   );
 
   final AuthRefreshRemoteDataSource _remoteDataSource;
-  final AuthRefreshLocalStore _localStore;
+  final AuthCredentialStore _credentialStore;
+  final AuthLegacyCredentialStore _legacyCredentialStore;
+  final AuthUserStore _userStore;
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
 
@@ -58,10 +64,7 @@ class AuthSessionRefresher implements AuthRefresher {
       future: operation,
     );
     _inFlight = inFlight;
-    _completeRefresh(
-      inFlight: inFlight,
-      completer: completer,
-    );
+    _completeRefresh(inFlight: inFlight, completer: completer);
     return operation;
   }
 
@@ -87,7 +90,15 @@ class AuthSessionRefresher implements AuthRefresher {
         if (!_isSameSession(inFlight.generation, inFlight.userId)) {
           return null;
         }
-        return _localStore.readTokens();
+        final credential = await _credentialStore.readCredential();
+        if (credential is! AuthCredentialReadPresent) {
+          return null;
+        }
+        final user = await _userStore.readUser();
+        if (user == null || user.id != inFlight.userId) {
+          return null;
+        }
+        return credential.tokens;
       });
       if (!_isSameSession(inFlight.generation, inFlight.userId)) {
         return const AuthRefreshSessionChanged();
@@ -105,14 +116,6 @@ class AuthSessionRefresher implements AuthRefresher {
             : const AuthRefreshSessionChanged();
       }
       tokens = stored;
-    } on CorruptedAuthTokensException {
-      final invalidated = await _invalidateSessionBestEffort(
-        generation: inFlight.generation,
-        userId: inFlight.userId,
-      );
-      return invalidated
-          ? const AuthRefreshSessionExpired()
-          : const AuthRefreshSessionChanged();
     } on AppException catch (error, stackTrace) {
       if (error.kind != AppExceptionKind.localStorage) {
         Error.throwWithStackTrace(error, stackTrace);
@@ -130,7 +133,7 @@ class AuthSessionRefresher implements AuthRefresher {
         }
 
         try {
-          await _localStore.saveTokens(
+          await _credentialStore.writeCredential(
             StoredAuthTokens(
               accessToken: response.accessToken,
               refreshToken: response.refreshToken,
@@ -185,10 +188,13 @@ class AuthSessionRefresher implements AuthRefresher {
 
   Future<void> _invalidateSessionBestEffortUnlocked() async {
     try {
-      await _localStore.clearTokens();
+      await _credentialStore.clearCredential();
     } catch (_) {}
     try {
-      await _localStore.clearUser();
+      await _legacyCredentialStore.clearLegacyCredential();
+    } catch (_) {}
+    try {
+      await _userStore.clearUser();
     } catch (_) {}
     _sessionManager.clear();
   }

@@ -2046,7 +2046,9 @@ Plan review已通過：19-1只建立typed store contract、將既有SharedPrefer
 docs/superpowers/plans/2026-07-20-milestone-19-2-secure-credential-store-adapter.md
 ```
 
-目前狀態：Implementation plan已建立，待plan review；尚未加入dependency或修改production code。
+目前狀態：Implementation plan review已通過，可開始production implementation；尚未加入dependency或修改production code。
+
+Plan review已拍板：使用stable `flutter_secure_storage: ^10.3.1`；Android minimum SDK固定為23；backup policy採App-wide `android:allowBackup="false"`；failure mapping只處理明確plugin operational exception，unknown programming error保持unexpected；named Secure binding不得取代default SharedPreferences authority。
 
 - [ ] `flutter_secure_storage`只加入App dependency。
 - [ ] App layer提供Secure credential adapter並注入`packages/auth` abstraction。

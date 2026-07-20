@@ -1,6 +1,6 @@
 # Milestone 19-2 Secure Credential Store Adapter Implementation Plan
 
-> **狀態：** Draft；待plan review通過後才能開始production implementation。
+> **狀態：** Passed；plan review已通過，可開始production implementation。
 
 **Goal:** 在App layer建立可獨立測試的`flutter_secure_storage` credential adapter、typed failure mapping與DI shape，但維持SharedPreferences為19-2 production credential authority。
 
@@ -92,10 +92,11 @@ Repository與Refresher仍解析default binding。DI test必須證明Secure Store
 
 ### 5. Android platform contract
 
-- 使用`flutter_secure_storage` 10.x預設Android cryptography options，不啟用biometric mode。
-- 審查Android backup設定，避免備份encrypted payload但無法還原裝置KeyStore key。
+- 使用`flutter_secure_storage: ^10.3.1` stable版本與預設Android cryptography options，不啟用biometric mode。
+- Android最低SDK明確提升為23，因10.x stable的Android implementation已不支援API 22以下；不得依賴build失敗後才被動發現。
+- Android backup policy明確採`android:allowBackup="false"`，避免encrypted payload被還原到沒有原KeyStore key的裝置。這是19-2刻意採用的App-wide安全政策，文件與contract test必須明示其影響，不使用未經驗證的plugin-private路徑做選擇性exclude。
 - 不加入`USE_BIOMETRIC`permission。
-- 保持Flutter-managed SDK levels；只有實際dependency/build evidence證明不相容時才調整minimum SDK，禁止無證據修改。
+- compileSdk與targetSdk仍維持Flutter-managed；只有minimum SDK依官方10.x requirement固定為23。
 - 19-2 Android evidence為artifact build與manifest contract；實機credential runtime smoke保留19-5。
 
 ---
@@ -105,15 +106,17 @@ Repository與Refresher仍解析default binding。DI test必須證明Secure Store
 **Files:**
 
 - Modify: `apps/flutter_architecture/pubspec.yaml`
-- Modify if required: `apps/flutter_architecture/android/app/src/main/AndroidManifest.xml`
+- Modify: `apps/flutter_architecture/android/app/src/main/AndroidManifest.xml`
+- Modify: `apps/flutter_architecture/android/app/build.gradle.kts`
 - Create: `apps/flutter_architecture/test/app/platform/secure_storage_android_contract_test.dart`
 
 - [ ] **Step 1：先寫failing Android contract test**
 
 驗證：
 
-- App dependency宣告`flutter_secure_storage`。
-- Android manifest明確採用安全backup policy。
+- App dependency精確宣告`flutter_secure_storage: ^10.3.1`。
+- Android manifest明確設定`android:allowBackup="false"`。
+- Android app minimum SDK固定為23。
 - 不加入biometric permission或biometric-specific設定。
 
 - [ ] **Step 2：執行failing test**
@@ -127,7 +130,7 @@ Expected：FAIL，因dependency與backup policy尚未加入。
 
 - [ ] **Step 3：加入App-only dependency與最小Android設定**
 
-加入`flutter_secure_storage` 10.x。依官方Android guidance設定backup policy；不修改package dependency、不加入biometric permission。
+加入`flutter_secure_storage: ^10.3.1`。設定`android:allowBackup="false"`並將App minimum SDK固定為23；不修改package dependency、不加入biometric permission。
 
 - [ ] **Step 4：執行dependency resolution與contract test**
 
@@ -151,6 +154,7 @@ git commit -m "build(auth): 加入Secure Storage App依賴"
 
 - Create: `apps/flutter_architecture/lib/features/auth/data/stores/flutter_secure_auth_credential_store.dart`
 - Create: `apps/flutter_architecture/test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart`
+- Modify: `apps/flutter_architecture/pubspec.yaml` dev dependency（若測試需要直接實作platform interface fake）
 
 - [ ] **Step 1：先寫adapter failing tests**
 
@@ -176,7 +180,7 @@ flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store
 
 - [ ] **Step 3：實作最小Secure adapter**
 
-Adapter constructor接受`FlutterSecureStorage`，只依賴public `auth` contracts，不import `package:auth/src/...`。
+Adapter constructor接受`FlutterSecureStorage`，只依賴public `auth` contracts，不import `package:auth/src/...`。Happy-path可使用`FlutterSecureStorage.setMockInitialValues()`；failure-path若需控制platform result，App test可顯式加入相容的`flutter_secure_storage_platform_interface` dev dependency並安裝test fake，不建立production generic wrapper。
 
 - [ ] **Step 4：執行GREEN與analyze**
 
@@ -209,11 +213,13 @@ git commit -m "feat(auth): 建立Secure credential adapter"
 - `stackTrace`保留origin stack。
 - message與`toString()`不包含raw JSON、access token、refresh token。
 - 已是`AppException`時不重複包裝。
-- 明確的unknown programming error保持unexpected，不被降級成corruption或absence。
+- `PlatformException`與`MissingPluginException`視為plugin / platform operational failure並映射為local-storage `AppException`。
+- 已是`AppException`時原樣rethrow，不重複包裝。
+- 其他unknown programming error保持unexpected，不被降級成local-storage、corruption或absence。
 
 - [ ] **Step 2：完成最小failure mapping**
 
-只捕捉Secure Storage operational boundary；payload decode corruption在typed result內處理。
+只捕捉明確的Secure Storage operational exception種類；禁止catch-all後統一包成local-storage。Payload decode corruption在typed result內處理，非plugin的`StateError`、`TypeError`等保持原始error與stack。
 
 - [ ] **Step 3：執行targeted regression**
 
@@ -226,7 +232,7 @@ dart analyze .
 - [ ] **Step 4：Commit**
 
 ```bash
-git commit -m "test(auth): 補強Secure Storage錯誤邊界"
+git commit -m "fix(auth): 補強Secure Storage錯誤邊界"
 ```
 
 ---
@@ -355,4 +361,18 @@ Gate通過後，下一階段才是：
 ```txt
 Milestone 19-3 — SharedPreferences Legacy Migration
 ```
+
+---
+
+## Plan Review 結論
+
+狀態：Passed。
+
+- `M19-2-PLAN01`：原草案只寫`flutter_secure_storage 10.x`，會讓dependency resolution隨時間漂移。已固定為目前stable `^10.3.1`，且不採11.0 prerelease。
+- `M19-2-PLAN02`：原草案把minimum SDK調整寫成build失敗後才處理，但10.x已明確要求Android API 23。已改為Task 1的正式Native contract。
+- `M19-2-PLAN03`：原草案只要求「安全backup policy」，沒有拍板App-wide disable或選擇性exclude。為避免依賴plugin-private storage path，19-2固定採`android:allowBackup="false"`，並明示這是App-wide安全政策。
+- `M19-2-PLAN04`：原failure mapping描述可能導致catch-all，把programming error錯誤降級為local-storage failure。已限制只映射`PlatformException`、`MissingPluginException`與既有`AppException`，其他unknown error保持unexpected。
+- `M19-2-PLAN05`：adapter直接接受`FlutterSecureStorage`；測試以plugin提供的mock initial values與platform-interface fake控制，不新增production generic secure-store wrapper。
+- Named Secure binding與default SharedPreferences authority的分離成立，19-2不會提前切換Repository / Refresher source of truth。
+- 無Open P0 / P1 planning issue。
 

@@ -1233,6 +1233,6 @@ Milestone 19-2詳細implementation plan已建立：
 docs/superpowers/plans/2026-07-20-milestone-19-2-secure-credential-store-adapter.md
 ```
 
-19-2計畫採named Secure `AuthCredentialStore` binding；default `AuthCredentialStore`仍保持SharedPreferences authority，避免在migration與lifecycle integration完成前提前切換source of truth。計畫尚待review，未新增`flutter_secure_storage`dependency、未修改Native設定、production code或VERSION。
+19-2計畫採named Secure `AuthCredentialStore` binding；default `AuthCredentialStore`仍保持SharedPreferences authority，避免在migration與lifecycle integration完成前提前切換source of truth。Plan review已通過，並拍板使用stable `flutter_secure_storage: ^10.3.1`、Android minimum SDK 23、App-wide `android:allowBackup="false"`與明確plugin exception mapping；尚未新增dependency、修改Native設定、production code或VERSION。
 
 Milestone 20與21目前只保存正式scope、依賴順序、子階段與完成定義；必須等待前一Milestone完成、review並封存後才開始production implementation。

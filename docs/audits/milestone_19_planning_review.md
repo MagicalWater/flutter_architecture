@@ -233,11 +233,12 @@ Diagnostic不得包含Token、raw payload、SharedPreferences value、Secure Sto
 ### M19-PR03 — Absence、corruption與unavailable taxonomy不足
 
 - Severity：P1。
-- Status：19-1 implementation evidence complete；待19-2 Secure adapter完整關閉。
+- Status：Closed；19-1與19-2 implementation evidence complete。
 - Risk：把Secure unavailable當成absence會錯誤fallback Legacy並建立Session。
 - Disposition：採sealed read result；operational unavailable仍拋typed AppException。
 - Target：19-1 / 19-2。
 - 19-1 Evidence：`AuthCredentialReadAbsent / Present / Corrupted`已成為公開sealed taxonomy；SharedPreferences adapter只將payload validation映射為corrupted，plugin operational failure維持`AppExceptionKind.localStorage`並保留cause與stack。
+- 19-2 Evidence：Secure adapter沿用相同sealed taxonomy；不存在payload回傳absent，malformed / incomplete payload回傳corrupted，`PlatformException`與`MissingPluginException`拋出typed local-storage `AppException`。Tests確認cause、stored stack與實際caught stack identity，unknown `StateError` / `TypeError`不被降級。
 
 ### M19-PR04 — Persistent marker增加第四個非原子狀態
 
@@ -249,10 +250,11 @@ Diagnostic不得包含Token、raw payload、SharedPreferences value、Secure Sto
 ### M19-PR05 — Threat model與Secure Storage能力可能被過度宣稱
 
 - Severity：P1。
-- Status：Disposition approved；待19-2 / 19-5 implementation與runtime evidence關閉。
+- Status：19-2 implementation evidence complete；待19-5 Android runtime evidence完整關閉。
 - Risk：將at-rest hardening誤述為rooted device、runtime memory或server compromise防護。
 - Disposition：固定保護範圍、非目標與Android-only runtime evidence。
 - Target：19-2 / 19-5。
+- 19-2 Evidence：Secure Storage能力只描述為credential at-rest hardening；未宣稱可防rooted device、runtime memory或server compromise。Android App固定Secure Storage最低API 23下限、全面停用backup；release APK與merged manifest通過，實際minSdk 24、targetSdk 36，未加入Biometric / Fingerprint permission。
 
 ### M19-PR06 — Cleanup failure ownership不足
 
@@ -289,3 +291,16 @@ Milestone 19-1已完成並通過implementation review。
 - Workspace analyze、437項完整tests與App bundle build通過。
 
 下一步為Milestone 19-2；M19-PR03須待Secure adapter實作後完整關閉，其他跨階段finding依原Target持續追蹤。
+
+## 19-2 Implementation Review Update
+
+Milestone 19-2已完成並通過implementation review。
+
+- `flutter_secure_storage: ^10.3.1`只由App依賴；`packages/auth`沒有新增Flutter plugin或DI framework依賴。
+- App-owned Secure adapter使用單一Token Pair payload，並維持absent / present / corrupted / unavailable四種不同語意。
+- Plugin operational failure只窄範圍映射`PlatformException`與`MissingPluginException`；既有`AppException`與unknown error identity / stack保持不變。
+- Named Secure store與底層plugin為lazy singleton；default SharedPreferences store仍由Repository與Refresher使用。
+- Android release build發現並修正Flutter upgrader會覆寫literal minSdk的問題；最終採`maxOf(flutter.minSdkVersion, 23)`，release manifest實際minSdk 24、targetSdk 36、backup disabled且無Biometric permission。
+- Workspace analyze、465項完整tests與release APK build通過；未加入migration、OTP、Biometric runtime或VERSION變更。
+
+M19-PR03已關閉；M19-PR05完成19-2 evidence，保留至19-5 runtime evidence後完整關閉。下一步為Milestone 19-3。

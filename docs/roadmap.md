@@ -1993,7 +1993,7 @@ Milestone 21 — Biometric-gated Local Session Unlock
 
 ## Milestone 19：Secure Credential Storage & Migration
 
-狀態：19-0 Completed / Archived；19-1 Completed / Reviewed；下一步為19-2。
+狀態：19-0 Completed / Archived；19-1 Completed / Reviewed；19-2 Completed / Reviewed；下一步為19-3。
 
 ### 目標
 
@@ -2046,18 +2046,20 @@ Plan review已通過：19-1只建立typed store contract、將既有SharedPrefer
 docs/superpowers/plans/2026-07-20-milestone-19-2-secure-credential-store-adapter.md
 ```
 
-目前狀態：Implementation plan review已通過，可開始production implementation；尚未加入dependency或修改production code。
+目前狀態：Completed / Reviewed。
 
 Plan review已拍板：使用stable `flutter_secure_storage: ^10.3.1`；Android minimum SDK固定為23；backup policy採App-wide `android:allowBackup="false"`；failure mapping只處理明確plugin operational exception，unknown programming error保持unexpected；named Secure binding不得取代default SharedPreferences authority。
 
-- [ ] `flutter_secure_storage`只加入App dependency。
-- [ ] App layer提供Secure credential adapter並注入`packages/auth` abstraction。
-- [ ] Token Pair維持單一logical payload，包含userId與expiration metadata。
-- [ ] plugin / platform operational failure映射為typed local-storage failure。
-- [ ] Credential absence、corruption與storage unavailable不得混為同一結果。
-- [ ] 完成Android artifact build與adapter tests。
+- [x] `flutter_secure_storage`只加入App dependency。
+- [x] App layer提供Secure credential adapter並注入`packages/auth` abstraction。
+- [x] Token Pair維持單一logical payload，包含userId與expiration metadata。
+- [x] plugin / platform operational failure映射為typed local-storage failure。
+- [x] Credential absence、corruption與storage unavailable不得混為同一結果。
+- [x] 完成Android artifact build與adapter tests。
 
 完成定義：Secure adapter、typed failure mapping與DI shape可獨立建立及測試，但尚不提前切換production source of truth；Domain與package contract不暴露plugin或平台型別。
+
+19-2 implementation review已通過：App新增`flutter_secure_storage: ^10.3.1`、App-owned Secure credential adapter、single logical Token Pair payload、typed corruption與窄範圍plugin failure mapping。Named `secureAuthCredentialStore`與底層`FlutterSecureStorage`皆為lazy singleton；default SharedPreferences authority、Repository與Refresher wiring維持不變。Android採`minSdk = maxOf(flutter.minSdkVersion, 23)`與App-wide `allowBackup=false`；release merged manifest實際minSdk 24、targetSdk 36，且沒有Biometric / Fingerprint permission。Workspace analyze、465項tests與release APK build通過；VERSION維持1.2.0。下一步為19-3 SharedPreferences Legacy Migration。
 
 ### Milestone 19-3：SharedPreferences Legacy Migration
 

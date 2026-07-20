@@ -1,9 +1,10 @@
-import 'package:auth/src/data/data_sources/auth_local_store.dart';
 import 'package:auth/src/data/data_sources/auth_remote_data_source.dart';
-import 'package:auth/src/data/exceptions/corrupted_auth_tokens_exception.dart';
 import 'package:auth/src/data/mappers/login_response_dto_mapper.dart';
-import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
+import 'package:auth/src/data/stores/auth_credential_read_result.dart';
+import 'package:auth/src/data/stores/auth_credential_store.dart';
+import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
+import 'package:auth/src/data/stores/auth_user_store.dart';
 import 'package:auth/src/domain/entities/auth_result.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
@@ -29,13 +30,17 @@ import 'package:core/core.dart';
 class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(
     this._remoteDataSource,
-    this._localDataSource,
+    this._credentialStore,
+    this._legacyCredentialStore,
+    this._userStore,
     this._sessionManager,
     this._mutationCoordinator,
   );
 
   final AuthRemoteDataSource _remoteDataSource;
-  final AuthLocalStore _localDataSource;
+  final AuthCredentialStore _credentialStore;
+  final AuthLegacyCredentialStore _legacyCredentialStore;
+  final AuthUserStore _userStore;
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
 
@@ -57,7 +62,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await _mutationCoordinator.runExclusive(() async {
         operation.throwIfSuperseded();
         try {
-          await _localDataSource.saveTokens(
+          await _credentialStore.writeCredential(
             StoredAuthTokens(
               accessToken: result.accessToken,
               refreshToken: result.refreshToken,
@@ -65,7 +70,7 @@ class AuthRepositoryImpl implements AuthRepository {
             ),
           );
           operation.throwIfSuperseded();
-          await _localDataSource.saveUser(AuthUserModel.fromEntity(user));
+          await _userStore.writeUser(user);
           operation.throwIfSuperseded();
         } catch (error, stackTrace) {
           if (error is AuthLifecycleOperationSuperseded) {
@@ -99,17 +104,24 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       return await _mutationCoordinator.runExclusive(() async {
         operation.throwIfSuperseded();
-        final tokens = await _localDataSource.readTokens();
+        final credential = await _credentialStore.readCredential();
         operation.throwIfSuperseded();
-        final user = await _localDataSource.readUser();
+        final user = await _userStore.readUser();
         operation.throwIfSuperseded();
 
-        if (tokens == null || user == null) {
+        if (credential is AuthCredentialReadAbsent || user == null) {
           await _clearLocalAuthStateBestEffort();
           _sessionManager.clear();
           return const Success(null);
         }
 
+        if (credential is AuthCredentialReadCorrupted) {
+          await _clearLocalAuthStateBestEffort();
+          _sessionManager.clear();
+          return const Success(null);
+        }
+
+        final tokens = (credential as AuthCredentialReadPresent).tokens;
         if (tokens.userId == null || tokens.userId != user.id) {
           await _clearLocalAuthStateBestEffort();
           _sessionManager.clear();
@@ -121,16 +133,8 @@ class AuthRepositoryImpl implements AuthRepository {
           userId: user.id,
         );
 
-        return Success(user.toEntity());
+        return Success(user);
       });
-    } on CorruptedAuthTokensException {
-      await _mutationCoordinator.runExclusive(() async {
-        operation.throwIfSuperseded();
-        await _clearLocalAuthStateBestEffort();
-        operation.throwIfSuperseded();
-        _sessionManager.clear();
-      });
-      return const Success(null);
     } on AppException catch (error, stackTrace) {
       if (error.kind != AppExceptionKind.localStorage) {
         Error.throwWithStackTrace(error, stackTrace);
@@ -167,12 +171,17 @@ class AuthRepositoryImpl implements AuthRepository {
         }
 
         try {
-          await _localDataSource.clearUser();
+          await _userStore.clearUser();
         } catch (error, stackTrace) {
           captureError(error, stackTrace);
         }
         try {
-          await _localDataSource.clearTokens();
+          await _credentialStore.clearCredential();
+        } catch (error, stackTrace) {
+          captureError(error, stackTrace);
+        }
+        try {
+          await _legacyCredentialStore.clearLegacyCredential();
         } catch (error, stackTrace) {
           captureError(error, stackTrace);
         } finally {
@@ -190,10 +199,7 @@ class AuthRepositoryImpl implements AuthRepository {
         operation.throwIfSuperseded();
         final capturedExpectedError = expectedError;
         if (capturedExpectedError != null) {
-          Error.throwWithStackTrace(
-            capturedExpectedError,
-            expectedStackTrace!,
-          );
+          Error.throwWithStackTrace(capturedExpectedError, expectedStackTrace!);
         }
       });
       return const Success(null);
@@ -212,10 +218,13 @@ class AuthRepositoryImpl implements AuthRepository {
 
   Future<void> _clearLocalAuthStateBestEffort() async {
     try {
-      await _localDataSource.clearTokens();
+      await _credentialStore.clearCredential();
     } catch (_) {}
     try {
-      await _localDataSource.clearUser();
+      await _legacyCredentialStore.clearLegacyCredential();
+    } catch (_) {}
+    try {
+      await _userStore.clearUser();
     } catch (_) {}
   }
 }

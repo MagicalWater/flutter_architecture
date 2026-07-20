@@ -337,7 +337,7 @@ Task 3 implementation review：Passed。
 - Modify: `packages/auth/test/auth_repository_persistence_test.dart`
 - Delete after migration: `packages/auth/lib/src/data/data_sources/auth_local_store.dart`
 
-- [ ] **Step 1：先改repository tests為三個fake stores**
+- [x] **Step 1：先改repository tests為三個fake stores**
 
 19-1 Repository contract：
 
@@ -348,7 +348,7 @@ Task 3 implementation review：Passed。
 - Legacy store在19-1只參與cleanup，不執行migration。
 - Logout三個store都嘗試clear；expected / unexpected priority不變。
 
-- [ ] **Step 2：執行failing repository tests**
+- [x] **Step 2：執行failing repository tests**
 
 ```bash
 dart run melos exec --scope=auth -- flutter test test/auth_repository_persistence_test.dart
@@ -356,7 +356,7 @@ dart run melos exec --scope=auth -- flutter test test/auth_repository_persistenc
 
 Expected：FAIL。
 
-- [ ] **Step 3：修改Repository constructor與flow**
+- [x] **Step 3：修改Repository constructor與flow**
 
 ```dart
 AuthRepositoryImpl(
@@ -373,7 +373,7 @@ AuthRepositoryImpl(
 
 Repository直接將Domain `AuthUser`交給`AuthUserStore.writeUser()`，Restore取得的也是Domain `AuthUser`；不得新增App對`AuthUserModel`的依賴。
 
-- [ ] **Step 4：執行repository tests與analyze**
+- [x] **Step 4：執行repository tests與analyze**
 
 ```bash
 dart run melos exec --scope=auth -- flutter test test/auth_repository_persistence_test.dart
@@ -382,7 +382,7 @@ dart run melos exec --scope=auth -- dart analyze .
 
 Expected：PASS。
 
-- [ ] **Step 5：Commit**
+- [x] **Step 5：Commit**
 
 ```bash
 git add packages/auth/lib/src/data/repositories/auth_repository_impl.dart packages/auth/test/auth_repository_persistence_test.dart packages/auth/lib/src/data/data_sources/auth_local_store.dart

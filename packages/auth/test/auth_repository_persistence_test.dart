@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
-import 'package:auth/src/data/data_sources/auth_local_store.dart';
-import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,7 +10,7 @@ void main() {
     final sessionManager = SessionManager();
     final local = _FakeAuthLocalStore();
     final api = _ControlledAuthApi();
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(api),
       local,
       sessionManager,
@@ -43,10 +41,7 @@ void main() {
       ),
     );
 
-    await expectLater(
-      loginA,
-      throwsA(isA<AuthLifecycleOperationSuperseded>()),
-    );
+    await expectLater(loginA, throwsA(isA<AuthLifecycleOperationSuperseded>()));
     expect(resultB, isA<Success<AuthResult>>());
     expect(local.tokens?.accessToken, 'access-b');
     expect(local.user?.id, 'user-b');
@@ -61,9 +56,9 @@ void main() {
         accessToken: 'old-token',
         refreshToken: 'old-refresh',
       )
-      ..user = const AuthUserModel(id: 'old-user', name: 'Old User');
+      ..user = const AuthUser(id: 'old-user', name: 'Old User');
     final api = _ControlledAuthApi();
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(api),
       local,
       sessionManager,
@@ -83,10 +78,7 @@ void main() {
       ),
     );
 
-    await expectLater(
-      login,
-      throwsA(isA<AuthLifecycleOperationSuperseded>()),
-    );
+    await expectLater(login, throwsA(isA<AuthLifecycleOperationSuperseded>()));
     expect(logoutResult, isA<Success<void>>());
     expect(local.tokens, isNull);
     expect(local.user, isNull);
@@ -101,10 +93,10 @@ void main() {
         accessToken: 'old-token',
         refreshToken: 'old-refresh',
       )
-      ..user = const AuthUserModel(id: 'old-user', name: 'Old User');
+      ..user = const AuthUser(id: 'old-user', name: 'Old User');
     final api = _ControlledAuthApi();
     final mutationCoordinator = AuthStateMutationCoordinator();
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(api),
       local,
       sessionManager,
@@ -127,10 +119,7 @@ void main() {
 
     local.releaseClearUser();
 
-    await expectLater(
-      logout,
-      throwsA(isA<AuthLifecycleOperationSuperseded>()),
-    );
+    await expectLater(logout, throwsA(isA<AuthLifecycleOperationSuperseded>()));
     final loginResult = await login;
 
     expect(loginResult, isA<Success<AuthResult>>());
@@ -145,17 +134,21 @@ void main() {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
     final local = _FakeAuthLocalStore(failSaveUser: true);
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
       AuthStateMutationCoordinator(),
     );
 
-    final result = await repository.login(account: 'demo', password: 'password');
+    final result = await repository.login(
+      account: 'demo',
+      password: 'password',
+    );
 
     expect(result, isA<FailureResult<AuthResult>>());
     expect(local.clearTokensCalls, 1);
+    expect(local.clearLegacyCredentialCalls, 1);
     expect(local.clearUserCalls, 1);
     expect(sessionManager.currentSession, isNull);
   });
@@ -163,7 +156,7 @@ void main() {
   test('Restore 遇到損壞 Token Pair 時會清除本地狀態並視為未登入', () async {
     final sessionManager = SessionManager();
     final local = _FakeAuthLocalStore(corruptedTokens: true);
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
@@ -185,8 +178,8 @@ void main() {
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
       )
-      ..user = const AuthUserModel(id: 'user-001', name: 'User');
-    final repository = AuthRepositoryImpl(
+      ..user = const AuthUser(id: 'user-001', name: 'User');
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
@@ -209,8 +202,8 @@ void main() {
         refreshToken: 'refresh-token',
         userId: 'user-token',
       )
-      ..user = const AuthUserModel(id: 'user-row', name: 'User');
-    final repository = AuthRepositoryImpl(
+      ..user = const AuthUser(id: 'user-row', name: 'User');
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
@@ -233,8 +226,8 @@ void main() {
         refreshToken: 'refresh-token',
         userId: 'user-001',
       )
-      ..user = const AuthUserModel(id: 'user-001', name: 'User');
-    final repository = AuthRepositoryImpl(
+      ..user = const AuthUser(id: 'user-001', name: 'User');
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
@@ -247,24 +240,30 @@ void main() {
     expect(sessionManager.currentSession?.userId, 'user-001');
   });
 
-  test('Restore 遇到已知 local storage failure 時保留 runtime Session 並回傳 Failure', () async {
-    final sessionManager = SessionManager()
-      ..setAuthenticated(accessToken: 'runtime-token', userId: 'runtime-user');
-    final local = _FakeAuthLocalStore(failReadTokens: true);
-    final repository = AuthRepositoryImpl(
-      AuthRemoteDataSource(MockAuthApi()),
-      local,
-      sessionManager,
-      AuthStateMutationCoordinator(),
-    );
+  test(
+    'Restore 遇到已知 local storage failure 時保留 runtime Session 並回傳 Failure',
+    () async {
+      final sessionManager = SessionManager()
+        ..setAuthenticated(
+          accessToken: 'runtime-token',
+          userId: 'runtime-user',
+        );
+      final local = _FakeAuthLocalStore(failReadTokens: true);
+      final repository = _repository(
+        AuthRemoteDataSource(MockAuthApi()),
+        local,
+        sessionManager,
+        AuthStateMutationCoordinator(),
+      );
 
-    final result = await repository.restoreSession();
+      final result = await repository.restoreSession();
 
-    expect(result, isA<FailureResult<AuthUser?>>());
-    expect(local.clearTokensCalls, 0);
-    expect(local.clearUserCalls, 0);
-    expect(sessionManager.currentSession?.accessToken, 'runtime-token');
-  });
+      expect(result, isA<FailureResult<AuthUser?>>());
+      expect(local.clearTokensCalls, 0);
+      expect(local.clearUserCalls, 0);
+      expect(sessionManager.currentSession?.accessToken, 'runtime-token');
+    },
+  );
 
   test('Restore 遇到 unexpected AppException kind 時保留原始 exception', () async {
     final sessionManager = SessionManager()
@@ -275,7 +274,7 @@ void main() {
       stackTrace: StackTrace.current,
     );
     final local = _FakeAuthLocalStore(readTokensError: unexpected);
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
@@ -293,7 +292,7 @@ void main() {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'token', userId: 'user-001');
     final local = _FakeAuthLocalStore(failClearUser: true);
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
@@ -305,6 +304,7 @@ void main() {
     expect(result, isA<FailureResult<void>>());
     expect(local.clearUserCalls, 1);
     expect(local.clearTokensCalls, 1);
+    expect(local.clearLegacyCredentialCalls, 1);
     expect(sessionManager.currentSession, isNull);
   });
 
@@ -312,7 +312,7 @@ void main() {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
     final local = _FakeAuthLocalStore(failSaveUserWithUnknownError: true);
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
@@ -333,7 +333,7 @@ void main() {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'token', userId: 'user-001');
     final local = _FakeAuthLocalStore(failClearUserWithUnknownError: true);
-    final repository = AuthRepositoryImpl(
+    final repository = _repository(
       AuthRemoteDataSource(MockAuthApi()),
       local,
       sessionManager,
@@ -347,75 +347,100 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
-  test('Logout 遇到 unexpected AppException kind 時仍清除 runtime Session 並重新拋出', () async {
-    final sessionManager = SessionManager()
-      ..setAuthenticated(accessToken: 'token', userId: 'user-001');
-    final unexpected = AppException(
-      kind: AppExceptionKind.protocol,
-      message: 'unexpected logout failure',
-      stackTrace: StackTrace.current,
-    );
-    final local = _FakeAuthLocalStore(clearUserError: unexpected);
-    final repository = AuthRepositoryImpl(
-      AuthRemoteDataSource(MockAuthApi()),
-      local,
-      sessionManager,
-      AuthStateMutationCoordinator(),
-    );
+  test(
+    'Logout 遇到 unexpected AppException kind 時仍清除 runtime Session 並重新拋出',
+    () async {
+      final sessionManager = SessionManager()
+        ..setAuthenticated(accessToken: 'token', userId: 'user-001');
+      final unexpected = AppException(
+        kind: AppExceptionKind.protocol,
+        message: 'unexpected logout failure',
+        stackTrace: StackTrace.current,
+      );
+      final local = _FakeAuthLocalStore(clearUserError: unexpected);
+      final repository = _repository(
+        AuthRemoteDataSource(MockAuthApi()),
+        local,
+        sessionManager,
+        AuthStateMutationCoordinator(),
+      );
 
-    await expectLater(repository.logout(), throwsA(same(unexpected)));
+      await expectLater(repository.logout(), throwsA(same(unexpected)));
 
-    expect(local.clearUserCalls, 1);
-    expect(local.clearTokensCalls, 1);
-    expect(sessionManager.currentSession, isNull);
-  });
+      expect(local.clearUserCalls, 1);
+      expect(local.clearTokensCalls, 1);
+      expect(sessionManager.currentSession, isNull);
+    },
+  );
 
-  test('Logout 同時發生 expected 與 unknown cleanup error 時優先保留 unknown error', () async {
-    final sessionManager = SessionManager()
-      ..setAuthenticated(accessToken: 'token', userId: 'user-001');
-    final local = _FakeAuthLocalStore(
-      failClearUser: true,
-      clearTokensError: StateError('clear tokens unknown failure'),
-    );
-    final repository = AuthRepositoryImpl(
-      AuthRemoteDataSource(MockAuthApi()),
-      local,
-      sessionManager,
-      AuthStateMutationCoordinator(),
-    );
+  test(
+    'Logout 同時發生 expected 與 unknown cleanup error 時優先保留 unknown error',
+    () async {
+      final sessionManager = SessionManager()
+        ..setAuthenticated(accessToken: 'token', userId: 'user-001');
+      final local = _FakeAuthLocalStore(
+        failClearUser: true,
+        clearTokensError: StateError('clear tokens unknown failure'),
+      );
+      final repository = _repository(
+        AuthRemoteDataSource(MockAuthApi()),
+        local,
+        sessionManager,
+        AuthStateMutationCoordinator(),
+      );
 
-    await expectLater(repository.logout(), throwsA(isA<StateError>()));
+      await expectLater(repository.logout(), throwsA(isA<StateError>()));
 
-    expect(local.clearUserCalls, 1);
-    expect(local.clearTokensCalls, 1);
-    expect(sessionManager.currentSession, isNull);
-  });
+      expect(local.clearUserCalls, 1);
+      expect(local.clearTokensCalls, 1);
+      expect(sessionManager.currentSession, isNull);
+    },
+  );
 
-  test('Logout 同時發生 expected 與 protocol cleanup error 時優先保留 protocol error', () async {
-    final sessionManager = SessionManager()
-      ..setAuthenticated(accessToken: 'token', userId: 'user-001');
-    final protocolError = AppException(
-      kind: AppExceptionKind.protocol,
-      message: 'clear tokens protocol failure',
-      stackTrace: StackTrace.current,
-    );
-    final local = _FakeAuthLocalStore(
-      failClearUser: true,
-      clearTokensError: protocolError,
-    );
-    final repository = AuthRepositoryImpl(
-      AuthRemoteDataSource(MockAuthApi()),
-      local,
-      sessionManager,
-      AuthStateMutationCoordinator(),
-    );
+  test(
+    'Logout 同時發生 expected 與 protocol cleanup error 時優先保留 protocol error',
+    () async {
+      final sessionManager = SessionManager()
+        ..setAuthenticated(accessToken: 'token', userId: 'user-001');
+      final protocolError = AppException(
+        kind: AppExceptionKind.protocol,
+        message: 'clear tokens protocol failure',
+        stackTrace: StackTrace.current,
+      );
+      final local = _FakeAuthLocalStore(
+        failClearUser: true,
+        clearTokensError: protocolError,
+      );
+      final repository = _repository(
+        AuthRemoteDataSource(MockAuthApi()),
+        local,
+        sessionManager,
+        AuthStateMutationCoordinator(),
+      );
 
-    await expectLater(repository.logout(), throwsA(same(protocolError)));
+      await expectLater(repository.logout(), throwsA(same(protocolError)));
 
-    expect(local.clearUserCalls, 1);
-    expect(local.clearTokensCalls, 1);
-    expect(sessionManager.currentSession, isNull);
-  });
+      expect(local.clearUserCalls, 1);
+      expect(local.clearTokensCalls, 1);
+      expect(sessionManager.currentSession, isNull);
+    },
+  );
+}
+
+AuthRepositoryImpl _repository(
+  AuthRemoteDataSource remoteDataSource,
+  _FakeAuthLocalStore local,
+  SessionManager sessionManager,
+  AuthStateMutationCoordinator mutationCoordinator,
+) {
+  return AuthRepositoryImpl(
+    remoteDataSource,
+    local,
+    local,
+    local,
+    sessionManager,
+    mutationCoordinator,
+  );
 }
 
 class _ControlledAuthApi implements AuthApi {
@@ -437,7 +462,8 @@ class _ControlledAuthApi implements AuthApi {
   }
 }
 
-class _FakeAuthLocalStore implements AuthLocalStore {
+class _FakeAuthLocalStore
+    implements AuthCredentialStore, AuthLegacyCredentialStore, AuthUserStore {
   _FakeAuthLocalStore({
     this.failSaveUser = false,
     this.failClearUser = false,
@@ -461,18 +487,19 @@ class _FakeAuthLocalStore implements AuthLocalStore {
   final Object? clearTokensError;
 
   int clearTokensCalls = 0;
+  int clearLegacyCredentialCalls = 0;
   int clearUserCalls = 0;
 
   StoredAuthTokens? tokens;
-  AuthUserModel? user;
+  AuthUser? user;
 
   @override
-  Future<void> saveTokens(StoredAuthTokens value) async {
+  Future<void> writeCredential(StoredAuthTokens value) async {
     tokens = value;
   }
 
   @override
-  Future<StoredAuthTokens?> readTokens() async {
+  Future<AuthCredentialReadResult> readCredential() async {
     final error = readTokensError;
     if (error != null) {
       throw error;
@@ -484,13 +511,15 @@ class _FakeAuthLocalStore implements AuthLocalStore {
       );
     }
     if (corruptedTokens) {
-      throw const CorruptedAuthTokensException();
+      return const AuthCredentialReadCorrupted();
     }
-    return tokens;
+    final value = tokens;
+    if (value == null) return const AuthCredentialReadAbsent();
+    return AuthCredentialReadPresent(value);
   }
 
   @override
-  Future<void> clearTokens() async {
+  Future<void> clearCredential() async {
     clearTokensCalls += 1;
     final error = clearTokensError;
     if (error != null) {
@@ -500,7 +529,7 @@ class _FakeAuthLocalStore implements AuthLocalStore {
   }
 
   @override
-  Future<void> saveUser(AuthUserModel value) async {
+  Future<void> writeUser(AuthUser value) async {
     if (failSaveUserWithUnknownError) {
       throw StateError('save user unknown failure');
     }
@@ -514,7 +543,17 @@ class _FakeAuthLocalStore implements AuthLocalStore {
   }
 
   @override
-  Future<AuthUserModel?> readUser() async => user;
+  Future<AuthUser?> readUser() async => user;
+
+  @override
+  Future<AuthCredentialReadResult> readLegacyCredential() async {
+    return const AuthCredentialReadAbsent();
+  }
+
+  @override
+  Future<void> clearLegacyCredential() async {
+    clearLegacyCredentialCalls += 1;
+  }
 
   @override
   Future<void> clearUser() async {

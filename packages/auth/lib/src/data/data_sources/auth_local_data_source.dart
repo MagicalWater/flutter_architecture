@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:auth/src/data/models/auth_user_model.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/data/exceptions/corrupted_auth_tokens_exception.dart';
-import 'package:auth/src/data/data_sources/auth_local_store.dart';
 import 'package:auth/src/data/data_sources/auth_refresh_local_store.dart';
 import 'package:auth/src/session/auth_token_storage.dart';
 import 'package:core/core.dart';
@@ -22,12 +21,8 @@ import 'package:sqflite/sqflite.dart';
 /// - profile 存在 SQLite。
 ///
 /// 這樣可以示範兩種常見本地持久化方式。
-class AuthLocalDataSource
-    implements AuthTokenStorage, AuthLocalStore, AuthRefreshLocalStore {
-  const AuthLocalDataSource(
-    this._preferences,
-    this._database,
-  );
+class AuthLocalDataSource implements AuthTokenStorage, AuthRefreshLocalStore {
+  const AuthLocalDataSource(this._preferences, this._database);
 
   static const String _tokensKey = 'auth.tokens';
   static const String _legacyAccessTokenKey = 'auth.accessToken';
@@ -38,81 +33,69 @@ class AuthLocalDataSource
 
   @override
   Future<void> saveTokens(StoredAuthTokens tokens) async {
-    await _guardLocal(
-      () async {
-        final success = await _preferences.setString(
-          _tokensKey,
-          jsonEncode(tokens.toJson()),
+    await _guardLocal(() async {
+      final success = await _preferences.setString(
+        _tokensKey,
+        jsonEncode(tokens.toJson()),
+      );
+      if (!success) {
+        throw const AppException(
+          kind: AppExceptionKind.localStorage,
+          message: '儲存 token pair 失敗',
         );
-        if (!success) {
-          throw const AppException(
-            kind: AppExceptionKind.localStorage,
-            message: '儲存 token pair 失敗',
-          );
-        }
-      },
-      message: '儲存 token pair 失敗',
-    );
+      }
+    }, message: '儲存 token pair 失敗');
   }
 
   @override
   Future<StoredAuthTokens?> readTokens() async {
-    return _guardLocal(
-      () async {
-        final raw = _preferences.getString(_tokensKey);
-        if (raw == null) {
-          if (_preferences.containsKey(_legacyAccessTokenKey)) {
-            await clearTokens();
-          }
-          return null;
+    return _guardLocal(() async {
+      final raw = _preferences.getString(_tokensKey);
+      if (raw == null) {
+        if (_preferences.containsKey(_legacyAccessTokenKey)) {
+          await clearTokens();
         }
-        try {
-          final decoded = jsonDecode(raw);
-          if (decoded is! Map<String, dynamic>) {
-            throw const FormatException('Invalid auth token payload');
-          }
-          return StoredAuthTokens.fromJson(decoded);
-        } on FormatException catch (error, stackTrace) {
-          Error.throwWithStackTrace(
-            CorruptedAuthTokensException(cause: error),
-            stackTrace,
-          );
+        return null;
+      }
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is! Map<String, dynamic>) {
+          throw const FormatException('Invalid auth token payload');
         }
-      },
-      message: '讀取 token pair 失敗',
-    );
+        return StoredAuthTokens.fromJson(decoded);
+      } on FormatException catch (error, stackTrace) {
+        Error.throwWithStackTrace(
+          CorruptedAuthTokensException(cause: error),
+          stackTrace,
+        );
+      }
+    }, message: '讀取 token pair 失敗');
   }
 
   @override
   Future<void> clearTokens() async {
-    await _guardLocal(
-      () async {
-        final tokensRemoved = await _preferences.remove(_tokensKey);
-        final legacyRemoved = await _preferences.remove(_legacyAccessTokenKey);
-        if (!tokensRemoved || !legacyRemoved) {
-          throw const AppException(
-            kind: AppExceptionKind.localStorage,
-            message: '清除 token pair 失敗',
-          );
-        }
-      },
-      message: '清除 token pair 失敗',
-    );
+    await _guardLocal(() async {
+      final tokensRemoved = await _preferences.remove(_tokensKey);
+      final legacyRemoved = await _preferences.remove(_legacyAccessTokenKey);
+      if (!tokensRemoved || !legacyRemoved) {
+        throw const AppException(
+          kind: AppExceptionKind.localStorage,
+          message: '清除 token pair 失敗',
+        );
+      }
+    }, message: '清除 token pair 失敗');
   }
 
-  @override
   Future<void> saveUser(AuthUserModel user) async {
     await _guardLocal(
-      () => _database.insert(
-        _userTable,
-        <String, Object?>{'slot': 1, ...user.toJson()},
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      ),
+      () => _database.insert(_userTable, <String, Object?>{
+        'slot': 1,
+        ...user.toJson(),
+      }, conflictAlgorithm: ConflictAlgorithm.replace),
       message: '儲存登入使用者失敗',
     );
   }
 
-  @override
   Future<AuthUserModel?> readUser() async {
     final rows = await _guardLocal(
       () => _database.query(
@@ -133,10 +116,7 @@ class AuthLocalDataSource
 
   @override
   Future<void> clearUser() async {
-    await _guardLocal(
-      () => _database.delete(_userTable),
-      message: '清除登入使用者失敗',
-    );
+    await _guardLocal(() => _database.delete(_userTable), message: '清除登入使用者失敗');
   }
 
   Future<T> _guardLocal<T>(

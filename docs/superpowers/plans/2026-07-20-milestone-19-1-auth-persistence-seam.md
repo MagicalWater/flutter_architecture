@@ -211,13 +211,13 @@ Task 1 implementation review：Passed。
 - Create: `apps/flutter_architecture/test/features/auth/data/stores/shared_preferences_auth_credential_store_test.dart`
 - Create: `apps/flutter_architecture/test/features/auth/data/stores/shared_preferences_auth_legacy_credential_store_test.dart`
 
-- [ ] **Step 1：先寫SharedPreferences adapter tests**
+- [x] **Step 1：先寫SharedPreferences adapter tests**
 
 Credential adapter覆蓋：absence、合法JSON、非JSON、非Map、缺必要token、非法expiration、write、idempotent clear、plugin false result與unknown error stack preservation。
 
 Legacy adapter覆蓋：合法`auth.tokens`、corrupted payload、只有`auth.accessToken`時回傳absent並清除、同時清除兩個legacy keys與idempotent clear。
 
-- [ ] **Step 2：執行failing tests**
+- [x] **Step 2：執行failing tests**
 
 ```bash
 cd apps/flutter_architecture
@@ -227,7 +227,7 @@ flutter test test/features/auth/data/stores/shared_preferences_auth_legacy_crede
 
 Expected：FAIL。
 
-- [ ] **Step 3：實作SharedPreferences adapters**
+- [x] **Step 3：實作SharedPreferences adapters**
 
 固定規則：
 
@@ -237,7 +237,7 @@ Expected：FAIL。
 - plugin operational error包成`AppExceptionKind.localStorage`並保留cause / stack。
 - exception、log與`toString()`不得包含raw JSON或token。
 
-- [ ] **Step 4：執行adapter tests**
+- [x] **Step 4：執行adapter tests**
 
 ```bash
 cd apps/flutter_architecture
@@ -247,7 +247,7 @@ flutter test test/features/auth/data/stores/shared_preferences_auth_legacy_crede
 
 Expected：PASS。
 
-- [ ] **Step 5：Commit**
+- [x] **Step 5：Commit**
 
 ```bash
 git add apps/flutter_architecture/lib/features/auth/data/stores apps/flutter_architecture/test/features/auth/data/stores

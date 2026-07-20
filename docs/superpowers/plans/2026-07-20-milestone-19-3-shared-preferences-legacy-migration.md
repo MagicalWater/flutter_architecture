@@ -1,6 +1,6 @@
 # Milestone 19-3 — SharedPreferences Legacy Migration Implementation Plan
 
-狀態：Draft；待implementation plan review。
+狀態：Implementation plan review passed；可進入Task 1。
 
 日期：2026-07-20。
 
@@ -44,14 +44,32 @@ AuthUserStore
 
 ### Resolution contract
 
-新增sealed result，至少區分：
+新增sealed result，固定區分：
 
 ```txt
-AuthCredentialMigrationUnauthenticated
-AuthCredentialMigrationResolved(tokens, user)
+AuthCredentialMigrationUnauthenticated(diagnostics)
+AuthCredentialMigrationResolved(tokens, user, diagnostics)
 ```
 
-必要的post-migration cleanup diagnostic以Auth-specific、安全且不含credential的typed detail表達；不得把raw payload或Token放入`toString()`。
+`diagnostics`為immutable list，允許同一次resolution攜帶多個safe diagnostic；不得只保留最後一個cleanup failure。Diagnostic只表達固定operation、severity與safe code，不保存raw error message、payload或Token，且不得把credential放入`toString()`。
+
+只有「Secure已驗證為權威，但Legacy cleanup發生expected local-storage failure」可以用successful resolution加diagnostic表示。Destructive cleanup尚未完成時不得偽裝成成功unauthenticated resolution。
+
+### Failure與cleanup優先權
+
+- Destructive cleanup必須嘗試所有應清除的stores。
+- 任一unknown error存在時，完成其他cleanup後重拋最先捕捉的unknown error與原stack。
+- 沒有unknown error但存在expected local-storage error時，完成其他cleanup後重拋最先捕捉的expected error與原stack。
+- 只有全部destructive cleanup成功時才回傳`AuthCredentialMigrationUnauthenticated`。
+- Post-authority Legacy cleanup是唯一例外：expected local-storage failure不阻止`Resolved`，改以cleanup-pending diagnostic表達；unknown error仍重拋。
+
+### Read-back validation contract
+
+- 必須比較`accessToken`、`refreshToken`、`userId`、`accessTokenExpiresAt`與`refreshTokenExpiresAt`全部欄位，不能只比identity。
+- read-back `absent`、`corrupted`或完整payload mismatch皆建立固定safe `AppExceptionKind.dataCorruption`，diagnostic code固定為`auth_secure_migration_read_back_invalid`。
+- read-back本身拋出的plugin operational failure維持原`AppExceptionKind.localStorage`，不得改寫為corruption。
+- validation failure後必須嘗試rollback清除Secure；unknown rollback error優先，其次expected local-storage rollback error，最後才是原始data-corruption validation error。
+- 無論哪一個error向外拋出，都不得清除Legacy。
 
 ### Authority規則
 
@@ -76,6 +94,7 @@ AuthCredentialMigrationResolved(tokens, user)
 
 - [ ] 先建立failing contract tests。
 - [ ] 定義sealed resolution與safe diagnostic shape。
+- [ ] 兩個resolution variant都持有immutable diagnostics list；預設為empty，且可安全承載多個diagnostic。
 - [ ] Coordinator只接受三個Auth-specific stores，不接受plugin、DI或SessionManager型別。
 - [ ] 公開方法命名明確表達呼叫方已持有exclusive ownership，例如`resolveUnlocked()`。
 - [ ] Coordinator不得依賴`AuthStateMutationCoordinator`。
@@ -103,6 +122,8 @@ git commit -m "feat(auth): 建立credential migration contract"
 - [ ] Secure corrupted時清完整Auth state且不得讀Legacy建立Session。
 - [ ] 舊單一`auth.accessToken`由Legacy adapter維持corrupted／cleanup語意，不得migration。
 - [ ] destructive cleanup必須各自嘗試，unknown error優先於expected local-storage error。
+- [ ] destructive cleanup只有全部成功才回unauthenticated；只要有expected cleanup failure就向外拋出，而不是回成功resolution。
+- [ ] 多個cleanup failure時固定採unknown優先，其次第一個expected local-storage error，並驗證實際caught stack identity。
 
 Commit：
 
@@ -143,8 +164,11 @@ git commit -m "feat(auth): 實作Secure authority cleanup policy"
 - [ ] Secure write expected failure保留Legacy且向外拋typed local-storage failure。
 - [ ] Secure write unknown error保留原error與stack。
 - [ ] read-back absent、corrupted或payload不一致都視為validation failure。
+- [ ] payload equality比較Token Pair、userId與兩個expiration metadata全部欄位。
+- [ ] read-back validation failure建立`AppExceptionKind.dataCorruption`與固定`auth_secure_migration_read_back_invalid` diagnostic code。
 - [ ] read-back validation failure不得刪Legacy，並嘗試清除無法驗證的Secure寫入。
 - [ ] read-back operational unavailable不得fallback Legacy或刪Legacy。
+- [ ] rollback cleanup失敗優先權固定為unknown → expected local-storage →原始validation failure；所有error與stack identity均有tests。
 - [ ] Secure已驗證後Legacy cleanup expected failure仍resolved並標記cleanup pending。
 - [ ] partial state可重入：Secure已存在且Legacy仍存在時不重寫Secure，只重試Legacy cleanup。
 
@@ -166,6 +190,7 @@ git commit -m "feat(auth): 完成legacy migration read-back驗證"
 - Create: `apps/flutter_architecture/test/app/di/register_module_auth_migration_test.dart`
 
 - [ ] 建立Auth migration cleanup的固定safe reporting operation/context。
+- [ ] Adapter接受一組diagnostics並逐項上報；不得因只處理單一detail而遺失同次resolution的其他diagnostic。
 - [ ] Reporter adapter不得包含Token、raw payload、SharedPreferences value、Secure value或plugin message。
 - [ ] `AuthCredentialMigrationCoordinator`以lazy singleton組裝。
 - [ ] DI明確使用named `secureAuthCredentialStore`、default Legacy store與User store。
@@ -218,6 +243,8 @@ git commit -m "docs(auth): 封存 Milestone 19-3 legacy migration"
 - Secure unavailable與corrupted都不fallback Legacy。
 - Legacy migration遵守write → read-back → validate → cleanup順序。
 - Read-back failure不刪Legacy，無法驗證的Secure資料會嘗試清除。
+- Read-back validation使用全部credential metadata，並以固定data-corruption diagnostic表達；plugin unavailable仍保持local-storage failure。
+- Destructive cleanup未完整成功時不得回成功unauthenticated resolution。
 - Secure verified後Legacy cleanup expected failure不阻止resolution，並留下safe cleanup-pending diagnostic。
 - Unknown error與stack identity不被吞掉或降級。
 - 不建立persistent migration marker。
@@ -230,3 +257,15 @@ Gate通過後，下一階段才是：
 ```txt
 Milestone 19-4 — Secure Credential Lifecycle Integration
 ```
+
+## Plan Review 結論
+
+狀態：Passed。
+
+- `M19-3-PLAN01`：原resolution contract沒有說明diagnostic cardinality，可能在多個cleanup failure時遺失evidence。已固定兩個resolution variants皆攜帶immutable diagnostics list。
+- `M19-3-PLAN02`：原destructive cleanup只寫error優先權，沒有說expected failure時是否仍回unauthenticated。已固定只有全部cleanup成功才回成功resolution；expected或unknown failure皆在完成其他cleanup後向外拋出。
+- `M19-3-PLAN03`：原read-back failure沒有指定typed exception。已固定validation state failure為`AppExceptionKind.dataCorruption`與safe diagnostic code，plugin operational failure仍維持`localStorage`。
+- `M19-3-PLAN04`：原payload一致性只寫identity/value，可能漏掉expiration metadata。已固定比較完整Token Pair、userId與兩個expiration欄位。
+- `M19-3-PLAN05`：原rollback cleanup failure沒有優先權。已固定unknown → expected local-storage →原始validation failure，Legacy在所有failure path都不得刪除。
+- Named Secure DI與19-4 authority switch邊界維持不變；19-3不修改Repository、Refresher或SessionManager runtime flow。
+- 無Open P0 / P1 planning issue。

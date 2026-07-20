@@ -2069,7 +2069,9 @@ Plan review已拍板：使用stable `flutter_secure_storage: ^10.3.1`；Android 
 docs/superpowers/plans/2026-07-20-milestone-19-3-shared-preferences-legacy-migration.md
 ```
 
-目前狀態：Implementation plan已建立，待plan review；尚未修改migration production code或credential authority。
+目前狀態：Implementation plan review已通過，可進入Task 1；尚未修改migration production code或credential authority。
+
+Plan review已固定：resolution以immutable diagnostics list承載多個safe cleanup evidence；destructive cleanup只有全部成功才回unauthenticated，expected／unknown failure均在嘗試所有cleanup後依優先權重拋；read-back validation比較完整Token Pair、userId與expiration metadata，validation state failure使用`AppExceptionKind.dataCorruption`與固定safe diagnostic code，plugin operational failure仍維持`localStorage`。
 
 - [ ] `auth.tokens`只有在Token Pair完整且userId可驗證時才允許migration。
 - [ ] `auth.accessToken`缺少Refresh Token與identity，只允許安全清除，不得升級為有效Session。

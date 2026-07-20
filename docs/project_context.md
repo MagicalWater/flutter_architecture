@@ -1233,7 +1233,7 @@ Milestone 19-3詳細implementation plan已建立：
 docs/superpowers/plans/2026-07-20-milestone-19-3-shared-preferences-legacy-migration.md
 ```
 
-19-3計畫建立`AuthCredentialMigrationCoordinator`作為唯一migration policy owner，完整測試Secure × Legacy × User decision matrix、write/read-back/cleanup順序、partial migration re-entry、identity validation與cleanup failure ownership。Coordinator不依賴`SessionManager`或`AuthStateMutationCoordinator`；App DI只建立named Secure dependency shape，Repository與Refresher仍保持SharedPreferences authority。計畫尚待review，未修改production code、generated DI或VERSION。
+19-3計畫建立`AuthCredentialMigrationCoordinator`作為唯一migration policy owner，完整測試Secure × Legacy × User decision matrix、write/read-back/cleanup順序、partial migration re-entry、identity validation與cleanup failure ownership。Coordinator不依賴`SessionManager`或`AuthStateMutationCoordinator`；App DI只建立named Secure dependency shape，Repository與Refresher仍保持SharedPreferences authority。Plan review已通過，並固定immutable diagnostics list、destructive cleanup成功條件、完整payload read-back equality、`dataCorruption` validation failure與rollback error優先權；尚未修改production code、generated DI或VERSION。
 
 Milestone 19-2詳細implementation plan已建立：
 

@@ -25,7 +25,7 @@
 - 完成Milestone 19-0 Planning Review與最終文件一致性review，新增Threat Model、Secure × Legacy × User decision matrix、migration owner、typed credential read taxonomy、cleanup / reporting contract與六項planning findings；P1 findings已取得approved disposition，但仍待implementation與tests正式關閉。
 - 建立並review Milestone 19-1 Auth Persistence Seam詳細implementation plan，明確拆分typed store contract、App-owned SharedPreferences / SQLite adapter、Repository / Refresher rewiring、DI與regression gate。
 - 建立並review Milestone 19-2 Secure Credential Store Adapter implementation plan，明確定義App-only `flutter_secure_storage: ^10.3.1`、single logical payload、typed read / failure mapping、named Secure DI binding、Android minimum SDK 23、App-wide backup disable與artifact gate。
-- 建立Milestone 19-3 SharedPreferences Legacy Migration implementation plan，拆分migration public contract、destructive matrix、Secure authority cleanup、write/read-back validation、named DI與concurrency regression gate。
+- 建立並review Milestone 19-3 SharedPreferences Legacy Migration implementation plan，拆分migration public contract、destructive matrix、Secure authority cleanup、write/read-back validation、named DI與concurrency regression gate。
 - 完成Milestone 19-1 Auth Persistence Seam：新增Auth-specific credential、legacy與user store contracts及sealed read taxonomy；將SharedPreferences / SQLite adapters與plugin ownership移至App layer；Repository與Refresher改用三個明確store boundaries；移除舊`AuthLocalDataSource`、聚合local-store介面與`packages/auth`的plugin dependencies。
 - 完成Milestone 19-2 Secure Credential Store Adapter：App加入`flutter_secure_storage: ^10.3.1`、App-owned Secure adapter、single logical Token Pair payload、typed corruption / operational failure mapping、named Secure DI binding與Android artifact contract。
 
@@ -36,6 +36,7 @@
 - Auth persistence DI由App唯一Composition Root顯式綁定三個lazy singleton stores；SharedPreferences仍維持19-1 production credential authority，未提前加入Secure Storage或migration policy。
 - 19-2 plan review固定Secure adapter只以named binding存在；default SharedPreferences authority不變，plugin operational exception與unknown programming error分流處理。
 - Android Secure Storage minimum SDK contract改為`maxOf(flutter.minSdkVersion, 23)`，避免Flutter build upgrader覆寫literal設定，同時允許Flutter未來提高最低版本；App-wide backup維持停用。
+- 19-3 plan review固定resolution使用immutable diagnostics list；destructive cleanup未完整成功時不得回成功unauthenticated；read-back validation比較完整Token Pair與metadata，validation state failure、plugin operational failure及rollback cleanup error採明確typed priority。
 
 ### Notes
 

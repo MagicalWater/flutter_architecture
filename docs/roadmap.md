@@ -2040,6 +2040,14 @@ Plan review已通過：19-1只建立typed store contract、將既有SharedPrefer
 
 ### Milestone 19-2：Secure Credential Store Adapter
 
+詳細implementation plan：
+
+```txt
+docs/superpowers/plans/2026-07-20-milestone-19-2-secure-credential-store-adapter.md
+```
+
+目前狀態：Implementation plan已建立，待plan review；尚未加入dependency或修改production code。
+
 - [ ] `flutter_secure_storage`只加入App dependency。
 - [ ] App layer提供Secure credential adapter並注入`packages/auth` abstraction。
 - [ ] Token Pair維持單一logical payload，包含userId與expiration metadata。

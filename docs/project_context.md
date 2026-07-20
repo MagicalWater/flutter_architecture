@@ -1227,4 +1227,12 @@ App Composition Root綁定共享lazy singleton instances
 
 目前正式下一步為Milestone 19-2 Secure Credential Store Adapter；19-2只建立App-owned Secure adapter、typed failure mapping與DI shape，不提前切換production source of truth。
 
+Milestone 19-2詳細implementation plan已建立：
+
+```txt
+docs/superpowers/plans/2026-07-20-milestone-19-2-secure-credential-store-adapter.md
+```
+
+19-2計畫採named Secure `AuthCredentialStore` binding；default `AuthCredentialStore`仍保持SharedPreferences authority，避免在migration與lifecycle integration完成前提前切換source of truth。計畫尚待review，未新增`flutter_secure_storage`dependency、未修改Native設定、production code或VERSION。
+
 Milestone 20與21目前只保存正式scope、依賴順序、子階段與完成定義；必須等待前一Milestone完成、review並封存後才開始production implementation。

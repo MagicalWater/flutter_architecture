@@ -1,0 +1,358 @@
+# Milestone 19-2 Secure Credential Store Adapter Implementation Plan
+
+> **狀態：** Draft；待plan review通過後才能開始production implementation。
+
+**Goal:** 在App layer建立可獨立測試的`flutter_secure_storage` credential adapter、typed failure mapping與DI shape，但維持SharedPreferences為19-2 production credential authority。
+
+**Architecture:** `packages/auth`既有`AuthCredentialStore`、`AuthCredentialReadResult`與`StoredAuthTokens`contract不修改plugin邊界。App新增`FlutterSecureAuthCredentialStore`，以named `AuthCredentialStore` binding提供給後續migration coordinator；default `AuthCredentialStore` binding仍指向`SharedPreferencesAuthCredentialStore`。19-2不實作migration、不改Repository / Refresher constructor、不改Login / Restore / Refresh / Logout source of truth。
+
+---
+
+## 19-2 Scope
+
+19-2必須做到：
+
+- `flutter_secure_storage`只加入`apps/flutter_architecture`dependency。
+- App layer新增Secure credential adapter。
+- Token Pair維持單一logical JSON payload，包含`accessToken`、`refreshToken`、`userId`與expiration metadata。
+- Secure read明確區分`absent / present / corrupted`。
+- Plugin / platform operational failure映射為`AppExceptionKind.localStorage`，保留原始cause與stack。
+- Diagnostic message、exception與`toString()`不得包含raw payload或credential。
+- DI建立named secure `AuthCredentialStore` singleton，但default production binding仍為SharedPreferences adapter。
+- 完成Android backup設定審查、adapter tests、DI tests與Android artifact build。
+
+19-2不得做到：
+
+- 不切換default `AuthCredentialStore`到Secure adapter。
+- 不修改Repository或Refresher persistence authority。
+- 不讀取或刪除SharedPreferences legacy credential。
+- 不建立`AuthCredentialMigrationCoordinator`。
+- 不實作Secure × Legacy × User decision matrix。
+- 不建立persistent migration marker。
+- 不加入OTP、Biometric、Device Binding或`local_auth`。
+- 不建立Generic Secure Store framework。
+- 不更新`VERSION`。
+
+---
+
+## 已拍板設計
+
+### 1. Secure payload contract
+
+Secure Store只保存一筆Auth-specific logical payload：
+
+```txt
+key: auth.tokens
+value: StoredAuthTokens.toJson() encoded JSON string
+```
+
+禁止拆成多個secure keys，避免Access Token、Refresh Token、identity與expiration metadata出現partial write state。
+
+### 2. Read taxonomy
+
+```txt
+storage.read == null
+  → AuthCredentialReadAbsent
+
+storage.read returns valid JSON map
+  → AuthCredentialReadPresent
+
+storage.read returns malformed / incomplete logical payload
+  → AuthCredentialReadCorrupted
+
+storage API / platform operation throws
+  → AppException(kind: localStorage)
+```
+
+Corruption是可讀取但payload不符合contract；unavailable是operation無法完成。兩者不得互換。
+
+### 3. Write與clear contract
+
+- `writeCredential()`只執行一次logical payload write。
+- `clearCredential()`只刪除Secure credential key，具idempotent語意。
+- Plugin operational exception轉成local-storage `AppException`。
+- Unknown non-plugin programming error不得被誤分類為absence或corruption。
+- Adapter不負責read-back validation；migration write後read-back驗證由19-3 coordinator負責。
+
+### 4. DI authority contract
+
+19-2同時存在兩個`AuthCredentialStore` implementation：
+
+```txt
+default AuthCredentialStore
+  → SharedPreferencesAuthCredentialStore
+  → 19-2 production authority
+
+@Named('secureAuthCredentialStore') AuthCredentialStore
+  → FlutterSecureAuthCredentialStore
+  → dependency-ready，尚未進入lifecycle
+```
+
+Repository與Refresher仍解析default binding。DI test必須證明Secure Store可獨立解析，且default binding沒有改變。
+
+### 5. Android platform contract
+
+- 使用`flutter_secure_storage` 10.x預設Android cryptography options，不啟用biometric mode。
+- 審查Android backup設定，避免備份encrypted payload但無法還原裝置KeyStore key。
+- 不加入`USE_BIOMETRIC`permission。
+- 保持Flutter-managed SDK levels；只有實際dependency/build evidence證明不相容時才調整minimum SDK，禁止無證據修改。
+- 19-2 Android evidence為artifact build與manifest contract；實機credential runtime smoke保留19-5。
+
+---
+
+## Task 1：Dependency與Android contract tests
+
+**Files:**
+
+- Modify: `apps/flutter_architecture/pubspec.yaml`
+- Modify if required: `apps/flutter_architecture/android/app/src/main/AndroidManifest.xml`
+- Create: `apps/flutter_architecture/test/app/platform/secure_storage_android_contract_test.dart`
+
+- [ ] **Step 1：先寫failing Android contract test**
+
+驗證：
+
+- App dependency宣告`flutter_secure_storage`。
+- Android manifest明確採用安全backup policy。
+- 不加入biometric permission或biometric-specific設定。
+
+- [ ] **Step 2：執行failing test**
+
+```bash
+cd apps/flutter_architecture
+flutter test test/app/platform/secure_storage_android_contract_test.dart
+```
+
+Expected：FAIL，因dependency與backup policy尚未加入。
+
+- [ ] **Step 3：加入App-only dependency與最小Android設定**
+
+加入`flutter_secure_storage` 10.x。依官方Android guidance設定backup policy；不修改package dependency、不加入biometric permission。
+
+- [ ] **Step 4：執行dependency resolution與contract test**
+
+```bash
+dart pub get
+cd apps/flutter_architecture
+flutter test test/app/platform/secure_storage_android_contract_test.dart
+```
+
+- [ ] **Step 5：Commit**
+
+```bash
+git commit -m "build(auth): 加入Secure Storage App依賴"
+```
+
+---
+
+## Task 2：Secure adapter happy path與typed corruption
+
+**Files:**
+
+- Create: `apps/flutter_architecture/lib/features/auth/data/stores/flutter_secure_auth_credential_store.dart`
+- Create: `apps/flutter_architecture/test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart`
+
+- [ ] **Step 1：先寫adapter failing tests**
+
+至少覆蓋：
+
+- absence。
+- valid Token Pair round-trip。
+- non-JSON。
+- JSON非map。
+- missing access / refresh token。
+- missing或invalid `userId`。
+- invalid expiration metadata。
+- write只保存一筆logical payload。
+- clear idempotent。
+- adapter / result diagnostic不包含secret sentinel。
+
+- [ ] **Step 2：執行RED**
+
+```bash
+cd apps/flutter_architecture
+flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart
+```
+
+- [ ] **Step 3：實作最小Secure adapter**
+
+Adapter constructor接受`FlutterSecureStorage`，只依賴public `auth` contracts，不import `package:auth/src/...`。
+
+- [ ] **Step 4：執行GREEN與analyze**
+
+```bash
+flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart
+dart analyze .
+```
+
+- [ ] **Step 5：Commit**
+
+```bash
+git commit -m "feat(auth): 建立Secure credential adapter"
+```
+
+---
+
+## Task 3：Plugin failure mapping與error identity review
+
+**Files:**
+
+- Modify: `apps/flutter_architecture/lib/features/auth/data/stores/flutter_secure_auth_credential_store.dart`
+- Modify: `apps/flutter_architecture/test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart`
+
+- [ ] **Step 1：新增failing failure tests**
+
+覆蓋read / write / delete的plugin failure：
+
+- 映射為`AppExceptionKind.localStorage`。
+- `cause`保留原始error identity。
+- `stackTrace`保留origin stack。
+- message與`toString()`不包含raw JSON、access token、refresh token。
+- 已是`AppException`時不重複包裝。
+- 明確的unknown programming error保持unexpected，不被降級成corruption或absence。
+
+- [ ] **Step 2：完成最小failure mapping**
+
+只捕捉Secure Storage operational boundary；payload decode corruption在typed result內處理。
+
+- [ ] **Step 3：執行targeted regression**
+
+```bash
+cd apps/flutter_architecture
+flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart
+dart analyze .
+```
+
+- [ ] **Step 4：Commit**
+
+```bash
+git commit -m "test(auth): 補強Secure Storage錯誤邊界"
+```
+
+---
+
+## Task 4：Named DI shape，不切換production authority
+
+**Files:**
+
+- Modify: `apps/flutter_architecture/lib/app/di/register_module.dart`
+- Generate: `apps/flutter_architecture/lib/app/di/injection.config.dart`
+- Create: `apps/flutter_architecture/test/app/di/register_module_secure_auth_store_test.dart`
+
+- [ ] **Step 1：先寫failing DI test**
+
+驗證：
+
+- default `AuthCredentialStore`仍為`SharedPreferencesAuthCredentialStore`。
+- named `secureAuthCredentialStore`解析為`FlutterSecureAuthCredentialStore`。
+- named Secure Store為lazy singleton。
+- Repository與Refresher仍使用default SharedPreferences authority。
+- Secure Store寫入不會被現有Repository restore讀取。
+
+- [ ] **Step 2：執行RED**
+
+```bash
+cd apps/flutter_architecture
+flutter test test/app/di/register_module_secure_auth_store_test.dart
+```
+
+- [ ] **Step 3：更新RegisterModule並生成DI**
+
+提供`FlutterSecureStorage`與named Secure `AuthCredentialStore` binding；禁止手動修改generated source。
+
+- [ ] **Step 4：執行generation與DI tests**
+
+```bash
+dart run melos run build_runner
+cd apps/flutter_architecture
+flutter test test/app/di/register_module_secure_auth_store_test.dart
+flutter test test/app/di/register_module_auth_persistence_test.dart
+```
+
+- [ ] **Step 5：Commit**
+
+```bash
+git commit -m "refactor(di): 組裝Secure credential adapter"
+```
+
+---
+
+## Task 5：Android artifact與19-2 regression gate
+
+**Files:**
+
+- Modify: `docs/audits/milestone_19_planning_review.md`
+- Modify: `docs/roadmap.md`
+- Modify: `docs/project_context.md`
+- Modify: `CHANGELOG.md`
+- Modify: this plan
+
+- [ ] **Step 1：執行targeted tests**
+
+```bash
+cd apps/flutter_architecture
+flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart
+flutter test test/app/di/register_module_secure_auth_store_test.dart
+flutter test test/app/platform/secure_storage_android_contract_test.dart
+```
+
+- [ ] **Step 2：執行workspace validation**
+
+```bash
+cd ../..
+dart run melos run analyze
+dart run melos exec -- flutter test
+cd apps/flutter_architecture
+flutter build apk --release
+cd ../..
+git diff --check
+```
+
+Expected：全部通過；既有437 tests不得無理由遺失。
+
+- [ ] **Step 3：進行19-2 implementation review**
+
+Review checklist：
+
+- Secure dependency只存在App。
+- Adapter只依賴public Auth contract。
+- Single logical payload與typed read taxonomy正確。
+- Operational failure沒有降級為absence / corruption。
+- Raw credential不進入diagnostic。
+- Default authority仍是SharedPreferences。
+- Named Secure binding沒有被Repository / Refresher使用。
+- 沒有migration、Secure source-of-truth切換、OTP或Biometric行為。
+- Android release artifact build通過。
+
+- [ ] **Step 4：同步文件與finding evidence**
+
+只有review通過後才將19-2標記Completed、更新M19-PR03與M19-PR05 evidence，並把下一步切換19-3。`VERSION`維持不變。
+
+- [ ] **Step 5：Commit封存文件**
+
+```bash
+git commit -m "docs(auth): 封存 Milestone 19-2 Secure adapter"
+```
+
+---
+
+## 19-2 Review Gate
+
+必須全部成立才能進入19-3：
+
+- `flutter_secure_storage`只由App依賴。
+- Secure adapter與typed read / failure mapping已有tests。
+- Token Pair為單一logical payload。
+- Named Secure DI binding可解析且為singleton。
+- Default SharedPreferences production authority未改變。
+- Repository / Refresher runtime behavior未改變。
+- Android backup policy與artifact build通過。
+- Workspace analyze與完整tests通過。
+- 未加入migration、OTP、Biometric、Native biometric設定或VERSION變更。
+
+Gate通過後，下一階段才是：
+
+```txt
+Milestone 19-3 — SharedPreferences Legacy Migration
+```
+

@@ -234,6 +234,8 @@ git commit -m "refactor(auth): 收斂Secure logout cleanup policy"
 
 Task 5執行結果：Repository Logout移除手寫三組try/catch accumulator，改在單一caller-owned exclusive section內直接使用Task 1 `AuthLifecycleCleanupPolicy`，固定依Secure credential、Legacy credential、User順序全部嘗試。若operation仍current，無論cleanup結果都先清runtime Session；unknown cleanup error優先保留identity與stack，之後才檢查superseded control flow與expected local-storage failure。既有Logout＋較新Login交錯、expected／unknown／protocol priority regression維持通過，並新增明確cleanup順序測試。App production DI與credential authority未切換。
 
+Task 5 implementation review：通過。Review確認shared cleanup policy在Logout中維持unknown → superseded → expected local-storage優先權，且只有operation仍current時才清runtime Session；較新Login／Restore可安全接管。補上`AuthRepositoryImpl.secureLifecycle`直接Logout regression，證明transitional Secure subclass與default path沿用相同Secure → Legacy → User → Session順序與語意，並確認App DI仍未切換。
+
 ## Task 6 — Atomic DI authority switch
 
 **Files**

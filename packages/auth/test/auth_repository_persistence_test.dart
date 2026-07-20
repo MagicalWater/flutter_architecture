@@ -359,6 +359,34 @@ void main() {
     ]);
   });
 
+  test('Secure lifecycle Logout沿用相同cleanup順序與Session語意', () async {
+    final operations = <String>[];
+    final sessionManager = _TrackingSessionManager(operations)
+      ..setAuthenticated(accessToken: 'token', userId: 'user-001');
+    operations.clear();
+    final local = _OrderedAuthPersistenceStores(operations);
+    final repository = AuthRepositoryImpl.secureLifecycle(
+      AuthRemoteDataSource(MockAuthApi()),
+      local,
+      local,
+      local,
+      sessionManager,
+      AuthStateMutationCoordinator(),
+      AuthCredentialMigrationCoordinator(local, local, local),
+      const _NoopLifecycleDiagnosticSink(),
+    );
+
+    final result = await repository.logout();
+
+    expect(result, isA<Success<void>>());
+    expect(operations, <String>[
+      'credential.clear',
+      'legacy.clear',
+      'user.clear',
+      'session.clear',
+    ]);
+  });
+
   test('Login persistence 發生未知錯誤時仍補償清除並保留原始錯誤', () async {
     final sessionManager = SessionManager()
       ..setAuthenticated(accessToken: 'old-token', userId: 'old-user');
@@ -701,4 +729,12 @@ final class _TrackingSessionManager extends SessionManager {
     operations.add('session.clear');
     super.clear();
   }
+}
+
+final class _NoopLifecycleDiagnosticSink
+    implements AuthLifecycleDiagnosticSink {
+  const _NoopLifecycleDiagnosticSink();
+
+  @override
+  void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {}
 }

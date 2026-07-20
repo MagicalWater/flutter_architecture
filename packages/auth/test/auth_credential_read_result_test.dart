@@ -16,8 +16,10 @@ void main() {
     expect(absent, isA<AuthCredentialReadResult>());
     expect(corrupted, isA<AuthCredentialReadResult>());
     expect(present.tokens, same(tokens));
+    expect(present.toString(), 'AuthCredentialReadPresent()');
     expect(present.toString(), isNot(contains(tokens.accessToken)));
     expect(present.toString(), isNot(contains(tokens.refreshToken)));
+    expect(present.toString(), isNot(contains(tokens.userId!)));
   });
 
   test('persistence store contracts use auth-specific public types', () {

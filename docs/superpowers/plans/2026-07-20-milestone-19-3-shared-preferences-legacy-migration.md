@@ -146,19 +146,21 @@ Task 2 implementation review：通過。Review補強Secure read unavailable會�
 - Modify: `packages/auth/lib/src/data/migration/auth_credential_migration_coordinator.dart`
 - Modify: `packages/auth/test/auth_credential_migration_coordinator_test.dart`
 
-- [ ] Secure valid且與User一致、Legacy absent時直接resolved。
-- [ ] Secure valid且Legacy相同時，Secure為權威並清Legacy。
-- [ ] Secure valid且Legacy不同或corrupted時，仍由Secure resolved，只清Legacy。
-- [ ] Legacy cleanup成功時不產生diagnostic。
-- [ ] Legacy cleanup expected failure時仍resolved，回傳safe cleanup-pending diagnostic。
-- [ ] Legacy cleanup unknown error不得被降級或吞掉，保留error與stack identity。
-- [ ] 下一次呼叫在Secure valid、Legacy仍存在時會再次嘗試cleanup，不需persistent marker。
+- [x] Secure valid且與User一致、Legacy absent時直接resolved。
+- [x] Secure valid且Legacy相同時，Secure為權威並清Legacy。
+- [x] Secure valid且Legacy不同或corrupted時，仍由Secure resolved，只清Legacy。
+- [x] Legacy cleanup成功時不產生diagnostic。
+- [x] Legacy cleanup expected failure時仍resolved，回傳safe cleanup-pending diagnostic。
+- [x] Legacy cleanup unknown error不得被降級或吞掉，保留error與stack identity。
+- [x] 下一次呼叫在Secure valid、Legacy仍存在時會再次嘗試cleanup，不需persistent marker。
 
 Commit：
 
 ```bash
 git commit -m "feat(auth): 實作Secure authority cleanup policy"
 ```
+
+Task 3執行結果：Secure credential合法且與User identity一致時成為唯一authority；Legacy absent直接回傳resolved，Legacy present（相同或不同）與corrupted只觸發Legacy cleanup，不清Secure或User，也不重寫Secure。Legacy cleanup成功不產生diagnostic；`AppExceptionKind.localStorage` cleanup failure仍回傳resolved並攜帶`legacyCleanup` safe diagnostic，保留原error與caught stack；unknown cleanup error以原identity / stack重拋。Cleanup pending由Secure、Legacy與User真實store state推導，下一次resolve會再次嘗試Legacy cleanup，無persistent marker。RED為7個Secure authority tests因原`UnimplementedError`失敗；GREEN targeted tests增為22項，Auth analyze通過。
 
 ## Task 4 — Legacy migration、read-back validation與partial failure
 

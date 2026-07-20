@@ -1,4 +1,5 @@
 import 'package:auth/src/data/migration/auth_credential_migration_result.dart';
+import 'package:auth/src/data/migration/auth_credential_migration_diagnostic.dart';
 import 'package:auth/src/data/stores/auth_credential_read_result.dart';
 import 'package:auth/src/data/stores/auth_credential_store.dart';
 import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
@@ -51,8 +52,18 @@ final class AuthCredentialMigrationCoordinator {
         );
         return AuthCredentialMigrationUnauthenticated();
       }
-      throw UnimplementedError(
-        'Secure authority resolution is not implemented.',
+      final legacy = await _legacyCredentialStore.readLegacyCredential();
+      if (legacy is AuthCredentialReadAbsent) {
+        return AuthCredentialMigrationResolved(
+          tokens: secure.tokens,
+          user: user,
+        );
+      }
+      final diagnostics = await _clearLegacyAfterSecureAuthority();
+      return AuthCredentialMigrationResolved(
+        tokens: secure.tokens,
+        user: user,
+        diagnostics: diagnostics,
       );
     }
 
@@ -92,6 +103,26 @@ final class AuthCredentialMigrationCoordinator {
     }
 
     throw UnimplementedError('Legacy migration is not implemented.');
+  }
+
+  Future<List<AuthCredentialMigrationDiagnostic>>
+  _clearLegacyAfterSecureAuthority() async {
+    try {
+      await _legacyCredentialStore.clearLegacyCredential();
+      return const <AuthCredentialMigrationDiagnostic>[];
+    } catch (error, stackTrace) {
+      if (error is AppException &&
+          error.kind == AppExceptionKind.localStorage) {
+        return <AuthCredentialMigrationDiagnostic>[
+          AuthCredentialMigrationDiagnostic(
+            operation: AuthCredentialMigrationDiagnosticOperation.legacyCleanup,
+            error: error,
+            stackTrace: stackTrace,
+          ),
+        ];
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
   }
 
   Future<void> _clearDestructive({

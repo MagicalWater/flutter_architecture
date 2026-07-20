@@ -106,7 +106,7 @@ packages/auth/lib/src/session/auth_token_storage.dart
 - Create: `packages/auth/test/auth_credential_read_result_test.dart`
 - Modify: `packages/auth/lib/auth.dart`
 
-- [ ] **Step 1：先寫typed result contract test**
+- [x] **Step 1：先寫typed result contract test**
 
 ```dart
 const absent = AuthCredentialReadAbsent();
@@ -120,7 +120,7 @@ expect(present.toString(), isNot(contains(tokens.accessToken)));
 expect(present.toString(), isNot(contains(tokens.refreshToken)));
 ```
 
-- [ ] **Step 2：執行failing test**
+- [x] **Step 2：執行failing test**
 
 ```bash
 dart run melos exec --scope=auth -- flutter test test/auth_credential_read_result_test.dart
@@ -128,7 +128,7 @@ dart run melos exec --scope=auth -- flutter test test/auth_credential_read_resul
 
 Expected：FAIL，因新型別尚不存在。
 
-- [ ] **Step 3：建立最小contract**
+- [x] **Step 3：建立最小contract**
 
 ```dart
 sealed class AuthCredentialReadResult {
@@ -176,7 +176,7 @@ abstract interface class AuthUserStore {
 
 `AuthUserStore`刻意使用公開Domain entity `AuthUser`，不得把`AuthUserModel`暴露給App adapter或迫使App import `package:auth/src/...`。
 
-- [ ] **Step 4：執行package test與analyze**
+- [x] **Step 4：執行package test與analyze**
 
 ```bash
 dart run melos exec --scope=auth -- flutter test test/auth_credential_read_result_test.dart
@@ -185,7 +185,7 @@ dart run melos exec --scope=auth -- dart analyze .
 
 Expected：PASS。
 
-- [ ] **Step 5：Commit**
+- [x] **Step 5：Commit**
 
 ```bash
 git add packages/auth/lib/src/data/stores packages/auth/lib/auth.dart packages/auth/test/auth_credential_read_result_test.dart

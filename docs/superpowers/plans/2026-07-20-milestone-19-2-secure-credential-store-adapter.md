@@ -295,6 +295,8 @@ git commit -m "refactor(di): 組裝Secure credential adapter"
 
 Task 4執行結果：App Composition Root新增`FlutterSecureStorage` lazy singleton與named `secureAuthCredentialStore` lazy singleton binding，default `AuthCredentialStore`仍維持`SharedPreferencesAuthCredentialStore`。DI regression確認named Secure Store可解析且instance identity穩定；只寫入Secure Store時，現有`AuthRepository.restoreSession()`仍回傳未登入，證明Repository與Refresher尚未切換production authority。Generated DI由build_runner產生，非相關Bloc generated noise已還原；新舊DI tests共2項、App analyze與diff check通過。
 
+Task 4 implementation review：補強Refresher authority的行為證據。Review test現在先以default store建立session並執行refresh，確認rotated credential只寫回default SharedPreferences store，而named Secure payload保持原值；同時鎖定底層`FlutterSecureStorage`與named adapter皆為lazy singleton。Generated graph與production constructor wiring未修改。
+
 ---
 
 ## Task 5：Android artifact與19-2 regression gate

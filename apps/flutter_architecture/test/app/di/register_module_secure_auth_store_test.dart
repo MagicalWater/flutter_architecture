@@ -58,6 +58,10 @@ void main() {
         ),
         isTrue,
       );
+      expect(
+        identical(getIt<FlutterSecureStorage>(), getIt<FlutterSecureStorage>()),
+        isTrue,
+      );
 
       await secureStore.writeCredential(
         const StoredAuthTokens(
@@ -75,6 +79,34 @@ void main() {
 
       expect(getIt<AuthRepository>(), isA<AuthRepositoryImpl>());
       expect(getIt<api_client.AuthRefresher>(), isA<AuthSessionRefresher>());
+
+      await defaultStore.writeCredential(
+        const StoredAuthTokens(
+          accessToken: 'default-access',
+          refreshToken: 'default-refresh',
+          userId: 'default-user',
+        ),
+      );
+      await getIt<AuthUserStore>().writeUser(
+        const AuthUser(id: 'default-user', name: 'Default User'),
+      );
+      await getIt<AuthRepository>().restoreSession();
+
+      final refreshResult = await getIt<api_client.AuthRefresher>().refresh(
+        failedAccessToken: 'default-access',
+      );
+
+      expect(refreshResult, isA<api_client.AuthRefreshSuccess>());
+      final defaultCredential =
+          await defaultStore.readCredential() as AuthCredentialReadPresent;
+      expect(
+        defaultCredential.tokens.accessToken,
+        'mock-refreshed-access-token',
+      );
+      final secureCredential =
+          await secureStore.readCredential() as AuthCredentialReadPresent;
+      expect(secureCredential.tokens.accessToken, 'secure-only-access');
+      expect(secureCredential.tokens.refreshToken, 'secure-only-refresh');
     },
   );
 }

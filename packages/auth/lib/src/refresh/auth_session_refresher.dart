@@ -4,6 +4,9 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/data_sources/auth_refresh_remote_data_source.dart';
 import 'package:auth/src/data/exceptions/invalid_refresh_credential_exception.dart';
 import 'package:auth/src/data/exceptions/temporary_refresh_exception.dart';
+import 'package:auth/src/data/lifecycle/auth_lifecycle_cleanup_policy.dart';
+import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
+import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic_sink.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/data/stores/auth_credential_read_result.dart';
 import 'package:auth/src/data/stores/auth_credential_store.dart';
@@ -22,6 +25,16 @@ class AuthSessionRefresher implements AuthRefresher {
     this._sessionManager,
     this._mutationCoordinator,
   );
+
+  factory AuthSessionRefresher.secureLifecycle(
+    AuthRefreshRemoteDataSource remoteDataSource,
+    AuthCredentialStore credentialStore,
+    AuthLegacyCredentialStore legacyCredentialStore,
+    AuthUserStore userStore,
+    SessionManager sessionManager,
+    AuthStateMutationCoordinator mutationCoordinator,
+    AuthLifecycleDiagnosticSink diagnosticSink,
+  ) = _SecureLifecycleAuthSessionRefresher;
 
   final AuthRefreshRemoteDataSource _remoteDataSource;
   final AuthCredentialStore _credentialStore;
@@ -201,6 +214,154 @@ class AuthSessionRefresher implements AuthRefresher {
     } catch (_) {}
     _sessionManager.clear();
   }
+}
+
+final class _SecureLifecycleAuthSessionRefresher extends AuthSessionRefresher {
+  _SecureLifecycleAuthSessionRefresher(
+    super.remoteDataSource,
+    super.credentialStore,
+    super.legacyCredentialStore,
+    super.userStore,
+    super.sessionManager,
+    super.mutationCoordinator,
+    this._diagnosticSink,
+  );
+
+  final AuthLifecycleDiagnosticSink _diagnosticSink;
+
+  @override
+  Future<AuthRefreshResult> _performRefresh(_InFlightRefresh inFlight) async {
+    late final StoredAuthTokens tokens;
+    try {
+      final stored = await _mutationCoordinator.runExclusive(() async {
+        if (!_isSameSession(inFlight.generation, inFlight.userId)) return null;
+        final credential = await _credentialStore.readCredential();
+        if (credential is! AuthCredentialReadPresent) return null;
+        final resolved = credential.tokens;
+        if (resolved.userId == null ||
+            resolved.userId != inFlight.userId ||
+            resolved.isRefreshTokenExpired) {
+          return null;
+        }
+        final user = await _userStore.readUser();
+        if (user == null || user.id != inFlight.userId) return null;
+        return resolved;
+      });
+      if (!_isSameSession(inFlight.generation, inFlight.userId)) {
+        return const AuthRefreshSessionChanged();
+      }
+      if (stored == null) {
+        return _invalidateSecureSession(
+          generation: inFlight.generation,
+          userId: inFlight.userId,
+          expiredResult: const AuthRefreshSessionExpired(),
+        );
+      }
+      tokens = stored;
+    } on AppException catch (error, stackTrace) {
+      if (error.kind != AppExceptionKind.localStorage) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+      return _isSameSession(inFlight.generation, inFlight.userId)
+          ? const AuthRefreshLocalStateFailure()
+          : const AuthRefreshSessionChanged();
+    }
+
+    try {
+      final response = await _remoteDataSource.refresh(tokens.refreshToken);
+      final outcome = await _mutationCoordinator.runExclusive(() async {
+        if (!_isSameSession(inFlight.generation, inFlight.userId)) {
+          return const _SecureRefreshOutcome(
+            result: AuthRefreshSessionChanged(),
+          );
+        }
+        try {
+          await _credentialStore.writeCredential(
+            StoredAuthTokens(
+              accessToken: response.accessToken,
+              refreshToken: response.refreshToken,
+              userId: inFlight.userId,
+              accessTokenExpiresAt: response.accessTokenExpiresAt,
+              refreshTokenExpiresAt: response.refreshTokenExpiresAt,
+            ),
+          );
+        } on AppException catch (error, stackTrace) {
+          if (error.kind != AppExceptionKind.localStorage) {
+            Error.throwWithStackTrace(error, stackTrace);
+          }
+          final cleanup = await _clearSecureAuthStateUnlocked();
+          _sessionManager.clear();
+          cleanup.throwIfUnexpected();
+          return _SecureRefreshOutcome(
+            result: const AuthRefreshLocalStateFailure(),
+            diagnostics: cleanup.diagnostics,
+          );
+        }
+        _sessionManager.updateAccessToken(response.accessToken);
+        return const _SecureRefreshOutcome(result: AuthRefreshSuccess());
+      });
+      _reportBestEffort(outcome.diagnostics);
+      return outcome.result;
+    } on InvalidRefreshCredentialException {
+      return _invalidateSecureSession(
+        generation: inFlight.generation,
+        userId: inFlight.userId,
+        expiredResult: const AuthRefreshSessionExpired(),
+      );
+    } on TemporaryRefreshException {
+      return const AuthRefreshTemporarilyUnavailable();
+    }
+  }
+
+  Future<AuthRefreshResult> _invalidateSecureSession({
+    required int generation,
+    required String userId,
+    required AuthRefreshResult expiredResult,
+  }) async {
+    final outcome = await _mutationCoordinator.runExclusive(() async {
+      if (!_isSameSession(generation, userId)) {
+        return const _SecureRefreshOutcome(result: AuthRefreshSessionChanged());
+      }
+      final cleanup = await _clearSecureAuthStateUnlocked();
+      _sessionManager.clear();
+      return _SecureRefreshOutcome(
+        result: expiredResult,
+        diagnostics: cleanup.diagnostics,
+        unexpectedError: cleanup.hasUnexpectedFailure ? cleanup : null,
+      );
+    });
+    _reportBestEffort(outcome.diagnostics);
+    outcome.unexpectedError?.throwIfUnexpected();
+    return outcome.result;
+  }
+
+  Future<AuthLifecycleCleanupResult> _clearSecureAuthStateUnlocked() {
+    return AuthLifecycleCleanupPolicy(
+      secureCredentialStore: _credentialStore,
+      legacyCredentialStore: _legacyCredentialStore,
+      userStore: _userStore,
+    ).clearAllUnlocked();
+  }
+
+  void _reportBestEffort(Iterable<AuthLifecycleDiagnostic> diagnostics) {
+    try {
+      _diagnosticSink.reportAll(diagnostics);
+    } on Object {
+      // Passive invalidation reporting不得改變Session expiration語意。
+    }
+  }
+}
+
+final class _SecureRefreshOutcome {
+  const _SecureRefreshOutcome({
+    required this.result,
+    this.diagnostics = const <AuthLifecycleDiagnostic>[],
+    this.unexpectedError,
+  });
+
+  final AuthRefreshResult result;
+  final List<AuthLifecycleDiagnostic> diagnostics;
+  final AuthLifecycleCleanupResult? unexpectedError;
 }
 
 final class _InFlightRefresh {

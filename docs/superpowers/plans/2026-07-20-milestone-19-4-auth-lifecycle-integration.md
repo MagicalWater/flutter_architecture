@@ -188,21 +188,23 @@ Task 3 implementation review：通過。Review發現初版會讓expected cleanup
 
 **Contract**
 
-- [ ] 新Secure lifecycle path只從其注入的Secure credential authority讀取完整Token Pair。
-- [ ] Rotation只寫同一注入authority，維持persistence-first後才更新Session access token。
-- [ ] Refresh前驗證stored userId、SQLite User與runtime Session一致。
-- [ ] Invalid refresh、credential corruption／absence與identity mismatch觸發passive invalidation。
-- [ ] Passive invalidation嘗試清Secure、Legacy與User，再清runtime Session。
-- [ ] Expected cleanup failure不阻止Session expired語意；先清runtime Session，再於lock外逐項non-fatal report。
-- [ ] Unknown cleanup error也必須先完成runtime Session expiration，再保留identity / stack進既有unexpected reporting flow。
-- [ ] Concurrent 401 single-flight、generation、cross-session與safe replay regression不得退化。
-- [ ] App production DI在Task 6前仍選擇舊Refresher path。
+- [x] 新Secure lifecycle path只從其注入的Secure credential authority讀取完整Token Pair。
+- [x] Rotation只寫同一注入authority，維持persistence-first後才更新Session access token。
+- [x] Refresh前驗證stored userId、SQLite User與runtime Session一致。
+- [x] Invalid refresh、credential corruption／absence與identity mismatch觸發passive invalidation。
+- [x] Passive invalidation嘗試清Secure、Legacy與User，再清runtime Session。
+- [x] Expected cleanup failure不阻止Session expired語意；先清runtime Session，再於lock外逐項non-fatal report。
+- [x] Unknown cleanup error也必須先完成runtime Session expiration，再保留identity / stack進既有unexpected reporting flow。
+- [x] Concurrent 401 single-flight、generation、cross-session與safe replay regression不得退化。
+- [x] App production DI在Task 6前仍選擇舊Refresher path。
 
 建議commit：
 
 ```bash
 git commit -m "feat(auth): 切換refresh與passive invalidation至Secure"
 ```
+
+Task 4執行結果：新增非nullable transitional `AuthSessionRefresher.secureLifecycle`，以同library私有Secure subclass保留既有single-flight、generation與cross-session協調骨架，只覆寫credential resolution、rotation與passive invalidation。Secure path只讀寫注入的Secure Token Pair，先驗證stored userId、SQLite User與runtime Session identity，再呼叫remote；rotation persistence成功後才更新runtime access token。Invalid refresh、credential absence／corruption／expiry與identity mismatch均在caller-owned exclusive section內使用Task 1 cleanup policy依序清Secure、Legacy、User並清Session；immutable diagnostics帶出lock後report。Expected cleanup failure仍回SessionExpired／LocalStateFailure，unknown cleanup error在Session清除後保留identity與stack拋出。App production DI與default Refresher constructor未切換。
 
 ## Task 5 — Logout destructive cleanup
 

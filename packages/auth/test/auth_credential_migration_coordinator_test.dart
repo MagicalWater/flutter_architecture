@@ -315,39 +315,63 @@ void main() {
       },
     );
 
-    for (final legacyResult in <AuthCredentialReadResult>[
-      const AuthCredentialReadPresent(tokens),
-      const AuthCredentialReadPresent(
+    final legacyCases = <String, AuthCredentialReadResult>{
+      'matching credential': const AuthCredentialReadPresent(tokens),
+      'different credential': const AuthCredentialReadPresent(
         StoredAuthTokens(
           accessToken: 'legacy-access',
           refreshToken: 'legacy-refresh',
           userId: 'user-1',
         ),
       ),
-      const AuthCredentialReadCorrupted(),
-    ]) {
-      test(
-        'secure remains authority and clears existing legacy ${legacyResult.runtimeType}',
-        () async {
-          final stores = _MigrationStores(
-            secureResult: const AuthCredentialReadPresent(tokens),
-            legacyResult: legacyResult,
-            user: user,
-          );
+      'corrupted credential': const AuthCredentialReadCorrupted(),
+    };
+    for (final entry in legacyCases.entries) {
+      test('secure remains authority and clears ${entry.key}', () async {
+        final stores = _MigrationStores(
+          secureResult: const AuthCredentialReadPresent(tokens),
+          legacyResult: entry.value,
+          user: user,
+        );
 
-          final result = await stores.coordinator.resolveUnlocked();
+        final result = await stores.coordinator.resolveUnlocked();
 
-          expect(result, isA<AuthCredentialMigrationResolved>());
-          final resolved = result as AuthCredentialMigrationResolved;
-          expect(resolved.tokens, same(tokens));
-          expect(resolved.user, same(user));
-          expect(resolved.diagnostics, isEmpty);
-          expect(stores.legacy.clearCalls, 1);
-          expect(stores.secure.clearCalls, 0);
-          expect(stores.secure.writeCalls, 0);
-        },
-      );
+        expect(result, isA<AuthCredentialMigrationResolved>());
+        final resolved = result as AuthCredentialMigrationResolved;
+        expect(resolved.tokens, same(tokens));
+        expect(resolved.user, same(user));
+        expect(resolved.diagnostics, isEmpty);
+        expect(stores.legacy.clearCalls, 1);
+        expect(stores.secure.clearCalls, 0);
+        expect(stores.secure.writeCalls, 0);
+      });
     }
+
+    test('legacy read failure prevents resolved authority', () async {
+      final failure = AppException(
+        kind: AppExceptionKind.localStorage,
+        message: 'legacy unavailable',
+      );
+      final failureStack = StackTrace.current;
+      final stores =
+          _MigrationStores(
+              secureResult: const AuthCredentialReadPresent(tokens),
+              user: user,
+            )
+            ..legacy.readError = failure
+            ..legacy.readStackTrace = failureStack;
+
+      try {
+        await stores.coordinator.resolveUnlocked();
+        fail('Expected legacy read failure');
+      } catch (error, stackTrace) {
+        expect(error, same(failure));
+        expect(stackTrace, same(failureStack));
+      }
+      expect(stores.legacy.clearCalls, 0);
+      expect(stores.secure.clearCalls, 0);
+      expect(stores.user.clearCalls, 0);
+    });
 
     test(
       'expected legacy cleanup failure resolves with safe pending diagnostic',
@@ -426,13 +450,14 @@ void main() {
                 message: 'first cleanup failed',
               );
 
-        final first = await stores.coordinator.resolveUnlocked();
+        final coordinator = stores.coordinator;
+        final first = await coordinator.resolveUnlocked();
         expect(first.diagnostics, hasLength(1));
         expect(stores.legacy.clearCalls, 1);
         expect(stores.secure.writeCalls, 0);
 
         stores.legacy.clearError = null;
-        final second = await stores.coordinator.resolveUnlocked();
+        final second = await coordinator.resolveUnlocked();
 
         expect(second, isA<AuthCredentialMigrationResolved>());
         expect(second.diagnostics, isEmpty);
@@ -545,6 +570,8 @@ final class _RecordingLegacyStore
 
   AuthCredentialReadResult result;
   int readCalls = 0;
+  Object? readError;
+  StackTrace? readStackTrace;
 
   @override
   Future<void> clearLegacyCredential() => clearRecorded();
@@ -552,6 +579,10 @@ final class _RecordingLegacyStore
   @override
   Future<AuthCredentialReadResult> readLegacyCredential() async {
     readCalls += 1;
+    final error = readError;
+    if (error != null) {
+      Error.throwWithStackTrace(error, readStackTrace ?? StackTrace.current);
+    }
     return result;
   }
 }

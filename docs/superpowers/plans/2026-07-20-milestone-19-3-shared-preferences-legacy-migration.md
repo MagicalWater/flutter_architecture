@@ -162,6 +162,8 @@ git commit -m "feat(auth): 實作Secure authority cleanup policy"
 
 Task 3執行結果：Secure credential合法且與User identity一致時成為唯一authority；Legacy absent直接回傳resolved，Legacy present（相同或不同）與corrupted只觸發Legacy cleanup，不清Secure或User，也不重寫Secure。Legacy cleanup成功不產生diagnostic；`AppExceptionKind.localStorage` cleanup failure仍回傳resolved並攜帶`legacyCleanup` safe diagnostic，保留原error與caught stack；unknown cleanup error以原identity / stack重拋。Cleanup pending由Secure、Legacy與User真實store state推導，下一次resolve會再次嘗試Legacy cleanup，無persistent marker。RED為7個Secure authority tests因原`UnimplementedError`失敗；GREEN targeted tests增為22項，Auth analyze通過。
 
+Task 3 implementation review：通過。Review將Legacy matching / different / corrupted案例改為唯一可辨識test名稱；補強Legacy read unavailable會阻止resolved並保留原error / caught stack，且不觸發任何cleanup；re-entry regression改用同一個Coordinator instance連續resolve，正式證明cleanup pending不依賴Coordinator內部mutable state。Targeted tests增為23項，Auth analyze重新通過。
+
 ## Task 4 — Legacy migration、read-back validation與partial failure
 
 **Files**

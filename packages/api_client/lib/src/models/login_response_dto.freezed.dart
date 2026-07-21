@@ -1,4 +1,4 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
+﻿// GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
@@ -11,16 +11,34 @@ part of 'login_response_dto.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
+LoginResponseDto _$LoginResponseDtoFromJson(
+  Map<String, dynamic> json
+) {
+        switch (json['resultType']) {
+                  case 'authenticated':
+          return AuthenticatedLoginResponseDto.fromJson(
+            json
+          );
+                case 'otpChallenge':
+          return OtpChallengeLoginResponseDto.fromJson(
+            json
+          );
+
+          default:
+            throw CheckedFromJsonException(
+  json,
+  'resultType',
+  'LoginResponseDto',
+  'Invalid union type "${json['resultType']}"!'
+);
+        }
+
+}
 
 /// @nodoc
 mixin _$LoginResponseDto {
 
- String get accessToken; String get refreshToken; String get userId; String get userName;
-/// Create a copy of LoginResponseDto
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$LoginResponseDtoCopyWith<LoginResponseDto> get copyWith => _$LoginResponseDtoCopyWithImpl<LoginResponseDto>(this as LoginResponseDto, _$identity);
+
 
   /// Serializes this LoginResponseDto to a JSON map.
   Map<String, dynamic> toJson();
@@ -28,49 +46,20 @@ $LoginResponseDtoCopyWith<LoginResponseDto> get copyWith => _$LoginResponseDtoCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginResponseDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginResponseDto);
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,userId,userName);
+int get hashCode => runtimeType.hashCode;
 
 
 
 }
 
 /// @nodoc
-abstract mixin class $LoginResponseDtoCopyWith<$Res>  {
-  factory $LoginResponseDtoCopyWith(LoginResponseDto value, $Res Function(LoginResponseDto) _then) = _$LoginResponseDtoCopyWithImpl;
-@useResult
-$Res call({
- String accessToken, String refreshToken, String userId, String userName
-});
-
-
-
-
-}
-/// @nodoc
-class _$LoginResponseDtoCopyWithImpl<$Res>
-    implements $LoginResponseDtoCopyWith<$Res> {
-  _$LoginResponseDtoCopyWithImpl(this._self, this._then);
-
-  final LoginResponseDto _self;
-  final $Res Function(LoginResponseDto) _then;
-
-/// Create a copy of LoginResponseDto
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? refreshToken = null,Object? userId = null,Object? userName = null,}) {
-  return _then(_self.copyWith(
-accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
-as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
+class $LoginResponseDtoCopyWith<$Res>  {
+$LoginResponseDtoCopyWith(LoginResponseDto _, $Res Function(LoginResponseDto) __);
 }
 
 
@@ -88,11 +77,12 @@ extension LoginResponseDtoPatterns on LoginResponseDto {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LoginResponseDto value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( AuthenticatedLoginResponseDto value)?  authenticated,TResult Function( OtpChallengeLoginResponseDto value)?  otpChallenge,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _LoginResponseDto() when $default != null:
-return $default(_that);case _:
+case AuthenticatedLoginResponseDto() when authenticated != null:
+return authenticated(_that);case OtpChallengeLoginResponseDto() when otpChallenge != null:
+return otpChallenge(_that);case _:
   return orElse();
 
 }
@@ -110,14 +100,12 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LoginResponseDto value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( AuthenticatedLoginResponseDto value)  authenticated,required TResult Function( OtpChallengeLoginResponseDto value)  otpChallenge,}){
 final _that = this;
 switch (_that) {
-case _LoginResponseDto():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+case AuthenticatedLoginResponseDto():
+return authenticated(_that);case OtpChallengeLoginResponseDto():
+return otpChallenge(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -131,11 +119,12 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LoginResponseDto value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( AuthenticatedLoginResponseDto value)?  authenticated,TResult? Function( OtpChallengeLoginResponseDto value)?  otpChallenge,}){
 final _that = this;
 switch (_that) {
-case _LoginResponseDto() when $default != null:
-return $default(_that);case _:
+case AuthenticatedLoginResponseDto() when authenticated != null:
+return authenticated(_that);case OtpChallengeLoginResponseDto() when otpChallenge != null:
+return otpChallenge(_that);case _:
   return null;
 
 }
@@ -152,10 +141,11 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String userId,  String userName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function(@JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson)  AuthenticatedResponseDto authenticated)?  authenticated,TResult Function(@JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson)  OtpChallengeDto challenge)?  otpChallenge,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _LoginResponseDto() when $default != null:
-return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName);case _:
+case AuthenticatedLoginResponseDto() when authenticated != null:
+return authenticated(_that.authenticated);case OtpChallengeLoginResponseDto() when otpChallenge != null:
+return otpChallenge(_that.challenge);case _:
   return orElse();
 
 }
@@ -173,13 +163,11 @@ return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String userId,  String userName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function(@JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson)  AuthenticatedResponseDto authenticated)  authenticated,required TResult Function(@JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson)  OtpChallengeDto challenge)  otpChallenge,}) {final _that = this;
 switch (_that) {
-case _LoginResponseDto():
-return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName);case _:
-  throw StateError('Unexpected subclass');
-
-}
+case AuthenticatedLoginResponseDto():
+return authenticated(_that.authenticated);case OtpChallengeLoginResponseDto():
+return otpChallenge(_that.challenge);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -193,10 +181,11 @@ return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String accessToken,  String refreshToken,  String userId,  String userName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function(@JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson)  AuthenticatedResponseDto authenticated)?  authenticated,TResult? Function(@JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson)  OtpChallengeDto challenge)?  otpChallenge,}) {final _that = this;
 switch (_that) {
-case _LoginResponseDto() when $default != null:
-return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName);case _:
+case AuthenticatedLoginResponseDto() when authenticated != null:
+return authenticated(_that.authenticated);case OtpChallengeLoginResponseDto() when otpChallenge != null:
+return otpChallenge(_that.challenge);case _:
   return null;
 
 }
@@ -207,72 +196,157 @@ return $default(_that.accessToken,_that.refreshToken,_that.userId,_that.userName
 /// @nodoc
 @JsonSerializable()
 
-class _LoginResponseDto implements LoginResponseDto {
-  const _LoginResponseDto({required this.accessToken, required this.refreshToken, required this.userId, required this.userName});
-  factory _LoginResponseDto.fromJson(Map<String, dynamic> json) => _$LoginResponseDtoFromJson(json);
+class AuthenticatedLoginResponseDto implements LoginResponseDto {
+  const AuthenticatedLoginResponseDto({@JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson) required this.authenticated, final  String? $type}): $type = $type ?? 'authenticated';
+  factory AuthenticatedLoginResponseDto.fromJson(Map<String, dynamic> json) => _$AuthenticatedLoginResponseDtoFromJson(json);
 
-@override final  String accessToken;
-@override final  String refreshToken;
-@override final  String userId;
-@override final  String userName;
+@JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson) final  AuthenticatedResponseDto authenticated;
+
+@JsonKey(name: 'resultType')
+final String $type;
+
 
 /// Create a copy of LoginResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$LoginResponseDtoCopyWith<_LoginResponseDto> get copyWith => __$LoginResponseDtoCopyWithImpl<_LoginResponseDto>(this, _$identity);
+$AuthenticatedLoginResponseDtoCopyWith<AuthenticatedLoginResponseDto> get copyWith => _$AuthenticatedLoginResponseDtoCopyWithImpl<AuthenticatedLoginResponseDto>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$LoginResponseDtoToJson(this, );
+  return _$AuthenticatedLoginResponseDtoToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginResponseDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.userName, userName) || other.userName == userName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthenticatedLoginResponseDto&&(identical(other.authenticated, authenticated) || other.authenticated == authenticated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,userId,userName);
+int get hashCode => Object.hash(runtimeType,authenticated);
 
 
 
 }
 
 /// @nodoc
-abstract mixin class _$LoginResponseDtoCopyWith<$Res> implements $LoginResponseDtoCopyWith<$Res> {
-  factory _$LoginResponseDtoCopyWith(_LoginResponseDto value, $Res Function(_LoginResponseDto) _then) = __$LoginResponseDtoCopyWithImpl;
-@override @useResult
+abstract mixin class $AuthenticatedLoginResponseDtoCopyWith<$Res> implements $LoginResponseDtoCopyWith<$Res> {
+  factory $AuthenticatedLoginResponseDtoCopyWith(AuthenticatedLoginResponseDto value, $Res Function(AuthenticatedLoginResponseDto) _then) = _$AuthenticatedLoginResponseDtoCopyWithImpl;
+@useResult
 $Res call({
- String accessToken, String refreshToken, String userId, String userName
+@JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson) AuthenticatedResponseDto authenticated
 });
 
 
-
+$AuthenticatedResponseDtoCopyWith<$Res> get authenticated;
 
 }
 /// @nodoc
-class __$LoginResponseDtoCopyWithImpl<$Res>
-    implements _$LoginResponseDtoCopyWith<$Res> {
-  __$LoginResponseDtoCopyWithImpl(this._self, this._then);
+class _$AuthenticatedLoginResponseDtoCopyWithImpl<$Res>
+    implements $AuthenticatedLoginResponseDtoCopyWith<$Res> {
+  _$AuthenticatedLoginResponseDtoCopyWithImpl(this._self, this._then);
 
-  final _LoginResponseDto _self;
-  final $Res Function(_LoginResponseDto) _then;
+  final AuthenticatedLoginResponseDto _self;
+  final $Res Function(AuthenticatedLoginResponseDto) _then;
 
 /// Create a copy of LoginResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,Object? userId = null,Object? userName = null,}) {
-  return _then(_LoginResponseDto(
-accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
-as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
-as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,userName: null == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
-as String,
+@pragma('vm:prefer-inline') $Res call({Object? authenticated = null,}) {
+  return _then(AuthenticatedLoginResponseDto(
+authenticated: null == authenticated ? _self.authenticated : authenticated // ignore: cast_nullable_to_non_nullable
+as AuthenticatedResponseDto,
   ));
 }
 
+/// Create a copy of LoginResponseDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AuthenticatedResponseDtoCopyWith<$Res> get authenticated {
 
+  return $AuthenticatedResponseDtoCopyWith<$Res>(_self.authenticated, (value) {
+    return _then(_self.copyWith(authenticated: value));
+  });
+}
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class OtpChallengeLoginResponseDto implements LoginResponseDto {
+  const OtpChallengeLoginResponseDto({@JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson) required this.challenge, final  String? $type}): $type = $type ?? 'otpChallenge';
+  factory OtpChallengeLoginResponseDto.fromJson(Map<String, dynamic> json) => _$OtpChallengeLoginResponseDtoFromJson(json);
+
+@JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson) final  OtpChallengeDto challenge;
+
+@JsonKey(name: 'resultType')
+final String $type;
+
+
+/// Create a copy of LoginResponseDto
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$OtpChallengeLoginResponseDtoCopyWith<OtpChallengeLoginResponseDto> get copyWith => _$OtpChallengeLoginResponseDtoCopyWithImpl<OtpChallengeLoginResponseDto>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$OtpChallengeLoginResponseDtoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OtpChallengeLoginResponseDto&&(identical(other.challenge, challenge) || other.challenge == challenge));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,challenge);
+
+
+
+}
+
+/// @nodoc
+abstract mixin class $OtpChallengeLoginResponseDtoCopyWith<$Res> implements $LoginResponseDtoCopyWith<$Res> {
+  factory $OtpChallengeLoginResponseDtoCopyWith(OtpChallengeLoginResponseDto value, $Res Function(OtpChallengeLoginResponseDto) _then) = _$OtpChallengeLoginResponseDtoCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson) OtpChallengeDto challenge
+});
+
+
+$OtpChallengeDtoCopyWith<$Res> get challenge;
+
+}
+/// @nodoc
+class _$OtpChallengeLoginResponseDtoCopyWithImpl<$Res>
+    implements $OtpChallengeLoginResponseDtoCopyWith<$Res> {
+  _$OtpChallengeLoginResponseDtoCopyWithImpl(this._self, this._then);
+
+  final OtpChallengeLoginResponseDto _self;
+  final $Res Function(OtpChallengeLoginResponseDto) _then;
+
+/// Create a copy of LoginResponseDto
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? challenge = null,}) {
+  return _then(OtpChallengeLoginResponseDto(
+challenge: null == challenge ? _self.challenge : challenge // ignore: cast_nullable_to_non_nullable
+as OtpChallengeDto,
+  ));
+}
+
+/// Create a copy of LoginResponseDto
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OtpChallengeDtoCopyWith<$Res> get challenge {
+
+  return $OtpChallengeDtoCopyWith<$Res>(_self.challenge, (value) {
+    return _then(_self.copyWith(challenge: value));
+  });
+}
 }
 
 // dart format on

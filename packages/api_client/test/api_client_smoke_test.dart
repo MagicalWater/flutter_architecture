@@ -11,14 +11,15 @@ void main() {
     const client = MockAuthApi();
 
     final response = await client.login(
-      const LoginRequestDto(
-        account: 'demo',
-        password: 'password',
-      ),
+      const LoginRequestDto(account: 'demo', password: 'password'),
     );
 
-    expect(response.accessToken, isNotEmpty);
-    expect(response.userName, 'Water Magical');
+    final authenticated = response.maybeWhen(
+      authenticated: (authenticated) => authenticated,
+      orElse: () => fail('Expected authenticated login response.'),
+    );
+    expect(authenticated.accessToken, isNotEmpty);
+    expect(authenticated.userName, 'Water Magical');
   });
 
   test('MockProfileApi.getProfile 會回傳 mock 使用者資料', () async {
@@ -84,15 +85,14 @@ void main() {
   });
 
   test('Login DTO 可以正確進行 JSON serialization', () {
-    const request = LoginRequestDto(
-      account: 'demo',
-      password: 'super-secret',
-    );
-    const response = LoginResponseDto(
-      accessToken: 'token',
-      refreshToken: 'refresh-token',
-      userId: 'user-001',
-      userName: 'Water Magical',
+    const request = LoginRequestDto(account: 'demo', password: 'super-secret');
+    const response = LoginResponseDto.authenticated(
+      authenticated: AuthenticatedResponseDto(
+        accessToken: 'token',
+        refreshToken: 'refresh-token',
+        userId: 'user-001',
+        userName: 'Water Magical',
+      ),
     );
 
     expect(request.toJson(), <String, dynamic>{
@@ -105,10 +105,7 @@ void main() {
   });
 
   test('ProfileResponseDto 可以正確進行 JSON serialization', () {
-    const response = ProfileResponseDto(
-      id: 'user-001',
-      name: 'Water Magical',
-    );
+    const response = ProfileResponseDto(id: 'user-001', name: 'Water Magical');
 
     expect(ProfileResponseDto.fromJson(response.toJson()), response);
   });
@@ -136,21 +133,14 @@ void main() {
     final error = DioException(
       requestOptions: request,
       type: DioExceptionType.badResponse,
-      response: Response<void>(
-        requestOptions: request,
-        statusCode: 503,
-      ),
+      response: Response<void>(requestOptions: request, statusCode: 503),
     );
 
     expect(
       () => rethrowMappedTransportException(error, StackTrace.current),
       throwsA(
         isA<AppException>()
-            .having(
-              (value) => value.kind,
-              'kind',
-              AppExceptionKind.transport,
-            )
+            .having((value) => value.kind, 'kind', AppExceptionKind.transport)
             .having(
               (value) => value.transportKind,
               'transport kind',
@@ -190,10 +180,7 @@ void main() {
     final api = AuthApi(dio);
 
     final response = await api.login(
-      const LoginRequestDto(
-        account: 'demo',
-        password: 'password',
-      ),
+      const LoginRequestDto(account: 'demo', password: 'password'),
     );
 
     expect(adapter.method, 'POST');
@@ -203,8 +190,12 @@ void main() {
       'account': 'demo',
       'password': 'password',
     });
-    expect(response.accessToken, 'real-access-token');
-    expect(response.userId, 'user-002');
+    final authenticated = response.maybeWhen(
+      authenticated: (authenticated) => authenticated,
+      orElse: () => fail('Expected authenticated login response.'),
+    );
+    expect(authenticated.accessToken, 'real-access-token');
+    expect(authenticated.userId, 'user-002');
   });
 
   test('AuthRefreshApi 使用獨立 endpoint 並標記 skipAuthRefresh', () async {
@@ -221,9 +212,7 @@ void main() {
     expect(adapter.path, '/auth/refresh');
     expect(adapter.extra[RequestExtras.requiresAuth], isNot(true));
     expect(adapter.extra[RequestExtras.skipAuthRefresh], isTrue);
-    expect(adapter.body, <String, dynamic>{
-      'refreshToken': 'refresh-token',
-    });
+    expect(adapter.body, <String, dynamic>{'refreshToken': 'refresh-token'});
     expect(response.accessToken, 'new-access-token');
     expect(response.refreshToken, 'new-refresh-token');
   });
@@ -284,11 +273,7 @@ void main() {
       ..httpClientAdapter = adapter;
     final api = CatalogApi(dio);
 
-    await api.searchCatalog(
-      query: '',
-      cursor: null,
-      limit: 20,
-    );
+    await api.searchCatalog(query: '', cursor: null, limit: 20);
 
     expect(adapter.queryParameters, <String, dynamic>{
       'query': '',
@@ -332,19 +317,19 @@ class _RecordingAdapter implements HttpClientAdapter {
 
     final response = switch (options.path) {
       '/auth/login' => <String, dynamic>{
-        'accessToken': 'real-access-token',
-        'refreshToken': 'real-refresh-token',
-        'userId': 'user-002',
-        'userName': 'Retrofit User',
+        'resultType': 'authenticated',
+        'authenticated': <String, dynamic>{
+          'accessToken': 'real-access-token',
+          'refreshToken': 'real-refresh-token',
+          'userId': 'user-002',
+          'userName': 'Retrofit User',
+        },
       },
       '/auth/refresh' => <String, dynamic>{
         'accessToken': 'new-access-token',
         'refreshToken': 'new-refresh-token',
       },
-      '/profile' => <String, dynamic>{
-        'id': 'user-003',
-        'name': 'Profile User',
-      },
+      '/profile' => <String, dynamic>{'id': 'user-003', 'name': 'Profile User'},
       '/catalog' => <String, dynamic>{
         'items': <Map<String, dynamic>>[
           <String, dynamic>{

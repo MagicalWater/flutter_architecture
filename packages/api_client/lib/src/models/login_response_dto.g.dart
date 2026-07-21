@@ -6,18 +6,34 @@ part of 'login_response_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_LoginResponseDto _$LoginResponseDtoFromJson(Map<String, dynamic> json) =>
-    _LoginResponseDto(
-      accessToken: json['accessToken'] as String,
-      refreshToken: json['refreshToken'] as String,
-      userId: json['userId'] as String,
-      userName: json['userName'] as String,
-    );
+AuthenticatedLoginResponseDto _$AuthenticatedLoginResponseDtoFromJson(
+  Map<String, dynamic> json,
+) => AuthenticatedLoginResponseDto(
+  authenticated: AuthenticatedResponseDto.fromJson(
+    json['authenticated'] as Map<String, dynamic>,
+  ),
+  $type: json['resultType'] as String?,
+);
 
-Map<String, dynamic> _$LoginResponseDtoToJson(_LoginResponseDto instance) =>
-    <String, dynamic>{
-      'accessToken': instance.accessToken,
-      'refreshToken': instance.refreshToken,
-      'userId': instance.userId,
-      'userName': instance.userName,
-    };
+Map<String, dynamic> _$AuthenticatedLoginResponseDtoToJson(
+  AuthenticatedLoginResponseDto instance,
+) => <String, dynamic>{
+  'authenticated': _authenticatedToJson(instance.authenticated),
+  'resultType': instance.$type,
+};
+
+OtpChallengeLoginResponseDto _$OtpChallengeLoginResponseDtoFromJson(
+  Map<String, dynamic> json,
+) => OtpChallengeLoginResponseDto(
+  challenge: OtpChallengeDto.fromJson(
+    json['challenge'] as Map<String, dynamic>,
+  ),
+  $type: json['resultType'] as String?,
+);
+
+Map<String, dynamic> _$OtpChallengeLoginResponseDtoToJson(
+  OtpChallengeLoginResponseDto instance,
+) => <String, dynamic>{
+  'challenge': _challengeToJson(instance.challenge),
+  'resultType': instance.$type,
+};

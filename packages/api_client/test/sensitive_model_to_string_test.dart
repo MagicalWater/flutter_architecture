@@ -12,11 +12,13 @@ void main() {
         password: 'sensitive-password',
       ),
       const RefreshTokenRequestDto(refreshToken: refreshToken),
-      const LoginResponseDto(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        userId: 'user-001',
-        userName: 'User',
+      const LoginResponseDto.authenticated(
+        authenticated: AuthenticatedResponseDto(
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          userId: 'user-001',
+          userName: 'User',
+        ),
       ),
       const RefreshTokenResponseDto(
         accessToken: accessToken,

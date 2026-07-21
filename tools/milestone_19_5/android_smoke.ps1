@@ -248,12 +248,23 @@ function Inspect-Sandbox {
     "echo '[legacy_key_files]'",
     ('grep -rl ''name="auth.tokens"\|name="auth.accessToken"'' {0}/shared_prefs 2>/dev/null | sed ''s#.*/##'' | sort' -f $base),
     "echo '[secure_artifacts]'",
-    ('find {0}/shared_prefs -maxdepth 1 -type f \( -iname ''*secure*'' -o -iname ''*encrypted*'' \) -printf ''%f|%s|%TY-%Tm-%TdT%TH:%TM:%TS\n'' 2>/dev/null | sort' -f $base),
-    "echo '[auth_user]'",
-    ('if command -v sqlite3 >/dev/null 2>&1; then find {0}/databases -maxdepth 1 -type f | head -n 1 | xargs -r sqlite3 ''SELECT slot,id,name FROM auth_user;''; else echo ''sqlite3 unavailable on device''; fi' -f $base)
+    ('find {0}/shared_prefs -maxdepth 1 -type f \( -iname ''*secure*'' -o -iname ''*encrypted*'' \) -printf ''%f|%s|%TY-%Tm-%TdT%TH:%TM:%TS\n'' 2>/dev/null | sort' -f $base)
   ) -join '; '
   if ($PSCmdlet.ShouldProcess("$serial/$PackageId", 'Collect root-only read-only sandbox evidence')) {
     $result = Invoke-Checked adb @('-s', $serial, 'shell', 'sh', '-c', $shell) -Capture
+    $databasePath = Invoke-Checked adb @(
+      '-s', $serial, 'shell', 'ls', "$base/databases/*.db"
+    ) -Capture
+    if ($databasePath -match [Environment]::NewLine) {
+      $databasePath = ($databasePath -split [Environment]::NewLine)[0]
+    }
+    $authUser = if ($databasePath) {
+      $command = 'adb -s "{0}" shell sqlite3 "{1}" "\"SELECT slot,id,name FROM auth_user;\""' -f $serial, $databasePath
+      Invoke-Checked cmd.exe @('/d', '/s', '/c', $command) -Capture
+    } else {
+      'database unavailable'
+    }
+    $result = $result + [Environment]::NewLine + '[auth_user]' + [Environment]::NewLine + $authUser
     Assert-NoSecret $result 'Sandbox evidence'
     $result | Set-Content -Encoding UTF8 (Join-Path $evidenceRoot "$Label-sandbox.txt")
   }

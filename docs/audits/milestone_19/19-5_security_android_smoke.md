@@ -139,3 +139,51 @@ Task 2 implementation review：通過。
 - Evidence endpoint與JSONL檔案只暴露safe metadata與fingerprint。
 - `BaseHTTPRequestHandler.log_message()`已停用，避免預設request line輸出。
 - Tooling沒有App、Flutter或package dependency，亦未修改production source。
+
+## Task 4 — Current release Login、Restore與Logout runtime smoke
+
+### Environment與artifact
+
+- AVD：`flutter_architecture_m18`。
+- Device serial：`emulator-5554`。
+- Android API：35。
+- ABI：x86_64。
+- `adb root`：成功；root只用於test environment evidence。
+- APK：development release、`API_MODE=mock`。
+- APK SHA-256：`5477bdef4d51a042a4ad13c14e03bf9553c10be1274da006fb1b68f399d4d476`。
+- APK size：58,927,329 bytes。
+- App artifact versionName／versionCode：`0.1.0`／`1`。
+- Merged manifest：minSdk 24、targetSdk 36、`allowBackup=false`。
+
+### Login與Secure authority
+
+- Clean install後顯示Login頁，預設帳號存在且password欄位保持遮罩。
+- 透過既有UI Login後顯示Profile，current user為`Water Magical`。
+- Legacy SharedPreferences keys `auth.tokens`／`auth.accessToken`均不存在。
+- Secure Storage backing artifact `FlutterSecureStorage.xml`存在。
+- SQLite `auth_user`為single-active row：`1|user-001|Water Magical`。
+- Authenticated UI hierarchy、screenshot hash與resumed Activity evidence已保存於untracked evidence directory。
+
+### Force-stop／restart Restore
+
+- Force-stop後重新啟動release APK，App直接恢復Profile authenticated狀態。
+- Restore後Legacy keys仍不存在。
+- Secure Storage backing artifact與`auth_user` identity保持一致。
+- Restore UI hierarchy、screenshot hash、Activity及logcat evidence已保存。
+
+### Logout destructive cleanup與public cache persistence
+
+- 先開啟Catalog，建立public cache：`catalog_cache_page=1`、`catalog_cache_page_item=12`。
+- 透過既有Profile UI執行Logout後回到Login頁。
+- Logout後`auth_user=0`，Legacy keys不存在；Secure Storage backing file仍可存在，但logical credential已清除，檔案大小由1,500 bytes降為1,144 bytes。
+- Catalog cache在Logout後仍保持1頁／12項，符合既有public persistence contract。
+- 再次force-stop／restart後仍停留Login，`auth_user`保持空、Legacy keys仍不存在。
+- Logout與restart後UI hierarchy、screenshot hash、Activity、sandbox與logcat evidence已保存。
+
+### Task 4 implementation review
+
+- Login、Restore與Logout成功結果均由release App production orchestration產生。
+- ADB只負責安裝、點擊既有UI、force-stop／launch、只讀sandbox與evidence收集，沒有直接建立Session、credential或User。
+- 每次`CollectLogcat`均通過secret／fatal gate，沒有credential sentinel或App fatal。
+- Task 4執行期間發現Task 3 SQLite helper的Windows quoting缺陷；已改為先由ADB只讀取得`.db`路徑，再以quoted `sqlite3` command查詢safe欄位，未增加任何寫入能力。
+- 無Open P0／P1 runtime finding。

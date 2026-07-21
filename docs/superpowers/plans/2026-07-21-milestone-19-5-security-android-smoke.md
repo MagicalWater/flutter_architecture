@@ -418,7 +418,7 @@ Task 3執行結果：新增Windows PowerShell 5.1相容的`android_smoke.ps1`，
 **Files:**
 - Modify: `docs/audits/milestone_19/19-5_security_android_smoke.md`
 
-- [ ] **Step 1：啟動AVD並確認root capability**
+- [x] **Step 1：啟動AVD並確認root capability**
 
 Run:
 
@@ -437,7 +437,7 @@ Expected:
 - API 35、x86_64或實際記錄值。
 - `adb root`成功。
 
-- [ ] **Step 2：建立current development release APK（Mock mode）**
+- [x] **Step 2：建立current development release APK（Mock mode）**
 
 Run:
 
@@ -448,7 +448,7 @@ flutter build apk --release -t lib/main_development.dart --dart-define=API_MODE=
 
 Expected: `build/app/outputs/flutter-apk/app-release.apk`建立成功。
 
-- [ ] **Step 3：執行clean install與Login journey**
+- [x] **Step 3：執行clean install與Login journey**
 
 流程：
 
@@ -460,7 +460,7 @@ Expected: `build/app/outputs/flutter-apk/app-release.apk`建立成功。
 - `auth_user`只有slot 1且identity為`user-001`。
 - 保存Login完成後的UI hierarchy、screenshot hash與resumed Activity evidence。
 
-- [ ] **Step 4：執行force-stop／restart Restore**
+- [x] **Step 4：執行force-stop／restart Restore**
 
 流程：
 
@@ -471,7 +471,7 @@ Expected: `build/app/outputs/flutter-apk/app-release.apk`建立成功。
 - logcat無fatal／secret。
 - 保存restart後的UI hierarchy、screenshot hash與resumed Activity evidence。
 
-- [ ] **Step 5：執行Logout cleanup**
+- [x] **Step 5：執行Logout cleanup**
 
 流程：
 
@@ -485,7 +485,7 @@ Expected: `build/app/outputs/flutter-apk/app-release.apk`建立成功。
 - force-stop／restart仍unauthenticated。
 - 保存Logout後與restart後Login畫面的UI hierarchy、screenshot hash與resumed Activity evidence。
 
-- [ ] **Step 6：更新audit evidence並commit**
+- [x] **Step 6：更新audit evidence並commit**
 
 文件只記錄：
 
@@ -500,9 +500,11 @@ git add docs/audits/milestone_19/19-5_security_android_smoke.md
 git commit -m "test(android): 驗證Secure login restore與logout"
 ```
 
-- [ ] **Step 7：進行Task 4 implementation review**
+- [x] **Step 7：進行Task 4 implementation review**
 
 Review gate：Login／Restore／Logout均由release App production orchestration完成，ADB沒有直接建立Session或credential。
+
+Task 4執行結果：在`flutter_architecture_m18`（API 35、x86_64、root adbd）建立Mock mode development release APK並完成clean install。既有UI Login後Profile顯示`Water Magical`，Legacy keys不存在、Secure backing artifact存在、`auth_user`為`1|user-001|Water Magical`；force-stop／restart後直接恢復authenticated Profile。Catalog先建立1頁／12項public cache，Logout後回Login、`auth_user`清空且Legacy keys仍不存在，Catalog cache保持1頁／12項；再次restart仍unauthenticated。UI／Activity／screenshot hash／sandbox／logcat evidence均保存於untracked build directory，logcat gate無secret或fatal。執行中修正Task 3 SQLite helper的Windows quoting缺陷，維持只讀safe欄位查詢。Task 4 implementation review通過，無Open P0／P1。
 
 ---
 

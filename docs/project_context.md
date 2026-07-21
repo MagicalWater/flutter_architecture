@@ -1161,7 +1161,7 @@ docs/conversation_rules.md
 
 ## 下一個正式方向：Milestone 20 OTP Step-Up Authentication Planning Review
 
-狀態：Milestone 19 Secure Credential Storage & Migration已完成、final review、封存並發布Template Baseline 1.3.0。下一步只進行Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review，不直接加入OTP production code。
+狀態：Milestone 19 Secure Credential Storage & Migration已完成、final review、獨立Holistic Final Review、封存並發布Template Baseline 1.3.0。下一步只進行Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review，不直接加入OTP production code。
 
 原候選Milestone 19「Authentication Security & Step-Up Verification」已正式拆分為：
 
@@ -1240,6 +1240,8 @@ App Composition Root已原子切換default `AuthCredentialStore`為`FlutterSecur
 19-5完成Android release runtime evidence：Secure Login、force-stop / restart Restore、real API 401 → Refresh rotation → Replay、access-v2 restart persistence、`05b3412` predecessor production Login建立Legacy資料後的signed in-place upgrade migration，以及Logout destructive cleanup均通過。ADB沒有直接寫入credential、User或Session；App／host evidence無raw secret。Release artifact實際minSdk 24、targetSdk 36、`allowBackup=false`，permissions只有既有必要權限。Workspace五個packages analyze、542項Flutter tests、7項Python fixture tests與release APK build全數通過。`M19-PR01`至`M19-PR06`全部關閉或完成正式disposition，無Open P0 / P1。
 
 版本review判定Milestone 19新增可交付的Secure credential storage與migration能力，因此Template Baseline由1.2.0提升為1.3.0。能力只描述為credential-at-rest hardening，不防rooted device、runtime memory或server compromise；OTP、Biometric、Device Binding與Passkey仍屬後續Milestone。
+
+封存後另完成獨立`docs/audits/milestone_19_holistic_final_review.md`，重新跨19-0至19-5審查architecture、production source、generated DI、concurrency、failure、security、runtime evidence與1.3.0版本判斷。Review只發現缺少獨立holistic review紀錄的P2治理finding `M19-H01`，已隨文件建立關閉；另重跑63項核心Auth targeted tests全部通過，沒有重開production implementation，也沒有新增P0／P1。
 
 Milestone 19-3詳細implementation plan已建立：
 

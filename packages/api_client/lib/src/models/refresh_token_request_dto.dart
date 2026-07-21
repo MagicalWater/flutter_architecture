@@ -11,4 +11,7 @@ abstract class RefreshTokenRequestDto with _$RefreshTokenRequestDto {
 
   factory RefreshTokenRequestDto.fromJson(Map<String, dynamic> json) =>
       _$RefreshTokenRequestDtoFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson();
 }

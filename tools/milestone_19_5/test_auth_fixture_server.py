@@ -1,3 +1,4 @@
+import io
 import json
 import unittest
 
@@ -6,6 +7,7 @@ from auth_fixture_server import (
     ACCESS_V2,
     REFRESH_V1,
     AuthFixtureState,
+    _read_http_body,
 )
 
 
@@ -91,6 +93,21 @@ class AuthFixtureStateTest(unittest.TestCase):
 
         self.assertEqual(self.state.evidence(), [])
         self.assertEqual(self.state.refresh_count, 0)
+
+    def test_chunked_request_body_is_decoded(self) -> None:
+        payload = b'{"refreshToken":"m19-refresh-v1"}'
+        stream = io.BytesIO(
+            b'%X\r\n' % len(payload) + payload + b'\r\n0\r\n\r\n'
+        )
+
+        body = _read_http_body(
+            stream,
+            {
+                "Transfer-Encoding": "chunked",
+            },
+        )
+
+        self.assertEqual(body, payload.decode("utf-8"))
 
 
 if __name__ == "__main__":

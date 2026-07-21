@@ -187,3 +187,73 @@ Task 2 implementation review：通過。
 - 每次`CollectLogcat`均通過secret／fatal gate，沒有credential sentinel或App fatal。
 - Task 4執行期間發現Task 3 SQLite helper的Windows quoting缺陷；已改為先由ADB只讀取得`.db`路徑，再以quoted `sqlite3` command查詢safe欄位，未增加任何寫入能力。
 - 無Open P0／P1 runtime finding。
+
+## Task 5 — Real API Refresh rotation與restart persistence smoke
+
+### Environment與transport
+
+- 使用同一`flutter_architecture_m18` AVD，以`-writable-system -no-snapshot`啟動後完成`adb root`、disable-verity、overlayfs與`adb remount`。
+- Temporary local CA安裝至emulator system trust store；App manifest、network security config與Dio trust policy均未修改。
+- Host fixture以`https://localhost:18443`運行，並透過`adb reverse tcp:18443 tcp:18443`連線。
+- Current APK為development release、`API_MODE=real`。
+
+### Runtime發現與修正
+
+首次runtime sequence為Login 200 → Profile 401 → Refresh 401。Safe shape診斷顯示Refresh request長度37、沒有`Content-Type`且不是JSON；內容未被記錄。
+
+根因是`RefreshTokenRequestDto`沒有明確宣告public `toJson()` contract，導致Retrofit generated client將DTO物件直接交給Dio，實際request body沒有形成JSON Map。新增API client regression後先得到`adapter.body == null`的RED結果，再補上`toJson()`宣告並重新執行build_runner。
+
+修正後generated client會執行：
+
+```txt
+request.toJson()
+→ {'refreshToken': '<credential>'}
+```
+
+Fixture server也補上chunked request body decoder及對應Python test，避免host tooling因Transfer-Encoding差異誤判；evidence仍不保存request body。
+
+### Refresh rotation evidence
+
+最終fixture sequence：
+
+```txt
+1 POST /auth/login    200
+2 GET  /profile       401  access-v1 fingerprint
+3 POST /auth/refresh  200  refresh-v1 fingerprint
+4 GET  /profile       200  access-v2 fingerprint
+```
+
+- App完成Login後保持authenticated並顯示Profile／`Water Magical`。
+- Refresh endpoint只成功一次。
+- Replay使用與後續restart相同的access-v2 fingerprint。
+- Legacy keys不存在；Secure backing artifact存在。
+- SQLite `auth_user`保持`1|user-001|Water Magical`。
+
+### Restart persistence evidence
+
+Force-stop／restart後fixture只新增：
+
+```txt
+5 GET /profile 200 access-v2 fingerprint
+```
+
+- 沒有第二次`POST /auth/refresh`。
+- Restart後直接顯示authenticated Profile。
+- Secure backing artifact size與`auth_user` identity維持一致。
+- 這項evidence證明rotated Token Pair已持久化，且Restore後runtime Session直接使用rotated access token。
+
+### Secret與environment cleanup gate
+
+- App UI、sandbox、logcat與host fixture evidence掃描無raw Access Token、Refresh Token、Authorization、password、request body或`FATAL EXCEPTION`。
+- Fixture evidence只保存sequence、method、path、status與SHA-256前16碼fingerprint。
+- Temporary CA移除後，system CA filename集合與安裝前完全一致。
+- Host fixture server已停止。
+
+### Task 5 implementation review
+
+- 實際經過real Dio client、`AuthRefreshInterceptor`、`AuthSessionRefresher`與request replay。
+- Rotation與restart persistence均由release App production flow證明。
+- 修正有API client regression、generated source與runtime evidence共同保護。
+- Host tooling沒有保存raw credential。
+- Temporary CA lifecycle完整cleanup，App production trust policy未弱化。
+- 無Open P0／P1；runtime發現的Refresh JSON P1已在本Task關閉。

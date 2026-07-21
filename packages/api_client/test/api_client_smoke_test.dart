@@ -221,6 +221,9 @@ void main() {
     expect(adapter.path, '/auth/refresh');
     expect(adapter.extra[RequestExtras.requiresAuth], isNot(true));
     expect(adapter.extra[RequestExtras.skipAuthRefresh], isTrue);
+    expect(adapter.body, <String, dynamic>{
+      'refreshToken': 'refresh-token',
+    });
     expect(response.accessToken, 'new-access-token');
     expect(response.refreshToken, 'new-refresh-token');
   });

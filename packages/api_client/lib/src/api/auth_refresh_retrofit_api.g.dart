@@ -26,7 +26,8 @@ class _AuthRefreshApi implements AuthRefreshApi {
     final _extra = <String, dynamic>{'skipAuthRefresh': true};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = request;
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
     final _options = _setStreamType<RefreshTokenResponseDto>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(

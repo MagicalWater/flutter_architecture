@@ -512,8 +512,13 @@ Task 4執行結果：在`flutter_architecture_m18`（API 35、x86_64、root adbd
 
 **Files:**
 - Modify: `docs/audits/milestone_19/19-5_security_android_smoke.md`
+- Modify: `packages/api_client/lib/src/models/refresh_token_request_dto.dart`
+- Modify generated: `packages/api_client/lib/src/api/auth_refresh_retrofit_api.g.dart`
+- Modify: `packages/api_client/test/api_client_smoke_test.dart`
+- Modify: `tools/milestone_19_5/auth_fixture_server.py`
+- Modify: `tools/milestone_19_5/test_auth_fixture_server.py`
 
-- [ ] **Step 1：啟動fixture server並reset state**
+- [x] **Step 1：啟動fixture server並reset state**
 
 Run:
 
@@ -523,7 +528,7 @@ python tools/milestone_19_5/auth_fixture_server.py --host 127.0.0.1 --port 18443
 
 Expected: server啟動，不輸出raw credential。
 
-- [ ] **Step 2：建立real API development release APK**
+- [x] **Step 2：建立real API development release APK**
 
 Run:
 
@@ -535,7 +540,7 @@ adb reverse tcp:18443 tcp:18443
 
 Expected: release APK建立成功，reverse rule存在。
 
-- [ ] **Step 3：執行Login與401／Refresh／Replay**
+- [x] **Step 3：執行Login與401／Refresh／Replay**
 
 UI執行Login並進Profile。
 
@@ -555,7 +560,7 @@ Assertions：
 - User identity不變。
 - App保持authenticated。
 
-- [ ] **Step 4：驗證rotated credential已持久化**
+- [x] **Step 4：驗證rotated credential已持久化**
 
 流程：
 
@@ -567,7 +572,7 @@ Assertions：
 
 這是rotation persistence的必要evidence；mtime／size只能作輔助，不能單獨判定成功。
 
-- [ ] **Step 5：掃描App與server logs**
+- [x] **Step 5：掃描App與server logs**
 
 Expected：
 
@@ -577,14 +582,14 @@ Expected：
 - 無password／request body。
 - 無App fatal。
 
-- [ ] **Step 6：更新audit evidence並commit**
+- [x] **Step 6：更新audit evidence並commit**
 
 ```bash
 git add docs/audits/milestone_19/19-5_security_android_smoke.md
 git commit -m "test(android): 驗證refresh rotation與restart restore"
 ```
 
-- [ ] **Step 7：進行Task 5 implementation review**
+- [x] **Step 7：進行Task 5 implementation review**
 
 Review gate：
 
@@ -592,6 +597,8 @@ Review gate：
 - Replay只有一次。
 - Restart後直接使用rotated credential。
 - Host tooling沒有洩漏secret。
+
+Task 5執行結果：在root-capable AVD以`-writable-system`啟用overlayfs，安裝temporary CA並以HTTPS fixture＋`adb reverse`執行real API release smoke。首次runtime發現Refresh request body未JSON serialization，server sequence為Login 200 → Profile 401 → Refresh 401；新增API client regression後確認`adapter.body == null`，根因為`RefreshTokenRequestDto`缺少明確`toJson()` contract。補上contract並重新生成後，最終sequence為Login 200 → Profile 401 → Refresh 200 → Replay 200；force-stop／restart只新增access-v2 Profile 200，未再次refresh。Fixture補上chunked body decoder與test，所有evidence只保存safe fingerprint。Legacy keys不存在、`auth_user`保持`1|user-001|Water Magical`；App／server evidence無secret或fatal。Temporary CA移除後system CA集合恢復。Task 5 implementation review通過，runtime P1已關閉。
 
 ---
 

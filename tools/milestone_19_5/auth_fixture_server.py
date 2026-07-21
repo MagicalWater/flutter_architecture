@@ -5,8 +5,10 @@ import hashlib
 import json
 import ssl
 import threading
+from collections.abc import Mapping
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from typing import BinaryIO
 from pathlib import Path
 from typing import Any
 
@@ -162,11 +164,7 @@ class _FixtureHandler(BaseHTTPRequestHandler):
         del format, args
 
     def _read_body(self) -> str:
-        try:
-            content_length = int(self.headers.get("Content-Length", "0"))
-        except ValueError:
-            content_length = 0
-        return self.rfile.read(content_length).decode("utf-8", errors="replace")
+        return _read_http_body(self.rfile, self.headers)
 
     def _send(self, response: FixtureResponse) -> None:
         payload = json.dumps(response.body, separators=(",", ":")).encode("utf-8")
@@ -198,6 +196,29 @@ def _read_refresh_token(raw_body: str) -> str | None:
         return None
     refresh_token = value.get("refreshToken")
     return refresh_token if isinstance(refresh_token, str) else None
+
+
+def _read_http_body(stream: BinaryIO, headers: Mapping[str, str]) -> str:
+    transfer_encoding = headers.get("Transfer-Encoding", "").lower()
+    if "chunked" in transfer_encoding:
+        chunks = bytearray()
+        while True:
+            size_line = stream.readline().strip()
+            if not size_line:
+                break
+            chunk_size = int(size_line.split(b";", 1)[0], 16)
+            if chunk_size == 0:
+                stream.readline()
+                break
+            chunks.extend(stream.read(chunk_size))
+            stream.read(2)
+        return bytes(chunks).decode("utf-8", errors="replace")
+
+    try:
+        content_length = int(headers.get("Content-Length", "0"))
+    except ValueError:
+        content_length = 0
+    return stream.read(content_length).decode("utf-8", errors="replace")
 
 
 def _fingerprint(value: str) -> str:

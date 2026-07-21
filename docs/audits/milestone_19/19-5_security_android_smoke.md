@@ -257,3 +257,47 @@ Force-stop／restart後fixture只新增：
 - Host tooling沒有保存raw credential。
 - Temporary CA lifecycle完整cleanup，App production trust policy未弱化。
 - 無Open P0／P1；runtime發現的Refresh JSON P1已在本Task關閉。
+
+## Task 6 — Predecessor release upgrade與Legacy migration smoke
+
+### Predecessor artifact與dependency reproducibility
+
+- Predecessor commit：`05b3412b02274fb70f21a15c23288a590b11eda0`。
+- Temporary worktree：`D:\Developer\devspace-sandbox-m19-predecessor`，完成後已解除Git worktree登記並刪除殘留目錄。
+- `05b3412`未保留受控root lockfile；直接解析會取得Dio 5.10.0，因新增`DioExceptionType.transformTimeout`使舊版exhaustive switch無法編譯。
+- 本次只將main workspace目前使用的ignored root `pubspec.lock`暫時複製至predecessor worktree，固定Dio 5.9.2後成功建立release APK；未修改predecessor任何tracked source或commit。
+- Predecessor與current APK package ID皆為`com.example.flutterarchitecture`。
+- `apksigner verify --print-certs`確認兩者certificate SHA-256皆為`d82d0e952cea2dc69488015ce6be6fef50b9cbca8071c70198b773d373df29bb`，因此`adb install -r`可作為有效in-place upgrade evidence。
+
+### 真實Legacy fixture
+
+- 先清除App data並安裝predecessor release APK。
+- 透過predecessor既有Mock Login UI登入，Profile顯示`Water Magical`。
+- Force-stop後root只讀證據：
+  - SharedPreferences只存在`FlutterSharedPreferences.xml`。
+  - `auth.tokens` key存在。
+  - 尚無`FlutterSecureStorage.xml`等current Secure Storage backing artifact。
+  - SQLite `auth_user`為`1|user-001|Water Magical`。
+- ADB沒有直接寫入SharedPreferences、SQLite、Secure Storage、Session或credential。
+
+### Current release upgrade與Restore migration
+
+- 使用簽章一致的current Mock development release APK執行`adb install -r`，保留predecessor App data。
+- 啟動current release後直接恢復Profile authenticated狀態，current user仍為`Water Magical`。
+- Migration後root只讀證據：
+  - `FlutterSecureStorage.xml`與Key Storage／Configuration backing artifacts存在。
+  - Secure backing artifact size為1,500 bytes。
+  - `auth.tokens`查核以exit code 1確認已不存在。
+  - `auth_user`仍為`1|user-001|Water Magical`。
+- 再次force-stop／restart後仍直接authenticated；Secure authority與User identity保持一致，Legacy key沒有重新出現。
+- Migration與第二次restart的UI hierarchy、screenshot SHA-256、Activity、sandbox與logcat evidence均保存於untracked evidence directory。
+- App／logcat evidence未命中credential sentinel、Authorization、Bearer Token或`FATAL EXCEPTION`。
+
+### Task 6 implementation review
+
+- Legacy fixture由predecessor production Login建立，不是ADB手工拼XML或SQLite。
+- Current release透過production Restore migration完成Secure authority接管。
+- `adb install -r`具相同App ID與certificate SHA-256證據，升級宣稱有效。
+- 第二次restart不依賴predecessor binary或Legacy key。
+- Temporary dependency lock只恢復歷史可編譯解析，未改predecessor tracked source。
+- 無Open P0／P1 runtime finding。

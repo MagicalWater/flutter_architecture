@@ -607,7 +607,7 @@ Task 5執行結果：在root-capable AVD以`-writable-system`啟用overlayfs，�
 **Files:**
 - Modify: `docs/audits/milestone_19/19-5_security_android_smoke.md`
 
-- [ ] **Step 1：建立temporary predecessor worktree**
+- [x] **Step 1：建立temporary predecessor worktree**
 
 Run:
 
@@ -617,7 +617,7 @@ git worktree add ../devspace-sandbox-m19-predecessor 05b3412
 
 Expected: detached worktree建立，不修改main checkout。
 
-- [ ] **Step 2：從`05b3412`建立相同App ID／signing的release APK**
+- [x] **Step 2：從`05b3412`建立相同App ID／signing的release APK**
 
 Run in predecessor worktree:
 
@@ -631,7 +631,7 @@ Expected: predecessor APK建立成功，package ID為`com.example.flutterarchite
 
 同時以`apksigner verify --print-certs`確認predecessor與current APK certificate SHA-256相同；若不同，不得使用`adb install -r`宣稱upgrade evidence。
 
-- [ ] **Step 3：以predecessor production Login建立真實Legacy資料**
+- [x] **Step 3：以predecessor production Login建立真實Legacy資料**
 
 流程：
 
@@ -644,7 +644,7 @@ Expected: predecessor APK建立成功，package ID為`com.example.flutterarchite
 
 不得手工寫XML或SQLite。
 
-- [ ] **Step 4：升級安裝current release並執行Restore migration**
+- [x] **Step 4：升級安裝current release並執行Restore migration**
 
 Run:
 
@@ -661,7 +661,7 @@ Expected：保留App data且安裝成功。
 - Secure backing artifact建立。
 - User identity保持`user-001`。
 
-- [ ] **Step 5：再次force-stop／restart證明Secure authority接管**
+- [x] **Step 5：再次force-stop／restart證明Secure authority接管**
 
 Expected：
 
@@ -670,7 +670,7 @@ Expected：
 - 不依賴predecessor APK或migration marker。
 - logcat無retry loop、plugin failure、secret或fatal。
 
-- [ ] **Step 6：移除temporary worktree**
+- [x] **Step 6：移除temporary worktree**
 
 Run:
 
@@ -680,16 +680,18 @@ git worktree remove ../devspace-sandbox-m19-predecessor
 
 Expected: worktree乾淨移除。
 
-- [ ] **Step 7：更新audit evidence並commit**
+- [x] **Step 7：更新audit evidence並commit**
 
 ```bash
 git add docs/audits/milestone_19/19-5_security_android_smoke.md
 git commit -m "test(android): 驗證Legacy credential升級migration"
 ```
 
-- [ ] **Step 8：進行Task 6 implementation review**
+- [x] **Step 8：進行Task 6 implementation review**
 
 Review gate：fixture由舊版production Login產生；current release只透過production Restore migration處理；ADB未手工建立成功結果。
+
+Task 6執行結果：從`05b3412`建立temporary detached worktree。因舊commit沒有受控root lockfile，直接解析Dio 5.10.0會新增`transformTimeout`並使舊版exhaustive switch無法編譯；只暫時複製main目前使用的ignored root lockfile，固定Dio 5.9.2後成功建立predecessor release APK，未修改舊版tracked source。Predecessor與current APK的App ID相同，certificate SHA-256皆為`d82d0e952cea2dc69488015ce6be6fef50b9cbca8071c70198b773d373df29bb`。Predecessor既有UI Login建立`auth.tokens`與`auth_user=1|user-001|Water Magical`，當時尚無Secure Storage artifact；簽章一致的`adb install -r`升級current release後直接Restore至Profile，Secure artifact建立、Legacy key刪除且User identity不變。第二次force-stop／restart仍authenticated，Legacy key未重現，logcat／UI／sandbox evidence無secret或fatal。Temporary lockfile與worktree均已移除。Task 6 implementation review通過，無Open P0／P1。
 
 ---
 

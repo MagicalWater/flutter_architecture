@@ -138,12 +138,12 @@
 - Modify: `apps/flutter_architecture/lib/features/auth/presentation/auth_failure_localization.dart`
 - Test: `apps/flutter_architecture/test/features/auth/presentation/pages/otp_page_test.dart`
 
-- [ ] Write widget tests for masked destination、code input、Verify loading、Resend cooldown、invalid / expired / too-many-attempts and retry。
-- [ ] Implement accessible numeric/one-time-code input without logging or persisting code。
-- [ ] Add English and`zh_TW` localized copy and OTP-specific failure mapping。
-- [ ] Verify narrow viewport、2.0 text scale、Default/Ocean and Light/Dark representative coverage。
-- [ ] Run gen_l10n / build runner, targeted widget tests and analyze。
-- [ ] Commit: `feat(auth): 新增OTP驗證頁面`。
+- [x] Write widget tests for masked destination、code input、Verify loading、Resend cooldown、invalid / expired / too-many-attempts and retry。
+- [x] Implement accessible numeric/one-time-code input without logging or persisting code。
+- [x] Add English and`zh_TW` localized copy and OTP-specific failure mapping。
+- [x] Verify narrow viewport、2.0 text scale、Default/Ocean and Light/Dark representative coverage。
+- [x] Run gen_l10n / build runner, targeted widget tests and analyze。
+- [x] Commit: `feat(auth): 新增OTP驗證頁面`。
 
 ### Task 8: App-owned Navigation and Guard Integration
 
@@ -154,11 +154,11 @@
 - Test: `apps/flutter_architecture/test/app/router/auth_guard_test.dart`
 - Test: app navigation integration tests。
 
-- [ ] Write failing tests for challenge → OTP route、replacement staying on OTP、Verify success → Profile and Logout / account switch leaving OTP。
-- [ ] Prove OTP pending hasnull Session and Protected Route redirects to Login/Auth entry。
-- [ ] Implement navigation inApp composition layer; OTP Page and Login Page must not import Shell tab or directly own cross-feature navigation。
-- [ ] Run mounted router and app integration tests。
-- [ ] Commit: `feat(auth): 整合OTP navigation與route guard`。
+- [x] Write failing tests for challenge → OTP route、replacement staying on OTP、Verify success → Profile and Logout / account switch leaving OTP。
+- [x] Prove OTP pending hasnull Session and Protected Route redirects to Login/Auth entry。
+- [x] Implement navigation inApp composition layer; OTP Page and Login Page must not import Shell tab or directly own cross-feature navigation。
+- [x] Run mounted router and app integration tests。
+- [x] Commit: `feat(auth): 整合OTP navigation與route guard`。
 
 ### Task 9: Security and Regression Gate
 

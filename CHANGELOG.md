@@ -22,6 +22,7 @@
 
 - 完成Milestone 20-1 OTP typed API與Stateful Mock：Login改為`authenticated | otpChallenge` discriminated union，新增Verify / Resend Retrofit contract、challenge DTO與敏感model sentinel；Mock支援可注入clock、expiration、attempt exhaustion、cooldown、replacement與predecessor invalidation。Workspace analyze與554項tests通過，VERSION維持1.3.0。
 - 完成Milestone 20-2 OTP Domain、Repository與UseCase：新增`AuthLoginResult`、`AuthAuthenticatedResult`、validated `OtpChallenge`、Verify / Resend use cases與typed OTP failure metadata；Direct Login與Verify共用authenticated-only Secure credential → User → Session commit boundary，challenge與Resend零persistence side effect。Verify → Login / Resend / Logout stale-response regression、workspace analyze與570項完整tests通過，VERSION維持1.3.0。
+- 完成Milestone 20-4 OTP UI、Navigation與Protected Route：新增可存取的OTP頁面、數字one-time-code輸入、Verify / Resend loading與cooldown、English / zh_TW localized typed failure copy；App-owned coordinator支援Login → OTP → Profile與clear → Login，replacement challenge停留OTP，Protected Route仍只依Session。Workspace analyze與584項完整tests通過，VERSION維持1.3.0。
 - 完成Milestone 20-3 OTP Bloc concurrency與latest challenge ordering：新增explicit unauthenticated / submitting / otpRequired / verifying / resending / authenticated presentation authority、Verify / Resend events與App-owned DI wiring；Bloc以presentation generation及active challenge identity阻擋stale UI metadata，Repository generation仍是credential commit authority。Authoritative Session null → null clear可清除active OTP。Workspace analyze與579項tests通過，VERSION維持1.3.0。
 
 ### Documentation
@@ -29,7 +30,7 @@
 - 完成並review Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review；拍板typed Login / Verify / Resend contract、authenticated-only credential與Session成功邊界、challenge replacement、typed failure metadata及latest-intent concurrency規則，建立11項planning findings與詳細implementation plan。本階段未修改production code、dependency、Native設定、generated files或VERSION。
 - 完成Milestone 19獨立Holistic Final Review，重新跨19-0至19-5審查authority、lifecycle、concurrency、failure、security、generated DI、Android runtime evidence與1.3.0版本判斷；新增P2治理finding `M19-H01`並於本Review關閉，無新增P0／P1。
 
-Milestone 20-3已完成並通過implementation review；下一步為20-4 OTP UI、Navigation與Protected Route。
+Milestone 20-4已完成並通過implementation review；下一步為20-5 Security Review、Regression與封存。
 
 ---
 

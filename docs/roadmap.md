@@ -2137,7 +2137,7 @@ Milestone 19封存後完成獨立Holistic Final Review：重新檢查19-0至19-5
 
 ## Milestone 20：OTP Step-Up Authentication
 
-狀態：20-3已完成並通過implementation review；下一步為20-4。
+狀態：20-4已完成並通過implementation review；下一步為20-5。
 
 正式子階段：
 
@@ -2146,7 +2146,7 @@ Milestone 19封存後完成獨立Holistic Final Review：重新檢查19-0至19-5
 20-1 API、DTO、Mapper與Stateful Mock（Completed / Reviewed）
 20-2 Domain、Repository與UseCase（Completed / Reviewed）
 20-3 Bloc Concurrency與Latest Challenge Ordering（Completed / Reviewed）
-20-4 OTP UI、Navigation與Protected Route
+20-4 OTP UI、Navigation與Protected Route（Completed / Reviewed）
 20-5 Security Review、Regression與封存
 ```
 
@@ -2164,6 +2164,8 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 20-2已完成並通過implementation review：Domain建立`AuthLoginResult.authenticated | otpChallenge`、credential-bearing `AuthAuthenticatedResult`與validated `OtpChallenge`；Repository新增Verify / Resend狹窄行為，OTP failures以typed attempts / retryAt metadata表達。Direct Login與Verify共用Secure credential → User → Session commit helper，challenge與Resend零persistence mutation；Verify → Login / Resend / Logout reversed completion均由Repository generation在commit前阻擋。Workspace analyze與570項完整tests通過，無Open P0 / P1，VERSION維持1.3.0。Review evidence：`docs/audits/milestone_20/20-2_domain_repository_review.md`。
 
 20-3已完成並通過implementation review：AuthBloc新增explicit presentation authority、OTP Verify / Resend events與App-owned DI wiring。Presentation generation與active challenge identity只保護Bloc UI metadata；credential / User / Session side-effect authority仍由Repository generation負責。Resend replacement、Verify success、Verify → Resend、Verify → Verify、Resend → Resend、account switch及Session null → null authoritative clear均有regression evidence。Workspace analyze與579項tests通過，無Open P0 / P1，VERSION維持1.3.0。Review evidence：`docs/audits/milestone_20/20-3_bloc_concurrency_review.md`。
+
+20-4已完成並通過implementation review：App新增獨立`OtpRoute`與可存取OTP頁面，支援masked destination、numeric one-time-code、Verify / Resend loading、authoritative cooldown顯示與typed OTP failure localization。AuthNavigationCoordinator現在以Login / OTP / Profile三個destination管理跨feature導航；replacement challenge不重複導航，Verify成功進Profile，authoritative clear回Login。OTP pending仍為null Session，Protected Route自然由既有AuthGuard拒絕。Workspace analyze與584項完整tests通過，VERSION維持1.3.0。Review evidence：`docs/audits/milestone_20/20-4_ui_navigation_review.md`。
 
 完成定義摘要：
 

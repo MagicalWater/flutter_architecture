@@ -69,11 +69,11 @@
 - Modify: `packages/auth/lib/auth.dart`
 - Test: `packages/auth/test/auth_otp_domain_contract_test.dart`
 
-- [ ] Write failing tests that reject invalid challenge timestamps / blank identity and verify union exhaustiveness。
-- [ ] Implement `AuthLoginResult.authenticated` / `otpChallenge` and immutable challenge model。
-- [ ] Add narrow repository methods and one-use-case-per-business-action classes。
-- [ ] Run package tests and analyze。
-- [ ] Commit: `feat(auth): 建立OTP domain與use case contract`。
+- [x] Write failing tests that reject invalid challenge timestamps / blank identity and verify union exhaustiveness。
+- [x] Implement `AuthLoginResult.authenticated` / `otpChallenge` and immutable challenge model。
+- [x] Add narrow repository methods and one-use-case-per-business-action classes。
+- [x] Run package tests and analyze。
+- [x] Commit: `feat(auth): 建立OTP domain與use case contract`。
 
 ### Task 4: Remote Mapping and Failure Taxonomy
 
@@ -84,12 +84,12 @@
 - Modify: relevant Core/Auth exception and failure identity files only where required by Decision 020 conventions。
 - Test: `packages/auth/test/auth_otp_remote_mapping_test.dart`
 
-- [ ] Write failing tests for malformed union、blank challengeId、invalid timestamp、invalid code with / without attempts metadata、expired、too many attempts、cooldown retryAt與invalidated backend codes。
-- [ ] Implement endpoint-aware mapping; do not classify every401 aspassword invalid。
-- [ ] Add typed OTP failure details for `attemptsRemaining` and `retryAt`; never encode transition metadata in free-form messages。
-- [ ] Preserve unknown error identity and caught stack; expose onlysafe diagnostic codes。
-- [ ] Run targeted tests and secret sentinel tests。
-- [ ] Commit: `feat(auth): 定義OTP failure與mapping`。
+- [x] Write failing tests for malformed union、blank challengeId、invalid timestamp、invalid code with / without attempts metadata、expired、too many attempts、cooldown retryAt與invalidated backend codes。
+- [x] Implement endpoint-aware mapping; do not classify every401 aspassword invalid。
+- [x] Add typed OTP failure details for `attemptsRemaining` and `retryAt`; never encode transition metadata in free-form messages。
+- [x] Preserve unknown error identity and caught stack; expose onlysafe diagnostic codes。
+- [x] Run targeted tests and secret sentinel tests。
+- [x] Commit: `feat(auth): 定義OTP failure與mapping`。
 
 ### Task 5: Authenticated-only Repository Commit Boundary
 
@@ -99,15 +99,15 @@
 - Test: `packages/auth/test/auth_repository_otp_test.dart`
 - Test: existing secure lifecycle and latest-intent tests。
 
-- [ ] Write failing tests proving challenge Login performs zero Secure/User/Session writes。
-- [ ] Write failing Verify success tests proving order isSecure credential → User → Session。
-- [ ] Write failure / superseded tests proving no partial Session and Milestone 19 cleanup semantics remain intact。
-- [ ] Write Verify → Resend、Verify → Login與Verify → Logout reversed-completion tests at Repository level, proving stale authenticated Verify cannot persist credentials before Bloc sees the response。
-- [ ] Extract one private authenticated commit helper shared by direct Login and Verify。
-- [ ] Begin a lifecycle operation before each Verify / Resend remote call; check operation current before entering commit and between Secure、User、Session steps。
-- [ ] Implement Resend as pure challenge replacement with no persistence side effects。
-- [ ] Run repository, migration, secure login and refresh regression suites。
-- [ ] Commit: `feat(auth): 封閉OTP credential成功邊界`。
+- [x] Write failing tests proving challenge Login performs zero Secure/User/Session writes。
+- [x] Write failing Verify success tests proving order isSecure credential → User → Session。
+- [x] Write failure / superseded tests proving no partial Session and Milestone 19 cleanup semantics remain intact。
+- [x] Write Verify → Resend、Verify → Login與Verify → Logout reversed-completion tests at Repository level, proving stale authenticated Verify cannot persist credentials before Bloc sees the response。
+- [x] Extract one private authenticated commit helper shared by direct Login and Verify。
+- [x] Begin a lifecycle operation before each Verify / Resend remote call; check operation current before entering commit and between Secure、User、Session steps。
+- [x] Implement Resend as pure challenge replacement with no persistence side effects。
+- [x] Run repository, migration, secure login and refresh regression suites。
+- [x] Commit: `feat(auth): 封閉OTP credential成功邊界`。
 
 ### Task 6: Bloc OTP State Machine and Concurrency
 

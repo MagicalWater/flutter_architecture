@@ -2137,14 +2137,14 @@ Milestone 19封存後完成獨立Holistic Final Review：重新檢查19-0至19-5
 
 ## Milestone 20：OTP Step-Up Authentication
 
-狀態：20-1已完成並通過implementation review；下一步為20-2。
+狀態：20-2已完成並通過implementation review；下一步為20-3。
 
 正式子階段：
 
 ```txt
 20-0 OTP Contract、Threat Model與State Machine
 20-1 API、DTO、Mapper與Stateful Mock（Completed / Reviewed）
-20-2 Domain、Repository與UseCase
+20-2 Domain、Repository與UseCase（Completed / Reviewed）
 20-3 Bloc Concurrency與Latest Challenge Ordering
 20-4 OTP UI、Navigation與Protected Route
 20-5 Security Review、Regression與封存
@@ -2160,6 +2160,8 @@ docs/superpowers/plans/2026-07-21-milestone-20-implementation-plan.md
 Planning Review已完成正式文件review，固定typed Login union、Verify / Resend contract、OTP challenge model、authenticated-only credential / Session commit boundary、expiration / cooldown / attempts / replacement規則，以及Login / Verify / Resend / account switch共用latest-intent generation。Repository generation必須在credential commit前阻擋stale Verify；Bloc challenge identity只保護UI metadata。Invalid-code attempts與cooldown retryAt採typed details，authoritative clear需處理OTP pending時Session已為null的情境。共記錄11項planning findings，無Open P0；所有P1均有approved disposition與target phase。20-1開始前不得跨階段加入UI、修改VERSION或引入SMS provider SDK。
 
 20-1已完成並通過implementation review：Login wire contract使用discriminated union，Verify / Resend endpoints與DTO已生成；Stateful Mock支援deterministic challenge、expiration、attempt、cooldown、replacement與predecessor invalidation。既有Auth mapper在phase boundary只接受authenticated variant，challenge domain mapping與credential side-effect contract留在20-2。Workspace analyze與554項tests通過，無Open P0 / P1，VERSION維持1.3.0。Review evidence：`docs/audits/milestone_20/20-1_api_mock_review.md`。
+
+20-2已完成並通過implementation review：Domain建立`AuthLoginResult.authenticated | otpChallenge`、credential-bearing `AuthAuthenticatedResult`與validated `OtpChallenge`；Repository新增Verify / Resend狹窄行為，OTP failures以typed attempts / retryAt metadata表達。Direct Login與Verify共用Secure credential → User → Session commit helper，challenge與Resend零persistence mutation；Verify → Login / Resend / Logout reversed completion均由Repository generation在commit前阻擋。Workspace analyze與570項完整tests通過，無Open P0 / P1，VERSION維持1.3.0。Review evidence：`docs/audits/milestone_20/20-2_domain_repository_review.md`。
 
 完成定義摘要：
 

@@ -2137,7 +2137,7 @@ Milestone 19封存後完成獨立Holistic Final Review：重新檢查19-0至19-5
 
 ## Milestone 20：OTP Step-Up Authentication
 
-狀態：20-4已完成並通過implementation review；下一步為20-5。
+狀態：Completed / Archived；Template Baseline 1.4.0。
 
 正式子階段：
 
@@ -2147,7 +2147,7 @@ Milestone 19封存後完成獨立Holistic Final Review：重新檢查19-0至19-5
 20-2 Domain、Repository與UseCase（Completed / Reviewed）
 20-3 Bloc Concurrency與Latest Challenge Ordering（Completed / Reviewed）
 20-4 OTP UI、Navigation與Protected Route（Completed / Reviewed）
-20-5 Security Review、Regression與封存
+20-5 Security Review、Regression與封存（Completed / Reviewed）
 ```
 
 20-0正式Planning Review與詳細implementation plan：
@@ -2166,6 +2166,8 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 20-3已完成並通過implementation review：AuthBloc新增explicit presentation authority、OTP Verify / Resend events與App-owned DI wiring。Presentation generation與active challenge identity只保護Bloc UI metadata；credential / User / Session side-effect authority仍由Repository generation負責。Resend replacement、Verify success、Verify → Resend、Verify → Verify、Resend → Resend、account switch及Session null → null authoritative clear均有regression evidence。Workspace analyze與579項tests通過，無Open P0 / P1，VERSION維持1.3.0。Review evidence：`docs/audits/milestone_20/20-3_bloc_concurrency_review.md`。
 
 20-4已完成並通過implementation review：App新增獨立`OtpRoute`與可存取OTP頁面，支援masked destination、numeric one-time-code、Verify / Resend loading、authoritative cooldown顯示與typed OTP failure localization。AuthNavigationCoordinator現在以Login / OTP / Profile三個destination管理跨feature導航；replacement challenge不重複導航，Verify成功進Profile，authoritative clear回Login。OTP pending仍為null Session，Protected Route自然由既有AuthGuard拒絕。Workspace analyze與584項完整tests通過，VERSION維持1.3.0。Review evidence：`docs/audits/milestone_20/20-4_ui_navigation_review.md`。
+
+20-5已完成並通過security、regression與holistic final review：新增OTP event secret sentinel，重新審查20-0至20-4的transport、Domain、Repository、Bloc、Session、navigation、Guard與failure authority。Workspace analyze與585項完整tests通過；Android release APK在API 35 emulator完成install與startup smoke。11項planning findings均有implementation evidence，無Open P0 / P1。Template Baseline提升至1.4.0並正式封存。Final evidence：`docs/audits/milestone_20/20-5_security_regression_review.md`、`docs/audits/milestone_20/milestone_20_final_review.md`。
 
 完成定義摘要：
 

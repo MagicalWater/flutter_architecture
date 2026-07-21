@@ -1263,7 +1263,7 @@ docs/superpowers/plans/2026-07-20-milestone-19-2-secure-credential-store-adapter
 
 19-2實作結果：`flutter_secure_storage: ^10.3.1`只存在App；新增App-owned `FlutterSecureAuthCredentialStore`，以單一payload保存完整Token Pair並明確區分absent、present、corrupted與operational unavailable。`PlatformException` / `MissingPluginException`映射為typed local-storage `AppException`，保留cause與origin stack且不輸出secret；unknown programming error維持原始identity。DI採named Secure binding，default SharedPreferences authority與Repository / Refresher behavior保持不變。Android以`minSdk = maxOf(flutter.minSdkVersion, 23)`固定Secure Storage下限並允許Flutter提高最低版本，App-wide停用backup；release merged manifest實際minSdk 24、targetSdk 36，未加入Biometric / Fingerprint permission。Workspace analyze、465項tests與release APK build通過，VERSION維持1.2.0。
 
-Milestone 21目前只保存正式scope、依賴順序、子階段與完成定義。Milestone 20-0至20-4已完成；目前已有OTP transport、Domain、credential commit boundary、Bloc concurrency、OTP UI與App-owned navigation，尚待20-5安全與完整regression gate。
+Milestone 20 OTP Step-Up Authentication已完成security、regression、holistic final review並以Template Baseline 1.4.0封存。Milestone 21 Biometric-gated Local Session Unlock現在成為下一個正式方向；仍需獨立planning review後才能開始實作。
 
 Milestone 20-0正式文件已建立：
 
@@ -1281,3 +1281,5 @@ Milestone 20-2已完成並review：`packages/auth`新增typed Login Domain union
 Milestone 20-3已完成並review：AuthBloc以`AuthPresentationStatus`明確表達unauthenticated、submitting、otpRequired、verifying、resending與authenticated，不再以nullable challenge推導authority。Verify / Resend response需同時通過presentation generation與active challenge identity後才能修改UI metadata；Repository generation仍是credential commit authority。Verify / Verify、Resend / Resend、account switch與SessionManager null → null authoritative clear均有regression。Workspace analyze與579項tests通過；VERSION仍為1.3.0。Review文件：`docs/audits/milestone_20/20-3_bloc_concurrency_review.md`。
 
 Milestone 20-4已完成並review：新增獨立OTP route與頁面、one-time-code輸入、masked destination、Verify / Resend loading與cooldown、English / zh_TW typed failure localization；App-owned AuthNavigationCoordinator支援Login / OTP / Profile destination，replacement challenge保持OTP，Verify成功進Profile，clear回Login。OTP pending不建立Session，Protected Route仍由既有AuthGuard拒絕。Workspace analyze與584項完整tests通過；VERSION仍為1.3.0。Review文件：`docs/audits/milestone_20/20-4_ui_navigation_review.md`。
+
+Milestone 20-5已完成並review：新增OTP event secret sentinel，完成production source sensitive logging search、full workspace analyze、585項Flutter tests、Android release APK build、API 35 emulator install與startup smoke。11項planning findings全部以20-1至20-5 implementation evidence關閉，無Open P0 / P1。Security claim限定為server-issued OTP step-up flow，不宣稱SIM-swap prevention或SMS provider delivery assurance。Template Baseline提升至1.4.0。Final review文件：`docs/audits/milestone_20/20-5_security_regression_review.md`與`docs/audits/milestone_20/milestone_20_final_review.md`。

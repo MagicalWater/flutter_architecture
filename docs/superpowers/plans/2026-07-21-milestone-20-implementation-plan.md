@@ -166,12 +166,12 @@
 - Add or modify secret sentinel tests across `packages/api_client`, `packages/auth` and App。
 - Modify: `docs/audits/milestone_20_planning_review.md` finding statuses only after evidence exists。
 
-- [ ] Search production source for password、OTP code、token、raw challenge logging and generated field-toString risks。
-- [ ] Run targeted race matrix, Login / Restore / Logout, secure persistence, Refresh single-flight / generation / replay and Protected Route tests。
-- [ ] Run `dart pub get`、workspace build runner、analyze and full Flutter tests。
-- [ ] Build Android release artifact and perform runtime smoke forMock full OTP journey; Real API evidence validates contract only and does not claimSMS delivery。
-- [ ] Record exact test counts, artifact metadata and remaining findings。
-- [ ] Commit: `test(auth): 完成Milestone 20安全與regression gate`。
+- [x] Search production source for password、OTP code、token、raw challenge logging and generated field-toString risks。
+- [x] Run targeted race matrix, Login / Restore / Logout, secure persistence, Refresh single-flight / generation / replay and Protected Route tests。
+- [x] Run `dart pub get`、workspace build runner、analyze and full Flutter tests。
+- [x] Build Android release artifact；API 35 emulator完成install / startup smoke，Mock full OTP journey由mounted router、Repository、Bloc與widget integration regression證明；Real API evidence只驗證contract且不宣稱SMS delivery。
+- [x] Record exact test counts, artifact metadata and remaining findings。
+- [x] Commit: `test(auth): 完成Milestone 20安全與regression gate`。
 
 ### Task 10: Documentation, Final Review and Baseline Decision
 
@@ -185,11 +185,11 @@
 - Create: final Milestone 20 review / runtime evidence documents decided by20-5。
 - Modify: `VERSION` only if final review approves a new baseline。
 
-- [ ] Reconcile all planning findings against implementation evidence。
-- [ ] Confirm noOpen P0 / P1 and document accepted / deferred P2 / P3。
-- [ ] Describe security claim narrowly: server-issued OTP step-up flow, notSIM-swap prevention or provider delivery assurance。
-- [ ] Decide version only after all gates pass; planning and intermediate phases do not changeVERSION。
-- [ ] Commit documentation and release separately when a release is approved。
+- [x] Reconcile all planning findings against implementation evidence。
+- [x] Confirm noOpen P0 / P1 and document accepted / deferred P2 / P3。
+- [x] Describe security claim narrowly: server-issued OTP step-up flow, notSIM-swap prevention or provider delivery assurance。
+- [x] Decide version only after all gates pass; planning and intermediate phases do not changeVERSION。
+- [x] Commit documentation and release separately when a release is approved。
 
 ---
 

@@ -3106,6 +3106,24 @@ Milestone 21 Planning Review 通過前，不新增 `local_auth`、不修改 Andr
 
 Milestone 19 final baseline review已依此規則判定為新的可交付Template能力，正式發布1.3.0；此決定不預先承諾Milestone 20或21的版本號。
 
+### Milestone 20 Final Decision
+
+Milestone 20於2026-07-21完成並封存，最終contract如下：
+
+- Login wire與Domain result均為`authenticated | otpChallenge` closed union。
+- 只有Direct Login authenticated與Verify success可進入共用Secure credential → AuthUser → Session commit helper。
+- Repository lifecycle generation是credential、User與Session side-effect的唯一stale-response authority。
+- Bloc presentation generation與active challenge identity只保護UI metadata與state transition，不反向補償Repository commit。
+- OTP pending不保存credential、不建立Session，也不通過Protected Route。
+- Resend成功回傳完整replacement challenge並使predecessor失效；UI cooldown只是authoritative `retryAt` / `resendAvailableAt`的projection。
+- Invalid code attempts與Resend cooldown使用typed metadata，不解析backend message。
+- App composition layer持有Login → OTP → Profile與clear → Login navigation；Auth pages不持有Shell或跨feature routing authority。
+- Password、OTP code、Token與raw challenge identity不得出現在generated／manual `toString()`、reporting context或production log。
+
+Security scope只涵蓋server-issued OTP step-up authentication flow，不宣稱SIM-swap prevention、SMS delivery assurance、provider compromise defense、rooted-device defense或server compromise defense。
+
+Final review確認11項planning findings均有implementation與regression evidence，無Open P0 / P1。此能力構成新的可交付模板功能，因此Template Baseline由1.3.0提升至1.4.0。
+
 ### 非目標
 
 - Cryptographic Device Binding。

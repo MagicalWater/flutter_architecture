@@ -121,6 +121,6 @@ flutter build apk --release -t lib/main_production.dart
 
 ## Related Decisions
 
-主要 authority 位於 `docs/architecture_decisions.md`，特別是 Composition Root、environment、refresh、offline cache、design system、localization、failure architecture 與 authentication security 相關 Decisions。
+主要 authority 位於 `docs/adr/README.md`，特別是 Composition Root、environment、refresh、offline cache、design system、localization、failure architecture與authentication security相關 ADR。
 
 本 README 只保存 App local current contract，不保存 Milestone journal、test count 或 commit timeline。

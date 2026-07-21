@@ -106,6 +106,6 @@ Legacy SharedPreferences credential
 
 ## Related Decisions
 
-以 `docs/architecture_decisions.md` 中的 Auth／Session／Refresh／Secure Credential／OTP／Local Unlock Decisions 為正式 authority。
+以 `docs/adr/README.md` 中的 ADR-005、006、015、021與022為正式 authority。
 
 本 README 只保存 feature-local current contract，不記錄 Milestone journal。

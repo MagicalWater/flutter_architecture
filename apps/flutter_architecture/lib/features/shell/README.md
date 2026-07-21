@@ -52,4 +52,4 @@ Shell 只開啟 App-owned dialogs。Theme／Locale controller、preference persi
 
 ## Related Decisions
 
-以 `docs/architecture_decisions.md` 的 Navigation、Composition Root、Design System、Localization與 Local Unlock Decisions 為 authority。
+以 `docs/adr/README.md` 中的 ADR-006、012、018、019、021與022為 authority。

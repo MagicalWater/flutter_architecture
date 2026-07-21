@@ -131,6 +131,26 @@ class DocumentationCheckerTest(unittest.TestCase):
             self.assertIn("adr-supersession-cycle", codes)
             self.assertIn("superseded-without-successor", codes)
 
+    def test_reports_incomplete_full_adr_coverage_after_cutover(self) -> None:
+        with _fixture() as root:
+            _write(root, "docs/adr/README.md", _adr_index("ADR-001", "adr-001-a.md", "extracted"))
+            _write(root, "docs/adr/adr-001-a.md", _adr("ADR-001"))
+            _write(
+                root,
+                "docs/architecture_decisions.md",
+                "---\ndocument_type: architecture-decision-index\nstatus: legacy\n"
+                "authoritative_for:\n  - architecture-decision-legacy-routing\n"
+                "last_reviewed_baseline: 1.5.1\n---\n",
+            )
+
+            self.assertIn("incomplete-adr-coverage", _codes(root))
+
+    def test_reports_invalid_managed_legacy_adr_route(self) -> None:
+        with _fixture() as root:
+            _write(root, "docs/adr/000-template-positioning.md", "# Legacy\n")
+
+            self.assertIn("invalid-legacy-adr-route", _codes(root))
+
 
 def _codes(root: Path) -> list[str]:
     return [issue.code for issue in check_repository(root)]

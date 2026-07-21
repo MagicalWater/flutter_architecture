@@ -90,6 +90,6 @@ App 是唯一 Composition Root。App 選擇 Theme definition、保存 preference
 
 ## Related Decisions
 
-以 `docs/architecture_decisions.md` 的 Design System Foundation與 Localization boundary Decisions 為 authority。
+以 `docs/adr/README.md` 中的 ADR-018與 ADR-019為 authority。
 
 本 README 只保存 current package contract；Milestone 15 的計畫、review、test count與 commit timeline留在 historical artifacts。

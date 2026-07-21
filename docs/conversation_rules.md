@@ -42,7 +42,7 @@ Commit
 必須先更新：
 
 ```txt
-docs/architecture_decisions.md
+docs/adr/README.md
 ```
 
 再修改程式。

@@ -330,6 +330,44 @@ def _check_adrs(root: Path, metadata_by_path: dict[Path, dict[str, object]]) -> 
     }
     for identifier in _cycle_nodes(graph):
         issues.append(CheckIssue("adr-supersession-cycle", records[identifier][0], f"{identifier} is in a cycle"))
+
+    aggregate_path = root / "docs" / "architecture_decisions.md"
+    aggregate_metadata = metadata_by_path.get(aggregate_path, {})
+    if aggregate_metadata.get("status") == "legacy":
+        expected = {f"ADR-{number:03d}" for number in range(1, 23)}
+        extracted = {identifier for identifier, _, state in index_rows if state == "extracted"}
+        if extracted != expected:
+            missing = sorted(expected - extracted)
+            extra = sorted(extracted - expected)
+            issues.append(
+                CheckIssue(
+                    "incomplete-adr-coverage",
+                    index_path,
+                    f"expected ADR-001..ADR-022; missing={missing}, extra={extra}",
+                )
+            )
+
+    for name in (
+        "000-template-positioning.md",
+        "001-why-bloc.md",
+        "002-why-get-it-and-injectable.md",
+        "003-why-flutter-hooks-and-hooked-bloc.md",
+        "004-why-freezed-and-json-serializable.md",
+        "005-why-auto-route.md",
+    ):
+        path = adr_dir / name
+        if not path.exists():
+            continue
+        metadata = metadata_by_path.get(path, {})
+        text = path.read_text(encoding="utf-8")
+        if metadata.get("status") != "legacy" or "[Canonical ADR index](README.md)" not in text:
+            issues.append(
+                CheckIssue(
+                    "invalid-legacy-adr-route",
+                    path,
+                    "managed legacy ADR path must declare legacy metadata and link to README.md",
+                )
+            )
     return issues
 
 

@@ -12,9 +12,9 @@ last_reviewed_baseline: 1.5.1
 
 ```txt
 Milestone 23 — Architecture Decision Record Extraction & Normalization
-Current phase: 23-0 ADR Extraction Planning Review
+Current phase: 23-8 Authority Cutover and Legacy Compatibility
 Planning gate: Accepted
-Implementation status: Not started
+Implementation status: Authority cutover completed; final review pending
 ```
 
 ## Scope and Artifacts
@@ -25,7 +25,7 @@ Implementation status: Not started
 - Migration manifest：`docs/migrations/m23_adr_extraction_manifest.md`
 - Implementation plan：`docs/superpowers/plans/2026-07-21-milestone-23-architecture-decision-record-extraction-normalization.md`
 
-23-0 尚未拆分任何 Decision。Final cutover前 `docs/architecture_decisions.md` 仍是正式 authority。
+ADR-001至ADR-022已完成 extraction與 authority cutover；`docs/adr/README.md`現在是正式 Decision routing authority，舊 aggregate路徑維持 compatibility stub。
 
 Milestone 22 — Documentation Authority & Navigation Foundation 已完成 final review、full verification 與 archive transition。
 
@@ -47,7 +47,7 @@ Historical artifact routing：
 
 ## Current Next Action
 
-依 accepted plan 開始 Task 23-1：ADR index與 migration-aware checker foundation。
+依 accepted plan進入 Task 23-9：Whole-Milestone Final Review and Archive。
 
 ```txt
 Task implementation

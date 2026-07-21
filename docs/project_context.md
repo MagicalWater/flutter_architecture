@@ -360,7 +360,7 @@ docs/roadmap.md
 
 其餘依任務讀取：
 
-- Architecture：`docs/architecture_decisions.md` 相關 Decision。
+- Architecture：`docs/adr/README.md` 與相關 canonical ADR。
 - Feature：對應 Feature README、Decision、source 與 tests。
 - Package：對應 Package README、Decision、public API、source 與 tests。
 - Milestone：Spec、Plan、Planning Review 與目前 Phase Review。

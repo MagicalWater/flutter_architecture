@@ -1,7 +1,7 @@
 # 設計原則
 
 > [!WARNING]
-> **Historical / superseded first-phase guidance.** 本文件保存第一階段MVP的設計背景，內文中的「目前」「第一階段」與scope限制不可用來判斷Template Baseline 1.5.0 current state。Current snapshot請讀取`docs/project_context.md`；accepted architecture decisions請讀取`docs/architecture_decisions.md`。
+> **Historical / superseded first-phase guidance.** 本文件保存第一階段MVP的設計背景，內文中的「目前」「第一階段」與scope限制不可用來判斷current state。Current snapshot請讀取`docs/project_context.md`；canonical Decisions請讀取`docs/adr/README.md`。
 
 這份模板的第一階段目標是完成一個可用、清楚、可擴充的 Flutter MVP 架構模板。
 

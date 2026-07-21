@@ -50,4 +50,4 @@ ProfilePage
 
 ## Related Decisions
 
-以 `docs/architecture_decisions.md` 的 Session、API Client、Design System、Localization與 Failure Architecture Decisions 為 authority。
+以 `docs/adr/README.md` 中的 ADR-006、013、018、019與020為 authority。

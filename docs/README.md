@@ -23,7 +23,7 @@ last_reviewed_baseline: 1.5.1
 | Agent policy | AI 操作規則、禁止事項、讀取路由 | `AGENTS.md` |
 | Human entry | 專案定位、能力、快速開始 | root `README.md` |
 | Current snapshot | 目前有效架構、能力與限制 | `docs/project_context.md` |
-| Architecture decision | 已拍板且仍有效的架構規則 | `docs/architecture_decisions.md`；後續遷移至單一 Decision records |
+| Architecture decision | 已拍板且仍有效的架構規則 | `docs/adr/README.md` 與 canonical ADR records |
 | Roadmap | Active、candidate、deferred 與 closed routing | `docs/roadmap.md` |
 | Backlog | 尚未承諾、延後或明確不做的 scope | `docs/backlog.md` |
 | Design / implementation plan | 已核准設計與執行步驟 | `docs/superpowers/` |
@@ -54,7 +54,7 @@ docs/roadmap.md
 
 ```txt
 最小讀取集
-→ docs/architecture_decisions.md 的相關 Decision
+→ docs/adr/README.md 的相關 ADR
 → 受影響 App／Feature／Package README
 → 相關 source 與 tests
 ```

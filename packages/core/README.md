@@ -71,4 +71,4 @@ Consumer 不應 deep import `lib/src/`。
 
 ## Related Decisions
 
-架構 authority 位於 `docs/architecture_decisions.md` 的 package boundary 與 Exception／Failure Architecture Decisions。
+架構 authority 位於 `docs/adr/README.md` 中的 ADR-001、012與020。

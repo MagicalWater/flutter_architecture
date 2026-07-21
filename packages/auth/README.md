@@ -112,4 +112,4 @@ Public barrel export Domain、Repository、UseCase、Session、Refresh、Store�
 
 ## Related Decisions
 
-架構 authority位於 `docs/architecture_decisions.md` 的 Auth package、Session、Refresh、Secure Credential、OTP 與 Biometric-gated Local Session Unlock Decisions。
+架構 authority位於 `docs/adr/README.md` 中的 ADR-005、006、015、021與022。

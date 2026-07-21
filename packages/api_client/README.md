@@ -81,4 +81,4 @@ Package 不使用 DI annotation。App Composition Root 建立 Dio、選擇 Mock�
 
 ## Related Decisions
 
-架構 authority 位於 `docs/architecture_decisions.md` 的 API Client、Environment、Refresh Token、Exception Architecture 與 OTP Decisions。
+架構 authority 位於 `docs/adr/README.md` 中的 ADR-013、014、015、020與022。

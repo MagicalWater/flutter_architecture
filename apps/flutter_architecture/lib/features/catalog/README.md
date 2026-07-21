@@ -64,4 +64,4 @@ Composition 由 App 完成；feature 不使用 DI annotation。
 
 ## Related Decisions
 
-以 `docs/architecture_decisions.md` 的 Pagination、Offline Cache、Localization、Design System 與 Failure Architecture Decisions 為 authority。
+以 `docs/adr/README.md` 中的 ADR-016至ADR-020為 authority。

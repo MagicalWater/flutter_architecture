@@ -41,4 +41,4 @@ AuthGuard 只依賴 `SessionManager`／Auth session abstraction；Protected feat
 
 ## Related Decisions
 
-以 `docs/architecture_decisions.md` 的 Route Guard、Session與 Design System Decisions 為 authority。
+以 `docs/adr/README.md` 中的 ADR-006、018與022為 authority。

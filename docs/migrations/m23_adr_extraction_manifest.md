@@ -114,4 +114,13 @@ Batch E aggregate source sections remain unchanged. 21 rows were `extracted` bef
 |---|---|---|---|---|
 | ADR-022 | extracted | secure credential、OTP typed challenge、local unlock、plugin ownership、platform claim與 security non-goals retained | M19–21 planning supplements、review gates、test evidence、dates、versions與 release decisions routed to audits/plans/CHANGELOG | reciprocal partial supersession established with ADR-015 credential-storage scope |
 
-Batch F aggregate source section remains unchanged. All 22 rows are now `extracted`, but `docs/architecture_decisions.md` remains the formal aggregate authority until Task 23-8 cutover enables full coverage and compatibility routing。
+Batch F aggregate source section remained unchanged until authority cutover。
+
+### Batch G — Authority Cutover and Legacy Compatibility
+
+- ADR index is the canonical routing authority with 22/22 extracted coverage.
+- `docs/architecture_decisions.md` is a stable legacy compatibility stub.
+- Legacy `docs/adr/000-*`至`005-*` paths declare `status: legacy` and route to the canonical index without inventing ADR-000.
+- Historical `docs/architecture/*` guides remain preserved and link to current ADR authority.
+- Current App、Package、Feature、Documentation Hub、AGENTS與 roadmap routes point to `docs/adr/README.md`.
+- Historical audits、plans、archives與 published CHANGELOG retain original references.

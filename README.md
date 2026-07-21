@@ -524,7 +524,8 @@ docs/README.md
 - `VERSION`：目前 Template Baseline Version 的唯一來源。
 - `docs/project_context.md`：目前有效 project snapshot。
 - `docs/roadmap.md`：Active、candidate、deferred 與 closed routing。
-- `docs/architecture_decisions.md`：現有 Architecture Decision aggregate authority。
+- `docs/adr/README.md`：canonical Architecture Decision index與正式 authority。
+- `docs/architecture_decisions.md`：legacy compatibility route。
 - `docs/audits/README.md`：Review 與 runtime evidence 索引。
 - `docs/superpowers/README.md`：Design specs 與 implementation plans 索引。
 - `docs/milestones/README.md`：Milestone artifacts routing。

@@ -8,14 +8,13 @@ last_reviewed_baseline: 1.5.1
 
 # Architecture Decision Records
 
-本文件是 Architecture Decision 的 migration-aware index。Milestone 23 authority cutover 完成前，`docs/architecture_decisions.md` 仍是 Decision 001–022 的唯一正式正文 authority。
+本文件是 Architecture Decision 的 canonical index，也是 ADR-001至ADR-022的正式 routing authority。
 
 ## Migration State
 
-- `aggregate`：Decision 正文仍只存在 aggregate authority；index 不要求 canonical ADR file。
-- `extracted`：canonical ADR file 已建立並通過 semantic review；aggregate 正文仍保留到最終 cutover。
+- `extracted`：canonical ADR file已建立並通過 semantic、relation、link與 checker review。
 
-只有完成逐 Decision semantic preservation review、relation review 與 checker validation後，才能把該列從 `aggregate` 改成 `extracted`。
+Authority cutover後所有正式 Decision必須維持 `extracted`，checker強制驗證ADR-001至ADR-022完整 coverage。
 
 ## Decision Index
 
@@ -56,7 +55,9 @@ docs/adr/adr-NNN-stable-kebab-title.md
 
 ## Compatibility
 
-本目錄既有 `000-*` 至 `005-*` 文件仍是 legacy placeholders，不是 canonical Decision records。它們會保留到 Milestone 23 authority cutover，再依 migration manifest轉為明確的 compatibility routing。
+本目錄既有 `000-*` 至 `005-*` 文件已轉為 `legacy` compatibility routes，不是 canonical Decision records，也不會建立 ADR-000。
+
+舊 aggregate路徑 `../architecture_decisions.md`維持 stable compatibility stub，不再承載 Decision正文。
 
 逐 Decision disposition與批次策略：
 

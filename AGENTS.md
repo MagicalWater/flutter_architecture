@@ -24,7 +24,7 @@ docs/roadmap.md
 
 ```txt
 Architecture task
-→ 相關 Decision + 受影響 README + source/tests
+→ docs/adr/README.md 的相關 ADR + 受影響 README + source/tests
 
 Feature task
 → Feature README + 相關 Decision + source/tests
@@ -209,7 +209,7 @@ flutter build web
   ↓
 拍板
   ↓
-更新 architecture decision authority
+更新 docs/adr/README.md 與相關 canonical ADR
   ↓
 實作
   ↓

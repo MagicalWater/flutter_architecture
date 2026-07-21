@@ -87,7 +87,7 @@ Batch B aggregate source sections remain unchanged. Current repository routes co
 | ADR-015 | extracted | interceptor split、single-flight、Session identity、safe replay、failure classification、commit ordering retained | implementation status、test matrix、Milestone 12 journal routed to README/audit/Git history | ADR-005、006、012、013、020、021、022 reviewed; storage supersession deferred to ADR-022 extraction |
 | ADR-021 | extracted | App-owned startup and auth-navigation mapping retained | Milestone 18-7D closure status routed to audit | ADR-005–007、015、022 retained |
 
-Batch C aggregate source sections remain unchanged. ADR-015 does not yet declare a `superseded_by` edge because ADR-022 canonical target does not exist until Batch F；the scope disposition is recorded in prose and this manifest。
+Batch C aggregate source sections remain unchanged. ADR-015 credential-storage supersession was deferred until Batch F and is now recorded as a reciprocal edge with ADR-022。
 
 ### Batch D — Catalog Data Lifecycle
 
@@ -106,4 +106,12 @@ Batch D aggregate source sections remain unchanged. The duplicate Batch B progre
 | ADR-019 | extracted | App localization ownership、system/explicit locale resolution、preference、Failure-to-copy mapping與 locale formatting retained | completion status、production text audit與 regression journal routed to README/history | ADR-009、012、018、020 retained |
 | ADR-020 | extracted | typed expected/unexpected taxonomy、mapping ownership、protocol/cancellation/lifecycle、reporting與 sensitive-data contract retained | audit chronology、382 test count、bundle results與 provider implementation decision routed to audits/README/history | ADR-013、015–019、022 retained |
 
-Batch E aggregate source sections remain unchanged. 21 rows are now `extracted` and ADR-022 remains `aggregate`; formal authority cutover仍延後至 Batch G。
+Batch E aggregate source sections remain unchanged. 21 rows were `extracted` before Batch F；formal authority cutover仍延後至 Batch G。
+
+### Batch F — Authentication Security Umbrella
+
+| ID | Migration state | Semantic preservation | Non-ADR routing | Relation result |
+|---|---|---|---|---|
+| ADR-022 | extracted | secure credential、OTP typed challenge、local unlock、plugin ownership、platform claim與 security non-goals retained | M19–21 planning supplements、review gates、test evidence、dates、versions與 release decisions routed to audits/plans/CHANGELOG | reciprocal partial supersession established with ADR-015 credential-storage scope |
+
+Batch F aggregate source section remains unchanged. All 22 rows are now `extracted`, but `docs/architecture_decisions.md` remains the formal aggregate authority until Task 23-8 cutover enables full coverage and compatibility routing。

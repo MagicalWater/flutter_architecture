@@ -8,6 +8,7 @@ id: ADR-015
 title: Refresh Token and Concurrent 401 Handling
 supersedes:
 superseded_by:
+  - ADR-022
 related:
   - ADR-005
   - ADR-006
@@ -22,7 +23,7 @@ related:
 
 ## Status
 
-Accepted；credential storage implementation scope 已由後續 authentication security contract取代，正式 reciprocal supersession relation於 ADR-022 extraction時建立。
+Accepted；credential storage implementation scope由 ADR-022部分取代。
 
 ## Authoritative Scope
 
@@ -163,7 +164,7 @@ Reactive server 401是最終 refresh protection。未來即使加入 proactive r
 
 ## Supersession
 
-Aggregate Decision 015中「SharedPreferences單一 JSON作為 Token Pair current implementation」已不再是 current credential-at-rest contract。該 scope由 Decision 022與 Milestone 19 secure credential authority取代；ADR-022 canonical extraction時會建立正式 reciprocal relation。
+Aggregate Decision 015中「SharedPreferences單一 JSON作為 Token Pair current implementation」已不再是 current credential-at-rest contract。該 scope由 ADR-022 secure credential authority取代，並已建立 reciprocal supersession relation。
 
 Refresh concurrency、Session identity、safe replay、failure classification與 commit ordering仍有效。
 

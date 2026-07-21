@@ -42,7 +42,7 @@ last_reviewed_baseline: 1.5.1
 | ADR-019 | adr-019-localization-locale-failure-mapping.md | extracted |
 | ADR-020 | adr-020-exception-failure-reporting.md | extracted |
 | ADR-021 | adr-021-auth-startup-navigation-coordination.md | extracted |
-| ADR-022 | - | aggregate |
+| ADR-022 | adr-022-authentication-security-capability-boundaries.md | extracted |
 
 ## Canonical ADR Contract
 

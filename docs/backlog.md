@@ -18,7 +18,7 @@
 
 - CI/CD：Milestone 11維持Deferred，需另行決定host、signing、secret management與release channel。
 - iOS、Web、Windows、macOS與Linux runner、artifact與runtime support；目前只承諾Android Supported，其餘平台維持Dependency-ready。
-- Cryptographic Device Binding與Passkey；目前Baseline 1.5.0已提供credential-at-rest hardening、Server-issued OTP與Android biometric-gated local user-presence gate，但仍未承諾rooted device、runtime memory或server compromise防護。
+- Cryptographic Device Binding與Passkey；目前Baseline 1.5.1已提供credential-at-rest hardening、Server-issued OTP與Android biometric-gated local user-presence gate，但仍未承諾rooted device、runtime memory或server compromise防護。
 
 ## Explicitly not planned in current baseline
 

@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.5.0
+last_reviewed_baseline: 1.5.1
 ---
 
 # Milestone Routing
@@ -35,6 +35,7 @@ Milestone routing 只回答：
 - Planning Review：`docs/audits/milestone_22_planning_review.md`。
 - Implementation Plan：`docs/superpowers/plans/2026-07-21-milestone-22-documentation-authority-navigation-foundation.md`。
 - Phase Reviews：`docs/audits/milestone_22/`。
+- Final Review：`docs/audits/milestone_22/22-7_final_review.md`。
 
 ## Closed milestone routing
 
@@ -54,6 +55,7 @@ Milestone routing 只回答：
 | 19 | Completed / Archived | planning review、`docs/audits/milestone_19/`、holistic final review、plans |
 | 20 | Completed / Archived | planning review、`docs/audits/milestone_20/`、implementation plan |
 | 21 | Completed / Archived | planning review、`docs/audits/milestone_21/`、implementation plan |
+| 22 | Completed / Archived | planning review、implementation plan、`docs/audits/milestone_22/22-7_final_review.md` |
 
 完整 disposition 與歷史保存位置記錄於 `docs/migrations/m22_roadmap_manifest.md`。
 

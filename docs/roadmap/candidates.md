@@ -3,10 +3,24 @@ document_type: roadmap-candidates
 status: active
 authoritative_for:
   - concrete-roadmap-candidates
-last_reviewed_baseline: 1.5.0
+last_reviewed_baseline: 1.5.1
 ---
 
 # Roadmap Candidates
+
+## Architecture Decision Record Extraction & Normalization
+
+目標：將目前 aggregate `docs/architecture_decisions.md` 依 stable Decision ID 分離為 index 與單一 Decision records，並移除 architecture contract、milestone sequencing、review evidence 與 release notes 的責任混合。
+
+Promotion 前置條件：
+
+- 核准 extraction design 與 non-goals。
+- 建立逐 Decision migration manifest。
+- 定義 transitional stub 與 rollback procedure。
+- 逐 Decision 完成 semantic preservation review。
+- 不重新編號 Decision 001 至 022。
+
+此項目前只是 candidate，不得直接開始 extraction。
 
 本文件保存已有明確價值與邊界、但尚未核准為 active milestone 的候選方向。
 

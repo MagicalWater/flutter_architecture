@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - api-client-package-local-contract
-last_reviewed_baseline: 1.5.0
+last_reviewed_baseline: 1.5.1
 ---
 
 # API Client Package

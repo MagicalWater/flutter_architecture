@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.5.0
+last_reviewed_baseline: 1.5.1
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.5.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.5.0
+Template Baseline: 1.5.1
 Phase 1 / MVP: Completed
 Current documentation initiative: Milestone 22
-Current gate: 22-6 completed; next approved phase is 22-7 Final Review & Decision Extraction Gate
+Current gate: Milestone 22 completed and archived; no active milestone
 ```
 
 版本字串唯一來源為 `VERSION`；正式版本內容由 `CHANGELOG.md` 記錄。
@@ -323,7 +323,7 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於 Baseline 1.5.0。
+- Device Binding 與 Passkey 不屬於 Baseline 1.5.1。
 - Repository 的 release build 使用 local verification signing，不可直接作為 production store signing configuration。
 - Default Android application ID 仍是 template placeholder，建立正式產品時必須替換 application ID、namespace、label 與 signing configuration。
 
@@ -333,7 +333,7 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 
 ```txt
 Milestone 22 — Documentation Authority & Navigation Foundation
-Current gate: 22-6 completed; next approved phase is 22-7 Final Review & Decision Extraction Gate
+Current gate: Milestone 22 completed and archived; no active milestone
 ```
 
 Milestone 22 的主要目標：

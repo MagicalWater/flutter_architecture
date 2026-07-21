@@ -38,6 +38,11 @@ Milestone 20
 Milestone 21
 → docs/audits/milestone_21_planning_review.md
 → docs/audits/milestone_21/
+
+Milestone 22
+→ docs/audits/milestone_22_planning_review.md
+→ docs/audits/milestone_22/
+→ docs/audits/milestone_22/22-7_final_review.md
 ```
 
 Milestone 1 至 17 與所有 closed milestone 的完整 routing 由 `docs/milestones/README.md` 統一管理。Roadmap migration disposition 位於 `docs/migrations/m22_roadmap_manifest.md`。

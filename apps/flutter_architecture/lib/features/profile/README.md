@@ -3,7 +3,7 @@ document_type: feature-readme
 status: accepted
 authoritative_for:
   - profile-feature-local-contract
-last_reviewed_baseline: 1.5.0
+last_reviewed_baseline: 1.5.1
 ---
 
 # Profile Feature

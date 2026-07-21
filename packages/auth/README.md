@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - auth-package-local-contract
-last_reviewed_baseline: 1.5.0
+last_reviewed_baseline: 1.5.1
 ---
 
 # Auth Package

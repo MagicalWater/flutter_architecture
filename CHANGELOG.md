@@ -22,6 +22,32 @@
 
 ---
 
+## [1.5.1] - 2026-07-21
+
+### Added
+
+- 完成 Milestone 22 Documentation Authority & Navigation Foundation，建立正式 Documentation Hub、task-based AI reading contract、Audits／Plans／Milestones indexes 與文件治理政策。
+- 新增 App、Core、API Client、Auth 與所有 production Feature README，使 App／Package／Feature README coverage 達 10 / 10。
+- 新增 Python standard-library documentation checker 與 Melos `docs_check` 指令，驗證 relative links、baseline、managed metadata、explicit IDs、active milestone status 與 README coverage。
+
+### Changed
+
+- 將 `docs/project_context.md` 重寫為 current-only snapshot，並以 migration manifest 保存原有歷史內容的 authority routing。
+- 將 2,217 行 aggregate Roadmap 分離為精簡 index、唯一 active authority、candidates 與 closed milestone routing。
+- Legacy `docs/adr/` 與 `docs/architecture/` 加入 Historical／Superseded warning，避免被誤認為目前架構 authority。
+- 正規化 Auth、Catalog、Profile、Protected、Shell 與 Design System README，使其只描述 local current contract，不再保存 milestone implementation journal。
+- Template Baseline 由 1.5.0 提升至 1.5.1；本次是相容的文件治理、navigation 與 local tooling 改進，未改變 production runtime behavior。
+
+### Verification
+
+- `dart pub get` 通過。
+- `dart run melos run docs_check` 通過。
+- Workspace 五個 packages `flutter analyze` 通過。
+- Workspace 全部 Flutter tests 通過。
+- `apps/flutter_architecture` 的 `flutter build bundle` 通過。
+
+---
+
 ## [1.5.0] - 2026-07-21
 
 ### Added

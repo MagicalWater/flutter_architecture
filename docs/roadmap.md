@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.5.0
+last_reviewed_baseline: 1.5.1
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.5.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.5.0
+Template Baseline: 1.5.1
 Supported platform: Android
 Other platforms: Dependency-ready
 ```
@@ -24,12 +24,7 @@ Other platforms: Dependency-ready
 
 ## Active Milestone
 
-```txt
-Milestone 22 — Documentation Authority & Navigation Foundation
-Status: Active
-Current completed phase: 22-4 Roadmap Active / Candidate Separation
-Next approved phase: 22-7 Final Review & Decision Extraction Gate
-```
+目前沒有 active milestone。
 
 完整 active scope、gate 與 next action：
 
@@ -49,7 +44,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 21 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
+Milestone 1 至 22 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

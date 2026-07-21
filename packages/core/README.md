@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - core-package-local-contract
-last_reviewed_baseline: 1.5.0
+last_reviewed_baseline: 1.5.1
 ---
 
 # Core Package

@@ -2208,7 +2208,7 @@ docs/audits/milestone_21_planning_review.md
 docs/superpowers/plans/2026-07-21-milestone-21-implementation-plan.md
 ```
 
-Planning Review固定以下contract：local unlock preference預設disabled；capability與enable policy分離；enabled cold start必須先unlock才可restore；locked階段`SessionManager`維持null；cancel、not-enrolled、unavailable與lockout不得fallback自動restore；resume採可注入5分鐘grace period；App-owned coordinator與既有Auth lifecycle generation共同阻擋stale prompt / restore。共記錄12項planning findings，其中`M21-PR01`為P0，已由21-3 pre-restore gate取得approved disposition，但需待implementation evidence才正式關閉。VERSION維持1.4.0。
+Planning Review固定以下contract：local unlock preference預設disabled；capability與enable policy分離；enabled cold start必須先unlock才可restore；locked階段`SessionManager`維持null；cancel、not-enrolled、unavailable與lockout不得fallback自動restore；resume採可注入5分鐘grace period；App-owned coordinator與既有Auth lifecycle generation共同阻擋stale prompt / restore。共記錄12項planning findings；`M21-PR01` P0已由21-3 pre-restore implementation evidence正式關閉，其餘findings亦已於21-1至21-5完成disposition。Current VERSION為1.5.0。
 
 21-1已完成純Dart `LocalUserPresenceVerifier`、typed capability / verification / operational exception、App-only `local_auth` adapter與lazy singleton DI。Adapter固定biometric-only且不允許device credential fallback；unknown plugin detail不進safe `toString()`。Implementation review補正plugin `false` result不得錯標cancelled，新增`notVerified` identity。Workspace analyze與596項完整tests通過；未修改Android Native、startup restore或VERSION。Review evidence：`docs/audits/milestone_21/21-1_local_presence_review.md`。
 

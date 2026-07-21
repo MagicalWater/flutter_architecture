@@ -1159,9 +1159,9 @@ docs/conversation_rules.md
 
 ---
 
-## 下一個正式方向：Milestone 21 Biometric-gated Local Session Unlock
+## Authentication Security Initiative：Milestone 19 至 21
 
-狀態：Milestone 19 Secure Credential Storage & Migration與Milestone 20 OTP Step-Up Authentication均已完成、final review、封存並發布Template Baseline 1.4.0。Milestone 21-0 Planning Review與跨文件一致性review已完成；下一步為21-1，但尚未開始production implementation。
+狀態：Milestone 19 Secure Credential Storage & Migration、Milestone 20 OTP Step-Up Authentication與Milestone 21 Biometric-gated Local Session Unlock均已完成final review並封存。Current Template Baseline為1.5.0；下一個正式方向尚待後續backlog review決定。
 
 原候選Milestone 19「Authentication Security & Step-Up Verification」已正式拆分為：
 

@@ -1,6 +1,6 @@
 ---
 document_type: migration-manifest
-status: active
+status: completed
 authoritative_for:
   - milestone-23-adr-extraction-migration
 last_reviewed_baseline: 1.5.1
@@ -8,7 +8,7 @@ last_reviewed_baseline: 1.5.1
 
 # Milestone 23 — ADR Extraction Migration Manifest
 
-本 manifest 逐 Decision 追蹤 current validity、分類、canonical target、durable scope、非 ADR disposition、relation review與 batch。它不是 Architecture Decision authority；Batch G前 authority仍是 `docs/architecture_decisions.md`。
+本 manifest 保存 Milestone 23逐 Decision migration disposition與完成結果。它不是 Architecture Decision authority；current authority為`docs/adr/README.md`。
 
 ## Decision Migration Matrix
 
@@ -124,3 +124,4 @@ Batch F aggregate source section remained unchanged until authority cutover。
 - Historical `docs/architecture/*` guides remain preserved and link to current ADR authority.
 - Current App、Package、Feature、Documentation Hub、AGENTS與 roadmap routes point to `docs/adr/README.md`.
 - Historical audits、plans、archives與 published CHANGELOG retain original references.
+- Final review accepted with no release；manifest closed as `completed`.

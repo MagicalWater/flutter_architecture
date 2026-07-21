@@ -30,12 +30,7 @@ Milestone routing 只回答：
 
 ## Active routing
 
-- Milestone 22：`docs/roadmap/active.md`。
-- Design：`docs/superpowers/specs/2026-07-21-documentation-authority-navigation-foundation-design.md`。
-- Planning Review：`docs/audits/milestone_22_planning_review.md`。
-- Implementation Plan：`docs/superpowers/plans/2026-07-21-milestone-22-documentation-authority-navigation-foundation.md`。
-- Phase Reviews：`docs/audits/milestone_22/`。
-- Final Review：`docs/audits/milestone_22/22-7_final_review.md`。
+目前沒有 active milestone。下一個方向需由`docs/roadmap/candidates.md`完成planning後提升。
 
 ## Closed milestone routing
 
@@ -56,6 +51,7 @@ Milestone routing 只回答：
 | 20 | Completed / Archived | planning review、`docs/audits/milestone_20/`、implementation plan |
 | 21 | Completed / Archived | planning review、`docs/audits/milestone_21/`、implementation plan |
 | 22 | Completed / Archived | planning review、implementation plan、`docs/audits/milestone_22/22-7_final_review.md` |
+| 23 | Completed / Archived | `docs/audits/milestone_23/23-0_planning_review.md`、migration manifest、batch reviews、`docs/audits/milestone_23/23-9_final_review.md` |
 
 完整 disposition 與歷史保存位置記錄於 `docs/migrations/m22_roadmap_manifest.md`。
 

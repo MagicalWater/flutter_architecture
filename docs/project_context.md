@@ -29,8 +29,9 @@ last_reviewed_baseline: 1.5.1
 ```txt
 Template Baseline: 1.5.1
 Phase 1 / MVP: Completed
-Current documentation initiative: Milestone 23
-Current gate: Milestone 23-0 Planning Review accepted; implementation not started
+Current active milestone: None
+Latest completed initiative: Milestone 23 ADR Extraction & Normalization
+Architecture Decision authority: docs/adr/README.md
 ```
 
 版本字串唯一來源為 `VERSION`；正式版本內容由 `CHANGELOG.md` 記錄。
@@ -38,6 +39,8 @@ Current gate: Milestone 23-0 Planning Review accepted; implementation not starte
 Milestone 19 Secure Credential Storage、Milestone 20 OTP Step-Up Authentication 與 Milestone 21 Biometric-gated Local Session Unlock 均已完成 final review 並封存。
 
 Milestone 22 只處理 Documentation Authority、Navigation、Current Snapshot、README Coverage 與 consistency foundation，不改變 production runtime behavior。
+
+Milestone 23 已將 Decision 001–022擷取為canonical single-file ADR、建立可驗證supersession graph、切換正式authority並保留aggregate與legacy path相容路由。此Milestone不改變runtime能力，baseline維持1.5.1。
 
 ## Project Purpose
 

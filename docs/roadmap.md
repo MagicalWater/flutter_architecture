@@ -24,11 +24,13 @@ Other platforms: Dependency-ready
 
 ## Active Milestone
 
-目前 active milestone：
+目前沒有 active milestone。最近完成：
 
 ```txt
 Milestone 23 — Architecture Decision Record Extraction & Normalization
-Current gate: 23-0 Planning Review accepted; implementation not started
+Status: Completed / Archived
+Final review: Accepted
+Release decision: No release; baseline remains 1.5.1
 ```
 
 完整 active scope、gate 與 next action：
@@ -49,7 +51,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 22 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 23 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

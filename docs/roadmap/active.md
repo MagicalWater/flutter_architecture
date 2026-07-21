@@ -1,6 +1,6 @@
 ---
 document_type: active-milestone
-status: active
+status: completed
 authoritative_for:
   - current-active-milestone
 last_reviewed_baseline: 1.5.1
@@ -8,13 +8,13 @@ last_reviewed_baseline: 1.5.1
 
 # Active Milestone
 
-目前 active milestone：
+目前沒有 active milestone。最近完成：
 
 ```txt
 Milestone 23 — Architecture Decision Record Extraction & Normalization
-Current phase: 23-8 Authority Cutover and Legacy Compatibility
-Planning gate: Accepted
-Implementation status: Authority cutover completed; final review pending
+Status: Completed / Archived
+Final review: Accepted
+Release decision: No release; baseline remains 1.5.1
 ```
 
 ## Scope and Artifacts
@@ -32,14 +32,14 @@ Milestone 22 — Documentation Authority & Navigation Foundation 已完成 final
 ## Last Completed Milestone
 
 ```txt
-Milestone 22 — Documentation Authority & Navigation Foundation
+Milestone 23 — Architecture Decision Record Extraction & Normalization
 Status: Completed / Archived
 Baseline: 1.5.1
 ```
 
 Final review：
 
-- `docs/audits/milestone_22/22-7_final_review.md`
+- `docs/audits/milestone_23/23-9_final_review.md`
 
 Historical artifact routing：
 
@@ -47,7 +47,7 @@ Historical artifact routing：
 
 ## Current Next Action
 
-依 accepted plan進入 Task 23-9：Whole-Milestone Final Review and Archive。
+從`docs/roadmap/candidates.md`選擇下一個候選方向，先完成scope與planning review，再提升為active milestone。
 
 ```txt
 Task implementation

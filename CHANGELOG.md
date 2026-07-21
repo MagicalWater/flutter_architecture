@@ -20,17 +20,39 @@
 
 ### Added
 
-- 完成Milestone 20-1 OTP typed API與Stateful Mock：Login改為`authenticated | otpChallenge` discriminated union，新增Verify / Resend Retrofit contract、challenge DTO與敏感model sentinel；Mock支援可注入clock、expiration、attempt exhaustion、cooldown、replacement與predecessor invalidation。Workspace analyze與554項tests通過，VERSION維持1.3.0。
-- 完成Milestone 20-2 OTP Domain、Repository與UseCase：新增`AuthLoginResult`、`AuthAuthenticatedResult`、validated `OtpChallenge`、Verify / Resend use cases與typed OTP failure metadata；Direct Login與Verify共用authenticated-only Secure credential → User → Session commit boundary，challenge與Resend零persistence side effect。Verify → Login / Resend / Logout stale-response regression、workspace analyze與570項完整tests通過，VERSION維持1.3.0。
-- 完成Milestone 20-4 OTP UI、Navigation與Protected Route：新增可存取的OTP頁面、數字one-time-code輸入、Verify / Resend loading與cooldown、English / zh_TW localized typed failure copy；App-owned coordinator支援Login → OTP → Profile與clear → Login，replacement challenge停留OTP，Protected Route仍只依Session。Workspace analyze與584項完整tests通過，VERSION維持1.3.0。
-- 完成Milestone 20-3 OTP Bloc concurrency與latest challenge ordering：新增explicit unauthenticated / submitting / otpRequired / verifying / resending / authenticated presentation authority、Verify / Resend events與App-owned DI wiring；Bloc以presentation generation及active challenge identity阻擋stale UI metadata，Repository generation仍是credential commit authority。Authoritative Session null → null clear可清除active OTP。Workspace analyze與579項tests通過，VERSION維持1.3.0。
-
 ### Documentation
 
-- 完成並review Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review；拍板typed Login / Verify / Resend contract、authenticated-only credential與Session成功邊界、challenge replacement、typed failure metadata及latest-intent concurrency規則，建立11項planning findings與詳細implementation plan。本階段未修改production code、dependency、Native設定、generated files或VERSION。
-- 完成Milestone 19獨立Holistic Final Review，重新跨19-0至19-5審查authority、lifecycle、concurrency、failure、security、generated DI、Android runtime evidence與1.3.0版本判斷；新增P2治理finding `M19-H01`並於本Review關閉，無新增P0／P1。
+Milestone 20已封存；下一個正式方向為Milestone 21 Biometric-gated Local Session Unlock。
 
-Milestone 20-4已完成並通過implementation review；下一步為20-5 Security Review、Regression與封存。
+---
+
+## [1.4.0] - 2026-07-21
+
+### Added
+
+- 完成Milestone 20 OTP Step-Up Authentication：Login使用`authenticated | otpChallenge` typed union，新增Verify / Resend contract、validated challenge、typed OTP failure metadata與Stateful deterministic Mock。
+- 新增authenticated-only Secure credential → AuthUser → Session commit boundary；OTP pending與Resend replacement不保存credential、不建立Session。
+- 新增AuthBloc explicit OTP presentation state machine、latest-intent generation、active challenge identity ordering與Session null → null authoritative clear。
+- 新增可存取的OTP route與頁面、one-time-code輸入、Verify / Resend loading、authoritative cooldown、English與zh_TW copy，以及App-owned Login → OTP → Profile navigation。
+
+### Changed
+
+- Protected Route仍只依`SessionManager`；OTP pending不被視為authenticated，也不建立第二套route authority。
+- Template Baseline由1.3.0提升至1.4.0；理由是新增完整且可重用的server-issued OTP step-up authentication能力。
+
+### Security
+
+- Password、OTP code、Token與raw challenge identity不透過transport／domain／event `toString()`或production logging暴露。
+- Repository generation是credential、User與Session side-effect的唯一stale-response authority；Bloc generation與challenge identity只保護presentation metadata。
+- 本能力不宣稱防止SIM swap、SMS interception、rooted device、provider compromise或server compromise；Real API只提供contract，不保證SMS delivery。
+
+### Verification
+
+- Workspace五個packages analyze全部通過。
+- 完整Flutter tests共585項通過：Core 4、Design System 43、API Client 55、Auth 144、App 339。
+- Android release APK建立成功，size 59,042,017 bytes，SHA-256為`4ce541f5553979549ccd5a940cfd1c93da4abb7e6f7dca4c5a1fbbe8b395bc4e`。
+- Release APK已安裝並在Android 15 / API 35 emulator成功啟動；完整OTP journey由mounted router、Bloc、Repository、Mock與widget regression覆蓋。裝置層自動文字輸入未作為安全或delivery證據。
+- 11項Milestone 20 planning findings均已由implementation evidence關閉；無Open P0／P1。
 
 ---
 

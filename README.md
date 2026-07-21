@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.3.0
+- Template Baseline Version：1.4.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -21,6 +21,7 @@
 - Milestone 17 Exception & Failure Architecture：Completed
 - Milestone 18 Template Baseline Holistic Audit：Completed
 - Milestone 19 Secure Credential Storage & Migration：Completed / Archived
+- Milestone 20 OTP Step-Up Authentication：Completed / Archived
 
 平台能力：
 

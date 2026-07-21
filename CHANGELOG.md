@@ -20,6 +20,7 @@
 
 ### Documentation
 
+- 完成並review Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review；拍板typed Login / Verify / Resend contract、authenticated-only credential與Session成功邊界、challenge replacement、typed failure metadata及latest-intent concurrency規則，建立11項planning findings與詳細implementation plan。本階段未修改production code、dependency、Native設定、generated files或VERSION。
 - 完成Milestone 19獨立Holistic Final Review，重新跨19-0至19-5審查authority、lifecycle、concurrency、failure、security、generated DI、Android runtime evidence與1.3.0版本判斷；新增P2治理finding `M19-H01`並於本Review關閉，無新增P0／P1。
 
 目前沒有尚未發布的production baseline能力。下一個正式方向為Milestone 20 OTP Step-Up Authentication Planning Review。

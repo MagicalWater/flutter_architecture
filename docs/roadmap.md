@@ -2137,7 +2137,7 @@ Milestone 19封存後完成獨立Holistic Final Review：重新檢查19-0至19-5
 
 ## Milestone 20：OTP Step-Up Authentication
 
-狀態：Next candidate；Milestone 19已完成、review並封存，下一步先進行20-0 Planning Review，不直接開始production implementation。
+狀態：20-0 Planning Review已完成並通過；依使用者指示停在planning gate，不直接開始20-1 production implementation。
 
 正式子階段：
 
@@ -2149,6 +2149,15 @@ Milestone 19封存後完成獨立Holistic Final Review：重新檢查19-0至19-5
 20-4 OTP UI、Navigation與Protected Route
 20-5 Security Review、Regression與封存
 ```
+
+20-0正式Planning Review與詳細implementation plan：
+
+```txt
+docs/audits/milestone_20_planning_review.md
+docs/superpowers/plans/2026-07-21-milestone-20-implementation-plan.md
+```
+
+Planning Review已完成正式文件review，固定typed Login union、Verify / Resend contract、OTP challenge model、authenticated-only credential / Session commit boundary、expiration / cooldown / attempts / replacement規則，以及Login / Verify / Resend / account switch共用latest-intent generation。Repository generation必須在credential commit前阻擋stale Verify；Bloc challenge identity只保護UI metadata。Invalid-code attempts與cooldown retryAt採typed details，authoritative clear需處理OTP pending時Session已為null的情境。共記錄11項planning findings，無Open P0；所有P1均有approved disposition與target phase。20-1開始前不得跨階段加入UI、修改VERSION或引入SMS provider SDK。
 
 完成定義摘要：
 

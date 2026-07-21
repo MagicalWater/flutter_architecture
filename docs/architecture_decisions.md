@@ -3078,6 +3078,24 @@ Milestone 19 Planning Review 通過前，不新增 `flutter_secure_storage`、�
 
 Milestone 20 Planning Review 通過前，不新增 OTP API、route、Bloc 或 UI production code，也不假設任何實際 SMS provider。
 
+Milestone 20-0 Planning Review已於2026-07-21通過，正式補充以下contract：
+
+- Password Login使用`authenticated | otpChallenge` discriminated typed union，不使用nullable credential / challenge欄位組合。
+- OTP Verify成功是OTP流程唯一可進入Secure credential、SQLite User與runtime Session commit的boundary；Password Login直接authenticated時共用相同commit helper。
+- OTP Resend成功必須回傳完整replacement challenge與新的`challengeId`，predecessor challenge及其in-flight Verify / Resend response立即失去authority。
+- Login、Verify、Resend、Restore、Logout與account switch共用既有`AuthStateMutationCoordinator`latest-intent generation；Repository以generation在credential、User與Session commit前阻擋stale response，Bloc active challenge identity只保護presentation metadata與state transition。
+- OTP pending時`SessionManager`維持unauthenticated，Protected Route繼續只依SessionManager，不改為依賴AuthBloc。
+- Challenge只保存Server提供的opaque identity、UTC expiration、masked destination、resend availability與optional attempts metadata；Client不持久化OTP code，也不自行推導完整destination或attempt limit。
+
+完整Threat Model、state transition、findings與implementation phase位於：
+
+```txt
+docs/audits/milestone_20_planning_review.md
+docs/superpowers/plans/2026-07-21-milestone-20-implementation-plan.md
+```
+
+Planning Gate通過只代表20-1可以在後續獨立工作開始，不代表已存在OTP production capability，也不允許跨階段提前加入UI、provider SDK或更新VERSION。
+
 Milestone 21 Planning Review 通過前，不新增 `local_auth`、不修改 Android Native configuration，也不宣稱 Face ID / Touch ID runtime support。
 
 ### 版本規則

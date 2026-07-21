@@ -48,8 +48,9 @@
 - Target：既有Android 35 Google APIs x86_64 emulator設定。
 - App ID：`com.example.flutterarchitecture`。
 - Build mode：release APK。
-- Runtime API mode分兩條：一般journey使用development／Mock API；Refresh rotation使用development／`API_MODE=real`，由`adb reverse`連接host-side ephemeral HTTP fixture server。
+- Runtime API mode分兩條：一般journey使用development／Mock API；Refresh rotation使用development／`API_MODE=real`，由`adb reverse`連接host-side ephemeral HTTPS fixture server。
 - HTTP fixture server只屬repo tooling／runtime evidence，不進App production graph，不保存Authorization或request body。
+- Android release manifest不得為smoke開啟global cleartext traffic。Root-capable emulator需暫時安裝test-only local CA到system trust store，fixture server使用該CA簽發的localhost certificate；smoke完成後移除CA或wipe AVD。
 
 啟動前記錄：
 
@@ -104,7 +105,7 @@ ADB只用於準備與觀察測試狀態，不得繞過production Auth orchestrat
 
 Refresh smoke必須使用production `AuthRefreshInterceptor → AuthSessionRefresher`路徑，不直接呼叫store adapter。
 
-固定方式：建立development release APK並使用`--dart-define=API_MODE=real`與`--dart-define=API_BASE_URL=http://127.0.0.1:18080`；透過`adb reverse tcp:18080 tcp:18080`連接host-side ephemeral HTTP fixture server。Mock API implementation不經Dio，不能作為Refresh Interceptor runtime evidence。
+固定方式：建立development release APK並使用`--dart-define=API_MODE=real`與`--dart-define=API_BASE_URL=https://localhost:18443`；透過`adb reverse tcp:18443 tcp:18443`連接host-side ephemeral HTTPS fixture server。Root-capable emulator會暫時信任test-only local CA，App本身不加入cleartext exception、自簽憑證繞過或release-only trust branch。Mock API implementation不經Dio，不能作為Refresh Interceptor runtime evidence。
 
 HTTP fixture server必須提供：
 

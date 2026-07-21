@@ -4,16 +4,16 @@
 
 **Goal:** 完成Milestone 19的credential安全審查、Android release runtime evidence、Legacy upgrade migration、Refresh rotation與最終文件封存，並只在證據完整後關閉`M19-PR05`與判斷Template Baseline版本。
 
-**Architecture:** 不新增App測試後門或runtime authority選項。Security evidence由既有Dart tests延伸；Refresh runtime使用development release＋real API mode＋host-side deterministic HTTP fixture server；Legacy migration使用`05b3412` predecessor release的production Login建立真實舊資料，再以相同App ID升級目前release。ADB只負責安裝、force-stop、root只讀觀察、logcat與port reverse，不直接手工製造成功狀態。
+**Architecture:** 不新增App測試後門或runtime authority選項。Security evidence由既有Dart tests延伸；Refresh runtime使用development release＋real API mode＋host-side deterministic HTTPS fixture server，root-capable emulator暫時安裝test-only local CA而不修改App production trust policy；Legacy migration使用`05b3412` predecessor release的production Login建立真實舊資料，再以相同App ID升級目前release。ADB只負責安裝、force-stop、root只讀觀察、logcat、temporary CA與port reverse，不直接手工製造成功狀態。
 
-**Tech Stack:** Dart 3、Flutter、flutter_test、Python 3 standard library、Android SDK／ADB、Android 35 Google APIs x86_64 emulator、Gradle、Melos、Git worktree。
+**Tech Stack:** Dart 3、Flutter、flutter_test、Python 3 standard library、OpenSSL 3、PowerShell 5.1、Android SDK／ADB、Android 35 Google APIs x86_64 emulator、Gradle、Melos、Git worktree。
 
 ---
 
 ## File map
 
 - Create: `tools/milestone_19_5/auth_fixture_server.py`
-  - Host-side deterministic Login／401／Refresh／Replay server。
+  - Host-side deterministic HTTPS Login／401／Refresh／Replay server。
   - 只輸出sequence、status與SHA-256 fingerprint，不輸出raw credential或request body。
 - Create: `tools/milestone_19_5/test_auth_fixture_server.py`
   - 使用Python standard library驗證server state machine、單次refresh、secret-safe logs與restart profile contract。
@@ -102,8 +102,8 @@ expect(text, isNot(contains(pluginSentinel)));
 Run:
 
 ```bash
-flutter test packages/auth/test/auth_credential_read_result_test.dart packages/auth/test/auth_credential_migration_coordinator_test.dart packages/auth/test/auth_lifecycle_cleanup_policy_test.dart
-flutter test apps/flutter_architecture/test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart apps/flutter_architecture/test/features/auth/data/migration/auth_migration_error_reporter_adapter_test.dart
+cd packages/auth && flutter test test/auth_credential_read_result_test.dart test/auth_credential_migration_coordinator_test.dart test/auth_lifecycle_cleanup_policy_test.dart
+cd ../../apps/flutter_architecture && flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart test/features/auth/data/migration/auth_migration_error_reporter_adapter_test.dart
 ```
 
 Expected:
@@ -130,9 +130,9 @@ Expected:
 Run:
 
 ```bash
-flutter test packages/auth/test/auth_credential_read_result_test.dart packages/auth/test/auth_credential_migration_coordinator_test.dart packages/auth/test/auth_lifecycle_cleanup_policy_test.dart
-flutter test apps/flutter_architecture/test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart apps/flutter_architecture/test/features/auth/data/migration/auth_migration_error_reporter_adapter_test.dart
-dart run melos run analyze
+cd packages/auth && flutter test test/auth_credential_read_result_test.dart test/auth_credential_migration_coordinator_test.dart test/auth_lifecycle_cleanup_policy_test.dart
+cd ../../apps/flutter_architecture && flutter test test/features/auth/data/stores/flutter_secure_auth_credential_store_test.dart test/features/auth/data/migration/auth_migration_error_reporter_adapter_test.dart
+cd ../.. && dart run melos run analyze
 ```
 
 Expected: PASS；五個workspace package analyze無issue。
@@ -199,7 +199,7 @@ Log event只允許：
 Run:
 
 ```bash
-python -m unittest tools.milestone_19_5.test_auth_fixture_server -v
+python -m unittest discover -s tools/milestone_19_5 -p "test_*.py" -v
 ```
 
 Expected: FAIL，因server module尚未存在。
@@ -228,7 +228,7 @@ Server不得print headers、body、exception repr或raw token。
 Run:
 
 ```bash
-python -m unittest tools.milestone_19_5.test_auth_fixture_server -v
+python -m unittest discover -s tools/milestone_19_5 -p "test_*.py" -v
 ```
 
 Expected: 全部PASS。
@@ -272,19 +272,21 @@ Review gate：
 Script parameters：
 
 ```powershell
+[CmdletBinding(SupportsShouldProcess = $true)]
 param(
   [string]$Avd = "flutter_architecture_m18",
   [string]$PackageId = "com.example.flutterarchitecture",
-  [int]$FixturePort = 18080,
+  [int]$FixturePort = 18443,
   [string]$EvidenceDir = "build/milestone_19_5_evidence"
 )
 ```
 
 必須fail fast檢查：
 
-- `flutter`、`adb`、`python`、`git`存在。
+- `flutter`、`adb`、`python`、`openssl`、`git`存在。
 - AVD存在且device boot完成。
 - `adb root`成功；若失敗，停止並要求root-capable Google APIs AVD。
+- `adb remount`成功，且temporary CA安裝前後都有可驗證cleanup path。
 - App ID與release APK存在。
 - Evidence directory不在Git tracked source內。
 
@@ -326,7 +328,22 @@ permissions
 - Secure Storage XML／DB raw value。
 - Authorization、Access Token、Refresh Token、password。
 
-- [ ] **Step 4：加入logcat gate**
+- [ ] **Step 4：加入temporary CA lifecycle helpers**
+
+工具需以host-side openssl或Python產生一次性local CA與`localhost` server certificate，將CA certificate hash命名後推入emulator system trust store：
+
+```txt
+/system/etc/security/cacerts/<subject_hash>.0
+```
+
+要求：
+
+- 只在`$PSCmdlet.ShouldProcess(...)`為true時執行。
+- 安裝前記錄原始system CA檔案集合。
+- smoke結束時移除該CA並重啟adbd；若cleanup失敗，整個Task失敗並要求wipe AVD。
+- 不修改App manifest、network security config或Dio certificate callback。
+
+- [ ] **Step 5：加入logcat gate**
 
 Script在每個journey前執行：
 
@@ -347,7 +364,15 @@ FATAL EXCEPTION
 
 任何命中均使Task失敗。
 
-- [ ] **Step 5：執行PowerShell parser／dry-run檢查**
+每個主要UI狀態還需收集：
+
+- `adb shell dumpsys activity activities`中的resumed Activity。
+- `adb shell uiautomator dump`產生的UI hierarchy。
+- Login、authenticated、restart restored與logout後畫面的PNG screenshot及SHA-256。
+
+Screenshot與UI dump只保存於untracked evidence directory；輸入password前或完成登入後才允許截圖，不得保存含明文password、Token或Authorization的畫面／hierarchy。
+
+- [ ] **Step 6：執行PowerShell parser／dry-run檢查**
 
 Run:
 
@@ -360,14 +385,14 @@ Expected:
 - 只檢查工具與列出將執行步驟。
 - 不啟動server、不安裝APK、不修改device data。
 
-- [ ] **Step 6：commit**
+- [ ] **Step 7：commit**
 
 ```bash
 git add tools/milestone_19_5/android_smoke.ps1 docs/audits/milestone_19/19-5_security_android_smoke.md
 git commit -m "test(android): 建立Milestone 19 runtime smoke工具"
 ```
 
-- [ ] **Step 7：進行Task 3 implementation review**
+- [ ] **Step 8：進行Task 3 implementation review**
 
 Review gate：
 
@@ -375,6 +400,8 @@ Review gate：
 - Release sandbox observation只依賴root-capable emulator。
 - Evidence logs不包含secret。
 - `-WhatIf`不產生side effect。
+- Temporary CA一定有cleanup evidence；App production trust policy未改動。
+- UI evidence可對應Login、authenticated、restored與unauthenticated狀態，且不含secret。
 
 ---
 
@@ -423,6 +450,7 @@ Expected: `build/app/outputs/flutter-apk/app-release.apk`建立成功。
 - Legacy key不存在。
 - Secure backing artifact存在。
 - `auth_user`只有slot 1且identity為`user-001`。
+- 保存Login完成後的UI hierarchy、screenshot hash與resumed Activity evidence。
 
 - [ ] **Step 4：執行force-stop／restart Restore**
 
@@ -433,6 +461,7 @@ Expected: `build/app/outputs/flutter-apk/app-release.apk`建立成功。
 - 直接進authenticated destination。
 - Legacy key仍不存在。
 - logcat無fatal／secret。
+- 保存restart後的UI hierarchy、screenshot hash與resumed Activity evidence。
 
 - [ ] **Step 5：執行Logout cleanup**
 
@@ -446,6 +475,7 @@ Expected: `build/app/outputs/flutter-apk/app-release.apk`建立成功。
 - `auth_user`為空。
 - Catalog cache tables仍有資料。
 - force-stop／restart仍unauthenticated。
+- 保存Logout後與restart後Login畫面的UI hierarchy、screenshot hash與resumed Activity evidence。
 
 - [ ] **Step 6：更新audit evidence並commit**
 
@@ -478,7 +508,7 @@ Review gate：Login／Restore／Logout均由release App production orchestration
 Run:
 
 ```bash
-python tools/milestone_19_5/auth_fixture_server.py --host 127.0.0.1 --port 18080 --evidence build/milestone_19_5_evidence/fixture.jsonl
+python tools/milestone_19_5/auth_fixture_server.py --host 127.0.0.1 --port 18443 --cert build/milestone_19_5_evidence/localhost.crt --key build/milestone_19_5_evidence/localhost.key --evidence build/milestone_19_5_evidence/fixture.jsonl
 ```
 
 Expected: server啟動，不輸出raw credential。
@@ -489,8 +519,8 @@ Run:
 
 ```bash
 cd apps/flutter_architecture
-flutter build apk --release -t lib/main_development.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=http://127.0.0.1:18080
-adb reverse tcp:18080 tcp:18080
+flutter build apk --release -t lib/main_development.dart --dart-define=API_MODE=real --dart-define=API_BASE_URL=https://localhost:18443
+adb reverse tcp:18443 tcp:18443
 ```
 
 Expected: release APK建立成功，reverse rule存在。
@@ -531,6 +561,7 @@ Assertions：
 
 Expected：
 
+- Temporary CA存在於smoke期間，完成後已移除或AVD已wipe。
 - 無raw Authorization。
 - 無Access／Refresh Token。
 - 無password／request body。
@@ -580,6 +611,8 @@ flutter build apk --release -t lib/main_development.dart --dart-define=API_MODE=
 ```
 
 Expected: predecessor APK建立成功，package ID為`com.example.flutterarchitecture`。
+
+同時以`apksigner verify --print-certs`確認predecessor與current APK certificate SHA-256相同；若不同，不得使用`adb install -r`宣稱upgrade evidence。
 
 - [ ] **Step 3：以predecessor production Login建立真實Legacy資料**
 
@@ -667,7 +700,7 @@ Run:
 ```bash
 dart run melos run analyze
 dart run melos exec -- flutter test
-python -m unittest tools.milestone_19_5.test_auth_fixture_server -v
+python -m unittest discover -s tools/milestone_19_5 -p "test_*.py" -v
 ```
 
 Expected：
@@ -801,7 +834,7 @@ Run:
 dart pub get
 dart run melos run analyze
 dart run melos exec -- flutter test
-python -m unittest tools.milestone_19_5.test_auth_fixture_server -v
+python -m unittest discover -s tools/milestone_19_5 -p "test_*.py" -v
 cd apps/flutter_architecture && flutter build apk --release -t lib/main_development.dart --dart-define=API_MODE=mock
 ```
 
@@ -846,6 +879,7 @@ git push origin main
 - [ ] Migration fixture由`05b3412` predecessor production Login產生。
 - [ ] Root只用於test environment evidence，不形成安全能力宣稱。
 - [ ] Host server與PowerShell tooling不輸出credential。
+- [ ] Refresh HTTPS使用temporary test CA，App manifest／Dio trust policy不為smoke弱化。
 - [ ] 每個Task有獨立implementation review。
 - [ ] 最終版本判斷只在完整runtime與security gate後進行。
 

@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('MockAuthApi.login 會回傳 mock token 與使用者資料', () async {
-    const client = MockAuthApi();
+    final client = MockAuthApi();
 
     final response = await client.login(
       const LoginRequestDto(account: 'demo', password: 'password'),

@@ -22,22 +22,26 @@ void main() {
 
     api.completeLogin(
       'account-b',
-      const LoginResponseDto(
-        accessToken: 'access-b',
-        refreshToken: 'refresh-b',
-        userId: 'user-b',
-        userName: 'User B',
+      const LoginResponseDto.authenticated(
+        authenticated: AuthenticatedResponseDto(
+          accessToken: 'access-b',
+          refreshToken: 'refresh-b',
+          userId: 'user-b',
+          userName: 'User B',
+        ),
       ),
     );
     final resultB = await loginB;
 
     api.completeLogin(
       'account-a',
-      const LoginResponseDto(
-        accessToken: 'access-a',
-        refreshToken: 'refresh-a',
-        userId: 'user-a',
-        userName: 'User A',
+      const LoginResponseDto.authenticated(
+        authenticated: AuthenticatedResponseDto(
+          accessToken: 'access-a',
+          refreshToken: 'refresh-a',
+          userId: 'user-a',
+          userName: 'User A',
+        ),
       ),
     );
 
@@ -70,11 +74,13 @@ void main() {
 
     api.completeLogin(
       'account-a',
-      const LoginResponseDto(
-        accessToken: 'access-a',
-        refreshToken: 'refresh-a',
-        userId: 'user-a',
-        userName: 'User A',
+      const LoginResponseDto.authenticated(
+        authenticated: AuthenticatedResponseDto(
+          accessToken: 'access-a',
+          refreshToken: 'refresh-a',
+          userId: 'user-a',
+          userName: 'User A',
+        ),
       ),
     );
 
@@ -109,11 +115,13 @@ void main() {
     final login = repository.login(account: 'account-b', password: 'password');
     api.completeLogin(
       'account-b',
-      const LoginResponseDto(
-        accessToken: 'access-b',
-        refreshToken: 'refresh-b',
-        userId: 'user-b',
-        userName: 'User B',
+      const LoginResponseDto.authenticated(
+        authenticated: AuthenticatedResponseDto(
+          accessToken: 'access-b',
+          refreshToken: 'refresh-b',
+          userId: 'user-b',
+          userName: 'User B',
+        ),
       ),
     );
 
@@ -537,6 +545,14 @@ class _ControlledAuthApi implements AuthApi {
     _requests[request.account] = completer;
     return completer.future;
   }
+
+  @override
+  Future<AuthenticatedResponseDto> verifyOtp(VerifyOtpRequestDto request) =>
+      throw UnimplementedError();
+
+  @override
+  Future<OtpChallengeDto> resendOtp(ResendOtpRequestDto request) =>
+      throw UnimplementedError();
 
   void completeLogin(String account, LoginResponseDto response) {
     final completer = _requests[account];

@@ -159,21 +159,25 @@ void main() {
     final newer = repository.login(account: 'newer', password: 'password');
     api.complete(
       'newer',
-      const LoginResponseDto(
-        accessToken: 'new-access',
-        refreshToken: 'new-refresh',
-        userId: 'new-user',
-        userName: 'New User',
+      const LoginResponseDto.authenticated(
+        authenticated: AuthenticatedResponseDto(
+          accessToken: 'new-access',
+          refreshToken: 'new-refresh',
+          userId: 'new-user',
+          userName: 'New User',
+        ),
       ),
     );
     expect(await newer, isA<Success<AuthResult>>());
     api.complete(
       'older',
-      const LoginResponseDto(
-        accessToken: 'old-access',
-        refreshToken: 'old-refresh',
-        userId: 'old-user',
-        userName: 'Old User',
+      const LoginResponseDto.authenticated(
+        authenticated: AuthenticatedResponseDto(
+          accessToken: 'old-access',
+          refreshToken: 'old-refresh',
+          userId: 'old-user',
+          userName: 'Old User',
+        ),
       ),
     );
 
@@ -309,6 +313,14 @@ final class _ControlledAuthApi implements AuthApi {
   Future<LoginResponseDto> login(LoginRequestDto request) {
     return (_requests[request.account] = Completer<LoginResponseDto>()).future;
   }
+
+  @override
+  Future<AuthenticatedResponseDto> verifyOtp(VerifyOtpRequestDto request) =>
+      throw UnimplementedError();
+
+  @override
+  Future<OtpChallengeDto> resendOtp(ResendOtpRequestDto request) =>
+      throw UnimplementedError();
 
   void complete(String account, LoginResponseDto response) {
     _requests[account]!.complete(response);

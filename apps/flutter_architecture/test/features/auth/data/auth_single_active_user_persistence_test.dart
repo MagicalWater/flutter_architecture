@@ -258,17 +258,21 @@ void main() {
     final repository = AuthRepositoryImpl(
       AuthRemoteDataSource(
         _SequencedAuthApi(const <LoginResponseDto>[
-          LoginResponseDto(
-            accessToken: 'access-a',
-            refreshToken: 'refresh-a',
-            userId: 'user-a',
-            userName: 'User A',
+          LoginResponseDto.authenticated(
+            authenticated: AuthenticatedResponseDto(
+              accessToken: 'access-a',
+              refreshToken: 'refresh-a',
+              userId: 'user-a',
+              userName: 'User A',
+            ),
           ),
-          LoginResponseDto(
-            accessToken: 'access-b',
-            refreshToken: 'refresh-b',
-            userId: 'user-b',
-            userName: 'User B',
+          LoginResponseDto.authenticated(
+            authenticated: AuthenticatedResponseDto(
+              accessToken: 'access-b',
+              refreshToken: 'refresh-b',
+              userId: 'user-b',
+              userName: 'User B',
+            ),
           ),
         ]),
       ),
@@ -326,6 +330,14 @@ class _SequencedAuthApi implements AuthApi {
   Future<LoginResponseDto> login(LoginRequestDto request) async {
     return responses[_index++];
   }
+
+  @override
+  Future<AuthenticatedResponseDto> verifyOtp(VerifyOtpRequestDto request) =>
+      throw UnimplementedError();
+
+  @override
+  Future<OtpChallengeDto> resendOtp(ResendOtpRequestDto request) =>
+      throw UnimplementedError();
 }
 
 final class _NoopLifecycleDiagnosticSink

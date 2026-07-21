@@ -15,11 +15,13 @@ void main() {
   });
 
   test('LoginResponseDto mapper 會轉為 AuthResult', () {
-    const dto = LoginResponseDto(
-      accessToken: 'token',
-      refreshToken: 'refresh-token',
-      userId: 'user-001',
-      userName: 'Water Magical',
+    const dto = LoginResponseDto.authenticated(
+      authenticated: AuthenticatedResponseDto(
+        accessToken: 'token',
+        refreshToken: 'refresh-token',
+        userId: 'user-001',
+        userName: 'Water Magical',
+      ),
     );
 
     final result = dto.toDomain();
@@ -58,5 +60,4 @@ void main() {
     expect(manager.generation, generation + 1);
     expect(manager.currentSession, isNull);
   });
-
 }

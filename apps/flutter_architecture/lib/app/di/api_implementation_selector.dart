@@ -8,7 +8,7 @@ import 'package:flutter_architecture/app/config/api_config.dart';
 abstract final class ApiImplementationSelector {
   static api_client.AuthApi createAuthApi(ApiConfig config, Dio dio) {
     return switch (config.mode) {
-      ApiMode.mock => const api_client.MockAuthApi(),
+      ApiMode.mock => api_client.MockAuthApi(),
       ApiMode.real => api_client.AuthApi(dio),
     };
   }

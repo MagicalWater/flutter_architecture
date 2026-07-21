@@ -164,7 +164,7 @@ Task 1 implementation review：通過。Source inventory未發現production Toke
 - Create: `tools/milestone_19_5/auth_fixture_server.py`
 - Create: `tools/milestone_19_5/test_auth_fixture_server.py`
 
-- [ ] **Step 1：先寫server state machine tests**
+- [x] **Step 1：先寫server state machine tests**
 
 測試必須覆蓋：
 
@@ -198,7 +198,7 @@ Log event只允許：
 }
 ```
 
-- [ ] **Step 2：執行tests確認RED**
+- [x] **Step 2：執行tests確認RED**
 
 Run:
 
@@ -208,7 +208,7 @@ python -m unittest discover -s tools/milestone_19_5 -p "test_*.py" -v
 
 Expected: FAIL，因server module尚未存在。
 
-- [ ] **Step 3：實作最小HTTP fixture server**
+- [x] **Step 3：實作最小HTTP fixture server**
 
 使用Python standard library：
 
@@ -227,7 +227,7 @@ Endpoints：
 
 Server不得print headers、body、exception repr或raw token。
 
-- [ ] **Step 4：執行server tests確認GREEN**
+- [x] **Step 4：執行server tests確認GREEN**
 
 Run:
 
@@ -237,7 +237,7 @@ python -m unittest discover -s tools/milestone_19_5 -p "test_*.py" -v
 
 Expected: 全部PASS。
 
-- [ ] **Step 5：執行secret scan**
+- [x] **Step 5：執行secret scan**
 
 Run:
 
@@ -247,14 +247,14 @@ rg -n "print\(.*Authorization|print\(.*password|print\(.*access|print\(.*refresh
 
 Expected: 無不安全輸出。
 
-- [ ] **Step 6：commit**
+- [x] **Step 6：commit**
 
 ```bash
 git add tools/milestone_19_5
 git commit -m "test(auth): 新增Android refresh fixture server"
 ```
 
-- [ ] **Step 7：進行Task 2 implementation review**
+- [x] **Step 7：進行Task 2 implementation review**
 
 Review gate：
 
@@ -262,6 +262,8 @@ Review gate：
 - Refresh只允許一次。
 - Evidence endpoint不洩漏credential。
 - Tool不進App dependency graph。
+
+Task 2執行結果：先建立6項Python state machine tests，RED因`auth_fixture_server`不存在而正確失敗；GREEN新增Python standard library HTTPS fixture server，固定Login → Profile 401 → Refresh → Replay 200、單次refresh與restart access-v2 contract。Evidence只保存sequence、method、path、status及SHA-256前16碼fingerprint，停用HTTP預設request log，不保存headers、body或raw credential。6項unittest、`py_compile`、secret scan與diff check通過；未修改App或package production source。Task 2 implementation review通過，無Open P0／P1。
 
 ---
 

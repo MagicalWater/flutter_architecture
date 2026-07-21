@@ -53,3 +53,66 @@ Task 1 implementation review：通過。
 - 原始error identity與caught stack仍保留於typed欄位；沒有將unknown error降級。
 - 沒有新增平行redaction framework或跨package dependency。
 - Production source scan未發現Token Pair、Authorization、password或raw payload直接輸出。
+
+## Task 2 — Secret-safe deterministic HTTP fixture server
+
+### Scope
+
+新增repo-owned host tooling，只用來提供Android release runtime的deterministic Login／401／Refresh／Replay契約，不進App dependency graph，也不修改Mock API或production Auth code。
+
+檔案：
+
+- `tools/milestone_19_5/auth_fixture_server.py`
+- `tools/milestone_19_5/test_auth_fixture_server.py`
+
+### State machine
+
+固定流程：
+
+```txt
+POST /auth/login       → access-v1 / refresh-v1
+GET  /profile + v1     → 401
+POST /auth/refresh     → access-v2 / refresh-v2
+GET  /profile + v2     → 200
+```
+
+- Refresh只允許成功一次；後續相同refresh credential回401。
+- Restart evidence保留server state，access-v2可直接取得Profile且不新增refresh call。
+- `/reset`只清除host state與evidence，不接觸App資料。
+- HTTPS certificate與temporary CA由Task 3 orchestration建立；server本身要求明確傳入`--cert`與`--key`。
+
+### Secret-safe evidence
+
+Evidence event只包含：
+
+```txt
+sequence
+method
+path
+status
+credential_fingerprint（SHA-256前16碼，可選）
+```
+
+不記錄：
+
+- Raw Authorization header。
+- Access Token／Refresh Token。
+- Password。
+- Request body。
+- Exception repr或HTTP server預設request log。
+
+### Verification
+
+- TDD RED：server module不存在，unittest因`ModuleNotFoundError`失敗。
+- GREEN：6項Python state machine tests全數通過。
+- `python -m py_compile`通過。
+- Secret scan只命中必要的parser／test fixture使用點，沒有unsafe print或raw evidence輸出。
+- `git diff --check`通過。
+
+Task 2 implementation review：通過。
+
+- Login、Refresh與Profile JSON欄位和現有Retrofit DTO contract一致。
+- Refresh只成功一次，restart後access-v2可直接使用。
+- Evidence endpoint與JSONL檔案只暴露safe metadata與fingerprint。
+- `BaseHTTPRequestHandler.log_message()`已停用，避免預設request line輸出。
+- Tooling沒有App、Flutter或package dependency，亦未修改production source。

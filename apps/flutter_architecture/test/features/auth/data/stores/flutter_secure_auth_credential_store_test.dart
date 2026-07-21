@@ -8,6 +8,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _accessSentinel = 'M19_ACCESS_SECRET_7f4a';
+const _refreshSentinel = 'M19_REFRESH_SECRET_2c91';
+const _passwordSentinel = 'M19_PASSWORD_SECRET_11de';
+const _pluginSentinel = 'M19_PLUGIN_SECRET_a63b';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final originalPlatform = FlutterSecureStoragePlatform.instance;
@@ -181,6 +186,42 @@ void main() {
     expect(result.toString(), isNot(contains('refresh-secret')));
   });
 
+  test('secure adapter result hides unified credential sentinels', () async {
+    FlutterSecureStorage.setMockInitialValues(<String, String>{
+      'auth.tokens': jsonEncode(<String, Object?>{
+        'accessToken': _accessSentinel,
+        'refreshToken': _refreshSentinel,
+        'userId': _passwordSentinel,
+        'accessTokenExpiresAt': null,
+        'refreshTokenExpiresAt': null,
+      }),
+    });
+    final result = await _createStore().readCredential();
+
+    _expectNoCredentialSentinel(result.toString());
+  });
+
+  test('mapped secure error hides unified credential sentinels', () async {
+    final originStack = StackTrace.fromString(_pluginSentinel);
+    final failure = PlatformException(
+      code: 'secure_storage_unavailable',
+      message:
+          '$_pluginSentinel $_accessSentinel $_refreshSentinel $_passwordSentinel',
+    );
+    FlutterSecureStoragePlatform.instance = _ControlledSecureStoragePlatform(
+      operation: _SecureOperation.read,
+      error: failure,
+      stackTrace: originStack,
+    );
+
+    try {
+      await _createStore().readCredential();
+      fail('Expected AppException');
+    } on AppException catch (error) {
+      _expectNoCredentialSentinel(error.toString());
+    }
+  });
+
   for (final operation in _SecureOperation.values) {
     test(
       '${operation.name} PlatformException becomes local storage failure',
@@ -280,6 +321,13 @@ void main() {
       }
     });
   }
+}
+
+void _expectNoCredentialSentinel(String text) {
+  expect(text, isNot(contains(_accessSentinel)));
+  expect(text, isNot(contains(_refreshSentinel)));
+  expect(text, isNot(contains(_passwordSentinel)));
+  expect(text, isNot(contains(_pluginSentinel)));
 }
 
 const _validPayload = <String, Object?>{

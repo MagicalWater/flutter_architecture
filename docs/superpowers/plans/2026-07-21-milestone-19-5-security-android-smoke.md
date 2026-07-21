@@ -53,7 +53,7 @@
 - Modify: `apps/flutter_architecture/test/features/auth/data/migration/auth_migration_error_reporter_adapter_test.dart`
 - Create: `docs/audits/milestone_19/19-5_security_android_smoke.md`
 
-- [ ] **Step 1：盤點credential-bearing output surface**
+- [x] **Step 1：盤點credential-bearing output surface**
 
 Run:
 
@@ -67,7 +67,7 @@ Expected:
 - Production log／reporting不得直接展開credential-bearing object。
 - 任何新發現先記入audit文件，不立即以猜測修改production code。
 
-- [ ] **Step 2：先寫失敗的統一sentinel regressions**
+- [x] **Step 2：先寫失敗的統一sentinel regressions**
 
 使用固定sentinel：
 
@@ -97,7 +97,7 @@ expect(text, isNot(contains(pluginSentinel)));
 - Secure adapter mapped `AppException`。
 - `AuthMigrationErrorReporterAdapter`建立的`ErrorReport`與debug sink文字。
 
-- [ ] **Step 3：執行targeted tests確認RED或既有契約已完整**
+- [x] **Step 3：執行targeted tests確認RED或既有契約已完整**
 
 Run:
 
@@ -111,7 +111,7 @@ Expected:
 - 若任何credential出現在字串中，測試FAIL並精確指出type。
 - 若全部已安全，新增測試仍應PASS並形成19-5明確evidence。
 
-- [ ] **Step 4：只修正已證實的production leakage**
+- [x] **Step 4：只修正已證實的production leakage**
 
 允許修正方式：
 
@@ -125,7 +125,7 @@ Expected:
 - 將unknown error降級為expected Failure。
 - 建立平行的redaction framework。
 
-- [ ] **Step 5：重跑targeted tests與analyze**
+- [x] **Step 5：重跑targeted tests與analyze**
 
 Run:
 
@@ -137,20 +137,24 @@ cd ../.. && dart run melos run analyze
 
 Expected: PASS；五個workspace package analyze無issue。
 
-- [ ] **Step 6：記錄Task 1 evidence並commit**
+- [x] **Step 6：記錄Task 1 evidence並commit**
 
 ```bash
 git add packages/auth/test apps/flutter_architecture/test/features/auth/data docs/audits/milestone_19/19-5_security_android_smoke.md
 git commit -m "test(auth): 補強Milestone 19 credential安全回歸"
 ```
 
-- [ ] **Step 7：進行Task 1 implementation review**
+- [x] **Step 7：進行Task 1 implementation review**
 
 Review gate：
 
 - 沒有credential sentinel進入任何一般字串輸出。
 - Error identity／stack與Decision 020語意未退化。
 - 無新增跨package redaction abstraction。
+
+Task 1執行結果：新增統一Access／Refresh／Password／Plugin sentinels，覆蓋`StoredAuthTokens`、credential read union、migration result、lifecycle diagnostic、cleanup result、Secure adapter mapped `AppException`與App `ErrorReport`／safe context。Auth targeted 51項、App targeted 31項與五個workspace package analyze全數通過。新增regressions直接GREEN，確認既有production output已secret-safe，因此未修改production code；error identity、caught stack與Decision 020語意保持不變。
+
+Task 1 implementation review：通過。Source inventory未發現production Token Pair、Authorization、password或raw payload直接輸出；沒有新增redaction framework、package dependency或runtime behavior change。
 
 ---
 

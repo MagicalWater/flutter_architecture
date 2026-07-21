@@ -4,6 +4,11 @@ import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _accessSentinel = 'M19_ACCESS_SECRET_7f4a';
+const _refreshSentinel = 'M19_REFRESH_SECRET_2c91';
+const _passwordSentinel = 'M19_PASSWORD_SECRET_11de';
+const _pluginSentinel = 'M19_PLUGIN_SECRET_a63b';
+
 void main() {
   const tokens = StoredAuthTokens(
     accessToken: 'access-secret',
@@ -80,6 +85,35 @@ void main() {
       }
     },
   );
+
+  test('migration results hide unified credential sentinels', () {
+    const sentinelTokens = StoredAuthTokens(
+      accessToken: _accessSentinel,
+      refreshToken: _refreshSentinel,
+      userId: _passwordSentinel,
+    );
+    const sentinelUser = AuthUser(id: _passwordSentinel, name: 'User');
+    final sentinelDiagnostic = AuthLifecycleDiagnostic(
+      operation: AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
+      error: StateError(_pluginSentinel),
+      stackTrace: StackTrace.fromString(_pluginSentinel),
+    );
+    final values = <Object>[
+      AuthCredentialMigrationUnauthenticated(
+        diagnostics: <AuthLifecycleDiagnostic>[sentinelDiagnostic],
+      ),
+      AuthCredentialMigrationResolved(
+        tokens: sentinelTokens,
+        user: sentinelUser,
+        diagnostics: <AuthLifecycleDiagnostic>[sentinelDiagnostic],
+      ),
+      sentinelDiagnostic,
+    ];
+
+    for (final value in values) {
+      _expectNoCredentialSentinel(value.toString());
+    }
+  });
 
   test('coordinator contract only accepts Auth-specific stores', () {
     final coordinator = AuthCredentialMigrationCoordinator(
@@ -820,6 +854,13 @@ void main() {
       },
     );
   });
+}
+
+void _expectNoCredentialSentinel(String text) {
+  expect(text, isNot(contains(_accessSentinel)));
+  expect(text, isNot(contains(_refreshSentinel)));
+  expect(text, isNot(contains(_passwordSentinel)));
+  expect(text, isNot(contains(_pluginSentinel)));
 }
 
 final class _CredentialStore implements AuthCredentialStore {

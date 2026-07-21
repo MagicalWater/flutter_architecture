@@ -2,6 +2,11 @@ import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _accessSentinel = 'M19_ACCESS_SECRET_7f4a';
+const _refreshSentinel = 'M19_REFRESH_SECRET_2c91';
+const _passwordSentinel = 'M19_PASSWORD_SECRET_11de';
+const _pluginSentinel = 'M19_PLUGIN_SECRET_a63b';
+
 void main() {
   test('cleanup attempts secure legacy and user in order', () async {
     final operations = <String>[];
@@ -98,6 +103,23 @@ void main() {
     expect(diagnostic.toString(), isNot(contains('plugin-secret')));
   });
 
+  test('cleanup result and diagnostics hide unified credential sentinels', () {
+    final diagnostic = AuthLifecycleDiagnostic(
+      operation: AuthLifecycleDiagnosticOperation.secureCleanup,
+      error: StateError(
+        '$_pluginSentinel $_accessSentinel $_refreshSentinel $_passwordSentinel',
+      ),
+      stackTrace: StackTrace.fromString(_pluginSentinel),
+    );
+    final result = AuthLifecycleCleanupResult(<AuthLifecycleDiagnostic>[
+      diagnostic,
+    ]);
+
+    for (final value in <Object>[diagnostic, result]) {
+      _expectNoCredentialSentinel(value.toString());
+    }
+  });
+
   test('cleanup diagnostics are immutable', () async {
     final policy = AuthLifecycleCleanupPolicy(
       secureCredentialStore: _CredentialStore(
@@ -121,6 +143,13 @@ void main() {
       throwsUnsupportedError,
     );
   });
+}
+
+void _expectNoCredentialSentinel(String text) {
+  expect(text, isNot(contains(_accessSentinel)));
+  expect(text, isNot(contains(_refreshSentinel)));
+  expect(text, isNot(contains(_passwordSentinel)));
+  expect(text, isNot(contains(_pluginSentinel)));
 }
 
 base class _ClearStore {

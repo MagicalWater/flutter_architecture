@@ -4,6 +4,11 @@ import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const _accessSentinel = 'M19_ACCESS_SECRET_7f4a';
+const _refreshSentinel = 'M19_REFRESH_SECRET_2c91';
+const _passwordSentinel = 'M19_PASSWORD_SECRET_11de';
+const _pluginSentinel = 'M19_PLUGIN_SECRET_a63b';
+
 void main() {
   test('逐項上報所有migration diagnostics並使用固定safe context', () {
     final reporter = _RecordingReporter();
@@ -86,6 +91,35 @@ void main() {
     expect(reporter.calls, 2);
     expect(reporter.reports, hasLength(1));
   });
+
+  test('report adapter output hides unified credential sentinels', () {
+    final reporter = _RecordingReporter();
+    final adapter = AuthMigrationErrorReporterAdapter(reporter);
+    final error = StateError(
+      '$_pluginSentinel $_accessSentinel $_refreshSentinel $_passwordSentinel',
+    );
+
+    adapter.reportAll(<AuthLifecycleDiagnostic>[
+      AuthLifecycleDiagnostic(
+        operation: AuthLifecycleDiagnosticOperation.secureCleanup,
+        error: error,
+        stackTrace: StackTrace.fromString(_pluginSentinel),
+      ),
+    ]);
+
+    expect(reporter.reports, hasLength(1));
+    final report = reporter.reports.single;
+    expect(report.error, same(error));
+    _expectNoCredentialSentinel(report.toString());
+    _expectNoCredentialSentinel(report.context.toString());
+  });
+}
+
+void _expectNoCredentialSentinel(String text) {
+  expect(text, isNot(contains(_accessSentinel)));
+  expect(text, isNot(contains(_refreshSentinel)));
+  expect(text, isNot(contains(_passwordSentinel)));
+  expect(text, isNot(contains(_pluginSentinel)));
 }
 
 final class _RecordingReporter implements ErrorReporter {

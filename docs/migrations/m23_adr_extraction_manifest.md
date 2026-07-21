@@ -49,3 +49,19 @@ last_reviewed_baseline: 1.5.1
 ## Batch Completion Contract
 
 每批 review記錄 source baseline、target、semantic result、link result、checker result、rollback commit boundary與 aggregate authority state。Batch G前 manifest維持 `active`。
+
+## Batch Progress
+
+### Batch A — Foundation Contracts
+
+| ID | Migration state | Semantic preservation | Non-ADR routing | Relation result |
+|---|---|---|---|---|
+| ADR-001 | extracted | accepted | wording normalized; no journal removed | ADR-002、005、007、012 retained |
+| ADR-002 | extracted | accepted | volatile command detail routed to `AGENTS.md`; ordering invariant retained | ADR-001、012 retained |
+| ADR-003 | extracted | accepted | illustrative code sample omitted; tool responsibility retained | ADR-007、018 retained |
+| ADR-006 | extracted | accepted | historical future tense normalized to current contract | ADR-005、007、021 retained |
+| ADR-007 | extracted | accepted | Profile example normalized to general cross-feature rule | ADR-001、003、006、021 retained |
+| ADR-008 | extracted | accepted | examples retained as contract illustration | ADR-001、005 retained |
+| ADR-012 | extracted | accepted | completion statement routed to current package/App README | ADR-004 scope note deferred to Batch B |
+
+Batch A aggregate source sections remain unchanged. Canonical files are migration targets that passed semantic review；formal authority cutover仍延後至 Batch G。

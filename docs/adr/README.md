@@ -21,18 +21,18 @@ last_reviewed_baseline: 1.5.1
 
 | ID | File | Migration state |
 |---|---|---|
-| ADR-001 | - | aggregate |
-| ADR-002 | - | aggregate |
-| ADR-003 | - | aggregate |
+| ADR-001 | adr-001-clean-architecture-feature-first.md | extracted |
+| ADR-002 | adr-002-monorepo-melos.md | extracted |
+| ADR-003 | adr-003-presentation-state-and-hooks.md | extracted |
 | ADR-004 | - | aggregate |
 | ADR-005 | - | aggregate |
-| ADR-006 | - | aggregate |
-| ADR-007 | - | aggregate |
-| ADR-008 | - | aggregate |
+| ADR-006 | adr-006-auth-guard-session-authority.md | extracted |
+| ADR-007 | adr-007-cross-feature-state-boundaries.md | extracted |
+| ADR-008 | adr-008-use-case-granularity.md | extracted |
 | ADR-009 | - | aggregate |
 | ADR-010 | - | aggregate |
 | ADR-011 | - | aggregate |
-| ADR-012 | - | aggregate |
+| ADR-012 | adr-012-reusable-package-di-boundary.md | extracted |
 | ADR-013 | - | aggregate |
 | ADR-014 | - | aggregate |
 | ADR-015 | - | aggregate |

@@ -35,6 +35,9 @@ agent-policy
 project-entry
 documentation-hub
 current-snapshot
+app-readme
+feature-readme
+package-readme
 architecture-decision-index
 architecture-decision
 roadmap-index

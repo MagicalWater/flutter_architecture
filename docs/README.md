@@ -79,7 +79,7 @@ docs/roadmap.md
 → package public API、source 與 tests
 ```
 
-缺少 README 時，先從 root README、current snapshot、相關 Decision 與 source 建立邊界理解；Milestone 22-5 會補齊 App 與關鍵 Package README。
+所有 production App、Package 與 Feature 都已有 local README。修改前先讀對應 README，再依 task route 載入相關 Decision、source 與 tests。
 
 ### Active Milestone execution
 

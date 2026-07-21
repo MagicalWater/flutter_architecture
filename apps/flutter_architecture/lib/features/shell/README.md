@@ -1,41 +1,55 @@
+---
+document_type: feature-readme
+status: accepted
+authoritative_for:
+  - shell-feature-local-contract
+last_reviewed_baseline: 1.5.0
+---
+
 # Shell Feature
 
-Shell feature 負責已進入主App後的外層layout與tab容器，不擁有authentication state transition或startup unlock orchestration。
+Shell feature 擁有 App authenticated／public tabs 的外層 layout與使用者主動 actions，不擁有 authentication transition policy。
 
-## 負責什麼？
+## Responsibilities
 
-- AppBar
-- NavigationBar
-- Login / Catalog / Profile 的nested route容器
-- ProtectedPage 的入口按鈕
-- Appearance、Locale與Local Unlock設定入口
+- `AppBar`、`NavigationBar` 與 nested tab layout。
+- Login、Catalog、Profile tab container。
+- 開啟 Protected route、Appearance、Locale 與 Local Unlock settings。
+- 將 labels／tooltips交由 localization 提供。
 
-## 頁面關係
+## Non-responsibilities
 
-```txt
-ShellPage(A)
-  ├── LoginPage(B)
-  ├── CatalogPage(C)
-  ├── ProfilePage(D)
-  └── ProtectedPage(E)
-```
+- 不根據 AuthBloc 決定 Login、OTP、Local Unlock 或 Profile destination。
+- 不實作 AuthGuard 或 Session policy。
+- 不保存 theme、locale 或 local unlock preference。
+- 不擁有 Feature business state。
 
-LoginPage、CatalogPage與ProfilePage是ShellPage的tab內容。
-
-ProtectedPage 是獨立頁面，透過 AppBar action 開啟。
-
-## Authentication navigation boundary
-
-Shell不依賴`AuthBloc`，也不根據登入、OTP或local unlock state直接操作root router。
+## Page Composition
 
 ```txt
-Auth presentation / StartupLocalUnlockCoordinator
-  ↓
-AuthNavigationCoordinator（App composition layer）
-  ↓
-LoginRoute / OtpRoute / LocalUnlockRoute / Profile destination
+ShellPage
+├── LoginPage
+├── CatalogPage
+├── ProfilePage
+└── ProtectedPage (push route + guard)
 ```
 
-`AuthNavigationCoordinator`維持單一Shell並處理Login、OTP、locked與Profile destination transition。Shell只管理自己的tab selection與使用者主動開啟的AppBar actions。
+`AutoTabsRouter` 管理 tab child；Shell 只管理 active index 與 UI action。
 
-Protected Route仍由`AuthGuard`依`SessionManager`判斷；Shell不自行判斷authentication authority。
+## Navigation Boundary
+
+- `AuthNavigationCoordinator` 位於 App layer，擁有 authentication destination transition。
+- `AuthGuard` 依賴 Session abstraction，決定 Protected route access。
+- Shell 不監聽 AuthBloc，也不發出跨 feature state mutation。
+
+## Appearance, Locale and Local Unlock
+
+Shell 只開啟 App-owned dialogs。Theme／Locale controller、preference persistence與 local unlock policy composition不屬於 Shell。
+
+## Tests
+
+測試應涵蓋 tab selection、actions、localized labels、theme／locale dialog composition與 Protected route action。
+
+## Related Decisions
+
+以 `docs/architecture_decisions.md` 的 Navigation、Composition Root、Design System、Localization與 Local Unlock Decisions 為 authority。

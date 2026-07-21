@@ -24,30 +24,30 @@ last_reviewed_baseline: 1.5.0
 22-2 Documentation Index & AI Reading Contract     Completed
 22-3 Current Project Snapshot Rewrite              Completed
 22-4 Roadmap Active / Candidate Separation         Completed
-22-5 README Coverage Baseline                      Next
-22-6 Documentation Lint Foundation                 Approved after 22-5
+22-5 README Coverage Baseline                      Completed
+22-6 Documentation Lint Foundation                 Next
 22-7 Final Review & Decision Extraction Gate       Approved after 22-6
 ```
 
 ## Current Gate
 
-22-4 已通過 Task reviews 與 whole-phase implementation review。Roadmap index、active、candidates 與 closed milestone routing 已分離。
+22-5 已通過 Task reviews 與 whole-phase implementation review。App、Package 與 production Feature README coverage 已完整，local contract 與 metadata 已統一。
 
 下一個允許執行的階段是：
 
 ```txt
-Milestone 22-5 — README Coverage Baseline
+Milestone 22-6 — Documentation Lint Foundation
 ```
 
 ## Next Action
 
 依核准 implementation plan：
 
-1. 建立 App README。
-2. 建立 `packages/core`、`packages/api_client`、`packages/auth` README。
-3. 正規化所有 Feature README。
-4. 收斂 Design System README 的 milestone journal。
-5. 完成 README coverage review 與整階段提交。
+1. 建立 documentation checker tests。
+2. 實作 relative Markdown link checker。
+3. 驗證 baseline、ID、status 與 README coverage consistency。
+4. 加入固定 local `docs_check` command。
+5. 完成 checker regression 與整階段提交。
 
 ## Non-goals
 

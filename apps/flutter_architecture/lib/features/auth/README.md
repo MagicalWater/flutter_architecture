@@ -1,136 +1,111 @@
+---
+document_type: feature-readme
+status: accepted
+authoritative_for:
+  - auth-feature-local-contract
+last_reviewed_baseline: 1.5.0
+---
+
 # Auth Feature
 
-App 內的 Auth feature 負責Auth presentation，以及需要Flutter plugin或App lifecycle的adapter。Auth domain、repository、use case、Session與refresh coordination位於`packages/auth`；App仍是唯一Composition Root。
+App 內的 Auth feature 擁有 Login、OTP 與 Session state 的 presentation。Auth Domain／Data／Session contract 位於 `packages/auth`，navigation coordination 與 platform adapters 位於 App layer。
 
-## 負責什麼？
+## Responsibilities
 
-- Login與Logout presentation。
-- OTP challenge、Verify與Resend presentation。
-- Session expiration UI synchronization。
-- Local unlock locked surface與設定入口。
-- Flutter Secure Storage、SharedPreferences、SQLite與`local_auth`的App-owned adapters。
+- Login、OTP Verify／Resend、Logout UI 與 Bloc。
+- Restore／Session expiration 的 presentation synchronization。
+- 顯示 expected authentication failure 的 localized UI。
+- 將 user intent 轉交單一 UseCase。
 
-## 不負責什麼？
+## Non-responsibilities
 
-- Profile 頁面如何顯示
-- Payment
-- Notification
-- App Theme
-- Auth domain policy與credential lifecycle ordering
-- App-level authentication navigation transition
+- 不保存 credential、Auth User 或 local unlock preference。
+- 不直接操作 Dio、Router、Flutter Secure Storage、SQLite 或 `local_auth`。
+- 不決定 Auth navigation destination；由 App-owned coordinator 負責。
+- 不負責 Profile、Catalog 或 Protected feature behavior。
 
-## Runtime Flow
+## Dependencies
+
+```txt
+presentation
+→ packages/auth public API
+→ packages/core Result / Failure contract
+→ design_system public primitives
+```
+
+Feature 不 deep import package `lib/src/`，也不跨 feature 讀取 Bloc。
+
+## Login and OTP Flow
 
 ```txt
 LoginPage
-  ↓
-AuthBloc
-  ↓
-LoginUseCase
-  ↓
-AuthRepository
-  ↓
-AuthRepositoryImpl
-  ├── AuthRemoteDataSource
-  │     ↓
-  │   AuthApi
-  │     ├── MockAuthApi
-  │     └── _AuthApi（Retrofit generated）
-  │
-  ├── FlutterSecureAuthCredentialStore
-  ├── SharedPreferencesAuthLegacyCredentialStore
-  └── SqfliteAuthUserStore
-  ↓
-FlutterSecureStorage + SQLite
-  ↓
-AuthBloc
-  ↓
-UI
+→ AuthBloc
+→ LoginUseCase
+→ AuthRepository
+→ Authenticated | OtpChallenge | Failure
+
+OtpPage
+→ AuthOtpBloc
+→ VerifyOtpUseCase / ResendOtpUseCase
+→ Authenticated | Updated Challenge | Failure
 ```
 
-Current persistence authority：
+OTP challenge 完成前不建立 authenticated Session。`AuthNavigationCoordinator` 觀察 Auth state 並在 Login、OTP、Profile／Shell destinations 間切換。
+
+## Credential and Restore Flow
+
+```txt
+AuthRepositoryImpl
+├── AuthRemoteDataSource
+├── AuthCredentialStore
+├── AuthLegacyCredentialStore
+└── AuthUserStore
+```
+
+Production authority：
 
 ```txt
 Credential Token Pair
-  → FlutterSecureAuthCredentialStore
-  → FlutterSecureStorage
+→ FlutterSecureAuthCredentialStore
+→ Flutter Secure Storage
 
-Public AuthUser identity
-  → SqfliteAuthUserStore
-  → SQLite
+Public AuthUser
+→ SqfliteAuthUserStore
+→ SQLite
 
 Legacy SharedPreferences credential
-  → migration / cleanup only
+→ migration / cleanup only
 ```
 
-`SharedPreferencesAuthCredentialStore`只保留於legacy／regression test與歷史相容情境，不是production credential authority。
+`SharedPreferencesAuthCredentialStore`只保留於 legacy／regression test與歷史相容情境，不是 production credential authority。
 
-## OTP Flow
+## Refresh and Session Expiration
 
-```txt
-Login result = otpChallenge
-  ↓
-AuthBloc進入otpRequired
-  ↓
-AuthNavigationCoordinator導向OtpRoute
-  ↓
-Verify成功
-  ↓
-Secure credential → SQLite User → Session commit
-  ↓
-導向Profile
-```
+- `AuthRefreshInterceptor` 不操作 Bloc 或 Router。
+- `AuthSessionRefresher` 使用 identity-aware single-flight。
+- Rotated token pair persistence-first，再更新 `SessionManager`。
+- Invalid refresh credential 由 Auth lifecycle cleanup 清除 persistence 與 runtime Session。
+- AuthBloc 監聽 SessionManager stream，自然切換 UI state。
 
-OTP完成前不得保存credential、建立Session或通過Protected Route。Resend只替換challenge，不修改credential或Session。
+## Local Unlock Boundary
 
-## Local Unlock Flow
+- `StartupLocalUnlockCoordinator` 與 lifecycle coordinator 位於 App layer。
+- `LocalUnlockPage` 只呈現 locked／verifying／failure UI 與 retry／use login intent。
+- `local_auth` adapter與 preference persistence 由 App 擁有。
+- Local unlock 只驗證本機 user presence，不保存 biometric data，也不是 Device Binding。
 
-```txt
-App startup / grace-period-expired resume
-  ↓
-StartupLocalUnlockCoordinator
-  ↓
-enabled preference時先保持SessionManager = null
-  ↓
-biometric-only local user-presence verification
-  ↓ verified
-RestoreSessionUseCase
-```
+## Tests
 
-Cancel、not enrolled、unavailable與lockout均不得fallback自動restore。Biometric只驗證本機user presence，不是Server authentication，也不保存biometric資料。
+主要測試位於：
 
-## Refresh / Session Expiration Flow
+- `test/features/auth/`
+- `test/app/auth/`
+- `test/app/navigation/`
 
-```txt
-Authenticated API 401
-  ↓
-AuthRefreshInterceptor
-  ↓
-AuthSessionRefresher（single-flight）
-  ├── Refresh Dio → AuthRefreshApi
-  ├── 保存 rotated Token Pair
-  └── 更新 SessionManager access token
-  ↓
-安全 replay 原 request
-```
+應涵蓋 Login、OTP、Restore、Logout、Session expiration、navigation、local unlock lifecycle與 sensitive output。
 
-規則：
+## Related Decisions
 
-- Interceptor 不直接操作 AuthBloc、Router 或 LogoutUseCase。
-- Invalid refresh credential 由 `packages/auth` 清除 persistence 與 SessionManager。
-- AuthBloc 監聽 SessionManager stream，自然切換為未登入狀態。
-- Logout / relogin 或帳號切換後，舊 request 與舊 refresh response 不得覆蓋新 Session。
-- `AuthNavigationCoordinator`與`StartupLocalUnlockCoordinator`由App composition layer持有，不由Shell或Bloc直接操作Router。
+以 `docs/architecture_decisions.md` 中的 Auth／Session／Refresh／Secure Credential／OTP／Local Unlock Decisions 為正式 authority。
 
-## Auth 邊界分工
-
-```txt
-apps/flutter_architecture/lib/features/auth/
-  presentation/  Login / OTP / Local Unlock UI + Bloc
-  data/          Flutter plugin adapters與App-local persistence adapters
-
-packages/auth/
-  domain/        Entity + Repository Interface + UseCase
-  data/          Model + RepositoryImpl + DataSource
-  session/       Runtime Session、lifecycle generation與refresh coordination
-```
+本 README 只保存 feature-local current contract，不記錄 Milestone journal。

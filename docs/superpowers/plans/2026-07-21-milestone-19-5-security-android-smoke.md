@@ -273,7 +273,7 @@ Task 2執行結果：先建立6項Python state machine tests，RED因`auth_fixtu
 - Create: `tools/milestone_19_5/android_smoke.ps1`
 - Modify: `docs/audits/milestone_19/19-5_security_android_smoke.md`
 
-- [ ] **Step 1：建立PowerShell參數與fail-fast checks**
+- [x] **Step 1：建立PowerShell參數與fail-fast checks**
 
 Script parameters：
 
@@ -296,7 +296,7 @@ param(
 - App ID與release APK存在。
 - Evidence directory不在Git tracked source內。
 
-- [ ] **Step 2：加入artifact metadata收集**
+- [x] **Step 2：加入artifact metadata收集**
 
 收集：
 
@@ -319,7 +319,7 @@ permissions
 
 不得複製APK或credential payload進docs。
 
-- [ ] **Step 3：加入只讀sandbox evidence helpers**
+- [x] **Step 3：加入只讀sandbox evidence helpers**
 
 只允許：
 
@@ -334,7 +334,7 @@ permissions
 - Secure Storage XML／DB raw value。
 - Authorization、Access Token、Refresh Token、password。
 
-- [ ] **Step 4：加入temporary CA lifecycle helpers**
+- [x] **Step 4：加入temporary CA lifecycle helpers**
 
 工具需以host-side openssl或Python產生一次性local CA與`localhost` server certificate，將CA certificate hash命名後推入emulator system trust store：
 
@@ -349,7 +349,7 @@ permissions
 - smoke結束時移除該CA並重啟adbd；若cleanup失敗，整個Task失敗並要求wipe AVD。
 - 不修改App manifest、network security config或Dio certificate callback。
 
-- [ ] **Step 5：加入logcat gate**
+- [x] **Step 5：加入logcat gate**
 
 Script在每個journey前執行：
 
@@ -378,7 +378,7 @@ FATAL EXCEPTION
 
 Screenshot與UI dump只保存於untracked evidence directory；輸入password前或完成登入後才允許截圖，不得保存含明文password、Token或Authorization的畫面／hierarchy。
 
-- [ ] **Step 6：執行PowerShell parser／dry-run檢查**
+- [x] **Step 6：執行PowerShell parser／dry-run檢查**
 
 Run:
 
@@ -391,14 +391,14 @@ Expected:
 - 只檢查工具與列出將執行步驟。
 - 不啟動server、不安裝APK、不修改device data。
 
-- [ ] **Step 7：commit**
+- [x] **Step 7：commit**
 
 ```bash
 git add tools/milestone_19_5/android_smoke.ps1 docs/audits/milestone_19/19-5_security_android_smoke.md
 git commit -m "test(android): 建立Milestone 19 runtime smoke工具"
 ```
 
-- [ ] **Step 8：進行Task 3 implementation review**
+- [x] **Step 8：進行Task 3 implementation review**
 
 Review gate：
 
@@ -408,6 +408,8 @@ Review gate：
 - `-WhatIf`不產生side effect。
 - Temporary CA一定有cleanup evidence；App production trust policy未改動。
 - UI evidence可對應Login、authenticated、restored與unauthenticated狀態，且不含secret。
+
+Task 3執行結果：新增Windows PowerShell 5.1相容的`android_smoke.ps1`，具`SupportsShouldProcess`與Plan／Prepare／Artifact／Install／ClearData／Launch／ForceStop／CaptureUi／InspectSandbox／Logcat／CA lifecycle／ReversePort actions。Parser、預設dry-run與`CreateCa -WhatIf`均通過且無side effect；實際短效CA chain與localhost SAN驗證通過；既有release APK metadata helper成功取得SHA-256、size、App ID、versionCode／versionName、minSdk 24與targetSdk 36。Static review未發現credential、SQLite或Session寫入helper，也未加入cleartext／certificate bypass；Task 3 implementation review通過，無Open P0／P1。
 
 ---
 

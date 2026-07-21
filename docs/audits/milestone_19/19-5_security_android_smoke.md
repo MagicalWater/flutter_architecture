@@ -54,6 +54,29 @@ Task 1 implementation review：通過。
 - 沒有新增平行redaction framework或跨package dependency。
 - Production source scan未發現Token Pair、Authorization、password或raw payload直接輸出。
 
+## Task 3 — Android smoke orchestration與artifact gate
+
+新增`tools/milestone_19_5/android_smoke.ps1`，以Windows PowerShell 5.1可執行語法提供AVD／root檢查、artifact metadata、install／clear／launch／force-stop、UI evidence、root-only只讀sandbox查核、temporary CA lifecycle、`adb reverse`與logcat gate。
+
+所有會修改host或device的操作都經`SupportsShouldProcess`／`ShouldProcess`。工具沒有credential、SharedPreferences value、SQLite User或Session寫入helper，也不修改App manifest、network security config或Dio trust policy。
+
+驗證結果：
+
+- PowerShell parser通過。
+- 預設`-WhatIf`與`CreateCa -WhatIf`均無side effect。
+- 實際短效CA與localhost certificate建立成功；`openssl verify`通過，SAN包含`DNS:localhost`與`IP Address:127.0.0.1`。
+- Artifact helper成功解析既有release APK：App ID `com.example.flutterarchitecture`、versionCode 1、versionName 0.1.0、minSdk 24、targetSdk 36，並產出SHA-256與size。
+- Script static scan未發現credential／SQLite寫入、cleartext bypass、`badCertificateCallback`或network security override。
+- Temporary evidence驗證後已清除，未進Git。
+
+Task 3 implementation review：通過。
+
+- `-WhatIf`沒有host／device side effect。
+- Release sandbox inspection只允許root-capable emulator的只讀metadata與safe row查核。
+- UI、sandbox與logcat evidence都有secret sentinel gate。
+- Temporary CA具create／install／remove流程；cleanup失敗要求wipe AVD。
+- App production trust policy與runtime Auth contract未修改。
+
 ## Task 2 — Secret-safe deterministic HTTP fixture server
 
 ### Scope

@@ -13,4 +13,12 @@ void main() {
     expect(output, isNot(contains('sensitive-account')));
     expect(output, isNot(contains('sensitive-password')));
   });
+
+  test('Auth OTP verify event does not expose code in toString', () {
+    const event = AuthEvent.otpVerifyRequested(code: '938271');
+
+    final output = event.toString();
+
+    expect(output, isNot(contains('938271')));
+  });
 }

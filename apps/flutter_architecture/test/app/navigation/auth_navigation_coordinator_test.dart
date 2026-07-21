@@ -7,7 +7,7 @@ import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.d
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('start先訂閱state再觸發restore，authenticated時導向Profile', () async {
+  test('start訂閱state後authenticated時導向Profile', () async {
     final states = StreamController<AuthState>();
     addTearDown(states.close);
     final destinations = <AuthNavigationDestination>[];
@@ -16,21 +16,19 @@ void main() {
     coordinator = AuthNavigationCoordinator(
       initialState: AuthState.initial(),
       states: states.stream,
-      restoreSession: () {
-        states.add(
-          const AuthState(
-            isLoading: false,
-            user: AuthUser(id: 'user-1', name: 'User'),
-            failure: null,
-            failureOperation: null,
-          ),
-        );
-      },
       navigate: destinations.add,
     );
     addTearDown(coordinator.dispose);
 
     coordinator.start();
+    states.add(
+      const AuthState(
+        isLoading: false,
+        user: AuthUser(id: 'user-1', name: 'User'),
+        failure: null,
+        failureOperation: null,
+      ),
+    );
     await Future<void>.delayed(Duration.zero);
 
     expect(destinations, <AuthNavigationDestination>[
@@ -50,7 +48,6 @@ void main() {
         failureOperation: null,
       ),
       states: states.stream,
-      restoreSession: () {},
       navigate: destinations.add,
     );
     addTearDown(coordinator.dispose);
@@ -72,7 +69,6 @@ void main() {
     final coordinator = AuthNavigationCoordinator(
       initialState: AuthState.initial(),
       states: states.stream,
-      restoreSession: () {},
       navigate: destinations.add,
     );
     addTearDown(coordinator.dispose);
@@ -103,7 +99,6 @@ void main() {
         failureOperation: null,
       ),
       states: const Stream<AuthState>.empty(),
-      restoreSession: () {},
       navigate: destinations.add,
     );
     addTearDown(coordinator.dispose);
@@ -122,7 +117,6 @@ void main() {
     final coordinator = AuthNavigationCoordinator(
       initialState: AuthState.initial(),
       states: states.stream,
-      restoreSession: () {},
       navigate: destinations.add,
     );
 
@@ -160,7 +154,6 @@ void main() {
     final coordinator = AuthNavigationCoordinator(
       initialState: AuthState.initial(),
       states: states.stream,
-      restoreSession: () {},
       navigate: destinations.add,
     );
     addTearDown(coordinator.dispose);
@@ -183,7 +176,6 @@ void main() {
     final coordinator = AuthNavigationCoordinator(
       initialState: _otpState('challenge-1'),
       states: states.stream,
-      restoreSession: () {},
       navigate: destinations.add,
     );
     addTearDown(coordinator.dispose);

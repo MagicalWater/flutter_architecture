@@ -2920,7 +2920,7 @@ ShellRoute(LoginRoute / ProfileRoute)
 
 **狀態：** Accepted；Milestone 19與20已完成並封存，Milestone 21-0 Planning Review已通過
 
-**實作狀態：** Milestone 19 Secure Credential Storage & Migration與Milestone 20 OTP Step-Up Authentication均已完成並封存，Template Baseline為1.4.0。Milestone 21已完成21-0至21-2；local unlock preference與enable / disable policy已建立，startup gate、UI與Android Native仍待21-3至21-5。
+**實作狀態：** Milestone 19 Secure Credential Storage & Migration與Milestone 20 OTP Step-Up Authentication均已完成並封存，Template Baseline為1.4.0。Milestone 21已完成21-0至21-3；preference enabled時已由App-owned pre-restore gate維持Session null並先完成local user-presence verification。UI、resume lifecycle與Android Native仍待21-4至21-5。
 
 ### 背景
 

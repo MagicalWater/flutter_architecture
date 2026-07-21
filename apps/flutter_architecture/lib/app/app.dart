@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:auth/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
 import 'package:flutter_architecture/app/localization/app_locale_resolution.dart';
@@ -35,6 +37,7 @@ class ArchitectureApp extends StatefulWidget {
 class _ArchitectureAppState extends State<ArchitectureApp> {
   late final AppRouter _router;
   late final AuthNavigationCoordinator _authNavigationCoordinator;
+  late final StartupLocalUnlockCoordinator _startupLocalUnlockCoordinator;
   bool _authNavigationStarted = false;
 
   @override
@@ -45,16 +48,28 @@ class _ArchitectureAppState extends State<ArchitectureApp> {
     _authNavigationCoordinator = AuthNavigationCoordinator(
       initialState: authBloc.state,
       states: authBloc.stream,
-      restoreSession: () => authBloc.add(const AuthEvent.started()),
       navigate: (destination) {
         unawaited(reconcileAuthDestination(_router, destination));
       },
     );
+    _startupLocalUnlockCoordinator = StartupLocalUnlockCoordinator(
+      preferenceStore: getIt<LocalUnlockPreferenceStore>(),
+      verifier: getIt<LocalUserPresenceVerifier>(),
+      sessionManager: getIt<SessionManager>(),
+      mutationCoordinator: getIt<AuthStateMutationCoordinator>(),
+      restoreSession: () => authBloc.add(const AuthEvent.started()),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _authNavigationStarted) return;
       _authNavigationStarted = true;
-      _authNavigationCoordinator.start();
+      unawaited(_startAuthFlow());
     });
+  }
+
+  Future<void> _startAuthFlow() async {
+    await _startupLocalUnlockCoordinator.start();
+    if (!mounted) return;
+    _authNavigationCoordinator.start();
   }
 
   @override

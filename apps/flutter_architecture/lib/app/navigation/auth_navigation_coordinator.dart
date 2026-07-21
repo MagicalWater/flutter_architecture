@@ -11,15 +11,12 @@ final class AuthNavigationCoordinator {
   AuthNavigationCoordinator({
     required AuthState initialState,
     required Stream<AuthState> states,
-    required void Function() restoreSession,
     required void Function(AuthNavigationDestination destination) navigate,
   }) : _lastDestination = _destinationFor(initialState),
        _states = states,
-       _restoreSession = restoreSession,
        _navigate = navigate;
 
   final Stream<AuthState> _states;
-  final void Function() _restoreSession;
   final void Function(AuthNavigationDestination destination) _navigate;
   AuthNavigationDestination _lastDestination;
   bool _isDisposed = false;
@@ -31,7 +28,6 @@ final class AuthNavigationCoordinator {
     if (_lastDestination != AuthNavigationDestination.login) {
       _navigate(_lastDestination);
     }
-    _restoreSession();
   }
 
   void _onStateChanged(AuthState state) {

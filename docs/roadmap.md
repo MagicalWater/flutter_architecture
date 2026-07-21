@@ -1972,7 +1972,7 @@ Milestone 18 final release review已完成：`M18-D01`、`M18-D02`與`M18-D03`�
 
 ## Authentication Security & Step-Up Verification Initiative
 
-狀態：Milestone 19-0 Planning Review已通過。
+狀態：Milestone 19已完成並封存；下一步為Milestone 20 Planning Review。
 
 原候選方向已依 Architecture Decision 022 拆分為三個獨立 Milestone：
 
@@ -1993,7 +1993,7 @@ Milestone 21 — Biometric-gated Local Session Unlock
 
 ## Milestone 19：Secure Credential Storage & Migration
 
-狀態：19-0 Completed / Archived；19-1 Completed / Reviewed；19-2 Completed / Reviewed；19-3 Planning。
+狀態：Completed / Archived；Template Baseline 1.3.0已發布。
 
 ### 目標
 
@@ -2116,12 +2116,14 @@ Plan review已固定：migration-only diagnostic不足以表達Secure / User cle
 
 ### Milestone 19-5：Security Review、Android Smoke與封存
 
-- [ ] Audit exception、failure、reporting、log與`toString()`，確認credential不外洩。
-- [ ] 執行workspace analyze與完整tests；既有410 tests不得無理由遺失。
-- [ ] 建立Android release artifact。
-- [ ] 在Android runtime驗證login、restart restore、refresh rotation、migration與logout cleanup。
-- [ ] 同步README、Project Context、Architecture Decisions、Roadmap、Backlog與CHANGELOG。
-- [ ] Final review後才決定是否更新Template Baseline VERSION。
+- [x] Audit exception、failure、reporting、log與`toString()`，確認credential不外洩。
+- [x] 執行workspace analyze與完整tests；完整Flutter tests為542項，Python fixture為7項。
+- [x] 建立Android release artifact並驗證manifest、permissions、SHA-256與size。
+- [x] 在Android runtime驗證login、restart restore、refresh rotation、migration與logout cleanup。
+- [x] 同步README、Project Context、Architecture Decisions、Roadmap、Backlog與CHANGELOG。
+- [x] Final review判定Milestone 19新增可交付Template能力，Template Baseline發布為1.3.0。
+
+19-5 final implementation review已通過：Android API 35 root-capable emulator完成Secure Login、Restore、real API Refresh rotation與Replay、rotated credential restart persistence、predecessor signed upgrade migration與Logout cleanup；ADB沒有直接寫入credential、User或Session。Release artifact實際minSdk 24、targetSdk 36、`allowBackup=false`，permissions未擴張至Biometric / Fingerprint。Workspace analyze、542項Flutter tests、7項Python tests與release APK build通過。`M19-PR01`至`M19-PR06`全部Closed或依正式scope完成disposition，無Open P0／P1。Security claim只限credential-at-rest hardening，不防rooted device、runtime memory或server compromise。Milestone 19正式Archived。
 
 ### Milestone 19 非目標
 
@@ -2133,7 +2135,7 @@ Plan review已固定：migration-only diagnostic不足以表達Secure / User cle
 
 ## Milestone 20：OTP Step-Up Authentication
 
-狀態：Planned；必須等待Milestone 19完成、review並封存。
+狀態：Next candidate；Milestone 19已完成、review並封存，下一步先進行20-0 Planning Review，不直接開始production implementation。
 
 正式子階段：
 

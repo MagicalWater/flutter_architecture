@@ -349,4 +349,49 @@ Force-stop／restart後fixture只新增：
 - Task 1至Task 6 runtime evidence仍有對應artifact、UI、sandbox、fixture、signing與cleanup contract，可重現且沒有互相矛盾。
 - 完整test count、analyze與artifact gate均通過。
 - Security claim維持credential-at-rest hardening與Android-only runtime evidence，不擴張為rooted device、runtime memory或server compromise防護。
+
+## Task 8 — Finding closure、版本判斷與Milestone 19封存
+
+### Finding closure
+
+- `M19-PR01`：Closed；唯一migration owner與lifecycle exclusive ownership已由19-3／19-4證明。
+- `M19-PR02`：Closed；所有migration與cleanup helper使用caller-owned `...Unlocked` contract，無nested mutation lock。
+- `M19-PR03`：Closed；absence、corruption與operational unavailable維持不同typed語意。
+- `M19-PR04`：Not an issue after revision；Milestone 19未建立persistent marker，以真實store state推導。
+- `M19-PR05`：Closed；Android release artifact、root-capable emulator、Login／Restore／Refresh／Migration／Logout、secret-safe logs與能力邊界皆有runtime evidence。
+- `M19-PR06`：Closed；interactive、passive與post-migration cleanup ownership及error priority已固定。
+
+無Open P0／P1。
+
+### Version decision
+
+Milestone 19不是只補完1.2.0文件承諾，而是新增以下可交付Template能力：
+
+- App-owned Secure credential authority。
+- SharedPreferences Legacy migration與cleanup。
+- Secure Login／Restore／Refresh rotation／Logout lifecycle。
+- Android release runtime、signed predecessor upgrade與secret-safe evidence tooling。
+
+依Template Semantic Versioning policy，這屬新增模板能力，因此核准下一個MINOR：`1.3.0`。此判斷不預先承諾Milestone 20或21的版本號。
+
+### Final documentation contract
+
+- Android是唯一Supported target；其他平台維持Dependency-ready。
+- Secure Storage只保存credential Token Pair。
+- SQLite仍保存公開`AuthUser`。
+- Legacy SharedPreferences只供migration與cleanup。
+- OTP、Biometric、Device Binding與Passkey仍是後續scope。
+- Security claim只限credential-at-rest hardening，不防rooted device、runtime memory或server compromise。
+
+### Milestone 19 final implementation review
+
+- Task 1至Task 7均有獨立implementation review。
+- Runtime成功結果均由release App production flow產生；ADB沒有直接寫入credential、User或Session。
+- Real API Refresh實際經過Dio interceptor與AuthSessionRefresher；rotation persistence由restart後access-v2直接成功證明。
+- Migration fixture由`05b3412` predecessor production Login建立，App ID與certificate一致後才執行`adb install -r`。
+- Temporary CA已移除；App manifest與Dio trust policy未為smoke弱化。
+- Final gate：五個package analyze、542項Flutter tests、7項Python fixture tests與Android release APK build全部通過。
+- Template Baseline發布為1.3.0；Milestone 19正式Archived。
+
+下一個正式方向為Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review，不直接開始OTP production implementation。
 - 無Open P0／P1；artifact與security敘述沒有超過實際證據。

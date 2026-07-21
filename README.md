@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.2.0
+- Template Baseline Version：1.3.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -20,6 +20,7 @@
 - Milestone 16 Localization Foundation：Completed
 - Milestone 17 Exception & Failure Architecture：Completed
 - Milestone 18 Template Baseline Holistic Audit：Completed
+- Milestone 19 Secure Credential Storage & Migration：Completed / Archived
 
 平台能力：
 
@@ -446,7 +447,22 @@ cd apps/flutter_architecture
 flutter build apk --release
 ```
 
-目前 Android runtime smoke 已驗證：bootstrap、Mock Login、Login → Profile、Catalog 顯示與搜尋、Protected Route、Theme / Locale 持久化、restart Auth restore、Logout，以及 Android 上實際建立 SharedPreferences 與 SQLite database。
+目前 Android runtime smoke 已驗證：bootstrap、Mock Login、Login → Profile、Catalog 顯示與搜尋、Protected Route、Theme / Locale 持久化、Secure credential Login、force-stop / restart Restore、real API 401 → Refresh rotation → Replay、predecessor release Legacy migration、Logout destructive cleanup，以及 Android 上實際建立 Secure Storage、SharedPreferences 與 SQLite database。
+
+Auth persistence authority：
+
+```txt
+Credential Token Pair
+  → FlutterSecureStorage
+
+Public AuthUser identity
+  → SQLite
+
+Legacy SharedPreferences credential
+  → migration / cleanup only
+```
+
+這項能力屬於credential-at-rest hardening，不代表可防止rooted device、runtime memory擷取或server compromise。OTP、Biometric、Device Binding與Passkey不屬於目前baseline。
 
 ---
 

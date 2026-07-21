@@ -1159,9 +1159,9 @@ docs/conversation_rules.md
 
 ---
 
-## 下一個正式方向：Authentication Security Initiative
+## 下一個正式方向：Milestone 20 OTP Step-Up Authentication Planning Review
 
-狀態：Milestone 19-0 Planning Review與最終文件一致性review已完成；尚未修改production code。
+狀態：Milestone 19 Secure Credential Storage & Migration已完成、final review、封存並發布Template Baseline 1.3.0。下一步只進行Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review，不直接加入OTP production code。
 
 原候選Milestone 19「Authentication Security & Step-Up Verification」已正式拆分為：
 
@@ -1225,7 +1225,7 @@ App Composition Root綁定共享lazy singleton instances
 - Auth package 56 tests、App auth / DI targeted 45 tests與workspace完整437 tests通過；workspace analyze與App bundle build通過。
 - 未新增`flutter_secure_storage`、migration policy、Android Native設定或VERSION變更。
 
-Milestone 19-4 Auth Lifecycle Integration已完成並通過implementation review gate；目前下一步為Milestone 19-5 Security Review、Android Smoke與封存。
+Milestone 19-4 Auth Lifecycle Integration已完成並通過implementation review gate；Milestone 19-5 Security Review、Android Smoke與封存亦已完成。
 
 Milestone 19-4詳細implementation plan已建立：
 
@@ -1235,7 +1235,11 @@ docs/superpowers/plans/2026-07-20-milestone-19-4-auth-lifecycle-integration.md
 
 19-4已將migration policy正式整合至Restore，並將Login、Refresh、Logout與passive invalidation全部切換至Secure credential lifecycle。Package新增Auth lifecycle diagnostic taxonomy與共用cleanup policy；Restore migration resolution、latest-intent check與Session commit位於同一exclusive ownership，diagnostics只在lock外report。Login固定Secure credential → SQLite User → Session，Refresh rotation固定Secure persistence-first；destructive與passive cleanup皆依Secure、Legacy、User順序全部嘗試，unknown與expected failure依Decision 020表達。
 
-App Composition Root已原子切換default `AuthCredentialStore`為`FlutterSecureAuthCredentialStore` singleton；Repository、Refresher與Migration Coordinator共用同一Secure authority，named Secure binding與所有transitional constructor / subclass均已移除。Legacy SharedPreferences只保留migration與cleanup責任。Workspace五個packages共536項tests與analyze全數通過，App `flutter build bundle`成功；VERSION維持1.2.0，未加入OTP、Biometric、Device Binding或額外Native permission。完整review無Open P0 / P1；M19-PR01、M19-PR02與M19-PR06已關閉，M19-PR05留至19-5 Android runtime evidence。
+App Composition Root已原子切換default `AuthCredentialStore`為`FlutterSecureAuthCredentialStore` singleton；Repository、Refresher與Migration Coordinator共用同一Secure authority，named Secure binding與所有transitional constructor / subclass均已移除。Legacy SharedPreferences只保留migration與cleanup責任。
+
+19-5完成Android release runtime evidence：Secure Login、force-stop / restart Restore、real API 401 → Refresh rotation → Replay、access-v2 restart persistence、`05b3412` predecessor production Login建立Legacy資料後的signed in-place upgrade migration，以及Logout destructive cleanup均通過。ADB沒有直接寫入credential、User或Session；App／host evidence無raw secret。Release artifact實際minSdk 24、targetSdk 36、`allowBackup=false`，permissions只有既有必要權限。Workspace五個packages analyze、542項Flutter tests、7項Python fixture tests與release APK build全數通過。`M19-PR01`至`M19-PR06`全部關閉或完成正式disposition，無Open P0 / P1。
+
+版本review判定Milestone 19新增可交付的Secure credential storage與migration能力，因此Template Baseline由1.2.0提升為1.3.0。能力只描述為credential-at-rest hardening，不防rooted device、runtime memory或server compromise；OTP、Biometric、Device Binding與Passkey仍屬後續Milestone。
 
 Milestone 19-3詳細implementation plan已建立：
 
@@ -1257,4 +1261,4 @@ docs/superpowers/plans/2026-07-20-milestone-19-2-secure-credential-store-adapter
 
 19-2實作結果：`flutter_secure_storage: ^10.3.1`只存在App；新增App-owned `FlutterSecureAuthCredentialStore`，以單一payload保存完整Token Pair並明確區分absent、present、corrupted與operational unavailable。`PlatformException` / `MissingPluginException`映射為typed local-storage `AppException`，保留cause與origin stack且不輸出secret；unknown programming error維持原始identity。DI採named Secure binding，default SharedPreferences authority與Repository / Refresher behavior保持不變。Android以`minSdk = maxOf(flutter.minSdkVersion, 23)`固定Secure Storage下限並允許Flutter提高最低版本，App-wide停用backup；release merged manifest實際minSdk 24、targetSdk 36，未加入Biometric / Fingerprint permission。Workspace analyze、465項tests與release APK build通過，VERSION維持1.2.0。
 
-Milestone 20與21目前只保存正式scope、依賴順序、子階段與完成定義；必須等待前一Milestone完成、review並封存後才開始production implementation。
+Milestone 20與21目前只保存正式scope、依賴順序、子階段與完成定義。Milestone 19已封存，因此下一步可進入Milestone 20-0 Planning Review；Milestone 20 planning gate通過前不得新增OTP API、route、Bloc或UI production code。

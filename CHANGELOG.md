@@ -18,6 +18,47 @@
 
 ## [Unreleased]
 
+目前沒有尚未發布的baseline能力。下一個正式方向為Milestone 20 OTP Step-Up Authentication Planning Review。
+
+---
+
+## [1.3.0] - 2026-07-21
+
+### Added
+
+- 新增App-owned `flutter_secure_storage` credential adapter，以單一logical payload保存Access Token、Refresh Token、userId與expiration metadata。
+- 新增Auth-specific credential、legacy與user store boundaries、sealed credential read taxonomy、唯一`AuthCredentialMigrationCoordinator`與共用lifecycle cleanup policy。
+- 新增SharedPreferences Legacy Token Pair migration、完整read-back validation、identity-aware authority matrix、rollback與cleanup retry contract。
+- 新增repo-owned Android smoke tooling與deterministic HTTPS Auth fixture，驗證Login、401 Refresh rotation、request replay、restart persistence、Legacy upgrade migration與Logout cleanup。
+
+### Changed
+
+- Production credential authority由SharedPreferences原子切換為default `FlutterSecureAuthCredentialStore` singleton；Repository、Refresher與Migration Coordinator共用同一Secure store。
+- SQLite繼續只保存公開`AuthUser` identity；Legacy SharedPreferences只保留migration與cleanup責任。
+- Android維持唯一Supported target，Secure Storage最低contract為`maxOf(flutter.minSdkVersion, 23)`，App-wide `allowBackup=false`。
+- Template Baseline由1.2.0提升至1.3.0；理由是Milestone 19新增可交付的Secure credential storage與migration能力，不是單純文件補強。
+
+### Fixed
+
+- 修正Refresh request DTO未被Retrofit序列化為JSON，導致real API refresh body為空的production P1 regression。
+- 關閉Milestone 19 planning findings `M19-PR01`至`M19-PR06`；無Open P0／P1。
+
+### Verification
+
+- Workspace五個package analyze全部通過。
+- 完整Flutter tests共542項通過；Python fixture tests 7項通過。
+- Android development release APK建立成功，SHA-256為`43bc34d2ead9424e862ba8e11d060520fd9d8bb4a6d5394dc59b7c2322935112`，size 58,927,329 bytes。
+- Release merged manifest實際minSdk 24、targetSdk 36、`allowBackup=false`；permissions只有INTERNET與既有dynamic receiver保護權限。
+- Android API 35 root-capable emulator完成Login、Restore、Refresh rotation、restart persistence、predecessor upgrade migration與Logout runtime smoke。
+- App／host evidence未保存raw credential；temporary CA已移除，system CA集合恢復。
+
+### Security Scope
+
+- 本baseline只提供credential-at-rest hardening，不宣稱防止rooted device、runtime memory擷取或server compromise。
+- OTP、Biometric Prompt、Device Binding與Passkey仍屬後續獨立Milestone。
+
+### Milestone 19 detailed changes
+
 ### Added
 
 - 規劃 Authentication Security & Step-Up Verification initiative，正式拆分為 Milestone 19 Secure Credential Storage & Migration、Milestone 20 OTP Step-Up Authentication 與 Milestone 21 Biometric-gated Local Session Unlock。

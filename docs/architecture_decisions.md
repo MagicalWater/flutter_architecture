@@ -2918,13 +2918,13 @@ ShellRoute(LoginRoute / ProfileRoute)
 
 ## Decision 022：Authentication Security 能力拆分與責任邊界
 
-**狀態：** Accepted；Milestone 19-0 Planning Review已通過
+**狀態：** Accepted；Milestone 19已完成並封存
 
-**實作狀態：** 尚未開始 production implementation。本 Decision 只確認 Milestone 拆分、依賴順序、邊界與 review gate；未新增 dependency、未修改 Native 設定、未更新 VERSION。
+**實作狀態：** Milestone 19 Secure Credential Storage & Migration已完成。Production credential authority為App-owned `FlutterSecureAuthCredentialStore`；SQLite仍保存公開`AuthUser`，Legacy SharedPreferences只供migration與cleanup。Android release runtime evidence、完整regression與final baseline review均已通過，Template Baseline發布為1.3.0。Milestone 20與21尚未開始production implementation。
 
 ### 背景
 
-Template Baseline 1.2.0 已具備 Token Pair persistence、Refresh Token rotation、concurrent 401 single-flight、Session generation、latest-intent ordering、single-active-user persistence、App-owned Auth navigation 與 Android Supported baseline。
+Template Baseline 1.3.0 已具備Secure Token Pair persistence、SharedPreferences legacy migration、Refresh Token rotation、concurrent 401 single-flight、Session generation、latest-intent ordering、single-active-user persistence、App-owned Auth navigation與Android Supported baseline。
 
 下一階段原本考慮在單一 Milestone 同時加入 Secure Token Storage、OTP 雙重驗證與 Biometric-gated local session unlock。三者都屬於 Authentication Security，但實際涉及三種不同責任：
 
@@ -3085,6 +3085,8 @@ Milestone 21 Planning Review 通過前，不新增 `local_auth`、不修改 Andr
 - Milestone 規劃、audit 與 review 落檔不更新 VERSION。
 - 每個 Milestone 完成後可獨立決定是否發布新的 Template Baseline。
 - 不預先承諾 1.3.0、1.4.0 或其他版本號；版本只在 final baseline review 時決定。
+
+Milestone 19 final baseline review已依此規則判定為新的可交付Template能力，正式發布1.3.0；此決定不預先承諾Milestone 20或21的版本號。
 
 ### 非目標
 

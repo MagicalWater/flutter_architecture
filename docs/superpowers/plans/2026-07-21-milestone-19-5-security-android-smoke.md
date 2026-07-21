@@ -802,7 +802,7 @@ Task 7執行結果：`dart pub get`、三個package build_runner與五個package
 - Modify: `docs/audits/milestone_19_planning_review.md`
 - Modify: `docs/audits/milestone_19/19-5_security_android_smoke.md`
 
-- [ ] **Step 1：以runtime evidence關閉`M19-PR05`**
+- [x] **Step 1：以runtime evidence關閉`M19-PR05`**
 
 Finding更新必須包含：
 
@@ -813,7 +813,7 @@ Finding更新必須包含：
 - 能力只描述為credential-at-rest hardening。
 - 明確不防rooted device、runtime memory或server compromise。
 
-- [ ] **Step 2：進行版本判斷**
+- [x] **Step 2：進行版本判斷**
 
 判斷規則：
 
@@ -822,7 +822,7 @@ Finding更新必須包含：
 
 不得因「Milestone完成」本身自動升版；需記錄review理由。
 
-- [ ] **Step 3：同步所有文件**
+- [x] **Step 3：同步所有文件**
 
 必須一致表達：
 
@@ -832,7 +832,7 @@ Finding更新必須包含：
 - OTP、Biometric、Device Binding、Passkey仍是後續Milestone。
 - Milestone 20只有在19正式封存後才可開始。
 
-- [ ] **Step 4：文件一致性scan**
+- [x] **Step 4：文件一致性scan**
 
 Run:
 
@@ -847,7 +847,7 @@ Expected：
 - 歷史19-1至19-4紀錄維持當時正確描述。
 - 無Open P0／P1。
 
-- [ ] **Step 5：最終完整驗證**
+- [x] **Step 5：最終完整驗證**
 
 Run:
 
@@ -861,7 +861,7 @@ cd apps/flutter_architecture && flutter build apk --release -t lib/main_developm
 
 Expected：全部PASS，Flutter tests不少於536項。
 
-- [ ] **Step 6：進行Milestone 19 final implementation review**
+- [x] **Step 6：進行Milestone 19 final implementation review**
 
 Final gate：
 
@@ -871,7 +871,7 @@ Final gate：
 - Security claim不超過at-rest hardening。
 - 版本判斷有明確理由。
 
-- [ ] **Step 7：建立封存commit並推送**
+- [x] **Step 7：建立封存commit並推送**
 
 若升版：
 
@@ -893,14 +893,16 @@ git push origin main
 
 ## Plan review checklist
 
-- [ ] 每個runtime成功結果都由release App production flow產生。
-- [ ] ADB沒有直接寫入credential、User或Session。
-- [ ] Refresh使用real API mode與Dio interceptor，不使用Mock shortcut。
-- [ ] Rotation persistence以force-stop／restart＋access-v2直接成功驗證。
-- [ ] Migration fixture由`05b3412` predecessor production Login產生。
-- [ ] Root只用於test environment evidence，不形成安全能力宣稱。
-- [ ] Host server與PowerShell tooling不輸出credential。
-- [ ] Refresh HTTPS使用temporary test CA，App manifest／Dio trust policy不為smoke弱化。
-- [ ] 每個Task有獨立implementation review。
-- [ ] 最終版本判斷只在完整runtime與security gate後進行。
+- [x] 每個runtime成功結果都由release App production flow產生。
+- [x] ADB沒有直接寫入credential、User或Session。
+- [x] Refresh使用real API mode與Dio interceptor，不使用Mock shortcut。
+- [x] Rotation persistence以force-stop／restart＋access-v2直接成功驗證。
+- [x] Migration fixture由`05b3412` predecessor production Login產生。
+- [x] Root只用於test environment evidence，不形成安全能力宣稱。
+- [x] Host server與PowerShell tooling不輸出credential。
+- [x] Refresh HTTPS使用temporary test CA，App manifest／Dio trust policy不為smoke弱化。
+- [x] 每個Task有獨立implementation review。
+- [x] 最終版本判斷只在完整runtime與security gate後進行。
+
+Task 8執行結果：`M19-PR05`已由Android release runtime evidence正式關閉，`M19-PR01`至`M19-PR06`全部Closed或依正式scope判定為Not an issue after revision。README、CHANGELOG、VERSION、Project Context、Architecture Decisions、Roadmap、Backlog與audit已同步Android-only Supported scope、Secure credential / SQLite User / Legacy migration authority、runtime evidence與後續OTP / Biometric邊界。版本review確認Milestone 19新增可交付的Secure credential storage與migration能力，因此Template Baseline發布為1.3.0。Final gate維持542項Flutter tests、7項Python fixture tests、五個package analyze與release APK build全部通過；無Open P0／P1。Milestone 19 final implementation review通過並正式封存。
 

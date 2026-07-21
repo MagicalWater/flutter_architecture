@@ -254,11 +254,12 @@ Diagnostic不得包含Token、raw payload、SharedPreferences value、Secure Sto
 ### M19-PR05 — Threat model與Secure Storage能力可能被過度宣稱
 
 - Severity：P1。
-- Status：19-2 implementation evidence complete；待19-5 Android runtime evidence完整關閉。
+- Status：Closed；19-2與19-5 implementation / Android runtime evidence complete。
 - Risk：將at-rest hardening誤述為rooted device、runtime memory或server compromise防護。
 - Disposition：固定保護範圍、非目標與Android-only runtime evidence。
 - Target：19-2 / 19-5。
 - 19-2 Evidence：Secure Storage能力只描述為credential at-rest hardening；未宣稱可防rooted device、runtime memory或server compromise。Android App固定Secure Storage最低API 23下限、全面停用backup；release APK與merged manifest通過，實際minSdk 24、targetSdk 36，未加入Biometric / Fingerprint permission。
+- 19-5 Evidence：Android API 35 root-capable emulator以release App production flow完成Secure Login、force-stop / restart Restore、real API 401 → Refresh rotation → Replay、rotated access-v2 restart persistence、`05b3412` predecessor production Login建立Legacy資料後的signed `adb install -r` migration，以及Logout destructive cleanup。Release artifact package為`com.example.flutterarchitecture`、minSdk 24、targetSdk 36、`allowBackup=false`；App／host logs與UI／sandbox evidence未保存raw credential。Root只用於test evidence，temporary CA完成後已移除。能力仍明確限制為credential-at-rest hardening，不防rooted device、runtime memory或server compromise。
 
 ### M19-PR06 — Cleanup failure ownership不足
 
@@ -339,3 +340,17 @@ Milestone 19-4已完成並通過implementation review gate。
 - Workspace五個packages共536項tests與analyze全數通過，App `flutter build bundle`成功；VERSION維持1.2.0。
 
 M19-PR01、M19-PR02與M19-PR06正式Closed。M19-PR05依原Target保留至19-5 Android runtime evidence；下一步為Milestone 19-5 Security Review、Android Smoke與封存。
+
+## 19-5 Final Implementation Review Update
+
+Milestone 19-5已完成Security Review、Android release smoke、完整regression與final baseline review。
+
+- `M19-PR01`至`M19-PR06`全部Closed或依正式scope判定為Not an issue after revision。
+- Android為唯一Supported runtime target；iOS、Web、Windows、macOS與Linux維持Dependency-ready。
+- Secure Storage只保存credential Token Pair；SQLite保存公開`AuthUser`；Legacy SharedPreferences只供migration與cleanup。
+- Release App production flow完成Login、Restore、Refresh rotation、restart persistence、Legacy upgrade migration與Logout evidence；ADB沒有直接寫入credential、User或Session。
+- Security claim維持credential-at-rest hardening，不擴張為rooted device、runtime memory或server compromise防護。
+- Workspace analyze、542項Flutter tests、7項Python fixture tests與Android release APK build通過；無Open P0／P1。
+- Milestone 19新增可交付Template能力，因此Template Baseline發布為1.3.0。
+
+Milestone 19正式Archived；下一個正式方向為Milestone 20 OTP Step-Up Authentication Planning Review。

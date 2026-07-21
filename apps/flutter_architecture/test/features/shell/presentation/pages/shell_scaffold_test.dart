@@ -15,6 +15,7 @@ void main() {
     var appearanceCount = 0;
     var localeCount = 0;
     var protectedCount = 0;
+    var localUnlockCount = 0;
     int? selectedIndex;
 
     await tester.pumpWidget(
@@ -26,10 +27,12 @@ void main() {
           onOpenAppearance: () => appearanceCount += 1,
           onOpenLocale: () => localeCount += 1,
           onOpenProtected: () => protectedCount += 1,
+          onOpenLocalUnlock: () => localUnlockCount += 1,
           title: 'Flutter Architecture',
           localeTooltip: 'Language',
           appearanceTooltip: 'Appearance',
           protectedTooltip: 'Protected Page',
+          localUnlockTooltip: 'Local unlock settings',
           loginLabel: 'Login',
           catalogLabel: 'Catalog',
           profileLabel: 'Profile',
@@ -47,15 +50,18 @@ void main() {
     expect(find.byIcon(Icons.palette_outlined), findsOneWidget);
     expect(find.byIcon(Icons.language_outlined), findsOneWidget);
     expect(find.byIcon(Icons.lock_outline), findsOneWidget);
+    expect(find.byIcon(Icons.fingerprint), findsOneWidget);
 
     await tester.tap(find.byTooltip('Language'));
     await tester.tap(find.byTooltip('Appearance'));
     await tester.tap(find.byTooltip('Protected Page'));
+    await tester.tap(find.byTooltip('Local unlock settings'));
     await tester.tap(find.text('Profile'));
 
     expect(localeCount, 1);
     expect(appearanceCount, 1);
     expect(protectedCount, 1);
+    expect(localUnlockCount, 1);
     expect(selectedIndex, 2);
   });
 
@@ -72,10 +78,12 @@ void main() {
             onOpenAppearance: () {},
             onOpenLocale: () {},
             onOpenProtected: () {},
+            onOpenLocalUnlock: () {},
             title: 'Flutter Architecture',
             localeTooltip: 'Language',
             appearanceTooltip: 'Appearance',
             protectedTooltip: 'Protected Page',
+            localUnlockTooltip: 'Local unlock settings',
             loginLabel: 'Login',
             catalogLabel: 'Catalog',
             profileLabel: 'Profile',
@@ -153,10 +161,12 @@ final class _LocalizedShellHarness extends StatelessWidget {
                 onOpenAppearance: () {},
                 onOpenLocale: () {},
                 onOpenProtected: () {},
+                onOpenLocalUnlock: () {},
                 title: l10n.shellTitle,
                 localeTooltip: l10n.localeSelectorTooltip,
                 appearanceTooltip: l10n.shellAppearanceTooltip,
                 protectedTooltip: l10n.shellProtectedTooltip,
+                localUnlockTooltip: l10n.localUnlockSettingsTooltip,
                 loginLabel: l10n.navigationLoginLabel,
                 catalogLabel: l10n.navigationCatalogLabel,
                 profileLabel: l10n.navigationProfileLabel,

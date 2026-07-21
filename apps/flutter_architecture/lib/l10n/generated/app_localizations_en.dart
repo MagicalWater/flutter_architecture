@@ -36,6 +36,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shellProtectedTooltip => 'Protected Page';
 
   @override
+  String get localUnlockSettingsTooltip => 'Local unlock settings';
+
+  @override
   String get navigationLoginLabel => 'Login';
 
   @override
@@ -128,6 +131,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get localUnlockPromptProgressSemanticsLabel =>
       'Local verification in progress';
+
+  @override
+  String get localUnlockSettingsTitle => 'Local unlock';
+
+  @override
+  String get localUnlockSettingsToggleLabel => 'Use local unlock';
+
+  @override
+  String get localUnlockSettingsDescription =>
+      'Require biometric verification before restoring a saved session.';
+
+  @override
+  String get localUnlockSettingsFailureMessage =>
+      'Unable to update local unlock settings.';
+
+  @override
+  String get localUnlockEnableReason => 'Verify to enable local unlock';
 
   @override
   String get authInvalidCredentialsMessage =>

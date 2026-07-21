@@ -2179,7 +2179,7 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 
 ## Milestone 21：Biometric-gated Local Session Unlock
 
-狀態：Milestone 21-4已完成並通過implementation review；下一步為21-5 Android Native Configuration、Runtime Smoke與封存。
+狀態：Completed / Archived；Template Baseline 1.5.0已發布，Android biometric-gated local session unlock可交付。
 
 正式子階段：
 
@@ -2189,7 +2189,7 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 21-2 Enable / Disable Workflow（Completed / Reviewed）
 21-3 Startup Unlock、Restore與Refresh Orchestration（Completed / Reviewed）
 21-4 Unlock UI、Navigation與Lifecycle Concurrency（Completed / Reviewed）
-21-5 Android Native Configuration、Runtime Smoke與封存
+21-5 Android Native Configuration、Runtime Smoke與封存（Completed / Reviewed）
 ```
 
 完成定義摘要：
@@ -2213,3 +2213,5 @@ Planning Review固定以下contract：local unlock preference預設disabled；ca
 21-1已完成純Dart `LocalUserPresenceVerifier`、typed capability / verification / operational exception、App-only `local_auth` adapter與lazy singleton DI。Adapter固定biometric-only且不允許device credential fallback；unknown plugin detail不進safe `toString()`。Implementation review補正plugin `false` result不得錯標cancelled，新增`notVerified` identity。Workspace analyze與596項完整tests通過；未修改Android Native、startup restore或VERSION。Review evidence：`docs/audits/milestone_21/21-1_local_presence_review.md`。
 
 21-2已完成versioned local unlock preference、typed read taxonomy、serialized SharedPreferences store與authenticated-only enable / disable policy。Enable共用Auth lifecycle generation，stale prompt completion不得寫enabled；write failure回typed `storageFailure`。Logout cleanup清除preference，restore無credential時best-effort清stale preference。Workspace analyze、610項完整tests與App bundle通過；startup gate、Android Native與VERSION未改。Review evidence：`docs/audits/milestone_21/21-2_policy_persistence_review.md`。
+
+21-5已完成Android Native、security、runtime與holistic final review：新增production local unlock設定入口；MainActivity改為`FlutterFragmentActivity`，manifest加入`USE_BIOMETRIC`，launch / normal theme改用AppCompat。Release APK在API 35 emulator完成install與startup smoke，merged manifest為minSdk 24、targetSdk 36與`allowBackup=false`。12項planning findings全部Closed或依正式scope完成disposition，無Open P0 / P1。Template Baseline提升至1.5.0。Final evidence：`docs/audits/milestone_21/21-5_android_security_runtime_review.md`、`docs/audits/milestone_21/milestone_21_final_review.md`。

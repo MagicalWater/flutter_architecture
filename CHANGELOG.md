@@ -18,12 +18,19 @@
 
 ## [Unreleased]
 
+目前沒有尚未發布的變更。
+
+---
+
+## [1.5.0] - 2026-07-21
+
 ### Added
 
 - 完成Milestone 21-2：新增versioned local unlock preference、typed read taxonomy、serialized SharedPreferences store與authenticated-only enable / disable policy。
 - Logout與unauthenticated restore已清理stale local unlock preference；enable race共用Auth lifecycle generation並提供typed storage failure。
 - 完成Milestone 21-3：新增App-owned cold-start pre-restore gate、single-prompt與完整Auth lifecycle lease；navigation coordinator不再無條件觸發restore，`M21-PR01` P0正式關閉。
 - 完成Milestone 21-4：新增localized locked route／surface、retry與server-login escape，以及App-owned 5分鐘resume grace period；逾時resume先清Session再要求unlock。
+- 完成Milestone 21-5：加入production enable / disable設定入口、Android `FlutterFragmentActivity`、Biometric permission、AppCompat theme、release artifact與API 35 runtime evidence。
 
 - 完成Milestone 21-1 Local User Presence foundation：新增純Dart verifier contract、typed capability / verification / operational failure，以及App-only `local_auth` adapter與lazy singleton DI。
 - Local Auth adapter固定biometric-only、禁止device credential fallback與background自動重試；明確區分not verified、cancel、not enrolled、no hardware、temporary / permanent lockout與temporarily unavailable。
@@ -35,6 +42,22 @@ Milestone 20已封存；下一個正式方向為Milestone 21 Biometric-gated Loc
 - 完成Milestone 21-0 Planning Review與跨文件一致性review；固定pre-restore local user-presence gate、default-disabled preference、locked Session null、typed capability / failure、latest-intent與5分鐘resume grace period。
 - 建立21-1至21-5詳細implementation plan與12項planning findings；本階段不加入`local_auth`、不修改Android Native或VERSION。
 - 21-1 implementation review修正plugin `false` result不得錯標cancelled；workspace analyze與596項tests通過，Android Native、startup restore與VERSION維持不變。
+
+### Changed
+
+- Template Baseline由1.4.0提升至1.5.0；理由是Milestone 21形成可啟用、可關閉、可在cold start與resume gate Session restore的Android本機生物辨識解鎖能力。
+
+### Security
+
+- Biometric只驗證本機user presence，不取代Server authentication，不保存biometric資料，也不構成cryptographic Device Binding。
+- Locked與prompting期間`SessionManager`維持null；Guard、token provider、Refresh、Profile與navigation均無authenticated authority。
+
+### Verification
+
+- Workspace五個packages analyze與626項Flutter tests通過。
+- Android release APK build通過，size 59,850,883 bytes，SHA-256為`6fb6d3a82073a77e001a0b1d9749fcf755308f1476e8f8c2406cac4ace0a6ba6`。
+- Release merged manifest為minSdk 24、targetSdk 36、`allowBackup=false`，MainActivity使用`FlutterFragmentActivity`，包含Biometric與Android compatibility Fingerprint permission。
+- API 35 emulator完成release APK install與startup smoke；not-enrolled / unavailable路徑可重現，生物辨識success則由adapter、policy、startup與widget deterministic tests覆蓋，未誤宣稱未觀察到的實機指紋成功旅程。
 
 ---
 

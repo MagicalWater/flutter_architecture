@@ -36,6 +36,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shellProtectedTooltip => '受保護頁面';
 
   @override
+  String get localUnlockSettingsTooltip => '本機解鎖設定';
+
+  @override
   String get navigationLoginLabel => '登入';
 
   @override
@@ -124,6 +127,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get localUnlockPromptProgressSemanticsLabel => '正在進行本機驗證';
+
+  @override
+  String get localUnlockSettingsTitle => '本機解鎖';
+
+  @override
+  String get localUnlockSettingsToggleLabel => '使用本機解鎖';
+
+  @override
+  String get localUnlockSettingsDescription => '還原已儲存的登入狀態前，必須先完成生物辨識驗證。';
+
+  @override
+  String get localUnlockSettingsFailureMessage => '無法更新本機解鎖設定。';
+
+  @override
+  String get localUnlockEnableReason => '請驗證以啟用本機解鎖';
 
   @override
   String get authInvalidCredentialsMessage => '帳號或密碼不正確。';
@@ -360,6 +378,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get shellProtectedTooltip => '受保護頁面';
 
   @override
+  String get localUnlockSettingsTooltip => '本機解鎖設定';
+
+  @override
   String get navigationLoginLabel => '登入';
 
   @override
@@ -448,6 +469,21 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get localUnlockPromptProgressSemanticsLabel => '正在進行本機驗證';
+
+  @override
+  String get localUnlockSettingsTitle => '本機解鎖';
+
+  @override
+  String get localUnlockSettingsToggleLabel => '使用本機解鎖';
+
+  @override
+  String get localUnlockSettingsDescription => '還原已儲存的登入狀態前，必須先完成生物辨識驗證。';
+
+  @override
+  String get localUnlockSettingsFailureMessage => '無法更新本機解鎖設定。';
+
+  @override
+  String get localUnlockEnableReason => '請驗證以啟用本機解鎖';
 
   @override
   String get authInvalidCredentialsMessage => '帳號或密碼不正確。';

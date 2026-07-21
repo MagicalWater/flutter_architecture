@@ -1,5 +1,8 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:auth/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/app/auth/presentation/local_unlock_settings_dialog.dart';
+import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
 import 'package:flutter_architecture/app/localization/presentation/locale_selector_dialog.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
@@ -60,10 +63,20 @@ class ShellPage extends HookWidget {
             );
           },
           onOpenProtected: () => context.pushRoute(const ProtectedRoute()),
+          onOpenLocalUnlock: () {
+            showDialog<void>(
+              context: context,
+              builder: (_) => LocalUnlockSettingsDialog(
+                policy: getIt<LocalUnlockPolicy>(),
+                preferenceStore: getIt<LocalUnlockPreferenceStore>(),
+              ),
+            );
+          },
           title: l10n.shellTitle,
           localeTooltip: l10n.localeSelectorTooltip,
           appearanceTooltip: l10n.shellAppearanceTooltip,
           protectedTooltip: l10n.shellProtectedTooltip,
+          localUnlockTooltip: l10n.localUnlockSettingsTooltip,
           loginLabel: l10n.navigationLoginLabel,
           catalogLabel: l10n.navigationCatalogLabel,
           profileLabel: l10n.navigationProfileLabel,
@@ -81,10 +94,12 @@ final class ShellScaffold extends StatelessWidget {
     required this.onOpenAppearance,
     required this.onOpenLocale,
     required this.onOpenProtected,
+    required this.onOpenLocalUnlock,
     required this.title,
     required this.localeTooltip,
     required this.appearanceTooltip,
     required this.protectedTooltip,
+    required this.localUnlockTooltip,
     required this.loginLabel,
     required this.catalogLabel,
     required this.profileLabel,
@@ -97,10 +112,12 @@ final class ShellScaffold extends StatelessWidget {
   final VoidCallback onOpenAppearance;
   final VoidCallback onOpenLocale;
   final VoidCallback onOpenProtected;
+  final VoidCallback onOpenLocalUnlock;
   final String title;
   final String localeTooltip;
   final String appearanceTooltip;
   final String protectedTooltip;
+  final String localUnlockTooltip;
   final String loginLabel;
   final String catalogLabel;
   final String profileLabel;
@@ -112,6 +129,11 @@ final class ShellScaffold extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
         actions: <Widget>[
+          IconButton(
+            tooltip: localUnlockTooltip,
+            onPressed: onOpenLocalUnlock,
+            icon: const Icon(Icons.fingerprint),
+          ),
           IconButton(
             tooltip: localeTooltip,
             onPressed: onOpenLocale,

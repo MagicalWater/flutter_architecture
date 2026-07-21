@@ -2920,7 +2920,7 @@ ShellRoute(LoginRoute / ProfileRoute)
 
 **狀態：** Accepted；Milestone 19與20已完成並封存，Milestone 21-0 Planning Review已通過
 
-**實作狀態：** Milestone 19 Secure Credential Storage & Migration與Milestone 20 OTP Step-Up Authentication均已完成並封存，Template Baseline為1.4.0。Milestone 21已完成21-0至21-4；preference enabled時由App-owned pre-restore gate與locked route維持Session null，resume採可注入monotonic 5分鐘grace period。Android Native與runtime smoke待21-5。
+**實作狀態：** Milestone 19至21均已完成並封存，Template Baseline為1.5.0。Milestone 21在Android提供default-disabled、authenticated-only enable、biometric-only pre-restore gate、locked route、5分鐘resume grace period與AppCompat / FragmentActivity Native contract；其他平台仍不宣稱runtime biometric support。
 
 ### 背景
 
@@ -3143,6 +3143,12 @@ Milestone 20於2026-07-21完成並封存，最終contract如下：
 Security scope只涵蓋server-issued OTP step-up authentication flow，不宣稱SIM-swap prevention、SMS delivery assurance、provider compromise defense、rooted-device defense或server compromise defense。
 
 Final review確認11項planning findings均有implementation與regression evidence，無Open P0 / P1。此能力構成新的可交付模板功能，因此Template Baseline由1.3.0提升至1.4.0。
+
+### Milestone 21 Final Decision
+
+Milestone 21於2026-07-21完成並封存。Local unlock preference預設disabled；只有authenticated user通過biometric-only verification後才能enable。Enabled cold start與逾5分鐘resume會先維持／清除runtime Session，再完成local user-presence verification，verified後才dispatch既有Repository restore。Cancel、not-enrolled、unavailable、corruption與lockout均fail closed，並提供retry或server-login出口。
+
+Android正式採`FlutterFragmentActivity`、`USE_BIOMETRIC`與AppCompat theme。Biometric只代表本機user presence，不是Server authentication，不保存biometric資料，不建立Device Binding，也不防rooted device或server compromise。Final review確認12項planning findings與21-1至21-5 implementation findings均完成disposition，無Open P0 / P1，因此Template Baseline由1.4.0提升至1.5.0。
 
 ### 非目標
 

@@ -16,7 +16,7 @@ void main() {
     expect(pubspec, contains('flutter_secure_storage: ^10.3.1'));
     expect(buildFile, contains('minSdk = maxOf(flutter.minSdkVersion, 23)'));
     expect(manifest, contains('android:allowBackup="false"'));
-    expect(manifest, isNot(contains('android.permission.USE_BIOMETRIC')));
+    expect(manifest, contains('android.permission.USE_BIOMETRIC'));
     expect(manifest, isNot(contains('android.permission.USE_FINGERPRINT')));
   });
 }

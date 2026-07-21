@@ -153,6 +153,12 @@ abstract class AppLocalizations {
   /// **'Protected Page'**
   String get shellProtectedTooltip;
 
+  /// No description provided for @localUnlockSettingsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Local unlock settings'**
+  String get localUnlockSettingsTooltip;
+
   /// No description provided for @navigationLoginLabel.
   ///
   /// In en, this message translates to:
@@ -332,6 +338,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Local verification in progress'**
   String get localUnlockPromptProgressSemanticsLabel;
+
+  /// No description provided for @localUnlockSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local unlock'**
+  String get localUnlockSettingsTitle;
+
+  /// No description provided for @localUnlockSettingsToggleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Use local unlock'**
+  String get localUnlockSettingsToggleLabel;
+
+  /// No description provided for @localUnlockSettingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Require biometric verification before restoring a saved session.'**
+  String get localUnlockSettingsDescription;
+
+  /// No description provided for @localUnlockSettingsFailureMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to update local unlock settings.'**
+  String get localUnlockSettingsFailureMessage;
+
+  /// No description provided for @localUnlockEnableReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify to enable local unlock'**
+  String get localUnlockEnableReason;
 
   /// No description provided for @authInvalidCredentialsMessage.
   ///

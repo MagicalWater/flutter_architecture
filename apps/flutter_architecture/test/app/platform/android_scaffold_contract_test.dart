@@ -18,6 +18,6 @@ void main() {
     expect(buildFile, contains('targetSdk = flutter.targetSdkVersion'));
     expect(manifest, contains('android.permission.INTERNET'));
     expect(manifest, contains('android:value="2"'));
-    expect(activity, contains('class MainActivity : FlutterActivity()'));
+    expect(activity, contains('class MainActivity : FlutterFragmentActivity()'));
   });
 }

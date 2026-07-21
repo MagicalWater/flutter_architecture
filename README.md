@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.4.0
+- Template Baseline Version：1.5.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -22,13 +22,13 @@
 - Milestone 18 Template Baseline Holistic Audit：Completed
 - Milestone 19 Secure Credential Storage & Migration：Completed / Archived
 - Milestone 20 OTP Step-Up Authentication：Completed / Archived
-- Milestone 21 Biometric-gated Local Session Unlock：Planning Review Completed；Implementation Not Started
+- Milestone 21 Biometric-gated Local Session Unlock：Completed / Archived
 
 平台能力：
 
 | Platform | Capability |
 |---|---|
-| Android | Supported |
+| Android | Supported（含biometric-gated local session unlock） |
 | iOS | Dependency-ready |
 | Web | Dependency-ready |
 | Windows | Dependency-ready |

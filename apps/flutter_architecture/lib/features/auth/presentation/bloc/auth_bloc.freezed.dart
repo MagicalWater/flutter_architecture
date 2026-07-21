@@ -196,7 +196,7 @@ return sessionCleared();case _:
 
 class AuthStarted implements AuthEvent {
   const AuthStarted();
-  
+
 
 
 
@@ -224,7 +224,7 @@ int get hashCode => runtimeType.hashCode;
 
 class AuthLoginRequested implements AuthEvent {
   const AuthLoginRequested({required this.account, required this.password});
-  
+
 
  final  String account;
  final  String password;

@@ -297,6 +297,102 @@ abstract class AppLocalizations {
   /// **'Unable to log out. Please try again.'**
   String get authLogoutFailureMessage;
 
+  /// No description provided for @otpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code'**
+  String get otpTitle;
+
+  /// No description provided for @otpInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code sent to {destination}.'**
+  String otpInstruction(String destination);
+
+  /// No description provided for @otpCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code'**
+  String get otpCodeLabel;
+
+  /// No description provided for @otpVerifyAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get otpVerifyAction;
+
+  /// No description provided for @otpVerifyingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying'**
+  String get otpVerifyingLabel;
+
+  /// No description provided for @otpVerifyProgressSemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification progress'**
+  String get otpVerifyProgressSemanticsLabel;
+
+  /// No description provided for @otpResendAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get otpResendAction;
+
+  /// No description provided for @otpResendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resending code'**
+  String get otpResendingLabel;
+
+  /// No description provided for @otpResendCountdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {seconds}s'**
+  String otpResendCountdown(int seconds);
+
+  /// No description provided for @otpInvalidCodeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The verification code is incorrect.'**
+  String get otpInvalidCodeMessage;
+
+  /// No description provided for @otpInvalidCodeAttemptsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The code is incorrect. {attempts} attempts remaining.'**
+  String otpInvalidCodeAttemptsMessage(int attempts);
+
+  /// No description provided for @otpExpiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This verification code has expired. Request a new code.'**
+  String get otpExpiredMessage;
+
+  /// No description provided for @otpTooManyAttemptsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many incorrect attempts. Request a new code.'**
+  String get otpTooManyAttemptsMessage;
+
+  /// No description provided for @otpResendCooldownMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait before requesting another code.'**
+  String get otpResendCooldownMessage;
+
+  /// No description provided for @otpInvalidatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This verification request is no longer valid.'**
+  String get otpInvalidatedMessage;
+
+  /// No description provided for @otpGenericFailureMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to verify the code. Please try again.'**
+  String get otpGenericFailureMessage;
+
   /// No description provided for @profileUnauthenticatedTitle.
   ///
   /// In en, this message translates to:

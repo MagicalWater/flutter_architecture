@@ -108,6 +108,65 @@ class AppLocalizationsZh extends AppLocalizations {
   String get authLogoutFailureMessage => '目前無法登出，請稍後再試。';
 
   @override
+  String get otpTitle => 'Verification code';
+
+  @override
+  String otpInstruction(String destination) {
+    return 'Enter the code sent to $destination.';
+  }
+
+  @override
+  String get otpCodeLabel => 'Verification code';
+
+  @override
+  String get otpVerifyAction => 'Verify';
+
+  @override
+  String get otpVerifyingLabel => 'Verifying';
+
+  @override
+  String get otpVerifyProgressSemanticsLabel => 'Verification progress';
+
+  @override
+  String get otpResendAction => 'Resend code';
+
+  @override
+  String get otpResendingLabel => 'Resending code';
+
+  @override
+  String otpResendCountdown(int seconds) {
+    return 'Resend in ${seconds}s';
+  }
+
+  @override
+  String get otpInvalidCodeMessage => 'The verification code is incorrect.';
+
+  @override
+  String otpInvalidCodeAttemptsMessage(int attempts) {
+    return 'The code is incorrect. $attempts attempts remaining.';
+  }
+
+  @override
+  String get otpExpiredMessage =>
+      'This verification code has expired. Request a new code.';
+
+  @override
+  String get otpTooManyAttemptsMessage =>
+      'Too many incorrect attempts. Request a new code.';
+
+  @override
+  String get otpResendCooldownMessage =>
+      'Please wait before requesting another code.';
+
+  @override
+  String get otpInvalidatedMessage =>
+      'This verification request is no longer valid.';
+
+  @override
+  String get otpGenericFailureMessage =>
+      'Unable to verify the code. Please try again.';
+
+  @override
   String get profileUnauthenticatedTitle => '尚未登入';
 
   @override
@@ -341,6 +400,60 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get authLogoutFailureMessage => '目前無法登出，請稍後再試。';
+
+  @override
+  String get otpTitle => '驗證碼';
+
+  @override
+  String otpInstruction(String destination) {
+    return '請輸入傳送至 $destination 的驗證碼。';
+  }
+
+  @override
+  String get otpCodeLabel => '驗證碼';
+
+  @override
+  String get otpVerifyAction => '驗證';
+
+  @override
+  String get otpVerifyingLabel => '驗證中';
+
+  @override
+  String get otpVerifyProgressSemanticsLabel => '驗證進度';
+
+  @override
+  String get otpResendAction => '重新傳送驗證碼';
+
+  @override
+  String get otpResendingLabel => '重新傳送中';
+
+  @override
+  String otpResendCountdown(int seconds) {
+    return '$seconds 秒後可重新傳送';
+  }
+
+  @override
+  String get otpInvalidCodeMessage => '驗證碼不正確。';
+
+  @override
+  String otpInvalidCodeAttemptsMessage(int attempts) {
+    return '驗證碼不正確，剩餘 $attempts 次機會。';
+  }
+
+  @override
+  String get otpExpiredMessage => '驗證碼已過期，請重新取得。';
+
+  @override
+  String get otpTooManyAttemptsMessage => '錯誤次數過多，請重新取得驗證碼。';
+
+  @override
+  String get otpResendCooldownMessage => '請稍候再重新傳送驗證碼。';
+
+  @override
+  String get otpInvalidatedMessage => '此驗證流程已失效。';
+
+  @override
+  String get otpGenericFailureMessage => '無法驗證，請稍後再試。';
 
   @override
   String get profileUnauthenticatedTitle => '尚未登入';

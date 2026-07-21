@@ -43,6 +43,22 @@ class LoginRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [OtpPage]
+class OtpRoute extends PageRouteInfo<void> {
+  const OtpRoute({List<PageRouteInfo>? children})
+    : super(OtpRoute.name, initialChildren: children);
+
+  static const String name = 'OtpRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const OtpPage();
+    },
+  );
+}
+
+/// generated route for
 /// [ProfilePage]
 class ProfileRoute extends PageRouteInfo<void> {
   const ProfileRoute({List<PageRouteInfo>? children})

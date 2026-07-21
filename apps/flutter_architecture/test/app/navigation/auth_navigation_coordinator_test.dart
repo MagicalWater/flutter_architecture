@@ -142,14 +142,83 @@ void main() {
   });
 
   test('App-owned destination明確映射到Shell child route', () {
-    final profile = routeForAuthDestination(
-      AuthNavigationDestination.profile,
-    );
+    final profile = routeForAuthDestination(AuthNavigationDestination.profile);
     final login = routeForAuthDestination(AuthNavigationDestination.login);
+    final otp = routeForAuthDestination(AuthNavigationDestination.otp);
 
     expect(profile.routeName, ShellRoute.name);
     expect(profile.initialChildren!.single.routeName, ProfileRoute.name);
     expect(login.routeName, ShellRoute.name);
     expect(login.initialChildren!.single.routeName, LoginRoute.name);
+    expect(otp.routeName, OtpRoute.name);
+  });
+
+  test('challenge導向OTP且replacement不重複導航', () async {
+    final states = StreamController<AuthState>();
+    addTearDown(states.close);
+    final destinations = <AuthNavigationDestination>[];
+    final coordinator = AuthNavigationCoordinator(
+      initialState: AuthState.initial(),
+      states: states.stream,
+      restoreSession: () {},
+      navigate: destinations.add,
+    );
+    addTearDown(coordinator.dispose);
+
+    coordinator.start();
+    states
+      ..add(_otpState('challenge-1'))
+      ..add(_otpState('challenge-2'));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(destinations, <AuthNavigationDestination>[
+      AuthNavigationDestination.otp,
+    ]);
+  });
+
+  test('OTP verify success導向Profile，clear導向Login', () async {
+    final states = StreamController<AuthState>();
+    addTearDown(states.close);
+    final destinations = <AuthNavigationDestination>[];
+    final coordinator = AuthNavigationCoordinator(
+      initialState: _otpState('challenge-1'),
+      states: states.stream,
+      restoreSession: () {},
+      navigate: destinations.add,
+    );
+    addTearDown(coordinator.dispose);
+
+    coordinator.start();
+    states.add(
+      const AuthState(
+        status: AuthPresentationStatus.authenticated,
+        isLoading: false,
+        user: AuthUser(id: 'user-1', name: 'User'),
+        failure: null,
+        failureOperation: null,
+      ),
+    );
+    states.add(AuthState.initial());
+    await Future<void>.delayed(Duration.zero);
+
+    expect(destinations, <AuthNavigationDestination>[
+      AuthNavigationDestination.otp,
+      AuthNavigationDestination.profile,
+      AuthNavigationDestination.login,
+    ]);
   });
 }
+
+AuthState _otpState(String challengeId) => AuthState(
+  status: AuthPresentationStatus.otpRequired,
+  isLoading: false,
+  user: null,
+  otpChallenge: OtpChallenge(
+    challengeId: challengeId,
+    maskedDestination: '***123',
+    expiresAt: DateTime.utc(2030),
+    resendAvailableAt: DateTime.utc(2029),
+  ),
+  failure: null,
+  failureOperation: null,
+);

@@ -110,6 +110,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLogoutFailureMessage => 'Unable to log out. Please try again.';
 
   @override
+  String get otpTitle => 'Verification code';
+
+  @override
+  String otpInstruction(String destination) {
+    return 'Enter the code sent to $destination.';
+  }
+
+  @override
+  String get otpCodeLabel => 'Verification code';
+
+  @override
+  String get otpVerifyAction => 'Verify';
+
+  @override
+  String get otpVerifyingLabel => 'Verifying';
+
+  @override
+  String get otpVerifyProgressSemanticsLabel => 'Verification progress';
+
+  @override
+  String get otpResendAction => 'Resend code';
+
+  @override
+  String get otpResendingLabel => 'Resending code';
+
+  @override
+  String otpResendCountdown(int seconds) {
+    return 'Resend in ${seconds}s';
+  }
+
+  @override
+  String get otpInvalidCodeMessage => 'The verification code is incorrect.';
+
+  @override
+  String otpInvalidCodeAttemptsMessage(int attempts) {
+    return 'The code is incorrect. $attempts attempts remaining.';
+  }
+
+  @override
+  String get otpExpiredMessage =>
+      'This verification code has expired. Request a new code.';
+
+  @override
+  String get otpTooManyAttemptsMessage =>
+      'Too many incorrect attempts. Request a new code.';
+
+  @override
+  String get otpResendCooldownMessage =>
+      'Please wait before requesting another code.';
+
+  @override
+  String get otpInvalidatedMessage =>
+      'This verification request is no longer valid.';
+
+  @override
+  String get otpGenericFailureMessage =>
+      'Unable to verify the code. Please try again.';
+
+  @override
   String get profileUnauthenticatedTitle => 'Not logged in';
 
   @override

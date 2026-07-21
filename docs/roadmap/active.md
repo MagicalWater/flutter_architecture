@@ -8,7 +8,24 @@ last_reviewed_baseline: 1.5.1
 
 # Active Milestone
 
-目前沒有 active milestone。
+目前 active milestone：
+
+```txt
+Milestone 23 — Architecture Decision Record Extraction & Normalization
+Current phase: 23-0 ADR Extraction Planning Review
+Planning gate: Accepted
+Implementation status: Not started
+```
+
+## Scope and Artifacts
+
+本 Milestone 將 Decision 001–022 轉為 canonical single-file ADR、正式 index、可驗證 supersession graph與 legacy compatibility routing。
+
+- Planning Review：`docs/audits/milestone_23/23-0_planning_review.md`
+- Migration manifest：`docs/migrations/m23_adr_extraction_manifest.md`
+- Implementation plan：`docs/superpowers/plans/2026-07-21-milestone-23-architecture-decision-record-extraction-normalization.md`
+
+23-0 尚未拆分任何 Decision。Final cutover前 `docs/architecture_decisions.md` 仍是正式 authority。
 
 Milestone 22 — Documentation Authority & Navigation Foundation 已完成 final review、full verification 與 archive transition。
 
@@ -28,16 +45,17 @@ Historical artifact routing：
 
 - `docs/milestones/README.md`
 
-## Next Selection Rule
+## Current Next Action
 
-下一個 milestone 必須從 `docs/roadmap/candidates.md` 或新的已核准需求中選出，並依序完成：
+依 accepted plan 開始 Task 23-1：ADR index與 migration-aware checker foundation。
 
 ```txt
-Design
-→ Planning Review
-→ Architecture Decision（若需要）
-→ Implementation Plan
-→ Active promotion
+Task implementation
+→ immediate Task review
+→ fix / re-review
+→ next Task
+→ whole-phase implementation review
+→ fix / re-review
+→ commit
+→ unified report
 ```
-
-在完成上述流程前，不得把 candidate 描述為 active 或直接開始 implementation。

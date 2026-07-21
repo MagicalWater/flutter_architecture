@@ -45,6 +45,7 @@ Final / Holistic Review
 
 ## Current indexes
 
+- `docs/audits/milestone_23/`：ADR Extraction Planning Review 與後續 batch／cutover review evidence。
 - `docs/audits/milestone_22_planning_review.md`：Documentation Governance Planning Review。
 - `docs/audits/milestone_22/`：Milestone 22 各小階段 review evidence。
 - `docs/audits/milestone_18/`：Template Baseline holistic audit phases。

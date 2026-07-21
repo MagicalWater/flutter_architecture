@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.5.1
 ```txt
 Template Baseline: 1.5.1
 Phase 1 / MVP: Completed
-Current documentation initiative: Milestone 22
-Current gate: Milestone 22 completed and archived; no active milestone
+Current documentation initiative: Milestone 23
+Current gate: Milestone 23-0 Planning Review accepted; implementation not started
 ```
 
 版本字串唯一來源為 `VERSION`；正式版本內容由 `CHANGELOG.md` 記錄。
@@ -332,21 +332,19 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 目前正式工作是：
 
 ```txt
-Milestone 22 — Documentation Authority & Navigation Foundation
-Current gate: Milestone 22 completed and archived; no active milestone
+Milestone 23 — Architecture Decision Record Extraction & Normalization
+Current gate: 23-0 Planning Review accepted; implementation not started
 ```
 
-Milestone 22 的主要目標：
+Milestone 23 的主要目標：
 
-- 建立文件 taxonomy 與 authoritative ownership。
-- 降低 AI mandatory reading context。
-- 分離 current、decision、plan、evidence 與 history。
-- 重寫 current Project Context。
-- 分離 Roadmap active、candidate 與 closed routing。
-- 補齊 App／Package／Feature README contract。
-- 建立 documentation consistency checker。
+- 將 Decision 001–022 擷取為 canonical single-file ADR。
+- 建立 Decision index、stable ID與 supersession graph。
+- 分離 durable contract與 milestone journal／evidence／release history。
+- 保留 aggregate與 legacy paths的 compatibility routing。
+- 擴充 checker驗證 ADR coverage、status與 relation integrity。
 
-本階段完成前，不直接進行全部 Decision 001–022 extraction 或大規模 artifact 搬移。
+23-0 只完成 planning review、migration manifest與 implementation plan。正式 extraction依 batch執行；final cutover前 aggregate仍是 authority。
 
 ## Documentation Routing
 

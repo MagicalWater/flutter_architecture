@@ -24,7 +24,12 @@ Other platforms: Dependency-ready
 
 ## Active Milestone
 
-目前沒有 active milestone。
+目前 active milestone：
+
+```txt
+Milestone 23 — Architecture Decision Record Extraction & Normalization
+Current gate: 23-0 Planning Review accepted; implementation not started
+```
 
 完整 active scope、gate 與 next action：
 

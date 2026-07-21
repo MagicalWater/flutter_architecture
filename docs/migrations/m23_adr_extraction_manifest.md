@@ -97,3 +97,13 @@ Batch C aggregate source sections remain unchanged. ADR-015 does not yet declare
 | ADR-017 | extracted | opt-in cache、SWR、identity、cursor chain、Repository coordination、degraded behavior、persistence ownership與 logout policy retained | exact DDL、database versions、migration journal與 test matrix routed to source/README/archive | ADR-010、012、013、016、018、020 retained |
 
 Batch D aggregate source sections remain unchanged. The duplicate Batch B progress block introduced during earlier normalization was removed as a manifest hygiene correction；formal authority cutover仍延後至 Batch G。
+
+### Batch E — Presentation Foundations
+
+| ID | Migration state | Semantic preservation | Non-ADR routing | Relation result |
+|---|---|---|---|---|
+| ADR-018 | extracted | Design System ownership、identity/mode、tokens、feature boundary、App-owned preference與 accessibility retained | page migration sequence、test matrix、completion journal與 golden count routed to package README/plan/history | ADR-003、012、016–020 retained |
+| ADR-019 | extracted | App localization ownership、system/explicit locale resolution、preference、Failure-to-copy mapping與 locale formatting retained | completion status、production text audit與 regression journal routed to README/history | ADR-009、012、018、020 retained |
+| ADR-020 | extracted | typed expected/unexpected taxonomy、mapping ownership、protocol/cancellation/lifecycle、reporting與 sensitive-data contract retained | audit chronology、382 test count、bundle results與 provider implementation decision routed to audits/README/history | ADR-013、015–019、022 retained |
+
+Batch E aggregate source sections remain unchanged. 21 rows are now `extracted` and ADR-022 remains `aggregate`; formal authority cutover仍延後至 Batch G。

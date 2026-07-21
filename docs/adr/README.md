@@ -38,9 +38,9 @@ last_reviewed_baseline: 1.5.1
 | ADR-015 | adr-015-refresh-token-concurrent-401.md | extracted |
 | ADR-016 | adr-016-catalog-pagination-search.md | extracted |
 | ADR-017 | adr-017-catalog-offline-cache-swr.md | extracted |
-| ADR-018 | - | aggregate |
-| ADR-019 | - | aggregate |
-| ADR-020 | - | aggregate |
+| ADR-018 | adr-018-design-system-theme-boundaries.md | extracted |
+| ADR-019 | adr-019-localization-locale-failure-mapping.md | extracted |
+| ADR-020 | adr-020-exception-failure-reporting.md | extracted |
 | ADR-021 | adr-021-auth-startup-navigation-coordination.md | extracted |
 | ADR-022 | - | aggregate |
 

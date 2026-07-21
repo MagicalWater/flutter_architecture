@@ -8,12 +8,13 @@
 
 ## 核准方案
 
-採用「ADB fixture＋既有UI／Mock API驗證」。
+採用「ADB fixture＋既有UI／可控HTTP fixture驗證」。
 
 - 沿用既有`flutter_architecture_m18` Android emulator。
 - 使用release APK執行runtime smoke。
-- 透過ADB與`run-as`建立、檢查或清理測試fixture。
-- 使用既有Mock API、Login UI、Profile、Protected Route與Logout流程。
+- 透過ADB、root-capable emulator與前版release APK建立、檢查或清理測試fixture。
+- 一般Login／Restore／Logout可使用既有Mock API；Refresh rotation使用development release＋real API mode＋host-side可控HTTP fixture server。
+- 使用既有Login UI、Profile、Protected Route與Logout流程。
 - 不新增debug-only頁面、隱藏按鈕、runtime authority flag或測試後門。
 - 不修改Secure credential production contract以方便測試。
 
@@ -47,11 +48,13 @@
 - Target：既有Android 35 Google APIs x86_64 emulator設定。
 - App ID：`com.example.flutterarchitecture`。
 - Build mode：release APK。
-- Runtime API mode：development／Mock API，沿用現有App config，不新增smoke專用backend。
+- Runtime API mode分兩條：一般journey使用development／Mock API；Refresh rotation使用development／`API_MODE=real`，由`adb reverse`連接host-side ephemeral HTTP fixture server。
+- HTTP fixture server只屬repo tooling／runtime evidence，不進App production graph，不保存Authorization或request body。
 
 啟動前記錄：
 
 - emulator API level、ABI與device serial。
+- `adb root`是否成功；若既有AVD不是root-capable，必須改用Google APIs root-capable AVD，不得以release `run-as`作為替代。
 - APK路徑、SHA-256與檔案大小。
 - App versionName／versionCode。
 - VERSION仍為`1.2.0`，除非最終review另行核准Template Baseline更新。
@@ -63,15 +66,15 @@ ADB只用於準備與觀察測試狀態，不得繞過production Auth orchestrat
 允許：
 
 - `pm clear`建立乾淨安裝狀態。
-- `run-as`讀取App sandbox中的SharedPreferences、SQLite metadata與非明文Secure Storage檔案存在性。
-- 在App未執行時寫入舊版SharedPreferences legacy credential fixture。
+- 在root-capable emulator上以`adb root`只讀檢查App sandbox中的SharedPreferences、SQLite metadata與非明文Secure Storage backing artifacts；root只用於evidence觀察，不構成rooted-device resistance證明。
+- 以原子authority切換前的既有release commit `05b3412`建立predecessor APK，透過該版production Login寫出真實Legacy SharedPreferences＋SQLite User狀態，再以`adb install -r`升級目前release APK並保留App data。
 - force-stop／restart驗證process death後Restore。
 - 清除logcat並收集指定時間窗內的App logs。
 
 禁止：
 
 - 直接寫入runtime Session memory。
-- 直接寫入SQLite user與Secure credential後宣稱Login／migration成功，除非該狀態本身就是被測的輸入fixture且後續由production Restore驗證。
+- 直接以ADB寫入SQLite user、Legacy credential或Secure credential後宣稱Login／migration成功。Migration輸入必須由predecessor release APK的production Login產生。
 - 解密或輸出Secure Storage raw credential。
 - 在文件中保存真實Access Token、Refresh Token、password或Authorization值。
 
@@ -101,28 +104,39 @@ ADB只用於準備與觀察測試狀態，不得繞過production Auth orchestrat
 
 Refresh smoke必須使用production `AuthRefreshInterceptor → AuthSessionRefresher`路徑，不直接呼叫store adapter。
 
-優先方式：利用既有Mock API deterministic token／401能力觸發受保護request的refresh與safe replay。
+固定方式：建立development release APK並使用`--dart-define=API_MODE=real`與`--dart-define=API_BASE_URL=http://127.0.0.1:18080`；透過`adb reverse tcp:18080 tcp:18080`連接host-side ephemeral HTTP fixture server。Mock API implementation不經Dio，不能作為Refresh Interceptor runtime evidence。
+
+HTTP fixture server必須提供：
+
+- `POST /auth/login`：回傳synthetic access-v1／refresh-v1與固定user identity。
+- 第一次`GET /profile`且Bearer為access-v1：回401。
+- `POST /auth/refresh`且refresh token為refresh-v1：回access-v2／refresh-v2。
+- replay `GET /profile`且Bearer為access-v2：回200。
+- 僅記錄request sequence、status與token fingerprint，不記錄raw Authorization、password、Access Token、Refresh Token或request body。
 
 驗證：
 
-- protected request最終成功或依既有Mock contract完成replay。
+- server request sequence必須精確為Login → Profile 401 → Refresh 200 → Profile replay 200，且refresh endpoint只呼叫一次。
 - Secure credential payload已發生rotation，可透過安全metadata、檔案變更或test-known token fingerprint證明，但不輸出token。
 - Legacy SharedPreferences credential未重新出現。
 - SQLite user identity保持一致。
 - runtime Session access token與Secure authority同步。
+- rotation完成後force-stop／restart；server保留scenario state並只接受access-v2。重啟後第一次Profile request必須直接200且不得再次呼叫refresh，證明rotated credential已持久化並由Restore重建runtime Session。
 
-若現有Mock API無法在release runtime穩定觸發401，19-5可新增App外部ADB／HTTP fixture控制或調整既有Mock deterministic scenario，但不得新增UI測試後門、runtime authority flag或release-only分支。任何production code調整都必須先有TDD與獨立implementation review。
+不得修改App Mock implementation來製造401，也不得新增UI測試後門、runtime authority flag或release-only分支。若real API release無法連接fixture server，先修正host tooling、`adb reverse`或既有network configuration；只有確認production defect後才能以TDD修改App code並進行獨立implementation review。
 
 ### 4. Legacy migration
 
-1. Force-stop App並清除目前Auth state。
-2. 使用ADB在舊版SharedPreferences key寫入synthetic legacy Token Pair。
-3. 建立與fixture identity一致的既有SQLite User前置狀態；此處必須沿用舊版production資料格式，並明確記錄是migration輸入fixture。
-4. 啟動release APK。
-5. 確認Restore migration成功並進入authenticated狀態。
-6. 確認Legacy credential已刪除。
-7. 確認Secure authority backing artifacts存在並可支援再次force-stop／restart Restore。
-8. 再次啟動後不得重寫或依賴Legacy credential。
+1. 建立獨立temporary Git worktree並checkout原子authority切換前的`05b3412`。
+2. 從該commit建立相同App ID與相同local signing的development release APK。
+3. `pm clear`後安裝predecessor APK，透過其production Mock Login建立Legacy SharedPreferences credential與SQLite User。
+4. Force-stop predecessor App；以root只讀證據確認Legacy key與User存在，且Secure logical payload尚未建立。
+5. 以`adb install -r`安裝目前release APK，保留既有App data。
+6. 啟動目前release APK。
+7. 確認Restore migration成功並進入authenticated狀態。
+8. 確認Legacy credential已刪除。
+9. 確認Secure authority backing artifacts存在並可支援再次force-stop／restart Restore。
+10. 再次啟動後不得重寫或依賴Legacy credential。
 
 Migration evidence不得以只執行unit test替代。
 
@@ -224,7 +238,7 @@ Milestone 19-5只有在以下全部成立時才可封存：
 - Workspace analyze與完整tests不低於19-4的536項。
 - Release APK與merged manifest驗證通過。
 - Android emulator完成Login、restart Restore、Refresh rotation、Legacy migration與Logout cleanup。
-- Runtime logcat無credential sentinel與App fatal error。
+- Runtime logcat與host-side HTTP fixture logs都不包含credential sentinel、raw Authorization或App fatal error。
 - `M19-PR05`有Android runtime evidence並正式Closed。
 - README、Architecture Decision、Project Context、Roadmap、Backlog與CHANGELOG一致。
 - 完整implementation review無Open P0／P1。

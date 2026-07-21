@@ -2179,12 +2179,12 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 
 ## Milestone 21：Biometric-gated Local Session Unlock
 
-狀態：Planned；必須等待Milestone 20完成、review並封存。
+狀態：Milestone 21-0 Planning Review已完成並通過跨文件一致性review；下一步為21-1，尚未開始production implementation。
 
 正式子階段：
 
 ```txt
-21-0 Threat Model、Unlock Policy與Architecture Contract
+21-0 Threat Model、Unlock Policy與Architecture Contract（Completed / Reviewed）
 21-1 Local User Presence Abstraction與App Adapter
 21-2 Enable / Disable Workflow
 21-3 Startup Unlock、Restore與Refresh Orchestration
@@ -2200,3 +2200,12 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 - 不保存biometric資料，不實作cryptographic Device Binding。
 - `local_auth`只由App layer依賴；Android需真實Native configuration、release artifact與runtime smoke。
 - iOS與其他平台不因dependency-ready就宣稱runtime support。
+
+21-0正式文件：
+
+```txt
+docs/audits/milestone_21_planning_review.md
+docs/superpowers/plans/2026-07-21-milestone-21-implementation-plan.md
+```
+
+Planning Review固定以下contract：local unlock preference預設disabled；capability與enable policy分離；enabled cold start必須先unlock才可restore；locked階段`SessionManager`維持null；cancel、not-enrolled、unavailable與lockout不得fallback自動restore；resume採可注入5分鐘grace period；App-owned coordinator與既有Auth lifecycle generation共同阻擋stale prompt / restore。共記錄12項planning findings，其中`M21-PR01`為P0，已由21-3 pre-restore gate取得approved disposition，但需待implementation evidence才正式關閉。VERSION維持1.4.0。

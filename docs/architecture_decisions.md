@@ -2918,9 +2918,9 @@ ShellRoute(LoginRoute / ProfileRoute)
 
 ## Decision 022：Authentication Security 能力拆分與責任邊界
 
-**狀態：** Accepted；Milestone 19已完成並封存
+**狀態：** Accepted；Milestone 19與20已完成並封存，Milestone 21-0 Planning Review已通過
 
-**實作狀態：** Milestone 19 Secure Credential Storage & Migration已完成。Production credential authority為App-owned `FlutterSecureAuthCredentialStore`；SQLite仍保存公開`AuthUser`，Legacy SharedPreferences只供migration與cleanup。Android release runtime evidence、完整regression與final baseline review均已通過，Template Baseline發布為1.3.0。Milestone 20與21尚未開始production implementation。
+**實作狀態：** Milestone 19 Secure Credential Storage & Migration與Milestone 20 OTP Step-Up Authentication均已完成並封存，Template Baseline為1.4.0。Milestone 21已完成21-0 Planning Review，但尚未開始production implementation。
 
 ### 背景
 
@@ -3097,6 +3097,26 @@ docs/superpowers/plans/2026-07-21-milestone-20-implementation-plan.md
 Planning Gate通過只代表20-1可以在後續獨立工作開始，不代表已存在OTP production capability，也不允許跨階段提前加入UI、provider SDK或更新VERSION。
 
 Milestone 21 Planning Review 通過前，不新增 `local_auth`、不修改 Android Native configuration，也不宣稱 Face ID / Touch ID runtime support。
+
+Milestone 21-0 Planning Review已於2026-07-21通過，正式補充以下contract：
+
+- local unlock preference與device capability分離；既有使用者預設disabled，不能因偵測到hardware而自動啟用。
+- Enabled cold start必須在credential restore與Session commit前完成local user-presence verification；不得先建立Session再以UI遮罩。
+- Locked與prompting階段`SessionManager`維持null，因此Guard、Dio、Refresh、Profile與navigation不會提前取得authenticated authority。
+- Cancel、not-enrolled、no hardware、unsupported、temporary / permanent lockout不得fallback自動restore；提供retry或重新登入安全出口。
+- App-owned coordinator持有prompt、startup與resume orchestration；Repository仍是credential、User與Session restore commit owner。
+- Unlock、Login、OTP、Logout、external clear與resume re-lock共用既有Auth lifecycle latest-intent authority；Bloc / UI generation只保護presentation metadata。
+- Cold start每次重新unlock；background resume使用可注入5分鐘grace period，prompt自身lifecycle抖動不得產生第二個prompt。
+- `local_auth`只在App layer，Android Native設定延後21-5；其他平台不提升runtime support。
+
+完整Threat Model、state machine、findings與implementation plan位於：
+
+```txt
+docs/audits/milestone_21_planning_review.md
+docs/superpowers/plans/2026-07-21-milestone-21-implementation-plan.md
+```
+
+Planning Gate通過只允許後續獨立開始21-1，不代表Biometric production capability已存在，也不允許提前修改Native或VERSION。
 
 ### 版本規則
 

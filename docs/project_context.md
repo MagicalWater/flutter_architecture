@@ -1159,9 +1159,9 @@ docs/conversation_rules.md
 
 ---
 
-## 下一個正式方向：Milestone 20 OTP Step-Up Authentication Planning Review
+## 下一個正式方向：Milestone 21 Biometric-gated Local Session Unlock
 
-狀態：Milestone 19 Secure Credential Storage & Migration已完成、final review、獨立Holistic Final Review、封存並發布Template Baseline 1.3.0。Milestone 20-0已完成規劃與final document review；Milestone 20-1 typed API與Stateful Mock也已完成並通過implementation review。下一步為20-2。
+狀態：Milestone 19 Secure Credential Storage & Migration與Milestone 20 OTP Step-Up Authentication均已完成、final review、封存並發布Template Baseline 1.4.0。Milestone 21-0 Planning Review與跨文件一致性review已完成；下一步為21-1，但尚未開始production implementation。
 
 原候選Milestone 19「Authentication Security & Step-Up Verification」已正式拆分為：
 
@@ -1283,3 +1283,5 @@ Milestone 20-3已完成並review：AuthBloc以`AuthPresentationStatus`明確表�
 Milestone 20-4已完成並review：新增獨立OTP route與頁面、one-time-code輸入、masked destination、Verify / Resend loading與cooldown、English / zh_TW typed failure localization；App-owned AuthNavigationCoordinator支援Login / OTP / Profile destination，replacement challenge保持OTP，Verify成功進Profile，clear回Login。OTP pending不建立Session，Protected Route仍由既有AuthGuard拒絕。Workspace analyze與584項完整tests通過；VERSION仍為1.3.0。Review文件：`docs/audits/milestone_20/20-4_ui_navigation_review.md`。
 
 Milestone 20-5已完成並review：新增OTP event secret sentinel，完成production source sensitive logging search、full workspace analyze、585項Flutter tests、Android release APK build、API 35 emulator install與startup smoke。11項planning findings全部以20-1至20-5 implementation evidence關閉，無Open P0 / P1。Security claim限定為server-issued OTP step-up flow，不宣稱SIM-swap prevention或SMS provider delivery assurance。Template Baseline提升至1.4.0。Final review文件：`docs/audits/milestone_20/20-5_security_regression_review.md`與`docs/audits/milestone_20/milestone_20_final_review.md`。
+
+Milestone 21-0 Planning Review已完成並通過跨文件一致性review。正式拍板Biometric只作為pre-restore local user-presence gate；local unlock preference預設disabled，capability與enable policy分離；enabled cold start在prompt成功前不得讀取可供Session commit的credential，locked階段`SessionManager`維持null。Cancel、not-enrolled、unavailable與lockout不允許fallback自動restore；App-owned coordinator持有startup / resume與single-prompt ordering，並與既有Auth lifecycle generation共同阻擋stale completion。Resume採可注入5分鐘grace period。共記錄12項planning findings，`M21-PR01`為P0但已有21-3 approved disposition；尚未開始production implementation，VERSION維持1.4.0。文件：`docs/audits/milestone_21_planning_review.md`、`docs/superpowers/plans/2026-07-21-milestone-21-implementation-plan.md`。

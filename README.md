@@ -22,6 +22,7 @@
 - Milestone 18 Template Baseline Holistic Audit：Completed
 - Milestone 19 Secure Credential Storage & Migration：Completed / Archived
 - Milestone 20 OTP Step-Up Authentication：Completed / Archived
+- Milestone 21 Biometric-gated Local Session Unlock：Planning Review Completed；Implementation Not Started
 
 平台能力：
 

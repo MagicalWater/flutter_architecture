@@ -24,6 +24,9 @@
 
 Milestone 20已封存；下一個正式方向為Milestone 21 Biometric-gated Local Session Unlock。
 
+- 完成Milestone 21-0 Planning Review與跨文件一致性review；固定pre-restore local user-presence gate、default-disabled preference、locked Session null、typed capability / failure、latest-intent與5分鐘resume grace period。
+- 建立21-1至21-5詳細implementation plan與12項planning findings；本階段不加入`local_auth`、不修改Android Native或VERSION。
+
 ---
 
 ## [1.4.0] - 2026-07-21

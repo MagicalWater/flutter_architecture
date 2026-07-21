@@ -118,15 +118,15 @@
 - Modify: app DI registration for new use cases。
 - Test: `apps/flutter_architecture/test/features/auth/presentation/bloc/auth_otp_bloc_test.dart`
 
-- [ ] Write transition tests forLogin challenge、Verify、Resend、terminal failures and account switch。
-- [ ] Write reversed-completion tests forLogin/Login、Verify/Resend、Verify/Verify、Resend/Resend and Logout/external clear。
-- [ ] Model explicit unauthenticated / submitting / otpRequired / verifying / resending / authenticated authority; do not inferchallenge from nullable fields。
-- [ ] Reuse lifecycle generation before every Repository side-effect commit; apply active challenge identity checks only to Bloc presentation metadata and state transitions。
-- [ ] Treat generation as Repository credential-commit authority and challenge identity as Bloc UI-metadata authority; do not rely on a post-Repository Bloc check to undo Session creation。
-- [ ] Add an authoritative external-clear regression where Session is already null but OTP challenge is active; active challenge and in-flight operations must still be invalidated。
-- [ ] Keepnetwork calls outside exclusive persistence section and keep countdown timer non-authoritative。
-- [ ] Run Auth Bloc, SessionManager, navigation coordinator and latest-intent regressions。
-- [ ] Commit: `feat(auth): 實作OTP Bloc state machine`。
+- [x] Write transition tests forLogin challenge、Verify、Resend、terminal failures and account switch。
+- [x] Write reversed-completion tests forLogin/Login、Verify/Resend、Verify/Verify、Resend/Resend and Logout/external clear。
+- [x] Model explicit unauthenticated / submitting / otpRequired / verifying / resending / authenticated authority; do not inferchallenge from nullable fields。
+- [x] Reuse lifecycle generation before every Repository side-effect commit; apply active challenge identity checks only to Bloc presentation metadata and state transitions。
+- [x] Treat generation as Repository credential-commit authority and challenge identity as Bloc UI-metadata authority; do not rely on a post-Repository Bloc check to undo Session creation。
+- [x] Add an authoritative external-clear regression where Session is already null but OTP challenge is active; active challenge and in-flight operations must still be invalidated。
+- [x] Keepnetwork calls outside exclusive persistence section and keep countdown timer non-authoritative。
+- [x] Run Auth Bloc, SessionManager, navigation coordinator and latest-intent regressions。
+- [x] Commit: `feat(auth): 實作OTP Bloc state machine`。
 
 ### Task 7: OTP Route, UI and Localization
 

@@ -20,6 +20,9 @@
 
 ### Added
 
+- 完成Milestone 21-2：新增versioned local unlock preference、typed read taxonomy、serialized SharedPreferences store與authenticated-only enable / disable policy。
+- Logout與unauthenticated restore已清理stale local unlock preference；enable race共用Auth lifecycle generation並提供typed storage failure。
+
 - 完成Milestone 21-1 Local User Presence foundation：新增純Dart verifier contract、typed capability / verification / operational failure，以及App-only `local_auth` adapter與lazy singleton DI。
 - Local Auth adapter固定biometric-only、禁止device credential fallback與background自動重試；明確區分not verified、cancel、not enrolled、no hardware、temporary / permanent lockout與temporarily unavailable。
 

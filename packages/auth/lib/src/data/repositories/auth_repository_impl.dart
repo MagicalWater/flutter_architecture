@@ -16,6 +16,7 @@ import 'package:auth/src/domain/entities/auth_authenticated_result.dart';
 import 'package:auth/src/domain/entities/otp_challenge.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
+import 'package:auth/src/local_unlock/local_unlock_preference.dart';
 import 'package:auth/src/session/session_manager.dart';
 import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
 import 'package:core/core.dart';
@@ -45,6 +46,7 @@ class AuthRepositoryImpl implements AuthRepository {
     this._mutationCoordinator,
     this._migrationCoordinator,
     this._diagnosticSink,
+    [this._localUnlockPreferenceStore]
   );
 
   final AuthRemoteDataSource _remoteDataSource;
@@ -55,6 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthStateMutationCoordinator _mutationCoordinator;
   final AuthCredentialMigrationCoordinator _migrationCoordinator;
   final AuthLifecycleDiagnosticSink _diagnosticSink;
+  final LocalUnlockPreferenceStore? _localUnlockPreferenceStore;
 
   @override
   Future<Result<AuthLoginResult>> login({
@@ -200,6 +203,7 @@ class AuthRepositoryImpl implements AuthRepository {
         secureCredentialStore: _credentialStore,
         legacyCredentialStore: _legacyCredentialStore,
         userStore: _userStore,
+        localUnlockPreferenceStore: _localUnlockPreferenceStore,
       ).clearAllUnlocked();
       cleanup.throwIfUnexpected();
       if (error is AuthLifecycleOperationSuperseded) {
@@ -228,6 +232,7 @@ class AuthRepositoryImpl implements AuthRepository {
         operation.throwIfSuperseded();
 
         if (resolution is AuthCredentialMigrationUnauthenticated) {
+          await _clearStaleLocalUnlockPreferenceBestEffort();
           _sessionManager.clear();
           return _AuthRestoreOutcome(
             user: null,
@@ -288,6 +293,7 @@ class AuthRepositoryImpl implements AuthRepository {
           secureCredentialStore: _credentialStore,
           legacyCredentialStore: _legacyCredentialStore,
           userStore: _userStore,
+          localUnlockPreferenceStore: _localUnlockPreferenceStore,
         ).clearAllUnlocked();
         if (operation.isCurrent) {
           _sessionManager.clear();
@@ -307,6 +313,16 @@ class AuthRepositoryImpl implements AuthRepository {
           fallbackMessage: 'Authentication logout failed.',
         ),
       );
+    }
+  }
+
+  Future<void> _clearStaleLocalUnlockPreferenceBestEffort() async {
+    final store = _localUnlockPreferenceStore;
+    if (store == null) return;
+    try {
+      await store.clear();
+    } on AppException catch (error) {
+      if (error.kind != AppExceptionKind.localStorage) rethrow;
     }
   }
 }

@@ -2179,14 +2179,14 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 
 ## Milestone 21：Biometric-gated Local Session Unlock
 
-狀態：Milestone 21-1已完成並通過implementation review；下一步為21-2 Enable / Disable Policy與Persistence。
+狀態：Milestone 21-2已完成並通過implementation review；下一步為21-3 Gated Restore與Session Authority。
 
 正式子階段：
 
 ```txt
 21-0 Threat Model、Unlock Policy與Architecture Contract（Completed / Reviewed）
 21-1 Local User Presence Abstraction與App Adapter（Completed / Reviewed）
-21-2 Enable / Disable Workflow
+21-2 Enable / Disable Workflow（Completed / Reviewed）
 21-3 Startup Unlock、Restore與Refresh Orchestration
 21-4 Unlock UI、Navigation與Lifecycle Concurrency
 21-5 Android Native Configuration、Runtime Smoke與封存
@@ -2211,3 +2211,5 @@ docs/superpowers/plans/2026-07-21-milestone-21-implementation-plan.md
 Planning Review固定以下contract：local unlock preference預設disabled；capability與enable policy分離；enabled cold start必須先unlock才可restore；locked階段`SessionManager`維持null；cancel、not-enrolled、unavailable與lockout不得fallback自動restore；resume採可注入5分鐘grace period；App-owned coordinator與既有Auth lifecycle generation共同阻擋stale prompt / restore。共記錄12項planning findings，其中`M21-PR01`為P0，已由21-3 pre-restore gate取得approved disposition，但需待implementation evidence才正式關閉。VERSION維持1.4.0。
 
 21-1已完成純Dart `LocalUserPresenceVerifier`、typed capability / verification / operational exception、App-only `local_auth` adapter與lazy singleton DI。Adapter固定biometric-only且不允許device credential fallback；unknown plugin detail不進safe `toString()`。Implementation review補正plugin `false` result不得錯標cancelled，新增`notVerified` identity。Workspace analyze與596項完整tests通過；未修改Android Native、startup restore或VERSION。Review evidence：`docs/audits/milestone_21/21-1_local_presence_review.md`。
+
+21-2已完成versioned local unlock preference、typed read taxonomy、serialized SharedPreferences store與authenticated-only enable / disable policy。Enable共用Auth lifecycle generation，stale prompt completion不得寫enabled；write failure回typed `storageFailure`。Logout cleanup清除preference，restore無credential時best-effort清stale preference。Workspace analyze、610項完整tests與App bundle通過；startup gate、Android Native與VERSION未改。Review evidence：`docs/audits/milestone_21/21-2_policy_persistence_review.md`。

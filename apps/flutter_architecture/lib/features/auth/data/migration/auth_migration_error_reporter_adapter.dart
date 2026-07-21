@@ -42,6 +42,8 @@ final class AuthMigrationErrorReporterAdapter
         ErrorReportOperation.authLegacyCleanup,
       AuthLifecycleDiagnosticOperation.userCleanup =>
         ErrorReportOperation.authUserCleanup,
+      AuthLifecycleDiagnosticOperation.localUnlockPreferenceCleanup =>
+        ErrorReportOperation.authLocalUnlockPreferenceCleanup,
     };
   }
 }

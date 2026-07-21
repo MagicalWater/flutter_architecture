@@ -23,6 +23,21 @@ void main() {
     expect(operations, <String>['secure', 'legacy', 'user']);
   });
 
+  test('cleanup also clears local unlock preference when configured', () async {
+    final operations = <String>[];
+    final policy = AuthLifecycleCleanupPolicy(
+      secureCredentialStore: _CredentialStore(operations),
+      legacyCredentialStore: _LegacyStore(operations),
+      userStore: _UserStore(operations),
+      localUnlockPreferenceStore: _LocalUnlockStore(operations),
+    );
+
+    final result = await policy.clearAllUnlocked();
+
+    expect(result.isSuccess, isTrue);
+    expect(operations, <String>['secure', 'legacy', 'user', 'localUnlock']);
+  });
+
   test('unknown error outranks expected local storage error', () async {
     final expected = AppException(
       kind: AppExceptionKind.localStorage,
@@ -208,4 +223,16 @@ final class _UserStore extends _ClearStore implements AuthUserStore {
   Future<AuthUser?> readUser() async => null;
   @override
   Future<void> writeUser(AuthUser user) async {}
+}
+
+final class _LocalUnlockStore extends _ClearStore
+    implements LocalUnlockPreferenceStore {
+  _LocalUnlockStore(List<String> operations) : super(operations, 'localUnlock');
+
+  @override
+  Future<LocalUnlockPreferenceReadResult> read() async =>
+      const LocalUnlockPreferenceReadResult.absent();
+
+  @override
+  Future<void> write(LocalUnlockPreference preference) async {}
 }

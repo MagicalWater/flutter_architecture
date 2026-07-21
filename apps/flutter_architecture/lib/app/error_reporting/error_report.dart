@@ -25,6 +25,7 @@ enum ErrorReportOperation {
   authSecureCleanup,
   authLegacyCleanup,
   authUserCleanup,
+  authLocalUnlockPreferenceCleanup,
 }
 
 /// 可安全送往 reporting adapter 的封閉 context。

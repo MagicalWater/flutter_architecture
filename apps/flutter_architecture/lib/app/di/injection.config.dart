@@ -106,6 +106,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i460.SharedPreferences>(),
       ),
     );
+    gh.lazySingleton<_i662.LocalUnlockPreferenceStore>(
+      () => registerModule.localUnlockPreferenceStore(
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.lazySingleton<_i997.AuthGuard>(
       () => _i997.AuthGuard(gh<_i662.SessionManager>()),
     );
@@ -163,6 +168,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.SessionManager>(),
         gh<_i662.AuthStateMutationCoordinator>(),
         gh<_i112.AuthMigrationErrorReporterAdapter>(),
+        gh<_i662.LocalUnlockPreferenceStore>(),
       ),
     );
     gh.lazySingleton<_i361.Dio>(
@@ -173,6 +179,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i46.ApiConfig>(),
       ),
       instanceName: 'mainDio',
+    );
+    gh.lazySingleton<_i662.LocalUnlockPolicy>(
+      () => registerModule.localUnlockPolicy(
+        gh<_i662.SessionManager>(),
+        gh<_i662.AuthStateMutationCoordinator>(),
+        gh<_i662.LocalUserPresenceVerifier>(),
+        gh<_i662.LocalUnlockPreferenceStore>(),
+      ),
     );
     gh.lazySingleton<_i633.AuthApi>(
       () => registerModule.authApi(
@@ -211,6 +225,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.AuthStateMutationCoordinator>(),
         gh<_i662.AuthCredentialMigrationCoordinator>(),
         gh<_i112.AuthMigrationErrorReporterAdapter>(),
+        gh<_i662.LocalUnlockPreferenceStore>(),
       ),
     );
     gh.lazySingleton<_i1035.CatalogRepository>(

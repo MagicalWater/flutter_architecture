@@ -3,6 +3,7 @@ enum AuthLifecycleDiagnosticOperation {
   secureCleanup,
   legacyCleanup,
   userCleanup,
+  localUnlockPreferenceCleanup,
 }
 
 final class AuthLifecycleDiagnostic {

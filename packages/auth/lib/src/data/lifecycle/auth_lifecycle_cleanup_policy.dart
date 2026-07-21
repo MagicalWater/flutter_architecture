@@ -4,6 +4,7 @@ import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
 import 'package:auth/src/data/stores/auth_credential_store.dart';
 import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
 import 'package:auth/src/data/stores/auth_user_store.dart';
+import 'package:auth/src/local_unlock/local_unlock_preference.dart';
 import 'package:core/core.dart';
 
 final class AuthLifecycleCleanupPolicy {
@@ -11,13 +12,16 @@ final class AuthLifecycleCleanupPolicy {
     required AuthCredentialStore secureCredentialStore,
     required AuthLegacyCredentialStore legacyCredentialStore,
     required AuthUserStore userStore,
+    LocalUnlockPreferenceStore? localUnlockPreferenceStore,
   }) : _secureCredentialStore = secureCredentialStore,
        _legacyCredentialStore = legacyCredentialStore,
-       _userStore = userStore;
+       _userStore = userStore,
+       _localUnlockPreferenceStore = localUnlockPreferenceStore;
 
   final AuthCredentialStore _secureCredentialStore;
   final AuthLegacyCredentialStore _legacyCredentialStore;
   final AuthUserStore _userStore;
+  final LocalUnlockPreferenceStore? _localUnlockPreferenceStore;
 
   Future<AuthLifecycleCleanupResult> clearAllUnlocked() async {
     final diagnostics = <AuthLifecycleDiagnostic>[];
@@ -51,6 +55,13 @@ final class AuthLifecycleCleanupPolicy {
       AuthLifecycleDiagnosticOperation.userCleanup,
       _userStore.clearUser,
     );
+    final localUnlockPreferenceStore = _localUnlockPreferenceStore;
+    if (localUnlockPreferenceStore != null) {
+      await attempt(
+        AuthLifecycleDiagnosticOperation.localUnlockPreferenceCleanup,
+        localUnlockPreferenceStore.clear,
+      );
+    }
 
     return AuthLifecycleCleanupResult(diagnostics);
   }

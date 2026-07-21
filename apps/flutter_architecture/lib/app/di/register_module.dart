@@ -8,6 +8,7 @@ import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_rep
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart';
 import 'package:flutter_architecture/features/auth/data/local_user_presence/local_auth_user_presence_verifier.dart';
+import 'package:flutter_architecture/features/auth/data/local_unlock/shared_preferences_local_unlock_preference_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
@@ -115,6 +116,24 @@ abstract class RegisterModule {
       SqfliteAuthUserStore(database);
 
   @lazySingleton
+  auth.LocalUnlockPreferenceStore localUnlockPreferenceStore(
+    SharedPreferences preferences,
+  ) => SharedPreferencesLocalUnlockPreferenceStore(preferences);
+
+  @lazySingleton
+  auth.LocalUnlockPolicy localUnlockPolicy(
+    auth.SessionManager sessionManager,
+    auth.AuthStateMutationCoordinator mutationCoordinator,
+    auth.LocalUserPresenceVerifier verifier,
+    auth.LocalUnlockPreferenceStore store,
+  ) => auth.LocalUnlockPolicy(
+    sessionManager,
+    mutationCoordinator,
+    verifier,
+    store,
+  );
+
+  @lazySingleton
   auth.AuthCredentialMigrationCoordinator authCredentialMigrationCoordinator(
     auth.AuthCredentialStore secureCredentialStore,
     auth.AuthLegacyCredentialStore legacyCredentialStore,
@@ -148,6 +167,7 @@ abstract class RegisterModule {
     auth.SessionManager sessionManager,
     auth.AuthStateMutationCoordinator mutationCoordinator,
     AuthMigrationErrorReporterAdapter diagnosticSink,
+    auth.LocalUnlockPreferenceStore localUnlockPreferenceStore,
   ) {
     return auth.AuthSessionRefresher(
       remoteDataSource,
@@ -184,6 +204,7 @@ abstract class RegisterModule {
     auth.AuthStateMutationCoordinator mutationCoordinator,
     auth.AuthCredentialMigrationCoordinator migrationCoordinator,
     AuthMigrationErrorReporterAdapter diagnosticSink,
+    auth.LocalUnlockPreferenceStore localUnlockPreferenceStore,
   ) {
     return auth.AuthRepositoryImpl(
       remoteDataSource,
@@ -194,6 +215,7 @@ abstract class RegisterModule {
       mutationCoordinator,
       migrationCoordinator,
       diagnosticSink,
+      localUnlockPreferenceStore,
     );
   }
 

@@ -301,3 +301,52 @@ Force-stop／restart後fixture只新增：
 - 第二次restart不依賴predecessor binary或Legacy key。
 - Temporary dependency lock只恢復歷史可編譯解析，未改predecessor tracked source。
 - 無Open P0／P1 runtime finding。
+
+## Task 7 — 完整regression、artifact與security gate
+
+### Dependency與generation gate
+
+- `dart pub get`成功，workspace持續解析Dio 5.9.2及既有受控dependency set。
+- `dart run melos run build_runner`在api_client、auth與flutter_architecture全數成功。
+- api_client沒有generated drift；auth與App generated source可重現。
+- Windows環境下Freezed對`profile_bloc.freezed.dart`產生4處trailing-whitespace formatting noise；確認只有空白差異後還原既有tracked generated source，避免將非語意變更納入commit。
+
+### Analyze與完整tests
+
+- 五個workspace package analyze全數`No issues found`。
+- 完整Flutter tests共542項：
+  - api_client：43。
+  - auth：128。
+  - core：4。
+  - design_system：43。
+  - flutter_architecture：324。
+- Python fixture tests共7項，全數通過。
+- Test count高於Task 7最低門檻536項，沒有退化。
+
+### Release artifact與manifest gate
+
+- Mock development release APK建立成功。
+- APK SHA-256：`43bc34d2ead9424e862ba8e11d060520fd9d8bb4a6d5394dc59b7c2322935112`。
+- APK size：58,927,329 bytes。
+- Package ID：`com.example.flutterarchitecture`；versionName／versionCode為`0.1.0`／`1`。
+- Merged manifest：minSdk 24、targetSdk 36、`allowBackup=false`。
+- Permissions只有`android.permission.INTERNET`與既有`DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`。
+- Source、manifest與pubspec scan未發現`USE_BIOMETRIC`、`USE_FINGERPRINT`、Biometric、OTP、Device Binding或Passkey dependency／permission。
+
+### Source、DI與security scan
+
+- Generated DI只有一個default `AuthCredentialStore` binding，實際由`FlutterSecureStorage`建立。
+- `AuthCredentialMigrationCoordinator`、`AuthRefresher`與`AuthRepository`共用同一Secure binding。
+- `AuthLegacyCredentialStore`單獨由SharedPreferences adapter提供，只參與migration／cleanup。
+- 完整credential keyword scan分類為：
+  - 正常model、DTO、serialization、repository、session與Authorization interceptor使用。
+  - Test-only credential fixtures與統一sentinels。
+  - Host fixture固定Token state machine與SHA-256 fingerprint evidence。
+- Production與tool output scan未發現`debugPrint`、`developer.log`、`LogInterceptor`或raw credential輸出；fixture唯一`print`只輸出listening host／port metadata。
+
+### Task 7 implementation review
+
+- Task 1至Task 6 runtime evidence仍有對應artifact、UI、sandbox、fixture、signing與cleanup contract，可重現且沒有互相矛盾。
+- 完整test count、analyze與artifact gate均通過。
+- Security claim維持credential-at-rest hardening與Android-only runtime evidence，不擴張為rooted device、runtime memory或server compromise防護。
+- 無Open P0／P1；artifact與security敘述沒有超過實際證據。

@@ -700,7 +700,7 @@ Task 6執行結果：從`05b3412`建立temporary detached worktree。因舊commi
 **Files:**
 - Modify: `docs/audits/milestone_19/19-5_security_android_smoke.md`
 
-- [ ] **Step 1：dependency與generation gate**
+- [x] **Step 1：dependency與generation gate**
 
 Run:
 
@@ -712,7 +712,7 @@ git diff --exit-code -- '*.g.dart' '*.freezed.dart' '*injection.config.dart'
 
 Expected: dependency與generation成功；generated source與預期一致。
 
-- [ ] **Step 2：workspace analyze與完整tests**
+- [x] **Step 2：workspace analyze與完整tests**
 
 Run:
 
@@ -728,7 +728,7 @@ Expected：
 - 完整Flutter tests不少於536項。
 - Python fixture tests全數通過。
 
-- [ ] **Step 3：release artifact與manifest gate**
+- [x] **Step 3：release artifact與manifest gate**
 
 Run:
 
@@ -745,7 +745,7 @@ flutter build apk --release -t lib/main_development.dart --dart-define=API_MODE=
 - permission只包含既有必要權限。
 - 無`USE_BIOMETRIC`、`USE_FINGERPRINT`、OTP、Device Binding或Passkey dependency／permission。
 
-- [ ] **Step 4：source與generated DI scan**
+- [x] **Step 4：source與generated DI scan**
 
 Run:
 
@@ -760,7 +760,7 @@ Expected：
 - Repository、Refresher、Migration Coordinator共用該binding。
 - Legacy adapter只負責migration／cleanup。
 
-- [ ] **Step 5：完整security scan**
+- [x] **Step 5：完整security scan**
 
 Run:
 
@@ -774,16 +774,18 @@ rg -n "print\(|debugPrint\(|developer\.log|LogInterceptor|Authorization|Cookie|r
 - Test-only sentinel。
 - Unsafe output（必須修正後重跑Task 1 review）。
 
-- [ ] **Step 6：更新regression evidence並commit**
+- [x] **Step 6：更新regression evidence並commit**
 
 ```bash
 git add docs/audits/milestone_19/19-5_security_android_smoke.md
 git commit -m "test(auth): 完成Milestone 19 security regression gate"
 ```
 
-- [ ] **Step 7：進行Task 7 implementation review**
+- [x] **Step 7：進行Task 7 implementation review**
 
 Review gate：無Open P0／P1；所有runtime evidence可重現；test count未退化；artifact claim不超過實際證據。
+
+Task 7執行結果：`dart pub get`、三個package build_runner與五個package analyze全數通過。完整Flutter tests為542項（api_client 43、auth 128、core 4、design_system 43、App 324），Python fixture 7項通過。Mock development release APK建立成功，SHA-256為`43bc34d2ead9424e862ba8e11d060520fd9d8bb4a6d5394dc59b7c2322935112`、size 58,927,329 bytes、minSdk 24、targetSdk 36、`allowBackup=false`；permissions只有INTERNET與既有dynamic receiver保護權限，未發現Biometric、Fingerprint、OTP、Device Binding或Passkey能力。Generated DI確認Repository、Refresher與Migration Coordinator共用default Secure `AuthCredentialStore`，Legacy adapter只負責migration／cleanup。完整security scan只命中合法model／serialization／interceptor使用、test sentinel與fixture安全listening metadata，沒有unsafe credential output。Generation gate偵測到Windows環境下Freezed產生4處trailing-whitespace formatting noise，確認無語意差異後還原，不納入tracked generated source。Task 7 implementation review通過，無Open P0／P1。
 
 ---
 

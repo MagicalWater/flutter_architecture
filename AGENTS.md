@@ -173,6 +173,7 @@ injection.config.dart
 ```bash
 dart pub get
 dart run melos run build_runner
+dart run melos run docs_check
 dart run melos run analyze
 dart run melos exec -- flutter test
 ```
@@ -228,6 +229,7 @@ Commit
 Commit 前至少確認：
 
 - `dart pub get` 通過。
+- `dart run melos run docs_check` 通過。
 - `dart run melos run analyze` 通過。
 - `dart run melos exec -- flutter test` 通過。
 - 若修改 generated source，已執行 build_runner。

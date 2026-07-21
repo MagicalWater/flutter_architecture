@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.5.0
 Template Baseline: 1.5.0
 Phase 1 / MVP: Completed
 Current documentation initiative: Milestone 22
-Current gate: 22-5 completed; next approved phase is 22-6 Documentation Lint Foundation
+Current gate: 22-6 completed; next approved phase is 22-7 Final Review & Decision Extraction Gate
 ```
 
 版本字串唯一來源為 `VERSION`；正式版本內容由 `CHANGELOG.md` 記錄。
@@ -333,7 +333,7 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 
 ```txt
 Milestone 22 — Documentation Authority & Navigation Foundation
-Current gate: 22-5 completed; next approved phase is 22-6 Documentation Lint Foundation
+Current gate: 22-6 completed; next approved phase is 22-7 Final Review & Decision Extraction Gate
 ```
 
 Milestone 22 的主要目標：
@@ -382,6 +382,7 @@ docs/roadmap.md
 ```bash
 dart pub get
 dart run melos run build_runner
+dart run melos run docs_check
 dart run melos run analyze
 dart run melos exec -- flutter test
 ```

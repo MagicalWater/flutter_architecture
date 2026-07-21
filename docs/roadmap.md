@@ -28,7 +28,7 @@ Other platforms: Dependency-ready
 Milestone 22 — Documentation Authority & Navigation Foundation
 Status: Active
 Current completed phase: 22-4 Roadmap Active / Candidate Separation
-Next approved phase: 22-6 Documentation Lint Foundation
+Next approved phase: 22-7 Final Review & Decision Extraction Gate
 ```
 
 完整 active scope、gate 與 next action：

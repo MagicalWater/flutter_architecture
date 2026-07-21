@@ -239,3 +239,31 @@ Current 與 index 文件禁止追加逐 Task journal、測試數成長紀錄、c
 - 經 review 後才移除舊正文。
 
 禁止直接以「已搬到新文件」取代未驗證的歷史內容。
+
+## 12. Automated Documentation Check
+
+Repository 提供固定本地指令：
+
+```bash
+dart run melos run docs_check
+```
+
+實作位於：
+
+```txt
+tools/docs/check_docs.py
+tools/docs/test_check_docs.py
+```
+
+目前 checker 僅使用 Python standard library，檢查：
+
+- Relative Markdown link target，並忽略 fenced code example。
+- `VERSION`、Root README 與 CHANGELOG 最新正式版本一致性。
+- Managed document required metadata、type、status、scope 與 baseline format。
+- Explicit metadata `id` uniqueness。
+- 同時存在多份 active milestone document 的 status contradiction。
+- App、Package 與 production Feature README coverage。
+
+Checker 是 governance safety net，不取代 semantic review。它不得推斷 prose 是否正確，也不得因歷史 artifact 沒有採用 managed metadata 就直接失敗。
+
+新增 checker rule 必須先建立 fixture test，確認 RED，再加入最小 implementation 並確認 repository current state 可通過。

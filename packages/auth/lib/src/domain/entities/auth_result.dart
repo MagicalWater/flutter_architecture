@@ -1,17 +1,41 @@
-import 'package:auth/src/domain/entities/auth_user.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:auth/src/domain/entities/auth_authenticated_result.dart';
+import 'package:auth/src/domain/entities/otp_challenge.dart';
 
-part 'auth_result.freezed.dart';
+/// Password login can either authenticate immediately or require OTP.
+sealed class AuthLoginResult {
+  const AuthLoginResult();
 
-/// 登入成功後 Domain Layer 使用的結果。
-///
-/// token 會被 Repository 寫入 local storage，
-/// 但 AuthBloc 仍需要知道目前登入者是誰。
-@Freezed(toStringOverride: false)
-abstract class AuthResult with _$AuthResult {
-  const factory AuthResult({
-    required String accessToken,
-    required String refreshToken,
-    required AuthUser user,
-  }) = _AuthResult;
+  const factory AuthLoginResult.authenticated(AuthAuthenticatedResult result) =
+      AuthLoginAuthenticated;
+
+  const factory AuthLoginResult.otpChallenge(OtpChallenge challenge) =
+      AuthLoginOtpChallenge;
+
+  T when<T>({
+    required T Function(AuthAuthenticatedResult result) authenticated,
+    required T Function(OtpChallenge challenge) otpChallenge,
+  }) {
+    return switch (this) {
+      AuthLoginAuthenticated(:final result) => authenticated(result),
+      AuthLoginOtpChallenge(:final challenge) => otpChallenge(challenge),
+    };
+  }
+
+  @override
+  String toString() => 'AuthLoginResult(${runtimeType.toString()})';
 }
+
+final class AuthLoginAuthenticated extends AuthLoginResult {
+  const AuthLoginAuthenticated(this.result);
+
+  final AuthAuthenticatedResult result;
+}
+
+final class AuthLoginOtpChallenge extends AuthLoginResult {
+  const AuthLoginOtpChallenge(this.challenge);
+
+  final OtpChallenge challenge;
+}
+
+/// Compatibility name for the authenticated payload used before Milestone 20.
+typedef AuthResult = AuthAuthenticatedResult;

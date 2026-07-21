@@ -1,5 +1,7 @@
 import 'package:core/core.dart';
 import 'package:auth/src/domain/entities/auth_result.dart';
+import 'package:auth/src/domain/entities/auth_authenticated_result.dart';
+import 'package:auth/src/domain/entities/otp_challenge.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 
 /// Auth Repository 抽象。
@@ -14,10 +16,17 @@ import 'package:auth/src/domain/entities/auth_user.dart';
 ///
 /// 所以這裡只定義業務需要的方法，實作放在 Data Layer。
 abstract interface class AuthRepository {
-  Future<Result<AuthResult>> login({
+  Future<Result<AuthLoginResult>> login({
     required String account,
     required String password,
   });
+
+  Future<Result<AuthAuthenticatedResult>> verifyOtp({
+    required String challengeId,
+    required String code,
+  });
+
+  Future<Result<OtpChallenge>> resendOtp({required String challengeId});
 
   Future<Result<AuthUser?>> restoreSession();
 

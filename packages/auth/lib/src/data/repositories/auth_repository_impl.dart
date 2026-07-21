@@ -1,5 +1,7 @@
+import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/data_sources/auth_remote_data_source.dart';
 import 'package:auth/src/data/mappers/login_response_dto_mapper.dart';
+import 'package:auth/src/data/mappers/otp_challenge_dto_mapper.dart';
 import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
 import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic_sink.dart';
 import 'package:auth/src/data/lifecycle/auth_lifecycle_cleanup_policy.dart';
@@ -10,6 +12,8 @@ import 'package:auth/src/data/stores/auth_credential_store.dart';
 import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
 import 'package:auth/src/data/stores/auth_user_store.dart';
 import 'package:auth/src/domain/entities/auth_result.dart';
+import 'package:auth/src/domain/entities/auth_authenticated_result.dart';
+import 'package:auth/src/domain/entities/otp_challenge.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 import 'package:auth/src/domain/repositories/auth_repository.dart';
 import 'package:auth/src/session/session_manager.dart';
@@ -53,7 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthLifecycleDiagnosticSink _diagnosticSink;
 
   @override
-  Future<Result<AuthResult>> login({
+  Future<Result<AuthLoginResult>> login({
     required String account,
     required String password,
   }) async {
@@ -64,17 +68,16 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
 
-      final result = response.toDomain();
-      final user = result.user;
+      final result = _mapLoginResponse(response);
 
-      await _mutationCoordinator.runExclusive(() async {
+      if (result is AuthLoginAuthenticated) {
+        await _mutationCoordinator.runExclusive(() async {
+          operation.throwIfSuperseded();
+          await _commitAuthenticatedUnlocked(operation, result.result);
+        });
+      } else {
         operation.throwIfSuperseded();
-        await _persistLoginUnlocked(operation, result, user);
-        _sessionManager.setAuthenticated(
-          accessToken: result.accessToken,
-          userId: user.id,
-        );
-      });
+      }
 
       return Success(result);
     } on AppException catch (error) {
@@ -87,11 +90,96 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  Future<void> _persistLoginUnlocked(
+  @override
+  Future<Result<AuthAuthenticatedResult>> verifyOtp({
+    required String challengeId,
+    required String code,
+  }) async {
+    final operation = _mutationCoordinator.beginLifecycleOperation();
+    try {
+      final response = await _remoteDataSource.verifyOtp(
+        challengeId: challengeId,
+        code: code,
+      );
+      final result = _mapAuthenticatedResponse(response);
+      await _mutationCoordinator.runExclusive(() async {
+        operation.throwIfSuperseded();
+        await _commitAuthenticatedUnlocked(operation, result);
+      });
+      return Success(result);
+    } on AppException catch (error) {
+      return FailureResult(
+        mapAppExceptionToFailure(
+          error,
+          fallbackMessage: 'OTP verification failed.',
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Result<OtpChallenge>> resendOtp({required String challengeId}) async {
+    final operation = _mutationCoordinator.beginLifecycleOperation();
+    try {
+      final response = await _remoteDataSource.resendOtp(
+        challengeId: challengeId,
+      );
+      final challenge = _mapOtpChallenge(response);
+      operation.throwIfSuperseded();
+      return Success(challenge);
+    } on AppException catch (error) {
+      return FailureResult(
+        mapAppExceptionToFailure(error, fallbackMessage: 'OTP resend failed.'),
+      );
+    }
+  }
+
+  AuthLoginResult _mapLoginResponse(LoginResponseDto response) {
+    try {
+      return response.toDomain();
+    } on FormatException catch (error, stackTrace) {
+      throw _protocolException(error, stackTrace);
+    } on ArgumentError catch (error, stackTrace) {
+      throw _protocolException(error, stackTrace);
+    }
+  }
+
+  AuthAuthenticatedResult _mapAuthenticatedResponse(
+    AuthenticatedResponseDto response,
+  ) {
+    try {
+      return response.toDomain();
+    } on FormatException catch (error, stackTrace) {
+      throw _protocolException(error, stackTrace);
+    } on ArgumentError catch (error, stackTrace) {
+      throw _protocolException(error, stackTrace);
+    }
+  }
+
+  OtpChallenge _mapOtpChallenge(OtpChallengeDto response) {
+    try {
+      return response.toDomain();
+    } on FormatException catch (error, stackTrace) {
+      throw _protocolException(error, stackTrace);
+    } on ArgumentError catch (error, stackTrace) {
+      throw _protocolException(error, stackTrace);
+    }
+  }
+
+  AppException _protocolException(Object error, StackTrace stackTrace) =>
+      AppException(
+        kind: AppExceptionKind.protocol,
+        message: 'Invalid OTP authentication response',
+        diagnosticCode: 'auth_otp_protocol_violation',
+        cause: error,
+        stackTrace: stackTrace,
+      );
+
+  Future<void> _commitAuthenticatedUnlocked(
     AuthLifecycleOperation operation,
-    AuthResult result,
-    AuthUser user,
+    AuthAuthenticatedResult result,
   ) async {
+    final user = result.user;
     try {
       await _credentialStore.writeCredential(
         StoredAuthTokens(
@@ -103,6 +191,10 @@ class AuthRepositoryImpl implements AuthRepository {
       operation.throwIfSuperseded();
       await _userStore.writeUser(user);
       operation.throwIfSuperseded();
+      _sessionManager.setAuthenticated(
+        accessToken: result.accessToken,
+        userId: user.id,
+      );
     } catch (error, stackTrace) {
       final cleanup = await AuthLifecycleCleanupPolicy(
         secureCredentialStore: _credentialStore,

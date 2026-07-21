@@ -24,7 +24,11 @@ void main() {
       ),
     );
 
-    final result = dto.toDomain();
+    final loginResult = dto.toDomain();
+    final result = switch (loginResult) {
+      AuthLoginAuthenticated(:final result) => result,
+      AuthLoginOtpChallenge() => throw StateError('unexpected challenge'),
+    };
 
     expect(result.accessToken, 'token');
     expect(result.refreshToken, 'refresh-token');

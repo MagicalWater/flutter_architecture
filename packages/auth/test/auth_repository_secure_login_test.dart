@@ -21,7 +21,7 @@ void main() {
         password: 'password',
       );
 
-      expect(result, isA<Success<AuthResult>>());
+      expect(result, isA<Success<AuthLoginResult>>());
       expect(operations, <String>['secure.write', 'user.write', 'session.set']);
       expect(legacy.writeCalls, 0);
     },
@@ -46,7 +46,7 @@ void main() {
         password: 'password',
       );
 
-      expect(result, isA<FailureResult<AuthResult>>());
+      expect(result, isA<FailureResult<AuthLoginResult>>());
       expect(operations, <String>[
         'secure.write',
         'user.write',
@@ -168,7 +168,7 @@ void main() {
         ),
       ),
     );
-    expect(await newer, isA<Success<AuthResult>>());
+    expect(await newer, isA<Success<AuthLoginResult>>());
     api.complete(
       'older',
       const LoginResponseDto.authenticated(

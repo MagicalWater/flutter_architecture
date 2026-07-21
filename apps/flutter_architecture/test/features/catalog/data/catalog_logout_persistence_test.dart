@@ -58,7 +58,7 @@ void main() {
       account: 'demo@example.com',
       password: 'password',
     );
-    expect(login, isA<Success<AuthResult>>());
+    expect(login, isA<Success<AuthLoginResult>>());
     expect(sessionManager.currentSession, isNotNull);
 
     await catalogLocal.replacePage(

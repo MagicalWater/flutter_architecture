@@ -23,13 +23,10 @@ class LoginUseCase {
 
   final AuthRepository _repository;
 
-  Future<Result<AuthResult>> execute({
+  Future<Result<AuthLoginResult>> execute({
     required String account,
     required String password,
   }) {
-    return _repository.login(
-      account: account,
-      password: password,
-    );
+    return _repository.login(account: account, password: password);
   }
 }

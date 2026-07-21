@@ -93,7 +93,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       state.copyWith(isLoading: true, failure: null, failureOperation: null),
     );
 
-    late final Result<AuthResult> result;
+    late final Result<AuthLoginResult> result;
     try {
       result = await _loginUseCase.execute(
         account: event.account,
@@ -108,7 +108,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     result.when(
       success: (authResult) {
-        emit(state.copyWith(isLoading: false, user: authResult.user));
+        authResult.when(
+          authenticated: (authenticated) {
+            emit(state.copyWith(isLoading: false, user: authenticated.user));
+          },
+          otpChallenge: (_) {
+            // Milestone 20-3 will replace this compatibility state with the
+            // explicit OTP presentation state machine.
+            emit(state.copyWith(isLoading: false));
+          },
+        );
       },
       failure: (error) {
         emit(

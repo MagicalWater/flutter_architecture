@@ -22,27 +22,22 @@ void main() {
       addTearDown(sessionManager.dispose);
 
       bloc.add(
-        const AuthEvent.loginRequested(
-          account: 'demo',
-          password: 'password',
-        ),
+        const AuthEvent.loginRequested(account: 'demo', password: 'password'),
       );
 
       await expectLater(
         bloc.stream,
-        emitsInOrder(
-          <Matcher>[
-            predicate<AuthState>((state) => state.isLoading),
-            predicate<AuthState>(
-              (state) =>
-                  !state.isLoading &&
-                  state.isAuthenticated &&
-                  state.user?.name == 'Demo User' &&
-                  state.failure == null &&
-                  state.failureOperation == null,
-            ),
-          ],
-        ),
+        emitsInOrder(<Matcher>[
+          predicate<AuthState>((state) => state.isLoading),
+          predicate<AuthState>(
+            (state) =>
+                !state.isLoading &&
+                state.isAuthenticated &&
+                state.user?.name == 'Demo User' &&
+                state.failure == null &&
+                state.failureOperation == null,
+          ),
+        ]),
       );
     });
 
@@ -50,7 +45,7 @@ void main() {
       final sessionManager = SessionManager();
       final repository = _FakeAuthRepository(
         sessionManager,
-        loginResult: const FailureResult<AuthResult>(
+        loginResult: const FailureResult<AuthLoginResult>(
           Failure(message: 'login failed'),
         ),
       );
@@ -66,26 +61,21 @@ void main() {
       addTearDown(sessionManager.dispose);
 
       bloc.add(
-        const AuthEvent.loginRequested(
-          account: 'demo',
-          password: 'wrong',
-        ),
+        const AuthEvent.loginRequested(account: 'demo', password: 'wrong'),
       );
 
       await expectLater(
         bloc.stream,
-        emitsInOrder(
-          <Matcher>[
-            predicate<AuthState>((state) => state.isLoading),
-            predicate<AuthState>(
-              (state) =>
-                  !state.isLoading &&
-                  !state.isAuthenticated &&
-                  state.failure?.message == 'login failed' &&
-                  state.failureOperation == AuthFailureOperation.login,
-            ),
-          ],
-        ),
+        emitsInOrder(<Matcher>[
+          predicate<AuthState>((state) => state.isLoading),
+          predicate<AuthState>(
+            (state) =>
+                !state.isLoading &&
+                !state.isAuthenticated &&
+                state.failure?.message == 'login failed' &&
+                state.failureOperation == AuthFailureOperation.login,
+          ),
+        ]),
       );
     });
 
@@ -101,25 +91,28 @@ void main() {
       final errors = <Object>[];
       final errorCaptured = Completer<void>();
 
-      await runZonedGuarded(() async {
-        bloc = AuthBloc(
-          LoginUseCase(repository),
-          RestoreSessionUseCase(repository),
-          LogoutUseCase(repository),
-          sessionManager,
-          mutationCoordinator,
-        );
-        bloc.add(
-          const AuthEvent.loginRequested(
-            account: 'demo',
-            password: 'password',
-          ),
-        );
-        await errorCaptured.future.timeout(const Duration(seconds: 1));
-      }, (error, stackTrace) {
-        errors.add(error);
-        if (!errorCaptured.isCompleted) errorCaptured.complete();
-      });
+      await runZonedGuarded(
+        () async {
+          bloc = AuthBloc(
+            LoginUseCase(repository),
+            RestoreSessionUseCase(repository),
+            LogoutUseCase(repository),
+            sessionManager,
+            mutationCoordinator,
+          );
+          bloc.add(
+            const AuthEvent.loginRequested(
+              account: 'demo',
+              password: 'password',
+            ),
+          );
+          await errorCaptured.future.timeout(const Duration(seconds: 1));
+        },
+        (error, stackTrace) {
+          errors.add(error);
+          if (!errorCaptured.isCompleted) errorCaptured.complete();
+        },
+      );
 
       expect(errors, contains(same(unknownError)));
       expect(bloc.state.isLoading, isFalse);
@@ -145,10 +138,7 @@ void main() {
       addTearDown(sessionManager.dispose);
 
       bloc.add(
-        const AuthEvent.loginRequested(
-          account: 'demo',
-          password: 'password',
-        ),
+        const AuthEvent.loginRequested(account: 'demo', password: 'password'),
       );
       await bloc.stream.firstWhere((state) => state.isAuthenticated);
 
@@ -156,16 +146,14 @@ void main() {
 
       await expectLater(
         bloc.stream,
-        emitsInOrder(
-          <Matcher>[
-            predicate<AuthState>(
-              (state) => state.isLoading && state.isAuthenticated,
-            ),
-            predicate<AuthState>(
-              (state) => !state.isLoading && !state.isAuthenticated,
-            ),
-          ],
-        ),
+        emitsInOrder(<Matcher>[
+          predicate<AuthState>(
+            (state) => state.isLoading && state.isAuthenticated,
+          ),
+          predicate<AuthState>(
+            (state) => !state.isLoading && !state.isAuthenticated,
+          ),
+        ]),
       );
     });
 
@@ -189,10 +177,7 @@ void main() {
       addTearDown(sessionManager.dispose);
 
       bloc.add(
-        const AuthEvent.loginRequested(
-          account: 'demo',
-          password: 'password',
-        ),
+        const AuthEvent.loginRequested(account: 'demo', password: 'password'),
       );
       await bloc.stream.firstWhere((state) => state.isAuthenticated);
 
@@ -200,21 +185,19 @@ void main() {
 
       await expectLater(
         bloc.stream,
-        emitsInOrder(
-          <Matcher>[
-            predicate<AuthState>(
-              (state) => state.isLoading && state.isAuthenticated,
-            ),
-            predicate<AuthState>(
-              (state) =>
-                  !state.isLoading &&
-                  state.isAuthenticated &&
-                  state.user?.name == 'Demo User' &&
-                  state.failure?.message == 'logout failed' &&
-                  state.failureOperation == AuthFailureOperation.logout,
-            ),
-          ],
-        ),
+        emitsInOrder(<Matcher>[
+          predicate<AuthState>(
+            (state) => state.isLoading && state.isAuthenticated,
+          ),
+          predicate<AuthState>(
+            (state) =>
+                !state.isLoading &&
+                state.isAuthenticated &&
+                state.user?.name == 'Demo User' &&
+                state.failure?.message == 'logout failed' &&
+                state.failureOperation == AuthFailureOperation.logout,
+          ),
+        ]),
       );
     });
 
@@ -237,17 +220,15 @@ void main() {
 
       await expectLater(
         bloc.stream,
-        emitsInOrder(
-          <Matcher>[
-            predicate<AuthState>((state) => state.isLoading),
-            predicate<AuthState>(
-              (state) =>
-                  !state.isLoading &&
-                  state.isAuthenticated &&
-                  state.user?.name == 'Demo User',
-            ),
-          ],
-        ),
+        emitsInOrder(<Matcher>[
+          predicate<AuthState>((state) => state.isLoading),
+          predicate<AuthState>(
+            (state) =>
+                !state.isLoading &&
+                state.isAuthenticated &&
+                state.user?.name == 'Demo User',
+          ),
+        ]),
       );
     });
 
@@ -291,10 +272,7 @@ void main() {
 
       expect(bloc.state.isLoading, isFalse);
       expect(bloc.state.user?.id, 'user-b');
-      expect(
-        states.where((state) => state.user?.id == 'user-a'),
-        isEmpty,
-      );
+      expect(states.where((state) => state.user?.id == 'user-a'), isEmpty);
     });
 
     test('Logout 完成後舊 Login 不會重新建立 authenticated UI state', () async {
@@ -428,25 +406,20 @@ void main() {
       addTearDown(sessionManager.dispose);
 
       bloc.add(
-        const AuthEvent.loginRequested(
-          account: 'demo',
-          password: 'password',
-        ),
+        const AuthEvent.loginRequested(account: 'demo', password: 'password'),
       );
 
       await expectLater(
         bloc.stream,
-        emitsInOrder(
-          <Matcher>[
-            predicate<AuthState>((state) => state.isLoading),
-            predicate<AuthState>(
-              (state) =>
-                  !state.isLoading &&
-                  state.isAuthenticated &&
-                  state.user?.name == 'Demo User',
-            ),
-          ],
-        ),
+        emitsInOrder(<Matcher>[
+          predicate<AuthState>((state) => state.isLoading),
+          predicate<AuthState>(
+            (state) =>
+                !state.isLoading &&
+                state.isAuthenticated &&
+                state.user?.name == 'Demo User',
+          ),
+        ]),
       );
 
       sessionManager.clear();
@@ -493,7 +466,7 @@ class _ControlledAuthRepository implements AuthRepository {
   void completeRestore() => _restoreCompletion.complete();
 
   @override
-  Future<Result<AuthResult>> login({
+  Future<Result<AuthLoginResult>> login({
     required String account,
     required String password,
   }) async {
@@ -511,10 +484,12 @@ class _ControlledAuthRepository implements AuthRepository {
         userId: account,
       );
       return Success(
-        AuthResult(
-          accessToken: 'access-$account',
-          refreshToken: 'refresh-$account',
-          user: user,
+        AuthLoginResult.authenticated(
+          AuthResult(
+            accessToken: 'access-$account',
+            refreshToken: 'refresh-$account',
+            user: user,
+          ),
         ),
       );
     } finally {
@@ -550,6 +525,16 @@ class _ControlledAuthRepository implements AuthRepository {
       if (!_restoreFinished.isCompleted) _restoreFinished.complete();
     }
   }
+
+  @override
+  Future<Result<AuthAuthenticatedResult>> verifyOtp({
+    required String challengeId,
+    required String code,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<Result<OtpChallenge>> resendOtp({required String challengeId}) =>
+      throw UnimplementedError();
 }
 
 class _FakeAuthRepository implements AuthRepository {
@@ -561,13 +546,13 @@ class _FakeAuthRepository implements AuthRepository {
   });
 
   final SessionManager _sessionManager;
-  final Result<AuthResult>? loginResult;
+  final Result<AuthLoginResult>? loginResult;
   final Result<void>? logoutResult;
   final Object? loginError;
   AuthUser? _cachedUser;
 
   @override
-  Future<Result<AuthResult>> login({
+  Future<Result<AuthLoginResult>> login({
     required String account,
     required String password,
   }) async {
@@ -581,10 +566,7 @@ class _FakeAuthRepository implements AuthRepository {
       return configuredResult;
     }
 
-    const user = AuthUser(
-      id: 'user-1',
-      name: 'Demo User',
-    );
+    const user = AuthUser(id: 'user-1', name: 'Demo User');
     _cachedUser = user;
 
     _sessionManager.setAuthenticated(
@@ -593,10 +575,12 @@ class _FakeAuthRepository implements AuthRepository {
     );
 
     return const Success(
-      AuthResult(
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-        user: user,
+      AuthLoginResult.authenticated(
+        AuthResult(
+          accessToken: 'access-token',
+          refreshToken: 'refresh-token',
+          user: user,
+        ),
       ),
     );
   }
@@ -628,4 +612,14 @@ class _FakeAuthRepository implements AuthRepository {
     );
     return Success(user);
   }
+
+  @override
+  Future<Result<AuthAuthenticatedResult>> verifyOtp({
+    required String challengeId,
+    required String code,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<Result<OtpChallenge>> resendOtp({required String challengeId}) =>
+      throw UnimplementedError();
 }

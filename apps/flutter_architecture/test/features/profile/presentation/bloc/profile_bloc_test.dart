@@ -32,7 +32,8 @@ void main() {
                 !state.isLoading &&
                 !state.isAuthenticated &&
                 state.profile == null &&
-                state.failure == null && state.failureOperation == null,
+                state.failure == null &&
+                state.failureOperation == null,
           ),
         ),
       );
@@ -61,60 +62,65 @@ void main() {
 
       await expectLater(
         bloc.stream,
-        emitsInOrder(
-          <Matcher>[
-            predicate<ProfileState>(
-              (state) => state.isLoading && state.isAuthenticated,
-            ),
-            predicate<ProfileState>(
-              (state) =>
-                  !state.isLoading &&
-                  state.isAuthenticated &&
-                  state.profile?.name == 'Demo User' &&
-                  state.failure == null && state.failureOperation == null,
-            ),
-          ],
-        ),
+        emitsInOrder(<Matcher>[
+          predicate<ProfileState>(
+            (state) => state.isLoading && state.isAuthenticated,
+          ),
+          predicate<ProfileState>(
+            (state) =>
+                !state.isLoading &&
+                state.isAuthenticated &&
+                state.profile?.name == 'Demo User' &&
+                state.failure == null &&
+                state.failureOperation == null,
+          ),
+        ]),
       );
 
       expect(profileRepository.getProfileCallCount, 1);
     });
 
-    test('Profile unknown error 保留 framework error flow，不降級為 Failure', () async {
-      final unknownError = StateError('profile unknown');
-      final profileRepository = _FakeProfileRepository(error: unknownError);
-      final authRepository = _FakeAuthRepository();
-      final sessionManager = SessionManager();
-      late ProfileBloc bloc;
-      final errors = <Object>[];
-      final errorCaptured = Completer<void>();
+    test(
+      'Profile unknown error 保留 framework error flow，不降級為 Failure',
+      () async {
+        final unknownError = StateError('profile unknown');
+        final profileRepository = _FakeProfileRepository(error: unknownError);
+        final authRepository = _FakeAuthRepository();
+        final sessionManager = SessionManager();
+        late ProfileBloc bloc;
+        final errors = <Object>[];
+        final errorCaptured = Completer<void>();
 
-      sessionManager.setAuthenticated(
-        accessToken: 'access-token',
-        userId: 'user-1',
-      );
-
-      await runZonedGuarded(() async {
-        bloc = ProfileBloc(
-          GetProfileUseCase(profileRepository),
-          LogoutUseCase(authRepository),
-          sessionManager,
+        sessionManager.setAuthenticated(
+          accessToken: 'access-token',
+          userId: 'user-1',
         );
-        bloc.add(const ProfileEvent.requested());
-        await errorCaptured.future.timeout(const Duration(seconds: 1));
-      }, (error, stackTrace) {
-        errors.add(error);
-        if (!errorCaptured.isCompleted) errorCaptured.complete();
-      });
 
-      expect(errors, contains(same(unknownError)));
-      expect(bloc.state.isLoading, isFalse);
-      expect(bloc.state.failure, isNull);
-      expect(bloc.state.failureOperation, isNull);
+        await runZonedGuarded(
+          () async {
+            bloc = ProfileBloc(
+              GetProfileUseCase(profileRepository),
+              LogoutUseCase(authRepository),
+              sessionManager,
+            );
+            bloc.add(const ProfileEvent.requested());
+            await errorCaptured.future.timeout(const Duration(seconds: 1));
+          },
+          (error, stackTrace) {
+            errors.add(error);
+            if (!errorCaptured.isCompleted) errorCaptured.complete();
+          },
+        );
 
-      await bloc.close();
-      await sessionManager.dispose();
-    });
+        expect(errors, contains(same(unknownError)));
+        expect(bloc.state.isLoading, isFalse);
+        expect(bloc.state.failure, isNull);
+        expect(bloc.state.failureOperation, isNull);
+
+        await bloc.close();
+        await sessionManager.dispose();
+      },
+    );
 
     test('Session expiration 會同步清除 Profile UI state', () async {
       final profileRepository = _FakeProfileRepository();
@@ -221,8 +227,7 @@ void main() {
       expect(sessionManager.currentSession?.userId, 'account-b');
     });
 
-    test('clear 後立即重新登入時舊 sessionCleared event 不會清除新 Session UI',
-        () async {
+    test('clear 後立即重新登入時舊 sessionCleared event 不會清除新 Session UI', () async {
       final profileRepository = _FakeProfileRepository();
       final authRepository = _FakeAuthRepository();
       final sessionManager = SessionManager();
@@ -281,28 +286,22 @@ class _FakeProfileRepository implements ProfileRepository {
     if (pending != null) {
       return pending.future;
     }
-    return const Success(
-      Profile(
-        id: 'user-1',
-        name: 'Demo User',
-      ),
-    );
+    return const Success(Profile(id: 'user-1', name: 'Demo User'));
   }
 }
 
 class _FakeAuthRepository implements AuthRepository {
   @override
-  Future<Result<AuthResult>> login({
+  Future<Result<AuthLoginResult>> login({
     required String account,
     required String password,
   }) async {
     return const Success(
-      AuthResult(
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-        user: AuthUser(
-          id: 'user-1',
-          name: 'Demo User',
+      AuthLoginResult.authenticated(
+        AuthResult(
+          accessToken: 'access-token',
+          refreshToken: 'refresh-token',
+          user: AuthUser(id: 'user-1', name: 'Demo User'),
         ),
       ),
     );
@@ -317,4 +316,14 @@ class _FakeAuthRepository implements AuthRepository {
   Future<Result<AuthUser?>> restoreSession() async {
     return const Success(null);
   }
+
+  @override
+  Future<Result<AuthAuthenticatedResult>> verifyOtp({
+    required String challengeId,
+    required String code,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<Result<OtpChallenge>> resendOtp({required String challengeId}) =>
+      throw UnimplementedError();
 }

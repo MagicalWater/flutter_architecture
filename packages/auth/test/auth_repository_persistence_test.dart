@@ -46,7 +46,7 @@ void main() {
     );
 
     await expectLater(loginA, throwsA(isA<AuthLifecycleOperationSuperseded>()));
-    expect(resultB, isA<Success<AuthResult>>());
+    expect(resultB, isA<Success<AuthLoginResult>>());
     expect(local.tokens?.accessToken, 'access-b');
     expect(local.user?.id, 'user-b');
     expect(sessionManager.currentSession?.userId, 'user-b');
@@ -130,7 +130,7 @@ void main() {
     await expectLater(logout, throwsA(isA<AuthLifecycleOperationSuperseded>()));
     final loginResult = await login;
 
-    expect(loginResult, isA<Success<AuthResult>>());
+    expect(loginResult, isA<Success<AuthLoginResult>>());
     expect(local.clearUserCalls, 1);
     expect(local.clearTokensCalls, 1);
     expect(local.tokens?.accessToken, 'access-b');
@@ -154,7 +154,7 @@ void main() {
       password: 'password',
     );
 
-    expect(result, isA<FailureResult<AuthResult>>());
+    expect(result, isA<FailureResult<AuthLoginResult>>());
     expect(local.clearTokensCalls, 1);
     expect(local.clearLegacyCredentialCalls, 1);
     expect(local.clearUserCalls, 1);

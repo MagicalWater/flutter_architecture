@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.5.0
 Template Baseline: 1.5.0
 Phase 1 / MVP: Completed
 Current documentation initiative: Milestone 22
-Current gate: 22-3 completed; next approved phase is 22-4 Roadmap Active / Candidate Separation
+Current gate: 22-4 completed; next approved phase is 22-5 README Coverage Baseline
 ```
 
 版本字串唯一來源為 `VERSION`；正式版本內容由 `CHANGELOG.md` 記錄。
@@ -333,7 +333,7 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 
 ```txt
 Milestone 22 — Documentation Authority & Navigation Foundation
-Current gate: 22-3 completed; next approved phase is 22-4 Roadmap Active / Candidate Separation
+Current gate: 22-4 completed; next approved phase is 22-5 README Coverage Baseline
 ```
 
 Milestone 22 的主要目標：

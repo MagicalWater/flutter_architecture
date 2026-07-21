@@ -46,7 +46,7 @@ docs/roadmap.md
 
 這是固定最小集合，不代表所有任務都只能讀這些文件。完成最小讀取後，再依任務類型按需載入局部文件。
 
-目前 `docs/project_context.md` 與 `docs/roadmap.md` 尚在 Milestone 22 migration 中，仍包含歷史內容；它們會分別在 22-3 與 22-4 收斂。讀取時以最新 current section、`VERSION` 與 final review 交叉驗證。
+`docs/project_context.md` 已於 22-3 收斂為 current-only snapshot；`docs/roadmap.md` 已於 22-4 分離為 index、active 與 candidates。歷史 milestone 細節應改由 Milestone、Audit、Plan、Archive 與 Git history 路由，不再從 current 文件讀取。
 
 ## 任務式讀取路由
 

@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.5.0
 
 本目錄是 Milestone charter、plan、review、runtime evidence 與 release history 的穩定索引入口。
 
-Milestone 22-2 先建立 routing contract，不搬移既有 artifacts；closed milestone 的完整索引會在 22-4 補齊。
+本索引不搬移既有 artifacts；它只提供可持續的 routing，避免 current Roadmap 再次累積完整歷史 journal。
 
 ## Authority
 
@@ -24,16 +24,39 @@ Milestone routing 只回答：
 
 ## Status rule
 
-- Active：以 `docs/roadmap.md` 的 active entry 為準。
+- Active：以 `docs/roadmap/active.md` 為準。
 - Completed / Archived：以 final review、`CHANGELOG.md` 與 `VERSION` 為準。
-- Candidate：以 Roadmap candidate 或 `docs/backlog.md` 為準。
+- Candidate：以 `docs/roadmap/candidates.md` 或 `docs/backlog.md` 為準。
 
-## Current routing
+## Active routing
 
-- Milestone 18：`docs/audits/milestone_18/` 與 `docs/audits/milestone_18_holistic_audit.md`。
-- Milestone 19：`docs/audits/milestone_19/`、root planning／holistic reviews 與相關 `docs/superpowers/plans/`。
-- Milestone 20：`docs/audits/milestone_20/`、planning review、implementation plan 與 final review。
-- Milestone 21：`docs/audits/milestone_21/`、planning review、implementation plan 與 final review。
-- Milestone 22：`docs/audits/milestone_22_planning_review.md`、Milestone 22 spec／plan 與 `docs/audits/milestone_22/`。
+- Milestone 22：`docs/roadmap/active.md`。
+- Design：`docs/superpowers/specs/2026-07-21-documentation-authority-navigation-foundation-design.md`。
+- Planning Review：`docs/audits/milestone_22_planning_review.md`。
+- Implementation Plan：`docs/superpowers/plans/2026-07-21-milestone-22-documentation-authority-navigation-foundation.md`。
+- Phase Reviews：`docs/audits/milestone_22/`。
 
-早期 Milestone 的歷史目前分散於 `docs/roadmap.md`、`docs/project_context.md`、`CHANGELOG.md` 與 `docs/archive/`。22-3、22-4 會先建立 migration manifest，再收斂 routing。
+## Closed milestone routing
+
+| Milestone | Status | Primary routing |
+|---|---|---|
+| 1–8 | Completed / Archived | `docs/archive/progress_v1.0.0.md`、`CHANGELOG.md`、Git history |
+| 9 | Completed / Archived | Decision 013、`CHANGELOG.md`、Git history |
+| 10 | Completed / Archived | Decision 014、`CHANGELOG.md`、Git history |
+| 11 | Deferred | `docs/roadmap/candidates.md`、`docs/backlog.md` |
+| 12 | Completed / Archived | Decision 015、`CHANGELOG.md`、Git history |
+| 13 | Completed / Archived | Decision 016、`CHANGELOG.md`、Git history |
+| 14 | Completed / Archived | `docs/archive/milestone_14_offline_cache.md`、Decision 017 |
+| 15 | Completed / Archived | Decision 018、`docs/superpowers/plans/`、`CHANGELOG.md` |
+| 16 | Completed / Archived | Decision 019、`CHANGELOG.md`、Git history |
+| 17 | Completed / Archived | Decision 020、`CHANGELOG.md`、Git history |
+| 18 | Completed / Archived | `docs/audits/milestone_18_holistic_audit.md`、`docs/audits/milestone_18/` |
+| 19 | Completed / Archived | planning review、`docs/audits/milestone_19/`、holistic final review、plans |
+| 20 | Completed / Archived | planning review、`docs/audits/milestone_20/`、implementation plan |
+| 21 | Completed / Archived | planning review、`docs/audits/milestone_21/`、implementation plan |
+
+完整 disposition 與歷史保存位置記錄於 `docs/migrations/m22_roadmap_manifest.md`。
+
+## Routing rule
+
+Milestone index 只保存名稱、status 與 artifact route。它不得複製 Architecture Decision body、Task checklist、測試 journal、runtime evidence 或 release notes 全文。

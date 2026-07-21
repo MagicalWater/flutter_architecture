@@ -14,6 +14,8 @@ String localizedAuthFailure(
   return switch (operation) {
     AuthFailureOperation.restore => l10n.authRestoreFailureMessage,
     AuthFailureOperation.login => l10n.authLoginFailureMessage,
+    AuthFailureOperation.verifyOtp => l10n.authLoginFailureMessage,
+    AuthFailureOperation.resendOtp => l10n.authLoginFailureMessage,
     AuthFailureOperation.logout => l10n.authLogoutFailureMessage,
   };
 }

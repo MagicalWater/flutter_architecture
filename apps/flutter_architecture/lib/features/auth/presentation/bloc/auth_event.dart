@@ -14,6 +14,11 @@ sealed class AuthEvent with _$AuthEvent {
     required String password,
   }) = AuthLoginRequested;
 
+  const factory AuthEvent.otpVerifyRequested({required String code}) =
+      AuthOtpVerifyRequested;
+
+  const factory AuthEvent.otpResendRequested() = AuthOtpResendRequested;
+
   /// 使用者按下登出。
   const factory AuthEvent.logoutRequested() = AuthLogoutRequested;
 

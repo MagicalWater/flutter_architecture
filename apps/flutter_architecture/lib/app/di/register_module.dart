@@ -10,6 +10,7 @@ import 'package:flutter_architecture/features/auth/data/migration/auth_migration
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
+import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
@@ -185,6 +186,37 @@ abstract class RegisterModule {
   @injectable
   auth.LoginUseCase loginUseCase(auth.AuthRepository repository) {
     return auth.LoginUseCase(repository);
+  }
+
+  @injectable
+  auth.VerifyOtpUseCase verifyOtpUseCase(auth.AuthRepository repository) {
+    return auth.VerifyOtpUseCase(repository);
+  }
+
+  @injectable
+  auth.ResendOtpUseCase resendOtpUseCase(auth.AuthRepository repository) {
+    return auth.ResendOtpUseCase(repository);
+  }
+
+  @lazySingleton
+  AuthBloc authBloc(
+    auth.LoginUseCase loginUseCase,
+    auth.RestoreSessionUseCase restoreSessionUseCase,
+    auth.LogoutUseCase logoutUseCase,
+    auth.SessionManager sessionManager,
+    auth.AuthStateMutationCoordinator mutationCoordinator,
+    auth.VerifyOtpUseCase verifyOtpUseCase,
+    auth.ResendOtpUseCase resendOtpUseCase,
+  ) {
+    return AuthBloc(
+      loginUseCase,
+      restoreSessionUseCase,
+      logoutUseCase,
+      sessionManager,
+      mutationCoordinator,
+      verifyOtpUseCase: verifyOtpUseCase,
+      resendOtpUseCase: resendOtpUseCase,
+    );
   }
 
   @injectable

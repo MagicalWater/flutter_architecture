@@ -223,6 +223,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i662.LoginUseCase>(
       () => registerModule.loginUseCase(gh<_i662.AuthRepository>()),
     );
+    gh.factory<_i662.VerifyOtpUseCase>(
+      () => registerModule.verifyOtpUseCase(gh<_i662.AuthRepository>()),
+    );
+    gh.factory<_i662.ResendOtpUseCase>(
+      () => registerModule.resendOtpUseCase(gh<_i662.AuthRepository>()),
+    );
     gh.factory<_i662.LogoutUseCase>(
       () => registerModule.logoutUseCase(gh<_i662.AuthRepository>()),
     );
@@ -237,12 +243,14 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.lazySingleton<_i1024.AuthBloc>(
-      () => _i1024.AuthBloc(
+      () => registerModule.authBloc(
         gh<_i662.LoginUseCase>(),
         gh<_i662.RestoreSessionUseCase>(),
         gh<_i662.LogoutUseCase>(),
         gh<_i662.SessionManager>(),
         gh<_i662.AuthStateMutationCoordinator>(),
+        gh<_i662.VerifyOtpUseCase>(),
+        gh<_i662.ResendOtpUseCase>(),
       ),
     );
     return this;

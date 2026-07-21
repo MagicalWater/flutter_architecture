@@ -65,3 +65,17 @@ last_reviewed_baseline: 1.5.1
 | ADR-012 | extracted | accepted | completion statement routed to current package/App README | ADR-004 scope note deferred to Batch B |
 
 Batch A aggregate source sections remain unchanged. Canonical files are migration targets that passed semantic review；formal authority cutover仍延後至 Batch G。
+
+### Batch B — Tooling, Governance and Platform Contracts
+
+| ID | Migration state | Semantic preservation | Non-ADR routing | Relation result |
+|---|---|---|---|---|
+| ADR-004 | extracted | accepted | App DI tool choice retained；package interpretation narrowed | reciprocal partial scope edge with ADR-012 |
+| ADR-005 | extracted | accepted | historical future tense normalized to current package boundary | ADR-001、006–008、012、013 retained |
+| ADR-009 | extracted | accepted | durable language choice retained | agent enforcement routed to `AGENTS.md` |
+| ADR-010 | extracted | accepted | conditional initialization retained | setup routed to README/guide；support claim routed to current snapshot |
+| ADR-011 | extracted | accepted | docs-over-chat and single-authority principle retained | stale path list/update flow routed to M22 governance |
+| ADR-013 | extracted | accepted | Retrofit/Dio/DTO/Mapper/DataSource/Repository boundary retained | volatile source layout routed to README/source |
+| ADR-014 | extracted | accepted | environment、ApiMode、entrypoint、typed config and validation retained | M9/M18 history routed to evidence/current snapshot |
+
+Batch B aggregate source sections remain unchanged. 14 rows are now `extracted` and 8 rows remain `aggregate`; formal authority cutover仍延後至 Batch G。

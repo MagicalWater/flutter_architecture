@@ -7,6 +7,7 @@ last_reviewed_baseline: 1.5.1
 id: ADR-012
 title: Reusable Package Dependency Injection Boundary
 supersedes:
+  - ADR-004
 superseded_by:
 related:
   - ADR-001
@@ -48,13 +49,15 @@ Package class 使用 constructor injection 表達必要依賴。App 是唯一 Co
 
 ## Supersession
 
-本 Decision 不取代 App 使用 `get_it + injectable` 的選型；它只限制 reusable package 不自行綁定該 framework。與 ADR-004 的 scope relation將在 ADR-004 extraction 時正式記錄。
+本 Decision 部分取代 ADR-004 的 package scope：reusable package 不得因 App 採用 `get_it + injectable` 而自行綁定該 framework 或宣告 App lifecycle。
+
+它不取代 ADR-004 的 App scope；App 仍可使用 `get_it + injectable`，且維持唯一 Composition Root。
 
 ## Related Decisions
 
 - ADR-001：package promotion 與 dependency direction。
 - ADR-002：Monorepo package organization。
-- ADR-004：App dependency injection tool selection，尚待 Batch B extraction。
+- ADR-004：App dependency injection tool selection；本 Decision 只部分取代其 reusable package scope。
 
 ## Related Evidence
 

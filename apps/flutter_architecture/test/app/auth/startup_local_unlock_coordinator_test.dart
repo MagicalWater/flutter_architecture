@@ -154,6 +154,22 @@ void main() {
     expect(restores, 0);
     expect(coordinator.state, StartupLocalUnlockState.superseded);
   });
+
+  test('server login escape preserves preference write failure', () async {
+    final coordinator = StartupLocalUnlockCoordinator(
+      preferenceStore: _FailingWriteStore(),
+      verifier: _Verifier(),
+      sessionManager: SessionManager(),
+      mutationCoordinator: AuthStateMutationCoordinator(),
+      restoreSession: () {},
+    );
+
+    await coordinator.useServerLogin();
+
+    expect(coordinator.state, StartupLocalUnlockState.operationalFailure);
+    expect(coordinator.failure, isA<StateError>());
+    expect(coordinator.failureStackTrace, isNotNull);
+  });
 }
 
 final class _Store implements LocalUnlockPreferenceStore {
@@ -206,6 +222,20 @@ final class _PendingStore implements LocalUnlockPreferenceStore {
 
   @override
   Future<void> write(LocalUnlockPreference preference) async {}
+
+  @override
+  Future<void> clear() async {}
+}
+
+final class _FailingWriteStore implements LocalUnlockPreferenceStore {
+  @override
+  Future<LocalUnlockPreferenceReadResult> read() async =>
+      const LocalUnlockPreferenceReadResult.absent();
+
+  @override
+  Future<void> write(LocalUnlockPreference preference) async {
+    throw StateError('write failed');
+  }
 
   @override
   Future<void> clear() async {}

@@ -139,12 +139,14 @@ void main() {
     final profile = routeForAuthDestination(AuthNavigationDestination.profile);
     final login = routeForAuthDestination(AuthNavigationDestination.login);
     final otp = routeForAuthDestination(AuthNavigationDestination.otp);
+    final locked = routeForAuthDestination(AuthNavigationDestination.locked);
 
     expect(profile.routeName, ShellRoute.name);
     expect(profile.initialChildren!.single.routeName, ProfileRoute.name);
     expect(login.routeName, ShellRoute.name);
     expect(login.initialChildren!.single.routeName, LoginRoute.name);
     expect(otp.routeName, OtpRoute.name);
+    expect(locked.routeName, LocalUnlockRoute.name);
   });
 
   test('challenge導向OTP且replacement不重複導航', () async {

@@ -96,6 +96,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginOpenProtectedAction => 'Open protected page';
 
   @override
+  String get localUnlockTitle => 'Unlock saved session';
+
+  @override
+  String get localUnlockRequiredMessage =>
+      'Verify that it is you before restoring the saved session.';
+
+  @override
+  String get localUnlockUnavailableMessage =>
+      'Local verification is unavailable. Try again or log in with your account.';
+
+  @override
+  String get localUnlockFailureMessage =>
+      'The saved session could not be unlocked safely.';
+
+  @override
+  String get localUnlockRetryAction => 'Try again';
+
+  @override
+  String get localUnlockPromptingLabel => 'Waiting for verification';
+
+  @override
+  String get localUnlockUseLoginAction => 'Log in with account instead';
+
+  @override
+  String get localUnlockSemanticsLabel => 'Saved session unlock screen';
+
+  @override
+  String get localUnlockIconSemanticsLabel => 'Locked session';
+
+  @override
+  String get localUnlockPromptProgressSemanticsLabel =>
+      'Local verification in progress';
+
+  @override
   String get authInvalidCredentialsMessage =>
       'The account or password is incorrect.';
 

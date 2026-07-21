@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth/auth.dart';
+import 'package:flutter/foundation.dart';
 
 enum StartupLocalUnlockState {
   idle,
@@ -13,13 +14,14 @@ enum StartupLocalUnlockState {
   preferenceCorrupted,
   operationalFailure,
   superseded,
+  serverLoginRequested,
 }
 
 /// App-owned cold-start local unlock gate.
 ///
 /// 此 coordinator 是 startup restore 的唯一入口。當 preference enabled 時，
 /// 必須先完成 local user-presence verification，才允許 dispatch repository restore。
-final class StartupLocalUnlockCoordinator {
+final class StartupLocalUnlockCoordinator extends ChangeNotifier {
   StartupLocalUnlockCoordinator({
     required LocalUnlockPreferenceStore preferenceStore,
     required LocalUserPresenceVerifier verifier,
@@ -44,12 +46,33 @@ final class StartupLocalUnlockCoordinator {
   Future<void>? _inFlight;
 
   StartupLocalUnlockState get state => _state;
+  bool get requiresUnlockSurface => switch (_state) {
+    StartupLocalUnlockState.locked ||
+    StartupLocalUnlockState.prompting ||
+    StartupLocalUnlockState.rejected ||
+    StartupLocalUnlockState.unavailable ||
+    StartupLocalUnlockState.preferenceCorrupted ||
+    StartupLocalUnlockState.operationalFailure => true,
+    _ => false,
+  };
   Object? get failure => _failure;
   StackTrace? get failureStackTrace => _failureStackTrace;
 
   Future<void> start() => _run();
 
   Future<void> retry() => _run();
+
+  Future<void> useServerLogin() async {
+    _mutationCoordinator.beginLifecycleOperation();
+    _sessionManager.clear();
+    try {
+      await _preferenceStore.write(LocalUnlockPreference.disabled);
+    } catch (error, stackTrace) {
+      _recordFailure(error, stackTrace);
+      return;
+    }
+    _setState(StartupLocalUnlockState.serverLoginRequested);
+  }
 
   Future<void> _run() {
     final existing = _inFlight;
@@ -66,7 +89,7 @@ final class StartupLocalUnlockCoordinator {
     final operation = _mutationCoordinator.beginLifecycleOperation();
     _failure = null;
     _failureStackTrace = null;
-    _state = StartupLocalUnlockState.checkingPreference;
+    _setState(StartupLocalUnlockState.checkingPreference);
 
     late final LocalUnlockPreferenceReadResult preferenceResult;
     try {
@@ -76,7 +99,7 @@ final class StartupLocalUnlockCoordinator {
       return;
     }
     if (!operation.isCurrent) {
-      _state = StartupLocalUnlockState.superseded;
+      _setState(StartupLocalUnlockState.superseded);
       return;
     }
 
@@ -93,34 +116,34 @@ final class StartupLocalUnlockCoordinator {
         _sessionManager.clear();
         await _verifyThenRestore(operation);
       case LocalUnlockPreferenceReadCorrupted():
-        _state = StartupLocalUnlockState.preferenceCorrupted;
+        _setState(StartupLocalUnlockState.preferenceCorrupted);
     }
   }
 
   Future<void> _verifyThenRestore(AuthLifecycleOperation operation) async {
-    _state = StartupLocalUnlockState.locked;
+    _setState(StartupLocalUnlockState.locked);
 
     try {
       final capability = await _verifier.checkCapability();
       if (!operation.isCurrent) {
-        _state = StartupLocalUnlockState.superseded;
+        _setState(StartupLocalUnlockState.superseded);
         return;
       }
       if (capability is LocalUserPresenceUnavailable) {
-        _state = StartupLocalUnlockState.unavailable;
+        _setState(StartupLocalUnlockState.unavailable);
         return;
       }
 
-      _state = StartupLocalUnlockState.prompting;
+      _setState(StartupLocalUnlockState.prompting);
       final verification = await _verifier.verify(
         reason: 'Unlock saved session',
       );
       if (!operation.isCurrent) {
-        _state = StartupLocalUnlockState.superseded;
+        _setState(StartupLocalUnlockState.superseded);
         return;
       }
       if (verification is LocalUserPresenceRejected) {
-        _state = StartupLocalUnlockState.rejected;
+        _setState(StartupLocalUnlockState.rejected);
         return;
       }
 
@@ -132,16 +155,22 @@ final class StartupLocalUnlockCoordinator {
 
   Future<void> _restore(AuthLifecycleOperation operation) async {
     if (!operation.isCurrent) {
-      _state = StartupLocalUnlockState.superseded;
+      _setState(StartupLocalUnlockState.superseded);
       return;
     }
-    _state = StartupLocalUnlockState.restoring;
+    _setState(StartupLocalUnlockState.restoring);
     await Future<void>.sync(_restoreSession);
   }
 
   void _recordFailure(Object error, StackTrace stackTrace) {
     _failure = error;
     _failureStackTrace = stackTrace;
-    _state = StartupLocalUnlockState.operationalFailure;
+    _setState(StartupLocalUnlockState.operationalFailure);
+  }
+
+  void _setState(StartupLocalUnlockState value) {
+    if (_state == value) return;
+    _state = value;
+    notifyListeners();
   }
 }

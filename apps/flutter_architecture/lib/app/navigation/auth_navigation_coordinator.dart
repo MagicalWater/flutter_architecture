@@ -4,7 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 
-enum AuthNavigationDestination { login, otp, profile }
+enum AuthNavigationDestination { login, locked, otp, profile }
 
 /// App-owned Auth startup與navigation transition coordinator。
 final class AuthNavigationCoordinator {
@@ -50,6 +50,7 @@ PageRouteInfo routeForAuthDestination(AuthNavigationDestination destination) {
     AuthNavigationDestination.login => const ShellRoute(
       children: <PageRouteInfo>[LoginRoute()],
     ),
+    AuthNavigationDestination.locked => const LocalUnlockRoute(),
     AuthNavigationDestination.otp => const OtpRoute(),
     AuthNavigationDestination.profile => const ShellRoute(
       children: <PageRouteInfo>[ProfileRoute()],

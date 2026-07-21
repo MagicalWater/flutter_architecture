@@ -27,6 +27,22 @@ class CatalogRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [LocalUnlockPage]
+class LocalUnlockRoute extends PageRouteInfo<void> {
+  const LocalUnlockRoute({List<PageRouteInfo>? children})
+    : super(LocalUnlockRoute.name, initialChildren: children);
+
+  static const String name = 'LocalUnlockRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const LocalUnlockPage();
+    },
+  );
+}
+
+/// generated route for
 /// [LoginPage]
 class LoginRoute extends PageRouteInfo<void> {
   const LoginRoute({List<PageRouteInfo>? children})

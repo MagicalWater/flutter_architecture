@@ -96,6 +96,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loginOpenProtectedAction => '開啟需要登入的頁面';
 
   @override
+  String get localUnlockTitle => '解鎖已儲存的工作階段';
+
+  @override
+  String get localUnlockRequiredMessage => '請先驗證是您本人，再還原已儲存的工作階段。';
+
+  @override
+  String get localUnlockUnavailableMessage => '目前無法使用本機驗證，請重試或改用帳號登入。';
+
+  @override
+  String get localUnlockFailureMessage => '無法安全解鎖已儲存的工作階段。';
+
+  @override
+  String get localUnlockRetryAction => '再試一次';
+
+  @override
+  String get localUnlockPromptingLabel => '等待驗證';
+
+  @override
+  String get localUnlockUseLoginAction => '改用帳號登入';
+
+  @override
+  String get localUnlockSemanticsLabel => '已儲存工作階段解鎖畫面';
+
+  @override
+  String get localUnlockIconSemanticsLabel => '工作階段已鎖定';
+
+  @override
+  String get localUnlockPromptProgressSemanticsLabel => '正在進行本機驗證';
+
+  @override
   String get authInvalidCredentialsMessage => '帳號或密碼不正確。';
 
   @override
@@ -388,6 +418,36 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get loginOpenProtectedAction => '開啟需要登入的頁面';
+
+  @override
+  String get localUnlockTitle => '解鎖已儲存的工作階段';
+
+  @override
+  String get localUnlockRequiredMessage => '請先驗證是您本人，再還原已儲存的工作階段。';
+
+  @override
+  String get localUnlockUnavailableMessage => '目前無法使用本機驗證，請重試或改用帳號登入。';
+
+  @override
+  String get localUnlockFailureMessage => '無法安全解鎖已儲存的工作階段。';
+
+  @override
+  String get localUnlockRetryAction => '再試一次';
+
+  @override
+  String get localUnlockPromptingLabel => '等待驗證';
+
+  @override
+  String get localUnlockUseLoginAction => '改用帳號登入';
+
+  @override
+  String get localUnlockSemanticsLabel => '已儲存工作階段解鎖畫面';
+
+  @override
+  String get localUnlockIconSemanticsLabel => '工作階段已鎖定';
+
+  @override
+  String get localUnlockPromptProgressSemanticsLabel => '正在進行本機驗證';
 
   @override
   String get authInvalidCredentialsMessage => '帳號或密碼不正確。';

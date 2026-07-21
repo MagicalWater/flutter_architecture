@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auth/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/app/auth/local_unlock_lifecycle_coordinator.dart';
 import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
@@ -34,10 +35,13 @@ class ArchitectureApp extends StatefulWidget {
   State<ArchitectureApp> createState() => _ArchitectureAppState();
 }
 
-class _ArchitectureAppState extends State<ArchitectureApp> {
+class _ArchitectureAppState extends State<ArchitectureApp>
+    with WidgetsBindingObserver {
   late final AppRouter _router;
   late final AuthNavigationCoordinator _authNavigationCoordinator;
   late final StartupLocalUnlockCoordinator _startupLocalUnlockCoordinator;
+  late final LocalUnlockLifecycleCoordinator _localUnlockLifecycleCoordinator;
+  final Stopwatch _monotonicClock = Stopwatch()..start();
   bool _authNavigationStarted = false;
 
   @override
@@ -59,6 +63,19 @@ class _ArchitectureAppState extends State<ArchitectureApp> {
       mutationCoordinator: getIt<AuthStateMutationCoordinator>(),
       restoreSession: () => authBloc.add(const AuthEvent.started()),
     );
+    if (!getIt.isRegistered<StartupLocalUnlockCoordinator>()) {
+      getIt.registerSingleton<StartupLocalUnlockCoordinator>(
+        _startupLocalUnlockCoordinator,
+      );
+    }
+    _startupLocalUnlockCoordinator.addListener(_onLocalUnlockStateChanged);
+    _localUnlockLifecycleCoordinator = LocalUnlockLifecycleCoordinator(
+      unlockCoordinator: _startupLocalUnlockCoordinator,
+      preferenceStore: getIt<LocalUnlockPreferenceStore>(),
+      sessionManager: getIt<SessionManager>(),
+      now: () => _monotonicClock.elapsed,
+    );
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _authNavigationStarted) return;
       _authNavigationStarted = true;
@@ -70,10 +87,49 @@ class _ArchitectureAppState extends State<ArchitectureApp> {
     await _startupLocalUnlockCoordinator.start();
     if (!mounted) return;
     _authNavigationCoordinator.start();
+    _onLocalUnlockStateChanged();
+  }
+
+  void _onLocalUnlockStateChanged() {
+    if (!mounted) return;
+    final state = _startupLocalUnlockCoordinator.state;
+    if (_startupLocalUnlockCoordinator.requiresUnlockSurface) {
+      unawaited(
+        reconcileAuthDestination(_router, AuthNavigationDestination.locked),
+      );
+    } else if (state == StartupLocalUnlockState.serverLoginRequested) {
+      unawaited(
+        reconcileAuthDestination(_router, AuthNavigationDestination.login),
+      );
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.inactive:
+        _localUnlockLifecycleCoordinator.onBackgrounded();
+      case AppLifecycleState.resumed:
+        unawaited(_localUnlockLifecycleCoordinator.onResumed());
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _startupLocalUnlockCoordinator.removeListener(_onLocalUnlockStateChanged);
+    if (getIt.isRegistered<StartupLocalUnlockCoordinator>() &&
+        identical(
+          getIt<StartupLocalUnlockCoordinator>(),
+          _startupLocalUnlockCoordinator,
+        )) {
+      getIt.unregister<StartupLocalUnlockCoordinator>();
+    }
+    _startupLocalUnlockCoordinator.dispose();
     _authNavigationCoordinator.dispose();
     super.dispose();
   }

@@ -273,6 +273,66 @@ abstract class AppLocalizations {
   /// **'Open protected page'**
   String get loginOpenProtectedAction;
 
+  /// No description provided for @localUnlockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock saved session'**
+  String get localUnlockTitle;
+
+  /// No description provided for @localUnlockRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify that it is you before restoring the saved session.'**
+  String get localUnlockRequiredMessage;
+
+  /// No description provided for @localUnlockUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Local verification is unavailable. Try again or log in with your account.'**
+  String get localUnlockUnavailableMessage;
+
+  /// No description provided for @localUnlockFailureMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved session could not be unlocked safely.'**
+  String get localUnlockFailureMessage;
+
+  /// No description provided for @localUnlockRetryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get localUnlockRetryAction;
+
+  /// No description provided for @localUnlockPromptingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for verification'**
+  String get localUnlockPromptingLabel;
+
+  /// No description provided for @localUnlockUseLoginAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in with account instead'**
+  String get localUnlockUseLoginAction;
+
+  /// No description provided for @localUnlockSemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved session unlock screen'**
+  String get localUnlockSemanticsLabel;
+
+  /// No description provided for @localUnlockIconSemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked session'**
+  String get localUnlockIconSemanticsLabel;
+
+  /// No description provided for @localUnlockPromptProgressSemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Local verification in progress'**
+  String get localUnlockPromptProgressSemanticsLabel;
+
   /// No description provided for @authInvalidCredentialsMessage.
   ///
   /// In en, this message translates to:

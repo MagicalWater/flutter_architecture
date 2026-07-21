@@ -2179,7 +2179,7 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 
 ## Milestone 21：Biometric-gated Local Session Unlock
 
-狀態：Milestone 21-3已完成並通過implementation review；下一步為21-4 Unlock UI、Navigation與Lifecycle Concurrency。
+狀態：Milestone 21-4已完成並通過implementation review；下一步為21-5 Android Native Configuration、Runtime Smoke與封存。
 
 正式子階段：
 
@@ -2188,7 +2188,7 @@ Planning Review已完成正式文件review，固定typed Login union、Verify / 
 21-1 Local User Presence Abstraction與App Adapter（Completed / Reviewed）
 21-2 Enable / Disable Workflow（Completed / Reviewed）
 21-3 Startup Unlock、Restore與Refresh Orchestration（Completed / Reviewed）
-21-4 Unlock UI、Navigation與Lifecycle Concurrency
+21-4 Unlock UI、Navigation與Lifecycle Concurrency（Completed / Reviewed）
 21-5 Android Native Configuration、Runtime Smoke與封存
 ```
 

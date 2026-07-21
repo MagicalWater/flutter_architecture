@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_architecture/app/router/auth_guard.dart';
 import 'package:flutter_architecture/features/auth/presentation/pages/login_page.dart';
+import 'package:flutter_architecture/features/auth/presentation/pages/local_unlock_page.dart';
 import 'package:flutter_architecture/features/auth/presentation/pages/otp_page.dart';
 import 'package:flutter_architecture/features/catalog/presentation/pages/catalog_page.dart';
 import 'package:flutter_architecture/features/profile/presentation/pages/profile_page.dart';
@@ -44,6 +45,7 @@ class AppRouter extends RootStackRouter {
       ],
     ),
     AutoRoute(page: OtpRoute.page),
+    AutoRoute(page: LocalUnlockRoute.page),
     AutoRoute(page: ProtectedRoute.page, guards: <AutoRouteGuard>[_authGuard]),
   ];
 }

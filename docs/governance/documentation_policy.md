@@ -1,0 +1,238 @@
+---
+document_type: governance-policy
+status: accepted
+authoritative_for:
+  - documentation-governance-and-metadata
+last_reviewed_baseline: 1.5.0
+---
+
+# Documentation Governance Policy
+
+本文件定義 repository 文件的 authority、metadata、生命週期與可控增長規則。
+
+## 1. Single Authority
+
+每一項事實只能有一個 authoritative owner。
+
+其他文件可以：
+
+- 提供短摘要。
+- 連結 authority。
+- 保存當時的 plan、review 或 evidence。
+
+其他文件不得：
+
+- 複製完整 contract 並獨立維護。
+- 將 historical state 寫成 current instruction。
+- 以 plan 或 audit 覆蓋 current snapshot 或 Architecture Decision。
+
+## 2. Document Types
+
+受治理的新文件使用下列 `document_type`：
+
+```txt
+agent-policy
+project-entry
+documentation-hub
+current-snapshot
+architecture-decision-index
+architecture-decision
+roadmap-index
+active-milestone
+roadmap-candidates
+backlog
+design-spec
+implementation-plan
+planning-review
+phase-review
+runtime-evidence
+final-review
+audit-index
+design-plan-index
+milestone-index
+milestone-archive
+guide
+knowledge
+governance-policy
+migration-manifest
+```
+
+新增類型前，必須證明現有類型無法表達責任；不得只因內容不同就建立新類型。
+
+## 3. Minimal Metadata
+
+Milestone 22 之後新增或正式採納的 managed document，使用 YAML front matter：
+
+```yaml
+---
+document_type: phase-review
+status: accepted
+authoritative_for:
+  - milestone-22-phase-2-review-evidence
+last_reviewed_baseline: 1.5.0
+---
+```
+
+### Required fields
+
+#### `document_type`
+
+文件的責任類型，值必須來自本政策 whitelist。
+
+#### `status`
+
+允許值：
+
+```txt
+draft
+proposed
+accepted
+active
+completed
+archived
+superseded
+legacy
+```
+
+語意：
+
+- `draft`：尚未完成內部 review。
+- `proposed`：可 review，但尚未拍板。
+- `accepted`：設計、決策、政策或 review 已核准。
+- `active`：目前正在執行或代表 current state。
+- `completed`：工作已完成，但尚未完成 archive transition。
+- `archived`：只供歷史與追溯。
+- `superseded`：已有新的 authority 取代。
+- `legacy`：舊格式或占位文件，禁止視為 current authority。
+
+#### `authoritative_for`
+
+列出此文件唯一擁有的 scope key。Scope key 使用小寫 kebab-case，應描述責任，不描述檔名。
+
+同一 scope key 不得同時出現在兩份 `active` 或 `accepted` authority 文件中。Index、summary 或 evidence 不得宣稱其未擁有的 scope。
+
+#### `last_reviewed_baseline`
+
+最近一次完整確認內容仍適用的 Template Baseline。值必須與某個已正式發布版本一致。
+
+Historical evidence 可以保留當時 baseline，不需要每次 release 都改寫。
+
+## 4. Optional Metadata
+
+有需要時可加入：
+
+```yaml
+id: ADR-022
+title: Authentication Security Capability Boundaries
+owners:
+  - app-architecture
+related:
+  - docs/audits/milestone_21/milestone_21_final_review.md
+supersedes:
+  - ADR-015
+superseded_by:
+  - ADR-023
+```
+
+禁止建立無使用者、無 checker 或無 routing 價值的 metadata。
+
+## 5. Lifecycle
+
+### Current / policy document
+
+```txt
+Draft
+→ Review
+→ Active / Accepted
+→ Superseded
+→ Archived historical record
+```
+
+### Milestone artifact
+
+```txt
+Design spec
+→ Planning review
+→ Implementation plan
+→ Phase reviews / runtime evidence
+→ Final review
+→ Milestone archive routing
+```
+
+Plan、review 與 evidence 完成後不持續改寫為新的 current state；current claim 必須更新其唯一 authority。
+
+## 6. Archive Triggers
+
+符合下列任一條件時，文件應進入 archive routing：
+
+- Milestone 已通過 final review 並發布或正式封存。
+- Current policy 或 Decision 已被 supersede。
+- Implementation plan 已完成且不再執行。
+- Review evidence 已完成 closure。
+- 文件只剩歷史解釋價值。
+
+Archive 不等於立即物理搬檔。若搬移會破壞連結，先建立 milestone index、migration manifest 或 transitional stub。
+
+## 7. Legacy Adoption Rule
+
+現有文件不要求在 Milestone 22-2 一次補齊 metadata。
+
+Legacy 文件只有在下列情況才正式採納新 metadata：
+
+- 被重寫為 current authority。
+- 被拆分或搬移。
+- 成為新的 managed index。
+- 因實際需求進行重大修改。
+
+採納時必須先確認：
+
+- 文件類型正確。
+- Authoritative scope 沒有與其他 current 文件重疊。
+- Status 與實際 lifecycle 一致。
+- Historical current-tense 內容已標示或移出 current path。
+
+不得為了追求 metadata coverage，在未做 semantic review 時批量標記舊文件為 `accepted`。
+
+## 8. Controlled Growth
+
+新增文件前必須回答：
+
+1. 這是 current、decision、plan、evidence、release、guide 還是 history？
+2. 它唯一擁有什麼 scope？
+3. 現有文件是否已擁有該 scope？
+4. AI 何時需要讀它？
+5. 工作完成後如何封存？
+6. 哪個 index 負責導向它？
+
+無法回答時，不新增文件。
+
+Current 與 index 文件禁止追加逐 Task journal、測試數成長紀錄、commit timeline 或重複完整 Decision contract。
+
+## 9. Summary Rule
+
+非 authority 文件引用某項資訊時，使用：
+
+```txt
+一句至一小段摘要
++ authority link
++ 必要 status
+```
+
+當摘要與 authority 衝突時，以 authority 為準，並修正摘要。
+
+## 10. AI Reading Rule
+
+固定最小讀取集與任務式路由由 `AGENTS.md` 與 `docs/README.md` 擁有。本政策只定義文件治理，不再複製完整 reading route。
+
+## 11. Migration Safety
+
+大型拆分或搬移必須：
+
+- 建立逐 section migration manifest。
+- 保留 Decision、Milestone、Finding 與 Release stable ID。
+- 執行 semantic preservation review。
+- 檢查 relative links。
+- 必要時保留 transitional stub。
+- 經 review 後才移除舊正文。
+
+禁止直接以「已搬到新文件」取代未驗證的歷史內容。

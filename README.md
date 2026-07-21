@@ -509,65 +509,27 @@ Web
 
 ## 文件導覽
 
-建議閱讀順序：
+文件系統的正式入口是：
 
 ```txt
-AGENTS.md
-  ↓
-README.md
-  ↓
-CHANGELOG.md
-  ↓
-VERSION
-  ↓
-docs/project_context.md
-  ↓
-docs/architecture_decisions.md
-  ↓
-docs/roadmap.md
-  ↓
-docs/conversation_rules.md
+docs/README.md
 ```
 
-### AGENTS.md
+它定義文件 taxonomy、authoritative owner、AI 最小讀取集，以及 Architecture、Feature、Package、Milestone、Review、Release 與 historical investigation 的按需路由。
 
-給自動化協作者使用的 repo root 工作守則。
+主要入口：
 
-### docs/project_context.md
+- `AGENTS.md`：AI 操作規則與安全邊界。
+- `VERSION`：目前 Template Baseline Version 的唯一來源。
+- `docs/project_context.md`：目前有效 project snapshot。
+- `docs/roadmap.md`：Active、candidate、deferred 與 closed routing。
+- `docs/architecture_decisions.md`：現有 Architecture Decision aggregate authority。
+- `docs/audits/README.md`：Review 與 runtime evidence 索引。
+- `docs/superpowers/README.md`：Design specs 與 implementation plans 索引。
+- `docs/milestones/README.md`：Milestone artifacts routing。
+- `CHANGELOG.md`：正式版本變更紀錄。
 
-專案目前完整上下文。
-
-新的 ChatGPT 對話應該先讀這份文件。
-
-### docs/architecture_decisions.md
-
-所有已拍板的架構決策。
-
-如果某個架構問題已經在這裡被標記為 Accepted，後續不應該反覆重新討論，除非有新的需求或新的限制。
-
-### docs/roadmap.md
-
-接下來的 Milestone 規劃。
-
-### docs/backlog.md
-
-暫時不做，但未來可以加入的想法。
-
-### docs/conversation_rules.md
-
-本專案與 ChatGPT 協作時的工作規範。
-
-### CHANGELOG.md
-
-正式版本變更紀錄。
-
-### VERSION
-
-目前 Template Baseline Version 的唯一版本來源。
-
-### docs/archive/
-
-歷史進度與已完成 milestone 紀錄。
+不要把所有文件都放入每次必讀清單；依 `docs/README.md` 的任務式路由讀取即可。
 
 ---
 
@@ -586,19 +548,16 @@ docs/conversation_rules.md
 
 ## 開新對話（給 ChatGPT）
 
-若需要在新的 ChatGPT 對話中延續本專案，請先閱讀：
+若需要在新的 ChatGPT 對話中延續本專案，固定先閱讀：
 
 ```txt
 AGENTS.md
-README.md
-CHANGELOG.md
 VERSION
+docs/README.md
 docs/project_context.md
-docs/architecture_decisions.md
 docs/roadmap.md
-docs/conversation_rules.md
 ```
 
-閱讀完成後，請依照 `docs/roadmap.md` 與 `CHANGELOG.md` 判斷下一個目標。
+閱讀完成後，再依 `docs/README.md` 的 task-based route 載入該任務需要的 Decision、Feature／Package README、spec、plan、review、source 與 tests。
 
-不要依賴舊對話內容作為唯一上下文，專案文件才是 Single Source of Truth。
+不要依賴舊對話內容作為唯一上下文，也不要把全部歷史文件載入 active context。

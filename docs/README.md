@@ -1,90 +1,164 @@
-# 文件索引
+---
+document_type: documentation-hub
+status: active
+authoritative_for:
+  - documentation-taxonomy-and-reading-routing
+last_reviewed_baseline: 1.5.0
+---
 
-本文件是Milestone 22 migration期間的暫時文件入口，用來避免讀者或AI把歷史文件誤認為Template Baseline 1.5.0的current authority。
+# Documentation Hub
 
-完整的documentation taxonomy、AI task-based reading contract與各類索引會在Milestone 22-2正式建立。本階段不搬移或刪除既有文件。
+本文件是 repository 文件系統的正式入口。它只負責文件分類、authority 與讀取路由，不重複保存架構正文、Milestone 執行內容或 release history。
 
-## Current authority
+目前 Template Baseline 以 root `VERSION` 為唯一版本來源。
 
-目前判斷專案狀態時優先使用：
+## 核心規則
+
+一項資訊只能有一個 authoritative owner。其他文件可以摘要並連結，但不得建立平行 Single Source of Truth。
+
+文件分為以下類型：
+
+| 類型 | Authoritative scope | 主要位置 |
+|---|---|---|
+| Agent policy | AI 操作規則、禁止事項、讀取路由 | `AGENTS.md` |
+| Human entry | 專案定位、能力、快速開始 | root `README.md` |
+| Current snapshot | 目前有效架構、能力與限制 | `docs/project_context.md` |
+| Architecture decision | 已拍板且仍有效的架構規則 | `docs/architecture_decisions.md`；後續遷移至單一 Decision records |
+| Roadmap | Active、candidate、deferred 與 closed routing | `docs/roadmap.md` |
+| Backlog | 尚未承諾、延後或明確不做的 scope | `docs/backlog.md` |
+| Design / implementation plan | 已核准設計與執行步驟 | `docs/superpowers/` |
+| Review / runtime evidence | Findings、review 結果與可重現證據 | `docs/audits/` |
+| Milestone routing | Milestone charter、plan、review、release 的索引 | `docs/milestones/` |
+| Historical archive | 已封存且不再代表 current state 的內容 | `docs/archive/` |
+| Governance | 文件類型、metadata、生命週期與增長規則 | `docs/governance/` |
+
+完整文件治理規則與 minimal metadata contract 見 `docs/governance/documentation_policy.md`。
+
+## 每次進入 repository 的最小讀取集
+
+```txt
+AGENTS.md
+VERSION
+docs/README.md
+docs/project_context.md
+docs/roadmap.md
+```
+
+這是固定最小集合，不代表所有任務都只能讀這些文件。完成最小讀取後，再依任務類型按需載入局部文件。
+
+目前 `docs/project_context.md` 與 `docs/roadmap.md` 尚在 Milestone 22 migration 中，仍包含歷史內容；它們會分別在 22-3 與 22-4 收斂。讀取時以最新 current section、`VERSION` 與 final review 交叉驗證。
+
+## 任務式讀取路由
+
+### Architecture task
+
+```txt
+最小讀取集
+→ docs/architecture_decisions.md 的相關 Decision
+→ 受影響 App／Feature／Package README
+→ 相關 source 與 tests
+```
+
+只有會改變穩定責任邊界、dependency direction、persistence authority、runtime ownership 或 security contract 的變更，才需要新增或更新 Architecture Decision。
+
+### Feature task
+
+```txt
+最小讀取集
+→ apps/flutter_architecture/lib/features/<feature>/README.md
+→ 相關 Decision
+→ 該 Feature source 與 tests
+```
+
+### Package task
+
+```txt
+最小讀取集
+→ packages/<package>/README.md
+→ 相關 Decision
+→ package public API、source 與 tests
+```
+
+缺少 README 時，先從 root README、current snapshot、相關 Decision 與 source 建立邊界理解；Milestone 22-5 會補齊 App 與關鍵 Package README。
+
+### Active Milestone execution
+
+```txt
+最小讀取集
+→ active roadmap entry
+→ Milestone design spec
+→ implementation plan
+→ planning review
+→ 當前 phase review
+```
+
+Plan 只描述「怎麼做」，不代表工作已完成。完成狀態以 current roadmap、phase/final review、CHANGELOG 與 VERSION 判斷。
+
+### Review / runtime evidence task
+
+```txt
+最小讀取集
+→ 相關 Decision 與 current contract
+→ implementation plan
+→ phase review / findings
+→ source、tests、artifact 或 runtime evidence
+```
+
+Audit 文件保存當時的 review 與 evidence，不取代 current snapshot 或 Architecture Decision。
+
+### Release task
 
 ```txt
 VERSION
-README.md
-docs/project_context.md
-docs/architecture_decisions.md
-docs/roadmap.md
-docs/backlog.md
+CHANGELOG.md
+Milestone final review
+Root README current capability
+相關 current snapshot / Decision
 ```
 
-注意：`docs/project_context.md`、`docs/architecture_decisions.md`與`docs/roadmap.md`目前仍包含大量歷史內容。讀取時應以最新current-state段落、`VERSION`與已完成Milestone的final review交叉驗證；它們會在Milestone 22後續階段逐步收斂。
-
-## 文件分類
-
-### Current與Governance
-
-- `docs/project_context.md`：目前仍是current context入口，但混有歷史內容；22-3將重寫為current-only snapshot。
-- `docs/architecture_decisions.md`：Decision 001至022的現有aggregate authority；全面單檔extraction不屬於22-1。
-- `docs/roadmap.md`：現有roadmap aggregate；22-4將分離active、candidate與closed routing。
-- `docs/backlog.md`：future、deferred與explicitly not planned scope。
-- `docs/conversation_rules.md`：目前協作規則；22-2將與`AGENTS.md`一起收斂AI reading contract。
-
-### Review與Runtime Evidence
-
-- `docs/audits/`：Planning Review、phase review、final review、findings與runtime evidence。
-- `docs/audits/milestone_22_planning_review.md`：Milestone 22治理規劃審查。
-- `docs/audits/milestone_22/`：Milestone 22各小階段review evidence。
-
-Audit文件是當時review與evidence artifact，不取代current snapshot或Architecture Decision。
-
-### Plans與Specs
-
-- `docs/superpowers/specs/`：核准前後的design specifications。
-- `docs/superpowers/plans/`：可執行implementation plans。
-
-Plan與Spec不代表工作已完成；實際完成狀態應由current roadmap、final review、CHANGELOG與VERSION判斷。
-
-### Historical Archive
-
-- `docs/archive/`：已明確封存的milestone摘要與舊版進度文件。
-- 目前部分已完成milestone evidence仍保留於`docs/audits/`與`docs/superpowers/`；Milestone 22會先建立穩定索引，再決定是否需要物理搬移。
-
-### Guides與Knowledge
-
-- `docs/guides/`：可重複使用的操作指南。
-- `docs/mistakes/`：已知反模式與錯誤案例。
-- `docs/evolution/`：演進文件入口；目前內容有限。
-
-### Legacy Paths
-
-- `docs/adr/`：第一階段placeholder，不是正式ADR集合，不得作為current authority。
-- `docs/architecture/`：第一階段historical／partially superseded guidance；內文中的current-tense scope不可直接套用至1.5.0。
-
-上述legacy文件已加上醒目warning，但暫時保留原路徑與正文，以避免歷史遺失及連結立即失效。
-
-## 暫時閱讀路由
-
-在22-2正式reading contract完成前：
+### Historical investigation
 
 ```txt
-確認版本或current capability
-→ VERSION + README.md + docs/project_context.md最新段落
-
-確認架構決策
-→ docs/architecture_decisions.md相關Decision
-
-執行特定Milestone
-→ 該Milestone spec / plan / planning review / phase review
-
-追查已完成工作的證據
-→ docs/audits/相關final review與runtime evidence
-
-查看歷史
-→ docs/archive/或對應audit / plan artifact
+docs/milestones/README.md
+→ 對應 audits / plans / final review
+→ docs/archive/（如已有封存摘要）
 ```
 
-不要依檔名或目錄名稱假設文件仍為current authority；尤其不要將`docs/adr/`與`docs/architecture/`的第一階段內容當成目前實作指令。
+Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆蓋 current authority。
 
-## 語言規範
+## 類型索引
 
-文件與註解預設使用繁體中文；套件、架構、Layer、類別與API名稱保留英文。
+- `docs/audits/README.md`：Planning Review、phase review、final review、findings 與 runtime evidence。
+- `docs/superpowers/README.md`：Design specs 與 implementation plans。
+- `docs/milestones/README.md`：Milestone routing 與 archive manifest 入口。
+- `docs/archive/README.md`：已明確封存的歷史內容。
+- `docs/governance/documentation_policy.md`：文件治理與 metadata contract。
+- `docs/guides/`：可重複使用的操作指南。
+- `docs/mistakes/`：已知反模式與錯誤案例。
+- `docs/evolution/`：架構演進知識入口。
+
+## Legacy 路徑
+
+- `docs/adr/` 是第一階段 placeholder，不是正式 ADR 集合。
+- `docs/architecture/` 是第一階段 historical／partially superseded guidance。
+
+這些文件已加上 warning，暫時保留路徑與正文，避免歷史遺失與連結立即失效。不得因目錄名稱而將它們當成 Template Baseline 1.5.0 的 current authority。
+
+## 摘要規則
+
+索引或入口文件只允許保存足以導航的摘要：
+
+- 說明 authority 在哪裡。
+- 說明何時需要讀取。
+- 說明文件目前 status。
+- 提供穩定連結。
+
+禁止在索引中複製完整架構 contract、逐 Task implementation journal、測試流水帳或 release evidence。
+
+## Metadata adoption
+
+Milestone 22 之後新增或正式採納的 managed document 使用 `document_type`、`status`、`authoritative_for` 與 `last_reviewed_baseline`。既有文件不批量補標；只有重寫、搬移、成為 managed index 或重大修改時，才經 semantic review 後採納。
+
+## 語言
+
+文件、README、註解與 commit message 預設使用繁體中文；套件名稱、架構名詞、Layer、類別與 API 名稱保留英文。

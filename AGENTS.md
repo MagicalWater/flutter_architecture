@@ -8,19 +8,38 @@
 
 ## 進入專案後先閱讀
 
-開始任何修改前，請先閱讀：
+每次進入 repository 的固定最小讀取集：
 
 ```txt
-README.md
-CHANGELOG.md
+AGENTS.md
 VERSION
+docs/README.md
 docs/project_context.md
-docs/architecture_decisions.md
 docs/roadmap.md
-docs/conversation_rules.md
 ```
 
-如果工作範圍涉及特定文件目錄，也請閱讀該目錄下相關說明。
+完成最小讀取後，依 `docs/README.md` 的 task-based reading route 按需載入文件。不要把 `CHANGELOG.md`、完整 Architecture Decisions、所有 audits 或所有 plans 當成每次必讀內容。
+
+常見路由：
+
+```txt
+Architecture task
+→ 相關 Decision + 受影響 README + source/tests
+
+Feature task
+→ Feature README + 相關 Decision + source/tests
+
+Package task
+→ Package README + 相關 Decision + public API/source/tests
+
+Milestone execution
+→ active roadmap + spec + plan + planning/phase review
+
+Review / release
+→ current contract + evidence + final review + VERSION/CHANGELOG
+```
+
+Historical 文件只能用來理解過去，不能覆蓋 current authority。
 
 ---
 
@@ -189,7 +208,7 @@ flutter build web
   ↓
 拍板
   ↓
-更新 docs/architecture_decisions.md
+更新 architecture decision authority
   ↓
 實作
   ↓
@@ -200,7 +219,7 @@ flutter build web
 Commit
 ```
 
-如果只是 bug fix 或小型文件修正，可不新增 architecture decision，但仍應確認 README / CHANGELOG / roadmap 是否需要同步。
+如果只是 bug fix 或小型文件修正，可不新增 Architecture Decision，但仍應依文件 ownership 確認 current snapshot、README、roadmap 或 CHANGELOG 是否需要同步。不要為了「全面同步」而在多份文件複製同一段內容。
 
 ---
 

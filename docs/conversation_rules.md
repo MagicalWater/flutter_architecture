@@ -63,22 +63,21 @@ VERSION
 
 ---
 
-## Rule 4：Roadmap / Changelog 是目前進度依據
+## Rule 4：使用最小讀取集與任務式路由
 
-任何新對話或新工作開始前，先閱讀：
+任何新對話或新工作開始前，固定閱讀：
 
 ```txt
 AGENTS.md
-README.md
-CHANGELOG.md
 VERSION
+docs/README.md
 docs/project_context.md
-docs/architecture_decisions.md
 docs/roadmap.md
-docs/conversation_rules.md
 ```
 
-目前要做什麼，以 roadmap 為準；已完成版本以 CHANGELOG 與 VERSION 為準。
+之後依 `docs/README.md` 的任務式路由按需讀取相關 Decision、README、spec、plan、review、source 與 tests。
+
+目前要做什麼，以 roadmap 的 active authority 為準；正式發布版本以 `VERSION` 與 `CHANGELOG.md` 為準。不要為了恢復上下文而載入全部歷史文件。
 
 ---
 
@@ -219,19 +218,20 @@ Commit 前確認：
 
 ## Rule 12：新的 ChatGPT 對話恢復流程
 
-新的對話第一步請閱讀：
+新的對話先使用 Rule 4 的最小讀取集，再依任務類型擴充上下文。
 
 ```txt
-AGENTS.md
-README.md
-CHANGELOG.md
-VERSION
-docs/project_context.md
-docs/architecture_decisions.md
-docs/roadmap.md
-docs/conversation_rules.md
+確認 current state
+→ VERSION + docs/project_context.md + docs/roadmap.md
+
+確認 architecture rule
+→ 相關 Architecture Decision
+
+執行既有 Milestone
+→ active entry + spec + plan + current phase review
+
+追查完成證據
+→ final review + runtime evidence + CHANGELOG
 ```
 
-閱讀完成後，依照 roadmap 與 CHANGELOG 判斷下一個目標。
-
-不要依賴舊聊天紀錄作為唯一上下文。
+不要依賴舊聊天紀錄作為唯一上下文，也不要把歷史 plan 或 audit 當成 current authority。

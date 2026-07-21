@@ -1161,7 +1161,7 @@ docs/conversation_rules.md
 
 ## 下一個正式方向：Milestone 20 OTP Step-Up Authentication Planning Review
 
-狀態：Milestone 19 Secure Credential Storage & Migration已完成、final review、獨立Holistic Final Review、封存並發布Template Baseline 1.3.0。Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review已完成並通過；依planning-only邊界停下，不直接開始20-1 production implementation。
+狀態：Milestone 19 Secure Credential Storage & Migration已完成、final review、獨立Holistic Final Review、封存並發布Template Baseline 1.3.0。Milestone 20-0已完成規劃與final document review；Milestone 20-1 typed API與Stateful Mock也已完成並通過implementation review。下一步為20-2。
 
 原候選Milestone 19「Authentication Security & Step-Up Verification」已正式拆分為：
 
@@ -1263,7 +1263,7 @@ docs/superpowers/plans/2026-07-20-milestone-19-2-secure-credential-store-adapter
 
 19-2實作結果：`flutter_secure_storage: ^10.3.1`只存在App；新增App-owned `FlutterSecureAuthCredentialStore`，以單一payload保存完整Token Pair並明確區分absent、present、corrupted與operational unavailable。`PlatformException` / `MissingPluginException`映射為typed local-storage `AppException`，保留cause與origin stack且不輸出secret；unknown programming error維持原始identity。DI採named Secure binding，default SharedPreferences authority與Repository / Refresher behavior保持不變。Android以`minSdk = maxOf(flutter.minSdkVersion, 23)`固定Secure Storage下限並允許Flutter提高最低版本，App-wide停用backup；release merged manifest實際minSdk 24、targetSdk 36，未加入Biometric / Fingerprint permission。Workspace analyze、465項tests與release APK build通過，VERSION維持1.2.0。
 
-Milestone 21目前只保存正式scope、依賴順序、子階段與完成定義。Milestone 20-0 Planning Review已通過；依本階段停止條件尚未開始20-1，因此目前仍沒有OTP API、route、Bloc或UI production code。
+Milestone 21目前只保存正式scope、依賴順序、子階段與完成定義。Milestone 20-0 Planning Review與20-1 typed API / Stateful Mock已完成；目前已有OTP transport contract與development Mock，但尚未開始20-2 Domain / Repository，也仍沒有OTP route、Bloc或UI production code。
 
 Milestone 20-0正式文件已建立：
 
@@ -1272,4 +1272,6 @@ docs/audits/milestone_20_planning_review.md
 docs/superpowers/plans/2026-07-21-milestone-20-implementation-plan.md
 ```
 
-Review拍板：Login使用`authenticated | otpChallenge` typed union；Verify成功是OTP流程唯一credential簽發與commit boundary；Resend成功必須回完整replacement challenge並使predecessor失效。OTP pending時Secure credential、SQLite AuthUser與SessionManager均不得mutation，Protected Route繼續只依SessionManager而自然拒絕。Login、Verify、Resend、Logout、Restore與account switch共用既有latest-intent generation；Repository generation負責在credential commit前阻擋stale Verify，Bloc challenge identity只保護UI metadata。Invalid-code attempts與Resend cooldown retry time採typed details，OTP pending即使Session原本為null，authoritative clear仍必須清除challenge。共11項planning findings，無Open P0，P1均已有approved disposition；下一步候選為20-1，但本階段未開始實作。
+Review拍板：Login使用`authenticated | otpChallenge` typed union；Verify成功是OTP流程唯一credential簽發與commit boundary；Resend成功必須回完整replacement challenge並使predecessor失效。OTP pending時Secure credential、SQLite AuthUser與SessionManager均不得mutation，Protected Route繼續只依SessionManager而自然拒絕。Login、Verify、Resend、Logout、Restore與account switch共用既有latest-intent generation；Repository generation負責在credential commit前阻擋stale Verify，Bloc challenge identity只保護UI metadata。Invalid-code attempts與Resend cooldown retry time採typed details，OTP pending即使Session原本為null，authoritative clear仍必須清除challenge。共11項planning findings，無Open P0，P1均已有approved disposition。
+
+Milestone 20-1已完成並review：`packages/api_client`已提供typed Login union、Verify / Resend Retrofit endpoints、authenticated / challenge DTO與敏感transport model保護。`MockAuthApi`現在是Auth-specific stateful deterministic Mock，支援注入clock、expiration、attempt exhaustion、resend cooldown、replacement與predecessor invalidation。既有Auth mapper在20-1只接受authenticated variant，OTP challenge domain / Repository行為留待20-2，避免提前建立Session。Workspace analyze與554項tests通過；VERSION仍為1.3.0。Review文件：`docs/audits/milestone_20/20-1_api_mock_review.md`。

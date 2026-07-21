@@ -36,14 +36,14 @@
 - Create: OTP backend error envelope / details DTO files under `packages/api_client/lib/src/models/`
 - Test: `packages/api_client/test/auth_otp_contract_test.dart`
 
-- [ ] Write failing serialization tests for both Login variants、Verify request、Resend replacement response、invalid-code attempts metadata與cooldown retry timestamp。
-- [ ] Run `cd packages/api_client && flutter test test/auth_otp_contract_test.dart` and verify failure before source creation。
-- [ ] Implement discriminated DTO union；credential / password / code-bearing models使用`@Freezed(toStringOverride: false)`。
-- [ ] Add `/auth/otp/verify` and `/auth/otp/resend` Retrofit methods。
-- [ ] Define a stable backend error envelope contract; do not require Presentation to parse message text。
-- [ ] Run build runner for`packages/api_client` and verify generated files are produced only from source changes。
-- [ ] Run targeted tests and `dart run melos run analyze`。
-- [ ] Commit: `feat(auth): 建立OTP typed API contract`。
+- [x] Write failing serialization tests for both Login variants、Verify request、Resend replacement response、invalid-code attempts metadata與cooldown retry timestamp。
+- [x] Run `cd packages/api_client && flutter test test/auth_otp_contract_test.dart` and verify failure before source creation。
+- [x] Implement discriminated DTO union；credential / password / code-bearing models使用`@Freezed(toStringOverride: false)`。
+- [x] Add `/auth/otp/verify` and `/auth/otp/resend` Retrofit methods。
+- [x] Define a stable backend error envelope contract; do not require Presentation to parse message text。
+- [x] Run build runner for`packages/api_client` and verify generated files are produced only from source changes。
+- [x] Run targeted tests and `dart run melos run analyze`。
+- [x] Commit: `feat(auth): 建立OTP typed API contract`。
 
 ### Task 2: Stateful Deterministic Mock
 
@@ -51,11 +51,11 @@
 - Modify: `packages/api_client/lib/src/mocks/mock_auth_api.dart`
 - Test: `packages/api_client/test/mock_auth_otp_state_machine_test.dart`
 
-- [ ] Write failing tests for direct authentication、challenge issuance、invalid code、expiration、attempt exhaustion、cooldown、replacement與predecessor invalidation。
-- [ ] Implement an Auth-specific in-memory challenge registry with injectable UTC clock and deterministic delay controls。
-- [ ] Ensure Resend always returns a new challengeId and invalidates predecessor。
-- [ ] Run targeted Mock tests and API selector regression。
-- [ ] Commit: `feat(auth): 新增Stateful OTP Mock流程`。
+- [x] Write failing tests for direct authentication、challenge issuance、invalid code、expiration、attempt exhaustion、cooldown、replacement與predecessor invalidation。
+- [x] Implement an Auth-specific in-memory challenge registry with injectable UTC clock and deterministic delay controls。
+- [x] Ensure Resend always returns a new challengeId and invalidates predecessor。
+- [x] Run targeted Mock tests and API selector regression。
+- [x] Commit: `feat(auth): 新增Stateful OTP Mock流程`。
 
 ### Task 3: Domain Models and Use Cases
 

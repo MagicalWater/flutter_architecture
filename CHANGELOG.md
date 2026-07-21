@@ -18,6 +18,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- 完成Milestone 20-1 OTP typed API與Stateful Mock：Login改為`authenticated | otpChallenge` discriminated union，新增Verify / Resend Retrofit contract、challenge DTO與敏感model sentinel；Mock支援可注入clock、expiration、attempt exhaustion、cooldown、replacement與predecessor invalidation。Workspace analyze與554項tests通過，VERSION維持1.3.0。
+
 ### Documentation
 
 - 完成並review Milestone 20-0 OTP Contract、Threat Model與State Machine Planning Review；拍板typed Login / Verify / Resend contract、authenticated-only credential與Session成功邊界、challenge replacement、typed failure metadata及latest-intent concurrency規則，建立11項planning findings與詳細implementation plan。本階段未修改production code、dependency、Native設定、generated files或VERSION。

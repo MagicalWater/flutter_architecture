@@ -20,12 +20,16 @@
 
 ### Added
 
+- 完成Milestone 21-1 Local User Presence foundation：新增純Dart verifier contract、typed capability / verification / operational failure，以及App-only `local_auth` adapter與lazy singleton DI。
+- Local Auth adapter固定biometric-only、禁止device credential fallback與background自動重試；明確區分not verified、cancel、not enrolled、no hardware、temporary / permanent lockout與temporarily unavailable。
+
 ### Documentation
 
 Milestone 20已封存；下一個正式方向為Milestone 21 Biometric-gated Local Session Unlock。
 
 - 完成Milestone 21-0 Planning Review與跨文件一致性review；固定pre-restore local user-presence gate、default-disabled preference、locked Session null、typed capability / failure、latest-intent與5分鐘resume grace period。
 - 建立21-1至21-5詳細implementation plan與12項planning findings；本階段不加入`local_auth`、不修改Android Native或VERSION。
+- 21-1 implementation review修正plugin `false` result不得錯標cancelled；workspace analyze與596項tests通過，Android Native、startup restore與VERSION維持不變。
 
 ---
 

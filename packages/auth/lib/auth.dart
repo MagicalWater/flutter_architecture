@@ -30,3 +30,4 @@ export 'src/session/auth_session.dart';
 export 'src/session/auth_state_mutation_coordinator.dart';
 export 'src/session/session_manager.dart';
 export 'src/refresh/auth_session_refresher.dart';
+export 'src/local_user_presence/local_user_presence_verifier.dart';

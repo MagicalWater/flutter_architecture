@@ -18,6 +18,8 @@ import 'package:flutter_architecture/app/error_reporting/error_reporter.dart'
     as _i1041;
 import 'package:flutter_architecture/app/router/app_router.dart' as _i787;
 import 'package:flutter_architecture/app/router/auth_guard.dart' as _i997;
+import 'package:flutter_architecture/features/auth/data/local_user_presence/local_auth_user_presence_verifier.dart'
+    as _i287;
 import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart'
     as _i112;
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart'
@@ -51,6 +53,7 @@ import 'package:flutter_architecture/features/profile/presentation/bloc/profile_
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:local_auth/local_auth.dart' as _i152;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:sqflite/sqflite.dart' as _i779;
 
@@ -73,6 +76,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i633.AppDioFactory>(() => registerModule.appDioFactory);
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => registerModule.flutterSecureStorage,
+    );
+    gh.lazySingleton<_i152.LocalAuthentication>(
+      () => registerModule.localAuthentication,
     );
     gh.lazySingleton<_i662.SessionManager>(() => registerModule.sessionManager);
     gh.lazySingleton<_i662.AuthStateMutationCoordinator>(
@@ -110,6 +116,9 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       instanceName: 'refreshDio',
     );
+    gh.lazySingleton<_i287.LocalAuthGateway>(
+      () => registerModule.localAuthGateway(gh<_i152.LocalAuthentication>()),
+    );
     gh.lazySingleton<_i112.AuthMigrationErrorReporterAdapter>(
       () => registerModule.authMigrationErrorReporterAdapter(
         gh<_i1041.ErrorReporter>(),
@@ -127,6 +136,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i787.AppRouter>(
       () => _i787.AppRouter(gh<_i997.AuthGuard>()),
+    );
+    gh.lazySingleton<_i662.LocalUserPresenceVerifier>(
+      () => registerModule.localUserPresenceVerifier(
+        gh<_i287.LocalAuthGateway>(),
+      ),
     );
     gh.lazySingleton<_i662.AuthRefreshRemoteDataSource>(
       () => registerModule.authRefreshRemoteDataSource(

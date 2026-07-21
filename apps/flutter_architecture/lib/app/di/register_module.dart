@@ -7,6 +7,7 @@ import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart';
+import 'package:flutter_architecture/features/auth/data/local_user_presence/local_auth_user_presence_verifier.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
@@ -26,6 +27,7 @@ import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:local_auth/local_auth.dart';
 
 /// Injectable Module。
 ///
@@ -86,6 +88,18 @@ abstract class RegisterModule {
 
   @lazySingleton
   FlutterSecureStorage get flutterSecureStorage => const FlutterSecureStorage();
+
+  @lazySingleton
+  LocalAuthentication get localAuthentication => LocalAuthentication();
+
+  @lazySingleton
+  LocalAuthGateway localAuthGateway(LocalAuthentication authentication) =>
+      PluginLocalAuthGateway(authentication);
+
+  @lazySingleton
+  auth.LocalUserPresenceVerifier localUserPresenceVerifier(
+    LocalAuthGateway gateway,
+  ) => LocalAuthUserPresenceVerifier(gateway);
 
   @lazySingleton
   auth.AuthCredentialStore authCredentialStore(FlutterSecureStorage storage) =>

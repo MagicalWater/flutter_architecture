@@ -70,6 +70,29 @@ Batch A aggregate source sections remain unchanged. Canonical files are migratio
 
 | ID | Migration state | Semantic preservation | Non-ADR routing | Relation result |
 |---|---|---|---|---|
+| ADR-004 | extracted | App `get_it + injectable` selection retained | package lifecycle scope routed to ADR-012 | reciprocal partial supersession established |
+| ADR-005 | extracted | Auth package/App presentation boundary normalized to current tense | migration completion omitted | ADR-001、006–008、012 retained |
+| ADR-009 | extracted | Traditional Chinese maintenance language retained | operational enforcement routed to AGENTS | ADR-011 retained |
+| ADR-010 | extracted | conditional SQLite initializer retained without support inflation | setup command routed to guide/current source | ADR-014、017 retained |
+| ADR-011 | extracted | one-authority-per-fact principle retained | stale file list/update workflow routed to M22 governance | governance policy linked |
+| ADR-013 | extracted | Retrofit/Dio/DTO/mapper/data-source boundaries retained | volatile directory evidence routed to README/source | ADR-005、012、014–016 retained |
+| ADR-014 | extracted | environment/ApiMode separation、entrypoint authority and validation retained | M9/M18 journal and support evidence routed to audits/current snapshot | ADR-010、012、013 retained |
+
+Batch B aggregate source sections remain unchanged. Current repository routes continue to point at aggregate authority until Batch G cutover。
+
+### Batch C — Auth Refresh and Navigation
+
+| ID | Migration state | Semantic preservation | Non-ADR routing | Relation result |
+|---|---|---|---|---|
+| ADR-015 | extracted | interceptor split、single-flight、Session identity、safe replay、failure classification、commit ordering retained | implementation status、test matrix、Milestone 12 journal routed to README/audit/Git history | ADR-005、006、012、013、020、021、022 reviewed; storage supersession deferred to ADR-022 extraction |
+| ADR-021 | extracted | App-owned startup and auth-navigation mapping retained | Milestone 18-7D closure status routed to audit | ADR-005–007、015、022 retained |
+
+Batch C aggregate source sections remain unchanged. ADR-015 does not yet declare a `superseded_by` edge because ADR-022 canonical target does not exist until Batch F；the scope disposition is recorded in prose and this manifest。
+
+### Batch B — Tooling, Governance and Platform Contracts
+
+| ID | Migration state | Semantic preservation | Non-ADR routing | Relation result |
+|---|---|---|---|---|
 | ADR-004 | extracted | accepted | App DI tool choice retained；package interpretation narrowed | reciprocal partial scope edge with ADR-012 |
 | ADR-005 | extracted | accepted | historical future tense normalized to current package boundary | ADR-001、006–008、012、013 retained |
 | ADR-009 | extracted | accepted | durable language choice retained | agent enforcement routed to `AGENTS.md` |

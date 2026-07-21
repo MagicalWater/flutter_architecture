@@ -35,13 +35,13 @@ last_reviewed_baseline: 1.5.1
 | ADR-012 | adr-012-reusable-package-di-boundary.md | extracted |
 | ADR-013 | adr-013-retrofit-http-api-boundary.md | extracted |
 | ADR-014 | adr-014-app-configuration-environment-entrypoints.md | extracted |
-| ADR-015 | - | aggregate |
+| ADR-015 | adr-015-refresh-token-concurrent-401.md | extracted |
 | ADR-016 | - | aggregate |
 | ADR-017 | - | aggregate |
 | ADR-018 | - | aggregate |
 | ADR-019 | - | aggregate |
 | ADR-020 | - | aggregate |
-| ADR-021 | - | aggregate |
+| ADR-021 | adr-021-auth-startup-navigation-coordination.md | extracted |
 | ADR-022 | - | aggregate |
 
 ## Canonical ADR Contract

@@ -54,6 +54,11 @@ _VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 _MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 _CHANGELOG_VERSION_RE = re.compile(r"^##\s+\[?(\d+\.\d+\.\d+)\]?")
 _README_BASELINE_RE = re.compile(r"Template Baseline Version[：:]\s*`?\*{0,2}(\d+\.\d+\.\d+)")
+_ADR_ID_RE = re.compile(r"^ADR-(\d{3})$")
+_ADR_FILE_RE = re.compile(r"^adr-(\d{3})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
+_ADR_INDEX_ROW_RE = re.compile(
+    r"^\|\s*(ADR-\d{3})\s*\|\s*([^|]+?)\s*\|\s*(aggregate|extracted)\s*\|$"
+)
 
 
 @dataclass(frozen=True)
@@ -80,6 +85,7 @@ def check_repository(root: Path) -> list[CheckIssue]:
     issues.extend(metadata_issues)
     issues.extend(_check_duplicate_ids(root, metadata_by_path))
     issues.extend(_check_status(metadata_by_path))
+    issues.extend(_check_adrs(root, metadata_by_path))
     issues.extend(_check_readme_coverage(root))
     return sorted(issues, key=lambda issue: (issue.code, str(issue.path), issue.message))
 
@@ -254,6 +260,121 @@ def _check_status(metadata_by_path: dict[Path, dict[str, object]]) -> list[Check
         CheckIssue("status-contradiction", path, "more than one active milestone document exists")
         for path in active
     ]
+
+
+def _check_adrs(root: Path, metadata_by_path: dict[Path, dict[str, object]]) -> list[CheckIssue]:
+    adr_dir = root / "docs" / "adr"
+    index_path = adr_dir / "README.md"
+    canonical_files = sorted(path for path in adr_dir.glob("adr-*.md") if path.is_file())
+    adr_metadata = {
+        path: metadata_by_path.get(path, {})
+        for path in canonical_files
+    }
+    issues: list[CheckIssue] = []
+
+    index_rows = _parse_adr_index(index_path)
+    indexed_files: set[str] = set()
+    for identifier, file_name, state in index_rows:
+        if state == "aggregate":
+            continue
+        indexed_files.add(file_name)
+        target = adr_dir / file_name
+        if not target.exists():
+            issues.append(CheckIssue("missing-adr-file", index_path, f"{identifier} targets missing {file_name}"))
+
+    for path in canonical_files:
+        if path.name not in indexed_files:
+            issues.append(CheckIssue("orphan-adr-file", path, "canonical ADR is not listed as extracted in index"))
+
+    records: dict[str, tuple[Path, dict[str, object]]] = {}
+    for path, metadata in adr_metadata.items():
+        identifier = metadata.get("id")
+        match = _ADR_ID_RE.fullmatch(identifier) if isinstance(identifier, str) else None
+        if not match:
+            issues.append(CheckIssue("invalid-adr-id", path, f"expected ADR-NNN, found {identifier!r}"))
+            continue
+        file_match = _ADR_FILE_RE.fullmatch(path.name)
+        if not file_match or file_match.group(1) != match.group(1):
+            issues.append(
+                CheckIssue("adr-filename-mismatch", path, f"id {identifier} does not match filename {path.name}")
+            )
+        records[identifier] = (path, metadata)
+
+    for identifier, (path, metadata) in records.items():
+        supersedes = _metadata_list(metadata, "supersedes")
+        superseded_by = _metadata_list(metadata, "superseded_by")
+        if metadata.get("status") == "superseded" and not superseded_by:
+            issues.append(CheckIssue("superseded-without-successor", path, f"{identifier} has no superseded_by target"))
+        for relation, targets in (("supersedes", supersedes), ("superseded_by", superseded_by)):
+            for target in targets:
+                if target == identifier:
+                    issues.append(CheckIssue("adr-self-edge", path, f"{identifier} has self edge in {relation}"))
+                    continue
+                target_record = records.get(target)
+                if target_record is None:
+                    issues.append(CheckIssue("missing-adr-target", path, f"{relation} target {target} does not exist"))
+                    continue
+                reverse_key = "superseded_by" if relation == "supersedes" else "supersedes"
+                if identifier not in _metadata_list(target_record[1], reverse_key):
+                    issues.append(
+                        CheckIssue(
+                            "non-reciprocal-adr-edge",
+                            path,
+                            f"{identifier} {relation} {target} lacks reciprocal {reverse_key}",
+                        )
+                    )
+
+    graph = {
+        identifier: [target for target in _metadata_list(metadata, "superseded_by") if target in records]
+        for identifier, (_, metadata) in records.items()
+    }
+    for identifier in _cycle_nodes(graph):
+        issues.append(CheckIssue("adr-supersession-cycle", records[identifier][0], f"{identifier} is in a cycle"))
+    return issues
+
+
+def _parse_adr_index(path: Path) -> list[tuple[str, str, str]]:
+    if not path.exists():
+        return []
+    rows: list[tuple[str, str, str]] = []
+    for line in _without_fenced_code(path.read_text(encoding="utf-8")).splitlines():
+        if match := _ADR_INDEX_ROW_RE.fullmatch(line.strip()):
+            rows.append((match.group(1), match.group(2).strip().strip("`"), match.group(3)))
+    return rows
+
+
+def _metadata_list(metadata: dict[str, object], key: str) -> list[str]:
+    value = metadata.get(key)
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, str) and item]
+    if value in (None, "[]"):
+        return []
+    return [value] if isinstance(value, str) and value else []
+
+
+def _cycle_nodes(graph: dict[str, list[str]]) -> set[str]:
+    visited: set[str] = set()
+    active: list[str] = []
+    active_set: set[str] = set()
+    cycles: set[str] = set()
+
+    def visit(node: str) -> None:
+        if node in active_set:
+            cycles.update(active[active.index(node) :])
+            return
+        if node in visited:
+            return
+        visited.add(node)
+        active.append(node)
+        active_set.add(node)
+        for target in graph.get(node, []):
+            visit(target)
+        active.pop()
+        active_set.remove(node)
+
+    for node in graph:
+        visit(node)
+    return cycles
 
 
 def _check_readme_coverage(root: Path) -> list[CheckIssue]:

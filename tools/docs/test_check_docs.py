@@ -64,6 +64,73 @@ class DocumentationCheckerTest(unittest.TestCase):
 
             self.assertIn("status-contradiction", _codes(root))
 
+    def test_reports_invalid_adr_id_and_filename_mismatch(self) -> None:
+        with _fixture() as root:
+            _write(
+                root,
+                "docs/adr/README.md",
+                _adr_index("ADR-001", "adr-001-example.md", "extracted")
+                + _adr_index_row("ADR-002", "adr-002-mismatch.md", "extracted"),
+            )
+            _write(root, "docs/adr/adr-001-example.md", _adr("ADR-2"))
+            _write(root, "docs/adr/adr-002-mismatch.md", _adr("ADR-003"))
+
+            codes = _codes(root)
+
+            self.assertIn("invalid-adr-id", codes)
+            self.assertIn("adr-filename-mismatch", codes)
+
+    def test_reports_missing_and_orphan_adr_index_entries(self) -> None:
+        with _fixture() as root:
+            _write(root, "docs/adr/README.md", _adr_index("ADR-001", "adr-001-missing.md", "extracted"))
+            _write(root, "docs/adr/adr-002-orphan.md", _adr("ADR-002"))
+
+            codes = _codes(root)
+
+            self.assertIn("missing-adr-file", codes)
+            self.assertIn("orphan-adr-file", codes)
+
+    def test_allows_aggregate_index_rows_during_migration(self) -> None:
+        with _fixture() as root:
+            _write(root, "docs/adr/README.md", _adr_index("ADR-001", "-", "aggregate"))
+
+            self.assertNotIn("missing-adr-file", _codes(root))
+
+    def test_reports_invalid_adr_supersession_edges(self) -> None:
+        with _fixture() as root:
+            _write(
+                root,
+                "docs/adr/README.md",
+                _adr_index("ADR-001", "adr-001-a.md", "extracted")
+                + _adr_index_row("ADR-002", "adr-002-b.md", "extracted"),
+            )
+            _write(root, "docs/adr/adr-001-a.md", _adr("ADR-001", superseded_by=["ADR-001", "ADR-999"]))
+            _write(root, "docs/adr/adr-002-b.md", _adr("ADR-002", supersedes=["ADR-001"]))
+
+            codes = _codes(root)
+
+            self.assertIn("adr-self-edge", codes)
+            self.assertIn("missing-adr-target", codes)
+            self.assertIn("non-reciprocal-adr-edge", codes)
+
+    def test_reports_supersession_cycle_and_missing_successor(self) -> None:
+        with _fixture() as root:
+            _write(
+                root,
+                "docs/adr/README.md",
+                _adr_index("ADR-001", "adr-001-a.md", "extracted")
+                + _adr_index_row("ADR-002", "adr-002-b.md", "extracted")
+                + _adr_index_row("ADR-003", "adr-003-c.md", "extracted"),
+            )
+            _write(root, "docs/adr/adr-001-a.md", _adr("ADR-001", supersedes=["ADR-002"], superseded_by=["ADR-002"]))
+            _write(root, "docs/adr/adr-002-b.md", _adr("ADR-002", supersedes=["ADR-001"], superseded_by=["ADR-001"]))
+            _write(root, "docs/adr/adr-003-c.md", _adr("ADR-003", status="superseded"))
+
+            codes = _codes(root)
+
+            self.assertIn("adr-supersession-cycle", codes)
+            self.assertIn("superseded-without-successor", codes)
+
 
 def _codes(root: Path) -> list[str]:
     return [issue.code for issue in check_repository(root)]
@@ -82,6 +149,43 @@ def _write(root: Path, relative_path: str, content: str) -> None:
     path = root / relative_path
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
+
+
+def _adr_index(identifier: str, file_name: str, state: str) -> str:
+    return (
+        "---\ndocument_type: architecture-decision-index\nstatus: active\n"
+        "authoritative_for:\n  - architecture-decision-routing\n"
+        "last_reviewed_baseline: 1.5.1\n---\n\n"
+        "| ID | File | Migration state |\n|---|---|---|\n"
+        + _adr_index_row(identifier, file_name, state)
+    )
+
+
+def _adr_index_row(identifier: str, file_name: str, state: str) -> str:
+    return f"| {identifier} | {file_name} | {state} |\n"
+
+
+def _adr(
+    identifier: str,
+    *,
+    status: str = "accepted",
+    supersedes: list[str] | None = None,
+    superseded_by: list[str] | None = None,
+) -> str:
+    def yaml_list(name: str, values: list[str] | None) -> str:
+        if not values:
+            return f"{name}: []\n"
+        return f"{name}:\n" + "".join(f"  - {value}\n" for value in values)
+
+    return (
+        "---\ndocument_type: architecture-decision\n"
+        f"status: {status}\nauthoritative_for:\n  - adr-contract\n"
+        "last_reviewed_baseline: 1.5.1\n"
+        f"id: {identifier}\ntitle: Example\n"
+        + yaml_list("supersedes", supersedes)
+        + yaml_list("superseded_by", superseded_by)
+        + "related: []\n---\n"
+    )
 
 
 if __name__ == "__main__":

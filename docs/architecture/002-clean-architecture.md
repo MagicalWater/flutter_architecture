@@ -1,5 +1,8 @@
 # Clean Architecture
 
+> [!WARNING]
+> **Historical / partially superseded first-phase guidance.** 基本依賴方向仍具參考價值，但內文的第一階段scope、storage authority與future feature敘述不代表Template Baseline 1.5.0 current state。Current snapshot請讀取`docs/project_context.md`；accepted architecture decisions請讀取`docs/architecture_decisions.md`。
+
 本專案採用 Clean Architecture，但用 Feature First 的資料夾方式組織。
 
 也就是：

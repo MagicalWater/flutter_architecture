@@ -464,7 +464,9 @@ Legacy SharedPreferences credential
   → migration / cleanup only
 ```
 
-這項能力屬於credential-at-rest hardening，不代表可防止rooted device、runtime memory擷取或server compromise。OTP、Biometric、Device Binding與Passkey不屬於目前baseline。
+Secure credential storage只提供credential-at-rest hardening，不代表可防止rooted device、runtime memory擷取或server compromise。
+
+目前baseline另包含server-issued OTP step-up authentication，以及Android上的biometric-gated local session unlock。OTP不宣稱可防止SIM-swap或保證SMS provider delivery；Biometric只驗證本機user presence，不是Server authentication，也不構成cryptographic Device Binding。Device Binding與Passkey仍不屬於目前baseline。
 
 ---
 

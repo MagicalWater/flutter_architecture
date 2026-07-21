@@ -1,5 +1,8 @@
 # 資料夾結構
 
+> [!WARNING]
+> **Historical / superseded first-phase guidance.** 本文件保存第一階段MVP的資料夾規劃，未包含目前完整App、Package與文件結構。Current repository overview請讀取root `README.md`與`docs/project_context.md`；accepted architecture decisions請讀取`docs/architecture_decisions.md`。
+
 本專案採用 Monorepo 與 Feature First。
 
 第一階段只建立 MVP 需要的結構。

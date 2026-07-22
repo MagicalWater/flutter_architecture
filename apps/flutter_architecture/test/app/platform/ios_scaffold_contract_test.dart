@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -38,5 +39,80 @@ void main() {
     expect(project, isNot(contains('DEVELOPMENT_TEAM =')));
     expect(project, isNot(contains('PROVISIONING_PROFILE_SPECIFIER')));
     expect(project, isNot(contains('PROVISIONING_PROFILE =')));
+  });
+
+  test('iOS native plugins固定Face ID與Keychain契約', () {
+    final root = Directory.current.path;
+    final infoPlist = File('$root/ios/Runner/Info.plist').readAsStringSync();
+    final project = File(
+      '$root/ios/Runner.xcodeproj/project.pbxproj',
+    ).readAsStringSync();
+    final debugProfileEntitlements = File(
+      '$root/ios/Runner/DebugProfile.entitlements',
+    ).readAsStringSync();
+    final releaseEntitlements = File(
+      '$root/ios/Runner/Release.entitlements',
+    ).readAsStringSync();
+    final registrant = File(
+      '$root/ios/Runner/GeneratedPluginRegistrant.m',
+    ).readAsStringSync();
+    final pluginDependencies = jsonDecode(
+      File('$root/.flutter-plugins-dependencies').readAsStringSync(),
+    ) as Map<String, dynamic>;
+
+    expect(infoPlist, contains('<key>NSFaceIDUsageDescription</key>'));
+    expect(
+      infoPlist,
+      contains(
+        '<string>Use Face ID to verify the current user before unlocking '
+        'the local signed-in session.</string>',
+      ),
+    );
+
+    for (final entitlements in [
+      debugProfileEntitlements,
+      releaseEntitlements,
+    ]) {
+      expect(entitlements, contains('<key>keychain-access-groups</key>'));
+      expect(
+        entitlements,
+        contains(
+          r'<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>',
+        ),
+      );
+      expect(entitlements, isNot(contains('com.apple.security.application-groups')));
+      expect(entitlements, isNot(contains('aps-environment')));
+    }
+
+    expect(
+      RegExp(r'CODE_SIGN_ENTITLEMENTS = Runner/DebugProfile\.entitlements;')
+          .allMatches(project)
+          .length,
+      2,
+    );
+    expect(
+      RegExp(r'CODE_SIGN_ENTITLEMENTS = Runner/Release\.entitlements;')
+          .allMatches(project)
+          .length,
+      1,
+    );
+
+    for (final plugin in [
+      'FlutterSecureStorageDarwinPlugin',
+      'LocalAuthPlugin',
+      'SharedPreferencesPlugin',
+      'SqflitePlugin',
+    ]) {
+      expect(registrant, contains('$plugin registerWithRegistrar'));
+    }
+
+    final iosPlugins = ((pluginDependencies['plugins'] as Map<String, dynamic>)['ios']
+            as List<dynamic>)
+        .cast<Map<String, dynamic>>();
+    final pathProvider = iosPlugins.singleWhere(
+      (plugin) => plugin['name'] == 'path_provider_foundation',
+    );
+    expect(pathProvider['native_build'], isFalse);
+    expect(registrant, isNot(contains('PathProviderPlugin')));
   });
 }

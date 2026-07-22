@@ -14,13 +14,14 @@ class ShellPortabilityContractTest(unittest.TestCase):
         self.assertNotIn("mapfile", script)
 
     def test_android_artifact_metadata_avoids_pipefail_head_pipeline(self) -> None:
-        script = (REPO_ROOT / "tools/ci/build_android_release.sh").read_text(
+        script = (REPO_ROOT / "tools/ci/build_android_environment.sh").read_text(
             encoding="utf-8"
         )
 
         self.assertNotIn("flutter --version | head", script)
         self.assertNotIn("java -version 2>&1 | head", script)
-        self.assertIn("Android Studio.app/Contents/jbr/Contents/Home/bin/java", script)
+        self.assertNotIn("mapfile", script)
+        self.assertIn("Android Studio.app/Contents/jbr/Contents/Home", script)
 
 
 if __name__ == "__main__":

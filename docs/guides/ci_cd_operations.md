@@ -164,6 +164,13 @@ Android workflow依序執行generated consistency與：
 bash tools/ci/build_android_release.sh
 ```
 
+此相容入口目前委派到production verification command。Local development與production的正式入口分別為：
+
+```bash
+bash tools/ci/build_android_development.sh
+API_BASE_URL=https://api.your-domain.example bash tools/ci/build_android_production.sh
+```
+
 失敗時：
 
 1. 確認generated gate是否先失敗。
@@ -171,7 +178,10 @@ bash tools/ci/build_android_release.sh
 3. 使用相容shell執行build script，或在App目錄直接驗證：
 
    ```bash
-   flutter build apk --release -t lib/main.dart
+   flutter build apk --release --flavor production \
+     -t lib/main_production.dart \
+     --dart-define=API_MODE=real \
+     --dart-define=API_BASE_URL=https://api.your-domain.example
    ```
 
 4. ReviewGradle、Android SDK、Java 17、Flutter 3.41.6與entrypoint evidence。
@@ -187,6 +197,15 @@ bash tools/ci/build_android_release.sh
 bash tools/ci/build_ios_simulator.sh
 ```
 
+此相容入口委派到Development Debug Simulator command。Local development與production verification的正式入口分別為：
+
+```bash
+bash tools/ci/build_ios_development.sh
+API_BASE_URL=https://api.your-domain.example bash tools/ci/build_ios_production.sh
+```
+
+Production iOS verification使用`Release-production`、generic iOS device SDK與`CODE_SIGNING_ALLOWED=NO`，不產生可上架IPA。
+
 此gate會重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`，不讀取Apple signing secrets，也不把`.app`上傳為distribution artifact。失敗時會保留7天的`toolchain.txt`與`build.log` diagnostics。
 
 處理順序：
@@ -201,16 +220,17 @@ bash tools/ci/build_ios_simulator.sh
 
 ## Artifact Contract
 
-Artifact包含：
+Environment-aware local artifact預設放在：
 
 ```txt
-flutter-architecture-<short-sha>-release.apk
+artifacts/android/<environment>/
+artifacts/ios/<environment>/
 artifact-metadata.txt
 ```
 
 GitHub artifact名稱包含full SHA，retention為14天。
 
-Metadata至少包含commit SHA、ref、run ID、Flutter／Dart／Java版本、entrypoint、build command、artifact filename與以下分類：
+Metadata至少包含environment、platform、flavor或scheme、configuration、entrypoint、API mode、native identifier、artifact filename與以下分類：
 
 ```txt
 signing=debug signing for verification only

@@ -125,25 +125,41 @@ void main() {
     expect(registrant, isNot(contains('PathProviderPlugin')));
   });
 
-  test('repository提供clean unsigned iOS Simulator build script', () {
+  test('repository提供environment-aware unsigned iOS build scripts', () {
     final root = Directory.current.path;
-    final script = File(
+    final compatibilityScript = File(
       '$root/../../tools/ci/build_ios_simulator.sh',
     ).readAsStringSync();
+    final developmentScript = File(
+      '$root/../../tools/ci/build_ios_development.sh',
+    ).readAsStringSync();
+    final productionScript = File(
+      '$root/../../tools/ci/build_ios_production.sh',
+    ).readAsStringSync();
+    final environmentScript = File(
+      '$root/../../tools/ci/build_ios_environment.sh',
+    ).readAsStringSync();
 
-    expect(script, contains('flutter clean'));
-    expect(script, contains('flutter pub get'));
-    expect(script, contains('pod install'));
+    expect(compatibilityScript, contains('build_ios_development.sh'));
     expect(
-      script,
-      contains('flutter build ios --simulator --no-codesign -t lib/main.dart'),
+      developmentScript,
+      contains(
+        'development Development Debug-development iphonesimulator '
+        'lib/main_development.dart mock',
+      ),
     );
-    expect(script, contains('Flutter Architecture.app'));
-    expect(script, contains('com.example.flutterarchitecture'));
-    expect(script, contains('IPHONEOS_DEPLOYMENT_TARGET'));
-    expect(script, contains('FlutterSecureStorageDarwinPlugin'));
-    expect(script, contains('LocalAuthPlugin'));
-    expect(script, contains('SharedPreferencesPlugin'));
-    expect(script, contains('SqflitePlugin'));
+    expect(
+      productionScript,
+      contains(
+        'production Production Release-production iphoneos '
+        'lib/main_production.dart real',
+      ),
+    );
+    expect(productionScript, isNot(contains('lib/main.dart')));
+    expect(environmentScript, contains('flutter pub get'));
+    expect(environmentScript, contains('pod install'));
+    expect(environmentScript, contains('CODE_SIGNING_ALLOWED=NO'));
+    expect(environmentScript, contains('plutil -extract CFBundleIdentifier'));
+    expect(environmentScript, contains('distribution=not production-ready'));
   });
 }

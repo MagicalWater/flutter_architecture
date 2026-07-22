@@ -88,14 +88,14 @@ last_reviewed_baseline: 1.7.0
 
 **Files:** Replace or extend `tools/ci/build_android_release.sh`, `build_ios_simulator.sh`; create focused scripts/tests and `26-5_local_build_review.md`; update artifact metadata contract。
 
-- [ ] Add explicit development and production wrapper commands; no wrapper may target `lib/main.dart` for production verification。
-- [ ] Keep Android production APKdebug-signed for verification and label metadata `distribution=not production-ready`。
-- [ ] Verify built Android package IDs with platform tooling and iOS bundle IDs with`plutil`。
-- [ ] Record environment、flavor/scheme、entrypoint、API mode classification and signing disposition in metadata/log output。
-- [ ] Add shell/Python contract tests for exact commands and expected artifact paths。
-- [ ] Run all four local representative builds from clean dependencies where host supports them。
-- [ ] Review stale artifact risk、path assumptions and shell portability；fix/re-review。
-- [ ] Commit `build(flavor): 建立環境化本機驗證命令`。
+- [x] Add explicit development and production wrapper commands; no wrapper may target `lib/main.dart` for production verification。
+- [x] Keep Android production APKdebug-signed for verification and label metadata `distribution=not production-ready`。
+- [x] Verify built Android package IDs with platform tooling and iOS bundle IDs with`plutil`。
+- [x] Record environment、flavor/scheme、entrypoint、API mode classification and signing disposition in metadata/log output。
+- [x] Add shell/Python contract tests for exact commands and expected artifact paths。
+- [x] Run all four local representative builds from clean dependencies where host supports them。
+- [x] Review stale artifact risk、path assumptions and shell portability；fix/re-review。
+- [x] Commit `build(flavor): 建立環境化本機驗證命令`。
 
 ## Task 26-6 — CI Representative Matrix
 

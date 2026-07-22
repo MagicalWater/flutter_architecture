@@ -18,9 +18,9 @@ CI/CD Foundation已由 Milestone 24完成並封存；current capability由`docs/
 
 ## Candidate — Additional Platform Support
 
-候選範圍：iOS、Web、Windows、macOS、Linux runner、artifact 與 runtime verification。
+候選範圍：Web、Windows、macOS、Linux runner、artifact 與 runtime verification。
 
-目前狀態：這些平台只有 Dependency-ready，不得因 dependency 或 conditional implementation 存在就宣稱 Supported。
+目前狀態：iOS已提升為Milestone 25；其餘平台仍只有 Dependency-ready，不得因 dependency 或 conditional implementation 存在就宣稱 Supported。
 
 每個平台應獨立評估 scaffold、artifact、runtime smoke、plugin support 與維護成本，不建議一次綁成單一大 milestone。
 

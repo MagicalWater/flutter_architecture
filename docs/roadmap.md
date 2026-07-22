@@ -17,6 +17,7 @@ last_reviewed_baseline: 1.6.1
 ```txt
 Template Baseline: 1.6.1
 Supported platform: Android
+iOS: Active implementation; remains Dependency-ready until Milestone 25 final evidence
 Other platforms: Dependency-ready
 ```
 
@@ -25,7 +26,7 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-None
+Milestone 25 — iOS Platform Support Foundation
 Latest completed: Milestone 24 — CI/CD Foundation
 Baseline: 1.6.1
 ```

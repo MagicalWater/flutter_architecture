@@ -8,13 +8,21 @@ last_reviewed_baseline: 1.6.1
 
 # Active Milestone
 
-目前沒有 active milestone：
+目前 active milestone：
 
 ```txt
-None
-Latest completed: Milestone 24 — CI/CD Foundation
+Milestone 25 — iOS Platform Support Foundation
 Baseline: 1.6.1
 ```
+
+## Active Scope
+
+Milestone 25建立tracked iOS runner、iOS 13 native contract、CocoaPods-compatible Flutter 3.41.6 integration、Swift Package Manager readiness audit、Simulator build／runtime evidence、macOS golden authority與GitHub-hosted iOS build gate。
+
+- Design：`docs/superpowers/specs/2026-07-22-milestone-25-ios-platform-support-foundation-design.md`
+- Planning Review：`docs/audits/milestone_25/25-0_planning_review.md`
+
+本Milestone不包含Flutter 3.44+升級、pure-SPM migration、Apple Developer帳號治理、production signing、provisioning、App Store Connect、TestFlight、App Store上傳、Push Notifications、正式Bundle Identifier、多Scheme／多Flavor或Fastlane。
 
 ## Latest Completed Milestone
 
@@ -38,11 +46,11 @@ Production signing、Play Store／App Store publishing、iOS build、GitHub Rele
 
 ## Current Next Action
 
-Review `docs/roadmap/candidates.md`與`docs/backlog.md`，經正式planning review後再提升下一個active milestone。
+建立並review Milestone 25 implementation plan，之後依逐Task implementation／review／修正／re-review／commit流程執行。
 
 ```txt
-Candidate review
-→ scope / non-goals
-→ planning review
-→ active promotion
+accepted design
+→ implementation plan
+→ plan review
+→ phased implementation
 ```

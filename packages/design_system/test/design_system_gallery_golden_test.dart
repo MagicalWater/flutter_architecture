@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,9 +24,11 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 100));
 
+    final goldenPath =
+        'goldens/design_system_gallery_${Platform.operatingSystem}.png';
     await expectLater(
       find.byType(_GalleryFixture),
-      matchesGoldenFile('goldens/design_system_gallery.png'),
+      matchesGoldenFile(goldenPath),
     );
   });
 }

@@ -14,6 +14,63 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  android-development-debug-apk:
+    name: Development Debug APK
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Load toolchain versions
+        id: versions
+        shell: bash
+        run: |
+          source .github/versions.env
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+          echo "java_version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
+          echo "java_distribution=$JAVA_DISTRIBUTION" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Java
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: ${{ steps.versions.outputs.java_distribution }}
+          java-version: ${{ steps.versions.outputs.java_version }}
+          cache: gradle
+          cache-dependency-path: |
+            apps/flutter_architecture/android/**/*.gradle*
+            apps/flutter_architecture/android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
+        with:
+          flutter-version: ${{ steps.versions.outputs.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: Restore Pub cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
+
+      - name: Build Android development Debug APK
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/android-development-artifact
+        run: bash tools/ci/build_android_development.sh
+
+      - name: Upload Android development verification artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: android-development-debug-${{ github.sha }}
+          path: ${{ runner.temp }}/android-development-artifact/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
   android-release-apk:
     name: Release APK
     runs-on: ubuntu-24.04
@@ -65,14 +122,15 @@ jobs:
 
       - name: Build Android release APK
         env:
-          ARTIFACT_DIR: ${{ runner.temp }}/android-artifact
-        run: bash tools/ci/build_android_release.sh
+          API_BASE_URL: https://api.acme.test
+          ARTIFACT_DIR: ${{ runner.temp }}/android-production-artifact
+        run: bash tools/ci/build_android_production.sh
 
       - name: Upload Android verification artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: flutter-architecture-android-release-${{ github.sha }}
-          path: ${{ runner.temp }}/android-artifact/
+          name: android-production-release-${{ github.sha }}
+          path: ${{ runner.temp }}/android-production-artifact/
           if-no-files-found: error
           retention-days: 14
           compression-level: 0

@@ -5,6 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 app_dir="$repo_root/apps/flutter_architecture"
 artifact_dir="${ARTIFACT_DIR:-$repo_root/artifacts/android/$environment}"
 api_base_url="${API_BASE_URL:-}"
+commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
 if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is required for $environment Android verification." >&2; exit 1; fi
 mkdir -p "$artifact_dir"; rm -f "$artifact_dir"/*.apk "$artifact_dir/artifact-metadata.txt"
 args=(apk "--$build_mode" --flavor "$environment" -t "$entrypoint" "--dart-define=API_MODE=$api_mode")
@@ -25,6 +26,7 @@ package_id="$($apkanalyzer manifest application-id "$target_apk")"
 expected_id="com.example.flutterarchitecture"; [[ "$environment" == "production" ]] || expected_id+=".$environment"
 [[ "$package_id" == "$expected_id" ]] || { echo "Unexpected package id: $package_id" >&2; exit 1; }
 cat > "$artifact_dir/artifact-metadata.txt" <<EOF
+commit_sha=$commit_sha
 environment=$environment
 platform=android
 flavor=$environment

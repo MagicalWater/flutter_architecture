@@ -101,15 +101,15 @@ last_reviewed_baseline: 1.7.0
 
 **Files:** Modify `.github/workflows/ci.yml`, `android.yml`, `ios.yml`, CI tests and guide; create `26-6_ci_review.md` and remote evidence artifact。
 
-- [ ] Add environment contract unittest to stableQuality gate。
-- [ ] Configure Android workflow to build developmentDebug and productionRelease representative artifacts withoutStore secrets。
-- [ ] Configure iOS workflow to build Development Debug and Production Release Simulator with no codesign。
-- [ ] Keep stablecheck names or document any intentional Branch Protection impact before renaming。
-- [ ] Upload onlybounded verification artifacts／diagnostics with explicit environment and SHA metadata。
-- [ ] Validate YAML/static contracts locally and trigger remote CI。
-- [ ] Record actual run IDs、runner/Xcode versions、artifact identity and all failure dispositions。
-- [ ] Review permissions、cache correctness、secret absence、matrix cost and production claim boundary；fix/re-review。
-- [ ] Commit `ci(flavor): 驗證開發與正式環境代表建置`。
+- [x] Add environment contract unittest to stableQuality gate。
+- [x] Configure Android workflow to build developmentDebug and productionRelease representative artifacts withoutStore secrets。
+- [x] Configure iOS workflow to build Development Debug Simulator and Production Release generic-device verification with no codesign；Release Simulator已由實際失敗證明不受Flutter支援。
+- [x] Keep stablecheck names or document any intentional Branch Protection impact before renaming。
+- [x] Upload onlybounded verification artifacts／diagnostics with explicit environment and SHA metadata。
+- [ ] Validate YAML/static contracts locally and trigger remote CI；local已完成，remote需push後執行。
+- [ ] Record actual run IDs、runner/Xcode versions、artifact identity and all failure dispositions；等待remote run。
+- [x] Review permissions、cache correctness、secret absence、matrix cost and production claim boundary；fix/re-review。
+- [x] Commit `ci(flavor): 驗證開發與正式環境代表建置`。
 
 ## Task 26-7 — Adoption and Operations Documentation
 

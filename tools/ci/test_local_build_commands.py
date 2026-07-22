@@ -15,6 +15,19 @@ class LocalBuildCommandsTest(unittest.TestCase):
         ):
             self.assertTrue((ROOT / "tools" / "ci" / name).is_file(), name)
 
+    def test_ios_production_uses_unsigned_device_release_not_simulator_aot(self) -> None:
+        wrapper = (ROOT / "tools" / "ci" / "build_ios_production.sh").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("Production", wrapper)
+        self.assertIn("Release-production", wrapper)
+        self.assertIn("iphoneos", wrapper)
+        self.assertIn("lib/main_production.dart", wrapper)
+        self.assertFalse(
+            (ROOT / "tools" / "ci" / "build_ios_production_simulator.sh").exists()
+        )
+
     def test_android_wrappers_use_explicit_flavor_and_entrypoint(self) -> None:
         development = (ROOT / "tools/ci/build_android_development.sh").read_text()
         production = (ROOT / "tools/ci/build_android_production.sh").read_text()
@@ -34,6 +47,7 @@ class LocalBuildCommandsTest(unittest.TestCase):
         ios = (ROOT / "tools/ci/build_ios_environment.sh").read_text()
         for script in (android, ios):
             for field in (
+                "commit_sha=",
                 "environment=",
                 "entrypoint=",
                 "api_mode=",
@@ -43,6 +57,7 @@ class LocalBuildCommandsTest(unittest.TestCase):
             ):
                 self.assertIn(field, script)
         self.assertIn("not production-ready", android)
+        self.assertIn("sdk=$sdk", ios)
         self.assertIn("plutil -extract CFBundleIdentifier", ios)
 
 

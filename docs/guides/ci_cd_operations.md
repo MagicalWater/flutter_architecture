@@ -37,6 +37,16 @@ CI / Tests
 iOS / Simulator Build
 ```
 
+Environment representative checks另外包含：
+
+```txt
+Android / Development Debug APK
+Android / Release APK
+iOS / Production Release Build
+```
+
+`iOS / Simulator Build`維持Development Debug Simulator，避免既有Branch Protection名稱漂移。Flutter不支援iOS Simulator的Release/Profile AOT，因此Production代表建置使用`Release-production`、generic `iphoneos`與`CODE_SIGNING_ALLOWED=NO`，不是Simulator build。
+
 ### Android Verification Artifact
 
 ```txt
@@ -48,13 +58,14 @@ Events：
 - Push 到 `main`。
 - `workflow_dispatch`。
 
-Job：
+Jobs：
 
 ```txt
+Android / Development Debug APK
 Android / Release APK
 ```
 
-此 job 建立 verification-only release APK，不是 production distribution pipeline。
+兩個job分別建立development Debug與production Release verification APK；production仍使用debug signing，不是production distribution pipeline。
 
 ## Recommended Branch Protection
 
@@ -161,7 +172,8 @@ Design System golden test使用`design_system_gallery_<platform>.png`保存各ho
 Android workflow依序執行generated consistency與：
 
 ```bash
-bash tools/ci/build_android_release.sh
+bash tools/ci/build_android_development.sh
+API_BASE_URL=https://api.acme.test bash tools/ci/build_android_production.sh
 ```
 
 此相容入口目前委派到production verification command。Local development與production的正式入口分別為：
@@ -191,10 +203,11 @@ API_BASE_URL=https://api.your-domain.example bash tools/ci/build_android_product
 
 ## iOS Simulator Build Failure
 
-`iOS / Simulator Build`在`macos-15`執行：
+`iOS / Simulator Build`與`iOS / Production Release Build`都在`macos-15`執行：
 
 ```bash
-bash tools/ci/build_ios_simulator.sh
+bash tools/ci/build_ios_development.sh
+API_BASE_URL=https://api.acme.test bash tools/ci/build_ios_production.sh
 ```
 
 此相容入口委派到Development Debug Simulator command。Local development與production verification的正式入口分別為：
@@ -204,7 +217,7 @@ bash tools/ci/build_ios_development.sh
 API_BASE_URL=https://api.your-domain.example bash tools/ci/build_ios_production.sh
 ```
 
-Production iOS verification使用`Release-production`、generic iOS device SDK與`CODE_SIGNING_ALLOWED=NO`，不產生可上架IPA。
+Production iOS verification使用`Release-production`、generic `iphoneos` SDK與`CODE_SIGNING_ALLOWED=NO`，不產生可上架IPA。不得改成Release Simulator；Flutter toolchain會以「release/profile builds are only supported for physical devices」拒絕該組合。
 
 此gate會重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`，不讀取Apple signing secrets，也不把`.app`上傳為distribution artifact。失敗時會保留7天的`toolchain.txt`與`build.log` diagnostics。
 
@@ -230,7 +243,7 @@ artifact-metadata.txt
 
 GitHub artifact名稱包含full SHA，retention為14天。
 
-Metadata至少包含environment、platform、flavor或scheme、configuration、entrypoint、API mode、native identifier、artifact filename與以下分類：
+Metadata至少包含commit SHA、environment、platform、flavor或scheme、configuration／SDK、entrypoint、API mode、native identifier、artifact filename與以下分類：
 
 ```txt
 signing=debug signing for verification only

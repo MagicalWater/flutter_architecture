@@ -4,6 +4,7 @@ environment="$1"; scheme="$2"; configuration="$3"; sdk="$4"; entrypoint="$5"; ap
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 app_dir="$repo_root/apps/flutter_architecture"; ios_dir="$app_dir/ios"
 artifact_dir="${ARTIFACT_DIR:-$repo_root/artifacts/ios/$environment}"; api_base_url="${API_BASE_URL:-}"
+commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
 if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is required for $environment iOS verification." >&2; exit 1; fi
 mkdir -p "$artifact_dir"; rm -rf "$artifact_dir"/*.app "$artifact_dir/artifact-metadata.txt" "$artifact_dir/DerivedData"
 (cd "$app_dir" && flutter pub get); (cd "$ios_dir" && pod install)
@@ -18,10 +19,12 @@ bundle_id="$(plutil -extract CFBundleIdentifier raw "$target_app/Info.plist")"
 expected_id="com.example.flutterarchitecture"; [[ "$environment" == "production" ]] || expected_id+=".$environment"
 [[ "$bundle_id" == "$expected_id" ]] || { echo "Unexpected bundle id: $bundle_id" >&2; exit 1; }
 cat > "$artifact_dir/artifact-metadata.txt" <<EOF
+commit_sha=$commit_sha
 environment=$environment
 platform=ios
 scheme=$scheme
 configuration=$configuration
+sdk=$sdk
 entrypoint=$entrypoint
 api_mode=$api_mode
 bundle_id=$bundle_id

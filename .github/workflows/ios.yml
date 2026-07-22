@@ -61,14 +61,28 @@ jobs:
           } > "$RUNNER_TEMP/ios-diagnostics/toolchain.txt" 2>&1
 
       - name: Check iOS workflow contract
-        run: python3 -m unittest tools.ci.test_ios_workflow_contract
+        run: >-
+          python3 -m unittest
+          tools.ci.test_environment_workflow_matrix_contract
+          tools.ci.test_ios_workflow_contract
 
       - name: Build unsigned iOS Simulator app
         shell: bash
         run: |
           set -o pipefail
-          bash tools/ci/build_ios_simulator.sh \
+          ARTIFACT_DIR="$RUNNER_TEMP/ios-development-artifact" \
+            bash tools/ci/build_ios_development.sh \
             2>&1 | tee "$RUNNER_TEMP/ios-diagnostics/build.log"
+
+      - name: Upload iOS development verification artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ios-development-debug-simulator-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ios-development-artifact/*.app
+            ${{ runner.temp }}/ios-development-artifact/artifact-metadata.txt
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload iOS failure diagnostics
         if: failure()
@@ -76,5 +90,77 @@ jobs:
         with:
           name: ios-simulator-build-diagnostics-${{ github.sha }}
           path: ${{ runner.temp }}/ios-diagnostics/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  production-release-build:
+    name: Production Release Build
+    runs-on: macos-15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Load toolchain versions
+        id: versions
+        shell: bash
+        run: |
+          source .github/versions.env
+          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
+        with:
+          flutter-version: ${{ steps.versions.outputs.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: Restore Pub cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
+
+      - name: Capture production build diagnostics
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/ios-production-diagnostics"
+          {
+            sw_vers
+            xcodebuild -version
+            flutter --version
+            flutter doctor -v
+            pod --version
+          } > "$RUNNER_TEMP/ios-production-diagnostics/toolchain.txt" 2>&1
+
+      - name: Build unsigned iOS Production Release app
+        shell: bash
+        env:
+          API_BASE_URL: https://api.acme.test
+          ARTIFACT_DIR: ${{ runner.temp }}/ios-production-artifact
+        run: |
+          set -o pipefail
+          bash tools/ci/build_ios_production.sh \
+            2>&1 | tee "$RUNNER_TEMP/ios-production-diagnostics/build.log"
+
+      - name: Upload iOS production verification artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ios-production-release-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ios-production-artifact/*.app
+            ${{ runner.temp }}/ios-production-artifact/artifact-metadata.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload iOS production failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ios-production-build-diagnostics-${{ github.sha }}
+          path: ${{ runner.temp }}/ios-production-diagnostics/
           if-no-files-found: ignore
           retention-days: 7

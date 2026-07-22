@@ -15,23 +15,38 @@ Future<void> loadDeterministicTestFonts() async {
     '${Platform.pathSeparator}artifacts${Platform.pathSeparator}material_fonts',
   );
 
+  final fontFiles = <String, File>{
+    await for (final entity in fontRoot.list())
+      if (entity is File) _fileName(entity.path).toLowerCase(): entity,
+  };
+
   await _loadFont(
     family: 'Roboto',
-    file: File('${fontRoot.path}${Platform.pathSeparator}roboto-regular.ttf'),
+    file: _requiredFont(fontFiles, 'roboto-regular.ttf', fontRoot),
   );
   await _loadFont(
     family: 'MaterialIcons',
-    file: File(
-      '${fontRoot.path}${Platform.pathSeparator}materialicons-regular.otf',
-    ),
+    file: _requiredFont(fontFiles, 'materialicons-regular.otf', fontRoot),
   );
 }
 
-Future<void> _loadFont({required String family, required File file}) async {
-  if (!file.existsSync()) {
-    throw StateError('Required test font is missing: ${file.path}');
+File _requiredFont(
+  Map<String, File> fontFiles,
+  String fileName,
+  Directory fontRoot,
+) {
+  final file = fontFiles[fileName.toLowerCase()];
+  if (file == null) {
+    throw StateError(
+      'Required test font is missing from ${fontRoot.path}: $fileName',
+    );
   }
+  return file;
+}
 
+String _fileName(String path) => path.split(Platform.pathSeparator).last;
+
+Future<void> _loadFont({required String family, required File file}) async {
   final bytes = await file.readAsBytes();
   final loader = FontLoader(family)
     ..addFont(Future<ByteData>.value(ByteData.sublistView(bytes)));

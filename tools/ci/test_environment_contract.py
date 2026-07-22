@@ -7,6 +7,7 @@ from tools.ci.verify_environment_contract import (
     validate_android_projection,
     validate_contract,
     validate_dart_projection,
+    validate_ios_projection,
 )
 
 
@@ -82,6 +83,9 @@ class EnvironmentContractTest(unittest.TestCase):
 
     def test_android_projection_validates(self) -> None:
         self.assertEqual(validate_android_projection(ROOT, self.contract), [])
+
+    def test_ios_projection_validates(self) -> None:
+        self.assertEqual(validate_ios_projection(ROOT, self.contract), [])
 
     def test_errors_include_the_failing_path(self) -> None:
         invalid = {

@@ -59,17 +59,17 @@ last_reviewed_baseline: 1.7.0
 
 **Files:** Create environment xcconfig files and `Development.xcscheme`, `Staging.xcscheme`, `Production.xcscheme`; modify `Runner.xcodeproj/project.pbxproj`, `Podfile`, `Info.plist`, verifier/tests; remove shared `Runner.xcscheme`; create `26-3_ios_scheme_review.md`。
 
-- [ ] Extend failing verifier tests for three shared schemes, nine configurations, approvedbundle IDs, display names, target and sentinel values。
-- [ ] Add environment xcconfig files that inherit Flutter／Pods settings and defineidentifier、display name、`FLUTTER_TARGET` and sentinel。
-- [ ] Duplicate Debug／Profile／Release configurations per environment without duplicatingtargets。
-- [ ] Map Development／Staging／Production scheme actions to approvedconfigurations。
-- [ ] UpdatePodfile project mapping for all custom configuration names and run clean `pod install`。
-- [ ] MakeInfo.plist read display name／bundle name from build settings。
-- [ ] Remove sharedRunner scheme after all three schemes are discoverable。
-- [ ] Run `xcodebuild -list` and `-showBuildSettings` for all schemes; inspectidentifier、target and deployment target。
-- [ ] Build Development Debug Simulator and Production Release Simulator with no codesign。
-- [ ] Run iOS static tests、docs_check and diff check。
-- [ ] Review scheme case sensitivity、Pods mapping、personal signing scan and rollback；fix/re-review。
+- [x] Extend failing verifier tests for three shared schemes, nine configurations, approvedbundle IDs, display names, target and sentinel values。
+- [x] Add environment xcconfig files that inherit Flutter／Pods settings and defineidentifier、display name、`FLUTTER_TARGET` and sentinel。
+- [x] Duplicate Debug／Profile／Release configurations per environment without duplicatingtargets。
+- [x] Map Development／Staging／Production scheme actions to approvedconfigurations。
+- [x] UpdatePodfile project mapping for all custom configuration names and run clean `pod install`。
+- [x] MakeInfo.plist read display name／bundle name from build settings。
+- [x] Remove sharedRunner scheme after all three schemes are discoverable。
+- [x] Run `xcodebuild -list` and `-showBuildSettings` for all schemes; inspectidentifier、target and deployment target。
+- [x] Build Development Debug Simulator and Production Release generic iOS device verification with no codesign；Flutter不支援Release Simulator AOT。
+- [x] Run iOS static tests、docs_check and diff check。
+- [x] Review scheme case sensitivity、Pods mapping、personal signing scan and rollback；fix/re-review。
 - [ ] Commit `feat(ios): 建立環境 Scheme 與產品識別契約`。
 
 ## Task 26-4 — Dart Bootstrap Mismatch Guard

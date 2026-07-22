@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import sys
 from typing import Any
+import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -330,6 +331,144 @@ def validate_android_projection(
     return errors
 
 
+def validate_ios_projection(
+    repository_root: Path,
+    contract: dict[str, Any],
+) -> list[ContractError]:
+    errors: list[ContractError] = []
+    ios_root = repository_root / "apps" / "flutter_architecture" / "ios"
+    project_path = ios_root / "Runner.xcodeproj" / "project.pbxproj"
+    scheme_root = ios_root / "Runner.xcodeproj" / "xcshareddata" / "xcschemes"
+    info_path = ios_root / "Runner" / "Info.plist"
+    podfile_path = ios_root / "Podfile"
+
+    if not project_path.is_file():
+        return [ContractError("$.iosProject", "Runner.xcodeproj/project.pbxproj missing")]
+
+    project_text = project_path.read_text(encoding="utf-8")
+    expected_configurations = {
+        f"{mode}-{environment}"
+        for environment in EXPECTED_ENVIRONMENTS
+        for mode in ("Debug", "Profile", "Release")
+    }
+    for configuration in sorted(expected_configurations):
+        if project_text.count(f'name = "{configuration}";') < 3:
+            errors.append(
+                ContractError(
+                    "$.iosBuildConfigurations",
+                    f"{configuration} must exist for project, Runner and RunnerTests",
+                )
+            )
+
+    environments = contract.get("environments")
+    if not isinstance(environments, list):
+        return [*errors, ContractError("$.environments", "must be an array")]
+
+    expected_schemes: set[str] = set()
+    for index, environment in enumerate(environments):
+        if not isinstance(environment, dict):
+            continue
+        name = environment.get("name")
+        scheme = environment.get("iosScheme")
+        entrypoint = environment.get("dartEntrypoint")
+        bundle_identifier = environment.get("iosBundleIdentifier")
+        display_name = environment.get("displayName")
+        values = (name, scheme, entrypoint, bundle_identifier, display_name)
+        if not all(_is_non_empty_string(value) for value in values):
+            continue
+
+        expected_schemes.add(f"{scheme}.xcscheme")
+        for mode in ("Debug", "Profile", "Release"):
+            config_path = ios_root / "Flutter" / f"{mode}-{name}.xcconfig"
+            contract_path = f"$.environments[{index}].iosConfiguration.{mode}"
+            if not config_path.is_file():
+                errors.append(ContractError(contract_path, f"missing {config_path.name}"))
+                continue
+            config_text = config_path.read_text(encoding="utf-8")
+            expected_values = (
+                f"PRODUCT_BUNDLE_IDENTIFIER = {bundle_identifier}",
+                f"APP_DISPLAY_NAME = {display_name}",
+                f"FLUTTER_TARGET = {entrypoint}",
+                f"NATIVE_ENVIRONMENT = {name}",
+                "DART_DEFINES = $(inherited),",
+            )
+            for expected in expected_values:
+                if expected not in config_text:
+                    errors.append(ContractError(contract_path, f'must contain "{expected}"'))
+
+        scheme_path = scheme_root / f"{scheme}.xcscheme"
+        scheme_contract_path = f"$.environments[{index}].iosScheme"
+        if not scheme_path.is_file():
+            errors.append(ContractError(scheme_contract_path, "shared scheme missing"))
+            continue
+        try:
+            root = ET.parse(scheme_path).getroot()
+        except ET.ParseError as error:
+            errors.append(ContractError(scheme_contract_path, f"invalid XML: {error}"))
+            continue
+        expected_actions = {
+            "TestAction": f"Debug-{name}",
+            "LaunchAction": f"Debug-{name}",
+            "AnalyzeAction": f"Debug-{name}",
+            "ProfileAction": f"Profile-{name}",
+            "ArchiveAction": f"Release-{name}",
+        }
+        for action, configuration in expected_actions.items():
+            node = root.find(action)
+            if node is None or node.attrib.get("buildConfiguration") != configuration:
+                errors.append(
+                    ContractError(
+                        scheme_contract_path,
+                        f"{action} must use {configuration}",
+                    )
+                )
+
+    if scheme_root.is_dir():
+        actual_schemes = {path.name for path in scheme_root.glob("*.xcscheme")}
+        if actual_schemes != expected_schemes:
+            errors.append(
+                ContractError(
+                    "$.iosSchemes",
+                    f"must equal {sorted(expected_schemes)}; found {sorted(actual_schemes)}",
+                )
+            )
+
+    if not info_path.is_file():
+        errors.append(ContractError("$.iosInfoPlist", "Runner/Info.plist missing"))
+    else:
+        info_text = info_path.read_text(encoding="utf-8")
+        if info_text.count("$(APP_DISPLAY_NAME)") < 2:
+            errors.append(
+                ContractError(
+                    "$.iosInfoPlist",
+                    "CFBundleDisplayName and CFBundleName must use APP_DISPLAY_NAME",
+                )
+            )
+
+    if not podfile_path.is_file():
+        errors.append(ContractError("$.iosPodfile", "Podfile missing"))
+    else:
+        podfile_text = podfile_path.read_text(encoding="utf-8")
+        for configuration in sorted(expected_configurations):
+            if f"'{configuration}' =>" not in podfile_text:
+                errors.append(
+                    ContractError(
+                        "$.iosPodfile",
+                        f"missing CocoaPods mapping for {configuration}",
+                    )
+                )
+
+    if re.search(r"DEVELOPMENT_TEAM\s*=\s*[^;\s]+", project_text):
+        errors.append(
+            ContractError(
+                "$.iosSigning",
+                "template project must not contain a personal DEVELOPMENT_TEAM",
+            )
+        )
+
+    return errors
+
+
 def _require_exact_fields(
     value: dict[str, Any],
     expected_fields: tuple[str, ...],
@@ -359,6 +498,7 @@ def main() -> int:
         *validate_contract(contract),
         *validate_dart_projection(ROOT, contract),
         *validate_android_projection(ROOT, contract),
+        *validate_ios_projection(ROOT, contract),
     ]
     if errors:
         for error in errors:

@@ -1,0 +1,8 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug-production.xcconfig"
+#include "Generated.xcconfig"
+PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterarchitecture
+APP_DISPLAY_NAME = Flutter Architecture
+PRODUCT_NAME = Flutter Architecture
+FLUTTER_TARGET = lib/main_production.dart
+NATIVE_ENVIRONMENT = production
+DART_DEFINES = $(inherited),TkFUSVZFX0VOVklST05NRU5UPXByb2R1Y3Rpb24=

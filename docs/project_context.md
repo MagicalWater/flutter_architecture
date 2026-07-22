@@ -347,7 +347,7 @@ Milestone 24的主要目標：
 - 固定 runner、Flutter與 Java策略，建立 cache、concurrency、permissions、Action pinning與 artifact traceability contract。
 - 文件化 Branch Protection required checks、failure、retention與 rollback policy。
 
-24-0只完成 planning authority與 design acceptance；尚未建立 workflows、ADR-023或修改 production signing／GitHub repository settings。
+Task 24-1至24-4已完成：repository已建立ADR-023、exact toolchain authority、tracked root lockfile、Pull Request quality workflow、main Android verification artifact workflow與CI operations guide。Production signing與GitHub repository settings仍未修改；Branch Protection目前只有文件化建議。
 
 ## Documentation Routing
 

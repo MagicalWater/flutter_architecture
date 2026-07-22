@@ -185,6 +185,18 @@ cd apps/flutter_architecture
 flutter build bundle
 ```
 
+Repository Android verification artifact：
+
+```bash
+bash tools/ci/build_android_release.sh
+```
+
+CI、Branch Protection、failure與rollback操作請讀：
+
+```txt
+docs/guides/ci_cd_operations.md
+```
+
 Web SQLite setup：
 
 ```bash

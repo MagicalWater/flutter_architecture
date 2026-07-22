@@ -25,7 +25,7 @@
 - Milestone 21 Biometric-gated Local Session Unlock：Completed / Archived
 - Milestone 22 Documentation Authority & Navigation Foundation：Completed / Archived
 - Milestone 23 Architecture Decision Record Extraction & Normalization：Completed / Archived
-- Milestone 24 CI/CD Foundation：Planning accepted / Implementation not started
+- Milestone 24 CI/CD Foundation：Task 24-1～24-4 completed / Active
 
 平台能力：
 
@@ -531,6 +531,7 @@ docs/README.md
 - `docs/audits/README.md`：Review 與 runtime evidence 索引。
 - `docs/superpowers/README.md`：Design specs 與 implementation plans 索引。
 - `docs/milestones/README.md`：Milestone artifacts routing。
+- `docs/guides/ci_cd_operations.md`：CI、Branch Protection、artifact與failure／rollback操作指南。
 - `CHANGELOG.md`：正式版本變更紀錄。
 
 不要把所有文件都放入每次必讀清單；依 `docs/README.md` 的任務式路由讀取即可。

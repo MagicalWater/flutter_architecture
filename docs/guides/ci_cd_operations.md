@@ -152,6 +152,8 @@ dart run melos exec -- flutter test
 
 確認是否可重現、是否為flaky test、shared state或平台差異。沒有證據前不得直接rerun直到變綠；若確認flaky，先建立focused fix與regression evidence。
 
+Design System golden test失敗時，`CI / Tests`會嘗試上傳`golden-test-failures-<full-sha>` artifact並保存14天。應下載比較master、test與isolated diff images，先確認字型、renderer與host差異，再判斷是否為真正UI regression；不得只放寬pixel tolerance掩蓋失敗。
+
 ## Android Artifact Failure
 
 Android workflow依序執行generated consistency與：

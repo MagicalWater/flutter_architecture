@@ -157,3 +157,12 @@ jobs:
 
       - name: Run all Flutter tests
         run: dart run melos exec -- flutter test
+
+      - name: Upload golden test failure evidence
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: golden-test-failures-${{ github.sha }}
+          path: packages/design_system/test/failures/
+          if-no-files-found: ignore
+          retention-days: 14

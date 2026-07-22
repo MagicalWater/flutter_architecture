@@ -2,7 +2,11 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/load_test_fonts.dart';
+
 void main() {
+  setUpAll(loadDeterministicTestFonts);
+
   testWidgets('Design System gallery remains visually stable', (tester) async {
     tester.view.physicalSize = const Size(800, 1200);
     tester.view.devicePixelRatio = 1;

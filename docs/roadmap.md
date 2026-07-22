@@ -24,16 +24,15 @@ Other platforms: Dependency-ready
 
 ## Active Milestone
 
-目前沒有 active milestone。最近完成：
-
 ```txt
-Milestone 23 — Architecture Decision Record Extraction & Normalization
-Status: Completed / Archived
-Final review: Accepted
-Release decision: No release; baseline remains 1.5.1
+Milestone 24 — CI/CD Foundation
+Status: Active
+Current gate: 24-0 Planning Review accepted
+Implementation: Not started
+Baseline: 1.5.1
 ```
 
-完整 active scope、gate 與 next action：
+完整 active scope、design、gate與 next action：
 
 - `docs/roadmap/active.md`
 

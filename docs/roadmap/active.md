@@ -1,6 +1,6 @@
 ---
 document_type: active-milestone
-status: completed
+status: active
 authoritative_for:
   - current-active-milestone
 last_reviewed_baseline: 1.5.1
@@ -8,26 +8,22 @@ last_reviewed_baseline: 1.5.1
 
 # Active Milestone
 
-目前沒有 active milestone。最近完成：
-
 ```txt
-Milestone 23 — Architecture Decision Record Extraction & Normalization
-Status: Completed / Archived
-Final review: Accepted
-Release decision: No release; baseline remains 1.5.1
+Milestone 24 — CI/CD Foundation
+Status: Active
+Current gate: 24-0 Planning Review accepted
+Implementation: Not started
+Baseline: 1.5.1
 ```
 
 ## Scope and Artifacts
 
-本 Milestone 將 Decision 001–022 轉為 canonical single-file ADR、正式 index、可驗證 supersession graph與 legacy compatibility routing。
+本 Milestone將既有 documentation、analysis、tests、generated source與 Android release artifact contract轉為 GitHub Actions repository-level automated gates。
 
-- Planning Review：`docs/audits/milestone_23/23-0_planning_review.md`
-- Migration manifest：`docs/migrations/m23_adr_extraction_manifest.md`
-- Implementation plan：`docs/superpowers/plans/2026-07-21-milestone-23-architecture-decision-record-extraction-normalization.md`
+- Design：`docs/superpowers/specs/2026-07-22-milestone-24-ci-cd-foundation-design.md`
+- Planning Review：`docs/audits/milestone_24/24-0_planning_review.md`
 
-ADR-001至ADR-022已完成 extraction與 authority cutover；`docs/adr/README.md`現在是正式 Decision routing authority，舊 aggregate路徑維持 compatibility stub。
-
-Milestone 22 — Documentation Authority & Navigation Foundation 已完成 final review、full verification 與 archive transition。
+目前只完成 planning authority與設計核准；尚未建立 `.github/workflows`、ADR-023、CI scripts或 production設定。
 
 ## Last Completed Milestone
 
@@ -47,7 +43,7 @@ Historical artifact routing：
 
 ## Current Next Action
 
-從`docs/roadmap/candidates.md`選擇下一個候選方向，先完成scope與planning review，再提升為active milestone。
+執行 Phase 24-1 — ADR／Reproducibility Foundation：先建立 ADR-023與 checker regression，再落實 exact toolchain authority、tracked root lockfile與 focused CI scripts。
 
 ```txt
 Task implementation

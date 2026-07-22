@@ -24,6 +24,8 @@
 - Milestone 20 OTP Step-Up Authentication：Completed / Archived
 - Milestone 21 Biometric-gated Local Session Unlock：Completed / Archived
 - Milestone 22 Documentation Authority & Navigation Foundation：Completed / Archived
+- Milestone 23 Architecture Decision Record Extraction & Normalization：Completed / Archived
+- Milestone 24 CI/CD Foundation：Planning accepted / Implementation not started
 
 平台能力：
 

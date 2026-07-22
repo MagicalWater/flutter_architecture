@@ -30,7 +30,9 @@ Milestone routing 只回答：
 
 ## Active routing
 
-目前沒有 active milestone。下一個方向需由`docs/roadmap/candidates.md`完成planning後提升。
+| Milestone | Status | Primary routing |
+|---|---|---|
+| 24 | Active；24-0 accepted，implementation not started | `docs/roadmap/active.md`、`docs/superpowers/specs/2026-07-22-milestone-24-ci-cd-foundation-design.md`、`docs/audits/milestone_24/24-0_planning_review.md` |
 
 ## Closed milestone routing
 

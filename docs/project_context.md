@@ -29,7 +29,7 @@ last_reviewed_baseline: 1.5.1
 ```txt
 Template Baseline: 1.5.1
 Phase 1 / MVP: Completed
-Current active milestone: None
+Current active milestone: Milestone 24 CI/CD Foundation
 Latest completed initiative: Milestone 23 ADR Extraction & Normalization
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -335,19 +335,19 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 目前正式工作是：
 
 ```txt
-Milestone 23 — Architecture Decision Record Extraction & Normalization
-Current gate: 23-0 Planning Review accepted; implementation not started
+Milestone 24 — CI/CD Foundation
+Current gate: 24-0 Planning Review accepted
+Implementation: Not started
 ```
 
-Milestone 23 的主要目標：
+Milestone 24的主要目標：
 
-- 將 Decision 001–022 擷取為 canonical single-file ADR。
-- 建立 Decision index、stable ID與 supersession graph。
-- 分離 durable contract與 milestone journal／evidence／release history。
-- 保留 aggregate與 legacy paths的 compatibility routing。
-- 擴充 checker驗證 ADR coverage、status與 relation integrity。
+- 將 documentation checker、workspace analyze、全部 Flutter tests與 generated source consistency轉為 Pull Request automated gates。
+- 在 main push與 manual dispatch的乾淨 GitHub Actions runner建立 Android release APK verification artifact。
+- 固定 runner、Flutter與 Java策略，建立 cache、concurrency、permissions、Action pinning與 artifact traceability contract。
+- 文件化 Branch Protection required checks、failure、retention與 rollback policy。
 
-23-0 只完成 planning review、migration manifest與 implementation plan。正式 extraction依 batch執行；final cutover前 aggregate仍是 authority。
+24-0只完成 planning authority與 design acceptance；尚未建立 workflows、ADR-023或修改 production signing／GitHub repository settings。
 
 ## Documentation Routing
 

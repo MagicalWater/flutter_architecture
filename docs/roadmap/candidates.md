@@ -14,18 +14,7 @@ Candidate 不代表 commitment。開始 implementation 前仍需 scope review、
 
 Architecture Decision Record Extraction & Normalization 已提升為 Milestone 23；current status由 `docs/roadmap/active.md` 擁有，不再列為 candidate。
 
-## Deferred Candidate — CI/CD Foundation
-
-來源：原 Milestone 11。
-
-候選範圍：
-
-- Workspace analyze／test automation。
-- Android artifact build。
-- Signing、secret management 與 release channel policy。
-- Documentation consistency check integration。
-
-前置條件：先決定 CI host、credential ownership、artifact retention 與 release strategy。
+CI/CD Foundation已提升為 Milestone 24；current status、scope與 gate由 `docs/roadmap/active.md`、design spec與 planning review擁有，不再列為 candidate。
 
 ## Candidate — Additional Platform Support
 

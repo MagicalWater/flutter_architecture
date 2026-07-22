@@ -38,7 +38,7 @@ Template revision db50e20168db8fee486b9abf32fc912de3bc5b6a
 
 | Finding | Severity | Result |
 |---|---:|---|
-| M25-1-R01 `flutter create`自動偵測本機Apple Development identity並寫入`DEVELOPMENT_TEAM = ZY28SRWLYV` | P0 | 引入前移除；repository全量scan無Team ID、email、certificate ID或provisioning資料 |
+| M25-1-R01 `flutter create`自動偵測本機Apple Development identity並寫入實際`DEVELOPMENT_TEAM`值 | P0 | 引入前移除並redact歷史evidence；repository全量scan不保留Team ID、email、certificate ID或provisioning資料 |
 | M25-1-R02 Temporary `.metadata`會移除既有Android entry並改寫channel | P0 | 不複製temporary metadata；只在既有stable metadata新增iOS platform entry |
 | M25-1-R03 Generated root README／pubspec會覆蓋repository authority | P0 | 未引入任何generated root file |
 | M25-1-R04 Initial template不直接生成Podfile | P2 | `flutter pub get`依current plugin set生成CocoaPods-compatible Podfile；符合approved transition contract |

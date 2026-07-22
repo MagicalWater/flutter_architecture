@@ -115,4 +115,26 @@ void main() {
     expect(pathProvider['native_build'], isFalse);
     expect(registrant, isNot(contains('PathProviderPlugin')));
   });
+
+  test('repository提供clean unsigned iOS Simulator build script', () {
+    final root = Directory.current.path;
+    final script = File(
+      '$root/../../tools/ci/build_ios_simulator.sh',
+    ).readAsStringSync();
+
+    expect(script, contains('flutter clean'));
+    expect(script, contains('flutter pub get'));
+    expect(script, contains('pod install'));
+    expect(
+      script,
+      contains('flutter build ios --simulator --no-codesign -t lib/main.dart'),
+    );
+    expect(script, contains('Flutter Architecture.app'));
+    expect(script, contains('com.example.flutterarchitecture'));
+    expect(script, contains('IPHONEOS_DEPLOYMENT_TARGET'));
+    expect(script, contains('FlutterSecureStorageDarwinPlugin'));
+    expect(script, contains('LocalAuthPlugin'));
+    expect(script, contains('SharedPreferencesPlugin'));
+    expect(script, contains('SqflitePlugin'));
+  });
 }

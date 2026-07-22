@@ -4,7 +4,7 @@
 
     <application
         android:allowBackup="false"
-        android:label="Flutter Architecture"
+        android:label="${appDisplayName}"
         android:name="${applicationName}"
         android:icon="@drawable/ic_launcher">
         <activity
@@ -27,6 +27,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="flutter.native_environment"
+            android:value="${nativeEnvironment}" />
     </application>
 
     <queries>

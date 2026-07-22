@@ -44,16 +44,16 @@ last_reviewed_baseline: 1.7.0
 
 **Files:** Modify `apps/flutter_architecture/android/app/build.gradle.kts`, Android manifest/resources as required, environment verifier/tests; create `docs/audits/milestone_26/26-2_android_flavor_review.md`。
 
-- [ ] Extend failing verifier tests for `environment`dimension, three flavors, approvedapplication IDs, labels and target mapping。
-- [ ] Add `development`、`staging`、`production` product flavors with manifest placeholders and suffix rules。
-- [ ] Add variant-awaretarget selection／validation: omitted target resolves from flavor; explicit mismatched target fails build。
-- [ ] Inject native environment sentinel for each variant without placing API endpoint in Gradle。
-- [ ] Build `developmentDebug` with mock and inspect package name／label／target evidence。
-- [ ] Build `productionRelease` with safe real example URL and inspect package name／label／target evidence；confirm debug verification signing classification。
-- [ ] Attempt a deliberate flavor／target mismatch and record expected failure。
-- [ ] Run Android focused tests、analyze、docs_check and diff check。
-- [ ] Review Flutter Gradle plugin compatibility、identity coexistence、signing and rollback；fix/re-review。
-- [ ] Commit `feat(android): 建立環境產品風味與識別契約`。
+- [x] Extend failing verifier tests for `environment` dimension, three flavors, approved application IDs, labels and target mapping。
+- [x] Add `development`、`staging`、`production` product flavors with manifest placeholders and suffix rules。
+- [x] Add variant-aware target selection／validation: omitted target resolves from flavor; explicit mismatched target fails build。
+- [x] Inject native environment sentinel for each variant without placing API endpoint in Gradle。
+- [x] Build `developmentDebug` with mock and inspect package name／label／target evidence。
+- [x] Build `productionRelease` with safe real example URL and inspect package name／label／target evidence；confirm debug verification signing classification。
+- [x] Attempt a deliberate flavor／target mismatch and record expected failure。
+- [x] Run Android focused tests、analyze、docs_check and diff check。
+- [x] Review Flutter Gradle plugin compatibility、identity coexistence、signing and rollback；fix/re-review。
+- [x] Commit `feat(android): 建立環境產品風味與識別契約`。
 
 ## Task 26-3 — iOS Schemes and Build Configurations
 

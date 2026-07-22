@@ -254,6 +254,82 @@ def validate_dart_projection(
     return errors
 
 
+def validate_android_projection(
+    repository_root: Path,
+    contract: dict[str, Any],
+) -> list[ContractError]:
+    errors: list[ContractError] = []
+    app_root = repository_root / "apps" / "flutter_architecture"
+    gradle_path = app_root / "android" / "app" / "build.gradle.kts"
+    manifest_path = app_root / "android" / "app" / "src" / "main" / "AndroidManifest.xml"
+
+    if not gradle_path.is_file():
+        return [ContractError("$.android.gradle", "android/app/build.gradle.kts missing")]
+    if not manifest_path.is_file():
+        return [ContractError("$.android.manifest", "AndroidManifest.xml missing")]
+
+    gradle_text = gradle_path.read_text(encoding="utf-8")
+    manifest_text = manifest_path.read_text(encoding="utf-8")
+
+    required_gradle_fragments = (
+        'flavorDimensions += "environment"',
+        'manifestPlaceholders["appDisplayName"]',
+        'manifestPlaceholders["nativeEnvironment"]',
+        'buildConfigField(',
+        '"NATIVE_ENVIRONMENT"',
+        "tasks.withType<FlutterTask>().configureEach",
+        'project.findProperty("target")',
+        'targetPath = environment.dartEntrypoint',
+        '"NATIVE_ENVIRONMENT=${environment.name}"',
+    )
+    for fragment in required_gradle_fragments:
+        if fragment not in gradle_text:
+            errors.append(
+                ContractError(
+                    "$.android.gradle",
+                    f"required contract fragment missing: {fragment}",
+                )
+            )
+
+    required_manifest_fragments = (
+        'android:label="${appDisplayName}"',
+        'android:name="flutter.native_environment"',
+        'android:value="${nativeEnvironment}"',
+    )
+    for fragment in required_manifest_fragments:
+        if fragment not in manifest_text:
+            errors.append(
+                ContractError(
+                    "$.android.manifest",
+                    f"required contract fragment missing: {fragment}",
+                )
+            )
+
+    environments = contract.get("environments")
+    if not isinstance(environments, list):
+        return errors
+
+    for index, environment in enumerate(environments):
+        if not isinstance(environment, dict):
+            continue
+        expected_fragments = (
+            f'name = "{environment.get("androidFlavor")}"',
+            f'applicationId = "{environment.get("androidApplicationId")}"',
+            f'displayName = "{environment.get("displayName")}"',
+            f'dartEntrypoint = "{environment.get("dartEntrypoint")}"',
+        )
+        for fragment in expected_fragments:
+            if fragment not in gradle_text:
+                errors.append(
+                    ContractError(
+                        f"$.environments[{index}].androidProjection",
+                        f"Gradle projection missing: {fragment}",
+                    )
+                )
+
+    return errors
+
+
 def _require_exact_fields(
     value: dict[str, Any],
     expected_fields: tuple[str, ...],
@@ -282,6 +358,7 @@ def main() -> int:
     errors = [
         *validate_contract(contract),
         *validate_dart_projection(ROOT, contract),
+        *validate_android_projection(ROOT, contract),
     ]
     if errors:
         for error in errors:

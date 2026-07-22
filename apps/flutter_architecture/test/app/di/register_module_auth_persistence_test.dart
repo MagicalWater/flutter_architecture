@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
@@ -16,10 +18,19 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  late Directory databaseDirectory;
 
-  setUpAll(() {
+  setUpAll(() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
+    databaseDirectory = await Directory.systemTemp.createTemp(
+      'register-module-auth-persistence-',
+    );
+    await databaseFactory.setDatabasesPath(databaseDirectory.path);
+  });
+
+  tearDownAll(() async {
+    await databaseDirectory.delete(recursive: true);
   });
 
   setUp(() {

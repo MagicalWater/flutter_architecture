@@ -8,13 +8,13 @@ last_reviewed_baseline: 1.5.1
 
 # Architecture Decision Records
 
-本文件是 Architecture Decision 的 canonical index，也是 ADR-001至ADR-022的正式 routing authority。
+本文件是 Architecture Decision 的 canonical index，也是 ADR-001至ADR-023的正式 routing authority。
 
 ## Migration State
 
 - `extracted`：canonical ADR file已建立並通過 semantic、relation、link與 checker review。
 
-Authority cutover後所有正式 Decision必須維持 `extracted`，checker強制驗證ADR-001至ADR-022完整 coverage。
+Authority cutover後所有正式 Decision必須維持 `extracted`，checker強制驗證既有 canonical ADR完整 coverage。
 
 ## Decision Index
 
@@ -42,6 +42,7 @@ Authority cutover後所有正式 Decision必須維持 `extracted`，checker強�
 | ADR-020 | adr-020-exception-failure-reporting.md | extracted |
 | ADR-021 | adr-021-auth-startup-navigation-coordination.md | extracted |
 | ADR-022 | adr-022-authentication-security-capability-boundaries.md | extracted |
+| ADR-023 | adr-023-repository-ci-quality-gates-android-verification-artifact.md | extracted |
 
 ## Canonical ADR Contract
 

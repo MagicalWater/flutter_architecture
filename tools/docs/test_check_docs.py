@@ -145,6 +145,33 @@ class DocumentationCheckerTest(unittest.TestCase):
 
             self.assertIn("incomplete-adr-coverage", _codes(root))
 
+    def test_requires_adr_023_after_cutover(self) -> None:
+        with _fixture() as root:
+            index = _adr_index("ADR-001", "adr-001-example.md", "extracted")
+            for number in range(2, 23):
+                identifier = f"ADR-{number:03d}"
+                file_name = f"adr-{number:03d}-example.md"
+                index += _adr_index_row(identifier, file_name, "extracted")
+                _write(root, f"docs/adr/{file_name}", _adr(identifier))
+            _write(root, "docs/adr/README.md", index)
+            _write(root, "docs/adr/adr-001-example.md", _adr("ADR-001"))
+            _write(
+                root,
+                "docs/architecture_decisions.md",
+                "---\ndocument_type: architecture-decision-index\nstatus: legacy\n"
+                "authoritative_for:\n  - architecture-decision-legacy-routing\n"
+                "last_reviewed_baseline: 1.5.1\n---\n",
+            )
+
+            issues = check_repository(root)
+
+            self.assertTrue(
+                any(
+                    issue.code == "incomplete-adr-coverage" and "ADR-023" in issue.message
+                    for issue in issues
+                )
+            )
+
     def test_reports_invalid_managed_legacy_adr_route(self) -> None:
         with _fixture() as root:
             _write(root, "docs/adr/000-template-positioning.md", "# Legacy\n")

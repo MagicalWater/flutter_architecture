@@ -8,22 +8,26 @@ last_reviewed_baseline: 1.5.1
 
 # Active Milestone
 
+目前 active milestone：
+
 ```txt
 Milestone 24 — CI/CD Foundation
 Status: Active
 Current gate: 24-0 Planning Review accepted
-Implementation: Not started
 Baseline: 1.5.1
 ```
 
 ## Scope and Artifacts
 
-本 Milestone將既有 documentation、analysis、tests、generated source與 Android release artifact contract轉為 GitHub Actions repository-level automated gates。
+本 Milestone 將既有 docs checker、workspace analyze、全部 Flutter tests、tracked generated source與 Android release build contract轉為 GitHub Actions repository-level automated gates。
 
-- Design：`docs/superpowers/specs/2026-07-22-milestone-24-ci-cd-foundation-design.md`
 - Planning Review：`docs/audits/milestone_24/24-0_planning_review.md`
+- Architecture Decision：`docs/adr/adr-023-repository-ci-quality-gates-android-verification-artifact.md`
+- Implementation plan：`docs/superpowers/plans/2026-07-22-milestone-24-ci-cd-foundation.md`
 
-目前只完成 planning authority與設計核准；尚未建立 `.github/workflows`、ADR-023、CI scripts或 production設定。
+第一版範圍包含 Pull Request quality gates、main branch revalidation、manual dispatch、generated consistency、exact toolchain、cache、Android release APK artifact、Branch Protection guidance與 failure／rollback policy。
+
+Production signing、Play Store／App Store publishing、iOS build、GitHub Release、environment promotion與dependency auto-update不在本 Milestone。
 
 ## Last Completed Milestone
 
@@ -43,7 +47,7 @@ Historical artifact routing：
 
 ## Current Next Action
 
-執行 Phase 24-1 — ADR／Reproducibility Foundation：先建立 ADR-023與 checker regression，再落實 exact toolchain authority、tracked root lockfile與 focused CI scripts。
+依 implementation plan執行 Task 24-1 Toolchain and Reproducibility Foundation，完成後立即 review、修正與 re-review。
 
 ```txt
 Task implementation

@@ -3,7 +3,7 @@ document_type: roadmap-candidates
 status: active
 authoritative_for:
   - concrete-roadmap-candidates
-last_reviewed_baseline: 1.6.0
+last_reviewed_baseline: 1.7.0
 ---
 
 # Roadmap Candidates
@@ -20,7 +20,7 @@ CI/CD Foundation已由 Milestone 24完成並封存；current capability由`docs/
 
 候選範圍：Web、Windows、macOS、Linux runner、artifact 與 runtime verification。
 
-目前狀態：iOS已提升為Milestone 25；其餘平台仍只有 Dependency-ready，不得因 dependency 或 conditional implementation 存在就宣稱 Supported。
+目前狀態：Android與iOS均為Supported；Web、Windows、macOS與Linux仍只有Dependency-ready，不得因dependency或conditional implementation存在就宣稱Supported。
 
 每個平台應獨立評估 scaffold、artifact、runtime smoke、plugin support 與維護成本，不建議一次綁成單一大 milestone。
 
@@ -32,16 +32,7 @@ CI/CD Foundation已由 Milestone 24完成並封存；current capability由`docs/
 
 目前 baseline 不包含 Firebase dependency。
 
-## Candidate — Native Flavor and Product Identity
-
-候選範圍：
-
-- Android productFlavors。
-- iOS Schemes。
-- application ID／bundle identifier。
-- 原生 App 名稱與 signing configuration。
-
-此候選不應與 Dart environment entrypoint 混為同一 authority。
+Native Flavor and Product Identity已提升為Milestone 26；current scope與next action由`docs/roadmap/active.md`擁有，不再列為candidate。
 
 ## Candidate — Documentation Knowledge Expansion
 

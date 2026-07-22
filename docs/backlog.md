@@ -9,7 +9,6 @@
 - Payment feature。
 - Analytics adapter與事件治理範例。
 - Firebase Crashlytics production adapter；目前僅有App-owned error reporting boundary，不引入Firebase dependency。
-- Native Flavor：Android productFlavors、iOS Schemes、applicationId、bundle identifier與原生App名稱切換。
 - 完整Feature新增指南。
 - 常見錯誤與除錯指南。
 - 架構演進與migration指南。
@@ -17,8 +16,9 @@
 ## Deferred commitments
 
 - Production CI/CD extension：Milestone 24只建立repository quality gates與verification-only Android artifact；Store發布、production signing、release channel與environment promotion仍維持Deferred。
-- iOS、Web、Windows、macOS與Linux runner、artifact與runtime support；目前只承諾Android Supported，其餘平台維持Dependency-ready。
-- Cryptographic Device Binding與Passkey；目前Baseline 1.6.0已提供credential-at-rest hardening、Server-issued OTP與Android biometric-gated local user-presence gate，但仍未承諾rooted device、runtime memory或server compromise防護。
+- Web、Windows、macOS與Linux runner、artifact與runtime support；目前Android與iOS為Supported，其餘平台維持Dependency-ready。
+- Cryptographic Device Binding與Passkey；目前Baseline 1.7.0已提供credential-at-rest hardening、Server-issued OTP與Android／iOS local user-presence foundation，但仍未承諾rooted／jailbroken device、runtime memory或server compromise防護。
+- Production signing與Store distribution：Android keystore、Apple Team／provisioning、AAB、IPA、TestFlight、App Store與Play Store workflow不由Milestone 26 native environment mapping承擔。
 
 ## Explicitly not planned in current baseline
 

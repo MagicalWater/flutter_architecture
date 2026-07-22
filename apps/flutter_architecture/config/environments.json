@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "templateBaseIdentifier": "com.example.flutterarchitecture",
+  "androidFlavorDimension": "environment",
+  "environments": [
+    {
+      "name": "development",
+      "androidFlavor": "development",
+      "iosScheme": "Development",
+      "dartEntrypoint": "lib/main_development.dart",
+      "displayName": "Flutter Architecture Dev",
+      "androidApplicationId": "com.example.flutterarchitecture.development",
+      "iosBundleIdentifier": "com.example.flutterarchitecture.development"
+    },
+    {
+      "name": "staging",
+      "androidFlavor": "staging",
+      "iosScheme": "Staging",
+      "dartEntrypoint": "lib/main_staging.dart",
+      "displayName": "Flutter Architecture Staging",
+      "androidApplicationId": "com.example.flutterarchitecture.staging",
+      "iosBundleIdentifier": "com.example.flutterarchitecture.staging"
+    },
+    {
+      "name": "production",
+      "androidFlavor": "production",
+      "iosScheme": "Production",
+      "dartEntrypoint": "lib/main_production.dart",
+      "displayName": "Flutter Architecture",
+      "androidApplicationId": "com.example.flutterarchitecture",
+      "iosBundleIdentifier": "com.example.flutterarchitecture"
+    }
+  ]
+}

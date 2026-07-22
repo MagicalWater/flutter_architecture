@@ -26,7 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-None
+Milestone 26 — Native Flavor & Product Identity Foundation
+Current task: 26-0 planning completed; next task 26-1
 Latest completed: Milestone 25 — iOS Platform Support Foundation
 Baseline: 1.7.0
 ```

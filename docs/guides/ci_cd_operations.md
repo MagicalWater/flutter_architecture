@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - repository-ci-cd-operations
-last_reviewed_baseline: 1.6.0
+last_reviewed_baseline: 1.6.1
 ---
 
 # CI/CD Operations Guide
@@ -34,6 +34,7 @@ Stable checks：
 CI / Quality
 CI / Generated Consistency
 CI / Tests
+iOS / Simulator Build
 ```
 
 ### Android Verification Artifact
@@ -75,11 +76,12 @@ Required status checks使用穩定名稱：
 CI / Quality
 CI / Generated Consistency
 CI / Tests
+iOS / Simulator Build
 ```
 
-第一版不建議把 `Android / Release APK` 設為 Pull Request required check，因為它只在 `main` push或manual dispatch執行。
+第一版不建議把 `Android / Release APK` 設為 Pull Request required check，因為它只在 `main` push或manual dispatch執行。`iOS / Simulator Build`會在Pull Request建立run，可在GitHub-hosted macOS remote validation成功後加入required checks。
 
-啟用 Merge Queue 前，必須先讓 `ci.yml` 支援 `merge_group` event，確認三個 required checks在merge queue context會建立run，再修改Branch Protection。
+啟用 Merge Queue 前，必須先讓`ci.yml`與`ios.yml`支援`merge_group` event，確認所有已設定的required checks在merge queue context會建立run，再修改Branch Protection。
 
 ## Rerun Policy
 
@@ -91,7 +93,7 @@ CI / Tests
 
 ### Manual verification
 
-兩份workflow都支援`workflow_dispatch`。Manual run只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit的結果。
+三份workflow都支援`workflow_dispatch`。Manual run只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit的結果。
 
 ## Cache Degradation
 
@@ -176,6 +178,26 @@ bash tools/ci/build_android_release.sh
 5. 建立fix commit或revert造成失敗的commit。
 
 不得上傳舊APK並標成新commit artifact，也不得把失敗commit對應到其他SHA的產物。
+
+## iOS Simulator Build Failure
+
+`iOS / Simulator Build`在`macos-15`執行：
+
+```bash
+bash tools/ci/build_ios_simulator.sh
+```
+
+此gate會重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`，不讀取Apple signing secrets，也不把`.app`上傳為distribution artifact。失敗時會保留7天的`toolchain.txt`與`build.log` diagnostics。
+
+處理順序：
+
+1. 下載`ios-simulator-build-diagnostics-<full-sha>`。
+2. 核對macOS、Xcode、Flutter與CocoaPods版本。
+3. 在macOS repository root重跑`bash tools/ci/build_ios_simulator.sh`。
+4. 若是runner或registry transient failure，只可在確認source contract無誤後rerun。
+5. 若是Pod resolution、native identity、plugin registration或Xcode build failure，建立focused fix並重新review。
+
+此check通過不代表實體裝置、Face ID／Touch ID、signing、archive或App Store上架已驗證。
 
 ## Artifact Contract
 

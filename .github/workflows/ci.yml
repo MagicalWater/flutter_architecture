@@ -62,6 +62,9 @@ jobs:
       - name: Check documentation
         run: dart run melos run docs_check
 
+      - name: Check CI workflow contracts
+        run: python3 -m unittest tools.ci.test_ios_workflow_contract
+
       - name: Analyze workspace
         run: dart run melos run analyze
 

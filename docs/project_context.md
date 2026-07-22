@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.6.0
+last_reviewed_baseline: 1.6.1
 ---
 
 # Project Context
@@ -27,7 +27,7 @@ last_reviewed_baseline: 1.6.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.6.0
+Template Baseline: 1.6.1
 Phase 1 / MVP: Completed
 Current active milestone: None
 Latest completed initiative: Milestone 24 CI/CD Foundation
@@ -42,7 +42,7 @@ Milestone 22 只處理 Documentation Authority、Navigation、Current Snapshot�
 
 Milestone 23 已將 Decision 001–022擷取為canonical single-file ADR、建立可驗證supersession graph、切換正式authority並保留aggregate與legacy path相容路由。
 
-Milestone 24 已建立GitHub Actions repository quality gates、exact toolchain authority、tracked root lockfile、generated consistency、main Android verification artifact與CI operations guide。此能力以Template Baseline 1.6.0封存；production signing、Store publishing與GitHub repository Branch Protection settings仍未納入。
+Milestone 24 已建立GitHub Actions repository quality gates、exact toolchain authority、tracked root lockfile、generated consistency、main Android verification artifact與CI operations guide。此能力以Template Baseline 1.6.0封存，並於1.6.1完成GitHub-hosted CI／Android remote validation、跨平台golden authority與Node 24 Actions相容性修正；production signing、Store publishing與GitHub repository Branch Protection settings仍未納入。
 
 ## Project Purpose
 
@@ -328,7 +328,7 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於 Baseline 1.6.0。
+- Device Binding 與 Passkey 不屬於 Baseline 1.6.1。
 - Repository 的 release build 使用 local verification signing，不可直接作為 production store signing configuration。
 - Default Android application ID 仍是 template placeholder，建立正式產品時必須替換 application ID、namespace、label 與 signing configuration。
 

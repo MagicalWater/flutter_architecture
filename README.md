@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.6.0
+- Template Baseline Version：1.6.1
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed

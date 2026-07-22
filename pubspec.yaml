@@ -27,4 +27,4 @@ melos:
 
     docs_check:
       description: 驗證文件連結、metadata、版本、ID、狀態與 README coverage。
-      run: python tools/docs/check_docs.py .
+      run: dart run tools/docs/run_check.dart .

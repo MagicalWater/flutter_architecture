@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.6.0
+last_reviewed_baseline: 1.6.1
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.6.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.6.0
+Template Baseline: 1.6.1
 Supported platform: Android
 Other platforms: Dependency-ready
 ```
@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 ```txt
 None
 Latest completed: Milestone 24 — CI/CD Foundation
-Baseline: 1.6.0
+Baseline: 1.6.1
 ```
 
 完整 active scope、design、gate與 next action：

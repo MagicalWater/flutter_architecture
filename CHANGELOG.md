@@ -22,6 +22,29 @@
 
 ---
 
+## [1.6.1] - 2026-07-22
+
+### Fixed
+
+- 修正Design System golden test依賴host字型與跨作業系統rasterization差異，改為載入Flutter SDK內固定Roboto／Material Icons並使用Windows、Linux各自經review的golden authority。
+- 修正Linux大小寫敏感檔案系統無法解析Flutter SDK字型檔名的問題。
+- Tests job失敗時會上傳golden差異圖片artifact，保留14天供remote review。
+- 修正Melos `docs_check`將Python executable寫死為`python`而無法在預設macOS環境執行的問題，改由repository-owned Dart launcher解析Python 3。
+
+### Changed
+
+- `actions/checkout`、`actions/setup-java`、`actions/cache`與`actions/upload-artifact`升級至Node 24世代major，並維持完整commit SHA pinning。
+- Template Baseline由1.6.0升級至1.6.1；本次為CI跨平台相容性與操作性修正，不新增新的模板能力。
+
+### Verification
+
+- GitHub Actions CI run `29887025664`通過：`CI / Quality`、`CI / Generated Consistency`、`CI / Tests`全部成功。
+- GitHub Actions Android run `29887025645`通過，release APK build與artifact upload成功。
+- Android artifact `flutter-architecture-android-release-2ea623c02b2f4957ef115ad17ea465a8235892ee`已建立，digest為`sha256:80453c4478b4c745d773f6c7aab3d16e1626c24e0875cb82a047c51d766f891e`，retention至2026-08-05。
+- Windows本機五個packages analyze、全部Flutter tests、documentation checks與workflow static contracts通過。
+
+---
+
 ## [1.6.0] - 2026-07-22
 
 ### Added

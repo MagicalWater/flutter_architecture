@@ -20,7 +20,10 @@ import 'package:design_system/design_system.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 共用 App bootstrap。
-Future<void> bootstrap(AppEnvironment environment) async {
+Future<void> bootstrap(
+  AppEnvironment environment, {
+  bool allowMissingNativeEnvironment = false,
+}) async {
   final errorReporter = DebugErrorReporter();
   final deduplicator = ErrorReportDeduplicator();
 
@@ -34,7 +37,10 @@ Future<void> bootstrap(AppEnvironment environment) async {
 
       await initializeDatabaseFactory();
 
-      final config = AppConfigFactory.fromEnvironment(environment: environment);
+      final config = AppConfigFactory.fromEnvironment(
+        environment: environment,
+        allowMissingNativeEnvironment: allowMissingNativeEnvironment,
+      );
       await configureDependencies(config, errorReporter);
 
       final defaultTheme = DefaultThemeDefinition();

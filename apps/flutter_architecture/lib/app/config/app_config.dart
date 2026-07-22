@@ -16,7 +16,12 @@ class AppConfig {
 abstract final class AppConfigFactory {
   static AppConfig fromEnvironment({
     required AppEnvironment environment,
+    bool allowMissingNativeEnvironment = false,
   }) {
+    const nativeEnvironmentValue = String.fromEnvironment(
+      'NATIVE_ENVIRONMENT',
+      defaultValue: '',
+    );
     const apiModeValue = String.fromEnvironment(
       'API_MODE',
       defaultValue: 'mock',
@@ -28,6 +33,8 @@ abstract final class AppConfigFactory {
 
     return fromValues(
       environment: environment,
+      nativeEnvironmentValue: nativeEnvironmentValue,
+      allowMissingNativeEnvironment: allowMissingNativeEnvironment,
       apiModeValue: apiModeValue,
       apiBaseUrlValue: apiBaseUrlValue,
     );
@@ -35,9 +42,17 @@ abstract final class AppConfigFactory {
 
   static AppConfig fromValues({
     required AppEnvironment environment,
+    required String nativeEnvironmentValue,
+    bool allowMissingNativeEnvironment = false,
     required String apiModeValue,
     required String apiBaseUrlValue,
   }) {
+    _validateNativeEnvironment(
+      environment: environment,
+      nativeEnvironmentValue: nativeEnvironmentValue,
+      allowMissingNativeEnvironment: allowMissingNativeEnvironment,
+    );
+
     final mode = ApiMode.parse(apiModeValue);
 
     if (environment != AppEnvironment.development && mode == ApiMode.mock) {
@@ -88,20 +103,20 @@ abstract final class AppConfigFactory {
       );
     }
 
-    if (environment == AppEnvironment.production) {
-      if (uri.scheme != 'https') {
-        throw ArgumentError.value(
-          value,
-          'API_BASE_URL',
-          'production 必須使用 https',
-        );
-      }
+    if (environment != AppEnvironment.development && uri.scheme != 'https') {
+      throw ArgumentError.value(
+        value,
+        'API_BASE_URL',
+        '${environment.name} 必須使用 https',
+      );
+    }
 
+    if (environment == AppEnvironment.production) {
       if (_isBlockedProductionHost(uri.host)) {
         throw ArgumentError.value(
           value,
           'API_BASE_URL',
-          'production 不允許 mock、localhost、loopback 或 .invalid URL',
+          'production 不允許 mock、localhost、loopback、.invalid 或 template placeholder URL',
         );
       }
     }
@@ -119,7 +134,40 @@ abstract final class AppConfigFactory {
         host == 'localhost' ||
         host.endsWith('.localhost') ||
         host.endsWith('.invalid') ||
+        host == 'example.com' ||
+        host.endsWith('.example.com') ||
+        host == 'example.org' ||
+        host.endsWith('.example.org') ||
+        host == 'example.net' ||
+        host.endsWith('.example.net') ||
         isIpv4Loopback ||
         isIpv6Loopback;
+  }
+
+  static void _validateNativeEnvironment({
+    required AppEnvironment environment,
+    required String nativeEnvironmentValue,
+    required bool allowMissingNativeEnvironment,
+  }) {
+    final normalized = nativeEnvironmentValue.trim();
+    if (normalized.isEmpty) {
+      if (allowMissingNativeEnvironment &&
+          environment == AppEnvironment.development) {
+        return;
+      }
+      throw ArgumentError.value(
+        nativeEnvironmentValue,
+        'NATIVE_ENVIRONMENT',
+        '原生環境 sentinel 不可為空',
+      );
+    }
+
+    if (normalized != environment.name) {
+      throw ArgumentError.value(
+        nativeEnvironmentValue,
+        'NATIVE_ENVIRONMENT',
+        '原生環境 $normalized 與 Dart entrypoint ${environment.name} 不一致',
+      );
+    }
   }
 }

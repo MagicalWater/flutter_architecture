@@ -224,19 +224,31 @@ def validate_dart_projection(
                     f"must bootstrap AppEnvironment.{name}",
                 )
             )
+        if "allowMissingNativeEnvironment" in entrypoint_text:
+            errors.append(
+                ContractError(
+                    path,
+                    "explicit environment entrypoints must require native sentinel",
+                )
+            )
 
     compatibility_entrypoint = app_root / "lib" / "main.dart"
     if not compatibility_entrypoint.is_file():
         errors.append(ContractError("$.dartCompatibilityEntrypoint", "lib/main.dart missing"))
-    elif "bootstrap(AppEnvironment.development)" not in compatibility_entrypoint.read_text(
-        encoding="utf-8"
-    ):
-        errors.append(
-            ContractError(
-                "$.dartCompatibilityEntrypoint",
-                "lib/main.dart must remain the development compatibility entrypoint",
+    else:
+        compatibility_text = compatibility_entrypoint.read_text(encoding="utf-8")
+        if not re.search(
+            r"bootstrap\(\s*AppEnvironment\.development,\s*"
+            r"allowMissingNativeEnvironment:\s*true,?\s*\)",
+            compatibility_text,
+            re.DOTALL,
+        ):
+            errors.append(
+                ContractError(
+                    "$.dartCompatibilityEntrypoint",
+                    "lib/main.dart must be the only development compatibility entrypoint",
+                )
             )
-        )
 
     enum_path = app_root / "lib" / "app" / "config" / "app_environment.dart"
     if not enum_path.is_file():
@@ -251,6 +263,51 @@ def validate_dart_projection(
                         f"AppEnvironment.{name} is missing",
                     )
                 )
+
+    config_path = app_root / "lib" / "app" / "config" / "app_config.dart"
+    if not config_path.is_file():
+        errors.append(ContractError("$.dartAppConfig", "AppConfig file missing"))
+    else:
+        config_text = config_path.read_text(encoding="utf-8")
+        for fragment in (
+            "String.fromEnvironment(\n      'NATIVE_ENVIRONMENT'",
+            "_validateNativeEnvironment(",
+            "allowMissingNativeEnvironment",
+            "environment != AppEnvironment.development && uri.scheme != 'https'",
+            "host.endsWith('.example.com')",
+            "host.endsWith('.example.org')",
+            "host.endsWith('.example.net')",
+        ):
+            if fragment not in config_text:
+                errors.append(
+                    ContractError(
+                        "$.dartAppConfig",
+                        f"required bootstrap guard fragment missing: {fragment}",
+                    )
+                )
+
+    bootstrap_path = app_root / "lib" / "bootstrap.dart"
+    if not bootstrap_path.is_file():
+        errors.append(ContractError("$.dartBootstrap", "lib/bootstrap.dart missing"))
+    else:
+        bootstrap_text = bootstrap_path.read_text(encoding="utf-8")
+        config_index = bootstrap_text.find("AppConfigFactory.fromEnvironment(")
+        di_index = bootstrap_text.find("configureDependencies(")
+        run_app_index = bootstrap_text.find("runApp(")
+        if config_index < 0 or di_index < 0 or run_app_index < 0:
+            errors.append(
+                ContractError(
+                    "$.dartBootstrap",
+                    "config, DI and runApp bootstrap stages must all exist",
+                )
+            )
+        elif not config_index < di_index < run_app_index:
+            errors.append(
+                ContractError(
+                    "$.dartBootstrap",
+                    "native environment validation must run before DI and runApp",
+                )
+            )
 
     return errors
 

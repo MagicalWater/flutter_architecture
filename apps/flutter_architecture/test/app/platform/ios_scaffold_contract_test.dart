@@ -11,6 +11,15 @@ void main() {
       '$root/ios/Runner.xcodeproj/project.pbxproj',
     ).readAsStringSync();
     final infoPlist = File('$root/ios/Runner/Info.plist').readAsStringSync();
+    final environmentConfigs = [
+      'development',
+      'staging',
+      'production',
+    ].map(
+      (environment) => File(
+        '$root/ios/Flutter/Debug-$environment.xcconfig',
+      ).readAsStringSync(),
+    );
 
     expect(podfile, contains("platform :ios, '13.0'"));
     expect(
@@ -20,8 +29,8 @@ void main() {
       greaterThanOrEqualTo(3),
     );
     expect(
-      project,
-      contains('PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterarchitecture;'),
+      environmentConfigs.join('\n'),
+      contains('PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterarchitecture'),
     );
     expect(
       project,
@@ -30,12 +39,12 @@ void main() {
         'com.example.flutterarchitecture.RunnerTests;',
       ),
     );
-    expect(project, contains('PRODUCT_NAME = "Flutter Architecture";'));
+    expect(environmentConfigs.join('\n'), contains('APP_DISPLAY_NAME = Flutter Architecture'));
     expect(
       RegExp(r'SWIFT_VERSION = 5\.0;').allMatches(project).length,
       greaterThanOrEqualTo(6),
     );
-    expect(infoPlist, contains('<string>Flutter Architecture</string>'));
+    expect(infoPlist, contains(r'<string>$(APP_DISPLAY_NAME)</string>'));
     expect(project, isNot(contains('DEVELOPMENT_TEAM =')));
     expect(project, isNot(contains('PROVISIONING_PROFILE_SPECIFIER')));
     expect(project, isNot(contains('PROVISIONING_PROFILE =')));
@@ -88,13 +97,13 @@ void main() {
       RegExp(r'CODE_SIGN_ENTITLEMENTS = Runner/DebugProfile\.entitlements;')
           .allMatches(project)
           .length,
-      2,
+      6,
     );
     expect(
       RegExp(r'CODE_SIGN_ENTITLEMENTS = Runner/Release\.entitlements;')
           .allMatches(project)
           .length,
-      1,
+      3,
     );
 
     for (final plugin in [

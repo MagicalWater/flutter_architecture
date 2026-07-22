@@ -26,6 +26,7 @@ void main() {
   test('development + mock 使用 mock 預設 URL', () {
     final config = AppConfigFactory.fromValues(
       environment: AppEnvironment.development,
+      nativeEnvironmentValue: 'development',
       apiModeValue: 'mock',
       apiBaseUrlValue: '',
     );
@@ -34,10 +35,57 @@ void main() {
     expect(config.api.baseUri, Uri.parse('https://mock.local'));
   });
 
+  test('native sentinel 與 entrypoint environment 相符時建立設定', () {
+    final config = AppConfigFactory.fromValues(
+      environment: AppEnvironment.staging,
+      nativeEnvironmentValue: 'staging',
+      apiModeValue: 'real',
+      apiBaseUrlValue: 'https://staging-api.acme.com',
+    );
+
+    expect(config.environment, AppEnvironment.staging);
+  });
+
+  test('native sentinel 與 entrypoint environment 不符時 fail fast', () {
+    expect(
+      () => AppConfigFactory.fromValues(
+        environment: AppEnvironment.production,
+        nativeEnvironmentValue: 'staging',
+        apiModeValue: 'real',
+        apiBaseUrlValue: 'https://api.acme.com',
+      ),
+      throwsArgumentError,
+    );
+  });
+
+  test('只有 development compatibility entrypoint 可缺少 native sentinel', () {
+    expect(
+      () => AppConfigFactory.fromValues(
+        environment: AppEnvironment.development,
+        nativeEnvironmentValue: '',
+        allowMissingNativeEnvironment: true,
+        apiModeValue: 'mock',
+        apiBaseUrlValue: '',
+      ),
+      returnsNormally,
+    );
+
+    expect(
+      () => AppConfigFactory.fromValues(
+        environment: AppEnvironment.development,
+        nativeEnvironmentValue: '',
+        apiModeValue: 'mock',
+        apiBaseUrlValue: '',
+      ),
+      throwsArgumentError,
+    );
+  });
+
   test('Real mode 未提供 baseUrl 時會拋出 ArgumentError', () {
     expect(
       () => AppConfigFactory.fromValues(
         environment: AppEnvironment.development,
+        nativeEnvironmentValue: 'development',
         apiModeValue: 'real',
         apiBaseUrlValue: '',
       ),
@@ -49,6 +97,7 @@ void main() {
     expect(
       () => AppConfigFactory.fromValues(
         environment: AppEnvironment.development,
+        nativeEnvironmentValue: 'development',
         apiModeValue: 'real',
         apiBaseUrlValue: 'api.example.com',
       ),
@@ -64,6 +113,7 @@ void main() {
       expect(
         () => AppConfigFactory.fromValues(
           environment: environment,
+          nativeEnvironmentValue: environment.name,
           apiModeValue: 'mock',
           apiBaseUrlValue: '',
         ),
@@ -76,6 +126,7 @@ void main() {
     expect(
       () => AppConfigFactory.fromValues(
         environment: AppEnvironment.development,
+        nativeEnvironmentValue: 'development',
         apiModeValue: 'real',
         apiBaseUrlValue: 'ftp://api.example.com',
       ),
@@ -87,8 +138,21 @@ void main() {
     expect(
       () => AppConfigFactory.fromValues(
         environment: AppEnvironment.production,
+        nativeEnvironmentValue: 'production',
         apiModeValue: 'real',
         apiBaseUrlValue: 'http://api.example.com',
+      ),
+      throwsArgumentError,
+    );
+  });
+
+  test('staging 必須使用 https', () {
+    expect(
+      () => AppConfigFactory.fromValues(
+        environment: AppEnvironment.staging,
+        nativeEnvironmentValue: 'staging',
+        apiModeValue: 'real',
+        apiBaseUrlValue: 'http://staging-api.acme.com',
       ),
       throwsArgumentError,
     );
@@ -108,6 +172,26 @@ void main() {
       expect(
         () => AppConfigFactory.fromValues(
           environment: AppEnvironment.production,
+          nativeEnvironmentValue: 'production',
+          apiModeValue: 'real',
+          apiBaseUrlValue: url,
+        ),
+        throwsArgumentError,
+      );
+    }
+  });
+
+  test('production 不允許 template placeholder host', () {
+    for (final url in [
+      'https://example.com',
+      'https://api.example.com',
+      'https://example.org',
+      'https://api.example.net',
+    ]) {
+      expect(
+        () => AppConfigFactory.fromValues(
+          environment: AppEnvironment.production,
+          nativeEnvironmentValue: 'production',
           apiModeValue: 'real',
           apiBaseUrlValue: url,
         ),
@@ -123,13 +207,14 @@ void main() {
     ]) {
       final config = AppConfigFactory.fromValues(
         environment: environment,
+        nativeEnvironmentValue: environment.name,
         apiModeValue: 'real',
-        apiBaseUrlValue: 'https://api.example.com',
+        apiBaseUrlValue: 'https://api.acme.com',
       );
 
       expect(config.environment, environment);
       expect(config.api.mode, ApiMode.real);
-      expect(config.api.baseUri, Uri.parse('https://api.example.com'));
+      expect(config.api.baseUri, Uri.parse('https://api.acme.com'));
     }
   });
 }

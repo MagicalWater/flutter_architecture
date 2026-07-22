@@ -76,13 +76,13 @@ last_reviewed_baseline: 1.7.0
 
 **Files:** Modify `app_config.dart`, bootstrap/config tests and environment verifier; create `26-4_bootstrap_guard_review.md`。
 
-- [ ] Write failing Dart tests for matching sentinel, missing sentinel on compatibility entrypoint, wrong sentinel, staging HTTP, production mock and placeholder host。
-- [ ] Parse `NATIVE_ENVIRONMENT` centrally inAppConfigFactory and compare with entrypoint environment before DI creation。
-- [ ] Keep `main.dart` development compatibility explicit; native flavor/scheme builds must always inject sentinel。
-- [ ] Require staging realHTTPS and harden production placeholder host rejection without blocking adopter-configured real domains。
-- [ ] Run focusedconfig/bootstrap tests, all Flutter tests and analyze。
-- [ ] Review fail-fast timing、error clarity and ADR-014 compatibility；fix/re-review。
-- [ ] Commit `fix(config): 阻擋原生環境與 Dart 入口錯配`。
+- [x] Write failing Dart tests for matching sentinel, missing sentinel on compatibility entrypoint, wrong sentinel, staging HTTP, production mock and placeholder host。
+- [x] Parse `NATIVE_ENVIRONMENT` centrally inAppConfigFactory and compare with entrypoint environment before DI creation。
+- [x] Keep `main.dart` development compatibility explicit; native flavor/scheme builds must always inject sentinel。
+- [x] Require staging realHTTPS and harden production placeholder host rejection without blocking adopter-configured real domains。
+- [x] Run focusedconfig/bootstrap tests, all Flutter tests and analyze。
+- [x] Review fail-fast timing、error clarity and ADR-014 compatibility；fix/re-review。
+- [x] Commit `fix(config): 阻擋原生環境與 Dart 入口錯配`。
 
 ## Task 26-5 — Local Build and Artifact Commands
 

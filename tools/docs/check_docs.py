@@ -334,7 +334,7 @@ def _check_adrs(root: Path, metadata_by_path: dict[Path, dict[str, object]]) -> 
     aggregate_path = root / "docs" / "architecture_decisions.md"
     aggregate_metadata = metadata_by_path.get(aggregate_path, {})
     if aggregate_metadata.get("status") == "legacy":
-        expected = {f"ADR-{number:03d}" for number in range(1, 24)}
+        expected = {f"ADR-{number:03d}" for number in range(1, 25)}
         extracted = {identifier for identifier, _, state in index_rows if state == "extracted"}
         if extracted != expected:
             missing = sorted(expected - extracted)
@@ -343,7 +343,7 @@ def _check_adrs(root: Path, metadata_by_path: dict[Path, dict[str, object]]) -> 
                 CheckIssue(
                     "incomplete-adr-coverage",
                     index_path,
-                    f"expected ADR-001..ADR-023; missing={missing}, extra={extra}",
+                    f"expected ADR-001..ADR-024; missing={missing}, extra={extra}",
                 )
             )
 

@@ -42,12 +42,13 @@ last_reviewed_baseline: 1.6.1
 
 ## Task 25-2 — Native Identity and Toolchain Contract
 
-**Files:** Modify iOS project settings／Podfile; create `apps/flutter_architecture/test/app/platform/ios_scaffold_contract_test.dart`、`docs/audits/milestone_25/25-2_toolchain_review.md`。
+**Files:** Modify iOS project settings／Podfile、`docs/adr/README.md`; create `docs/adr/adr-024-ios-platform-runner-native-dependency-verification-contract.md`、`apps/flutter_architecture/test/app/platform/ios_scaffold_contract_test.dart`、`docs/audits/milestone_25/25-2_toolchain_review.md`。
 
 - [ ] Add failing static tests for iOS 13、Bundle Identifier、Product Name、unset Development Team與absence of provisioning identifiers。
 - [ ] Align Podfile and Xcode build settings with iOS 13 and Flutter-generated Swift defaults。
 - [ ] Track `Podfile.lock` as CocoaPods resolution authority without dependency upgrade。
 - [ ] Record current plugin `Package.swift` readiness and `path_provider_foundation` fallback disposition。
+- [ ] Establish ADR-024 as the canonical iOS runner、native dependency、identity and verification contract and add canonical index routing。
 - [ ] Run focused tests、`pod install`、Xcode build-setting inspection、docs_check and diff check。
 - [ ] Review／fix／re-review; commit `build(ios): 固定原生識別與工具鏈契約`。
 

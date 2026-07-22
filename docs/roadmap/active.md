@@ -13,7 +13,7 @@ last_reviewed_baseline: 1.5.1
 ```txt
 Milestone 24 — CI/CD Foundation
 Status: Active
-Current gate: 24-4 Branch Protection and CI Operations accepted
+Current gate: 24-5 Clean-run and Workflow Validation accepted
 Baseline: 1.5.1
 ```
 
@@ -47,7 +47,7 @@ Historical artifact routing：
 
 ## Current Next Action
 
-依 implementation plan執行 Task 24-5 Clean-run and Workflow Validation，完成後立即 review、修正與 re-review。
+依implementation plan進入Task 24-6 Whole-Milestone Final Review and Archive，完成holistic review、release decision、封存與最終驗證。
 
 ```txt
 Task implementation

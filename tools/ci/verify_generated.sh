@@ -22,7 +22,10 @@ fi
 # same semantic output as the Ubuntu CI authority. Restore only those tracked
 # whitespace-only changes so the verification remains cross-platform without
 # hiding substantive generated-source drift.
-mapfile -t whitespace_only_files < <(git diff --name-only)
+whitespace_only_files=()
+while IFS= read -r file; do
+  [[ -n "$file" ]] && whitespace_only_files+=("$file")
+done < <(git diff --name-only)
 if (( ${#whitespace_only_files[@]} > 0 )); then
   git restore --worktree -- "${whitespace_only_files[@]}"
 fi

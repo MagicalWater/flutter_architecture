@@ -42,9 +42,13 @@ class IosWorkflowContractTest(unittest.TestCase):
 
     def test_contract_is_enforced_by_repository_quality_gate(self) -> None:
         quality_text = QUALITY_WORKFLOW.read_text(encoding="utf-8")
-        command = "python3 -m unittest tools.ci.test_ios_workflow_contract"
-        self.assertIn(command, quality_text)
-        self.assertIn(command, self.text)
+        self.assertIn("python3 -m unittest", quality_text)
+        self.assertIn("tools.ci.test_ios_workflow_contract", quality_text)
+        self.assertIn("tools.ci.test_shell_portability_contract", quality_text)
+        self.assertIn(
+            "python3 -m unittest tools.ci.test_ios_workflow_contract",
+            self.text,
+        )
 
 
 if __name__ == "__main__":

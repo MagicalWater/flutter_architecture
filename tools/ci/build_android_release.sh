@@ -26,9 +26,15 @@ fi
 
 cp "$source_apk" "$target_apk"
 
-flutter_version="$(flutter --version | head -n 1)"
+flutter_version_output="$(flutter --version)"
+flutter_version="${flutter_version_output%%$'\n'*}"
 dart_version="$(dart --version 2>&1)"
-java_version="$(java -version 2>&1 | head -n 1)"
+java_bin="java"
+if ! java -version >/dev/null 2>&1 && [[ -x "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java" ]]; then
+  java_bin="/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java"
+fi
+java_version_output="$("$java_bin" -version 2>&1)"
+java_version="${java_version_output%%$'\n'*}"
 
 cat > "$artifact_dir/artifact-metadata.txt" <<EOF
 repository=${GITHUB_REPOSITORY:-local}

@@ -114,6 +114,10 @@ Repository應建立獨立GitHub-hosted macOS iOS Simulator build gate。第一�
 - [Milestone 25 design](../superpowers/specs/2026-07-22-milestone-25-ios-platform-support-foundation-design.md)
 - [Milestone 25 implementation plan](../superpowers/plans/2026-07-22-milestone-25-ios-platform-support-foundation.md)
 - [Task 25-1 scaffold review](../audits/milestone_25/25-1_scaffold_review.md)
+- [Task 25-6 security and lifecycle review](../audits/milestone_25/25-6_security_lifecycle_review.md)
+- [Task 25-8 CI review](../audits/milestone_25/25-8_ci_review.md)
+- [Task 25-9 physical-device disposition](../audits/milestone_25/25-9_device_validation.md)
+- [Task 25-10 final review](../audits/milestone_25/25-10_final_review.md)
 
 ## Last Reviewed Baseline
 

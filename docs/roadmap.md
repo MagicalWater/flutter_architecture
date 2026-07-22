@@ -17,7 +17,7 @@ last_reviewed_baseline: 1.6.1
 ```txt
 Template Baseline: 1.6.1
 Supported platform: Android
-iOS: Active implementation; remains Dependency-ready until Milestone 25 final evidence
+iOS: Build-verified and Simulator-verified locally; release blocked pending remote iOS gate
 Other platforms: Dependency-ready
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 24 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 24 已完成或已有明確 disposition；Milestone 25仍為active／release-blocked。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

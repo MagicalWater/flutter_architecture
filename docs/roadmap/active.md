@@ -46,11 +46,12 @@ Production signing、Play Store／App Store publishing、iOS build、GitHub Rele
 
 ## Current Next Action
 
-建立並review Milestone 25 implementation plan，之後依逐Task implementation／review／修正／re-review／commit流程執行。
+Milestone 25本地implementation與final holistic review已完成，但1.7.0 release仍被remote evidence gate阻擋。下一步是push目前commits並確認GitHub-hosted `iOS / Simulator Build`實際通過，再補記remote runner／Xcode／CocoaPods evidence與執行release封存。
 
 ```txt
-accepted design
-→ implementation plan
-→ plan review
-→ phased implementation
+local implementation complete
+→ push reviewed commits
+→ GitHub-hosted iOS gate pass
+→ remote evidence review
+→ 1.7.0 release and archive
 ```

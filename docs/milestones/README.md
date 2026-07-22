@@ -32,7 +32,7 @@ Milestone routing 只回答：
 
 | Milestone | Status | Primary routing |
 |---|---|---|
-| None | No active milestone | `docs/roadmap/active.md` |
+| 25 | Active / Release blocked | ADR-024、implementation plan、`docs/audits/milestone_25/25-10_final_review.md` |
 
 ## Closed milestone routing
 

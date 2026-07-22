@@ -29,7 +29,7 @@ last_reviewed_baseline: 1.6.1
 ```txt
 Template Baseline: 1.6.1
 Phase 1 / MVP: Completed
-Current active milestone: None
+Current active milestone: Milestone 25 iOS Platform Support Foundation（release blocked）
 Latest completed initiative: Milestone 24 CI/CD Foundation
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -315,13 +315,13 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 | Platform | Current classification |
 |---|---|
 | Android | Supported；tracked runner、release artifact 與 runtime smoke evidence |
-| iOS | Dependency-ready；repository 未提供 tracked executable runner 與 runtime evidence |
+| iOS | Build-verified／Simulator-verified；tracked runner與local runtime evidence已建立，尚未宣稱Supported |
 | Web | Dependency-ready；有 SQLite assets，但沒有 tracked Web runner |
 | Windows | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
 | macOS | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
 | Linux | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
 
-只有 Android 可以被描述為目前 Supported platform。Dependency-ready 不等於 Scaffold only、artifact verified 或 runtime supported。
+只有 Android 可以被描述為目前 Supported platform。iOS目前具有build與Simulator evidence，但GitHub-hosted remote gate尚未實跑、physical device已defer，不能宣稱Supported或distribution-ready。
 
 ## Security and Support Boundaries
 
@@ -334,9 +334,9 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 
 ## Active Work
 
-目前沒有active milestone。Milestone 24已完成並封存：repository已建立ADR-023、exact toolchain authority、tracked root lockfile、Pull Request quality workflow、main Android verification artifact workflow、CI operations guide與clean-run evidence。
+Milestone 25本地implementation與final holistic review已完成，但仍維持active／release-blocked。解除條件是push reviewed commits、取得GitHub-hosted `iOS / Simulator Build`成功證據，再執行1.7.0 release與封存。
 
-下一個正式方向必須先由`docs/roadmap/candidates.md`或`docs/backlog.md`完成scope review與planning promotion。Production signing與GitHub repository settings仍未修改；Branch Protection目前只有文件化建議。
+Production signing、physical-device acceptance、App Store distribution與GitHub repository settings仍未納入；Branch Protection目前只有文件化建議。
 
 ## Documentation Routing
 

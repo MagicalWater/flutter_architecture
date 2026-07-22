@@ -26,19 +26,20 @@
 - Milestone 22 Documentation Authority & Navigation Foundation：Completed / Archived
 - Milestone 23 Architecture Decision Record Extraction & Normalization：Completed / Archived
 - Milestone 24 CI/CD Foundation：Completed / Archived
+- Milestone 25 iOS Platform Support Foundation：Local implementation completed / Release blocked
 
 平台能力：
 
 | Platform | Capability |
 |---|---|
 | Android | Supported（含biometric-gated local session unlock） |
-| iOS | Dependency-ready |
+| iOS | Build-verified／Simulator-verified（尚未Supported） |
 | Web | Dependency-ready |
 | Windows | Dependency-ready |
 | macOS | Dependency-ready |
 | Linux | Dependency-ready |
 
-目前只有 Android 包含 tracked runner、release artifact 與 runtime smoke 證據。其他平台的 Dart dependency 與 conditional implementation 已準備，但 repository 不包含可直接執行的 runner。
+Android仍是唯一正式Supported平台。iOS已包含tracked runner、unsigned Simulator build、runtime／storage／security smoke與macOS golden evidence；GitHub-hosted iOS workflow尚待push後實跑，physical device與distribution亦未驗證，因此不宣稱Supported。
 
 版本變更請參考 `CHANGELOG.md`。
 

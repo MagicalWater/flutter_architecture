@@ -18,7 +18,20 @@
 
 ## [Unreleased]
 
-目前沒有尚未發布的變更。
+### Added
+
+- Milestone 25建立tracked iOS runner、iOS 13 native contract、CocoaPods resolution、Face ID／Keychain設定、clean Simulator build與runtime smoke。
+- 新增macOS Design System golden authority與GitHub-hosted `iOS / Simulator Build`workflow。
+
+### Fixed
+
+- 修正generated consistency script依賴Bash 4 `mapfile`而無法在預設macOS Bash執行。
+- 修正Android artifact script在`pipefail`下以`head`讀取版本可能於build成功後錯誤失敗。
+
+### Release status
+
+- Baseline仍為1.6.1；1.7.0等待GitHub-hosted iOS workflow實跑證據後才發布。
+- iOS目前只分類為build-verified／Simulator-verified，不宣稱device-verified、Supported或distribution-ready。
 
 ---
 

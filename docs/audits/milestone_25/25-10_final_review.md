@@ -1,18 +1,18 @@
 ---
 document_type: final-review
-status: active
+status: completed
 authoritative_for:
   - milestone-25-final-review
-last_reviewed_baseline: 1.6.1
+last_reviewed_baseline: 1.7.0
 ---
 
 # Milestone 25-10 — Final Holistic Review and Release Gate
 
 ## Disposition
 
-Milestone 25的repository implementation、local build、Simulator runtime、security plugin、lifecycle與macOS golden evidence已完成整體review；目前 **不發布1.7.0、不封存Milestone 25，也不宣稱iOS Supported**。
+Milestone 25的repository implementation、local build、Simulator runtime、security plugin、lifecycle、macOS golden與GitHub-hosted iOS build evidence均已完成整體review。Remote validation已解除release gate，因此發布Template Baseline 1.7.0並封存Milestone 25。
 
-唯一未關閉的release gate是新加入的GitHub-hosted `iOS / Simulator Build`尚未在remote `macos-15` runner實際執行。相關workflow commit仍未push，因此沒有可引用的runner、Xcode、CocoaPods與workflow run evidence。Physical-device validation依Task 25-9正式defer，不是本次release blocker，但必須持續揭露。
+iOS正式分類為Supported，但physical-device validation依Task 25-9維持defer，production signing、IPA、TestFlight與App Store distribution不在本Milestone claim內。
 
 ## Planning Findings Closure
 
@@ -29,11 +29,11 @@ Milestone 25的repository implementation、local build、Simulator runtime、sec
 | M25-PR09 | Closed：template identity完成 |
 | M25-PR10 | Closed：personal signing data未進repository |
 | M25-PR11 | Closed：macOS golden authority完成 |
-| M25-PR12 | Implementation closed／remote evidence pending |
+| M25-PR12 | Closed：GitHub-hosted `iOS / Simulator Build` run `29910826245`通過 |
 | M25-PR13 | Disposition closed：physical device正式defer |
 | M25-PR14 | Closed：CocoaPods與future SPM gate已記錄 |
 
-Open implementation P0／P1為0；release evidence blocker為remote workflow尚未執行。
+Open implementation與release P0／P1為0。
 
 ## Evidence Classification
 
@@ -42,7 +42,7 @@ Open implementation P0／P1為0；release evidence blocker為remote workflow尚�
 | iOS build-verified | Yes |
 | iOS simulator-verified | Yes |
 | iOS device-verified | No；正式defer |
-| iOS Supported | No |
+| iOS Supported | Yes；physical device與distribution有明確deferred disposition |
 | Distribution-ready | No |
 
 ## Final Local Verification
@@ -54,14 +54,13 @@ Final gate期間發現並修正兩個macOS shell portability P1：
 - `verify_generated.sh`使用Bash 4 `mapfile`，在macOS Bash 3.2失敗。
 - `build_android_release.sh`在`pipefail`下以`head`截取版本，可能因SIGPIPE在APK成功後回傳失敗。
 
-## Release Gate
+## Remote Release Evidence
 
-解除blocked狀態需要：
+- CI run `29910826260`：Quality、Generated Consistency與Tests通過。
+- iOS run `29910826245`：`macos-15`上的unsigned Simulator build通過。
+- Android run `29910826210`：release verification APK build與artifact upload通過。
+- 詳細證據與claim boundary由`25-11_remote_validation.md`保存。
 
-1. Push目前Milestone 25 commits。
-2. 確認GitHub-hosted `iOS / Simulator Build`成功。
-3. 記錄實際run ID、runner image、Xcode、CocoaPods與Flutter evidence。
-4. 重新執行final documentation review。
-5. 屆時才可將VERSION升為1.7.0、更新CHANGELOG release section、封存Milestone 25並使用release commit。
+## Release Disposition
 
-在上述證據完成前，Baseline維持1.6.1，Milestone 25維持active／release-blocked。
+Template Baseline升為1.7.0，Milestone 25完成並封存。Physical-device與distribution disposition不因本次release改變。

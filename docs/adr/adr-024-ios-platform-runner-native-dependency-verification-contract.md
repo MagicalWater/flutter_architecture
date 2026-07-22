@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-024-ios-platform-runner-native-dependency-verification-contract
-last_reviewed_baseline: 1.6.1
+last_reviewed_baseline: 1.7.0
 id: ADR-024
 title: iOS Platform Runner, Native Dependency and Verification Contract
 supersedes: []
@@ -118,7 +118,8 @@ Repository應建立獨立GitHub-hosted macOS iOS Simulator build gate。第一�
 - [Task 25-8 CI review](../audits/milestone_25/25-8_ci_review.md)
 - [Task 25-9 physical-device disposition](../audits/milestone_25/25-9_device_validation.md)
 - [Task 25-10 final review](../audits/milestone_25/25-10_final_review.md)
+- [Task 25-11 remote validation](../audits/milestone_25/25-11_remote_validation.md)
 
 ## Last Reviewed Baseline
 
-1.6.1。
+1.7.0。

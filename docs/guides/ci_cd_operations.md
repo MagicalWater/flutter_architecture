@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - repository-ci-cd-operations
-last_reviewed_baseline: 1.6.1
+last_reviewed_baseline: 1.7.0
 ---
 
 # CI/CD Operations Guide
@@ -79,7 +79,7 @@ CI / Tests
 iOS / Simulator Build
 ```
 
-第一版不建議把 `Android / Release APK` 設為 Pull Request required check，因為它只在 `main` push或manual dispatch執行。`iOS / Simulator Build`會在Pull Request建立run，可在GitHub-hosted macOS remote validation成功後加入required checks。
+第一版不建議把 `Android / Release APK` 設為 Pull Request required check，因為它只在 `main` push或manual dispatch執行。`iOS / Simulator Build`會在Pull Request建立run；Milestone 25 remote validation已證明GitHub-hosted macOS job可成功執行，可依repository治理決定是否加入required checks。
 
 啟用 Merge Queue 前，必須先讓`ci.yml`與`ios.yml`支援`merge_group` event，確認所有已設定的required checks在merge queue context會建立run，再修改Branch Protection。
 

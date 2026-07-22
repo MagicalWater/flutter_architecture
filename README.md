@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.6.1
+- Template Baseline Version：1.7.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -26,20 +26,20 @@
 - Milestone 22 Documentation Authority & Navigation Foundation：Completed / Archived
 - Milestone 23 Architecture Decision Record Extraction & Normalization：Completed / Archived
 - Milestone 24 CI/CD Foundation：Completed / Archived
-- Milestone 25 iOS Platform Support Foundation：Local implementation completed / Release blocked
+- Milestone 25 iOS Platform Support Foundation：Completed / Archived
 
 平台能力：
 
 | Platform | Capability |
 |---|---|
 | Android | Supported（含biometric-gated local session unlock） |
-| iOS | Build-verified／Simulator-verified（尚未Supported） |
+| iOS | Supported（Simulator與GitHub-hosted build verified；physical device／distribution deferred） |
 | Web | Dependency-ready |
 | Windows | Dependency-ready |
 | macOS | Dependency-ready |
 | Linux | Dependency-ready |
 
-Android仍是唯一正式Supported平台。iOS已包含tracked runner、unsigned Simulator build、runtime／storage／security smoke與macOS golden evidence；GitHub-hosted iOS workflow尚待push後實跑，physical device與distribution亦未驗證，因此不宣稱Supported。
+Android與iOS目前皆為Supported平台。iOS已包含tracked runner、unsigned Simulator build、runtime／storage／security smoke、macOS golden authority與GitHub-hosted build evidence；physical-device biometric acceptance、IPA signing與App Store distribution仍有明確deferred disposition。
 
 版本變更請參考 `CHANGELOG.md`。
 

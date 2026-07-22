@@ -133,13 +133,13 @@ last_reviewed_baseline: 1.6.1
 
 **Files:** Create final review; update ADR index／ADR-024、roadmap、project context、README、milestone index、CI guide、CHANGELOG and VERSION according to evidence。
 
-- [ ] Close M25-PR01–PR14; Open P0／P1 is zero。
-- [ ] Run docs_check、analyze、all tests、generated consistency、Android release build and clean iOS simulator build。
-- [ ] Confirm macOS golden and GitHub-hosted iOS job pass。
-- [ ] Classify build、simulator、device、Supported and distribution evidence precisely。
-- [ ] Confirm no production signing／Store／Flutter upgrade／pure-SPM scope entered the milestone。
-- [ ] Release `1.7.0` only if critical runtime/plugin evidence is complete; otherwise do not claim iOS Supported。
-- [ ] Archive and commit `docs(release): 封存 Milestone 25 iOS 平台基礎`。
+- [x] Close M25-PR01–PR14; Open P0／P1 is zero。
+- [x] Run docs_check、analyze、all tests、generated consistency、Android release build and clean iOS simulator build。
+- [x] Confirm macOS golden and GitHub-hosted iOS job pass。
+- [x] Classify build、simulator、device、Supported and distribution evidence precisely。
+- [x] Confirm no production signing／Store／Flutter upgrade／pure-SPM scope entered the milestone。
+- [x] Release `1.7.0` only if critical runtime/plugin evidence is complete; otherwise do not claim iOS Supported。
+- [x] Archive and commit `docs(release): 封存 Milestone 25 iOS 平台基礎`。
 
 ## Self-Review
 

@@ -18,6 +18,12 @@
 
 ## [Unreleased]
 
+目前沒有尚未發布的變更。
+
+---
+
+## [1.7.0] - 2026-07-22
+
 ### Added
 
 - Milestone 25建立tracked iOS runner、iOS 13 native contract、CocoaPods resolution、Face ID／Keychain設定、clean Simulator build與runtime smoke。
@@ -28,10 +34,18 @@
 - 修正generated consistency script依賴Bash 4 `mapfile`而無法在預設macOS Bash執行。
 - 修正Android artifact script在`pipefail`下以`head`讀取版本可能於build成功後錯誤失敗。
 
-### Release status
+### Changed
 
-- Baseline仍為1.6.1；1.7.0等待GitHub-hosted iOS workflow實跑證據後才發布。
-- iOS目前只分類為build-verified／Simulator-verified，不宣稱device-verified、Supported或distribution-ready。
+- Template Baseline由1.6.1升級至1.7.0；Milestone 25完成final holistic review與remote validation後正式封存。
+- iOS現在分類為Supported：具有tracked runner、local Simulator runtime evidence、macOS golden authority與GitHub-hosted unsigned Simulator build gate。
+- Physical-device biometric acceptance與distribution仍有正式deferred disposition；Supported不代表device-verified、IPA、TestFlight或App Store-ready。
+
+### Verification
+
+- GitHub Actions CI run `29910826260`通過：Quality、Generated Consistency與Tests全部成功。
+- GitHub Actions iOS run `29910826245`於`macos-15`成功完成CocoaPods resolution與unsigned Simulator Xcode build。
+- GitHub Actions Android run `29910826210`成功建立並上傳verification APK artifact。
+- iOS remote build產出`Flutter Architecture.app`，Bundle Identifier為`com.example.flutterarchitecture`、deployment target為13.0，且未使用Development Team或provisioning profile。
 
 ---
 

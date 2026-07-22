@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.6.1
+last_reviewed_baseline: 1.7.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.6.1
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.6.1
+Template Baseline: 1.7.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 25 iOS Platform Support Foundation（release blocked）
-Latest completed initiative: Milestone 24 CI/CD Foundation
+Current active milestone: None
+Latest completed initiative: Milestone 25 iOS Platform Support Foundation
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -43,6 +43,8 @@ Milestone 22 只處理 Documentation Authority、Navigation、Current Snapshot�
 Milestone 23 已將 Decision 001–022擷取為canonical single-file ADR、建立可驗證supersession graph、切換正式authority並保留aggregate與legacy path相容路由。
 
 Milestone 24 已建立GitHub Actions repository quality gates、exact toolchain authority、tracked root lockfile、generated consistency、main Android verification artifact與CI operations guide。此能力以Template Baseline 1.6.0封存，並於1.6.1完成GitHub-hosted CI／Android remote validation、跨平台golden authority與Node 24 Actions相容性修正；production signing、Store publishing與GitHub repository Branch Protection settings仍未納入。
+
+Milestone 25已建立tracked iOS runner、iOS 13 native contract、CocoaPods resolution、Face ID／Keychain設定、Simulator runtime smoke、macOS golden authority與GitHub-hosted unsigned Simulator build gate，並以Template Baseline 1.7.0封存。Physical-device biometric acceptance、production signing、IPA與App Store distribution仍為deferred scope。
 
 ## Project Purpose
 
@@ -315,26 +317,26 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 | Platform | Current classification |
 |---|---|
 | Android | Supported；tracked runner、release artifact 與 runtime smoke evidence |
-| iOS | Build-verified／Simulator-verified；tracked runner與local runtime evidence已建立，尚未宣稱Supported |
+| iOS | Supported；tracked runner、local Simulator runtime、macOS golden與GitHub-hosted unsigned build evidence |
 | Web | Dependency-ready；有 SQLite assets，但沒有 tracked Web runner |
 | Windows | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
 | macOS | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
 | Linux | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
 
-只有 Android 可以被描述為目前 Supported platform。iOS目前具有build與Simulator evidence，但GitHub-hosted remote gate尚未實跑、physical device已defer，不能宣稱Supported或distribution-ready。
+Android與iOS可以被描述為目前Supported platform。iOS Supported claim不包含physical-device acceptance、production signing、IPA、TestFlight或App Store distribution；這些範圍仍有明確deferred disposition。
 
 ## Security and Support Boundaries
 
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於 Baseline 1.6.1。
+- Device Binding 與 Passkey 不屬於 Baseline 1.7.0。
 - Repository 的 release build 使用 local verification signing，不可直接作為 production store signing configuration。
 - Default Android application ID 仍是 template placeholder，建立正式產品時必須替換 application ID、namespace、label 與 signing configuration。
 
 ## Active Work
 
-Milestone 25本地implementation與final holistic review已完成，但仍維持active／release-blocked。解除條件是push reviewed commits、取得GitHub-hosted `iOS / Simulator Build`成功證據，再執行1.7.0 release與封存。
+目前沒有active milestone。Milestone 25已完成remote validation、1.7.0 release與封存；下一個正式方向必須先由Roadmap candidates或backlog完成scope review與promotion。
 
 Production signing、physical-device acceptance、App Store distribution與GitHub repository settings仍未納入；Branch Protection目前只有文件化建議。
 

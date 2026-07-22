@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.6.1
+last_reviewed_baseline: 1.7.0
 ---
 
 # Milestone Routing
@@ -32,7 +32,7 @@ Milestone routing 只回答：
 
 | Milestone | Status | Primary routing |
 |---|---|---|
-| 25 | Active / Release blocked | ADR-024、implementation plan、`docs/audits/milestone_25/25-10_final_review.md` |
+| None | No active milestone | `docs/roadmap/active.md` |
 
 ## Closed milestone routing
 
@@ -55,6 +55,7 @@ Milestone routing 只回答：
 | 22 | Completed / Archived | planning review、implementation plan、`docs/audits/milestone_22/22-7_final_review.md` |
 | 23 | Completed / Archived | `docs/audits/milestone_23/23-0_planning_review.md`、migration manifest、batch reviews、`docs/audits/milestone_23/23-9_final_review.md` |
 | 24 | Completed / Archived | ADR-023、implementation plan、`docs/audits/milestone_24/24-6_final_review.md`、`docs/audits/milestone_24/24-7_post_release_remote_validation.md` |
+| 25 | Completed / Archived | ADR-024、implementation plan、`docs/audits/milestone_25/25-10_final_review.md`、`docs/audits/milestone_25/25-11_remote_validation.md` |
 
 完整 disposition 與歷史保存位置記錄於 `docs/migrations/m22_roadmap_manifest.md`。
 

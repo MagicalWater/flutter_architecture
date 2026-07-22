@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.6.1
+last_reviewed_baseline: 1.7.0
 ---
 
 # Roadmap
@@ -15,9 +15,9 @@ last_reviewed_baseline: 1.6.1
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.6.1
-Supported platform: Android
-iOS: Build-verified and Simulator-verified locally; release blocked pending remote iOS gate
+Template Baseline: 1.7.0
+Supported platforms: Android, iOS
+iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
 ```
 
@@ -26,9 +26,9 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Milestone 25 — iOS Platform Support Foundation
-Latest completed: Milestone 24 — CI/CD Foundation
-Baseline: 1.6.1
+None
+Latest completed: Milestone 25 — iOS Platform Support Foundation
+Baseline: 1.7.0
 ```
 
 完整 active scope、design、gate與 next action：
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 24 已完成或已有明確 disposition；Milestone 25仍為active／release-blocked。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 25 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

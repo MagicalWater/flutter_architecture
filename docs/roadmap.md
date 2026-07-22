@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.6.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.5.1
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.5.1
+Template Baseline: 1.6.0
 Supported platform: Android
 Other platforms: Dependency-ready
 ```
@@ -25,11 +25,9 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Milestone 24 — CI/CD Foundation
-Status: Active
-Current gate: 24-0 Planning Review accepted
-Implementation: Not started
-Baseline: 1.5.1
+None
+Latest completed: Milestone 24 — CI/CD Foundation
+Baseline: 1.6.0
 ```
 
 完整 active scope、design、gate與 next action：
@@ -50,7 +48,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 23 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 24 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

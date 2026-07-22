@@ -18,7 +18,7 @@
 
 - Production CI/CD extension：Milestone 24只建立repository quality gates與verification-only Android artifact；Store發布、production signing、release channel與environment promotion仍維持Deferred。
 - iOS、Web、Windows、macOS與Linux runner、artifact與runtime support；目前只承諾Android Supported，其餘平台維持Dependency-ready。
-- Cryptographic Device Binding與Passkey；目前Baseline 1.5.1已提供credential-at-rest hardening、Server-issued OTP與Android biometric-gated local user-presence gate，但仍未承諾rooted device、runtime memory或server compromise防護。
+- Cryptographic Device Binding與Passkey；目前Baseline 1.6.0已提供credential-at-rest hardening、Server-issued OTP與Android biometric-gated local user-presence gate，但仍未承諾rooted device、runtime memory或server compromise防護。
 
 ## Explicitly not planned in current baseline
 

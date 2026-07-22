@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.5.1
+- Template Baseline Version：1.6.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -25,7 +25,7 @@
 - Milestone 21 Biometric-gated Local Session Unlock：Completed / Archived
 - Milestone 22 Documentation Authority & Navigation Foundation：Completed / Archived
 - Milestone 23 Architecture Decision Record Extraction & Normalization：Completed / Archived
-- Milestone 24 CI/CD Foundation：Task 24-1～24-4 completed / Active
+- Milestone 24 CI/CD Foundation：Completed / Archived
 
 平台能力：
 

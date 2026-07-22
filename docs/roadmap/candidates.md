@@ -3,7 +3,7 @@ document_type: roadmap-candidates
 status: active
 authoritative_for:
   - concrete-roadmap-candidates
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.6.0
 ---
 
 # Roadmap Candidates
@@ -14,7 +14,7 @@ Candidate 不代表 commitment。開始 implementation 前仍需 scope review、
 
 Architecture Decision Record Extraction & Normalization 已提升為 Milestone 23；current status由 `docs/roadmap/active.md` 擁有，不再列為 candidate。
 
-CI/CD Foundation已提升為 Milestone 24；current status、scope與 gate由 `docs/roadmap/active.md`、design spec與 planning review擁有，不再列為 candidate。
+CI/CD Foundation已由 Milestone 24完成並封存；current capability由`docs/project_context.md`、ADR-023與final review保存，不再列為 candidate。
 
 ## Candidate — Additional Platform Support
 

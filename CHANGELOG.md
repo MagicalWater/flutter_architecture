@@ -22,6 +22,37 @@
 
 ---
 
+## [1.6.0] - 2026-07-22
+
+### Added
+
+- 完成 Milestone 24 CI/CD Foundation，新增 Pull Request、`main` push與manual dispatch的GitHub Actions repository quality workflow。
+- 新增穩定required checks：`CI / Quality`、`CI / Generated Consistency`與`CI / Tests`。
+- 新增`main`與manual dispatch的Android release APK verification artifact workflow，包含commit SHA命名、metadata與14天retention。
+- 新增repository-owned exact toolchain authority、tracked root `pubspec.lock`、generated consistency與Android artifact scripts。
+- 新增ADR-023與CI／Branch Protection／failure／rollback操作指南。
+
+### Changed
+
+- Template Baseline由1.5.1升級至1.6.0；依Versioning Policy，CI/CD屬新增模板能力，因此採MINOR而非PATCH。
+- Generated consistency gate現在拒絕實質generated drift，同時安全處理已驗證的Windows Freezed行尾空白差異。
+- Milestone 24完成final holistic review並封存；Branch Protection仍為文件化建議，未宣稱已修改GitHub repository settings。
+
+### Security
+
+- Workflows使用最小`contents: read`權限、不讀取secrets、不使用`pull_request_target`，且所有Actions pin完整commit SHA。
+- Android artifact明確分類為debug signing、verification-only與not production-ready；未加入production keystore、Store publishing或deployment credentials。
+
+### Verification
+
+- Documentation checker unit tests 14 passed，`docs_check`通過。
+- Workspace五個packages analyze與全部Flutter tests通過；App suite 370 tests passed。
+- Generated consistency由乾淨commit通過，沒有實質tracked drift或untracked output。
+- Android release APK由repository script成功建立，約57.1 MB，SHA命名與metadata traceability通過。
+- Workflow YAML、events、permissions、concurrency、cache contract與Action SHA pinning完成static review。
+
+---
+
 ## [1.5.1] - 2026-07-21
 
 ### Added

@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.6.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.5.1
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.5.1
+Template Baseline: 1.6.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 24 CI/CD Foundation
-Latest completed initiative: Milestone 23 ADR Extraction & Normalization
+Current active milestone: None
+Latest completed initiative: Milestone 24 CI/CD Foundation
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -40,7 +40,9 @@ Milestone 19 Secure Credential Storage、Milestone 20 OTP Step-Up Authentication
 
 Milestone 22 只處理 Documentation Authority、Navigation、Current Snapshot、README Coverage 與 consistency foundation，不改變 production runtime behavior。
 
-Milestone 23 已將 Decision 001–022擷取為canonical single-file ADR、建立可驗證supersession graph、切換正式authority並保留aggregate與legacy path相容路由。此Milestone不改變runtime能力，baseline維持1.5.1。
+Milestone 23 已將 Decision 001–022擷取為canonical single-file ADR、建立可驗證supersession graph、切換正式authority並保留aggregate與legacy path相容路由。
+
+Milestone 24 已建立GitHub Actions repository quality gates、exact toolchain authority、tracked root lockfile、generated consistency、main Android verification artifact與CI operations guide。此能力以Template Baseline 1.6.0封存；production signing、Store publishing與GitHub repository Branch Protection settings仍未納入。
 
 ## Project Purpose
 
@@ -326,28 +328,15 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於 Baseline 1.5.1。
+- Device Binding 與 Passkey 不屬於 Baseline 1.6.0。
 - Repository 的 release build 使用 local verification signing，不可直接作為 production store signing configuration。
 - Default Android application ID 仍是 template placeholder，建立正式產品時必須替換 application ID、namespace、label 與 signing configuration。
 
 ## Active Work
 
-目前正式工作是：
+目前沒有active milestone。Milestone 24已完成並封存：repository已建立ADR-023、exact toolchain authority、tracked root lockfile、Pull Request quality workflow、main Android verification artifact workflow、CI operations guide與clean-run evidence。
 
-```txt
-Milestone 24 — CI/CD Foundation
-Current gate: 24-0 Planning Review accepted
-Implementation: Not started
-```
-
-Milestone 24的主要目標：
-
-- 將 documentation checker、workspace analyze、全部 Flutter tests與 generated source consistency轉為 Pull Request automated gates。
-- 在 main push與 manual dispatch的乾淨 GitHub Actions runner建立 Android release APK verification artifact。
-- 固定 runner、Flutter與 Java策略，建立 cache、concurrency、permissions、Action pinning與 artifact traceability contract。
-- 文件化 Branch Protection required checks、failure、retention與 rollback policy。
-
-Task 24-1至24-4已完成：repository已建立ADR-023、exact toolchain authority、tracked root lockfile、Pull Request quality workflow、main Android verification artifact workflow與CI operations guide。Production signing與GitHub repository settings仍未修改；Branch Protection目前只有文件化建議。
+下一個正式方向必須先由`docs/roadmap/candidates.md`或`docs/backlog.md`完成scope review與planning promotion。Production signing與GitHub repository settings仍未修改；Branch Protection目前只有文件化建議。
 
 ## Documentation Routing
 

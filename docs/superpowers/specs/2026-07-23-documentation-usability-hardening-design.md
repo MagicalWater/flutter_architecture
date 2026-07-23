@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: accepted
+status: completed
 authoritative_for:
   - documentation-usability-hardening-design
 last_reviewed_baseline: 1.8.0
@@ -386,16 +386,17 @@ Control：只在實際修改且完成semantic review的managed document上更新
 9. `git diff --check`通過。
 10. Holistic review沒有open P0／P1 finding。
 
-## Proposed Gate
+## Final Gate
 
 ```txt
-Design status: Accepted
+Design status: Completed
 Formal design review: Accepted
 Open P0 / P1: 0
-Implementation plan authorized: Yes
-Documentation implementation authorized: No
+Implementation plan: Completed
+Documentation implementation: Completed
 Milestone promotion authorized: No
 Runtime source modification authorized: No
+Holistic final review: Accepted
 ```
 
-下一步進入 implementation plan task。Plan 必須完成相同的 review、fix、re-review、validation與commit閉環後，才可開始 scope內的active documentation implementation。
+本 initiative 已由 [holistic final review](../../audits/documentation_usability_hardening_final_review.md) 完成 closure。此 design 保留為 historical design authority，不再代表 active implementation state。

@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: accepted
+status: completed
 authoritative_for:
   - documentation-usability-hardening-implementation-plan
 last_reviewed_baseline: 1.8.0
@@ -783,12 +783,14 @@ Formal plan review：
 
 - `../../audits/documentation_usability_hardening_plan_review.md`
 
-## Proposed Gate
+## Final Gate
 
 ```txt
-Plan status: Accepted
+Plan status: Completed
 Formal plan review: Accepted
 Open P0 / P1: 0
-Implementation authorized: Yes
-Task 1 authorized: Yes
+Task 1–6: Completed
+Holistic final review: Accepted
 ```
+
+本 plan 已完成所有 Task closure。Current documentation state 由各 active Guide／README／Roadmap authority 擁有；本文件只保留 implementation sequence 與 historical execution evidence。

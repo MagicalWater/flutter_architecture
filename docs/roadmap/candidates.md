@@ -36,7 +36,7 @@ Native Flavor and Product Identity已提升為Milestone 26；current scope與nex
 
 ## Disposition — Documentation Knowledge Expansion
 
-大型 Documentation Knowledge Expansion 不再列為 candidate。
+此大型文件擴張方向不再列為 candidate。
 
 已接受的 Documentation Usability & Coverage Audit 確認，目前缺口集中在少量 navigation、task route 與 stale placeholder，不足以支持大型 Milestone、通用 Troubleshooting Guide 或 Architecture Evolution handbook。
 

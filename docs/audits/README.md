@@ -70,8 +70,8 @@ Final / Holistic Review
 - [`documentation_usability_hardening_task_2_review.md`](documentation_usability_hardening_task_2_review.md)：App database 與 integration routes review。
 - [`documentation_usability_hardening_task_3_review.md`](documentation_usability_hardening_task_3_review.md)：API endpoint 與 external client route review。
 - [`documentation_usability_hardening_task_4_review.md`](documentation_usability_hardening_task_4_review.md)：本 Audit navigation Task review。
-
-Task 5 與 holistic final review 尚未建立時，不在此 index 預先宣稱其存在；initiative closure 時由 final Task 補齊 routing。
+- [`documentation_usability_hardening_task_5_review.md`](documentation_usability_hardening_task_5_review.md)：Roadmap candidate 與 Backlog disposition review。
+- [`documentation_usability_hardening_final_review.md`](documentation_usability_hardening_final_review.md)：Documentation Usability Hardening holistic final disposition。
 
 ### Earlier milestone groups
 

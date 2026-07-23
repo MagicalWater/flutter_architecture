@@ -27,6 +27,10 @@ docs/superpowers/plans/
   Task-based implementation plans
 ```
 
+目前已核准、尚未開始production implementation的最新計畫：
+
+- [`plans/2026-07-23-milestone-27-production-observability-foundation.md`](plans/2026-07-23-milestone-27-production-observability-foundation.md)
+
 ## Reading rule
 
 執行某個 Milestone 或 phase 時，只讀該工作相關的 spec、plan 與 review；不要把所有歷史 plans 加入 AI 每次進入 repository 的必讀集合。

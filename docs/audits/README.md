@@ -76,6 +76,7 @@ Final / Holistic Review
 ### Production observability planning
 
 - [`production_observability_capability_audit.md`](production_observability_capability_audit.md)：Baseline 1.8.0 observability能力、缺口、provider策略與Milestone promotion依據。
+- [`production_observability_design_review.md`](production_observability_design_review.md)：Architecture design formal review、findings、fix verification與Open P0／P1 closure。
 
 ### Earlier milestone groups
 

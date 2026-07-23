@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: proposed
+status: accepted
 authoritative_for:
   - production-observability-design-review
 last_reviewed_baseline: 1.8.0
@@ -85,19 +85,53 @@ Disposition：re-review closure時加入routing。
 - 將reporter放入`packages/core`：會讓App lifecycle、environment與provider ownership污染reusable package boundary。
 - 將所有typed Failure上報：會製造noise並違反ADR-020 operational failure policy。
 
-## Gate status before fixes
+## Fix verification
+
+### P1-1 resolved
+
+`docs/roadmap/candidates.md`已改為`Milestone 27 — Production Observability Foundation`，並明確包含release identity、privacy、symbol pipeline、provider resilience、CI與single reference adapter scope。
+
+### P1-2 resolved
+
+`apps/flutter_architecture/README.md`已修正為現有`ErrorReporter` composition seam與Debug adapter；明確標示production remote adapter仍待Milestone 27。
+
+### P1-3 resolved
+
+`docs/roadmap/active.md`已保留active milestone為None，同時指向已完成audit、design與formal review，並把下一步收斂為ADR、implementation plan、planning review與active promotion。
+
+### P2-1 resolved
+
+`docs/audits/README.md`已加入capability audit與本design review routing。
+
+## Re-review
+
+Re-review確認：
+
+- Audit結論與design scope一致。
+- Candidate、active routing與App README沒有再宣稱尚未實作的production capability。
+- ADR-020仍擁有Exception／Failure分類；新ADR scope不重疊。
+- Firebase Crashlytics只被推薦為單一reference adapter，Sentry未被同步導入。
+- Analytics、APM、business events、remote logging與Connectivity scope仍被排除。
+- 未簽署Android／iOS verification build可以承擔config與symbol pipeline驗證，但不被誤稱Store distribution。
+- 所有review finding均有具體disposition與document evidence。
+
+## Final gate
 
 ```txt
 Open P0: 0
-Open P1: 3
-Open P2: 1
-Formal disposition: CHANGES REQUIRED
+Open P1: 0
+Open P2: 0
+Formal disposition: ACCEPTED
 ```
 
-完成上述文件authority與navigation修正後，必須重新執行：
+Final validation：
 
-- `dart run melos run docs_check`。
-- `git diff --check`。
-- roadmap／candidate／App README semantic re-review。
+- `dart run melos run docs_check`通過。
+- `git diff --check`通過。
+- roadmap／candidate／App README semantic re-review通過。
 
-在Open P0／P1歸零前，不得把本review改為accepted，也不得開始production source implementation。
+## Final recommendation
+
+Production Observability Foundation通過capability audit與architecture design formal review，適合作為目前下一個正式Milestone。
+
+在開始production source implementation前，下一個對話／階段應建立Production Observability ADR與Milestone 27 implementation plan，完成planning review後才切換`docs/roadmap/active.md`。

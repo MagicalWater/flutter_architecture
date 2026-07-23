@@ -3,7 +3,7 @@ document_type: app-readme
 status: accepted
 authoritative_for:
   - flutter-architecture-app-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.8.0
 ---
 
 # Flutter Architecture App
@@ -91,6 +91,113 @@ Logout 清除 Auth credential、Auth User 與 runtime Session，但保留 public
 - Supported locales：English、`zh_TW`。
 - App 擁有 locale preference、restore 與 controller。
 - `design_system` 提供 Theme definitions 與 UI primitives；App 擁有 theme preference、controller 與 Appearance selector。
+
+## Database Schema and Migration Route
+
+App SQLite schema 與 migration 的 current source 位於：
+
+```txt
+lib/app/database/app_database_schema.dart
+```
+
+新增 table、column、index、constraint 或資料清理 migration 時，依下列順序處理：
+
+```txt
+確認受影響 Feature 與 persistence authority
+  ↓
+提高 AppDatabaseSchema.version
+  ↓
+更新 onCreate fresh-install path
+  ↓
+新增由 oldVersion 判斷的 incremental onUpgrade path
+  ↓
+確認 onConfigure / foreign-key contract仍成立
+  ↓
+更新受影響 LocalDataSource 或 App-owned store
+  ↓
+新增 fresh-create、upgrade與persistence regression tests
+  ↓
+更新受影響 Feature README並執行 focused verification
+```
+
+主要 integration points：
+
+- `lib/app/database/app_database_schema.dart`：schema version、fresh-create與incremental upgrade。
+- `lib/app/di/register_module.dart`：Database open lifecycle、`onConfigure`、`onCreate`與`onUpgrade` wiring。
+- `lib/features/<feature>/data/`：Feature-local LocalDataSource、store或Repository coordination。
+- `test/app/database/`：App database lifecycle與foreign-key contract。
+- `test/features/<feature>/data/`：Feature persistence behavior與migration regression。
+
+不要把 exact DDL、逐版 migration journal 或歷史測試流水帳複製進本 README。SQLite initialization與Feature persistence policy分別以 [ADR-010](../../docs/adr/adr-010-cross-platform-sqlite-initialization.md)、相關 persistence ADR、source與tests為準。
+
+## App Integration Route
+
+新增或整合 Feature 時，先使用 [How to Add a Feature](../../docs/guides/how-to-add-feature.md) 作為完整操作入口；App-specific integration 依下列順序檢查：
+
+```txt
+Router declaration / Guard / App coordinator
+  ↓
+App DI registration and environment selection
+  ↓
+Localization resources and feature-local failure mapping
+  ↓
+App-owned persistence or plugin adapter
+  ↓
+App / Feature regression tests
+  ↓
+build_runner when generated source is affected
+  ↓
+repository validation
+```
+
+### Router and navigation
+
+- Route declaration：`lib/app/router/app_router.dart`。
+- Guard：`lib/app/router/auth_guard.dart`。
+- Authentication destination transition：`lib/app/navigation/auth_navigation_coordinator.dart`。
+- Generated route：`lib/app/router/app_router.gr.dart`，不得手動修改。
+- Regression tests：`test/app/router/`、`test/app/navigation/`與受影響 Feature page tests。
+
+### Dependency Injection
+
+- External object、plugin、Database、Dio與interface binding：`lib/app/di/register_module.dart`。
+- App-owned module與generated composition：`lib/app/di/`。
+- Environment-specific API selection：`lib/app/di/api_implementation_selector.dart`。
+- Regression tests：`test/app/di/`。
+
+Reusable package 使用 constructor injection 表達依賴，不在 package 內加入 GetIt／Injectable ownership。
+
+### Localization
+
+- ARB resources：`lib/l10n/`。
+- Locale bootstrap、preference與controller：`lib/app/localization/`。
+- Feature user-facing Failure mapping：對應 Feature `presentation/*_localization.dart`。
+- Regression tests：`test/app/localization/`與受影響 Feature presentation tests。
+
+修改 ARB、Auto Route、Injectable、Freezed、JSON serialization 或 Retrofit declaration後，執行：
+
+```bash
+dart run melos run build_runner
+```
+
+不得手動修改 `*.gr.dart`、`injection.config.dart`、`*.g.dart`或`*.freezed.dart`。
+
+### Persistence and plugin adapters
+
+App-owned implementation放在受影響 Feature data layer或`lib/app/` integration boundary，並由Composition Root注入。新增adapter前先確認它屬於credential、public SQLite data、preference或platform user-presence等既有authority；不要建立模糊的generic persistence layer。
+
+### Focused validation
+
+依修改內容至少執行相關 App／Feature tests，並在repository root執行：
+
+```bash
+dart run melos run docs_check
+dart run melos run build_runner
+dart run melos run analyze
+dart run melos exec -- flutter test
+```
+
+只有文件變更且未影響generated source或runtime contract時，可以依change-aware CI contract省略不相關的重量驗證；實作變更仍須依受影響scope執行focused tests與代表build。
 
 ## Feature Entry Points
 

@@ -55,9 +55,14 @@ Non-goals：Sentry second adapter、Firebase Analytics、business events、APM�
 | Crashlytics breadcrumb建議可能把Analytics帶入scope | P1 | ADR-026明確禁止因breadcrumb自動導入Firebase Analytics |
 | Provider-neutral abstraction若無reference adapter無法形成production evidence | P1 | 核准Crashlytics作唯一reference adapter |
 | Provider替換成本可能擴散至Feature／Package | P1 | ADR-026建立App／native／CI integration seam與blocking boundary rule |
+| Plan未明確保存固定的小階段執行／review／commit規則 | P1 | Plan已明定每個編號Task是一個小階段，內部逐步review，整體implementation review通過後只commit一次 |
+| Production collection是否依provider預設啟用存在privacy歧義 | P1 | ADR、Design與Plan統一為所有environment remote collection預設關閉，僅由明確policy啟用 |
+| Release version／build authority留待實作選擇，可能形成雙重來源 | P1 | Task 27-1固定native package metadata為runtime authority，commit SHA僅由受控build-time define提供 |
 | Connectivity breadcrumb缺少typed authority | P2 | Defer至Connectivity and Offline State Foundation |
 
 所有P1均已有design／ADR／plan disposition，沒有阻擋activation的open finding。
+
+完整planning artifacts holistic re-review由`27-0_planning_artifacts_holistic_review.md`保存；本文件不以原始activation判定取代補充終審。
 
 ## Validation evidence
 

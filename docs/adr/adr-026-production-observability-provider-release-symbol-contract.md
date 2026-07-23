@@ -113,9 +113,9 @@ User correlation若未來確有產品需求，必須另行privacy review與ADR a
 ### Collection, consent and retention
 
 - Template提供App-owned collection switch與adopter hook。
-- Development remote collection預設關閉。
-- Staging可啟用remote verification。
-- Production是否預設collection由adopter privacy policy決定，不由Feature決定。
+- Development、staging與production的Template預設remote collection均為關閉；不得因provider config檔存在就自動送出資料。
+- Staging remote verification只能由明確的build-time／runtime collection policy啟用。
+- Production collection必須由adopter依privacy policy與consent model明確啟用，不由Feature或provider SDK default決定。
 - Adopter必須揭露provider、資料類型、retention、deletion／opt-out方式與適用法規責任。
 - 本Decision不宣稱符合特定司法管轄區。
 

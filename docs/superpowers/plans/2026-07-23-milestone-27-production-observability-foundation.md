@@ -12,16 +12,22 @@ last_reviewed_baseline: 1.8.0
 
 在ADR-020與ADR-026之上，建立App-owned provider-neutral production observability contracts，並以Firebase Crashlytics作為唯一reference adapter，完成Android／iOS symbol pipeline、CI secret boundary、privacy adoption與remote acceptance evidence。
 
-本Plan不直接代表implementation已完成；每個Task必須遵循：
+本Plan不直接代表implementation已完成。Milestone 27的每個編號Task視為一個「小階段」，小階段內的implementation steps／subtasks必須遵循：
 
 ```txt
-implementation
-→ focused tests
-→ Task review
-→ findings fix
-→ re-review
-→ commit
+執行該小階段 Step／Subtask 1
+→ 立即 focused review
+→ 有問題就修正並再次 review
+→ 通過後直接進入下一個 Step／Subtask
+→ 重複直到該小階段全部內容完成
+→ 針對整個小階段做 implementation review
+→ 修正 findings 並重新 review
+→ Open P0／P1 = 0
+→ 執行該小階段 validation
+→ 整個小階段只提交一次
 ```
+
+執行期間不因單一Step／Subtask停下等待使用者確認，也不逐Step回報；完成整個小階段、整體review、validation與commit後再統一回報。不得以focused test或機械checker取代整個小階段implementation review。
 
 ## Global constraints
 
@@ -74,8 +80,10 @@ docs(plan): 啟動正式環境可觀測性里程碑
 
 - Immutable `ReleaseIdentity`。
 - Environment、version、build number、platform、native configuration與optional commit SHA。
+- 建立App-owned `ReleaseMetadataReader` seam；version／build number以安裝產物的native package metadata為runtime authority，若需plugin dependency只能加入App，不能進入reusable package。
+- Commit SHA只由受控build-time define注入；local未提供時維持absent，不使用`local`等假SHA。
 - `ObservabilityCollectionPolicy`與test-friendly provider lifecycle abstraction。
-- Development／staging／production／test composition matrix。
+- Development／staging／production／test composition matrix；所有environment remote collection預設關閉，只有明確policy可啟用。
 - 缺少optional identity時的降級與environment mismatch fail-fast分離。
 
 **Tests**：
@@ -84,6 +92,7 @@ docs(plan): 啟動正式環境可觀測性里程碑
 - Local／CI commit SHA behavior。
 - Environment-specific collection policy。
 - Provider unavailable不阻止composition。
+- Provider config存在但collection policy未啟用時仍不得remote collect。
 
 **Commit**：
 

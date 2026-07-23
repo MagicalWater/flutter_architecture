@@ -249,11 +249,11 @@ Provider後台sampling與retention由adopter設定並在guide揭露，不由Feat
 | Environment | Reporter | Remote collection | Verification |
 |---|---|---|---|
 | Development | Debug reporter；reference adapter預設關閉 | Off by default | unit／local manual opt-in |
-| Staging | Debug + production adapter | On with staging environment tag | non-fatal test event與symbol check |
-| Production | production adapter + non-recursive local fallback | On according toadopter privacy policy | release configuration與upload gate |
+| Staging | Debug + production adapter | Off by default；remote acceptance時明確啟用 | non-fatal test event與symbol check |
+| Production | production adapter + non-recursive local fallback | Off by default；由adopter privacy／consent policy明確啟用 | release configuration與upload gate |
 | Test | recording／fake／noop | Off | deterministic contract tests |
 
-Debug build不得因配置檔存在就自動送production project。Staging與production必須使用可區分的provider project或environment/release routing，且文件不得把同一後台混成無法辨識的資料流。
+任何environment都不得因配置檔存在或provider SDK預設值而自動送出資料。Staging與production必須使用可區分的provider project或environment/release routing，且文件不得把同一後台混成無法辨識的資料流。
 
 ## Consent, privacy and retention
 

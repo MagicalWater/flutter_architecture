@@ -30,6 +30,7 @@ Baseline: 1.8.0
 - Design：`docs/superpowers/specs/2026-07-23-production-observability-foundation-design.md`
 - Implementation plan：`docs/superpowers/plans/2026-07-23-milestone-27-production-observability-foundation.md`
 - Planning review：`docs/audits/milestone_27/27-0_planning_review.md`
+- Planning artifacts holistic review：`docs/audits/milestone_27/27-0_planning_artifacts_holistic_review.md`
 
 ## Current Task
 

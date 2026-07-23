@@ -17,8 +17,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  classify-changes:
+    name: Classify Changes
+    runs-on: ubuntu-24.04
+    outputs:
+      docs_only: ${{ steps.classify.outputs.docs_only }}
+      full_ci: ${{ steps.classify.outputs.full_ci }}
+      android_build: ${{ steps.classify.outputs.android_build }}
+      ios_build: ${{ steps.classify.outputs.ios_build }}
+      release_full: ${{ steps.classify.outputs.release_full }}
+      reason: ${{ steps.classify.outputs.reason }}
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Classify repository changes
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if ! python3 tools/ci/change_classifier.py \
+            --event "$EVENT_NAME" \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --output "$GITHUB_OUTPUT"; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            echo "full_ci=true" >> "$GITHUB_OUTPUT"
+            echo "android_build=true" >> "$GITHUB_OUTPUT"
+            echo "ios_build=true" >> "$GITHUB_OUTPUT"
+            echo "release_full=false" >> "$GITHUB_OUTPUT"
+            echo "reason=classifier execution failed; fail-safe full matrix" >> "$GITHUB_OUTPUT"
+          fi
+
   quality:
     name: Quality
+    needs: classify-changes
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -28,6 +66,7 @@ jobs:
 
       - name: Load toolchain versions
         id: versions
+        if: needs.classify-changes.outputs.full_ci == 'true'
         shell: bash
         run: |
           source .github/versions.env
@@ -36,12 +75,14 @@ jobs:
           echo "java_distribution=$JAVA_DISTRIBUTION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Java
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: ${{ steps.versions.outputs.java_distribution }}
           java-version: ${{ steps.versions.outputs.java_version }}
 
       - name: Set up Flutter
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
@@ -49,6 +90,7 @@ jobs:
           cache: true
 
       - name: Restore Pub cache
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.pub-cache
@@ -57,21 +99,24 @@ jobs:
             pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
 
       - name: Resolve dependencies
+        if: needs.classify-changes.outputs.full_ci == 'true'
         run: dart pub get
 
       - name: Check documentation
-        run: dart run melos run docs_check
+        run: python3 tools/docs/check_docs.py .
 
       - name: Check CI workflow contracts
         run: >-
           python3 -m unittest
           tools.ci.test_environment_contract
           tools.ci.test_environment_workflow_matrix_contract
+          tools.ci.test_change_classifier
           tools.ci.test_ios_workflow_contract
           tools.ci.test_local_build_commands
           tools.ci.test_shell_portability_contract
 
       - name: Analyze workspace
+        if: needs.classify-changes.outputs.full_ci == 'true'
         run: dart run melos run analyze
 
       - name: Check whitespace errors
@@ -79,15 +124,18 @@ jobs:
 
   generated-consistency:
     name: Generated Consistency
+    needs: classify-changes
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Load toolchain versions
         id: versions
+        if: needs.classify-changes.outputs.full_ci == 'true'
         shell: bash
         run: |
           source .github/versions.env
@@ -96,12 +144,14 @@ jobs:
           echo "java_distribution=$JAVA_DISTRIBUTION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Java
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: ${{ steps.versions.outputs.java_distribution }}
           java-version: ${{ steps.versions.outputs.java_version }}
 
       - name: Set up Flutter
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
@@ -109,6 +159,7 @@ jobs:
           cache: true
 
       - name: Restore Pub cache
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.pub-cache
@@ -117,22 +168,32 @@ jobs:
             pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
 
       - name: Resolve dependencies
+        if: needs.classify-changes.outputs.full_ci == 'true'
         run: dart pub get
 
       - name: Verify generated files
+        if: needs.classify-changes.outputs.full_ci == 'true'
         run: bash tools/ci/verify_generated.sh
+
+      - name: Skip generated consistency
+        if: needs.classify-changes.outputs.full_ci != 'true'
+        run: |
+          echo "Generated consistency skipped: ${{ needs.classify-changes.outputs.reason }}"
 
   tests:
     name: Tests
+    needs: classify-changes
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Load toolchain versions
         id: versions
+        if: needs.classify-changes.outputs.full_ci == 'true'
         shell: bash
         run: |
           source .github/versions.env
@@ -141,12 +202,14 @@ jobs:
           echo "java_distribution=$JAVA_DISTRIBUTION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Java
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: ${{ steps.versions.outputs.java_distribution }}
           java-version: ${{ steps.versions.outputs.java_version }}
 
       - name: Set up Flutter
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
@@ -154,6 +217,7 @@ jobs:
           cache: true
 
       - name: Restore Pub cache
+        if: needs.classify-changes.outputs.full_ci == 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.pub-cache
@@ -162,13 +226,20 @@ jobs:
             pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
 
       - name: Resolve dependencies
+        if: needs.classify-changes.outputs.full_ci == 'true'
         run: dart pub get
 
       - name: Run all Flutter tests
+        if: needs.classify-changes.outputs.full_ci == 'true'
         run: dart run melos exec -- flutter test
 
+      - name: Skip Flutter tests
+        if: needs.classify-changes.outputs.full_ci != 'true'
+        run: |
+          echo "Flutter tests skipped: ${{ needs.classify-changes.outputs.reason }}"
+
       - name: Upload golden test failure evidence
-        if: failure()
+        if: needs.classify-changes.outputs.full_ci == 'true' && failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: golden-test-failures-${{ github.sha }}

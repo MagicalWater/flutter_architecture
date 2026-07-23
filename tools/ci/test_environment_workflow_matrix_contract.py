@@ -20,6 +20,76 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("tools.ci.test_environment_workflow_matrix_contract", self.quality)
         self.assertIn("tools.ci.test_local_build_commands", self.quality)
 
+    def test_ci_uses_change_classifier_and_preserves_required_job_names(self) -> None:
+        self.assertIn("name: Classify Changes", self.quality)
+        self.assertIn("tools/ci/change_classifier.py", self.quality)
+        self.assertIn("fetch-depth: 0", self.quality)
+        self.assertIn("needs.classify-changes.outputs.full_ci == 'true'", self.quality)
+        self.assertIn("name: Quality", self.quality)
+        self.assertIn("name: Generated Consistency", self.quality)
+        self.assertIn("name: Tests", self.quality)
+        self.assertNotIn("Generated Consistency Gate", self.quality)
+        self.assertNotIn("Tests Gate", self.quality)
+
+    def test_ci_classifier_execution_failure_falls_back_to_full_matrix(self) -> None:
+        classify = self.quality.split("  classify-changes:", 1)[1].split(
+            "  quality:", 1
+        )[0]
+
+        self.assertIn("if ! python3 tools/ci/change_classifier.py", classify)
+        self.assertIn('echo "docs_only=false" >> "$GITHUB_OUTPUT"', classify)
+        self.assertIn('echo "full_ci=true" >> "$GITHUB_OUTPUT"', classify)
+        self.assertIn('echo "android_build=true" >> "$GITHUB_OUTPUT"', classify)
+        self.assertIn('echo "ios_build=true" >> "$GITHUB_OUTPUT"', classify)
+        self.assertIn('echo "release_full=false" >> "$GITHUB_OUTPUT"', classify)
+        self.assertIn(
+            'echo "reason=classifier execution failed; fail-safe full matrix"',
+            classify,
+        )
+
+    def test_ci_required_jobs_use_internal_noop_instead_of_job_skip(self) -> None:
+        generated = self.quality.split("  generated-consistency:", 1)[1].split(
+            "  tests:", 1
+        )[0]
+        tests = self.quality.split("  tests:", 1)[1]
+
+        self.assertIn("needs: classify-changes", generated)
+        self.assertNotRegex(generated, r"(?m)^    if:")
+        self.assertIn("Skip generated consistency", generated)
+        self.assertIn("needs.classify-changes.outputs.full_ci != 'true'", generated)
+
+        self.assertIn("needs: classify-changes", tests)
+        self.assertNotRegex(tests, r"(?m)^    if:")
+        self.assertIn("Skip Flutter tests", tests)
+        self.assertIn("needs.classify-changes.outputs.full_ci != 'true'", tests)
+
+    def test_ci_quality_keeps_light_checks_unconditional(self) -> None:
+        quality = self.quality.split("  quality:", 1)[1].split(
+            "  generated-consistency:", 1
+        )[0]
+
+        for step_name in (
+            "Check documentation",
+            "Check CI workflow contracts",
+            "Check whitespace errors",
+        ):
+            match = re.search(
+                rf"      - name: {re.escape(step_name)}\n(?P<body>(?:        .*\n)*)",
+                quality,
+            )
+            self.assertIsNotNone(match, step_name)
+            self.assertNotIn("if:", match.group("body"))
+
+        analyze = re.search(
+            r"      - name: Analyze workspace\n(?P<body>(?:        .*\n)*)",
+            quality,
+        )
+        self.assertIsNotNone(analyze)
+        self.assertIn(
+            "needs.classify-changes.outputs.full_ci == 'true'",
+            analyze.group("body"),
+        )
+
     def test_android_keeps_release_check_and_adds_development_debug(self) -> None:
         self.assertIn("name: Release APK", self.android)
         self.assertIn("name: Development Debug APK", self.android)

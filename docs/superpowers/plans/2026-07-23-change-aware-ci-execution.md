@@ -141,7 +141,7 @@ git commit -m "feat(ci): 建立變更分類契約"
 - Produces job outputs `docs_only`與`full_ci` from `classify-changes` job。
 - Keeps required check names `CI / Quality`、`CI / Generated Consistency`、`CI / Tests`；三個job都永遠建立，不新增替代Gate名稱。
 
-- [ ] **Step 1: Add failing workflow contract tests**
+- [x] **Step 1: Add failing workflow contract tests**
 
 在`tools/ci/test_environment_workflow_matrix_contract.py`新增assertions：
 
@@ -158,7 +158,7 @@ self.assertNotIn("Tests Gate", self.quality)
 
 並確認docs checker與workflow contracts在Quality永遠執行，analyze只在`full_ci=true`執行；Generated Consistency與Tests job沒有job-level `if:`，各自具有docs-only no-op step。
 
-- [ ] **Step 2: Run tests and confirm failure**
+- [x] **Step 2: Run tests and confirm failure**
 
 ```bash
 python3 -m unittest tools.ci.test_environment_workflow_matrix_contract -v
@@ -166,7 +166,7 @@ python3 -m unittest tools.ci.test_environment_workflow_matrix_contract -v
 
 Expected: FAIL，因workflow尚未有classification wiring。
 
-- [ ] **Step 3: Add classification job**
+- [x] **Step 3: Add classification job**
 
 在`ci.yml`新增Ubuntu `classify-changes` job，checkout使用`fetch-depth: 0`，依event設定base/head：
 
@@ -178,14 +178,14 @@ workflow_dispatch: manual full matrix
 
 執行classifier並將五個outputs暴露給後續jobs。
 
-- [ ] **Step 4: Gate heavy CI work**
+- [x] **Step 4: Gate heavy CI work**
 
 - `Quality`永遠執行docs checker、classifier／workflow contracts、whitespace。
 - Dependency resolution與analyze使用step-level `if: needs.classify-changes.outputs.full_ci == 'true'`。
 - `Generated Consistency`與`Tests`job永遠建立；dependency setup、generator與test steps使用step-level `if: needs.classify-changes.outputs.full_ci == 'true'`。
 - 兩個job各自加入`full_ci != 'true'`的no-op step，輸出skip reason並成功結束；不得新增不同名稱的替代Gate。
 
-- [ ] **Step 5: Run workflow contracts and YAML parser**
+- [x] **Step 5: Run workflow contracts and YAML parser**
 
 ```bash
 python3 -m unittest tools.ci.test_change_classifier tools.ci.test_environment_workflow_matrix_contract -v
@@ -194,7 +194,7 @@ ruby -e 'require "yaml"; YAML.load_file(".github/workflows/ci.yml", aliases: tru
 
 Expected: PASS。
 
-- [ ] **Step 6: Review and commit**
+- [x] **Step 6: Review and commit**
 
 Review required-check semantics、PR/push/manual ranges、fetch depth、permissions與cache behavior。Commit：
 

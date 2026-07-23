@@ -6,11 +6,12 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      run_hosted:
-        description: Run GitHub-hosted Android verification even when CI_EXECUTION_MODE is local
-        required: false
-        default: false
-        type: boolean
+      execution_mode:
+        description: CI execution mode for this run
+        required: true
+        default: repository-default
+        type: choice
+        options: [repository-default, manual-local, self-hosted, github-hosted]
 
 permissions:
   contents: read
@@ -22,8 +23,14 @@ concurrency:
 jobs:
   classify-changes:
     name: Classify Changes
-    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
-    runs-on: ubuntu-24.04
+    if: >-
+      ${{
+        (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
+        (github.event_name == 'workflow_dispatch' &&
+         ((inputs.execution_mode == 'repository-default' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
+          contains(fromJSON('["self-hosted","github-hosted"]'), inputs.execution_mode)))
+      }}
+    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     outputs:
       docs_only: ${{ steps.classify.outputs.docs_only }}
       full_ci: ${{ steps.classify.outputs.full_ci }}
@@ -62,10 +69,9 @@ jobs:
     name: Development Debug APK
     needs: classify-changes
     if: >-
-      (vars.CI_EXECUTION_MODE == 'github' ||
-      (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true)) &&
+      needs.classify-changes.result == 'success' &&
       needs.classify-changes.outputs.android_build == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -124,10 +130,9 @@ jobs:
     name: Release APK
     needs: classify-changes
     if: >-
-      (vars.CI_EXECUTION_MODE == 'github' ||
-      (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true)) &&
+      needs.classify-changes.result == 'success' &&
       needs.classify-changes.outputs.android_build == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -194,9 +199,8 @@ jobs:
     needs: [classify-changes, android-development-debug-apk, android-release-apk]
     if: >-
       always() &&
-      (vars.CI_EXECUTION_MODE == 'github' ||
-      (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true))
-    runs-on: ubuntu-24.04
+      needs.classify-changes.result != 'skipped'
+    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     env:
       CLASSIFY_RESULT: ${{ needs.classify-changes.result }}
       ANDROID_BUILD: ${{ needs.classify-changes.outputs.android_build }}

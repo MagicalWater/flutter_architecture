@@ -7,11 +7,12 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      run_hosted:
-        description: Run GitHub-hosted observability verification even when CI_EXECUTION_MODE is local
-        required: false
-        default: false
-        type: boolean
+      execution_mode:
+        description: CI execution mode for this run
+        required: true
+        default: repository-default
+        type: choice
+        options: [repository-default, manual-local, self-hosted, github-hosted]
       remote_acceptance:
         description: Run secret-backed staging acceptance and symbol uploads
         required: false
@@ -28,8 +29,14 @@ concurrency:
 jobs:
   contract:
     name: PR-safe Contract
-    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
-    runs-on: ubuntu-24.04
+    if: >-
+      ${{
+        (github.event_name == 'pull_request' && vars.CI_EXECUTION_MODE == 'github-hosted') ||
+        (github.event_name == 'workflow_dispatch' &&
+         ((inputs.execution_mode == 'repository-default' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
+          contains(fromJSON('["self-hosted","github-hosted"]'), inputs.execution_mode)))
+      }}
+    runs-on: ${{ (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted'))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -43,12 +50,12 @@ jobs:
   android-symbols:
     name: Android Symbols
     if: >-
-      (vars.CI_EXECUTION_MODE == 'github' ||
-      (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true)) &&
-      github.event_name != 'pull_request' &&
-      (github.event_name == 'push' || inputs.remote_acceptance == true)
+      github.event_name == 'workflow_dispatch' &&
+      inputs.remote_acceptance == true &&
+      ((inputs.execution_mode == 'repository-default' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
+       contains(fromJSON('["self-hosted","github-hosted"]'), inputs.execution_mode))
     environment: staging-observability
-    runs-on: ubuntu-24.04
+    runs-on: ${{ (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     env:
       REMOTE_ACCEPTANCE_READY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' && secrets.FIREBASE_ANDROID_PRODUCTION_CONFIG_B64 != '' && secrets.FIREBASE_ANDROID_STAGING_CONFIG_B64 != '' && secrets.FIREBASE_ANDROID_APP_ID != '' && secrets.FIREBASE_ANDROID_STAGING_APP_ID != '' }}
     steps:
@@ -145,12 +152,12 @@ jobs:
   ios-symbols:
     name: iOS dSYMs
     if: >-
-      (vars.CI_EXECUTION_MODE == 'github' ||
-      (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true)) &&
-      github.event_name != 'pull_request' &&
-      (github.event_name == 'push' || inputs.remote_acceptance == true)
+      github.event_name == 'workflow_dispatch' &&
+      inputs.remote_acceptance == true &&
+      ((inputs.execution_mode == 'repository-default' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
+       contains(fromJSON('["self-hosted","github-hosted"]'), inputs.execution_mode))
     environment: staging-observability
-    runs-on: macos-15
+    runs-on: ${{ (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'macos-15' }}
     env:
       REMOTE_ACCEPTANCE_READY: ${{ secrets.FIREBASE_IOS_PRODUCTION_CONFIG_B64 != '' && secrets.FIREBASE_IOS_STAGING_CONFIG_B64 != '' }}
     steps:

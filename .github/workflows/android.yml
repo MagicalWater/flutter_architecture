@@ -14,8 +14,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  classify-changes:
+    name: Classify Changes
+    runs-on: ubuntu-24.04
+    outputs:
+      docs_only: ${{ steps.classify.outputs.docs_only }}
+      full_ci: ${{ steps.classify.outputs.full_ci }}
+      android_build: ${{ steps.classify.outputs.android_build }}
+      ios_build: ${{ steps.classify.outputs.ios_build }}
+      release_full: ${{ steps.classify.outputs.release_full }}
+      reason: ${{ steps.classify.outputs.reason }}
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Classify repository changes
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.before || '' }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          if ! python3 tools/ci/change_classifier.py \
+            --event "$EVENT_NAME" \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --output "$GITHUB_OUTPUT"; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            echo "full_ci=true" >> "$GITHUB_OUTPUT"
+            echo "android_build=true" >> "$GITHUB_OUTPUT"
+            echo "ios_build=true" >> "$GITHUB_OUTPUT"
+            echo "release_full=false" >> "$GITHUB_OUTPUT"
+            echo "reason=classifier execution failure; fail-safe full matrix" >> "$GITHUB_OUTPUT"
+          fi
+
   android-development-debug-apk:
     name: Development Debug APK
+    needs: classify-changes
+    if: needs.classify-changes.outputs.android_build == 'true'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -73,6 +112,8 @@ jobs:
 
   android-release-apk:
     name: Release APK
+    needs: classify-changes
+    if: needs.classify-changes.outputs.android_build == 'true'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -134,3 +175,39 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           compression-level: 0
+
+  android-summary:
+    name: Android Summary
+    needs: [classify-changes, android-development-debug-apk, android-release-apk]
+    if: always()
+    runs-on: ubuntu-24.04
+    env:
+      CLASSIFY_RESULT: ${{ needs.classify-changes.result }}
+      ANDROID_BUILD: ${{ needs.classify-changes.outputs.android_build }}
+      REASON: ${{ needs.classify-changes.outputs.reason }}
+      DEVELOPMENT_RESULT: ${{ needs.android-development-debug-apk.result }}
+      RELEASE_RESULT: ${{ needs.android-release-apk.result }}
+    steps:
+      - name: Verify Android workflow result
+        shell: bash
+        run: |
+          if [[ "$CLASSIFY_RESULT" != "success" ]]; then
+            echo "Android change classification did not complete successfully."
+            exit 1
+          fi
+
+          if [[ "$ANDROID_BUILD" != "true" ]]; then
+            if [[ "$DEVELOPMENT_RESULT" != "skipped" || "$RELEASE_RESULT" != "skipped" ]]; then
+              echo "Android builds were not requested but a build job did not skip."
+              exit 1
+            fi
+            echo "Android builds skipped: $REASON"
+            exit 0
+          fi
+
+          if [[ "$DEVELOPMENT_RESULT" != "success" || "$RELEASE_RESULT" != "success" ]]; then
+            echo "Requested Android build failed: development=$DEVELOPMENT_RESULT release=$RELEASE_RESULT"
+            exit 1
+          fi
+
+          echo "Android development and production verification builds succeeded."

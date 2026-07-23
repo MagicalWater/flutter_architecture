@@ -99,6 +99,42 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("android-development-debug-${{ github.sha }}", self.android)
         self.assertIn("android-production-release-${{ github.sha }}", self.android)
 
+    def test_android_uses_change_classifier_and_skips_build_jobs_for_docs_only(self) -> None:
+        self.assertIn("name: Classify Changes", self.android)
+        self.assertIn("tools/ci/change_classifier.py", self.android)
+        self.assertIn("fetch-depth: 0", self.android)
+        self.assertIn("needs.classify-changes.outputs.android_build == 'true'", self.android)
+        self.assertIn("name: Android Summary", self.android)
+
+        development = self.android.split("  android-development-debug-apk:", 1)[1].split(
+            "  android-release-apk:", 1
+        )[0]
+        release = self.android.split("  android-release-apk:", 1)[1].split(
+            "  android-summary:", 1
+        )[0]
+        self.assertIn("needs: classify-changes", development)
+        self.assertIn("if: needs.classify-changes.outputs.android_build == 'true'", development)
+        self.assertIn("needs: classify-changes", release)
+        self.assertIn("if: needs.classify-changes.outputs.android_build == 'true'", release)
+
+    def test_android_classifier_failure_falls_back_to_full_matrix(self) -> None:
+        classify = self.android.split("  classify-changes:", 1)[1].split(
+            "  android-development-debug-apk:", 1
+        )[0]
+        self.assertIn("if ! python3 tools/ci/change_classifier.py", classify)
+        self.assertIn("android_build=true", classify)
+        self.assertIn("ios_build=true", classify)
+        self.assertIn("reason=classifier execution failure", classify)
+
+    def test_android_summary_propagates_requested_build_failures(self) -> None:
+        summary = self.android.split("  android-summary:", 1)[1]
+        self.assertIn("if: always()", summary)
+        self.assertIn("needs: [classify-changes, android-development-debug-apk, android-release-apk]", summary)
+        self.assertIn("needs.android-development-debug-apk.result", summary)
+        self.assertIn("needs.android-release-apk.result", summary)
+        self.assertIn("exit 1", summary)
+        self.assertIn("Android builds skipped", summary)
+
     def test_ios_keeps_simulator_check_and_adds_unsigned_production_release(self) -> None:
         self.assertIn("name: Simulator Build", self.ios)
         self.assertIn("name: Production Release Build", self.ios)

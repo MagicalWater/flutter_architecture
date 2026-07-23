@@ -215,7 +215,7 @@ git commit -m "ci: 依變更範圍執行品質驗證"
 - Consumes classifier CLI from Task 1。
 - Produces `android_build` output and lightweight `Android / Summary` result。
 
-- [ ] **Step 1: Add failing Android workflow tests**
+- [x] **Step 1: Add failing Android workflow tests**
 
 Tests must confirm：
 
@@ -227,28 +227,28 @@ self.assertIn("name: Android Summary", self.android)
 
 並確認兩個artifact jobs仍保留原名稱與build scripts。
 
-- [ ] **Step 2: Run tests and confirm failure**
+- [x] **Step 2: Run tests and confirm failure**
 
 ```bash
 python3 -m unittest tools.ci.test_environment_workflow_matrix_contract -v
 ```
 
-- [ ] **Step 3: Wire classifier into Android workflow**
+- [x] **Step 3: Wire classifier into Android workflow**
 
 新增Ubuntu classification job；兩個build jobs以`android_build == 'true'`執行。Documentation-only時只執行summary job，不setup Java／Flutter、不上傳artifact。
 
-- [ ] **Step 4: Preserve release/manual behavior**
+- [x] **Step 4: Preserve release/manual behavior**
 
 確認`VERSION`與`workflow_dispatch`均使兩個Android jobs執行；首次push與invalid range fail-safe full build。
 
-- [ ] **Step 5: Run tests and YAML validation**
+- [x] **Step 5: Run tests and YAML validation**
 
 ```bash
 python3 -m unittest tools.ci.test_change_classifier tools.ci.test_environment_workflow_matrix_contract -v
 ruby -e 'require "yaml"; YAML.load_file(".github/workflows/android.yml", aliases: true); puts "android yaml ok"'
 ```
 
-- [ ] **Step 6: Review and commit**
+- [x] **Step 6: Review and commit**
 
 Review artifact SHA naming、retention、secret absence與summary dependency aggregation。Commit：
 

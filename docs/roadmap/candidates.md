@@ -24,13 +24,35 @@ CI/CD Foundation已由 Milestone 24完成並封存；current capability由`docs/
 
 每個平台應獨立評估 scaffold、artifact、runtime smoke、plugin support 與維護成本，不建議一次綁成單一大 milestone。
 
-## Candidate — Production Error Reporting Adapter
+## Candidate — Milestone 27 Production Observability Foundation
 
-候選範圍：在既有 App-owned reporting boundary 上加入 production adapter，例如 Firebase Crashlytics。
+候選範圍：在既有App-owned `ErrorReporter`、Exception／Failure architecture、Flutter／platform uncaught boundaries、native environment mapping與CI foundation之上，建立可供production使用的observability contract與單一reference adapter。
 
-前置條件：明確拍板 provider、privacy、sampling、release environment、symbol upload 與 sensitive-data policy。
+已完成：
 
-目前 baseline 不包含 Firebase dependency。
+- Capability audit與gap analysis。
+- Firebase Crashlytics、Sentry與provider-neutral-only策略比較。
+- Provider-neutral App contract加Firebase Crashlytics單一reference adapter的architecture design。
+- Goals、non-goals、acceptance criteria、platform／CI boundary與Task拆分。
+
+目前推薦：
+
+```txt
+Milestone 27 — Production Observability Foundation
+Provider strategy: provider-neutral contract + Firebase Crashlytics reference adapter
+```
+
+正式implementation前仍需新增Production Observability ADR、建立implementation plan、完成planning promotion並讓`docs/roadmap/active.md`切換為active。不得只加入Firebase dependency或同時導入多個production provider。
+
+Analytics、Feature Flags、performance APM、business event tracking、remote logging backend與完整SRE平台不屬於此candidate。
+
+Evidence：
+
+- `docs/audits/production_observability_capability_audit.md`。
+- `docs/superpowers/specs/2026-07-23-production-observability-foundation-design.md`。
+- `docs/audits/production_observability_design_review.md`。
+
+目前baseline不包含Firebase或Sentry dependency，也沒有production remote adapter、mapping／dSYM upload或provider-backed runtime evidence。
 
 Native Flavor and Product Identity已提升為Milestone 26；current scope與next action由`docs/roadmap/active.md`擁有，不再列為candidate。
 

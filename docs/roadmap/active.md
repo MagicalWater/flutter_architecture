@@ -33,11 +33,18 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-下一個正式方向必須先由`docs/roadmap/candidates.md`或`docs/backlog.md`完成scope review與planning promotion。
+Production Observability Foundation已完成capability audit、architecture design與formal review；目前仍未建立implementation plan或切換為active milestone。
+
+- Capability audit：`docs/audits/production_observability_capability_audit.md`。
+- Architecture design：`docs/superpowers/specs/2026-07-23-production-observability-foundation-design.md`。
+- Formal review：`docs/audits/production_observability_design_review.md`。
+
+下一步是新增Production Observability ADR、建立Milestone 27 implementation plan與planning promotion；不是重新進行同一份scope discovery，也不是直接修改production source。
 
 ```txt
-candidate review
-→ design
+approved candidate
+→ ADR
+→ implementation plan
 → planning review
 → active milestone promotion
 ```

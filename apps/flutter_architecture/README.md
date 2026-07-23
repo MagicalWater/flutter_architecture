@@ -60,7 +60,7 @@ App-owned adapters 包含：
 - SQLite Auth User 與 Catalog Cache adapters。
 - `local_auth` user-presence verifier。
 - Theme、locale、local unlock preference stores。
-- Debug／production error reporter composition。
+- ErrorReporter composition seam、Debug adapter與Flutter／platform uncaught boundaries；production remote adapter仍待Milestone 27。
 
 Package 只定義 interface、policy 或純 Dart orchestration；plugin ownership 留在 App。
 

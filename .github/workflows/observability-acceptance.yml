@@ -148,6 +148,12 @@ jobs:
             ${{ runner.temp }}/android-staging-acceptance/
           if-no-files-found: error
           retention-days: 1
+      - name: Clean Android observability secrets
+        if: always()
+        shell: bash
+        run: |
+          bash tools/ci/cleanup_ci_secrets.sh "$GITHUB_WORKSPACE"
+          bash tools/ci/cleanup_ci_secrets.sh "$RUNNER_TEMP"
 
   ios-symbols:
     name: iOS dSYMs
@@ -236,3 +242,9 @@ jobs:
             ${{ runner.temp }}/ios-staging-acceptance/artifact-metadata.txt
           if-no-files-found: error
           retention-days: 1
+      - name: Clean iOS observability secrets
+        if: always()
+        shell: bash
+        run: |
+          bash tools/ci/cleanup_ci_secrets.sh "$GITHUB_WORKSPACE"
+          bash tools/ci/cleanup_ci_secrets.sh "$RUNNER_TEMP"

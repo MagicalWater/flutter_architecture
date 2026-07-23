@@ -66,3 +66,23 @@ Open P1: 0
 ### Whole-workflow review
 
 逐份檢查PR、main push、manual dispatch、unknown mode與manual-local後，execution jobs均fail closed；沒有自動fallback到GitHub-hosted。Dynamic runner expression只在已允許的self-hosted event成立時回傳trusted labels，否則維持原Ubuntu／macOS runner。
+
+## Task 4 — Persistent Workspace and Secret Cleanup
+
+```txt
+Disposition: ACCEPTED
+Open P0: 0
+Open P1: 0
+```
+
+### Focused security review
+
+- Cleanup只接受明確job root，拒絕空值、filesystem root與home root。
+- 白名單只涵蓋materialized Firebase service account與provider config檔名。
+- Script只在傳入root內搜尋與刪除，不輸出secret內容。
+- Cleanup可重複執行；不存在檔案時仍成功。
+- Android與iOS observability jobs均以`if: always()`清理workspace與`RUNNER_TEMP`，涵蓋build／upload失敗。
+
+### Whole-task review
+
+Temporary provider files不再依賴ephemeral GitHub-hosted runner自動消失。Self-hosted持久workspace的主要secret殘留風險已有repository-owned、可測試且fail-closed的cleanup；清理scope不會觸及`water`帳號home或其他專案。Focused tests、shell syntax與workflow lint通過，未發現新的P0／P1。

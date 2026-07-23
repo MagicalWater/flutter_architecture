@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.8.0
 ---
 
 # Audits and Review Evidence
@@ -43,14 +43,44 @@ Final / Holistic Review
 
 開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
 
-## Current indexes
+## Evidence routes
 
-- `docs/audits/milestone_23/`：ADR Extraction Planning Review、batch／cutover evidence與23-9 final review。
-- `docs/audits/milestone_22_planning_review.md`：Documentation Governance Planning Review。
-- `docs/audits/milestone_22/`：Milestone 22 各小階段 review evidence。
-- `docs/audits/milestone_18/`：Template Baseline holistic audit phases。
-- `docs/audits/milestone_19/`：Secure credential storage phase reviews。
-- `docs/audits/milestone_20/`：OTP Step-Up Authentication phase reviews。
-- `docs/audits/milestone_21/`：Biometric-gated Local Session Unlock phase reviews。
+### Recent platform and delivery milestones
 
-其他位於 `docs/audits/` root 的 planning 或 holistic review 仍保留原路徑。Milestone 22 不在沒有 migration manifest 的情況下批量搬移它們。
+- [`milestone_24/`](milestone_24/)：Repository CI/CD Foundation 的 planning、phase reviews、final review 與 post-release remote validation。
+- [`milestone_25/`](milestone_25/)：iOS Platform Support Foundation 的 planning、native／runtime／security reviews、final review 與 remote validation。
+- [`milestone_26/`](milestone_26/)：Native Flavor & Product Identity Foundation 的 planning、environment／platform／CI reviews、final review 與 post-release remote validation。
+
+### Change-aware CI initiative
+
+- [`change_aware_ci_spec_review.md`](change_aware_ci_spec_review.md)：Design spec scope 與 acceptance review。
+- [`change_aware_ci_plan_review.md`](change_aware_ci_plan_review.md)：Implementation plan review。
+- [`change_aware_ci_implementation_review.md`](change_aware_ci_implementation_review.md)：Whole implementation review routing。
+- [`change_aware_ci_remote_validation.md`](change_aware_ci_remote_validation.md)：GitHub-hosted documentation-only 與 full-matrix evidence。
+- [`change_aware_ci_holistic_final_review.md`](change_aware_ci_holistic_final_review.md)：Initiative holistic final disposition。
+- `change_aware_ci_task_*_review.md`：各 implementation Task 的 focused review evidence。
+
+### Documentation usability audit and hardening
+
+- [`documentation_usability_coverage_audit.md`](documentation_usability_coverage_audit.md)：文件可用性與覆蓋的正式整體 audit。
+- [`documentation_usability_coverage_audit_review.md`](documentation_usability_coverage_audit_review.md)：Audit evidence、severity 與 scope 的 formal review。
+- [`documentation_usability_hardening_design_review.md`](documentation_usability_hardening_design_review.md)：小型 hardening design review。
+- [`documentation_usability_hardening_plan_review.md`](documentation_usability_hardening_plan_review.md)：Implementation plan review。
+- [`documentation_usability_hardening_task_1_review.md`](documentation_usability_hardening_task_1_review.md)：Feature Guide responsibility review。
+- [`documentation_usability_hardening_task_2_review.md`](documentation_usability_hardening_task_2_review.md)：App database 與 integration routes review。
+- [`documentation_usability_hardening_task_3_review.md`](documentation_usability_hardening_task_3_review.md)：API endpoint 與 external client route review。
+- [`documentation_usability_hardening_task_4_review.md`](documentation_usability_hardening_task_4_review.md)：本 Audit navigation Task review。
+
+Task 5 與 holistic final review 尚未建立時，不在此 index 預先宣稱其存在；initiative closure 時由 final Task 補齊 routing。
+
+### Earlier milestone groups
+
+- [`milestone_23/`](milestone_23/)：ADR Extraction Planning Review、batch／cutover evidence與 final review。
+- [`milestone_22_planning_review.md`](milestone_22_planning_review.md)：Documentation Governance Planning Review。
+- [`milestone_22/`](milestone_22/)：Milestone 22 各階段 documentation governance review evidence。
+- [`milestone_18/`](milestone_18/)：Template Baseline holistic audit phases。
+- [`milestone_19/`](milestone_19/)：Secure credential storage phase reviews。
+- [`milestone_20/`](milestone_20/)：OTP Step-Up Authentication phase reviews。
+- [`milestone_21/`](milestone_21/)：Biometric-gated Local Session Unlock phase reviews。
+
+其他位於 `docs/audits/` root 的 planning、runtime 或 holistic review 仍保留原 stable path。Index 只負責 routing，不複製 findings、test counts、commit hashes或 final gate內容。

@@ -76,4 +76,35 @@ Listening for Jobs
 
 ## Runtime routing acceptance
 
-尚待Task 6填入manual-local、manual self-hosted、main push、PR denial與offline queue證據。
+### Manual-local zero-runner
+
+Repository variable設為`manual-local`後，最新main push的CI、Android、iOS與Observability workflow全部在job建立前完成`skipped`。Runner維持`online`與`busy=false`，沒有execution job啟動。
+
+### Manual self-hosted smoke
+
+第一次manual run成功將Classify Changes與Tests派送到指定Mac，但揭露self-hosted仍沿用遠端Flutter／Pub cache上傳。Run在Tests成功後主動取消，並將此結果視為成本finding而非通過證據。
+
+修正cache policy後重新manual dispatch：
+
+```txt
+Run ID: 30029472978
+Event: workflow_dispatch
+Execution mode: self-hosted
+Runner: water-mac-flutter-architecture
+Conclusion: success
+```
+
+Jobs：
+
+```txt
+Classify Changes: success
+Quality: success
+Tests: success
+Generated Consistency: success
+```
+
+所有self-hosted jobs均略過GitHub Pub cache transport，沒有再次上傳遠端cache。
+
+### Pending acceptance
+
+尚待main push、PR denial與offline queue證據。

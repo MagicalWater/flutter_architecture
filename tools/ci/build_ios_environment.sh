@@ -35,9 +35,14 @@ if [[ -n "$dsym_bundle" ]]; then
   mkdir -p "$dsym_set_dir"
   cp -R "$dsym_bundle" "$dsym_set_dir/$expected_dsym_name"
 fi
+app_framework_dsym="$(find "$products" -maxdepth 4 -type d -name 'App.framework.dSYM' -print -quit)"
+if [[ -n "$app_framework_dsym" ]]; then
+  mkdir -p "$dsym_set_dir"
+  cp -R "$app_framework_dsym" "$dsym_set_dir/App.framework.dSYM"
+fi
 if [[ "${GENERATE_DSYM_FOR_ACCEPTANCE:-false}" == "true" ]]; then
   app_framework_binary="$app_bundle/Frameworks/App.framework/App"
-  if [[ -f "$app_framework_binary" ]]; then
+  if [[ -f "$app_framework_binary" && ! -d "$dsym_set_dir/App.framework.dSYM" ]]; then
     mkdir -p "$dsym_set_dir"
     xcrun dsymutil "$app_framework_binary" -o "$dsym_set_dir/App.framework.dSYM"
   fi

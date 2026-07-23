@@ -7,6 +7,11 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      run_hosted:
+        description: Run GitHub-hosted observability verification even when CI_EXECUTION_MODE is local
+        required: false
+        default: false
+        type: boolean
       remote_acceptance:
         description: Run secret-backed staging acceptance and symbol uploads
         required: false
@@ -23,6 +28,7 @@ concurrency:
 jobs:
   contract:
     name: PR-safe Contract
+    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -37,6 +43,8 @@ jobs:
   android-symbols:
     name: Android Symbols
     if: >-
+      (vars.CI_EXECUTION_MODE == 'github' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true)) &&
       github.event_name != 'pull_request' &&
       (github.event_name == 'push' || inputs.remote_acceptance == true)
     environment: staging-observability
@@ -132,11 +140,13 @@ jobs:
             ${{ runner.temp }}/observability/
             ${{ runner.temp }}/android-staging-acceptance/
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 1
 
   ios-symbols:
     name: iOS dSYMs
     if: >-
+      (vars.CI_EXECUTION_MODE == 'github' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true)) &&
       github.event_name != 'pull_request' &&
       (github.event_name == 'push' || inputs.remote_acceptance == true)
     environment: staging-observability
@@ -214,6 +224,8 @@ jobs:
           name: observability-ios-${{ github.sha }}
           path: |
             ${{ runner.temp }}/observability/
-            ${{ runner.temp }}/ios-staging-acceptance/
+            ${{ runner.temp }}/ios-staging-acceptance/*.app
+            ${{ runner.temp }}/ios-staging-acceptance/dSYMs/
+            ${{ runner.temp }}/ios-staging-acceptance/artifact-metadata.txt
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 1

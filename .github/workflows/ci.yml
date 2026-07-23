@@ -8,6 +8,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      run_hosted:
+        description: Run GitHub-hosted CI even when CI_EXECUTION_MODE is local
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -19,6 +25,7 @@ concurrency:
 jobs:
   classify-changes:
     name: Classify Changes
+    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
     runs-on: ubuntu-24.04
     outputs:
       docs_only: ${{ steps.classify.outputs.docs_only }}
@@ -57,6 +64,7 @@ jobs:
   quality:
     name: Quality
     needs: classify-changes
+    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -113,6 +121,7 @@ jobs:
           tools.ci.test_change_classifier
           tools.ci.test_ios_workflow_contract
           tools.ci.test_local_build_commands
+          tools.ci.test_ci_execution_mode_contract
           tools.ci.test_shell_portability_contract
 
       - name: Analyze workspace
@@ -125,6 +134,7 @@ jobs:
   generated-consistency:
     name: Generated Consistency
     needs: classify-changes
+    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -183,6 +193,7 @@ jobs:
   tests:
     name: Tests
     needs: classify-changes
+    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository

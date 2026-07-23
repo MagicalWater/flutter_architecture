@@ -8,6 +8,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      run_hosted:
+        description: Run GitHub-hosted iOS verification even when CI_EXECUTION_MODE is local
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -19,6 +25,7 @@ concurrency:
 jobs:
   classify-changes:
     name: Classify Changes
+    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
     runs-on: ubuntu-24.04
     outputs:
       docs_only: ${{ steps.classify.outputs.docs_only }}
@@ -58,6 +65,7 @@ jobs:
   simulator-build:
     name: Simulator Build
     needs: classify-changes
+    if: ${{ vars.CI_EXECUTION_MODE == 'github' || (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true) }}
     runs-on: ${{ needs.classify-changes.outputs.ios_build == 'true' && 'macos-15' || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
@@ -157,7 +165,10 @@ jobs:
   production-release-build:
     name: Production Release Build
     needs: classify-changes
-    if: needs.classify-changes.outputs.ios_build == 'true'
+    if: >-
+      (vars.CI_EXECUTION_MODE == 'github' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_hosted == true)) &&
+      needs.classify-changes.outputs.ios_build == 'true'
     runs-on: macos-15
     steps:
       - name: Checkout repository

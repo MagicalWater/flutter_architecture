@@ -54,12 +54,12 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         tests = self.quality.split("  tests:", 1)[1]
 
         self.assertIn("needs: classify-changes", generated)
-        self.assertNotRegex(generated, r"(?m)^    if:")
+        self.assertIn("CI_EXECUTION_MODE", generated)
         self.assertIn("Skip generated consistency", generated)
         self.assertIn("needs.classify-changes.outputs.full_ci != 'true'", generated)
 
         self.assertIn("needs: classify-changes", tests)
-        self.assertNotRegex(tests, r"(?m)^    if:")
+        self.assertIn("CI_EXECUTION_MODE", tests)
         self.assertIn("Skip Flutter tests", tests)
         self.assertIn("needs.classify-changes.outputs.full_ci != 'true'", tests)
 
@@ -113,9 +113,11 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
             "  android-summary:", 1
         )[0]
         self.assertIn("needs: classify-changes", development)
-        self.assertIn("if: needs.classify-changes.outputs.android_build == 'true'", development)
+        self.assertIn("needs.classify-changes.outputs.android_build == 'true'", development)
+        self.assertIn("CI_EXECUTION_MODE", development)
         self.assertIn("needs: classify-changes", release)
-        self.assertIn("if: needs.classify-changes.outputs.android_build == 'true'", release)
+        self.assertIn("needs.classify-changes.outputs.android_build == 'true'", release)
+        self.assertIn("CI_EXECUTION_MODE", release)
 
     def test_android_classifier_failure_falls_back_to_full_matrix(self) -> None:
         classify = self.android.split("  classify-changes:", 1)[1].split(
@@ -128,7 +130,8 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
 
     def test_android_summary_propagates_requested_build_failures(self) -> None:
         summary = self.android.split("  android-summary:", 1)[1]
-        self.assertIn("if: always()", summary)
+        self.assertIn("always()", summary)
+        self.assertIn("CI_EXECUTION_MODE", summary)
         self.assertIn("needs: [classify-changes, android-development-debug-apk, android-release-apk]", summary)
         self.assertIn("needs.android-development-debug-apk.result", summary)
         self.assertIn("needs.android-release-apk.result", summary)
@@ -155,7 +158,7 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         production = self.ios.split("  production-release-build:", 1)[1]
 
         self.assertIn("needs: classify-changes", simulator)
-        self.assertNotRegex(simulator, r"(?m)^    if:")
+        self.assertIn("CI_EXECUTION_MODE", simulator)
         self.assertIn(
             "needs.classify-changes.outputs.ios_build == 'true'",
             simulator,
@@ -169,10 +172,8 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         )
 
         self.assertIn("needs: classify-changes", production)
-        self.assertIn(
-            "if: needs.classify-changes.outputs.ios_build == 'true'",
-            production,
-        )
+        self.assertIn("needs.classify-changes.outputs.ios_build == 'true'", production)
+        self.assertIn("CI_EXECUTION_MODE", production)
 
     def test_ios_classifier_failure_falls_back_to_full_matrix(self) -> None:
         classify = self.ios.split("  classify-changes:", 1)[1].split(

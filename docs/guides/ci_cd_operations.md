@@ -16,6 +16,33 @@ Durable architecture contract 由 `docs/adr/adr-023-repository-ci-quality-gates-
 
 ## Workflow Inventory
 
+### Execution Mode Switch
+
+Repository以GitHub Actions variable `CI_EXECUTION_MODE`控制驗證執行端：
+
+```txt
+local   → push／Pull Request不啟動GitHub-hosted jobs，改由開發機執行
+github  → 恢復GitHub-hosted CI、Android、iOS與Observability jobs
+```
+
+額度不足或希望避免macOS runner成本時，使用：
+
+```bash
+gh variable set CI_EXECUTION_MODE --body local
+bash tools/ci/run_local_ci.sh quality
+bash tools/ci/run_local_ci.sh android
+bash tools/ci/run_local_ci.sh ios
+bash tools/ci/run_local_ci.sh observability
+```
+
+恢復GitHub-hosted自動驗證：
+
+```bash
+gh variable set CI_EXECUTION_MODE --body github
+```
+
+四份workflow的manual dispatch都有`run_hosted`布林輸入。即使repository variable維持`local`，仍可在需要遠端runner evidence時勾選`run_hosted=true`執行單次遠端驗證。這是執行端切換，不改變測試、build、symbol或secret contract。
+
 ### Repository CI
 
 ```txt
@@ -60,7 +87,7 @@ iOS / Production Release Build
 | 一般repository tooling | 是 | 依分類 | 依分類 | 未知path fail-safe完整矩陣 |
 | Classifier／workflow wiring | 是 | 是 | 是 | 防止錯誤分類自行略過平台驗證 |
 | `VERSION` | 是 | 是 | 是 | Release override |
-| `workflow_dispatch` | 是 | 是 | 是 | 明確要求完整驗證 |
+| `workflow_dispatch`＋`run_hosted=true` | 是 | 是 | 是 | 明確要求單次GitHub-hosted完整驗證 |
 
 `CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`是穩定required-check候選。Documentation-only時它們會成功完成no-op，而不是整個job skipped。Android兩個build jobs目前不是PR required checks，因此可在`android_build=false`時skipped；`Android / Summary`會驗證skip或build結果是否符合classifier決策。
 
@@ -121,7 +148,7 @@ iOS / Simulator Build
 
 ### Manual verification
 
-三份workflow都支援`workflow_dispatch`，且manual run強制完整CI、Android與iOS代表矩陣。Manual run只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit的結果。
+三份workflow都支援`workflow_dispatch`。當`CI_EXECUTION_MODE=local`時，manual run需明確設定`run_hosted=true`才會啟動GitHub-hosted完整CI、Android與iOS代表矩陣。Manual run只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit的結果。
 
 ## Observability Acceptance
 
@@ -129,7 +156,7 @@ iOS / Simulator Build
 
 Pull Request只執行`PR-safe Contract`，不讀取secrets、不materialize Firebase config，也不執行任何upload。Fork PR與Dependabot PR即使沒有secrets也必須成功完成static validation，並明確輸出`Upload skipped`。
 
-Main push或manual dispatch可使用GitHub Environment：
+當`CI_EXECUTION_MODE=github`時，main push可使用GitHub Environment；local模式則只有manual dispatch明確勾選`run_hosted=true`與`remote_acceptance=true`才啟動遠端acceptance：
 
 ```txt
 staging-observability
@@ -300,7 +327,7 @@ artifacts/ios/<environment>/
 artifact-metadata.txt
 ```
 
-GitHub artifact名稱包含full SHA，retention為14天。
+一般GitHub verification artifact名稱包含full SHA，retention依workflow為7或14天。Observability acceptance artifact只保存必要App、dSYM、metadata與evidence，不保存DerivedData，retention固定為1天。
 
 Metadata至少包含commit SHA、environment、platform、flavor或scheme、configuration／SDK、entrypoint、API mode、native identifier、artifact filename與以下分類：
 

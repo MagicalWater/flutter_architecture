@@ -20,7 +20,7 @@ class IosWorkflowContractTest(unittest.TestCase):
         )[0]
         self.assertIn("macos-15", simulator)
         self.assertIn("ubuntu-24.04", simulator)
-        self.assertNotRegex(simulator, r"(?m)^    if:")
+        self.assertIn("CI_EXECUTION_MODE", simulator)
         self.assertIn("Skip iOS Simulator build", simulator)
         self.assertIn("bash tools/ci/build_ios_development.sh", self.text)
         self.assertIn("name: Production Release Build", self.text)

@@ -8,12 +8,36 @@ last_reviewed_baseline: 1.8.0
 
 # Active Milestone
 
-目前沒有active milestone：
+目前active milestone：
 
 ```txt
-None
+Milestone 27 — Production Observability Foundation
 Baseline: 1.8.0
 ```
+
+## Active Scope
+
+在既有App-owned `ErrorReporter`、ADR-020 error architecture、native environment mapping與CI foundation之上，建立provider-neutral production observability contract，並以Firebase Crashlytics作為唯一reference adapter。
+
+包含release identity、fatal／unexpected／degraded routing、privacy／collection、provider failure isolation、Android mapping／Flutter symbols、iOS dSYM、CI secret boundary與remote acceptance。
+
+不包含Sentry第二adapter、Firebase Analytics、business event tracking、APM、production signing、Store distribution或Connectivity／Offline foundation。
+
+## Current Authority
+
+- Architecture Decision：`docs/adr/adr-026-production-observability-provider-release-symbol-contract.md`
+- Capability audit：`docs/audits/production_observability_capability_audit.md`
+- Design：`docs/superpowers/specs/2026-07-23-production-observability-foundation-design.md`
+- Implementation plan：`docs/superpowers/plans/2026-07-23-milestone-27-production-observability-foundation.md`
+- Planning review：`docs/audits/milestone_27/27-0_planning_review.md`
+
+## Current Task
+
+```txt
+Task 27-1 — Release Identity and Provider-neutral Contracts
+```
+
+Task 27-1只建立provider-neutral source與tests，不導入Firebase dependency。Firebase Crashlytics adapter延後至Task 27-3。
 
 ## Latest Completed Milestone
 
@@ -33,18 +57,4 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-Production Observability Foundation已完成capability audit、architecture design與formal review；目前仍未建立implementation plan或切換為active milestone。
-
-- Capability audit：`docs/audits/production_observability_capability_audit.md`。
-- Architecture design：`docs/superpowers/specs/2026-07-23-production-observability-foundation-design.md`。
-- Formal review：`docs/audits/production_observability_design_review.md`。
-
-下一步是新增Production Observability ADR、建立Milestone 27 implementation plan與planning promotion；不是重新進行同一份scope discovery，也不是直接修改production source。
-
-```txt
-approved candidate
-→ ADR
-→ implementation plan
-→ planning review
-→ active milestone promotion
-```
+依implementation plan執行Task 27-1，完成focused tests與Task review後才進入Task 27-2。

@@ -57,6 +57,7 @@ Milestone routing 只回答：
 | 24 | Completed / Archived | ADR-023、implementation plan、`docs/audits/milestone_24/24-6_final_review.md`、`docs/audits/milestone_24/24-7_post_release_remote_validation.md` |
 | 25 | Completed / Archived | ADR-024、implementation plan、`docs/audits/milestone_25/25-10_final_review.md`、`docs/audits/milestone_25/25-11_remote_validation.md` |
 | 26 | Completed / Archived | ADR-025、implementation plan、`docs/audits/milestone_26/26-8_final_review.md`、`docs/audits/milestone_26/26-6_remote_validation.md`、`docs/audits/milestone_26/26-9_post_release_remote_validation.md` |
+| 27 | Active | ADR-026、`docs/superpowers/plans/2026-07-23-milestone-27-production-observability-foundation.md`、`docs/audits/milestone_27/27-0_planning_review.md` |
 
 完整 disposition 與歷史保存位置記錄於 `docs/migrations/m22_roadmap_manifest.md`。
 

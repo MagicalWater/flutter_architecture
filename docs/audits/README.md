@@ -50,6 +50,7 @@ Final / Holistic Review
 - [`milestone_24/`](milestone_24/)：Repository CI/CD Foundation 的 planning、phase reviews、final review 與 post-release remote validation。
 - [`milestone_25/`](milestone_25/)：iOS Platform Support Foundation 的 planning、native／runtime／security reviews、final review 與 remote validation。
 - [`milestone_26/`](milestone_26/)：Native Flavor & Product Identity Foundation 的 planning、environment／platform／CI reviews、final review 與 post-release remote validation。
+- [`milestone_27/27-0_planning_review.md`](milestone_27/27-0_planning_review.md)：Production Observability Foundation 的scope、ADR、provider策略與activation gate。
 
 ### Change-aware CI initiative
 

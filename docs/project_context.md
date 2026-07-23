@@ -29,7 +29,7 @@ last_reviewed_baseline: 1.8.0
 ```txt
 Template Baseline: 1.8.0
 Phase 1 / MVP: Completed
-Current active milestone: None
+Current active milestone: Milestone 27 — Production Observability Foundation
 Latest completed initiative: Milestone 26 Native Flavor & Product Identity Foundation
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -340,7 +340,9 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-目前沒有active milestone。Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。下一個正式Milestone仍必須先由Roadmap candidates或backlog完成scope review與promotion。
+目前active milestone為Milestone 27 — Production Observability Foundation。此Milestone已完成capability audit、architecture design、ADR-026、implementation plan與planning review，下一步為Task 27-1 Release Identity and Provider-neutral Contracts；目前尚未加入Firebase或Sentry dependency，也沒有production remote adapter或provider-backed runtime evidence。
+
+Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。
 
 Production signing、physical-device acceptance、App Store distribution與GitHub repository settings仍未納入；Branch Protection目前只有文件化建議。
 

@@ -26,7 +26,7 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-None
+Milestone 27 — Production Observability Foundation
 Latest completed: Milestone 26 — Native Flavor & Product Identity Foundation
 Baseline: 1.8.0
 ```

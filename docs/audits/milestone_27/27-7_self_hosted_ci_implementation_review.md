@@ -86,3 +86,24 @@ Open P1: 0
 ### Whole-task review
 
 Temporary provider files不再依賴ephemeral GitHub-hosted runner自動消失。Self-hosted持久workspace的主要secret殘留風險已有repository-owned、可測試且fail-closed的cleanup；清理scope不會觸及`water`帳號home或其他專案。Focused tests、shell syntax與workflow lint通過，未發現新的P0／P1。
+
+## Task 5 — Mac Repository-scoped Runner Installation
+
+```txt
+Disposition: ACCEPTED
+Open P0: 0
+Open P1: 0
+```
+
+### Operational review
+
+- Runner以repository scope註冊，不會接受其他repository job。
+- 安裝與`_work`均位於`/Users/water/actions-runner/flutter-architecture`，沒有使用日常開發checkout。
+- macOS ARM64 package以GitHub官方SHA-256驗證後解壓。
+- Runner name與完整labels已透過GitHub API核對。
+- 官方LaunchAgent service完成stop／start循環後恢復`online`、`busy=false`。
+- Registration token沒有進入Git、文件或可重用設定。
+
+### Whole-task review
+
+Runner實際身份、workspace、service與GitHub API state均符合Spec。使用`water`帳號的隔離限制已明確保留，沒有誤稱為sandbox；未發現新的P0／P1。

@@ -80,7 +80,7 @@ jobs:
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
           channel: stable
-          cache: true
+          cache: false
       - name: Explain missing Android secret boundary
         if: env.REMOTE_ACCEPTANCE_READY != 'true'
         run: |
@@ -180,7 +180,7 @@ jobs:
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
           channel: stable
-          cache: true
+          cache: false
       - name: Explain missing iOS secret boundary
         if: env.REMOTE_ACCEPTANCE_READY != 'true'
         run: |

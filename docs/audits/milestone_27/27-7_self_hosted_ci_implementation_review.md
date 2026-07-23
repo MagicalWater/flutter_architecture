@@ -62,10 +62,11 @@ Open P1: 0
 | Self-hosted若只使用泛用label可能誤接其他runner | P1 | 所有dynamic runner expressions固定完整trusted label集合 |
 | Observability原本允許main push執行remote jobs | P1 | 已收斂為manual explicit acceptance only |
 | `actionlint`會因既有SC2129 style findings回傳非零 | P2 | YAML／expression驗證使用`actionlint -shellcheck=`通過；既有ShellCheck style findings不屬本Task功能缺陷，Task 8另列整體狀態 |
+| Self-hosted首次runtime仍嘗試上傳數GB Flutter／Pub cache | P1 | Flutter action cache全面關閉；explicit Pub cache只允許`runner.environment == 'github-hosted'`，Android Gradle cache input移除 |
 
 ### Whole-workflow review
 
-逐份檢查PR、main push、manual dispatch、unknown mode與manual-local後，execution jobs均fail closed；沒有自動fallback到GitHub-hosted。Dynamic runner expression只在已允許的self-hosted event成立時回傳trusted labels，否則維持原Ubuntu／macOS runner。
+逐份檢查PR、main push、manual dispatch、unknown mode與manual-local後，execution jobs均fail closed；沒有自動fallback到GitHub-hosted。Dynamic runner expression只在已允許的self-hosted event成立時回傳trusted labels，否則維持原Ubuntu／macOS runner。首次runtime揭露的cache storage風險已在重新驗收前修正。
 
 ## Task 4 — Persistent Workspace and Secret Cleanup
 

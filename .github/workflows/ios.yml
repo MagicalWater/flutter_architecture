@@ -96,10 +96,10 @@ jobs:
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
           channel: stable
-          cache: true
+          cache: false
 
       - name: Restore Pub cache
-        if: needs.classify-changes.outputs.ios_build == 'true'
+        if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'github-hosted'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.pub-cache
@@ -195,9 +195,10 @@ jobs:
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
           channel: stable
-          cache: true
+          cache: false
 
       - name: Restore Pub cache
+        if: runner.environment == 'github-hosted'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.pub-cache

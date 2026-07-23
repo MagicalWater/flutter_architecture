@@ -52,6 +52,7 @@ Final / Holistic Review
 - [`milestone_26/`](milestone_26/)：Native Flavor & Product Identity Foundation 的 planning、environment／platform／CI reviews、final review 與 post-release remote validation。
 - [`milestone_27/`](milestone_27/)：Production Observability Foundation 的planning artifacts review、後續phase reviews、native／CI evidence與final review routing。
 - [`milestone_27/27-0_planning_review.md`](milestone_27/27-0_planning_review.md)：Production Observability Foundation 的scope、ADR、provider策略與activation gate。
+- [`milestone_27/27-1_release_identity_contract_review.md`](milestone_27/27-1_release_identity_contract_review.md)：Release identity、collection policy與provider-neutral lifecycle contract review。
 
 ### Change-aware CI initiative
 

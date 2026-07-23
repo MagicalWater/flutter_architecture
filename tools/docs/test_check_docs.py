@@ -145,10 +145,10 @@ class DocumentationCheckerTest(unittest.TestCase):
 
             self.assertIn("incomplete-adr-coverage", _codes(root))
 
-    def test_requires_adr_025_after_cutover(self) -> None:
+    def test_requires_adr_026_after_cutover(self) -> None:
         with _fixture() as root:
             index = _adr_index("ADR-001", "adr-001-example.md", "extracted")
-            for number in range(2, 25):
+            for number in range(2, 26):
                 identifier = f"ADR-{number:03d}"
                 file_name = f"adr-{number:03d}-example.md"
                 index += _adr_index_row(identifier, file_name, "extracted")
@@ -167,7 +167,7 @@ class DocumentationCheckerTest(unittest.TestCase):
 
             self.assertTrue(
                 any(
-                    issue.code == "incomplete-adr-coverage" and "ADR-025" in issue.message
+                    issue.code == "incomplete-adr-coverage" and "ADR-026" in issue.message
                     for issue in issues
                 )
             )

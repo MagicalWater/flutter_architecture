@@ -63,6 +63,14 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         artifact_names = re.findall(r"name:\s+([^\n]*\$\{\{ github\.sha \}\}[^\n]*)", combined)
         self.assertGreaterEqual(len(artifact_names), 4)
 
+    def test_ios_uploads_success_toolchain_evidence(self) -> None:
+        self.assertIn("Upload iOS development toolchain evidence", self.ios)
+        self.assertIn("Upload iOS production toolchain evidence", self.ios)
+        self.assertIn("ios-development-toolchain-${{ github.sha }}", self.ios)
+        self.assertIn("ios-production-toolchain-${{ github.sha }}", self.ios)
+        self.assertIn("ios-diagnostics/toolchain.txt", self.ios)
+        self.assertIn("ios-production-diagnostics/toolchain.txt", self.ios)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -60,6 +60,14 @@ jobs:
             pod --version
           } > "$RUNNER_TEMP/ios-diagnostics/toolchain.txt" 2>&1
 
+      - name: Upload iOS development toolchain evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ios-development-toolchain-${{ github.sha }}
+          path: ${{ runner.temp }}/ios-diagnostics/toolchain.txt
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Check iOS workflow contract
         run: >-
           python3 -m unittest
@@ -135,6 +143,14 @@ jobs:
             flutter doctor -v
             pod --version
           } > "$RUNNER_TEMP/ios-production-diagnostics/toolchain.txt" 2>&1
+
+      - name: Upload iOS production toolchain evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ios-production-toolchain-${{ github.sha }}
+          path: ${{ runner.temp }}/ios-production-diagnostics/toolchain.txt
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Build unsigned iOS Production Release app
         shell: bash

@@ -65,11 +65,13 @@ final class FirebaseObservabilityInitializer
   const FirebaseObservabilityInitializer({
     required FirebaseCrashlyticsGateway gateway,
     required ObservabilityCollectionPolicy collectionPolicy,
+    this.initialKeys = const <String, String>{},
   }) : _gateway = gateway,
        _collectionPolicy = collectionPolicy;
 
   final FirebaseCrashlyticsGateway _gateway;
   final ObservabilityCollectionPolicy _collectionPolicy;
+  final Map<String, String> initialKeys;
 
   @override
   Future<void> initialize() async {
@@ -77,6 +79,9 @@ final class FirebaseObservabilityInitializer
     await _gateway.setCollectionEnabled(
       _collectionPolicy.remoteCollectionEnabled,
     );
+    if (initialKeys.isNotEmpty) {
+      await _gateway.setCustomKeys(initialKeys);
+    }
   }
 }
 
@@ -121,17 +126,20 @@ final class FirebaseObservabilityComposition {
     required this.gateway,
     required this.collectionPolicy,
     required this.localFallback,
+    this.initialKeys = const <String, String>{},
   });
 
   final FirebaseCrashlyticsGateway gateway;
   final ObservabilityCollectionPolicy collectionPolicy;
   final ErrorReporter localFallback;
+  final Map<String, String> initialKeys;
 
   Future<FirebaseObservabilityCompositionResult> compose() async {
     final initialization = await ObservabilityProviderLifecycle(
       FirebaseObservabilityInitializer(
         gateway: gateway,
         collectionPolicy: collectionPolicy,
+        initialKeys: initialKeys,
       ),
     ).initialize();
 

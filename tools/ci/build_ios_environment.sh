@@ -10,7 +10,9 @@ python3 "$repo_root/tools/ci/verify_ios_firebase_config.py" "$environment"
 mkdir -p "$artifact_dir"; rm -rf "$artifact_dir"/*.app "$artifact_dir/artifact-metadata.txt" "$artifact_dir/DerivedData"
 (cd "$app_dir" && flutter pub get); (cd "$ios_dir" && pod install)
 encode_define() { printf '%s' "$1" | base64 | tr -d '\n'; }
-dart_defines="$(encode_define "NATIVE_ENVIRONMENT=$environment"),$(encode_define "API_MODE=$api_mode")"
+dart_defines="$(encode_define "NATIVE_ENVIRONMENT=$environment"),$(encode_define "API_MODE=$api_mode"),$(encode_define "APP_COMMIT_SHA=$commit_sha")"
+[[ "${OBSERVABILITY_REMOTE_COLLECTION_ENABLED:-false}" == "true" ]] && dart_defines="$dart_defines,$(encode_define "OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")"
+[[ "${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}" == "true" ]] && dart_defines="$dart_defines,$(encode_define "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")"
 [[ -z "$api_base_url" ]] || dart_defines="$dart_defines,$(encode_define "API_BASE_URL=$api_base_url")"
 xcodebuild -workspace "$ios_dir/Runner.xcworkspace" -scheme "$scheme" -configuration "$configuration" -sdk "$sdk" -derivedDataPath "$artifact_dir/DerivedData" FLUTTER_TARGET="$entrypoint" DART_DEFINES="$dart_defines" CODE_SIGNING_ALLOWED=NO build
 products="$artifact_dir/DerivedData/Build/Products"; app_bundle="$(find "$products" -maxdepth 2 -type d -name '*.app' -print -quit)"

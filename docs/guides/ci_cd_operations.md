@@ -123,6 +123,39 @@ iOS / Simulator Build
 
 三份workflow都支援`workflow_dispatch`，且manual run強制完整CI、Android與iOS代表矩陣。Manual run只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit的結果。
 
+## Observability Acceptance
+
+`.github/workflows/observability-acceptance.yml`提供獨立的Crashlytics acceptance route。
+
+Pull Request只執行`PR-safe Contract`，不讀取secrets、不materialize Firebase config，也不執行任何upload。Fork PR與Dependabot PR即使沒有secrets也必須成功完成static validation，並明確輸出`Upload skipped`。
+
+Main push或manual dispatch可使用GitHub Environment：
+
+```txt
+staging-observability
+```
+
+Environment需提供：
+
+```txt
+FIREBASE_SERVICE_ACCOUNT_JSON
+FIREBASE_ANDROID_APP_ID
+FIREBASE_ANDROID_PRODUCTION_CONFIG_B64
+FIREBASE_ANDROID_STAGING_CONFIG_B64
+FIREBASE_IOS_PRODUCTION_CONFIG_B64
+FIREBASE_IOS_STAGING_CONFIG_B64
+```
+
+`*_CONFIG_B64`是原始provider config的base64內容。Android production／staging config分別對應`com.example.flutterarchitecture`與`com.example.flutterarchitecture.staging`；iOS亦須對應相同bundle identity。不得把原始JSON／plist提交到Git。
+
+Secret-ready run會：
+
+1. 建立production Android Flutter symbols與iOS dSYM並執行explicit upload。
+2. 建立Android與iOS staging acceptance artifacts；只有`OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true`與`OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true`同時存在時，App才會送出一次controlled handled non-fatal。
+3. 保存commit SHA、release、environment、upload與remote event evidence。
+
+Workflow不會自動把「symbol upload command成功」解讀成「remote event已symbolicated」。在Firebase Console核對Android與iOS stack前，`remote_event_status`與`symbolication_status`必須維持`not-executed`或pending，不得改成verified。
+
 ## Cache Degradation
 
 Flutter SDK、Pub與Gradle cache只用來降低時間，不是正確性前提。

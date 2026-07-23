@@ -11,6 +11,9 @@ if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is
 python3 "$repo_root/tools/ci/verify_android_firebase_config.py" "$environment"
 mkdir -p "$artifact_dir"; rm -rf "$flutter_symbols_dir"; rm -f "$artifact_dir"/*.apk "$artifact_dir/artifact-metadata.txt" "$artifact_dir/mapping.txt"
 args=(apk "--$build_mode" --flavor "$environment" -t "$entrypoint" "--dart-define=API_MODE=$api_mode")
+args+=("--dart-define=APP_COMMIT_SHA=$commit_sha")
+[[ "${OBSERVABILITY_REMOTE_COLLECTION_ENABLED:-false}" == "true" ]] && args+=("--dart-define=OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")
+[[ "${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}" == "true" ]] && args+=("--dart-define=OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")
 [[ -z "$api_base_url" ]] || args+=("--dart-define=API_BASE_URL=$api_base_url")
 if [[ "$environment" == "production" && "$build_mode" == "release" ]]; then
   mkdir -p "$flutter_symbols_dir"

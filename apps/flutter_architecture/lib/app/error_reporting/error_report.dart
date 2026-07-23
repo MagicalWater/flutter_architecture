@@ -13,6 +13,7 @@ enum ErrorReportSource {
 
 enum ErrorReportOperation {
   bootstrapInitialize,
+  observabilityAcceptance,
   flutterFrameworkError,
   platformUncaughtAsync,
   blocUnhandledError,

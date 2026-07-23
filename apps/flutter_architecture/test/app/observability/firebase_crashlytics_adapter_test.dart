@@ -15,11 +15,17 @@ void main() {
         collectionPolicy: const ObservabilityCollectionPolicy.enabled(
           AppEnvironment.staging,
         ),
+        initialKeys: const <String, String>{
+          'release': '1.8.0+42',
+          'environment': 'staging',
+          'commit_sha': 'abc1234',
+        },
       );
 
       await initializer.initialize();
 
       expect(gateway.calls, <String>['initialize', 'collection:true']);
+      expect(gateway.keys.single, containsPair('environment', 'staging'));
     },
   );
 

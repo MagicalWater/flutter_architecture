@@ -35,10 +35,10 @@ Baseline: 1.8.0
 ## Current Task
 
 ```txt
-Task 27-6 — CI Secrets and Remote Acceptance
+Task 27-6 — CI Secrets and Remote Acceptance（remote acceptance pending）
 ```
 
-Task 27-5已完成iOS environment config projection、Crashlytics Xcode build phase、iOS 15 deployment baseline、release dSYM fail-fast與manual upload fallback，並以unsigned production device build驗證dSYM UUID一致。真實Firebase config與remote upload尚未執行。
+Task 27-6 implementation已完成PR-safe secret boundary、Android／iOS explicit symbol upload jobs、App bootstrap provider composition與staging-only controlled non-fatal入口。Repository目前尚未配置Firebase secrets，因此remote upload、event ingestion與console symbolication均維持not executed。
 
 ## Latest Completed Milestone
 
@@ -58,4 +58,4 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-依implementation plan執行Task 27-6，建立CI secret boundary、provider-aware upload gates與remote acceptance evidence。
+配置`staging-observability` GitHub Environment secrets，push目前commit後manual dispatch `Observability Acceptance`，分別確認Android與iOS remote event的release、environment與symbolicated stack，再關閉Task 27-6。

@@ -38,6 +38,7 @@ docs/superpowers/plans/
 目前最新已核准、尚未進入implementation的架構設計：
 
 - [`specs/2026-07-23-production-observability-foundation-design.md`](specs/2026-07-23-production-observability-foundation-design.md)：Production Observability Foundation scope、provider策略、platform／CI boundary與Task拆分。
+- [`specs/2026-07-24-self-hosted-ci-execution-mode-design.md`](specs/2026-07-24-self-hosted-ci-execution-mode-design.md)：Task 27-7三種CI execution mode、trusted self-hosted runner與本機回退設計。
 
 ## Lifecycle
 

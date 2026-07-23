@@ -1,12 +1,20 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-27-self-hosted-ci-execution-mode-design
 last_reviewed_baseline: 1.8.0
 ---
 
 # Milestone 27 — Self-hosted CI Execution Mode Design
+
+本設計對應：
+
+```txt
+Task 27-7 — CI Execution Mode and Self-hosted Runner Foundation
+```
+
+Task 27-6保留Production Observability remote acceptance與symbolication closure責任；Task 27-7處理因Actions額度與執行端切換所新增的CI治理與self-hosted runner能力。Task 27-7完成後，Task 27-6仍須依最新本機runtime evidence完成自身closure，不得以runner建置取代observability驗收。
 
 ## 1. 背景
 
@@ -123,9 +131,11 @@ github-hosted
 未知值或空值不得默默啟動runner。Fail-safe行為為：
 
 ```txt
-自動事件：不啟動任何runner並顯示configuration error
+自動事件：所有執行job skipped，不啟動任何runner
 workflow_dispatch：只有明確manual override才允許執行
 ```
+
+由於「不啟動任何runner」與「執行一個job輸出configuration error」無法同時成立，未知模式在GitHub Checks中只能呈現為skipped／未派送；明確錯誤說明由repository文件、contract tests與人工檢查命令提供。不得為了顯示configuration error而偷偷啟動GitHub-hosted runner並消耗額度。
 
 Manual dispatch提供一次性override：
 
@@ -184,11 +194,21 @@ Mac開機並登入water帳號
 
 Runner離線時，job應維持queued，並由操作指南說明切換至`manual-local`或`github-hosted`。
 
+GitHub對找不到符合label的self-hosted runner會保持排隊；若超過平台允許的排隊期限，job會失敗。操作指南必須明確記錄目前GitHub的24小時上限，不能宣稱job會無限等待。
+
 ## 7. Workflow分流
 
 ### 7.1 PR
 
 Self-hosted模式下，PR不得啟動本機runner。Workflow應建立可理解的skip／policy結果，避免使用者誤以為已完成驗證。
+
+在不使用GitHub-hosted runner的前提下，PR無法額外執行一個summary job。因此本階段接受PR checks顯示為skipped，但文件與Branch Protection必須明確說明：
+
+```txt
+skipped ≠ verified
+```
+
+不得把這些skipped checks解讀為本機CI已自動完成。
 
 Branch Protection若要求GitHub checks，必須重新評估；不能把永久skip的job誤設成必須成功的required check。
 
@@ -295,6 +315,15 @@ job queued
 
 每個job使用Actions runner的標準checkout workspace。Workflow開始前與結束後確認沒有沿用日常開發checkout或未追蹤secret檔案。
 
+Self-hosted runner使用持久workspace，必須補上以下清理契約：
+
+- `actions/checkout`維持clean checkout與精確SHA。
+- Materialized Firebase config、service account與臨時憑證只存在於job workspace或runner temp。
+- 無論成功或失敗，都執行`always()` cleanup。
+- Cleanup後檢查敏感檔案不存在。
+- 不把`_work`加入日常開發搜尋路徑或手動編輯範圍。
+- 發現workspace污染時，runner必須先停用並清理，不能繼續接單。
+
 ### 11.3 模式設定錯誤
 
 Contract tests必須檢查三個合法值、manual override與unknown-mode fail-safe。Workflow summary需清楚顯示本次選定的執行端。
@@ -302,6 +331,12 @@ Contract tests必須檢查三個合法值、manual override與unknown-mode fail-
 ### 11.4 Self-hosted與GitHub-hosted差異
 
 Self-hosted可能殘留Pub、Gradle、CocoaPods與Xcode cache。Cache只能改善速度，不得成為正確性前提。定期或manual clean verification必須能從fresh dependency resolution成功。
+
+### 11.5 單機併發與取消
+
+本階段只有一台Mac runner，預設同一時間只執行一個job。多個workflow或同一workflow的多個job會排隊，不以平行執行作為需求。
+
+Workflow concurrency必須避免較新的main push讓舊job在寫入共享artifact或上傳symbols中途被不安全取消。可以取消純quality／build驗證，但Observability upload與runtime acceptance不得被自動`cancel-in-progress`中斷；其取消策略需逐workflow明確定義。
 
 ## 12. 測試策略
 
@@ -349,7 +384,7 @@ iOS build
 - `docs/roadmap/active.md`：current Task與next action。
 - `docs/audits/milestone_27/27-6_ci_secrets_remote_acceptance_review.md`：補記symbols、local runtime與execution mode evidence。
 - 新增Task review或closure review，記錄上一輪流程缺口、修正範圍與驗證結果。
-- 若self-hosted runner成為長期CI責任邊界，評估是否更新ADR-023或另建Decision；不得由guide單獨承擔架構規則。
+- 更新ADR-023，納入三種execution mode、trusted event boundary、self-hosted runner責任與fail-safe原則。這是既有Repository CI Decision的擴充，不另建平行ADR；guide只保存操作方式，不單獨承擔架構規則。
 
 完成條件：
 

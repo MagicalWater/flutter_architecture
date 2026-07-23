@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.7.0
+last_reviewed_baseline: 1.8.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.7.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.7.0
+Template Baseline: 1.8.0
 Phase 1 / MVP: Completed
 Current active milestone: None
-Latest completed initiative: Milestone 25 iOS Platform Support Foundation
+Latest completed initiative: Milestone 26 Native Flavor & Product Identity Foundation
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -46,7 +46,7 @@ Milestone 24 已建立GitHub Actions repository quality gates、exact toolchain 
 
 Milestone 25已建立tracked iOS runner、iOS 13 native contract、CocoaPods resolution、Face ID／Keychain設定、Simulator runtime smoke、macOS golden authority與GitHub-hosted unsigned Simulator build gate，並以Template Baseline 1.7.0封存。Physical-device biometric acceptance、production signing、IPA與App Store distribution仍為deferred scope。
 
-Milestone 26目前已建立development／staging／production的cross-platform mapping manifest、Android product flavors、iOS shared schemes與九組build configurations、native／Dart mismatch fail-fast、environment-aware local artifact commands，以及GitHub-hosted development／production代表性build matrix。Repository artifacts仍只屬verification evidence，不包含production signing或Store distribution。
+Milestone 26已建立development／staging／production的cross-platform mapping manifest、Android product flavors、iOS shared schemes與九組build configurations、native／Dart mismatch fail-fast、environment-aware local artifact commands、GitHub-hosted development／production代表性build matrix與manifest-first adoption guide，並以Template Baseline 1.8.0封存。Repository artifacts仍只屬verification evidence，不包含production signing或Store distribution。
 
 ## Project Purpose
 
@@ -332,13 +332,13 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於 Baseline 1.7.0。
+- Device Binding 與 Passkey 不屬於 Baseline 1.8.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Active Work
 
-目前active milestone為Milestone 26 — Native Flavor & Product Identity Foundation。Environment mapping、Android／iOS native projection、bootstrap guard、local build commands與CI remote validation已具備；目前進行adoption／operations documentation，尚未完成final holistic review、release與封存。
+目前沒有active milestone。Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；下一個正式方向必須先由Roadmap candidates或backlog完成scope review與promotion。
 
 Production signing、physical-device acceptance、App Store distribution與GitHub repository settings仍未納入；Branch Protection目前只有文件化建議。
 

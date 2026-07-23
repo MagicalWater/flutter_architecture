@@ -22,6 +22,40 @@
 
 ---
 
+## [1.8.0] - 2026-07-23
+
+### Added
+
+- 完成 Milestone 26 Native Flavor & Product Identity Foundation，建立 `development`／`staging`／`production` 的 App-owned cross-platform mapping manifest。
+- Android 新增 `environment` product flavor dimension、三組 application ID／display name／Dart target projection，以及錯 target與multi-environment invocation fail-fast。
+- iOS 新增 Development／Staging／Production shared schemes、九組 build configurations、environment xcconfig、bundle identity／display name projection與 CocoaPods custom configuration mapping。
+- 新增 `NATIVE_ENVIRONMENT` bootstrap mismatch guard，在 DI graph 與 `runApp` 前驗證 native environment與Dart entrypoint一致。
+- 新增 environment-aware Android／iOS local verification commands、artifact metadata與GitHub-hosted development／production representative build matrix。
+- 新增產品採用指南，定義 manifest-first identifier／display name／API domain替換順序，以及 verification、production signing與Store distribution責任邊界。
+
+### Changed
+
+- Template Baseline由1.7.0升級至1.8.0；native flavor、product identity與cross-platform environment verification屬新增模板能力，因此採MINOR版本。
+- `main.dart`只保留development compatibility用途；正式native build與CI必須使用environment-specific flavor／scheme與Dart entrypoint。
+- Staging與production real API均要求HTTPS；production額外拒絕localhost、loopback、`.invalid`與template placeholder hosts。
+- Repository Android production APK維持debug verification signing，iOS production `.app`維持unsigned verification build；兩者皆明確標示`distribution=not production-ready`。
+
+### Security
+
+- Repository與Git history未加入production keystore、certificate、Apple Team、provisioning profile、Store credential或workflow signing secret。
+- Native sentinel只用於證明mapping一致性，不成為第二個environment authority；錯配與缺失在正式native entrypoint維持fail-closed。
+- Production signing、AAB、IPA、TestFlight、Play Store與App Store publishing仍是deferred scope。
+
+### Verification
+
+- Environment verifier與47個repository Python contracts通過；documentation、workflow、shell portability與whitespace checks通過。
+- Workspace五個packages analyze與全部Flutter tests通過；App suite 378 tests passed，generated consistency無tracked drift。
+- Final gate重新建立Android development Debug、Android production Release、iOS Development Debug Simulator與iOS Production Release unsigned device四個代表artifact，identifier、entrypoint、API mode與distribution metadata均符合contract。
+- Deliberate Android target mismatch與multi-environment invocation均以預期Gradle錯誤失敗；16個App configuration focused tests確認sentinel、HTTPS、mock與placeholder host限制維持fail-closed。
+- GitHub Actions CI run `29970226490`、Android run `29970226525`與iOS run `29970226484`全部成功；iOS toolchain closure run `29971307542`於macOS 15.7.7、Xcode 16.4、Flutter 3.41.6與CocoaPods 1.17.0再次通過兩個iOS代表build。
+
+---
+
 ## [1.7.0] - 2026-07-22
 
 ### Added

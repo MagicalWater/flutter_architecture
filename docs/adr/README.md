@@ -3,7 +3,7 @@ document_type: architecture-decision-index
 status: active
 authoritative_for:
   - architecture-decision-routing
-last_reviewed_baseline: 1.7.0
+last_reviewed_baseline: 1.8.0
 ---
 
 # Architecture Decision Records

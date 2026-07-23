@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - repository-ci-cd-operations
-last_reviewed_baseline: 1.7.0
+last_reviewed_baseline: 1.8.0
 ---
 
 # CI/CD Operations Guide

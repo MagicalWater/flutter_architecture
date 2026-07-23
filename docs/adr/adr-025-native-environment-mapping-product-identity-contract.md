@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-025-native-environment-mapping-product-identity-contract
-last_reviewed_baseline: 1.7.0
+last_reviewed_baseline: 1.8.0
 id: ADR-025
 title: Native Environment Mapping and Product Identity Contract
 supersedes: []
@@ -74,7 +74,9 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA與Store pu
 - [Milestone 26 design](../superpowers/specs/2026-07-22-milestone-26-native-flavor-product-identity-foundation-design.md)
 - [Milestone 26 implementation plan](../superpowers/plans/2026-07-22-milestone-26-native-flavor-product-identity-foundation.md)
 - [Native Environment and Product Identity Adoption Guide](../guides/native_environment_adoption.md)
+- [Milestone 26 final review](../audits/milestone_26/26-8_final_review.md)
+- [Milestone 26 remote validation](../audits/milestone_26/26-6_remote_validation.md)
 
 ## Last Reviewed Baseline
 
-1.7.0。
+1.8.0。

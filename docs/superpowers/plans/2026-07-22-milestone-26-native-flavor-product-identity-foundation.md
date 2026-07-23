@@ -1,9 +1,9 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: completed
 authoritative_for:
   - milestone-26-native-flavor-product-identity-foundation-implementation-plan
-last_reviewed_baseline: 1.7.0
+last_reviewed_baseline: 1.8.0
 ---
 
 # Milestone 26 — Native Flavor & Product Identity Foundation Implementation Plan
@@ -128,14 +128,14 @@ last_reviewed_baseline: 1.7.0
 
 **Files:** Create final review and remote validation; update roadmap、milestone index、CHANGELOG、VERSION、ADR-025 and current snapshot according to evidence。
 
-- [ ] CloseM26-PR01–PR14 and all implementation findings; Open P0／P1=0。
-- [ ] Run docs_check、analyze、all Flutter tests、generated consistency、environment verifier and shell/workflow contracts。
-- [ ] Rebuild four representative artifacts and verifyidentity／entrypoint／sentinel metadata。
-- [ ] Confirm deliberate mismatch tests fail and production security restrictions remain fail-closed。
-- [ ] Confirm noTeam、keystore、certificate、provisioning orStore secret enteredGit history。
-- [ ] RecordGitHub-hostedCI／Android／iOS run evidence。
-- [ ] Decideversion from final evidence; native flavor/product identity capability is aMINOR candidate。
-- [ ] Archive and commit using approvedConventional Commit；do notpush without explicit instruction。
+- [x] CloseM26-PR01–PR14 and all implementation findings; Open P0／P1=0。
+- [x] Run docs_check、analyze、all Flutter tests、generated consistency、environment verifier and shell/workflow contracts。
+- [x] Rebuild four representative artifacts and verifyidentity／entrypoint／sentinel metadata。
+- [x] Confirm deliberate mismatch tests fail and production security restrictions remain fail-closed。
+- [x] Confirm noTeam、keystore、certificate、provisioning orStore secret enteredGit history。
+- [x] RecordGitHub-hostedCI／Android／iOS run evidence。
+- [x] Decideversion from final evidence; native flavor/product identity capability以MINOR 1.8.0發布。
+- [x] Archive and commit using approvedConventional Commit；do notpush without explicit instruction。
 
 ## Self-Review
 

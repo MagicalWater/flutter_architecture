@@ -3,37 +3,41 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.7.0
+last_reviewed_baseline: 1.8.0
 ---
 
 # Active Milestone
 
+目前沒有active milestone：
+
 ```txt
-Milestone 26 — Native Flavor & Product Identity Foundation
-Baseline: 1.7.0
-Current task: 26-0 Planning Review and Architecture Design completed
-Next task: 26-1 Environment Mapping Contract
+None
+Baseline: 1.8.0
 ```
 
-## Scope
+## Latest Completed Milestone
 
-將Dart `development`／`staging`／`production` environment延伸為Android product flavor、iOS shared scheme、native identity、display name、entrypoint綁定與repository verification contract。
+Milestone 26已建立development／staging／production的cross-platform native environment mapping、Android product flavors、iOS shared schemes與build configurations、bootstrap mismatch guard、environment-aware local／CI verification commands與產品採用指南，並以Template Baseline 1.8.0封存。
 
-Milestone 26不包含production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlight、App Store或Play Store publishing。
-
-## Current Authority
-
+- Architecture Decision：`docs/adr/adr-025-native-environment-mapping-product-identity-contract.md`
 - Design：`docs/superpowers/specs/2026-07-22-milestone-26-native-flavor-product-identity-foundation-design.md`
-- Planning review：`docs/audits/milestone_26/26-0_planning_review.md`
-- ADR draft：`docs/audits/milestone_26/adr-025_draft.md`
 - Implementation plan：`docs/superpowers/plans/2026-07-22-milestone-26-native-flavor-product-identity-foundation.md`
+- Final review：`docs/audits/milestone_26/26-8_final_review.md`
+- Remote validation：`docs/audits/milestone_26/26-6_remote_validation.md`
 
-## Current Gate
-
-Planning findings M26-PR01–M26-PR14均已有disposition，Open P0／P1為0。
-
-下一步只能執行Task 26-1；每個Task必須完成implement、self-review、findings、fix、re-review、Open P0／P1=0、validation與commit。未經明確要求不得push。
+Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlight、Play Store與App Store publishing仍未納入Milestone 26。
 
 ## Historical Artifact Routing
 
 - `docs/milestones/README.md`
+
+## Current Next Action
+
+下一個正式方向必須先由`docs/roadmap/candidates.md`或`docs/backlog.md`完成scope review與planning promotion。
+
+```txt
+candidate review
+→ design
+→ planning review
+→ active milestone promotion
+```

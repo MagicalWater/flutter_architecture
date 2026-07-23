@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - native-environment-product-identity-adoption
-last_reviewed_baseline: 1.7.0
+last_reviewed_baseline: 1.8.0
 ---
 
 # Native Environment and Product Identity Adoption Guide

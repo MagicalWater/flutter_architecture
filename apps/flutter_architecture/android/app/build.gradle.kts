@@ -35,6 +35,19 @@ val androidEnvironments = listOf(
     ),
 )
 
+val firebaseConfigCandidates = androidEnvironments.map { environment ->
+    file("src/${environment.name}/google-services.json")
+}
+val hasFirebaseConfig = firebaseConfigCandidates.any { it.isFile }
+if (hasFirebaseConfig) {
+    pluginManager.apply("com.google.gms.google-services")
+    pluginManager.apply("com.google.firebase.crashlytics")
+} else {
+    logger.lifecycle(
+        "Firebase Android config not present; Google Services and Crashlytics Gradle plugins are skipped.",
+    )
+}
+
 fun FlutterTask.environmentForTask(): AndroidEnvironment? {
     val normalizedTaskName = name.lowercase()
     val matches = androidEnvironments.filter { normalizedTaskName.contains(it.name) }
@@ -109,6 +122,12 @@ android {
 
     buildTypes {
         release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             // Template baseline intentionally uses debug signing for local
             // release artifact verification. Production apps must replace it.
             signingConfig = signingConfigs.getByName("debug")

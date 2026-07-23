@@ -73,6 +73,10 @@ Final / Holistic Review
 - [`documentation_usability_hardening_task_5_review.md`](documentation_usability_hardening_task_5_review.md)：Roadmap candidate 與 Backlog disposition review。
 - [`documentation_usability_hardening_final_review.md`](documentation_usability_hardening_final_review.md)：Documentation Usability Hardening holistic final disposition。
 
+### Production observability planning
+
+- [`production_observability_capability_audit.md`](production_observability_capability_audit.md)：Baseline 1.8.0 observability能力、缺口、provider策略與Milestone promotion依據。
+
 ### Earlier milestone groups
 
 - [`milestone_23/`](milestone_23/)：ADR Extraction Planning Review、batch／cutover evidence與 final review。

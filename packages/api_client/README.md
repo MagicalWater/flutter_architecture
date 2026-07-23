@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - api-client-package-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.8.0
 ---
 
 # API Client Package
@@ -74,6 +74,167 @@ Public barrel export APIs、DTOs、Dio factory、interceptors、request extras�
 ## Dependency and Composition
 
 Package 不使用 DI annotation。App Composition Root 建立 Dio、選擇 Mock／Real API、注入 token provider 與 refresher。
+
+## Adding an Endpoint
+
+新增同一 backend boundary 的 endpoint 時，依下列順序處理：
+
+```txt
+API abstraction / Retrofit declaration
+→ wire DTO and serialization
+→ generated Retrofit / Freezed / JSON source
+→ Mock / Real contract parity
+→ public barrel export
+→ authentication metadata and transport policy
+→ transport exception mapping
+→ Feature DataSource / Repository mapping
+→ App DI selection / registration
+→ Package and Feature tests
+→ repository verification
+```
+
+完整 Feature integration 流程先讀：
+
+- [How to Add a Feature](../../docs/guides/how-to-add-feature.md)
+
+### 1. Declare the transport contract
+
+一般 HTTP endpoint 使用 `lib/src/api/` 下的 Retrofit declaration。Method、path、query、body 與 response DTO 留在 transport boundary；不要讓 Dio、Retrofit annotation 或 generated client 穿透至 Domain。
+
+新增或修改 declaration 後，必須由 source 重新產生對應 `*.g.dart`，不得手動編輯 generated file。
+
+Architecture authority：
+
+- [ADR-013 — Retrofit HTTP API Boundary](../../docs/adr/adr-013-retrofit-http-api-boundary.md)
+
+### 2. Add wire DTOs and serialization
+
+Wire model 放在 `lib/src/models/`，只表達 request／response payload。需要 Freezed／JSON serialization 時修改 source DTO，再執行 build runner；不要手動修改：
+
+```txt
+*.freezed.dart
+*.g.dart
+```
+
+DTO 不承擔 Domain business state，也不得把 password、OTP code、access token、refresh token、Authorization header 或 raw credential payload 暴露在 diagnostic `toString()`、log 或 reporting context。
+
+### 3. Keep Mock and Real APIs aligned
+
+同一 abstraction 若已有 Mock／Real 選擇，新增 endpoint 時必須同步確認：
+
+```txt
+Retrofit implementation
+Mock implementation
+request and response contract
+expected failure behavior
+stateful mock behavior（若存在）
+```
+
+Mock 可以提供 deterministic fixture，但不得形成另一套 Domain contract。App 仍透過 `ApiImplementationSelector` 與 Composition Root 決定 environment implementation。
+
+主要入口：
+
+```txt
+packages/api_client/lib/src/mocks/
+apps/flutter_architecture/lib/app/di/api_implementation_selector.dart
+apps/flutter_architecture/lib/app/di/register_module.dart
+```
+
+### 4. Export only supported public contracts
+
+Consumer 只應透過：
+
+```dart
+import 'package:api_client/api_client.dart';
+```
+
+使用 package public API。新增可供 App／Feature 使用的 abstraction、DTO 或 helper 時，檢查 `lib/api_client.dart` 是否需要 export；不要要求 consumer deep import `lib/src/`。
+
+### 5. Apply authentication and replay policy
+
+Authenticated endpoint 使用既有 request metadata／interceptor boundary，不在每個 method 手動組合 credential。
+
+新增 endpoint 時必須判斷：
+
+- 是否 public 或 authenticated。
+- request 是否具備安全 replay 條件。
+- 是否包含 stream、multipart、upload、progress callback 或其他不可自動 replay 的 body。
+- repeated 401 是否會被 retry marker 阻止。
+- refresh request 是否必須留在獨立 Refresh Dio，避免 recursion。
+
+不要因新增 endpoint 而在 Feature、Repository 或 Retrofit method 內自行實作 token refresh。
+
+相關 authority：
+
+- [ADR-015 — Refresh Token Concurrent 401](../../docs/adr/adr-015-refresh-token-concurrent-401.md)
+- [ADR-022 — Authentication Security Capability Boundaries](../../docs/adr/adr-022-authentication-security-capability-boundaries.md)
+
+### 6. Preserve transport error boundaries
+
+Transport error 透過既有 `TransportExceptionMapper` 與 safe details contract 轉為 typed `AppException`。不要直接把 Dio response、raw response body 或 credential-bearing payload 回傳給 Repository 或顯示層。
+
+Feature DataSource 負責呼叫 API abstraction 與轉換 wire DTO；Repository implementation 負責協調 DataSource 並映射 Domain result／Failure。Package 不新增 Domain entity，也不決定 user-facing localization。
+
+相關 authority：
+
+- [ADR-020 — Exception, Failure and Reporting](../../docs/adr/adr-020-exception-failure-reporting.md)
+
+### 7. Compose in the App
+
+若 endpoint 需要新的 API abstraction、factory input 或 environment selection，App Composition Root 才負責實際 binding 與 lifecycle：
+
+```txt
+apps/flutter_architecture/lib/app/di/api_implementation_selector.dart
+apps/flutter_architecture/lib/app/di/register_module.dart
+apps/flutter_architecture/lib/app/di/app_module.dart
+```
+
+`api_client` package 本身不加入 GetIt／Injectable annotation，也不依賴 App configuration。
+
+DI authority：
+
+- [ADR-012 — Reusable Package DI Boundary](../../docs/adr/adr-012-reusable-package-di-boundary.md)
+- [Flutter Architecture App README](../../apps/flutter_architecture/README.md)
+
+### 8. Add focused tests and regenerate
+
+依變更至少檢查：
+
+```txt
+packages/api_client/test/
+affected Feature data / repository tests
+App DI selector / registration tests
+serialization and sensitive-output regression
+interceptor / replay behavior（若受影響）
+```
+
+在 repository root 執行：
+
+```bash
+dart run melos run build_runner
+dart run melos run docs_check
+dart run melos run analyze
+dart run melos exec -- flutter test
+```
+
+若 App runtime input、assets、configuration、plugin 或 native build contract 受到影響，再依 [CI/CD Operations Guide](../../docs/guides/ci_cd_operations.md) 執行相應 Android／iOS representative build；不要把 documentation-only no-op 語意套用到 source change。
+
+## Adding an External Client
+
+新 external system 不應直接塞進既有 `api_client`。先評估它是否具有獨立的：
+
+```txt
+authentication
+error format
+rate limit
+release lifecycle
+base URL / environment policy
+reuse boundary
+```
+
+若這些邊界與既有 backend 顯著不同，應先進入 architecture review，決定是否建立獨立 client package。此 README 只提供判斷入口，不建立新的 package splitting rule；正式責任仍由 canonical ADR、Documentation Hub 與 App Composition Root contract 擁有。
+
+在 review 完成前，不要先建立 generic multi-client framework，也不要讓 Feature 直接知道底層協調了幾個 external systems。
 
 ## Tests
 

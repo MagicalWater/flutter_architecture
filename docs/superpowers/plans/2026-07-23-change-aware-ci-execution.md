@@ -379,7 +379,7 @@ git commit -m "docs(ci): 說明變更感知執行策略"
 **Interfaces:**
 - Validates local and GitHub-hosted behavior after Tasks 1–5。
 
-- [ ] **Step 1: Run complete local contracts**
+- [x] **Step 1: Run complete local contracts**
 
 ```bash
 python3 -m unittest discover -s tools -p 'test_*.py'
@@ -393,7 +393,7 @@ git diff --check
 
 Expected: all PASS on clean working tree where required。
 
-- [ ] **Step 2: Simulate change classes locally**
+- [x] **Step 2: Simulate change classes locally**
 
 建立temporary commits或test fixtures，證明：
 

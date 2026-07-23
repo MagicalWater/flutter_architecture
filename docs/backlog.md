@@ -9,9 +9,6 @@
 - Payment feature。
 - Analytics adapter與事件治理範例。
 - Firebase Crashlytics production adapter；目前僅有App-owned error reporting boundary，不引入Firebase dependency。
-- 完整Feature新增指南。
-- 常見錯誤與除錯指南。
-- 架構演進與migration指南。
 
 ## Deferred commitments
 
@@ -30,3 +27,5 @@
 ## Scope rule
 
 新項目若尚未進入正式Roadmap、沒有明確acceptance criteria或會擴大platform／infrastructure承諾，先放在本文件，不直接修改baseline。
+
+Documentation Knowledge Expansion 不再以「完整 Feature 指南／通用 Troubleshooting／Architecture Evolution」三個重複 idea 保留於 Backlog。這些方向已由正式 audit 判定目前不成立；未來只有在出現新的 confirmed gap 與獨立 evidence 時，才重新建立候選項目。

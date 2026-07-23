@@ -3,7 +3,7 @@ document_type: roadmap-candidates
 status: active
 authoritative_for:
   - concrete-roadmap-candidates
-last_reviewed_baseline: 1.7.0
+last_reviewed_baseline: 1.8.0
 ---
 
 # Roadmap Candidates
@@ -34,15 +34,22 @@ CI/CD Foundation已由 Milestone 24完成並封存；current capability由`docs/
 
 Native Flavor and Product Identity已提升為Milestone 26；current scope與next action由`docs/roadmap/active.md`擁有，不再列為candidate。
 
-## Candidate — Documentation Knowledge Expansion
+## Disposition — Documentation Knowledge Expansion
 
-在 Milestone 22 governance foundation 穩定後，可分別評估：
+大型 Documentation Knowledge Expansion 不再列為 candidate。
 
-- 完整 Feature 新增指南。
-- 常見錯誤與除錯指南。
-- Architecture evolution／migration guides。
+已接受的 Documentation Usability & Coverage Audit 確認，目前缺口集中在少量 navigation、task route 與 stale placeholder，不足以支持大型 Milestone、通用 Troubleshooting Guide 或 Architecture Evolution handbook。
 
-這些屬於 guide／knowledge artifacts，不應回寫到 Current Project Context 或 Roadmap journal。
+已確認的缺口由有界的 Documentation Usability Hardening design 與 implementation plan 處理，不建立 Milestone 27，也不形成開放式 knowledge expansion commitment。
+
+未來若要重新提出大型文件擴張，必須先提供新的可驗證 evidence、明確 scope／non-goals 與獨立 candidate review，不得只因文件數量增加或既有 metadata baseline 較舊而重新啟動。
+
+Evidence：
+
+- `docs/audits/documentation_usability_coverage_audit.md`
+- `docs/audits/documentation_usability_coverage_audit_review.md`
+- `docs/superpowers/specs/2026-07-23-documentation-usability-hardening-design.md`
+- `docs/superpowers/plans/2026-07-23-documentation-usability-hardening.md`
 
 ## Promotion Rule
 

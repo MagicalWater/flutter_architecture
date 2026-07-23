@@ -41,6 +41,12 @@ class IosObservabilityContractTest(unittest.TestCase):
         self.assertIn("xcrun dsymutil", build)
         self.assertIn("App.framework.dSYM", build)
         self.assertIn("Required binary UUID is missing from dSYM set", build)
+        self.assertIn("require_complete_dsym_set", build)
+        self.assertIn(
+            '[[ "$configuration" == Release-* ]] || '
+            '[[ "${GENERATE_DSYM_FOR_ACCEPTANCE:-false}" == "true" ]]',
+            build,
+        )
         self.assertIn("IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'", podfile)
 
 

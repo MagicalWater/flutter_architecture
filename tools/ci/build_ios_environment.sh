@@ -48,7 +48,15 @@ if [[ "${GENERATE_DSYM_FOR_ACCEPTANCE:-false}" == "true" ]]; then
   fi
 fi
 bundle_id="$(plutil -extract CFBundleIdentifier raw "$target_app/Info.plist")"
-if [[ -d "$dsym_set_dir" ]]; then
+require_complete_dsym_set=false
+if [[ "$configuration" == Release-* ]] || [[ "${GENERATE_DSYM_FOR_ACCEPTANCE:-false}" == "true" ]]; then
+  require_complete_dsym_set=true
+fi
+if [[ "$require_complete_dsym_set" == "true" ]]; then
+  [[ -d "$dsym_set_dir" ]] || {
+    echo "Expected complete dSYM set was not generated: $dsym_set_dir" >&2
+    exit 1
+  }
   dsym_uuids="$(find "$dsym_set_dir" -type f -path '*/DWARF/*' -print0 | while IFS= read -r -d '' file; do xcrun dwarfdump --uuid "$file"; done | awk '{print $2}' | sort -u)"
   required_binaries=("$target_app/$(plutil -extract CFBundleExecutable raw "$target_app/Info.plist")")
   [[ ! -f "$target_app/Frameworks/App.framework/App" ]] || required_binaries+=("$target_app/Frameworks/App.framework/App")

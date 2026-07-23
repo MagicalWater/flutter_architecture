@@ -106,8 +106,8 @@ last_reviewed_baseline: 1.7.0
 - [x] Configure iOS workflow to build Development Debug Simulator and Production Release generic-device verification with no codesign；Release Simulator已由實際失敗證明不受Flutter支援。
 - [x] Keep stablecheck names or document any intentional Branch Protection impact before renaming。
 - [x] Upload onlybounded verification artifacts／diagnostics with explicit environment and SHA metadata。
-- [ ] Validate YAML/static contracts locally and trigger remote CI；local已完成，remote需push後執行。
-- [ ] Record actual run IDs、runner/Xcode versions、artifact identity and all failure dispositions；等待remote run。
+- [x] Validate YAML/static contracts locally and trigger remote CI；GitHub-hosted CI／Android／iOS runs均成功。
+- [x] Record actual run IDs、runner/Xcode versions、artifact identity and all failure dispositions；evidence見`26-6_remote_validation.md`。
 - [x] Review permissions、cache correctness、secret absence、matrix cost and production claim boundary；fix/re-review。
 - [x] Commit `ci(flavor): 驗證開發與正式環境代表建置`。
 

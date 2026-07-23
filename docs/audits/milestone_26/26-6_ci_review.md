@@ -1,6 +1,6 @@
 ---
 document_type: phase-review
-status: active
+status: completed
 authoritative_for:
   - milestone-26-task-26-6-ci-review
 last_reviewed_baseline: 1.7.0
@@ -65,4 +65,8 @@ last_reviewed_baseline: 1.7.0
 
 ## Remote validation status
 
-GitHub-hosted run尚未建立。Repository policy要求未經明確指示不得push；本Task提交後需先push對應commit，才能記錄實際run ID、runner image、Xcode版本與下載後artifact identity。此項不是本地workflow correctness的替代證據，亦不得填入虛構run ID。
+GitHub-hosted CI、Android與iOS representative matrix均已成功，artifact identity與toolchain evidence已下載核對。完整run IDs、runner／Xcode版本、artifact metadata與M26-6-R06 disposition見：
+
+```txt
+docs/audits/milestone_26/26-6_remote_validation.md
+```

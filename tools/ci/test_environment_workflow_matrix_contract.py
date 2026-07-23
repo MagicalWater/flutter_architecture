@@ -144,6 +144,46 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("API_BASE_URL: https://api.acme.test", self.ios)
         self.assertIn("ios-production-release-${{ github.sha }}", self.ios)
 
+    def test_ios_uses_classifier_and_keeps_simulator_job_stable(self) -> None:
+        self.assertIn("name: Classify Changes", self.ios)
+        self.assertIn("tools/ci/change_classifier.py", self.ios)
+        self.assertIn("fetch-depth: 0", self.ios)
+
+        simulator = self.ios.split("  simulator-build:", 1)[1].split(
+            "  production-release-build:", 1
+        )[0]
+        production = self.ios.split("  production-release-build:", 1)[1]
+
+        self.assertIn("needs: classify-changes", simulator)
+        self.assertNotRegex(simulator, r"(?m)^    if:")
+        self.assertIn(
+            "needs.classify-changes.outputs.ios_build == 'true'",
+            simulator,
+        )
+        self.assertIn("macos-15", simulator)
+        self.assertIn("ubuntu-24.04", simulator)
+        self.assertIn("Skip iOS Simulator build", simulator)
+        self.assertIn(
+            "needs.classify-changes.outputs.ios_build != 'true'",
+            simulator,
+        )
+
+        self.assertIn("needs: classify-changes", production)
+        self.assertIn(
+            "if: needs.classify-changes.outputs.ios_build == 'true'",
+            production,
+        )
+
+    def test_ios_classifier_failure_falls_back_to_full_matrix(self) -> None:
+        classify = self.ios.split("  classify-changes:", 1)[1].split(
+            "  simulator-build:", 1
+        )[0]
+        self.assertIn("if ! python3 tools/ci/change_classifier.py", classify)
+        self.assertIn("full_ci=true", classify)
+        self.assertIn("android_build=true", classify)
+        self.assertIn("ios_build=true", classify)
+        self.assertIn("reason=classifier execution failure", classify)
+
     def test_workflows_do_not_read_store_or_signing_secrets(self) -> None:
         combined = f"{self.android}\n{self.ios}"
         self.assertNotIn("secrets.", combined)

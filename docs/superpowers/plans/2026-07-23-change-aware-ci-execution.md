@@ -270,17 +270,17 @@ git commit -m "ci(android): 略過純文件編譯"
 - Consumes classifier CLI from Task 1。
 - Produces `ios_build` output；`iOS / Simulator Build`依輸出動態選擇macOS或Ubuntu runner，Production Release非required job可skipped。
 
-- [ ] **Step 1: Add failing iOS workflow tests**
+- [x] **Step 1: Add failing iOS workflow tests**
 
 Tests must confirm classifier runs onUbuntu；`Simulator Build`沒有job-level skip，`runs-on`依`ios_build`在`macos-15`與`ubuntu-24.04`間選擇，build/setup steps只在`ios_build=true`執行，docs-only no-op在同一job成功。`Production Release Build`可使用job-level condition。
 
-- [ ] **Step 2: Run tests and confirm failure**
+- [x] **Step 2: Run tests and confirm failure**
 
 ```bash
 python3 -m unittest tools.ci.test_environment_workflow_matrix_contract tools.ci.test_ios_workflow_contract -v
 ```
 
-- [ ] **Step 3: Wire classifier and conditions**
+- [x] **Step 3: Wire classifier and conditions**
 
 新增Ubuntu classification job：
 
@@ -290,18 +290,18 @@ python3 -m unittest tools.ci.test_environment_workflow_matrix_contract tools.ci.
 - `Production Release Build`使用job-level `if: needs.classify-changes.outputs.ios_build == 'true'`，因它目前不是required check。
 - 不新增可吞掉失敗的替代summary gate。
 
-- [ ] **Step 4: Preserve artifacts and toolchain evidence**
+- [x] **Step 4: Preserve artifacts and toolchain evidence**
 
 Build執行時仍上傳development／production `.app`與兩份toolchain evidence；docs-only時完全不上傳。
 
-- [ ] **Step 5: Run tests and YAML validation**
+- [x] **Step 5: Run tests and YAML validation**
 
 ```bash
 python3 -m unittest tools.ci.test_change_classifier tools.ci.test_environment_workflow_matrix_contract tools.ci.test_ios_workflow_contract -v
 ruby -e 'require "yaml"; YAML.load_file(".github/workflows/ios.yml", aliases: true); puts "ios yaml ok"'
 ```
 
-- [ ] **Step 6: Review and commit**
+- [x] **Step 6: Review and commit**
 
 Review dynamic runner expression、macOS runner avoidance、required-check naming、failure propagation、permissions與secret boundary。Commit：
 

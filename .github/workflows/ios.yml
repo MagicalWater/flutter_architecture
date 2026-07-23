@@ -17,23 +17,65 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  classify-changes:
+    name: Classify Changes
+    runs-on: ubuntu-24.04
+    outputs:
+      docs_only: ${{ steps.classify.outputs.docs_only }}
+      full_ci: ${{ steps.classify.outputs.full_ci }}
+      android_build: ${{ steps.classify.outputs.android_build }}
+      ios_build: ${{ steps.classify.outputs.ios_build }}
+      release_full: ${{ steps.classify.outputs.release_full }}
+      reason: ${{ steps.classify.outputs.reason }}
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Classify repository changes
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          if ! python3 tools/ci/change_classifier.py \
+            --event "$EVENT_NAME" \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --output "$GITHUB_OUTPUT"; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            echo "full_ci=true" >> "$GITHUB_OUTPUT"
+            echo "android_build=true" >> "$GITHUB_OUTPUT"
+            echo "ios_build=true" >> "$GITHUB_OUTPUT"
+            echo "release_full=false" >> "$GITHUB_OUTPUT"
+            echo "reason=classifier execution failure; fail-safe full matrix" >> "$GITHUB_OUTPUT"
+          fi
+
   simulator-build:
     name: Simulator Build
-    runs-on: macos-15
+    needs: classify-changes
+    runs-on: ${{ needs.classify-changes.outputs.ios_build == 'true' && 'macos-15' || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
+        if: needs.classify-changes.outputs.ios_build == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Load toolchain versions
         id: versions
+        if: needs.classify-changes.outputs.ios_build == 'true'
         shell: bash
         run: |
           source .github/versions.env
           echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Flutter
+        if: needs.classify-changes.outputs.ios_build == 'true'
         uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
@@ -41,6 +83,7 @@ jobs:
           cache: true
 
       - name: Restore Pub cache
+        if: needs.classify-changes.outputs.ios_build == 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.pub-cache
@@ -49,6 +92,7 @@ jobs:
             pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
 
       - name: Capture toolchain diagnostics
+        if: needs.classify-changes.outputs.ios_build == 'true'
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/ios-diagnostics"
@@ -61,6 +105,7 @@ jobs:
           } > "$RUNNER_TEMP/ios-diagnostics/toolchain.txt" 2>&1
 
       - name: Upload iOS development toolchain evidence
+        if: needs.classify-changes.outputs.ios_build == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-development-toolchain-${{ github.sha }}
@@ -69,12 +114,14 @@ jobs:
           retention-days: 14
 
       - name: Check iOS workflow contract
+        if: needs.classify-changes.outputs.ios_build == 'true'
         run: >-
           python3 -m unittest
           tools.ci.test_environment_workflow_matrix_contract
           tools.ci.test_ios_workflow_contract
 
       - name: Build unsigned iOS Simulator app
+        if: needs.classify-changes.outputs.ios_build == 'true'
         shell: bash
         run: |
           set -o pipefail
@@ -83,6 +130,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/ios-diagnostics/build.log"
 
       - name: Upload iOS development verification artifact
+        if: needs.classify-changes.outputs.ios_build == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-development-debug-simulator-${{ github.sha }}
@@ -93,7 +141,7 @@ jobs:
           retention-days: 14
 
       - name: Upload iOS failure diagnostics
-        if: failure()
+        if: needs.classify-changes.outputs.ios_build == 'true' && failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-simulator-build-diagnostics-${{ github.sha }}
@@ -101,8 +149,15 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Skip iOS Simulator build
+        if: needs.classify-changes.outputs.ios_build != 'true'
+        run: |
+          echo "iOS Simulator build skipped: ${{ needs.classify-changes.outputs.reason }}"
+
   production-release-build:
     name: Production Release Build
+    needs: classify-changes
+    if: needs.classify-changes.outputs.ios_build == 'true'
     runs-on: macos-15
     steps:
       - name: Checkout repository

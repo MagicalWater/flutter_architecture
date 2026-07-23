@@ -173,5 +173,39 @@ Documentation-only acceptance: Passed
 Manual full-matrix acceptance: Passed
 Task 6 status: Completed / Reviewed
 Original implementation remote acceptance: Passed
-Holistic follow-up classifier revalidation: Pending
+Holistic follow-up classifier revalidation: Passed
+Holistic final review: Accepted
 ```
+
+## Holistic Follow-up Classifier Revalidation
+
+```txt
+SHA: 84d6e7cf625b10a02dbc27f14c79ad2ecfe4d9c0
+CI run: 29986372624
+Android run: 29986372639
+iOS run: 29986372623
+```
+
+三份push workflows均成功。Android artifacts：
+
+```txt
+8555264233 android-development-debug-84d6e7cf625b10a02dbc27f14c79ad2ecfe4d9c0
+  sha256:a855e27ef6c60283cf8a97661db6ec2212e0a3d67c1b9354e56813040e2cfc4f
+8555364247 android-production-release-84d6e7cf625b10a02dbc27f14c79ad2ecfe4d9c0
+  sha256:cc9128b6b322c8e2c5d4ad46670c0740ebc256755162d2ae72aa2424f2f65452
+```
+
+iOS artifacts：
+
+```txt
+8555188368 ios-development-toolchain-84d6e7cf625b10a02dbc27f14c79ad2ecfe4d9c0
+  sha256:e0ea86a3ecd69b189a7498d58cfdcd42eebda8b0ef199b982c20b2271aea9379
+8555210337 ios-development-debug-simulator-84d6e7cf625b10a02dbc27f14c79ad2ecfe4d9c0
+  sha256:257856de66e9e037b9ad7bc291e8c8731043616a9c3929678f9f168fc3284674
+8555227456 ios-production-toolchain-84d6e7cf625b10a02dbc27f14c79ad2ecfe4d9c0
+  sha256:3d839def5db324eb2895ca1a7d2a53e22ac704e057046a846f88760faa7a2bec
+8555266538 ios-production-release-84d6e7cf625b10a02dbc27f14c79ad2ecfe4d9c0
+  sha256:e9b04f85c0b6f259d0f59a98a4e2f6de2f38bf8131a016346857663fbfc1465b
+```
+
+所有artifact expires at `2026-08-06`，符合14天retention contract。

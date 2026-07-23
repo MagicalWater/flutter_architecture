@@ -1,6 +1,6 @@
 ---
 document_type: final-review
-status: proposed
+status: accepted
 authoritative_for:
   - change-aware-ci-holistic-final-review
 last_reviewed_baseline: 1.8.0
@@ -123,17 +123,37 @@ docs/** → documentation-only
 ```txt
 Open P0: 0
 Open P1 code findings: 0
-Open P1 evidence requirement: 1
+Open P1 evidence requirement: 0
 Local re-review: Passed
-Remote revalidation after classifier fix: Pending
-Holistic final review status: Changes addressed / Awaiting remote revalidation
-Initiative formal closure: Not yet accepted
+Remote revalidation after classifier fix: Passed
+Holistic final review status: Accepted
+Initiative formal closure: Completed
 ```
 
-## Required Closure Action
+## Targeted Re-review Evidence
 
-1. Commit classifier regression fixes與本final review。
-2. Push該source change commit，確認CI、Android與iOS三份push workflows完整成功。
-3. 記錄新run IDs、jobs、runner與artifacts。
-4. 以純文件closure commit更新本文件為`status: accepted`，確認docs-only路徑再次成功。
-5. Open P1 evidence requirement歸零後，才恢復`Change-aware CI initiative: Completed`宣告。
+Classifier修正commit：
+
+```txt
+84d6e7cf625b10a02dbc27f14c79ad2ecfe4d9c0
+```
+
+GitHub-hosted push runs：
+
+```txt
+CI:      29986372624 — success
+Android: 29986372639 — success
+iOS:     29986372623 — success
+```
+
+Re-review確認：
+
+- CI的Classify Changes、Quality、Generated Consistency與Tests均在`ubuntu-24.04`成功。
+- Android Development Debug APK、Release APK與Summary均在`ubuntu-24.04`成功。
+- iOS Simulator Build與Production Release Build均在`macos-15`成功。
+- Android建立兩個full-SHA artifacts；iOS建立兩個build artifacts與兩個toolchain artifacts。
+- Artifact retention維持14天，名稱、SHA與digest完整。
+- 修正沒有改變required-check名稱、failure propagation、permissions、Action pin或secret boundary。
+- 沒有新增P0／P1 finding。
+
+因此三個classifier漏判finding已完成code fix、local regression與remote revalidation closure。

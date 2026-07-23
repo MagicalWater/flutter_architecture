@@ -340,7 +340,7 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-目前沒有active milestone。Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、完整本地regression、documentation-only remote acceptance與manual full-matrix acceptance。後續holistic final review發現App pubspec、assets與localization config的兩平台build漏判，已完成本地修正與57個CI contracts，尚待修正commit的GitHub-hosted完整矩陣revalidation後正式closure。下一個正式Milestone仍必須先由Roadmap candidates或backlog完成scope review與promotion。
+目前沒有active milestone。Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。下一個正式Milestone仍必須先由Roadmap candidates或backlog完成scope review與promotion。
 
 Production signing、physical-device acceptance、App Store distribution與GitHub repository settings仍未納入；Branch Protection目前只有文件化建議。
 

@@ -73,11 +73,20 @@ def _is_classifier_path(path: str) -> bool:
     )
 
 
+def _is_shared_app_build_path(path: str) -> bool:
+    return (
+        path.startswith("apps/flutter_architecture/lib/")
+        or path.startswith("apps/flutter_architecture/config/")
+        or path.startswith("apps/flutter_architecture/assets/")
+        or path == "apps/flutter_architecture/pubspec.yaml"
+        or path == "apps/flutter_architecture/l10n.yaml"
+    )
+
+
 def _is_android_path(path: str) -> bool:
     return (
         path.startswith("apps/flutter_architecture/android/")
-        or path.startswith("apps/flutter_architecture/lib/")
-        or path.startswith("apps/flutter_architecture/config/")
+        or _is_shared_app_build_path(path)
         or path.startswith("packages/")
         or path.startswith("tools/ci/build_android_")
         or path == "tools/ci/verify_environment_contract.py"
@@ -91,8 +100,7 @@ def _is_android_path(path: str) -> bool:
 def _is_ios_path(path: str) -> bool:
     return (
         path.startswith("apps/flutter_architecture/ios/")
-        or path.startswith("apps/flutter_architecture/lib/")
-        or path.startswith("apps/flutter_architecture/config/")
+        or _is_shared_app_build_path(path)
         or path.startswith("packages/")
         or path.startswith("tools/ci/build_ios_")
         or path == "tools/ci/verify_environment_contract.py"

@@ -92,6 +92,29 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
 
+    def test_app_pubspec_change_runs_both_platform_builds(self) -> None:
+        result = classify_paths(["apps/flutter_architecture/pubspec.yaml"])
+
+        self.assertTrue(result.full_ci)
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
+    def test_app_asset_change_runs_both_platform_builds(self) -> None:
+        result = classify_paths(
+            ["apps/flutter_architecture/assets/images/example.png"]
+        )
+
+        self.assertTrue(result.full_ci)
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
+    def test_app_localization_config_change_runs_both_platform_builds(self) -> None:
+        result = classify_paths(["apps/flutter_architecture/l10n.yaml"])
+
+        self.assertTrue(result.full_ci)
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
     def test_classifier_change_runs_full_matrix(self) -> None:
         result = classify_paths(["tools/ci/change_classifier.py"])
 

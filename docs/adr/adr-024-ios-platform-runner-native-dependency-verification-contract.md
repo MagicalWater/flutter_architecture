@@ -88,7 +88,7 @@ Repository應建立獨立GitHub-hosted macOS iOS Simulator build gate。第一�
 ## Consequences
 
 - iOS runner與identity成為reviewable repository contract。
-- iOS 13、Swift與native dependency resolution不再依賴Xcode或CocoaPods隱式推導。
+- iOS deployment target、Swift與native dependency resolution不再依賴Xcode或CocoaPods隱式推導；current baseline已由ADR-026因Firebase Apple SDK 12.x提升為iOS 15.0。
 - 個人signing資料不得污染template。
 - CocoaPods是current toolchain的可重現implementation，不是永久生態承諾。
 - Platform capability claim由evidence決定，而不是由dependency或successful compile單獨決定。

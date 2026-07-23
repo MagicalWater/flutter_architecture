@@ -54,6 +54,7 @@ Final / Holistic Review
 - [`milestone_27/27-0_planning_review.md`](milestone_27/27-0_planning_review.md)：Production Observability Foundation 的scope、ADR、provider策略與activation gate。
 - [`milestone_27/27-1_release_identity_contract_review.md`](milestone_27/27-1_release_identity_contract_review.md)：Release identity、collection policy與provider-neutral lifecycle contract review。
 - [`milestone_27/27-4_android_native_symbol_pipeline_review.md`](milestone_27/27-4_android_native_symbol_pipeline_review.md)：Android Firebase config、Gradle plugin、R8 mapping與Flutter symbols pipeline review。
+- [`milestone_27/27-5_ios_native_dsym_pipeline_review.md`](milestone_27/27-5_ios_native_dsym_pipeline_review.md)：iOS Firebase config、Crashlytics build phase、iOS 15 baseline與dSYM pipeline review。
 - [`milestone_27/27-3_firebase_crashlytics_reference_adapter_review.md`](milestone_27/27-3_firebase_crashlytics_reference_adapter_review.md)：Firebase Core／Crashlytics App-owned reference adapter、collection policy與failure isolation review。
 - [`milestone_27/27-2_reporting_routing_hardening_review.md`](milestone_27/27-2_reporting_routing_hardening_review.md)：Severity routing、closed metadata、recursive guard、degraded rate limiting與typed breadcrumb review。
 

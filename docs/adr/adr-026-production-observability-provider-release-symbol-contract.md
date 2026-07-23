@@ -155,6 +155,7 @@ Android：
 iOS：
 
 - Provider config與upload script只存在Runner／CI integration。
+- Firebase Apple SDK 12.x將current minimum deployment target提升為iOS 15.0；Podfile、Runner configurations與contract tests必須一致。
 - 建立dSYM生成、存在性與upload contract。
 - Unsigned generic device build可驗證dSYM tooling，但不代表IPA、TestFlight或App Store distribution。
 

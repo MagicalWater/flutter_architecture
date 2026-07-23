@@ -6,6 +6,7 @@ app_dir="$repo_root/apps/flutter_architecture"; ios_dir="$app_dir/ios"
 artifact_dir="${ARTIFACT_DIR:-$repo_root/artifacts/ios/$environment}"; api_base_url="${API_BASE_URL:-}"
 commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
 if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is required for $environment iOS verification." >&2; exit 1; fi
+python3 "$repo_root/tools/ci/verify_ios_firebase_config.py" "$environment"
 mkdir -p "$artifact_dir"; rm -rf "$artifact_dir"/*.app "$artifact_dir/artifact-metadata.txt" "$artifact_dir/DerivedData"
 (cd "$app_dir" && flutter pub get); (cd "$ios_dir" && pod install)
 encode_define() { printf '%s' "$1" | base64 | tr -d '\n'; }
@@ -15,6 +16,13 @@ xcodebuild -workspace "$ios_dir/Runner.xcworkspace" -scheme "$scheme" -configura
 products="$artifact_dir/DerivedData/Build/Products"; app_bundle="$(find "$products" -maxdepth 2 -type d -name '*.app' -print -quit)"
 [[ -n "$app_bundle" ]] || { echo "Expected iOS app not found under $products" >&2; exit 1; }
 target_app="$artifact_dir/$(basename "$app_bundle")"; cp -R "$app_bundle" "$target_app"
+expected_dsym_name="$(basename "$app_bundle").dSYM"
+dsym_bundle="$(find "$products" -maxdepth 3 -type d -name "$expected_dsym_name" -print -quit)"
+if [[ "$configuration" == Release-* && -z "$dsym_bundle" ]]; then
+  echo "Expected Runner dSYM was not generated under $products" >&2
+  exit 1
+fi
+if [[ -n "$dsym_bundle" ]]; then cp -R "$dsym_bundle" "$artifact_dir/$expected_dsym_name"; fi
 bundle_id="$(plutil -extract CFBundleIdentifier raw "$target_app/Info.plist")"
 expected_id="com.example.flutterarchitecture"; [[ "$environment" == "production" ]] || expected_id+=".$environment"
 [[ "$bundle_id" == "$expected_id" ]] || { echo "Unexpected bundle id: $bundle_id" >&2; exit 1; }
@@ -31,5 +39,6 @@ bundle_id=$bundle_id
 signing=unsigned verification build
 distribution=not production-ready
 artifact=$(basename "$target_app")
+dsym=$([[ -d "$artifact_dir/$expected_dsym_name" ]] && echo present || echo not-generated)
 EOF
 echo "iOS verification artifact: $target_app"; cat "$artifact_dir/artifact-metadata.txt"

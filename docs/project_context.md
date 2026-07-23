@@ -44,7 +44,7 @@ Milestone 23 已將 Decision 001–022擷取為canonical single-file ADR、建�
 
 Milestone 24 已建立GitHub Actions repository quality gates、exact toolchain authority、tracked root lockfile、generated consistency、main Android verification artifact與CI operations guide。此能力以Template Baseline 1.6.0封存，並於1.6.1完成GitHub-hosted CI／Android remote validation、跨平台golden authority與Node 24 Actions相容性修正；production signing、Store publishing與GitHub repository Branch Protection settings仍未納入。
 
-Milestone 25已建立tracked iOS runner、iOS 13 native contract、CocoaPods resolution、Face ID／Keychain設定、Simulator runtime smoke、macOS golden authority與GitHub-hosted unsigned Simulator build gate，並以Template Baseline 1.7.0封存。Physical-device biometric acceptance、production signing、IPA與App Store distribution仍為deferred scope。
+Milestone 25已建立tracked iOS runner、原始iOS 13 native contract、CocoaPods resolution、Face ID／Keychain設定、Simulator runtime smoke、macOS golden authority與GitHub-hosted unsigned Simulator build gate，並以Template Baseline 1.7.0封存。Milestone 27因Firebase Apple SDK 12.x最低需求，已將current iOS deployment baseline提升為15.0。Physical-device biometric acceptance、production signing、IPA與App Store distribution仍為deferred scope。
 
 Milestone 26已建立development／staging／production的cross-platform mapping manifest、Android product flavors、iOS shared schemes與九組build configurations、native／Dart mismatch fail-fast、environment-aware local artifact commands、GitHub-hosted development／production代表性build matrix與manifest-first adoption guide，並以Template Baseline 1.8.0封存。Repository artifacts仍只屬verification evidence，不包含production signing或Store distribution。
 

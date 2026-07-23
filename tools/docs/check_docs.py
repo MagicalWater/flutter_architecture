@@ -91,7 +91,7 @@ def check_repository(root: Path) -> list[CheckIssue]:
 
 
 def _iter_markdown_files(root: Path) -> Iterable[Path]:
-    ignored = {".git", ".dart_tool", "build"}
+    ignored = {".git", ".dart_tool", "build", "Pods"}
     for path in root.rglob("*.md"):
         if not any(part in ignored for part in path.parts):
             yield path

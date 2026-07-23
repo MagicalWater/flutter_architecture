@@ -35,10 +35,10 @@ Baseline: 1.8.0
 ## Current Task
 
 ```txt
-Task 27-5 — iOS Native and dSYM Pipeline
+Task 27-6 — CI Secrets and Remote Acceptance
 ```
 
-Task 27-4已完成Android environment config projection、conditional Google Services／Crashlytics Gradle wiring、R8 mapping與production Flutter split-debug-info pipeline，並通過phase review。真實Firebase config與remote upload尚未執行。
+Task 27-5已完成iOS environment config projection、Crashlytics Xcode build phase、iOS 15 deployment baseline、release dSYM fail-fast與manual upload fallback，並以unsigned production device build驗證dSYM UUID一致。真實Firebase config與remote upload尚未執行。
 
 ## Latest Completed Milestone
 
@@ -58,4 +58,4 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-依implementation plan執行Task 27-5，建立iOS Firebase config、build phase與dSYM pipeline。
+依implementation plan執行Task 27-6，建立CI secret boundary、provider-aware upload gates與remote acceptance evidence。

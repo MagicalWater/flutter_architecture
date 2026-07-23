@@ -8,6 +8,16 @@ from tools.docs.check_docs import check_repository
 
 
 class DocumentationCheckerTest(unittest.TestCase):
+    def test_generated_cocoapods_tree_is_ignored(self) -> None:
+        with _fixture() as root:
+            _write(
+                root,
+                "apps/demo/ios/Pods/Firebase/README.md",
+                "[Missing](CONTRIBUTING.md)\n",
+            )
+
+            self.assertNotIn("broken-link", _codes(root))
+
     def test_reports_broken_relative_markdown_link_but_ignores_fenced_example(self) -> None:
         with _fixture() as root:
             _write(root, "README.md", "[Missing](docs/missing.md)\n```md\n[Example](nope.md)\n```\n")

@@ -21,9 +21,9 @@ void main() {
       ).readAsStringSync(),
     );
 
-    expect(podfile, contains("platform :ios, '13.0'"));
+    expect(podfile, contains("platform :ios, '15.0'"));
     expect(
-      RegExp(r'IPHONEOS_DEPLOYMENT_TARGET = 13\.0;')
+      RegExp(r'IPHONEOS_DEPLOYMENT_TARGET = 15\.0;')
           .allMatches(project)
           .length,
       greaterThanOrEqualTo(3),

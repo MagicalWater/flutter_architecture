@@ -31,6 +31,10 @@ docs/superpowers/plans/
 
 執行某個 Milestone 或 phase 時，只讀該工作相關的 spec、plan 與 review；不要把所有歷史 plans 加入 AI 每次進入 repository 的必讀集合。
 
+目前最新已核准、尚未進入implementation的架構設計：
+
+- [`specs/2026-07-23-production-observability-foundation-design.md`](specs/2026-07-23-production-observability-foundation-design.md)：Production Observability Foundation scope、provider策略、platform／CI boundary與Task拆分。
+
 ## Lifecycle
 
 ```txt

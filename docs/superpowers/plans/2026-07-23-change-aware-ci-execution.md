@@ -406,7 +406,7 @@ VERSION → all true
 unknown path → all true
 ```
 
-- [ ] **Step 3: Perform remote docs-only acceptance**
+- [x] **Step 3: Perform remote docs-only acceptance**
 
 Push一個只改managed Markdown evidence的commit。確認：
 
@@ -416,15 +416,15 @@ Push一個只改managed Markdown evidence的commit。確認：
 - macOS runner未啟動。
 - Android／iOS artifacts未建立。
 
-- [ ] **Step 4: Perform remote full-matrix acceptance**
+- [x] **Step 4: Perform remote full-matrix acceptance**
 
 使用`workflow_dispatch`執行完整矩陣，確認CI、Android development／production與iOS development／production全部成功並上傳預期artifacts。
 
-- [ ] **Step 5: Record exact evidence**
+- [x] **Step 5: Record exact evidence**
 
 在remote validation文件記錄run IDs、SHA、jobs、skipped jobs、runner OS、artifacts與disposition。Open P0／P1 without disposition必須為0。
 
-- [ ] **Step 6: Final review and commit**
+- [x] **Step 6: Final review and commit**
 
 確認無required-check drift、無必要job誤跳過、無secret boundary改變。Commit：
 

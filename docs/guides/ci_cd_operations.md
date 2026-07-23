@@ -176,7 +176,7 @@ bash tools/ci/build_android_development.sh
 API_BASE_URL=https://api.acme.test bash tools/ci/build_android_production.sh
 ```
 
-此相容入口目前委派到production verification command。Local development與production的正式入口分別為：
+Local development與production的正式入口分別為：
 
 ```bash
 bash tools/ci/build_android_development.sh
@@ -187,7 +187,7 @@ API_BASE_URL=https://api.your-domain.example bash tools/ci/build_android_product
 
 1. 確認generated gate是否先失敗。
 2. 在repository root執行`dart pub get`。
-3. 使用相容shell執行build script，或在App目錄直接驗證：
+3. 使用 environment-aware build script，或在App目錄直接驗證：
 
    ```bash
    flutter build apk --release --flavor production \
@@ -210,7 +210,7 @@ bash tools/ci/build_ios_development.sh
 API_BASE_URL=https://api.acme.test bash tools/ci/build_ios_production.sh
 ```
 
-此相容入口委派到Development Debug Simulator command。Local development與production verification的正式入口分別為：
+Local development與production verification的正式入口分別為：
 
 ```bash
 bash tools/ci/build_ios_development.sh
@@ -225,7 +225,7 @@ Production iOS verification使用`Release-production`、generic `iphoneos` SDK�
 
 1. 下載`ios-simulator-build-diagnostics-<full-sha>`。
 2. 核對macOS、Xcode、Flutter與CocoaPods版本。
-3. 在macOS repository root重跑`bash tools/ci/build_ios_simulator.sh`。
+3. 在macOS repository root重跑`bash tools/ci/build_ios_development.sh`；production failure則重跑`API_BASE_URL=https://api.your-domain.example bash tools/ci/build_ios_production.sh`。
 4. 若是runner或registry transient failure，只可在確認source contract無誤後rerun。
 5. 若是Pod resolution、native identity、plugin registration或Xcode build failure，建立focused fix並重新review。
 
@@ -251,6 +251,12 @@ distribution=not production-ready
 ```
 
 下載後應先核對metadata SHA與預期commit，再用於verification或debug。
+
+完整三環境本地命令、manifest-first identity替換順序、placeholder與secret boundary請讀：
+
+```txt
+docs/guides/native_environment_adoption.md
+```
 
 ## Workflow Rollback
 

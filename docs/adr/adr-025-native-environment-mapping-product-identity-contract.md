@@ -26,7 +26,7 @@ Accepted。
 
 ## Context
 
-ADR-014已將Dart entrypoint定義為`AppEnvironment`唯一來源；ADR-023與ADR-024建立repository CI與iOS runner contract。但native runner目前仍只有單一identity與預設`lib/main.dart`，因此release-mode build可實際使用development environment，且Android flavor或iOS scheme未來可能與entrypoint錯配。
+ADR-014已將Dart entrypoint定義為`AppEnvironment`唯一來源；ADR-023與ADR-024建立repository CI與iOS runner contract。但本Decision採納前，native runner仍只有單一identity與預設compatibility entrypoint，因此release-mode build可實際使用development environment，且Android flavor或iOS scheme可能與entrypoint錯配。
 
 ## Decision
 
@@ -73,6 +73,7 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA與Store pu
 - [Milestone 26 Task 26-1 review](../audits/milestone_26/26-1_environment_contract_review.md)
 - [Milestone 26 design](../superpowers/specs/2026-07-22-milestone-26-native-flavor-product-identity-foundation-design.md)
 - [Milestone 26 implementation plan](../superpowers/plans/2026-07-22-milestone-26-native-flavor-product-identity-foundation.md)
+- [Native Environment and Product Identity Adoption Guide](../guides/native_environment_adoption.md)
 
 ## Last Reviewed Baseline
 

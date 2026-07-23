@@ -114,10 +114,23 @@ dart run melos exec -- flutter test
 App build：
 
 ```bash
-cd apps/flutter_architecture
-flutter build bundle
-flutter build apk --release -t lib/main_production.dart
+bash tools/ci/build_android_development.sh
+API_BASE_URL=https://staging-api.your-domain.example \
+  bash tools/ci/build_android_environment.sh \
+    staging debug lib/main_staging.dart real
+API_BASE_URL=https://api.your-domain.example \
+  bash tools/ci/build_android_production.sh
+
+bash tools/ci/build_ios_development.sh
+API_BASE_URL=https://staging-api.your-domain.example \
+  bash tools/ci/build_ios_environment.sh \
+    staging Staging Debug-staging iphonesimulator \
+    lib/main_staging.dart real
+API_BASE_URL=https://api.your-domain.example \
+  bash tools/ci/build_ios_production.sh
 ```
+
+以上是 repository verification commands，不是 production signing／Store distribution commands。產品 identifier、display name、API domain 與 signing 採用流程請讀 `docs/guides/native_environment_adoption.md`。
 
 ## Related Decisions
 

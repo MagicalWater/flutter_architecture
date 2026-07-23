@@ -119,42 +119,36 @@ Android與iOS目前皆為Supported平台。iOS已包含tracked runner、unsigned
 
 Authenticated request 由 Main Dio 加入 access token；401 refresh 使用獨立 Refresh Dio，避免 refresh request 再次進入 auth interceptor。多個同 Session 的並行 401 共用一次 refresh，成功後只有可安全重送的 request 才會以新 token replay。Logout、Session expiration 或帳號切換後，舊 request / 舊 refresh response 都不得使用新 Session 身分繼續執行。
 
-`main.dart` 與 `main_development.dart` 使用 development；staging / production 分別使用獨立 Dart entrypoint。預設 development 使用 Mock API。
+`main.dart` 只保留 development compatibility；正式 native build 使用 environment-specific flavor／scheme 與 Dart entrypoint。預設 development 使用 Mock API。
 
-Development Mock：
+Development Android／iOS verification：
 
 ```bash
-cd apps/flutter_architecture
-flutter run
+bash tools/ci/build_android_development.sh
+bash tools/ci/build_ios_development.sh
 ```
 
-Development Real API：
+Staging Android／iOS verification：
 
 ```bash
-cd apps/flutter_architecture
-flutter run \
-  --dart-define=API_MODE=real \
-  --dart-define=API_BASE_URL=https://api.example.com
+API_BASE_URL=https://staging-api.your-domain.example \
+  bash tools/ci/build_android_environment.sh \
+    staging debug lib/main_staging.dart real
+
+API_BASE_URL=https://staging-api.your-domain.example \
+  bash tools/ci/build_ios_environment.sh \
+    staging Staging Debug-staging iphonesimulator \
+    lib/main_staging.dart real
 ```
 
-Staging：
+Production Android／iOS verification：
 
 ```bash
-cd apps/flutter_architecture
-flutter run \
-  -t lib/main_staging.dart \
-  --dart-define=API_MODE=real \
-  --dart-define=API_BASE_URL=https://staging-api.example.com
-```
+API_BASE_URL=https://api.your-domain.example \
+  bash tools/ci/build_android_production.sh
 
-Production：
-
-```bash
-cd apps/flutter_architecture
-flutter run \
-  -t lib/main_production.dart \
-  --dart-define=API_MODE=real \
-  --dart-define=API_BASE_URL=https://api.example.com
+API_BASE_URL=https://api.your-domain.example \
+  bash tools/ci/build_ios_production.sh
 ```
 
 規則：
@@ -164,9 +158,10 @@ flutter run \
 - staging / production 只允許 Real API。
 - Real API 必須明確提供 `API_BASE_URL`。
 - URL 只允許 HTTP / HTTPS；production 強制 HTTPS，並拒絕 mock.local、localhost、loopback 與 `.invalid` URL。
-- Dart entrypoint 是 App Environment 的唯一來源，不使用 `APP_ENV` dart-define。
-- 預設 Android application ID 是模板 placeholder：`com.example.flutterarchitecture`。建立正式產品時必須替換 application ID、namespace、Kotlin package、App label 與 signing configuration。
-- Repository 的 release build 使用 debug signing，只用於本地 artifact verification，不可直接當作正式上架簽名。
+- Dart entrypoint 是 App Environment 的唯一來源；native flavor／scheme 透過 `NATIVE_ENVIRONMENT` sentinel 驗證 mapping，不使用 `APP_ENV` dart-define。
+- 預設 base identifier `com.example.flutterarchitecture` 與 display name 都是模板 placeholder。採用流程必須從 environment manifest 開始，同步 Android、iOS 與 verification projection。
+- Repository Android production APK 使用 debug signing，iOS production `.app` 不簽名；兩者都只用於 verification，不可直接上架。
+- 完整替換順序、三環境命令與 secret boundary 請讀 `docs/guides/native_environment_adoption.md`。
 
 ### Storage
 
@@ -450,7 +445,7 @@ dart run melos run build_runner
 dart run melos run analyze
 dart run melos exec -- flutter test
 cd apps/flutter_architecture
-flutter build apk --release
+flutter build bundle
 ```
 
 目前 Android runtime smoke 已驗證：bootstrap、Mock Login、Login → Profile、Catalog 顯示與搜尋、Protected Route、Theme / Locale 持久化、Secure credential Login、force-stop / restart Restore、real API 401 → Refresh rotation → Replay、predecessor release Legacy migration、Logout destructive cleanup，以及 Android 上實際建立 Secure Storage、SharedPreferences 與 SQLite database。
@@ -533,6 +528,7 @@ docs/README.md
 - `docs/superpowers/README.md`：Design specs 與 implementation plans 索引。
 - `docs/milestones/README.md`：Milestone artifacts routing。
 - `docs/guides/ci_cd_operations.md`：CI、Branch Protection、artifact與failure／rollback操作指南。
+- `docs/guides/native_environment_adoption.md`：三環境本地命令、產品識別替換順序與 signing／Store 責任邊界。
 - `CHANGELOG.md`：正式版本變更紀錄。
 
 不要把所有文件都放入每次必讀清單；依 `docs/README.md` 的任務式路由讀取即可。

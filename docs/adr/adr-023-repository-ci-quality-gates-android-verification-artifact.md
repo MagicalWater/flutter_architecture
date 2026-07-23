@@ -38,7 +38,7 @@ GitHub Actions是repository CI host。
 
 Pull Request到`main`必須執行穩定命名的quality、generated consistency與test checks。Push到`main`必須重新驗證repository state，並在乾淨Linux runner建立Android release APK verification artifact。Manual dispatch可重跑相同能力。
 
-支援iOS後，Pull Request、`main` push與manual dispatch另在明確的GitHub-hosted `macos-15` runner執行`iOS / Simulator Build`。此gate使用repository-owned `tools/ci/build_ios_simulator.sh`完成clean dependency restore、CocoaPods resolution與unsigned Simulator build，不使用Apple Team、certificate、provisioning profile或signing secret。
+支援iOS後，Pull Request、`main` push與manual dispatch另在明確的GitHub-hosted `macos-15` runner執行`iOS / Simulator Build`。此gate使用repository-owned `tools/ci/build_ios_development.sh`完成Development Debug Simulator的clean dependency restore、CocoaPods resolution與unsigned build；Production另使用`tools/ci/build_ios_production.sh`建立generic-device unsigned Release verification。兩者都不使用Apple Team、certificate、provisioning profile或signing secret。
 
 CI使用固定runner OS major version、exact Flutter version與Java 17。Executable workspace追蹤root `pubspec.lock`，使乾淨runner驗證已知dependency graph。
 

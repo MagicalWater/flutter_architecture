@@ -115,14 +115,14 @@ last_reviewed_baseline: 1.7.0
 
 **Files:** Modify app/rootREADME as owned, `docs/guides/ci_cd_operations.md`, project context and ADR links; create an adoption guide if existing README cannot own replacement procedure; create `26-7_documentation_review.md`。
 
-- [ ] Document exact local commands for all three environments onAndroid and iOS。
-- [ ] Document manifest-first replacement order for base identifier、display name and API domain。
-- [ ] Document what remains template placeholder and what must never be committed。
-- [ ] SeparateCI verification、production signing and Store distribution responsibilities。
-- [ ] Update current snapshot only with durable current capabilities; do not copyTask journal。
-- [ ] Runlink checker、docs_check and search for stale `lib/main.dart` release commands／single identity claims。
-- [ ] Review authority duplication and newcomer usability；fix/re-review。
-- [ ] Commit `docs(flavor): 說明產品識別與採用流程`。
+- [x] Document exact local commands for all three environments onAndroid and iOS。
+- [x] Document manifest-first replacement order for base identifier、display name and API domain。
+- [x] Document what remains template placeholder and what must never be committed。
+- [x] SeparateCI verification、production signing and Store distribution responsibilities。
+- [x] Update current snapshot only with durable current capabilities; do not copyTask journal。
+- [x] Runlink checker、docs_check and search for stale `lib/main.dart` release commands／single identity claims。
+- [x] Review authority duplication and newcomer usability；fix/re-review。
+- [x] Commit `docs(flavor): 說明產品識別與採用流程`。
 
 ## Task 26-8 — Final Holistic Review and Release
 

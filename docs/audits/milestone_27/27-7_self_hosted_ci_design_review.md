@@ -42,6 +42,7 @@ Spec在修正本Review findings後，已形成可實作、可驗證且不混淆T
 | Self-hosted持久workspace可能殘留Firebase secrets或provider config | P1 | 新增clean checkout、runner temp、`always()` cleanup、post-clean verification與污染停用規則 |
 | 單機runner同時接收多workflow可能造成不安全取消或artifact競爭 | P1 | 明確採單job執行與排隊模型；Observability不得被自動cancel-in-progress中斷 |
 | Runner離線等待時間未封頂 | P2 | 文件固定GitHub目前24小時queue上限，超時後視為失敗 |
+| `workflow_dispatch` choice若沒有inherit sentinel，manual run無法可靠表達「沿用repository variable」 | P1 | 新增`repository-default` manual sentinel；它不屬於正式execution mode，resolver將其視為不覆寫 |
 
 所有P1已在Spec正文內完成明確處置，沒有留給implementation自行猜測的blocking design choice。
 
@@ -112,6 +113,8 @@ git diff --check
 - Acceptance條件是否能以static contract與runtime evidence驗證。
 
 結果未發現新的P0／P1。Spec沒有把尚未完成的runner安裝或runtime結果寫成current fact，也沒有以「未來實作決定」保留blocking architecture choice。
+
+Plan初審時發現manual choice inheritance缺口後，Review重新開啟並回補Spec，再次確認三種正式mode仍維持互斥；`repository-default`只存在於manual dispatch input，不形成第四種runtime state。
 
 ## Gate
 

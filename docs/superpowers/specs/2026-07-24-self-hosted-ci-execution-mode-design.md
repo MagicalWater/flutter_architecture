@@ -141,12 +141,13 @@ Manual dispatch提供一次性override：
 
 ```txt
 execution_mode:
+  repository-default
   manual-local
   self-hosted
   github-hosted
 ```
 
-Manual override只影響該次run，不改寫repository variable。若未提供override，則使用repository variable；若兩者皆無合法值，workflow必須以configuration error結束，而不是自行猜測執行端。
+`repository-default`只是一個manual input sentinel，不是第四種execution mode。它表示沿用repository variable。其他三個值只影響該次run，不改寫repository variable。若repository variable沒有合法值且manual input為`repository-default`，所有execution jobs必須fail closed並skipped，而不是自行猜測執行端。
 
 ## 5. Runner註冊與label
 

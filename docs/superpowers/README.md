@@ -30,6 +30,7 @@ docs/superpowers/plans/
 目前已核准、尚未開始production implementation的最新計畫：
 
 - [`plans/2026-07-23-milestone-27-production-observability-foundation.md`](plans/2026-07-23-milestone-27-production-observability-foundation.md)
+- [`plans/2026-07-24-self-hosted-ci-execution-mode.md`](plans/2026-07-24-self-hosted-ci-execution-mode.md)：Task 27-7三種CI執行端、Mac self-hosted runner與closure實作計畫。
 
 ## Reading rule
 

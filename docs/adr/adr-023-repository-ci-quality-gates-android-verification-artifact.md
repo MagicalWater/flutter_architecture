@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-023-repository-ci-quality-gates-android-verification-artifact
-last_reviewed_baseline: 1.6.1
+last_reviewed_baseline: 1.8.0
 id: ADR-023
 title: Repository CI Quality Gates and Platform Verification Artifacts
 supersedes: []
@@ -36,9 +36,11 @@ CI本身也會引入runner drift、floating Action、secret exposure、cache dep
 
 GitHub Actions是repository CI host。
 
-Pull Request到`main`必須執行穩定命名的quality、generated consistency與test checks。Push到`main`必須重新驗證repository state，並在乾淨Linux runner建立Android release APK verification artifact。Manual dispatch可重跑相同能力。
+Pull Request到`main`與Push到`main`都必須先建立穩定、可審查的change classification。Repository-owned classifier依changed paths輸出`full_ci`、`android_build`與`ios_build`；unknown path、無效Git range與classifier execution failure一律fail-safe到完整矩陣。
 
-支援iOS後，Pull Request、`main` push與manual dispatch另在明確的GitHub-hosted `macos-15` runner執行`iOS / Simulator Build`。此gate使用repository-owned `tools/ci/build_ios_development.sh`完成Development Debug Simulator的clean dependency restore、CocoaPods resolution與unsigned build；Production另使用`tools/ci/build_ios_production.sh`建立generic-device unsigned Release verification。兩者都不使用Apple Team、certificate、provisioning profile或signing secret。
+穩定required checks `CI / Quality`、`CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`不得因documentation-only而消失。Documentation-only時，required job仍以原名稱建立並在同一job內完成明確no-op；不得以不同名稱summary取代。`VERSION`變更與`workflow_dispatch`強制完整CI及Android／iOS代表build。
+
+支援iOS後，`iOS / Simulator Build`維持穩定check名稱：需要iOS驗證時使用GitHub-hosted `macos-15`執行Development Debug Simulator clean build；documentation-only時同一job改用Ubuntu完成no-op，不啟動macOS runner。Production另使用`tools/ci/build_ios_production.sh`建立generic-device unsigned Release verification。兩者都不使用Apple Team、certificate、provisioning profile或signing secret。
 
 CI使用固定runner OS major version、exact Flutter version與Java 17。Executable workspace追蹤root `pubspec.lock`，使乾淨runner驗證已知dependency graph。
 
@@ -59,8 +61,9 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 - Merge contract由人工checklist提升為repository-enforced checks。
 - Toolchain與dependency graph變更必須透過reviewable repository change發生。
 - Generated source omission會在PR被阻擋。
-- Main commit可取得可追溯的Android verification APK，但不會被誤稱為production release。
+- 只有change classification要求Android驗證時，main commit才建立可追溯的Android verification APK；documentation-only不建立平台artifact。
 - Pull Request與main commit可由獨立`iOS / Simulator Build`check阻擋不可建置的iOS native state，且不需要repository signing secrets。
+- Documentation-only不執行analyze、generated consistency、全部Flutter tests或Android／iOS代表build，避免evidence-only commit形成無限驗證循環。
 - CI workflow與pinned Actions需要後續maintenance；Dependabot不因本Decision自動加入。
 - GitHub Branch Protection settings仍需repository管理者依文件人工設定，code不能宣稱已完成settings變更。
 
@@ -80,7 +83,9 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 
 - [Milestone 24 planning review](../audits/milestone_24/24-0_planning_review.md)
 - [Milestone 24 implementation plan](../superpowers/plans/2026-07-22-milestone-24-ci-cd-foundation.md)
+- [Change-aware CI design](../superpowers/specs/2026-07-23-change-aware-ci-execution-design.md)
+- [Change-aware CI planning review](../audits/change_aware_ci_plan_review.md)
 
 ## Last Reviewed Baseline
 
-1.6.0。
+1.8.0。

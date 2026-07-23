@@ -47,6 +47,23 @@ iOS / Production Release Build
 
 `iOS / Simulator Build`維持Development Debug Simulator，避免既有Branch Protection名稱漂移。Flutter不支援iOS Simulator的Release/Profile AOT，因此Production代表建置使用`Release-production`、generic `iphoneos`與`CODE_SIGNING_ALLOWED=NO`，不是Simulator build。
 
+## Change Classification and Trigger Matrix
+
+三份workflow都先在Ubuntu執行repository-owned classifier。分類失敗、Git range無效或遇到未知路徑時，必須回退完整矩陣，不得以失敗分類作為略過驗證的理由。
+
+| 變更類型 | Full CI | Android | iOS | 備註 |
+|---|---:|---:|---:|---|
+| 純Markdown／managed docs | 否 | 否 | 否 | `Quality`跑輕量治理；Generated／Tests同job no-op；Simulator用Ubuntu no-op |
+| App Dart source／shared package | 是 | 是 | 是 | 兩平台代表build |
+| Android native only | 是 | 是 | 否 | iOS不啟動macOS |
+| iOS native only | 是 | 否 | 是 | Android build jobs skipped |
+| 一般repository tooling | 是 | 依分類 | 依分類 | 未知path fail-safe完整矩陣 |
+| Classifier／workflow wiring | 是 | 是 | 是 | 防止錯誤分類自行略過平台驗證 |
+| `VERSION` | 是 | 是 | 是 | Release override |
+| `workflow_dispatch` | 是 | 是 | 是 | 明確要求完整驗證 |
+
+`CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`是穩定required-check候選。Documentation-only時它們會成功完成no-op，而不是整個job skipped。Android兩個build jobs目前不是PR required checks，因此可在`android_build=false`時skipped；`Android / Summary`會驗證skip或build結果是否符合classifier決策。
+
 ### Android Verification Artifact
 
 ```txt
@@ -104,7 +121,7 @@ iOS / Simulator Build
 
 ### Manual verification
 
-三份workflow都支援`workflow_dispatch`。Manual run只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit的結果。
+三份workflow都支援`workflow_dispatch`，且manual run強制完整CI、Android與iOS代表矩陣。Manual run只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit的結果。
 
 ## Cache Degradation
 
@@ -127,7 +144,7 @@ APK output
 
 ## Generated Consistency Failure
 
-`CI / Generated Consistency`會從clean checkout執行：
+只有`full_ci=true`時，`CI / Generated Consistency`才會從clean checkout執行：
 
 ```bash
 bash tools/ci/verify_generated.sh
@@ -203,7 +220,7 @@ API_BASE_URL=https://api.your-domain.example bash tools/ci/build_android_product
 
 ## iOS Simulator Build Failure
 
-`iOS / Simulator Build`與`iOS / Production Release Build`都在`macos-15`執行：
+只有`ios_build=true`時，`iOS / Simulator Build`與`iOS / Production Release Build`才在`macos-15`執行：
 
 ```bash
 bash tools/ci/build_ios_development.sh
@@ -219,7 +236,16 @@ API_BASE_URL=https://api.your-domain.example bash tools/ci/build_ios_production.
 
 Production iOS verification使用`Release-production`、generic `iphoneos` SDK與`CODE_SIGNING_ALLOWED=NO`，不產生可上架IPA。不得改成Release Simulator；Flutter toolchain會以「release/profile builds are only supported for physical devices」拒絕該組合。
 
-此gate會重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`，不讀取Apple signing secrets，也不把`.app`上傳為distribution artifact。失敗時會保留7天的`toolchain.txt`與`build.log` diagnostics。
+需要iOS build時，此gate會重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`，不讀取Apple signing secrets，也不把`.app`當成distribution artifact。失敗時會保留7天的`toolchain.txt`與`build.log` diagnostics。Documentation-only時，`iOS / Simulator Build`改在Ubuntu執行同名no-op，Production job skipped，完全不啟動macOS runner或上傳iOS artifacts。
+
+## Change Classification Failure
+
+若classification job本身失敗、輸出缺失或changed range無效：
+
+1. Workflow必須輸出`full_ci=true`、`android_build=true`、`ios_build=true`。
+2. 不得因classifier defect讓required checks或平台build被錯誤略過。
+3. 修正classifier後需重新執行完整矩陣。
+4. 緊急情況可使用`workflow_dispatch`取得完整驗證，或revert change-aware wiring恢復每次push全量執行。
 
 處理順序：
 
@@ -286,11 +312,10 @@ Production release必須建立獨立workflow與protected Environment，至少重
 
 ## Explicit Non-goals
 
-Milestone 24不包含：
+目前repository CI不包含：
 
 - Production signing。
 - Play Store／App Store publishing。
-- iOS build。
 - GitHub Release automation。
 - Environment promotion。
 - Dependency auto-update。

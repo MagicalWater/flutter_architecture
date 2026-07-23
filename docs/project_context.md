@@ -48,6 +48,8 @@ Milestone 25已建立tracked iOS runner、iOS 13 native contract、CocoaPods res
 
 Milestone 26已建立development／staging／production的cross-platform mapping manifest、Android product flavors、iOS shared schemes與九組build configurations、native／Dart mismatch fail-fast、environment-aware local artifact commands、GitHub-hosted development／production代表性build matrix與manifest-first adoption guide，並以Template Baseline 1.8.0封存。Repository artifacts仍只屬verification evidence，不包含production signing或Store distribution。
 
+Repository CI已採change-aware execution：純文件變更只執行輕量治理與穩定check no-op；source、native、dependency、classifier或release變更依contract執行完整CI及相關平台代表build。Unknown path、無效Git range與classification failure會fail-safe到完整矩陣。詳細操作矩陣由`docs/guides/ci_cd_operations.md`擁有。
+
 ## Project Purpose
 
 本 repository 是可直接作為中大型 Flutter 專案起點的 Enterprise Architecture Template。
@@ -338,7 +340,7 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-目前沒有active milestone。Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；下一個正式方向必須先由Roadmap candidates或backlog完成scope review與promotion。
+目前沒有active milestone。Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI implementation已完成本地Task 1–5，尚待full regression與GitHub-hosted remote acceptance。下一個正式Milestone仍必須先由Roadmap candidates或backlog完成scope review與promotion。
 
 Production signing、physical-device acceptance、App Store distribution與GitHub repository settings仍未納入；Branch Protection目前只有文件化建議。
 

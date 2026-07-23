@@ -326,7 +326,7 @@ git commit -m "ci(ios): 略過純文件編譯"
 **Interfaces:**
 - Documents durable architecture in ADR-023 and operational trigger matrix in CI guide。
 
-- [ ] **Step 1: Write documentation review findings**
+- [x] **Step 1: Write documentation review findings**
 
 在implementation audit記錄至少：
 
@@ -339,19 +339,19 @@ CA-CI-R04 unknown paths must fail safe
 
 每項標示severity、fix與re-review disposition。
 
-- [ ] **Step 2: Update ADR-023**
+- [x] **Step 2: Update ADR-023**
 
 將「每個main push完整重驗」調整為「每個main push建立穩定CI決策，依change classification執行必要gates；release／manual與未知狀態完整重驗」。保留security、artifact與required-check邊界。
 
-- [ ] **Step 3: Update operations guide**
+- [x] **Step 3: Update operations guide**
 
 新增trigger matrix：docs-only、source、Android-only、iOS-only、dependency/workflow、VERSION、manual dispatch。說明skipped不是failure、summary/gate判讀方式，以及如何手動完整驗證。
 
-- [ ] **Step 4: Update current snapshot and plan status**
+- [x] **Step 4: Update current snapshot and plan status**
 
 Project context只摘要change-aware能力；spec與plan已由formal review接受，本Task只更新implementation checkbox與current authority，不把path matrix複製進current snapshot。
 
-- [ ] **Step 5: Run docs governance**
+- [x] **Step 5: Run docs governance**
 
 ```bash
 dart run melos run docs_check
@@ -359,7 +359,7 @@ python3 -m unittest tools.ci.test_change_classifier tools.ci.test_environment_wo
 git diff --check
 ```
 
-- [ ] **Step 6: Review and commit**
+- [x] **Step 6: Review and commit**
 
 確認single authority、baseline metadata、links與無current-state contradiction。Commit：
 

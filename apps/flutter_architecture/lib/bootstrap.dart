@@ -11,6 +11,7 @@ import 'package:flutter_architecture/app/error_reporting/bootstrap_error_guard.d
 import 'package:flutter_architecture/app/error_reporting/debug_error_reporter.dart';
 import 'package:flutter_architecture/app/error_reporting/error_report_deduplicator.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
+import 'package:flutter_architecture/app/error_reporting/error_reporting_router.dart';
 import 'package:flutter_architecture/app/localization/locale_bootstrap.dart';
 import 'package:flutter_architecture/app/localization/locale_preference_store.dart';
 import 'package:flutter_architecture/app/theme/theme_bootstrap.dart';
@@ -24,7 +25,7 @@ Future<void> bootstrap(
   AppEnvironment environment, {
   bool allowMissingNativeEnvironment = false,
 }) async {
-  final errorReporter = DebugErrorReporter();
+  final errorReporter = ErrorReportingRouter(delegate: DebugErrorReporter());
   final deduplicator = ErrorReportDeduplicator();
 
   await runBootstrapGuarded(

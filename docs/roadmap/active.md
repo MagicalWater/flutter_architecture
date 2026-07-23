@@ -35,10 +35,10 @@ Baseline: 1.8.0
 ## Current Task
 
 ```txt
-Task 27-2 — Reporting Routing Hardening
+Task 27-3 — Firebase Crashlytics Reference Adapter
 ```
 
-Task 27-1已建立provider-neutral release identity、native package metadata reader、build-time commit metadata、remote collection default-off policy與provider lifecycle seam，並通過phase review。Firebase dependency仍未導入。
+Task 27-2已完成provider-neutral severity routing、closed metadata、recursive failure guard、degraded source＋operation rate limiting與typed breadcrumbs，並通過phase review。Firebase dependency仍未導入。
 
 ## Latest Completed Milestone
 
@@ -58,4 +58,4 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-依implementation plan執行Task 27-2，強化fatal／unexpected／degraded routing、recursive failure protection與degraded rate limiting；Firebase Crashlytics仍只能在Task 27-3導入。
+依implementation plan執行Task 27-3，只在App integration boundary導入Firebase Core與Crashlytics reference adapter，並維持collection default-off與provider failure isolation。

@@ -1,6 +1,11 @@
 from pathlib import Path
 import unittest
 
+from tools.ci.ci_execution_mode_contract import (
+    VALID_EXECUTION_MODES,
+    resolve_execution_mode,
+)
+
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS = (
@@ -12,12 +17,35 @@ WORKFLOWS = (
 
 
 class CiExecutionModeContractTest(unittest.TestCase):
-    def test_all_hosted_workflows_support_local_default_and_manual_override(self) -> None:
-        for workflow in WORKFLOWS:
-            text = workflow.read_text(encoding="utf-8")
-            self.assertIn("run_hosted:", text, workflow.name)
-            self.assertIn("CI_EXECUTION_MODE", text, workflow.name)
-            self.assertIn("inputs.run_hosted == true", text, workflow.name)
+    def test_accepts_only_three_explicit_modes(self) -> None:
+        self.assertEqual(
+            VALID_EXECUTION_MODES,
+            frozenset({"manual-local", "self-hosted", "github-hosted"}),
+        )
+        for value in ("manual-local", "self-hosted", "github-hosted"):
+            self.assertEqual(resolve_execution_mode(value, None), value)
+
+    def test_rejects_legacy_local_and_unknown_values(self) -> None:
+        for value in ("local", "", "unexpected", None):
+            with self.assertRaises(ValueError):
+                resolve_execution_mode(value, None)
+
+    def test_manual_override_wins_without_mutating_repository_value(self) -> None:
+        repository_value = "manual-local"
+        self.assertEqual(
+            resolve_execution_mode(repository_value, "self-hosted"),
+            "self-hosted",
+        )
+        self.assertEqual(repository_value, "manual-local")
+
+    def test_repository_default_uses_repository_value(self) -> None:
+        self.assertEqual(
+            resolve_execution_mode("self-hosted", "repository-default"),
+            "self-hosted",
+        )
+
+    def test_repository_default_is_not_a_runtime_mode(self) -> None:
+        self.assertNotIn("repository-default", VALID_EXECUTION_MODES)
 
     def test_local_entrypoint_exposes_all_supported_suites(self) -> None:
         script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
@@ -26,6 +54,8 @@ class CiExecutionModeContractTest(unittest.TestCase):
         self.assertIn("build_android_development.sh", script)
         self.assertIn("build_ios_development.sh", script)
         self.assertIn("upload_ios_dsyms.sh", script)
+        self.assertIn("manual-local", script)
+        self.assertNotIn("CI_EXECUTION_MODE=local", script)
 
 
 if __name__ == "__main__":

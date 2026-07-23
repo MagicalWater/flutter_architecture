@@ -5,6 +5,8 @@ suite="${1:-all}"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 
+echo "CI execution mode: manual-local (repository-owned local entrypoint)"
+
 run_quality() {
   dart pub get
   python3 tools/docs/check_docs.py .

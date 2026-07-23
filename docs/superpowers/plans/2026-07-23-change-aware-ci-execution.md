@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - change-aware-ci-execution-implementation-plan
 last_reviewed_baseline: 1.8.0
@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.8.0
 
 **Goal:** 讓純文件變更只執行輕量治理檢查，程式／原生／依賴變更執行必要的完整驗證，且 `VERSION` 與 manual dispatch 永遠執行完整 CI、Android 與 iOS 代表矩陣。
 
-**Architecture:** 新增 repository-owned Python change classifier，集中解析 event、base/head SHA 與 changed paths，輸出 `docs_only`、`full_ci`、`android_build`、`ios_build`、`release_full`。三份 GitHub Actions workflow 先在 Ubuntu classification job 執行 classifier，再以 job-level `if:` 控制重量級工作，並使用穩定 summary/gate jobs 保持 required check 語意。
+**Architecture:** 新增 repository-owned Python change classifier，集中解析 event、base/head SHA 與 changed paths，輸出 `docs_only`、`full_ci`、`android_build`、`ios_build`、`release_full`。三份 GitHub Actions workflow 先在 Ubuntu classification job 執行 classifier；既有required-check job永遠建立並在同一job內執行重量步驟或明確no-op，非required平台job才可使用job-level `if:` skipped。
 
 **Tech Stack:** Python 3 unittest、Git CLI、GitHub Actions YAML、Bash、Flutter 3.41.6、Dart 3.11.4、repository docs checker。
 
@@ -24,6 +24,7 @@ last_reviewed_baseline: 1.8.0
 - `VERSION` 變更與 `workflow_dispatch` 必須設定 `full_ci=true`、`android_build=true`、`ios_build=true`、`release_full=true`。
 - 純文件變更不得啟動 Android／iOS build runner，也不得執行 analyze、generated consistency或全部 Flutter tests。
 - 穩定 required check名稱維持可預測；不得透過更名繞過 Branch Protection。
+- `CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`不得因docs-only而整個job skipped；必須以原名稱成功完成no-op路徑。
 - External Actions維持full SHA pin，workflow不得讀取 signing／Store secrets。
 - 每個Task完成test-first implementation、self-review、findings disposition、validation與獨立commit；未經明確要求不得push。
 
@@ -66,7 +67,7 @@ def test_unknown_path_fails_safe():
     assert result.ios_build is True
 ```
 
-另外覆蓋 Dart source、Android-only native、iOS-only native、package、dependency、workflow、toolchain、manual與invalid range。
+另外覆蓋 Dart source、Android-only native、iOS-only native、package、dependency、workflow、toolchain、classifier自身變更、manual與invalid range。
 
 - [ ] **Step 2: Run focused tests and confirm failure**
 
@@ -138,7 +139,7 @@ git commit -m "feat(ci): 建立變更分類契約"
 **Interfaces:**
 - Consumes classifier CLI from Task 1。
 - Produces job outputs `docs_only`與`full_ci` from `classify-changes` job。
-- Keeps heavy job names `CI / Quality`、`CI / Generated Consistency`、`CI / Tests`，並新增穩定aggregate checks `CI / Generated Consistency Gate`與`CI / Tests Gate`供Branch Protection採用。
+- Keeps required check names `CI / Quality`、`CI / Generated Consistency`、`CI / Tests`；三個job都永遠建立，不新增替代Gate名稱。
 
 - [ ] **Step 1: Add failing workflow contract tests**
 
@@ -151,9 +152,11 @@ self.assertIn("needs.classify-changes.outputs.full_ci == 'true'", self.quality)
 self.assertIn("name: Quality", self.quality)
 self.assertIn("name: Generated Consistency", self.quality)
 self.assertIn("name: Tests", self.quality)
+self.assertNotIn("Generated Consistency Gate", self.quality)
+self.assertNotIn("Tests Gate", self.quality)
 ```
 
-並確認docs checker與workflow contracts在Quality永遠執行，analyze只在`full_ci=true`執行。
+並確認docs checker與workflow contracts在Quality永遠執行，analyze只在`full_ci=true`執行；Generated Consistency與Tests job沒有job-level `if:`，各自具有docs-only no-op step。
 
 - [ ] **Step 2: Run tests and confirm failure**
 
@@ -179,8 +182,8 @@ workflow_dispatch: manual full matrix
 
 - `Quality`永遠執行docs checker、classifier／workflow contracts、whitespace。
 - Dependency resolution與analyze使用step-level `if: needs.classify-changes.outputs.full_ci == 'true'`。
-- `Generated Consistency`與`Tests`使用job-level `if:`。
-- 增加穩定Ubuntu summary jobs，名稱固定為`CI / Generated Consistency Gate`與`CI / Tests Gate`，並由它們聚合heavy job的success／skipped／failure；不得更名既有heavy jobs。
+- `Generated Consistency`與`Tests`job永遠建立；dependency setup、generator與test steps使用step-level `if: needs.classify-changes.outputs.full_ci == 'true'`。
+- 兩個job各自加入`full_ci != 'true'`的no-op step，輸出skip reason並成功結束；不得新增不同名稱的替代Gate。
 
 - [ ] **Step 5: Run workflow contracts and YAML parser**
 
@@ -265,11 +268,11 @@ git commit -m "ci(android): 略過純文件編譯"
 
 **Interfaces:**
 - Consumes classifier CLI from Task 1。
-- Produces `ios_build` output and lightweight `iOS / Summary` on Ubuntu。
+- Produces `ios_build` output；`iOS / Simulator Build`依輸出動態選擇macOS或Ubuntu runner，Production Release非required job可skipped。
 
 - [ ] **Step 1: Add failing iOS workflow tests**
 
-Tests must confirm classifier runs on Ubuntu, both macOS jobs use`if: needs.classify-changes.outputs.ios_build == 'true'`，and summary remains stable without starting macOS for docs-only。
+Tests must confirm classifier runs onUbuntu；`Simulator Build`沒有job-level skip，`runs-on`依`ios_build`在`macos-15`與`ubuntu-24.04`間選擇，build/setup steps只在`ios_build=true`執行，docs-only no-op在同一job成功。`Production Release Build`可使用job-level condition。
 
 - [ ] **Step 2: Run tests and confirm failure**
 
@@ -279,7 +282,13 @@ python3 -m unittest tools.ci.test_environment_workflow_matrix_contract tools.ci.
 
 - [ ] **Step 3: Wire classifier and conditions**
 
-新增Ubuntu classification job；`Simulator Build`與`Production Release Build`只在`ios_build=true`啟動。新增Ubuntu summary job收斂skipped／success／failure狀態，且不得吞掉實際build failure。
+新增Ubuntu classification job：
+
+- `Simulator Build`永遠建立，使用expression動態選擇runner：`ios_build=true`為`macos-15`，否則為`ubuntu-24.04`。
+- Simulator的Flutter setup、cache、diagnostics、contract、build與artifact steps全部使用step-level `if: needs.classify-changes.outputs.ios_build == 'true'`。
+- Simulator加入`ios_build != 'true'` no-op step並保留job名稱`Simulator Build`。
+- `Production Release Build`使用job-level `if: needs.classify-changes.outputs.ios_build == 'true'`，因它目前不是required check。
+- 不新增可吞掉失敗的替代summary gate。
 
 - [ ] **Step 4: Preserve artifacts and toolchain evidence**
 
@@ -294,7 +303,7 @@ ruby -e 'require "yaml"; YAML.load_file(".github/workflows/ios.yml", aliases: tr
 
 - [ ] **Step 6: Review and commit**
 
-Review macOS runner avoidance、required-check naming、failure propagation、permissions與secret boundary。Commit：
+Review dynamic runner expression、macOS runner avoidance、required-check naming、failure propagation、permissions與secret boundary。Commit：
 
 ```bash
 git add .github/workflows/ios.yml tools/ci/test_environment_workflow_matrix_contract.py tools/ci/test_ios_workflow_contract.py
@@ -310,7 +319,7 @@ git commit -m "ci(ios): 略過純文件編譯"
 - Modify: `docs/guides/ci_cd_operations.md`
 - Modify: `docs/project_context.md`
 - Modify: `docs/README.md` if routing needs an explicit link
-- Create: `docs/audits/change_aware_ci_review.md`
+- Create: `docs/audits/change_aware_ci_implementation_review.md`
 - Modify: `docs/superpowers/specs/2026-07-23-change-aware-ci-execution-design.md`
 - Modify: `docs/superpowers/plans/2026-07-23-change-aware-ci-execution.md`
 
@@ -319,7 +328,7 @@ git commit -m "ci(ios): 略過純文件編譯"
 
 - [ ] **Step 1: Write documentation review findings**
 
-在audit記錄至少：
+在implementation audit記錄至少：
 
 ```txt
 CA-CI-R01 all main pushes previously triggered full matrix
@@ -340,7 +349,7 @@ CA-CI-R04 unknown paths must fail safe
 
 - [ ] **Step 4: Update current snapshot and plan status**
 
-Project context只摘要change-aware能力；spec改為accepted，plan依完成狀態更新checkbox，不把path matrix複製進current snapshot。
+Project context只摘要change-aware能力；spec與plan已由formal review接受，本Task只更新implementation checkbox與current authority，不把path matrix複製進current snapshot。
 
 - [ ] **Step 5: Run docs governance**
 
@@ -401,9 +410,10 @@ unknown path → all true
 
 Push一個只改managed Markdown evidence的commit。確認：
 
-- CI lightweight checks成功。
-- Android與iOS workflows只執行classification／summary。
-- macOS jobs未啟動。
+- `CI / Quality`、`CI / Generated Consistency`、`CI / Tests`三個穩定job均成功；後兩者走no-op而非skipped。
+- Android build jobs skipped，Android classification／summary成功。
+- `iOS / Simulator Build`以Ubuntu runner執行同名no-op並成功；Production Release job skipped。
+- macOS runner未啟動。
 - Android／iOS artifacts未建立。
 
 - [ ] **Step 4: Perform remote full-matrix acceptance**
@@ -431,3 +441,7 @@ git commit -m "docs(ci): 完成變更感知遠端驗證"
 - Placeholder scan：沒有TBD、TODO、未定義步驟或「類似前述」引用。
 - Type consistency：所有workflow都消費Task 1的五個固定boolean outputs；命名在各Task一致。
 - Scope：只處理CI execution policy，不加入deployment、signing、Store或package-level dynamic matrix。
+
+## Formal Review Gate
+
+正式plan review與findings disposition見`docs/audits/change_aware_ci_plan_review.md`。只有該文件維持Open P0／P1 without disposition為0時，Task 1才可開始。

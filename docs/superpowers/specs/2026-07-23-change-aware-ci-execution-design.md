@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - change-aware-ci-execution-design
 last_reviewed_baseline: 1.8.0
@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.8.0
 
 ## Status
 
-Proposed / Awaiting Review。
+Accepted after formal review and re-review。
 
 本文件定義repository CI從「任何`main` push都執行完整分析、測試與Android／iOS編譯」調整為change-aware execution的設計。它不直接修改workflow implementation。
 
@@ -68,7 +68,7 @@ push:
 
 ### C. Repository-owned change classifier with stable gate jobs
 
-新增單一repository-owned classifier，輸出`docs_only`、`full_ci`、`android_build`、`ios_build`與`release_full`。每份workflow先執行輕量classification job，再由重量級job使用`if:`判斷；必要時以穩定summary/gate job收斂結果。
+新增單一repository-owned classifier，輸出`docs_only`、`full_ci`、`android_build`、`ios_build`與`release_full`。每份workflow先執行輕量classification job，再由既有穩定命名job在內部依classification執行重量步驟或明確no-op；不得用另一個不同名稱的summary job取代既有required check。
 
 優點：分類規則集中、可測試、可文件化、required check名稱可保持穩定，並可明確支援release override。
 
@@ -121,7 +121,7 @@ analysis_options.yaml
 .github/workflows/**
 ```
 
-未知或無法分類的路徑採fail-safe：`full_ci=true`。
+未知或無法分類的路徑採fail-safe full matrix：`full_ci=true`、`android_build=true`、`ios_build=true`。
 
 ### Android build change
 
@@ -144,6 +144,8 @@ melos.yaml
 
 `VERSION`與manual dispatch強制`android_build=true`。
 
+`tools/ci/change_classifier.py`、其contract tests或任何classification wiring變更同樣強制Android build，因為它們可能改變是否執行平台驗證的判斷。
+
 ### iOS build change
 
 下列任一範圍變更時執行iOS Development Simulator與Production unsigned device代表build：
@@ -165,11 +167,13 @@ melos.yaml
 
 `VERSION`與manual dispatch強制`ios_build=true`。
 
+`tools/ci/change_classifier.py`、其contract tests或任何classification wiring變更同樣強制iOS build，因為它們可能改變是否執行平台驗證的判斷。
+
 ## Event Semantics
 
 ### Pull request
 
-比較PR base SHA與head SHA。Workflow必須建立，以維持required checks穩定；重量級jobs依classification執行或skipped。
+比較PR base SHA與head SHA。Workflow必須建立，以維持required checks穩定；required-check jobs依classification執行重量steps或同job no-op，非required jobs才可skipped。
 
 ### Push to `main`
 
@@ -204,15 +208,15 @@ CI / Tests
 
 `CI / Quality`永遠執行輕量治理檢查；只有`full_ci=true`時額外執行dependency resolution與workspace analyze。
 
-`Generated Consistency`與`Tests`在`full_ci=true`時執行。若因documentation-only而跳過，workflow應提供穩定成功的gate／summary，不讓required status缺失。
+`Generated Consistency`與`Tests`的job本身永遠建立，以維持既有status check名稱。`full_ci=true`時執行原本重量步驟；documentation-only時在同一job內執行明確no-op／classification assertion後成功結束。不得把整個job設為skipped，也不得用不同名稱的summary job替代。
 
 ### Android workflow
 
-Workflow在每次`main` push與manual dispatch建立。Build jobs只有`android_build=true`時執行；documentation-only時由輕量summary job成功結束，不上傳artifact。
+Workflow在每次`main` push與manual dispatch建立。Android build checks目前不是PR required checks，因此build jobs可在`android_build=false`時skipped；另以Ubuntu classification／summary job記錄skip reason，不上傳artifact。若未來Android build成為required check，必須改採與CI相同的stable-job internal no-op模式後才可啟用。
 
 ### iOS workflow
 
-Workflow在PR、`main` push與manual dispatch建立。兩個build jobs只有`ios_build=true`時執行；documentation-only時由輕量summary job成功結束，避免macOS runner使用。
+Workflow在PR、`main` push與manual dispatch建立。`iOS / Simulator Build`是既有stable required-check候選，因此該job永遠建立；`ios_build=true`時使用`macos-15`執行正式build，documentation-only時動態改用`ubuntu-24.04`並在同一job內執行no-op／classification assertion。`iOS / Production Release Build`目前不是required check，可在`ios_build=false`時skipped。
 
 分類job優先使用Ubuntu runner；不得為了判斷是否需要iOS build而先啟動macOS runner。
 
@@ -228,6 +232,7 @@ Current project context只需摘要「CI已採change-aware execution」，不得
 ## Testing Strategy
 
 - 新增classifier unit tests，覆蓋documentation-only、Dart source、Android-only native、iOS-only native、package、workflow、dependency、`VERSION`與未知路徑。
+- 新增required-check semantics tests，確認`CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`在documentation-only情境仍建立且成功，而不是整個job skipped。
 - 新增event range tests，覆蓋PR、push、invalid before SHA與manual dispatch。
 - 更新workflow contract tests，確認classification job、job-level conditions、stable gate names、release override與secret boundary。
 - YAML parse、shell portability、docs checker與link checker必須通過。

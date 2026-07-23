@@ -41,7 +41,7 @@ last_reviewed_baseline: 1.8.0
 - Produces: `classify_paths(paths: Sequence[str], *, manual: bool = False, invalid_range: bool = False) -> Classification`。
 - Produces: CLI `python3 tools/ci/change_classifier.py --event <push|pull_request|workflow_dispatch> --base <sha> --head <sha> --output <path>`，以 GitHub output格式寫出五個boolean與`reason`。
 
-- [ ] **Step 1: Write failing path classification tests**
+- [x] **Step 1: Write failing path classification tests**
 
 在`tools/ci/test_change_classifier.py`建立tests，至少包含：
 
@@ -69,7 +69,7 @@ def test_unknown_path_fails_safe():
 
 另外覆蓋 Dart source、Android-only native、iOS-only native、package、dependency、workflow、toolchain、classifier自身變更、manual與invalid range。
 
-- [ ] **Step 2: Run focused tests and confirm failure**
+- [x] **Step 2: Run focused tests and confirm failure**
 
 Run:
 
@@ -79,7 +79,7 @@ python3 -m unittest tools.ci.test_change_classifier -v
 
 Expected: FAIL，因`tools.ci.change_classifier`尚不存在。
 
-- [ ] **Step 3: Implement minimal classifier**
+- [x] **Step 3: Implement minimal classifier**
 
 在`tools/ci/change_classifier.py`實作：
 
@@ -96,7 +96,7 @@ class Classification:
 
 分類規則使用明確prefix／exact-match helpers；`VERSION`與manual優先，未知路徑或`invalid_range=True`回傳完整矩陣。CLI以`git diff --name-only <base> <head>`取得paths；base不存在、全零SHA或Git命令失敗時fail-safe。
 
-- [ ] **Step 4: Run classifier tests**
+- [x] **Step 4: Run classifier tests**
 
 Run:
 
@@ -106,7 +106,7 @@ python3 -m unittest tools.ci.test_change_classifier -v
 
 Expected: all tests PASS。
 
-- [ ] **Step 5: Run CLI simulations**
+- [x] **Step 5: Run CLI simulations**
 
 Run temporary Git ranges或直接使用CLI test fixture，確認output包含：
 
@@ -119,7 +119,7 @@ release_full=true|false
 reason=<non-empty>
 ```
 
-- [ ] **Step 6: Review and commit**
+- [x] **Step 6: Review and commit**
 
 Review unknown path、empty diff、all-zero before SHA、path normalization與shell-safe output。Commit：
 

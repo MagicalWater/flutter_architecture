@@ -89,6 +89,7 @@ Final build保留兩項既有非阻斷warning：第三方`local_auth_darwin` Swi
 - iOS run `29970226484`：Development Simulator與Production unsigned device Release成功。
 - iOS toolchain closure run `29971307542`：兩個iOS代表build再次成功，並永久保存macOS 15.7.7、Xcode 16.4、Flutter 3.41.6、Dart 3.11.4與CocoaPods 1.17.0 evidence。
 - 完整artifact metadata與下載後identity inspection見`26-6_remote_validation.md`。
+- Release／archive commit `40ce1f97a2c6db568cb42f2734cb5ee19d564f3e`的post-release runs亦全部成功：CI `29973185824`、Android `29973185891`、iOS `29973185825`。完整release-SHA artifacts、digests與toolchain evidence見`26-9_post_release_remote_validation.md`。
 
 ## Release Decision
 
@@ -116,4 +117,4 @@ Template Baseline 1.8.0可宣稱：
 - AAB、IPA、TestFlight、Play Store或App Store distribution-ready。
 - Apple physical-device biometric acceptance已完成。
 
-Milestone 26 final holistic review completed，Open P0／P1 without disposition為0。
+Milestone 26 final holistic review completed，且release-SHA post-release remote validation已關閉；Open P0／P1 without disposition為0。

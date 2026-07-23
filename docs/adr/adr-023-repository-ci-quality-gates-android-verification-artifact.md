@@ -24,7 +24,7 @@ Accepted。
 
 ## Authoritative Scope
 
-本Decision定義repository CI host、required quality gates、toolchain reproducibility、generated source consistency、Android verification artifact、iOS Simulator build gate與CI security boundary。
+本Decision定義repository CI host、execution mode、required quality gates、toolchain reproducibility、generated source consistency、Android verification artifact、iOS Simulator build gate與CI security boundary。
 
 ## Context
 
@@ -34,11 +34,27 @@ CI本身也會引入runner drift、floating Action、secret exposure、cache dep
 
 ## Decision
 
-GitHub Actions是repository CI host。
+GitHub Actions是repository CI control plane。Repository正式支援三種互斥的CI execution mode：
 
-Pull Request到`main`與Push到`main`都必須先建立穩定、可審查的change classification。Repository-owned classifier依changed paths輸出`full_ci`、`android_build`與`ios_build`；unknown path、無效Git range與classifier execution failure一律fail-safe到完整矩陣。
+```txt
+manual-local
+self-hosted
+github-hosted
+```
 
-穩定required checks `CI / Quality`、`CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`不得因documentation-only而消失。Documentation-only時，required job仍以原名稱建立並在同一job內完成明確no-op；不得以不同名稱summary取代。`VERSION`變更與`workflow_dispatch`強制完整CI及Android／iOS代表build。
+`manual-local`表示GitHub不派送任何hosted或self-hosted execution job，由操作者明確執行repository-owned本機腳本；`self-hosted`表示GitHub只把可信`main` push與`workflow_dispatch`工作派送至repository-scoped Mac runner；`github-hosted`表示沿用GitHub提供的Ubuntu／macOS runner。
+
+Manual dispatch可以使用`repository-default`作為sentinel，表示沿用repository variable的execution mode。`repository-default`不是第四種execution mode，不得保存為current mode。
+
+Self-hosted runner使用`water`帳號下的獨立runner workspace與完整專用labels。Pull Request、fork Pull Request、Dependabot Pull Request與未合併branch不得進入此runner。Unknown、空白或legacy mode必須fail closed，不得猜測執行端，也不得自動fallback到GitHub-hosted runner產生非預期費用。
+
+三種execution mode必須共用repository-owned scripts作為build、test與symbol handling實作來源。Workflow只負責event policy、runner routing、secret materialization與artifact transport，不得維護平行build contract。
+
+在`github-hosted`模式下，Pull Request到`main`與Push到`main`都必須先建立穩定、可審查的change classification。Repository-owned classifier依changed paths輸出`full_ci`、`android_build`與`ios_build`；unknown path、無效Git range與classifier execution failure一律fail-safe到完整矩陣。
+
+在`self-hosted`模式下，只有`main` push與`workflow_dispatch`可以建立execution jobs；Pull Request checks可以顯示為skipped，但`skipped`不得被解讀為已完成驗證。Branch Protection required checks必須依實際mode治理，不得要求一個在該mode永久不執行的job成功。
+
+在`github-hosted`模式下，穩定required checks `CI / Quality`、`CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`不得因documentation-only而消失。Documentation-only時，required job仍以原名稱建立並在同一job內完成明確no-op；不得以不同名稱summary取代。`VERSION`變更與`workflow_dispatch`強制完整CI及Android／iOS代表build。
 
 支援iOS後，`iOS / Simulator Build`維持穩定check名稱：需要iOS驗證時使用GitHub-hosted `macos-15`執行Development Debug Simulator clean build；documentation-only時同一job改用Ubuntu完成no-op，不啟動macOS runner。Production另使用`tools/ci/build_ios_production.sh`建立generic-device unsigned Release verification。兩者都不使用Apple Team、certificate、provisioning profile或signing secret。
 
@@ -65,6 +81,8 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 - Pull Request與main commit可由獨立`iOS / Simulator Build`check阻擋不可建置的iOS native state，且不需要repository signing secrets。
 - Documentation-only不執行analyze、generated consistency、全部Flutter tests或Android／iOS代表build，避免evidence-only commit形成無限驗證循環。
 - CI workflow與pinned Actions需要後續maintenance；Dependabot不因本Decision自動加入。
+- Self-hosted runner不消耗GitHub-hosted execution minutes，但會引入本機可用性、持久workspace、cache與secret清理責任。
+- Runner離線時job維持queued；不得自動切換至GitHub-hosted runner。操作人員必須恢復runner或明確切換mode。
 - GitHub Branch Protection settings仍需repository管理者依文件人工設定，code不能宣稱已完成settings變更。
 
 ## Supersession
@@ -85,6 +103,8 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 - [Milestone 24 implementation plan](../superpowers/plans/2026-07-22-milestone-24-ci-cd-foundation.md)
 - [Change-aware CI design](../superpowers/specs/2026-07-23-change-aware-ci-execution-design.md)
 - [Change-aware CI planning review](../audits/change_aware_ci_plan_review.md)
+- [Task 27-7 self-hosted CI design](../superpowers/specs/2026-07-24-self-hosted-ci-execution-mode-design.md)
+- [Task 27-7 self-hosted CI plan](../superpowers/plans/2026-07-24-self-hosted-ci-execution-mode.md)
 
 ## Last Reviewed Baseline
 

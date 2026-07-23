@@ -31,14 +31,20 @@ Baseline: 1.8.0
 - Implementation plan：`docs/superpowers/plans/2026-07-23-milestone-27-production-observability-foundation.md`
 - Planning review：`docs/audits/milestone_27/27-0_planning_review.md`
 - Planning artifacts holistic review：`docs/audits/milestone_27/27-0_planning_artifacts_holistic_review.md`
+- Task 27-7 Design：`docs/superpowers/specs/2026-07-24-self-hosted-ci-execution-mode-design.md`
+- Task 27-7 Implementation plan：`docs/superpowers/plans/2026-07-24-self-hosted-ci-execution-mode.md`
+- Task 27-7 Design review：`docs/audits/milestone_27/27-7_self_hosted_ci_design_review.md`
+- Task 27-7 Plan review：`docs/audits/milestone_27/27-7_self_hosted_ci_plan_review.md`
 
 ## Current Task
 
 ```txt
-Task 27-6 — CI Secrets and Remote Acceptance（remote acceptance pending）
+Task 27-7 — CI Execution Mode and Self-hosted Runner Foundation
 ```
 
-Task 27-6 implementation已完成PR-safe secret boundary、Android／iOS explicit symbol upload jobs、App bootstrap provider composition與staging-only controlled non-fatal入口。Repository目前尚未配置Firebase secrets，因此remote upload、event ingestion與console symbolication均維持not executed。
+Task 27-7目前已完成Design與Implementation Plan的完整審查，正在執行Task 1：activation與ADR authority同步。此Task將建立`manual-local`、`self-hosted`與`github-hosted`三種正式CI execution mode，讓可信`main` push與人工dispatch可由Mac self-hosted runner執行，同時保留人工本機與GitHub-hosted回退路徑。
+
+Task 27-6已完成CI secret boundary、Android／iOS explicit symbol upload、staging controlled non-fatal入口與本機iOS runtime傳送證據。Firebase secrets與App設定已完成；Android remote event與symbolication已有證據。iOS新build的symbols已成功提交，Simulator第二次啟動後Crashlytics report endpoint回應HTTP 200；Firebase Console ingestion與最終symbolication closure仍待確認。Task 27-7不得取代或提前關閉Task 27-6。
 
 ## Latest Completed Milestone
 
@@ -58,4 +64,4 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-配置`staging-observability` GitHub Environment secrets，push目前commit後manual dispatch `Observability Acceptance`，分別確認Android與iOS remote event的release、environment與symbolicated stack，再關閉Task 27-6。
+完成Task 27-7 Task 1的ADR與current authority同步，接著進入Task 2 execution mode contract與舊`local`命名遷移。Task 27-7完成後，再依最新iOS Firebase Console證據關閉Task 27-6。

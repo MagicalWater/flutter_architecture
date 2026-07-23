@@ -58,6 +58,7 @@ Final / Holistic Review
 - [`milestone_27/27-6_ci_secrets_remote_acceptance_review.md`](milestone_27/27-6_ci_secrets_remote_acceptance_review.md)：CI secret boundary、兩平台symbol upload與remote acceptance pending review。
 - [`milestone_27/27-7_self_hosted_ci_design_review.md`](milestone_27/27-7_self_hosted_ci_design_review.md)：三種CI execution mode、trusted self-hosted runner boundary與Task 27-7 design gate。
 - [`milestone_27/27-7_self_hosted_ci_plan_review.md`](milestone_27/27-7_self_hosted_ci_plan_review.md)：Task 27-7 implementation順序、TDD、runtime acceptance與逐Task closure gate。
+- [`milestone_27/27-7_task_1_activation_adr_review.md`](milestone_27/27-7_task_1_activation_adr_review.md)：Task 27-7 activation、ADR authority與current roadmap同步review。
 - [`milestone_27/27-3_firebase_crashlytics_reference_adapter_review.md`](milestone_27/27-3_firebase_crashlytics_reference_adapter_review.md)：Firebase Core／Crashlytics App-owned reference adapter、collection policy與failure isolation review。
 - [`milestone_27/27-2_reporting_routing_hardening_review.md`](milestone_27/27-2_reporting_routing_hardening_review.md)：Severity routing、closed metadata、recursive guard、degraded rate limiting與typed breadcrumb review。
 

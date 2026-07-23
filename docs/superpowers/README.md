@@ -27,10 +27,12 @@ docs/superpowers/plans/
   Task-based implementation plans
 ```
 
-目前已核准、尚未開始production implementation的最新計畫：
+目前已核准的最新計畫：
 
 - [`plans/2026-07-23-milestone-27-production-observability-foundation.md`](plans/2026-07-23-milestone-27-production-observability-foundation.md)
 - [`plans/2026-07-24-self-hosted-ci-execution-mode.md`](plans/2026-07-24-self-hosted-ci-execution-mode.md)：Task 27-7三種CI執行端、Mac self-hosted runner與closure實作計畫。
+
+Task 27-7已進入implementation；目前由`docs/roadmap/active.md`保存current Task，Plan只保存執行順序與驗證gate。
 
 ## Reading rule
 

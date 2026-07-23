@@ -31,7 +31,8 @@ jobs:
       - name: Verify observability acceptance contract
         run: python3 -m unittest tools.ci.test_observability_acceptance_workflow
       - name: Record upload disposition
-        run: echo "Upload skipped: PR-safe contract job never reads provider secrets."
+        run: |
+          echo "Upload skipped: PR-safe contract job never reads provider secrets."
 
   android-symbols:
     name: Android Symbols
@@ -51,9 +52,11 @@ jobs:
         shell: bash
         run: |
           source .github/versions.env
-          echo "flutter_version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
-          echo "java_version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
-          echo "java_distribution=$JAVA_DISTRIBUTION" >> "$GITHUB_OUTPUT"
+          {
+            echo "flutter_version=$FLUTTER_VERSION"
+            echo "java_version=$JAVA_VERSION"
+            echo "java_distribution=$JAVA_DISTRIBUTION"
+          } >> "$GITHUB_OUTPUT"
       - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: ${{ steps.versions.outputs.java_distribution }}
@@ -65,7 +68,8 @@ jobs:
           cache: true
       - name: Explain missing Android secret boundary
         if: env.REMOTE_ACCEPTANCE_READY != 'true'
-        run: echo "Upload skipped: Android observability secrets are not configured."
+        run: |
+          echo "Upload skipped: Android observability secrets are not configured."
       - name: Materialize Android provider config and credentials
         if: env.REMOTE_ACCEPTANCE_READY == 'true'
         shell: bash
@@ -150,7 +154,8 @@ jobs:
           cache: true
       - name: Explain missing iOS secret boundary
         if: env.REMOTE_ACCEPTANCE_READY != 'true'
-        run: echo "Upload skipped: iOS observability secrets are not configured."
+        run: |
+          echo "Upload skipped: iOS observability secrets are not configured."
       - name: Materialize iOS provider config
         if: env.REMOTE_ACCEPTANCE_READY == 'true'
         env:

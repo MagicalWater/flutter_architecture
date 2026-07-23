@@ -35,10 +35,10 @@ Baseline: 1.8.0
 ## Current Task
 
 ```txt
-Task 27-3 — Firebase Crashlytics Reference Adapter
+Task 27-4 — Android Native and Symbol Pipeline
 ```
 
-Task 27-2已完成provider-neutral severity routing、closed metadata、recursive failure guard、degraded source＋operation rate limiting與typed breadcrumbs，並通過phase review。Firebase dependency仍未導入。
+Task 27-3已在App integration boundary導入Firebase Core與Crashlytics reference adapter，完成explicit collection policy、fatal／non-fatal mapping、async provider failure isolation與local fallback。Firebase Analytics與Sentry仍未導入，native config與symbol pipeline尚未開始。
 
 ## Latest Completed Milestone
 
@@ -58,4 +58,4 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-依implementation plan執行Task 27-3，只在App integration boundary導入Firebase Core與Crashlytics reference adapter，並維持collection default-off與provider failure isolation。
+依implementation plan執行Task 27-4，建立Android environment config、Gradle integration與mapping／Flutter symbol contract。

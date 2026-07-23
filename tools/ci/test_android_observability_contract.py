@@ -16,13 +16,15 @@ class AndroidObservabilityContractTest(unittest.TestCase):
         self.assertIn('pluginManager.apply("com.google.firebase.crashlytics")', app_gradle)
         self.assertIn("google-services.json", app_gradle)
 
-    def test_production_build_generates_flutter_symbols(self) -> None:
+    def test_release_builds_generate_flutter_symbols(self) -> None:
         script = (ROOT / "tools/ci/build_android_environment.sh").read_text()
 
+        self.assertIn('--dart-define=NATIVE_ENVIRONMENT=$environment', script)
         self.assertIn('--obfuscate', script)
         self.assertIn('--split-debug-info=', script)
         self.assertIn('flutter_symbols_dir=', script)
         self.assertIn('mapping.txt', script)
+        self.assertNotIn('"$environment" == "production" && "$build_mode" == "release"', script)
 
     def test_symbol_upload_is_explicit_and_optional(self) -> None:
         upload = (ROOT / "tools/ci/upload_android_flutter_symbols.sh").read_text()

@@ -20,12 +20,43 @@ products="$artifact_dir/DerivedData/Build/Products"; app_bundle="$(find "$produc
 target_app="$artifact_dir/$(basename "$app_bundle")"; cp -R "$app_bundle" "$target_app"
 expected_dsym_name="$(basename "$app_bundle").dSYM"
 dsym_bundle="$(find "$products" -maxdepth 3 -type d -name "$expected_dsym_name" -print -quit)"
+if [[ -z "$dsym_bundle" && "${GENERATE_DSYM_FOR_ACCEPTANCE:-false}" == "true" ]]; then
+  executable_name="$(plutil -extract CFBundleExecutable raw "$app_bundle/Info.plist")"
+  generated_dsym="$products/$expected_dsym_name"
+  xcrun dsymutil "$app_bundle/$executable_name" -o "$generated_dsym"
+  dsym_bundle="$generated_dsym"
+fi
 if [[ "$configuration" == Release-* && -z "$dsym_bundle" ]]; then
   echo "Expected Runner dSYM was not generated under $products" >&2
   exit 1
 fi
-if [[ -n "$dsym_bundle" ]]; then cp -R "$dsym_bundle" "$artifact_dir/$expected_dsym_name"; fi
+dsym_set_dir="$artifact_dir/dSYMs"
+if [[ -n "$dsym_bundle" ]]; then
+  mkdir -p "$dsym_set_dir"
+  cp -R "$dsym_bundle" "$dsym_set_dir/$expected_dsym_name"
+fi
+if [[ "${GENERATE_DSYM_FOR_ACCEPTANCE:-false}" == "true" ]]; then
+  app_framework_binary="$app_bundle/Frameworks/App.framework/App"
+  if [[ -f "$app_framework_binary" ]]; then
+    mkdir -p "$dsym_set_dir"
+    xcrun dsymutil "$app_framework_binary" -o "$dsym_set_dir/App.framework.dSYM"
+  fi
+fi
 bundle_id="$(plutil -extract CFBundleIdentifier raw "$target_app/Info.plist")"
+if [[ -d "$dsym_set_dir" ]]; then
+  dsym_uuids="$(find "$dsym_set_dir" -type f -path '*/DWARF/*' -print0 | while IFS= read -r -d '' file; do xcrun dwarfdump --uuid "$file"; done | awk '{print $2}' | sort -u)"
+  required_binaries=("$target_app/$(plutil -extract CFBundleExecutable raw "$target_app/Info.plist")")
+  [[ ! -f "$target_app/Frameworks/App.framework/App" ]] || required_binaries+=("$target_app/Frameworks/App.framework/App")
+  for binary in "${required_binaries[@]}"; do
+    while read -r uuid; do
+      [[ -z "$uuid" ]] && continue
+      grep -qx "$uuid" <<< "$dsym_uuids" || {
+        echo "Required binary UUID is missing from dSYM set: binary=$binary uuid=$uuid" >&2
+        exit 1
+      }
+    done < <(xcrun dwarfdump --uuid "$binary" | awk '{print $2}' | sort -u)
+  done
+fi
 expected_id="com.example.flutterarchitecture"; [[ "$environment" == "production" ]] || expected_id+=".$environment"
 [[ "$bundle_id" == "$expected_id" ]] || { echo "Unexpected bundle id: $bundle_id" >&2; exit 1; }
 cat > "$artifact_dir/artifact-metadata.txt" <<EOF
@@ -41,6 +72,6 @@ bundle_id=$bundle_id
 signing=unsigned verification build
 distribution=not production-ready
 artifact=$(basename "$target_app")
-dsym=$([[ -d "$artifact_dir/$expected_dsym_name" ]] && echo present || echo not-generated)
+dsym=$([[ -d "$dsym_set_dir" ]] && echo present || echo not-generated)
 EOF
 echo "iOS verification artifact: $target_app"; cat "$artifact_dir/artifact-metadata.txt"

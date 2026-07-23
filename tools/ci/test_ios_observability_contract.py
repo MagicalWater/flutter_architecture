@@ -37,6 +37,10 @@ class IosObservabilityContractTest(unittest.TestCase):
         self.assertIn("not executed", uploader)
         self.assertIn("Expected Runner dSYM was not generated", build)
         self.assertIn("expected_dsym_name", build)
+        self.assertIn("GENERATE_DSYM_FOR_ACCEPTANCE", build)
+        self.assertIn("xcrun dsymutil", build)
+        self.assertIn("App.framework.dSYM", build)
+        self.assertIn("Required binary UUID is missing from dSYM set", build)
         self.assertIn("IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'", podfile)
 
 

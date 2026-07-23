@@ -42,7 +42,7 @@ jobs:
     environment: staging-observability
     runs-on: ubuntu-24.04
     env:
-      REMOTE_ACCEPTANCE_READY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' && secrets.FIREBASE_ANDROID_PRODUCTION_CONFIG_B64 != '' && secrets.FIREBASE_ANDROID_STAGING_CONFIG_B64 != '' && secrets.FIREBASE_ANDROID_APP_ID != '' }}
+      REMOTE_ACCEPTANCE_READY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON != '' && secrets.FIREBASE_ANDROID_PRODUCTION_CONFIG_B64 != '' && secrets.FIREBASE_ANDROID_STAGING_CONFIG_B64 != '' && secrets.FIREBASE_ANDROID_APP_ID != '' && secrets.FIREBASE_ANDROID_STAGING_APP_ID != '' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -98,7 +98,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase/service-account.json
           FIREBASE_ANDROID_APP_ID: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
         run: bash tools/ci/upload_android_flutter_symbols.sh "$RUNNER_TEMP/android-production-artifact/flutter-symbols"
-      - name: Build controlled Android staging acceptance APK
+      - name: Build controlled Android staging acceptance release
         if: env.REMOTE_ACCEPTANCE_READY == 'true'
         env:
           API_BASE_URL: https://api.acme.test
@@ -107,7 +107,13 @@ jobs:
           OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED: 'true'
         run: >-
           bash tools/ci/build_android_environment.sh
-          staging debug lib/main_staging.dart real
+          staging release lib/main_staging.dart real
+      - name: Upload Android staging Flutter symbols
+        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase/service-account.json
+          FIREBASE_ANDROID_APP_ID: ${{ secrets.FIREBASE_ANDROID_STAGING_APP_ID }}
+        run: bash tools/ci/upload_android_flutter_symbols.sh "$RUNNER_TEMP/android-staging-acceptance/flutter-symbols"
       - name: Write Android evidence
         env:
           STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && 'uploaded' || 'not-executed' }}
@@ -183,9 +189,15 @@ jobs:
           ARTIFACT_DIR: ${{ runner.temp }}/ios-staging-acceptance
           OBSERVABILITY_REMOTE_COLLECTION_ENABLED: 'true'
           OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED: 'true'
+          GENERATE_DSYM_FOR_ACCEPTANCE: 'true'
         run: >-
           bash tools/ci/build_ios_environment.sh
           staging Staging Debug-staging iphonesimulator lib/main_staging.dart real
+      - name: Upload iOS staging dSYM
+        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        run: >-
+          bash tools/ci/upload_ios_dsyms.sh staging
+          "$RUNNER_TEMP/ios-staging-acceptance/dSYMs"
       - name: Write iOS evidence
         env:
           STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && 'uploaded' || 'not-executed' }}

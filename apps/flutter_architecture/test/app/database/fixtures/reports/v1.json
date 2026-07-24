@@ -1,0 +1,69 @@
+{
+  "userVersion": 1,
+  "master": [
+    {
+      "type": "table",
+      "name": "auth_user",
+      "tbl_name": "auth_user",
+      "sql": "CREATE TABLE auth_user (\n          id TEXT PRIMARY KEY,\n          name TEXT NOT NULL\n        )"
+    }
+  ],
+  "tableInfo": {
+    "auth_user": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ]
+  },
+  "foreignKeys": {
+    "auth_user": []
+  },
+  "indexes": {
+    "auth_user": {
+      "list": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_auth_user_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "columns": {
+        "sqlite_autoindex_auth_user_1": [
+          {
+            "seqno": 0,
+            "cid": 0,
+            "name": "id"
+          }
+        ]
+      }
+    }
+  },
+  "foreignKeyCheck": [],
+  "sentinelData": {
+    "auth_user": [
+      {
+        "id": "legacy-a",
+        "name": "Legacy A"
+      },
+      {
+        "id": "legacy-b",
+        "name": "Legacy B"
+      }
+    ]
+  }
+}

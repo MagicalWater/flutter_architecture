@@ -1,0 +1,330 @@
+{
+  "userVersion": 3,
+  "master": [
+    {
+      "type": "index",
+      "name": "catalog_cache_page_item_position_idx",
+      "tbl_name": "catalog_cache_page_item",
+      "sql": "CREATE UNIQUE INDEX catalog_cache_page_item_position_idx\n      ON catalog_cache_page_item (\n        query, request_cursor, request_limit, item_position\n      )\n    "
+    },
+    {
+      "type": "table",
+      "name": "auth_user",
+      "tbl_name": "auth_user",
+      "sql": "CREATE TABLE auth_user (\n          id TEXT PRIMARY KEY,\n          name TEXT NOT NULL\n        )"
+    },
+    {
+      "type": "table",
+      "name": "catalog_cache_page",
+      "tbl_name": "catalog_cache_page",
+      "sql": "CREATE TABLE catalog_cache_page (\n        query TEXT NOT NULL,\n        request_cursor TEXT NOT NULL,\n        request_limit INTEGER NOT NULL,\n        next_cursor TEXT,\n        updated_at INTEGER NOT NULL,\n        PRIMARY KEY (query, request_cursor, request_limit)\n      )"
+    },
+    {
+      "type": "table",
+      "name": "catalog_cache_page_item",
+      "tbl_name": "catalog_cache_page_item",
+      "sql": "CREATE TABLE catalog_cache_page_item (\n        query TEXT NOT NULL,\n        request_cursor TEXT NOT NULL,\n        request_limit INTEGER NOT NULL,\n        item_id TEXT NOT NULL,\n        item_position INTEGER NOT NULL,\n        item_name TEXT NOT NULL,\n        item_description TEXT NOT NULL,\n        PRIMARY KEY (query, request_cursor, request_limit, item_id),\n        FOREIGN KEY (query, request_cursor, request_limit)\n          REFERENCES catalog_cache_page (query, request_cursor, request_limit)\n          ON DELETE CASCADE\n      )"
+    }
+  ],
+  "tableInfo": {
+    "auth_user": [
+      {
+        "cid": 0,
+        "name": "id",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "name",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "catalog_cache_page": [
+      {
+        "cid": 0,
+        "name": "query",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "request_cursor",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 2
+      },
+      {
+        "cid": 2,
+        "name": "request_limit",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 3
+      },
+      {
+        "cid": 3,
+        "name": "next_cursor",
+        "type": "TEXT",
+        "notnull": 0,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 4,
+        "name": "updated_at",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ],
+    "catalog_cache_page_item": [
+      {
+        "cid": 0,
+        "name": "query",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 1
+      },
+      {
+        "cid": 1,
+        "name": "request_cursor",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 2
+      },
+      {
+        "cid": 2,
+        "name": "request_limit",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 3
+      },
+      {
+        "cid": 3,
+        "name": "item_id",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 4
+      },
+      {
+        "cid": 4,
+        "name": "item_position",
+        "type": "INTEGER",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 5,
+        "name": "item_name",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      },
+      {
+        "cid": 6,
+        "name": "item_description",
+        "type": "TEXT",
+        "notnull": 1,
+        "dflt_value": null,
+        "pk": 0
+      }
+    ]
+  },
+  "foreignKeys": {
+    "auth_user": [],
+    "catalog_cache_page": [],
+    "catalog_cache_page_item": [
+      {
+        "id": 0,
+        "seq": 0,
+        "table": "catalog_cache_page",
+        "from": "query",
+        "to": "query",
+        "on_update": "NO ACTION",
+        "on_delete": "CASCADE",
+        "match": "NONE"
+      },
+      {
+        "id": 0,
+        "seq": 1,
+        "table": "catalog_cache_page",
+        "from": "request_cursor",
+        "to": "request_cursor",
+        "on_update": "NO ACTION",
+        "on_delete": "CASCADE",
+        "match": "NONE"
+      },
+      {
+        "id": 0,
+        "seq": 2,
+        "table": "catalog_cache_page",
+        "from": "request_limit",
+        "to": "request_limit",
+        "on_update": "NO ACTION",
+        "on_delete": "CASCADE",
+        "match": "NONE"
+      }
+    ]
+  },
+  "indexes": {
+    "auth_user": {
+      "list": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_auth_user_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "columns": {
+        "sqlite_autoindex_auth_user_1": [
+          {
+            "seqno": 0,
+            "cid": 0,
+            "name": "id"
+          }
+        ]
+      }
+    },
+    "catalog_cache_page": {
+      "list": [
+        {
+          "seq": 0,
+          "name": "sqlite_autoindex_catalog_cache_page_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "columns": {
+        "sqlite_autoindex_catalog_cache_page_1": [
+          {
+            "seqno": 0,
+            "cid": 0,
+            "name": "query"
+          },
+          {
+            "seqno": 1,
+            "cid": 1,
+            "name": "request_cursor"
+          },
+          {
+            "seqno": 2,
+            "cid": 2,
+            "name": "request_limit"
+          }
+        ]
+      }
+    },
+    "catalog_cache_page_item": {
+      "list": [
+        {
+          "seq": 0,
+          "name": "catalog_cache_page_item_position_idx",
+          "unique": 1,
+          "origin": "c",
+          "partial": 0
+        },
+        {
+          "seq": 1,
+          "name": "sqlite_autoindex_catalog_cache_page_item_1",
+          "unique": 1,
+          "origin": "pk",
+          "partial": 0
+        }
+      ],
+      "columns": {
+        "catalog_cache_page_item_position_idx": [
+          {
+            "seqno": 0,
+            "cid": 0,
+            "name": "query"
+          },
+          {
+            "seqno": 1,
+            "cid": 1,
+            "name": "request_cursor"
+          },
+          {
+            "seqno": 2,
+            "cid": 2,
+            "name": "request_limit"
+          },
+          {
+            "seqno": 3,
+            "cid": 4,
+            "name": "item_position"
+          }
+        ],
+        "sqlite_autoindex_catalog_cache_page_item_1": [
+          {
+            "seqno": 0,
+            "cid": 0,
+            "name": "query"
+          },
+          {
+            "seqno": 1,
+            "cid": 1,
+            "name": "request_cursor"
+          },
+          {
+            "seqno": 2,
+            "cid": 2,
+            "name": "request_limit"
+          },
+          {
+            "seqno": 3,
+            "cid": 3,
+            "name": "item_id"
+          }
+        ]
+      }
+    }
+  },
+  "foreignKeyCheck": [],
+  "sentinelData": {
+    "auth_user": [
+      {
+        "id": "legacy-single",
+        "name": "Legacy Single"
+      }
+    ],
+    "catalog_cache_page": [
+      {
+        "query": "flutter",
+        "request_cursor": "",
+        "request_limit": 20,
+        "next_cursor": null,
+        "updated_at": 1784505600000
+      }
+    ],
+    "catalog_cache_page_item": [
+      {
+        "query": "flutter",
+        "request_cursor": "",
+        "request_limit": 20,
+        "item_id": "item-1",
+        "item_position": 0,
+        "item_name": "Item item-1",
+        "item_description": "Fixture item item-1"
+      }
+    ]
+  }
+}

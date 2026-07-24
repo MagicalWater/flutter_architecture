@@ -45,3 +45,9 @@ git diff --check
 ```
 
 Open P0 = 0；Open P1 without disposition = 0。Task 31-R6 accepted。
+
+## R8-triggered reopen and fresh re-review
+
+R8 cross-authority audit發現`docs/superpowers/README.md`在recovery中已修改routing內容，但metadata仍為`1.12.0`。R6重新開啟並修正為`1.13.0`。
+
+Fresh re-review：Spec／Plan index仍只負責artifact routing；沒有新增workflow authority。Docs tests、repository `docs_check`與diff check重新通過。R6維持accepted。

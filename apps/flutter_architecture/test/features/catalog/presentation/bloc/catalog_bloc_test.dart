@@ -18,7 +18,9 @@ void main() {
     expect(state.isStale, isFalse);
     expect(state.lastUpdatedAt, isNull);
     expect(state.isRevalidating, isFalse);
+    expect(state.isReconnectRevalidating, isFalse);
     expect(state.revalidationFailure, isNull);
+    expect(state.reconnectFailure, isNull);
   });
 
   test('CatalogBloc 拒絕非正數 pageSize', () {
@@ -761,6 +763,121 @@ void main() {
     expect(repository.requests, hasLength(2));
     repository.completeSuccess(1, _page('fresh'));
     await _waitUntil(() => !bloc.state.isRefreshing);
+    await bloc.close();
+  });
+
+  test('Reconnect 只在已載入且有資料時執行非阻斷替換', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.reconnectObserved());
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(repository.requests, isEmpty);
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial', nextCursor: 'old-cursor'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.reconnectObserved());
+    await repository.waitForRequestCount(2);
+    expect(bloc.state.isReconnectRevalidating, isTrue);
+    expect(bloc.state.items.single.id, 'item-initial');
+    expect(repository.requests[1].policy, CatalogLoadPolicy.refresh);
+    expect(repository.requests[1].cursor, isNull);
+
+    repository.completeSuccess(
+      1,
+      _page('reconnected', nextCursor: 'new-cursor'),
+    );
+    await _waitUntil(() => !bloc.state.isReconnectRevalidating);
+    expect(bloc.state.items.single.id, 'item-reconnected');
+    expect(bloc.state.nextCursor, 'new-cursor');
+    await bloc.close();
+  });
+
+  test('Reconnect failure 保留既有資料且 duplicate reconnect 不重入', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial', nextCursor: 'cursor-1'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc
+      ..add(const CatalogEvent.reconnectObserved())
+      ..add(const CatalogEvent.reconnectObserved());
+    await repository.waitForRequestCount(2);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(repository.requests, hasLength(2));
+
+    repository.completeFailure(
+      1,
+      const Failure(message: 'reconnect failed', code: 'reconnect_failed'),
+    );
+    await _waitUntil(() => !bloc.state.isReconnectRevalidating);
+    expect(bloc.state.items.single.id, 'item-initial');
+    expect(bloc.state.nextCursor, 'cursor-1');
+    expect(bloc.state.reconnectFailure?.code, 'reconnect_failed');
+    await bloc.close();
+  });
+
+  test('Manual refresh 取消 reconnect，舊結果不得覆蓋 refresh', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.initialRequested());
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('initial'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.reconnectObserved());
+    await repository.waitForRequestCount(2);
+    bloc.add(const CatalogEvent.refreshRequested());
+    await repository.waitForRequestCount(3);
+    await _waitUntil(() => repository.cancelledRequests.contains(1));
+    repository.completeSuccess(2, _page('manual'));
+    await _waitUntil(() => !bloc.state.isRefreshing);
+
+    expect(bloc.state.items.single.id, 'item-manual');
+    expect(bloc.state.isReconnectRevalidating, isFalse);
+    await bloc.close();
+  });
+
+  test('Query switching 取消 reconnect 並拒絕舊 generation', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(
+      SearchCatalogUseCase(repository),
+      debounceDuration: Duration.zero,
+    );
+
+    bloc.add(const CatalogEvent.queryChanged('old'));
+    await repository.waitForRequestCount(1);
+    repository.completeSuccess(0, _page('old'));
+    await _waitUntil(() => !bloc.state.isInitialLoading);
+
+    bloc.add(const CatalogEvent.reconnectObserved());
+    await repository.waitForRequestCount(2);
+    bloc.add(const CatalogEvent.queryChanged('new'));
+    await repository.waitForRequestCount(3);
+    await _waitUntil(() => repository.cancelledRequests.contains(1));
+    repository.completeSuccess(2, _page('new'));
+    await _waitUntil(
+      () => bloc.state.query == 'new' && !bloc.state.isInitialLoading,
+    );
+
+    expect(bloc.state.items.single.id, 'item-new');
+    expect(bloc.state.isReconnectRevalidating, isFalse);
     await bloc.close();
   });
 

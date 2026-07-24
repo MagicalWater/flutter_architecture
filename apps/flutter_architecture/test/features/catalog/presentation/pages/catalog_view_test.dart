@@ -140,6 +140,36 @@ void main() {
     expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
   });
 
+  testWidgets('CatalogView 顯示 reconnect 背景更新與非阻斷失敗', (tester) async {
+    const items = <CatalogItem>[
+      CatalogItem(id: '1', name: 'Existing', description: 'existing'),
+    ];
+
+    await _pumpView(
+      tester,
+      _state(items: items, isReconnectRevalidating: true),
+    );
+    expect(find.byKey(const Key('catalog-reconnect-loading')), findsOneWidget);
+    expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
+
+    await _pumpView(
+      tester,
+      _state(
+        items: items,
+        reconnectFailure: const Failure(message: 'hidden diagnostic'),
+      ),
+    );
+    expect(find.byKey(const Key('catalog-reconnect-failure')), findsOneWidget);
+    expect(
+      find.text(
+        'The current catalog is still available, but it could not be updated.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('hidden diagnostic'), findsNothing);
+    expect(find.byKey(const Key('catalog-item-1')), findsOneWidget);
+  });
+
   testWidgets('CatalogView empty result 的 refresh failure 仍可見', (tester) async {
     await _pumpView(
       tester,
@@ -323,8 +353,10 @@ CatalogState _state({
   bool isStale = false,
   DateTime? lastUpdatedAt,
   bool isRevalidating = false,
+  bool isReconnectRevalidating = false,
   Failure? initialFailure,
   Failure? revalidationFailure,
+  Failure? reconnectFailure,
   Failure? refreshFailure,
   Failure? appendFailure,
 }) {
@@ -340,8 +372,10 @@ CatalogState _state({
     isStale: isStale,
     lastUpdatedAt: lastUpdatedAt,
     isRevalidating: isRevalidating,
+    isReconnectRevalidating: isReconnectRevalidating,
     initialFailure: initialFailure,
     revalidationFailure: revalidationFailure,
+    reconnectFailure: reconnectFailure,
     refreshFailure: refreshFailure,
     appendFailure: appendFailure,
   );

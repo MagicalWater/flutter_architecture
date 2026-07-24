@@ -26,7 +26,7 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-None
+Milestone 28 — Connectivity and Offline State Foundation
 Latest completed: Milestone 27 — Production Observability Foundation
 Baseline: 1.9.0
 ```

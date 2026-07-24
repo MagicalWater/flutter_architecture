@@ -12,27 +12,6 @@ last_reviewed_baseline: 1.9.0
 
 Candidate 不代表 commitment。開始 implementation 前仍需 scope review、Architecture Decision 判斷、acceptance criteria 與正式 active promotion。
 
-## Candidate — Connectivity and Offline State Foundation
-
-候選目標是建立App-owned、provider-neutral的typed connectivity authority，明確區分本機網路介面可用性、backend實際可達性與單次API operation結果，並以Catalog既有Offline Cache／SWR作為第一個feature opt-in integration。
-
-建議範圍：
-
-- `unknown`／`offline`／`online` typed state。
-- App-owned platform adapter、startup snapshot、stream與dispose lifecycle。
-- App resume recheck與offline→online transition coordination。
-- Feature不得直接監聽connectivity plugin。
-- Catalog reconnect後的non-blocking revalidation與manual／background operation ordering。
-- Android／iOS runtime evidence與deterministic tests。
-
-Non-goals：global Dio retry interceptor、generic offline framework、offline command queue、sync engine、conflict resolution、backend health SLA、以及自動重送Auth／交易／付款等command API。
-
-Capability audit已確認此方向具備獨立價值與有界scope，並建議新增ADR；但本candidate尚未核准為active Milestone 28，也不得在Design Spec與Implementation Plan各自完成完整Task審查循環前修改production source。
-
-Evidence：
-
-- `docs/audits/connectivity_offline_state_capability_audit.md`
-
 ## Candidate — Additional Platform Support
 
 候選範圍：Web、Windows、macOS、Linux runner、artifact 與 runtime verification。

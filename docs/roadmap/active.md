@@ -8,12 +8,23 @@ last_reviewed_baseline: 1.9.0
 
 # Active Milestone
 
-目前沒有active milestone：
+目前active milestone：
 
 ```txt
-None
+Milestone 28 — Connectivity and Offline State Foundation
 Baseline: 1.9.0
 ```
+
+## Active Scope
+
+建立App-owned typed connectivity authority，明確區分本機網路介面可用性、backend reachability與單次operation failure，並以Catalog既有Offline Cache／SWR作為第一個feature opt-in reconnect integration。
+
+- Design：`docs/superpowers/specs/2026-07-24-connectivity-offline-state-foundation-design.md`
+- Implementation plan：`docs/superpowers/plans/2026-07-24-milestone-28-connectivity-offline-state-foundation.md`
+- Planning review：`docs/audits/connectivity_offline_state_plan_review.md`
+- Architecture Decision：`docs/adr/adr-027-connectivity-offline-state-foundation.md`
+
+Implementation依Task 28-1～28-8執行；所有Task完成後仍需Milestone holistic final review、release、push與post-release validation。
 
 ## Latest Completed Milestone
 
@@ -35,11 +46,8 @@ Sentry第二adapter、Analytics／APM、production signing、Store distribution�
 
 ## Current Next Action
 
-下一個正式方向必須先由`docs/roadmap/candidates.md`或`docs/backlog.md`完成scope review與planning promotion。
-
 ```txt
-candidate review
-→ design
-→ planning review
-→ active milestone promotion
+執行Milestone 28 implementation plan
+→ 每個Task完整審查循環與commit
+→ Milestone holistic final review
 ```

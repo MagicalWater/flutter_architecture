@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: accepted
+status: completed
 authoritative_for:
   - karpathy-guidelines-skill-adoption-implementation
 last_reviewed_baseline: 1.13.0
@@ -406,3 +406,15 @@ Use `superpowers:finishing-a-development-branch` only after all Task gates pass.
 ## Approval Gate
 
 本 Plan 已於 2026-07-25 取得使用者明確核准並轉為 `accepted`。下一步依本 Plan 建立隔離 worktree，從 Task 1 開始執行；任何 Task 驗證失敗時維持 open／blocked，修正並 fresh re-verify 後才可進入下一 Task。
+
+## Execution Disposition
+
+本 Plan 已執行至 Task 2 的 admission stop rule：五個 RED controls 全部合規，未確認到可由新 Skill 修正的行為缺口。因此採用在 Pilot activation 前正式判定為 `Rejected`，Tasks 3～7 的 Skill 建立、routing、GREEN、registry與Pilot promotion不得執行。
+
+完成證據：
+
+- `docs/audits/milestone_31/31-followup-karpathy-guidelines-source-review.md`
+- `docs/audits/milestone_31/31-followup-karpathy-guidelines-red-validation.md`
+- `docs/audits/milestone_31/31-followup-karpathy-guidelines-final-review.md`
+
+本 Plan 的 `completed` 表示已依核准流程走到其明定停止條件，不表示 `karpathy-guidelines` 已安裝。

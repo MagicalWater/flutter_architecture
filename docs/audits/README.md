@@ -108,4 +108,10 @@ Final / Holistic Review
 - [`milestone_20/`](milestone_20/)：OTP Step-Up Authentication phase reviews。
 - [`milestone_21/`](milestone_21/)：Biometric-gated Local Session Unlock phase reviews。
 
+### Milestone 31 workflow follow-ups
+
+- [`milestone_31/31-followup-karpathy-guidelines-source-review.md`](milestone_31/31-followup-karpathy-guidelines-source-review.md)：固定上游commit、來源hash與授權觀察。
+- [`milestone_31/31-followup-karpathy-guidelines-red-validation.md`](milestone_31/31-followup-karpathy-guidelines-red-validation.md)：五個fresh RED controls與「無confirmed gap」拒絕證據。
+- [`milestone_31/31-followup-karpathy-guidelines-final-review.md`](milestone_31/31-followup-karpathy-guidelines-final-review.md)：Karpathy Skill adoption follow-up整體終審與Rejected disposition。
+
 其他位於 `docs/audits/` root 的 planning、runtime 或 holistic review 仍保留原 stable path。Index 只負責 routing，不複製 findings、test counts、commit hashes或 final gate內容。

@@ -2,6 +2,8 @@ import 'package:api_client/api_client.dart' as api_client;
 import 'package:auth/auth.dart' as auth;
 import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
+import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart';
+import 'package:flutter_architecture/app/connectivity/connectivity_plus_adapter.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
@@ -29,6 +31,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Injectable Module。
 ///
@@ -40,6 +43,13 @@ import 'package:local_auth/local_auth.dart';
 /// 這些外部物件需要透過 module 告訴 injectable 如何建立。
 @module
 abstract class RegisterModule {
+  @lazySingleton
+  Connectivity get connectivity => Connectivity();
+
+  @lazySingleton
+  ConnectivityAdapter connectivityAdapter(Connectivity connectivity) =>
+      ConnectivityPlusAdapter(connectivity: connectivity);
+
   @lazySingleton
   AuthMigrationErrorReporterAdapter authMigrationErrorReporterAdapter(
     ErrorReporter errorReporter,

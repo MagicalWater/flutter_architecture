@@ -11,8 +11,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:api_client/api_client.dart' as _i633;
 import 'package:auth/auth.dart' as _i662;
+import 'package:connectivity_plus/connectivity_plus.dart' as _i895;
 import 'package:dio/dio.dart' as _i361;
 import 'package:flutter_architecture/app/config/api_config.dart' as _i46;
+import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart'
+    as _i1037;
 import 'package:flutter_architecture/app/di/register_module.dart' as _i712;
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart'
     as _i1041;
@@ -73,6 +76,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.database,
       preResolve: true,
     );
+    gh.lazySingleton<_i895.Connectivity>(() => registerModule.connectivity);
     gh.lazySingleton<_i633.AppDioFactory>(() => registerModule.appDioFactory);
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => registerModule.flutterSecureStorage,
@@ -100,6 +104,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i633.AuthTokenProvider>(
       () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
+    );
+    gh.lazySingleton<_i1037.ConnectivityAdapter>(
+      () => registerModule.connectivityAdapter(gh<_i895.Connectivity>()),
     );
     gh.lazySingleton<_i662.AuthLegacyCredentialStore>(
       () => registerModule.authLegacyCredentialStore(

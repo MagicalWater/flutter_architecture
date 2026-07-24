@@ -4,14 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('ConnectivityState 保持最小且typed的三態contract', () {
-    expect(
-      ConnectivityState.values,
-      const <ConnectivityState>[
-        ConnectivityState.unknown,
-        ConnectivityState.offline,
-        ConnectivityState.online,
-      ],
-    );
+    expect(ConnectivityState.values, const <ConnectivityState>[
+      ConnectivityState.unknown,
+      ConnectivityState.offline,
+      ConnectivityState.online,
+    ]);
   });
 
   test('ConnectivityAdapter 不需要provider-specific type', () async {

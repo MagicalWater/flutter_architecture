@@ -2,8 +2,4 @@
 ///
 /// [online] 只代表至少存在可用介面，不保證 DNS、TLS、gateway 或
 /// backend request 一定成功。
-enum ConnectivityState {
-  unknown,
-  offline,
-  online,
-}
+enum ConnectivityState { unknown, offline, online }

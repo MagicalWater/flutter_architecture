@@ -1,6 +1,6 @@
 ---
 document_type: runtime-evidence
-status: active
+status: completed
 authoritative_for:
   - milestone-29-post-release-validation
 last_reviewed_baseline: 1.11.0
@@ -31,24 +31,65 @@ Remote sync after release push: main...origin/main = 0/0
 
 ## Remote Workflow State
 
-Release commit push已建立以下GitHub Actions runs：
+Release commit `c9a71c7c9200a57d110a005dbec4fe13068fea3e`建立的第一批
+GitHub Actions runs中，Android成功完成；CI與iOS因後續post-release evidence
+commit `7689e9a0b05c0899d8353ab9d4f87f352d39ed40`推送至同一`main` branch，觸發
+workflow既有`cancel-in-progress: true` concurrency policy而被取代。這不是額度耗盡、
+GitHub-hosted runner排隊或self-hosted runner離線。
 
-| Workflow | Run | Current state |
+替代commit `7689e9a0b05c0899d8353ab9d4f87f352d39ed40`的remote validation結果：
+
+| Workflow | Run | Final state |
 |---|---:|---|
-| CI | 30081244678 | classifier success；Quality／Tests／Generated Consistency queued |
-| Android | 30081244583 | classifier success；Release APK job started，其他job queued |
-| iOS | 30081244543 | classifier success；Simulator／Production jobs queued |
-| Observability Acceptance | 30081244494 | skipped by expected non-manual gate |
+| CI | 30081569765 | success |
+| Android | 30081569893 | success |
+| iOS | 30081569824 | success |
+| Observability Acceptance | 30081569756 | expected skipped by non-manual gate |
+
+被替代的release-commit runs保留歷史disposition：
+
+| Workflow | Run | Disposition |
+|---|---:|---|
+| CI | 30081244678 | classifier success；後續jobs由新commit依concurrency policy取消 |
+| Android | 30081244583 | success |
+| iOS | 30081244543 | classifier success；後續jobs由新commit依concurrency policy取消 |
+| Observability Acceptance | 30081244494 | expected skipped |
 
 ## Current Disposition
 
 - Local release、push、clean checkout、dependency resolution、generation與authority contracts均通過。
-- Remote workflow routing與classifiers均正常。
-- Remote heavy jobs尚未取得terminal conclusion，原因是GitHub／runner queue，屬外部服務執行狀態，不能記錄為pass或failure。
+- Repository variable為`CI_EXECUTION_MODE=self-hosted`；Mac runner
+  `water-mac-flutter-architecture`在驗證時為online，未使用GitHub-hosted付費Mac runner。
+- Remote workflow routing、classifiers與替代commit的CI／Android／iOS jobs均成功。
+- Release commit第一批CI／iOS run的cancelled結論已由後續同branch commit的完整成功run取代，
+  原因是workflow concurrency policy，不是使用量上限或runner故障。
 - Open P0：0。
 - Open P1 without disposition：0。
-- Dispositioned P1：remote CI／Android／iOS terminal result pending；取得結果後必須更新本文件status與結論，才能正式結束Milestone 29。
+- Dispositioned P1：0。
 
 ## Closure Gate
 
-Milestone 29只有在CI、Android與iOS release-commit workflows取得terminal success，且更新本文件後，才能由`active`改為`accepted`並正式宣告完成。
+以下closure gates全部成立：
+
+- Task 29-0～29-9的focused review、findings、修正、re-review、whole-task review、
+  documentation authority、validation與P0/P1 gate已有正式evidence。
+- Task 29-10 final holistic review與release authority同步完成。
+- Baseline `1.11.0`已commit並推送。
+- Clean-checkout generated consistency通過。
+- Remote CI、Android與iOS替代commit workflows全部success。
+- Open P0為0，Open P1 without disposition為0。
+
+```txt
+Milestone 29: COMPLETED
+Template Baseline: 1.11.0
+```
+
+## Focused Re-review and Whole-task Closure
+
+- Remote run IDs、commit SHA與workflow conclusions已重新查核，沒有把cancelled舊run誤記為failure。
+- `CI_EXECUTION_MODE=self-hosted`與runner online狀態已核對；沒有額度耗盡證據。
+- Post-release evidence只記錄驗證結果，不取代`29-10_final_review.md`、`CHANGELOG.md`、
+  `VERSION`或Roadmap authority。
+- 本文件由`active`更新為`completed`後，Milestone 29不再有pending external gate。
+- Open P0：0。
+- Open P1 without disposition：0。

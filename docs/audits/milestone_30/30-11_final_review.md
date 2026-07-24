@@ -2,7 +2,7 @@
 document_type: final-review
 status: accepted
 authoritative_for:
-  - milestone-30-local-final-review
+  - milestone-30-final-review
 last_reviewed_baseline: 1.12.0
 ---
 
@@ -38,7 +38,7 @@ Disposition：Rejected。成本不足以支持coverage reduction、nightly-only�
 
 ### F-30-11-04 — Milestone closure需要區分local release與post-release
 Severity：P1
-Disposition：Resolved。依no-push規則完成1.12.0 local release，但roadmap維持post-release pending；未宣稱remote closure。
+Disposition：Resolved。先依no-push規則完成1.12.0 local release；取得使用者明確授權後完成push、clean-checkout與remote workflow validation，最終evidence由`30-12_post_release_validation.md`保存。
 
 ### F-30-11-05 — Final authority同步腳本首次因here-doc編碼失敗
 Severity：P2
@@ -83,6 +83,7 @@ Flutter／Melos輸出中的startup lock文字是並行process等待訊息；comm
 - `CHANGELOG.md`：新增1.12.0 release。
 - Roadmap／project context／milestone index／superpowers index已同步。
 - `docs/guides/testing_governance.md`成為current testing authority。
+- Post-release evidence：`docs/audits/milestone_30/30-12_post_release_validation.md`。
 
 ## Final disposition
 
@@ -92,7 +93,7 @@ Milestone 30 local holistic review: ACCEPTED
 Template Baseline: 1.12.0
 Open P0: 0
 Open P1 without disposition: 0
-Push performed: NO
-Post-release validation: PENDING explicit push
-Formal remote closure: NOT YET CLAIMED
+Push performed: YES
+Post-release validation: PASSED
+Formal remote closure: COMPLETED
 ```

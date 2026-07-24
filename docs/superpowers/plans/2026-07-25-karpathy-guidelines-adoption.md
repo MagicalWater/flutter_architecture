@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: active
+status: completed
 authoritative_for:
   - karpathy-guidelines-skill-adoption-implementation
 last_reviewed_baseline: 1.13.0
@@ -419,4 +419,4 @@ Recovery decision：保留Task 1來源證據，將原Task 2標記為historical�
 - `docs/audits/milestone_31/31-followup-karpathy-guidelines-red-validation.md`
 - `docs/audits/milestone_31/31-followup-karpathy-guidelines-final-review.md`
 
-Recovery完成前本Plan維持`active`。
+Recovery已完成Tasks 3～7的restricted Pilot範圍。Current disposition為`Pilot／Approved with restrictions`；fresh isolated ChatGPT behavioral discovery GREEN仍是升級為fully Approved的前置條件。

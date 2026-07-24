@@ -29,7 +29,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
-- [`plans/2026-07-25-karpathy-guidelines-adoption.md`](plans/2026-07-25-karpathy-guidelines-adoption.md)：原Codex RED受Ponytail Plugin污染，已重新開啟primary-workflow recovery；沿用accepted Design／Plan執行受限制Pilot。
+- [`plans/2026-07-25-karpathy-guidelines-adoption.md`](plans/2026-07-25-karpathy-guidelines-adoption.md)：primary-workflow recovery已完成，Karpathy companion目前為`Pilot／Approved with restrictions`；不依賴Ponytail，fresh isolated ChatGPT behavioral GREEN仍待平台能力。
 - [`plans/2026-07-24-milestone-31-template-development-workflow-governance.md`](plans/2026-07-24-milestone-31-template-development-workflow-governance.md)：原計畫已降回`proposed`，等待Design Spec recovery核准後再進行Plan雙層review。
 - [`plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md`](plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md)：Repository-wide test inventory、coverage ownership、production／historical boundary、controlled cleanup與execution governance。
 - [`plans/2026-07-24-milestone-29-drift-persistence-migration.md`](plans/2026-07-24-milestone-29-drift-persistence-migration.md)：Drift整體遷移、historical compatibility、single-owner cutover與platform acceptance。

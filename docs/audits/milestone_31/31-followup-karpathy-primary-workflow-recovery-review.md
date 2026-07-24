@@ -1,6 +1,6 @@
 ---
 document_type: phase-review
-status: active
+status: completed
 authoritative_for:
   - karpathy-guidelines-primary-workflow-recovery
 last_reviewed_baseline: 1.13.0
@@ -61,3 +61,5 @@ Disposition：Resolved by invalidation。舊final review改為`superseded`；舊
 - Open P0：0。
 - Open P1 without disposition：0。
 - 下一步：Task 3建立受限制repository-local Skill。
+
+Recovery完成：Skill、routing、registry、clean-worktree discovery與replacement final review均已建立。

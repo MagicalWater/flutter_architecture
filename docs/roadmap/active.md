@@ -23,9 +23,9 @@ Milestone 31 的原始執行未完整證明 Design Spec、Implementation Plan、
 
 ```txt
 Recovery Task 31-R0：狀態與authority校正
-→ Recovery Task 31-R1：Design Spec完整雙層review
-→ 使用者拍板
-→ 才能進入Plan recovery
+→ Recovery Task 31-R5：Behavioral pressure RED／GREEN／REFACTOR
+→ BLOCKED：Codex CLI authentication／provider configuration
+→ 修復外部阻塞後重跑相同RED／GREEN cases
 ```
 
 ## Current routing

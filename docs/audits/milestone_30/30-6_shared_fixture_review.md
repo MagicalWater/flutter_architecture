@@ -43,6 +43,15 @@ Severity：P1
 
 Disposition：Rejected by design。Theme、Locale與local unlock的fallback、安全與diagnostic semantics不同；只共享framework mock能力，不抽取跨domain assertion。
 
+## Focused re-review
+
+- 逐項重新檢查30-4與30-5的重複setup、fake與builder後，沒有發現同時具備跨owner穩定性、清楚domain語意與實際維護收益的抽取候選。
+- `AppDatabase.forTesting(NativeDatabase.memory())`維持就地建立，讓current Drift path在每個integration test內直接可見。
+- Auth recording stores維持各owner檔案內，避免不同failure controls被萬用fake合併。
+- Catalog `_page`、`_write`與fixed clock維持local helper，沒有跨檔共享。
+- Theme、Locale與local unlock preference tests不建立generic storage contract。
+- Re-review未發現需要新增helper、修改production source或回頭調整30-4／30-5 disposition的finding。
+
 ## Accepted result
 
 本Task沒有新增shared helper。這是刻意的YAGNI disposition，而不是未完成：

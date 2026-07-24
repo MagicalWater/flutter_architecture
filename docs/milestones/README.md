@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.12.0
+last_reviewed_baseline: 1.13.0
 ---
 
 # Milestone Routing
@@ -30,9 +30,9 @@ Milestone routing 只回答：
 
 ## Active routing
 
-| Milestone | Status | Primary routing |
-|---|---|---|
-| 31 | Active | `docs/roadmap/active.md`、Design Spec、Implementation Plan |
+```txt
+None
+```
 
 ## Closed milestone routing
 
@@ -61,6 +61,7 @@ Milestone routing 只回答：
 | 28 | Completed / Archived | ADR-027、implementation plan、`docs/audits/milestone_28/28-9_final_review.md`、`docs/audits/milestone_28/28-10_post_release_validation.md`、Task 28-7 platform evidence |
 | 29 | Completed / Archived | ADR-010、implementation plan、`docs/audits/milestone_29/29-9_platform_runtime_regression.md`、`docs/audits/milestone_29/29-10_final_review.md`、`docs/audits/milestone_29/29-10_post_release_validation.md` |
 | 30 | Completed / Archived | Design Spec、implementation plan、`docs/audits/milestone_30/30-11_final_review.md`、`docs/audits/milestone_30/30-12_post_release_validation.md`、`docs/guides/testing_governance.md` |
+| 31 | Completed / Archived | Workflow Governance Skill、Design Spec、Implementation Plan、`docs/audits/milestone_31/31-6_final_review.md` |
 
 完整 disposition 與歷史保存位置記錄於 `docs/migrations/m22_roadmap_manifest.md`。
 

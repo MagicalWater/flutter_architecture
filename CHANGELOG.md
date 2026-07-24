@@ -22,6 +22,28 @@
 
 ---
 
+## [1.13.0] - 2026-07-24
+
+### Added
+
+- 完成Milestone 31 Template Development Workflow Governance，在`.agents/skills/governing-template-development/`建立repository-local executable workflow Skill。
+- 新增Level 0～5工作分類、Requirement Decision、artifact／Superpowers routing、雙層Task模式、Skill adoption governance與pressure scenarios。
+- 新增`docs/governance/development_workflow.md`作人類治理總覽。
+
+### Changed
+
+- `AGENTS.md`要求所有需求、Bug、Refactor、Migration、Architecture、Release與治理工作先經Workflow Governance Skill分類。
+- 修正Milestone 30 closure的stale／duplicate routing與metadata baseline。
+- Documentation checker支援Agent Skill標準frontmatter，並新增stale與duplicate Milestone routing gates。
+
+### Verified
+
+- 17個documentation checker tests、docs_check與workspace analyze通過。
+- 全部Flutter package tests通過；App suite 463 tests passed。
+- Skill structure、relative links、Level 0～5與pressure contract驗證通過。
+
+---
+
 ## [1.12.0] - 2026-07-24
 
 ### Added

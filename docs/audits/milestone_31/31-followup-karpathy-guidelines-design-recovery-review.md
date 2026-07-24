@@ -78,13 +78,13 @@ Acceptance涵蓋 automatic routing、non-trigger controls、authority conflict�
 
 ## Authority and validation gate
 
-- Design status：`proposed`。
-- Plan status：`proposed` draft，blocked by Design approval。
+- Design status：使用者於 2026-07-25 明確核准，已轉為`accepted`。
+- Plan status：`proposed` draft，進入重新Plan Task review。
 - Implementation：forbidden。
 - Open P0：0。
 - Open P1 without disposition：0。
-- Next user-owned gate：明確核准或要求修改 Design Spec。
+- Next user-owned gate：Plan Task完成後明確核准或要求修改 Implementation Plan。
 
 ## Recovery disposition
 
-Design內容通過 focused review、findings修正、fresh re-review與whole-Design review；但依 repository governance，在使用者明確核准前不能轉為`accepted`，也不能進入正式Plan Task。
+Design內容已通過 focused review、findings修正、fresh re-review與whole-Design review，並取得使用者明確核准；Design Task正式完成，可進入Plan Task，但不得開始implementation。

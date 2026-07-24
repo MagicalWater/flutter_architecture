@@ -44,7 +44,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
-- [`specs/2026-07-25-karpathy-guidelines-adoption-design.md`](specs/2026-07-25-karpathy-guidelines-adoption-design.md)：Karpathy coding companion的Pilot採用邊界、authority precedence、上游pinning與驗收條件；目前為`proposed`，等待Design approval。
+- [`specs/2026-07-25-karpathy-guidelines-adoption-design.md`](specs/2026-07-25-karpathy-guidelines-adoption-design.md)：Karpathy coding companion的Pilot採用邊界、authority precedence、上游pinning與驗收條件；目前為`accepted`，進入Plan Task。
 - [`specs/2026-07-24-milestone-31-template-development-workflow-governance-design.md`](specs/2026-07-24-milestone-31-template-development-workflow-governance-design.md)：已降回`proposed`並進行完整雙層review；既有實作不等於設計已重新核准。
 - [`specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md`](specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md)：測試ownership、historical boundary、disposition evidence與execution tiers。
 - [`specs/2026-07-24-milestone-29-drift-persistence-migration-design.md`](specs/2026-07-24-milestone-29-drift-persistence-migration-design.md)：Drift single-owner persistence、migration、opener與platform boundary。

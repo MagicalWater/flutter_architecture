@@ -14,3 +14,14 @@ Use these as RED／GREEN cases when changing workflow governance.
 10. **Skill overlap**：A new UI review skill duplicates an approved accessibility skill. Correct result：adoption review, responsibility matrix and Pilot/Reject decision before installation.
 
 A governance change passes only when these scenarios produce the expected classification, routing and stop／continue behavior without relying on conversation memory.
+
+## Behavioral execution protocol
+
+Static scenario presence is not validation. Workflow changes must execute the same representative cases in four stages:
+
+1. **RED baseline**：run outside the repository without repository `AGENTS.md` or repository-local Skill. Record concrete non-compliance; a baseline does not pass merely because the model happens to answer some cases correctly.
+2. **DISCOVERY**：run at the repository root without naming the Skill or its path. The agent must independently identify `AGENTS.md`, select `governing-template-development`, and apply its routed references.
+3. **EXPLICIT GREEN**：run at the repository root while explicitly requiring the Skill and needed references. This isolates whether the Skill contract itself produces compliant behavior.
+4. **REFACTOR**：repair any discovery, wording or routing loophole, then rerun the affected DISCOVERY and EXPLICIT cases.
+
+Evidence must preserve prompts, runtime mode, outputs, expected behavior, observed deviations and disposition. Authentication or provider failure before a model response is an execution failure, not behavioral evidence.

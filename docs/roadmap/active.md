@@ -58,7 +58,7 @@ Backend reachability service、generic reconnect framework、write queue、produ
 ## Current Next Action
 
 ```txt
-執行Task 30-7 — Platform, CI, Documentation and Generated Contract Audit
+執行Task 30-8 — Execution Matrix and Cost Optimization
 → 完成完整Task審查循環與commit
-→ 直接進入Task 30-8
+→ 直接進入Task 30-9
 ```

@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.9.0
+last_reviewed_baseline: 1.10.0
 ---
 
 # Audits and Review Evidence
@@ -44,6 +44,10 @@ Final / Holistic Review
 開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
 
 ## Evidence routes
+
+### Persistence feasibility
+
+- [`drift_adoption_feasibility_audit.md`](drift_adoption_feasibility_audit.md)：Template Baseline 1.10.0 的 SQLite capability inventory、sqflite／Drift repository-specific比較、migration go／no-go與重新評估條件。
 
 ### Recent platform and delivery milestones
 

@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: accepted
+status: proposed
 authoritative_for:
   - drift-adoption-feasibility-evidence
 last_reviewed_baseline: 1.10.0
@@ -166,14 +166,15 @@ Production direct dependencies集中於：
 | Existing DB compatibility | 已證實 | 技術上可保留同一 file；需 exact schema contract spike確認 |
 | Reactive queries | 無；符合 explicit refresh authority | 對 AuthUser與目前 Catalog flow價值低，預設啟用反而複雜 |
 | Testing | FFI in-memory簡單、現有coverage成熟 | typed test DB與migration tooling較強，但需重寫大量fixtures |
-| Cross-platform | mobile穩定，desktop dependency-ready，Web experimental | opener與API更一致；Web仍受 Wasm／browser storage限制，不等於自動 Supported |
+| Cross-platform library capability | mobile穩定；desktop需`ffi` factory；Web implementation官方仍標示experimental | Android、iOS、Windows、macOS、Linux、Web均為正式支援平台，並提供跨平台opener；Web仍受瀏覽器storage／worker能力限制 |
+| Repository verification status | Android／iOS已有tracked runtime evidence；其他平台僅dependency-ready | 採用後仍需補repository runtime evidence，但這是模板驗證工作，不是Drift平台能力缺口 |
 | Background isolate | mobile plugin自行處理；desktop語意不同 | Drift可統一 isolate strategy，但增加 lifecycle責任 |
 | Generated code | 無DB generated code | 增加 `drift_dev`、build_runner輸出與generated consistency gate |
 | Build／CI cost | 低 | 增加 code generation、cache invalidation與generated diff checks |
 | Debugging | SQL與row map直接 | generated stack、query expression與isolate messaging需學習 |
 | AI error protection | SQL typo／column cast容易漏到runtime | schema／query compile-time feedback明顯較佳 |
 | Template learning cost | Flutter開發者普遍易懂 | adopters需理解 table DSL、companions、migration、streams、generation |
-| Overdesign risk | 低 | 對只有3 tables的模板目前偏高 |
+| Template scalability | 目前範例規模易讀，但採用者擴充後需自行承擔manual SQL與migration治理 | 可把typed schema、SQL validation與migration tooling作為模板預設能力，價值不能以目前示範table數量衡量 |
 | Rollback | 現況無migration成本 | 一旦 Drift migration發布，rollback需雙向 schema／data strategy |
 
 ## 6. Option analysis
@@ -185,7 +186,7 @@ Production direct dependencies集中於：
 - 零production migration risk。
 - 保留成熟的 migration、Auth lifecycle與Catalog correctness tests。
 - 不增加 generated source、build time、native dependency與學習成本。
-- 目前只有3 tables，manual schema ownership仍可控。
+- 目前範例schema小，短期manual schema ownership仍可控。
 
 缺點：
 
@@ -194,7 +195,7 @@ Production direct dependencies集中於：
 - Web仍依 experimental implementation。
 - schema snapshot／migration consistency需自行維護。
 
-風險：長期table與query數量增加後，manual SQL與migration成本可能非線性上升。
+風險：本repository是提供未來專案擴充的模板，而不是只服務目前三張示範table；若以current sample size決定baseline，會低估採用者在中大型專案中的typed schema、SQL validation與migration tooling需求。
 
 ### Option B — Drift only for new feature opt-in
 
@@ -232,10 +233,10 @@ Disposition：只有在正式決定遷移後才合理；應以 phase-by-phase so
 
 - 同時重寫open lifecycle、schema、migration、Auth adapter、Catalog complex transactions、tests與platform setup。
 - 最難區分 framework migration bug與原有cursor-chain business invariant regression。
-- 對3-table模板而言成本／收益不成比例。
+- 現有production surface較小，反而可能使現在成為一次性切換成本最低的時間點；但仍需先用歷史fixture驗證相容性。
 - rollback與existing DB acceptance要求最高。
 
-Disposition：目前不建議。
+Disposition：不能再僅以current table數量否決。若isolated spike證明歷史database相容、schema等價與CI成本可接受，應與Option C一起進入正式方案比較。
 
 ## 7. Special verification results
 
@@ -270,9 +271,10 @@ AuthUser與Catalog schema均可由Drift table／custom SQL表達，包括 compos
 
 ### Web and desktop
 
-- Drift的六平台 opener與Wasm路徑比目前三套factory組合更一致。
-- 這可以降低setup branches，但不會自動把沒有tracked runner／runtime evidence的平台提升為Supported。
-- sqflite Web官方仍是experimental，形成未來重新評估的有效觸發因素；然而本模板目前Web也僅dependency-ready，尚不足以單獨支撐production migration。
+- Drift本身正式支援Android、iOS、Windows、macOS、Linux與Web；`drift_flutter`提供依目前平台選擇native或Web implementation的共用opener。
+- Repository目前把Web／Desktop列為dependency-ready，只代表尚未建立tracked runner與runtime acceptance，不能解讀為Drift不支援這些平台。
+- 採用Drift不會自動讓repository取得Supported宣稱，因為該宣稱仍需要本專案自己的build／runtime evidence；但Drift的六平台一致API與正式Web路徑，確實是模板層級的實質優勢。
+- 現有`sqflite_common_ffi_web`官方仍明列experimental、slow、not fully tested與bugs；相較之下，Drift Web有正式platform documentation、browser compatibility matrix與storage fallback說明。這項差異應提高Drift的採用權重，而不是等到Web先被本repository標為Supported後才評估。
 
 ### Reactive query and Bloc authority
 
@@ -286,15 +288,15 @@ AuthUser與Catalog schema均可由Drift table／custom SQL表達，包括 compos
 
 ## 8. Confirmed findings
 
-1. 現有persistence architecture規模小、schema owner單一、migration已有實際歷史coverage。
+1. 現有persistence範例規模小、schema owner單一、migration已有實際歷史coverage；但table數量只描述目前template sample，不能代表採用者最終專案規模。
 2. Reusable `auth` package沒有依賴sqflite；主要coupling位於App Composition Root與兩個App feature adapters。
 3. Drift可在技術上保留同一SQLite file，並能表達目前schema。
 4. Drift對typed query、SQL validation、generated row mapping與migration tooling有真實價值。
 5. Drift reactive query對目前Auth／Catalog flow沒有已證實價值。
 6. Drift不會消除Catalog cursor-chain的核心複雜度。
-7. 現有sqflite Web implementation仍由官方標示experimental；Drift跨平台setup較一致。
+7. 現有sqflite Web implementation仍由官方標示experimental；Drift正式支援六平台，且跨平台setup與database API較一致。
 8. 目前沒有足夠repository runtime evidence證明v1–v6 data可零風險切換。
-9. 對3 tables的模板立即整體遷移，generated code／CI／learning／migration成本高於現階段收益。
+9. 先前以「目前只有3 tables」判定收益不足不成立；對模板應評估未來中大型專案的預設路徑，而現有surface較小也可能代表現在是遷移成本最低的時點。
 
 ## 9. Assumptions and unverified items
 
@@ -305,42 +307,44 @@ AuthUser與Catalog schema均可由Drift table／custom SQL表達，包括 compos
 - 未驗證Drift 2.34.x與repository exact Flutter／Dart toolchain的完整dependency resolution。
 - 未驗證Web從`sqflite_common_ffi_web` IndexedDB naming／storage轉移至Drift Wasm storage的data migration；兩者不能僅因底層皆為SQLite就假設browser persistence直接相容。
 
-以上均不阻塞本次no-go，因為它們只可能支持未來migration，無法消除目前成本／收益不成比例的核心finding。
+以上事項會直接影響正式go／no-go，尤其是existing database compatibility、Web storage transition與generated／CI成本。未完成isolated spike前，不應宣告migration no-go，也不應宣告production migration go。
 
 ## 10. Recommendation
 
-正式建議：
+修正後的正式建議：
 
 ```text
-D. 目前不遷移，但建立明確的未來重新評估條件
+先撤回原本的D／NO-GO結論。
+進入isolated Drift compatibility spike，再於Option C與Option D之間做正式選擇。
 ```
 
-實務上維持Option A作為current baseline；不建立Milestone 29，不新增Drift dependency，不建立雙framework production path。
+在spike完成以前，production implementation仍維持Option A，且不得建立長期雙framework production path；但這只是調查期間的暫時狀態，不是最終adoption disposition。
 
 理由：
 
-- 現有schema只有3 tables，且migration與business invariant已有成熟tests。
-- Drift的主要收益是真實但尚未達到抵銷migration、generated code、CI與template adoption成本的程度。
-- Web／Desktop仍未升級為Supported，跨平台一致性收益目前多半是potential而非required capability。
+- 本repository是中大型Flutter專案模板，不能以目前示範schema規模推論未來採用者的database複雜度。
+- Drift的typed schema、SQL static validation、migration tooling與六平台一致API，均是template-level能力，而不只是目前Auth／Catalog兩個feature的局部收益。
+- Drift正式支援Web與Desktop；repository尚未對這些平台建立runtime evidence，只影響本模板的support claim，不減損套件能力與架構價值。
+- 現有surface較小，可能使現在成為切換成本最低、最容易建立完整historical fixture acceptance的時間點。
 - reactive query不是現有架構需求。
-- AI-assisted development可透過集中SQL、schema tests、migration fixtures與review降低風險，尚未必須用framework替換。
+- 是否採Option C或D，必須由v1–v6 file compatibility、schema equivalence、Web storage disposition及CI成本的isolated spike決定。
 
 ## 11. Not recommended
 
 - 不建議Option B長期雙軌：會建立兩套schema authority與adopter ambiguity。
-- 不建議Option D一次性遷移：變更面過大且無迫切需求。
+- 不再預先排除Option D；目前surface小可能讓一次性cutover比長期漸進雙軌更安全。
 - 不建議現在以「Drift較熱門」或download數作為Milestone promotion依據。
 - 不建議為預防未來遷移而先建立generic database abstraction；目前domain store／repository boundary已足以隔離business layer。
 
 ## 12. Re-evaluation triggers
 
-符合下列任一項時，重新進行Drift adoption review：
+下列項目不再是「未來才重新評估」的門檻，而是本次spike與最終方案比較應納入的決策因素：
 
-1. Production tables達8–10張以上，或每個release持續新增cross-table migration。
+1. 預期採用者的table、relation、join與migration複雜度，而不是目前sample table count。
 2. SQL／column mapping／migration defect開始逃過tests並進入runtime。
 3. 出現需要complex join、aggregate、full-text search或大量dynamic query的正式feature。
 4. 出現真正需要local reactive view／multi-screen live database state的feature。
-5. Web或Desktop被提升為Supported platform，且現有sqflite factory／Wasm限制成為acceptance blocker。
+5. Drift與sqflite在Web／Desktop的runtime、storage、worker與deployment差異；不要求repository先提升為Supported才有評估價值。
 6. 需要統一background isolate database execution，現有platform差異造成可量測問題。
 7. CI可接受新增generated schema consistency gate，且build time成本已量測。
 8. 可先完成isolated spike，證明v1–v6 file compatibility、schema equivalence、migration fixture與rollback策略。
@@ -348,7 +352,7 @@ D. 目前不遷移，但建立明確的未來重新評估條件
 
 ## 13. Future spike entry and exit criteria
 
-未來若觸發重新評估，先建立與production source隔離的spike，不直接切換dependency authority。
+下一步應建立與production source隔離的spike，不直接切換dependency authority。
 
 必驗項目：
 
@@ -362,19 +366,20 @@ D. 目前不遷移，但建立明確的未來重新評估條件
 
 退出條件：任何歷史fixture data loss、schema mismatch、Web storage incompatibility未有disposition、或CI成本未被接受，均回到sqflite baseline。
 
-## 14. Severity and final disposition
+## 14. Severity and revised disposition
 
 ```text
 Open P0: 0
-Open P1 without disposition: 0
-Migration Milestone: NO
+Open P1 without disposition: 1
+P1: Drift compatibility spike尚未完成，無法做最終Option C／D判定
+Migration Milestone: PENDING SPIKE RESULT
 Production Drift dependency: NO
-Final disposition: NO-GO for current migration
-Current baseline: Maintain sqflite
-Future disposition: Re-evaluate only when a documented trigger is met
+Final disposition: PRIOR NO-GO WITHDRAWN
+Current production baseline during audit: Maintain sqflite temporarily
+Next disposition: Execute isolated compatibility spike, then decide gradual or one-shot migration
 ```
 
-本次no-go不是否定Drift能力，而是確認目前repository尚未達到必須付出migration與治理成本的門檻。
+原NO-GO把目前sample schema規模當成template adoption的主要成本／收益依據，並把repository support classification與Drift library platform support混為一談，因此結論無效。本文件降回proposed，待isolated spike完成後重新審查並關閉P1。
 
 ## 15. External references checked on 2026-07-24
 

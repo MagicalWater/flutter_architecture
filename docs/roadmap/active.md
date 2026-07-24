@@ -21,6 +21,8 @@ Baseline: 1.11.0
 
 - Design Spec：`docs/superpowers/specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md`
 - Design review：`docs/audits/milestone_30/30-0_design_spec_review.md`
+- Implementation Plan：`docs/superpowers/plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md`
+- Plan review：`docs/audits/milestone_30/30-1_implementation_plan_review.md`
 
 ## Latest Completed Milestone
 
@@ -56,7 +58,7 @@ Backend reachability service、generic reconnect framework、write queue、produ
 ## Current Next Action
 
 ```txt
-建立Milestone 30 Implementation Plan
-→ 完成Plan審查與commit
-→ 依Task 30-2～30-11執行雙層Task治理
+執行Task 30-2 — Test Inventory, Ownership and Baseline
+→ 完成完整Task審查循環與commit
+→ 直接進入Task 30-3
 ```

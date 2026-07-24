@@ -58,7 +58,7 @@ apps/flutter_architecture/test/app/theme/architecture_theme_builder_test.dart,Th
 apps/flutter_architecture/test/app/theme/theme_bootstrap_test.dart,Theme,dart,111,3,Business invariant,Theme,current,Tier 1,Keep/Audit,Focused ownership review required.
 apps/flutter_architecture/test/app/theme/theme_preference_test.dart,Theme,dart,285,12,Business invariant,Theme,current,Tier 1,Keep/Audit,Focused ownership review required.
 apps/flutter_architecture/test/app_smoke_test.dart,Other,dart,7,1,Business invariant,Other,current,Tier 1,Keep/Audit,Focused ownership review required.
-apps/flutter_architecture/test/features/auth/data/auth_single_active_user_persistence_test.dart,Auth,dart,349,6,Business invariant,Auth,current,Tier 1,Keep/Audit,Focused ownership review required.
+apps/flutter_architecture/test/features/auth/data/auth_single_active_user_persistence_test.dart,Auth,dart,173,2,Business invariant,Auth,current,Tier 1,Keep/Audit,Focused ownership review required.
 apps/flutter_architecture/test/features/auth/data/local_unlock/local_unlock_lifecycle_integration_test.dart,Auth,dart,65,2,Business invariant,Auth,current,Tier 1,Keep/Audit,Focused ownership review required.
 apps/flutter_architecture/test/features/auth/data/local_unlock/shared_preferences_local_unlock_preference_store_test.dart,Auth,dart,65,5,Implementation contract,Auth,current,Tier 1,Keep/Audit,Focused ownership review required.
 apps/flutter_architecture/test/features/auth/data/local_user_presence/local_auth_user_presence_verifier_test.dart,Auth,dart,184,7,Business invariant,Auth,current,Tier 1,Keep/Audit,Focused ownership review required.
@@ -133,3 +133,4 @@ tools/ci/test_observability_acceptance_workflow.py,Observability,python,41,2,CI,
 tools/ci/test_shell_portability_contract.py,CI,python,28,2,CI,CI tooling,current,Tier 1,Audit,Review duplicate workflow and classifier assertions.
 tools/docs/test_check_docs.py,Documentation,python,249,15,CI,Documentation tooling,current,Tier 1,Keep/Audit,Documentation governance contract.
 tools/milestone_19_5/test_auth_fixture_server.py,Auth,python,114,7,Historical-only,Historical compatibility harness,historical,Tier 4,Keep/Audit,"Migration, rollback or fixture oracle; do not delete by name."
+tools/testing/test_test_inventory.py,Other,python,68,4,Business invariant,Other,current,Tier 1,Keep/Audit,Focused ownership review required.

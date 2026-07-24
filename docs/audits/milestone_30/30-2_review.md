@@ -60,7 +60,7 @@ Disposition：Resolved。新增四個Python unit tests，涵蓋discovery、Dart 
 python3 -m unittest tools.testing.test_test_inventory
 → 4 passed
 
-python3 tools/testing/test_inventory.py
+python3 tools/testing/inventory.py
 → files=134 loc=23066 cases=769
 
 dart run melos run docs_check

@@ -58,7 +58,7 @@ Backend reachability service、generic reconnect framework、write queue、produ
 ## Current Next Action
 
 ```txt
-執行Task 30-4 — Auth Test Rationalization
+執行Task 30-5 — Catalog Test Rationalization
 → 完成完整Task審查循環與commit
-→ 直接進入Task 30-5
+→ 直接進入Task 30-6
 ```

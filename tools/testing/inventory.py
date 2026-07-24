@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import re
 import subprocess
@@ -12,7 +13,6 @@ from typing import Iterable
 
 
 DART_CASE_RE = re.compile(r"\b(?:test|testWidgets|blocTest)\s*(?:<[^>]+>)?\s*\(")
-PYTHON_CASE_RE = re.compile(r"^\s*(?:async\s+)?def\s+test_[A-Za-z0-9_]+\s*\(", re.MULTILINE)
 
 FIELDNAMES = [
     "path",
@@ -34,7 +34,13 @@ def count_dart_cases(source: str) -> int:
 
 
 def count_python_cases(source: str) -> int:
-    return len(PYTHON_CASE_RE.findall(source))
+    tree = ast.parse(source)
+    return sum(
+        1
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name.startswith("test_")
+    )
 
 
 def _is_test_path(path: Path) -> bool:
@@ -188,7 +194,11 @@ def inventory_rows(root: Path, files: Iterable[Path]) -> list[dict[str, object]]
 def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=FIELDNAMES)
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=FIELDNAMES,
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 

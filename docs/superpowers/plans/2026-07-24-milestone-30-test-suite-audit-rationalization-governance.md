@@ -65,7 +65,7 @@ implementation
 
 **Files:**
 
-- Create: `tools/testing/test_inventory.py`
+- Create: `tools/testing/inventory.py`
 - Create: `tools/testing/test_test_inventory.py`
 - Create: `docs/audits/milestone_30/30-2_test_inventory.md`
 - Create: `docs/audits/milestone_30/30-2_review.md`

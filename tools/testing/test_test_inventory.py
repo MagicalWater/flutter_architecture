@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.testing.test_inventory import (
+from tools.testing.inventory import (
     count_dart_cases,
     count_python_cases,
     discover_test_files,

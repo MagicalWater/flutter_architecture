@@ -11,12 +11,14 @@ last_reviewed_baseline: 1.11.0
 ## Reproducible command
 
 ```bash
-python3 tools/testing/test_inventory.py
+python3 tools/testing/inventory.py
 ```
 
 Machine-readable result：
 
 - `docs/audits/milestone_30/30-2_test_inventory.csv`
+
+本文件的表格保存Milestone起始baseline；CSV由inventory command持續反映目前tracked snapshot，因此後續Task新增governance tests或受控cleanup後，CSV數字會依current tree更新。
 
 Inventory tool使用`git ls-files`取得tracked files，辨識`*_test.dart`、`test_*.py`與tracked integration tests，再以deterministic repository-relative path排序。工具只做盤點與初始分類，不會因檔名自動刪除或修改tests。
 

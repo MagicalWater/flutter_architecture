@@ -3,7 +3,7 @@ document_type: design-plan-index
 status: active
 authoritative_for:
   - design-spec-and-implementation-plan-routing
-last_reviewed_baseline: 1.11.0
+last_reviewed_baseline: 1.12.0
 ---
 
 # Design Specifications and Implementation Plans
@@ -34,7 +34,7 @@ docs/superpowers/plans/
 - [`plans/2026-07-23-milestone-27-production-observability-foundation.md`](plans/2026-07-23-milestone-27-production-observability-foundation.md)
 - [`plans/2026-07-24-self-hosted-ci-execution-mode.md`](plans/2026-07-24-self-hosted-ci-execution-mode.md)：Task 27-7三種CI執行端、Mac self-hosted runner與closure實作計畫。
 
-Milestone 29已完成implementation與holistic closure；Plan保留執行順序與驗證gate，current Task仍以`docs/roadmap/active.md`為準。
+Milestone 30已完成implementation與local holistic closure；Plan保留執行順序與驗證gate，push／post-release狀態仍以`docs/roadmap/active.md`為準。
 
 ## Reading rule
 

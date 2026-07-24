@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.11.0
+last_reviewed_baseline: 1.12.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.11.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.11.0
+Template Baseline: 1.12.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,7 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Milestone 30 — Test Suite Audit, Rationalization & Governance
-Baseline: 1.11.0
+Baseline: 1.12.0
+Status: Local release complete; push and post-release validation pending
 ```
 
 完整 active scope、design、gate與 next action：
@@ -48,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 29 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 29 已完成或已有明確 disposition；Milestone 30已完成local release，尚待explicit push與post-release validation。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

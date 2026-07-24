@@ -22,6 +22,28 @@
 
 ---
 
+## [1.12.0] - 2026-07-24
+
+### Added
+
+- 完成Milestone 30 Test Suite Audit, Rationalization & Governance，建立repository-wide machine-readable test inventory、coverage owner、production／historical boundary與Tier 1～5 execution matrix。
+- 新增`docs/guides/testing_governance.md`，定義新增、搬移、合併、刪除、封存、large-file與shared fixture規則。
+- 新增Catalog historical migration專屬owner，將current local boundary與sqflite historical oracle分離。
+
+### Changed
+
+- Auth與Catalog current integration tests改用production Drift adapters，不再以historical sqflite implementation作current fixture。
+- 測試清理改採replacement manifest與primary-owner證據，不以測試數或LOC下降作為成功標準。
+- CI、Platform、Documentation與Generated contracts完成ownership審查；維持現有change-aware與fail-safe routing，不新增無收益的sharding或generic YAML DSL。
+
+### Verified
+
+- Final inventory為136 files、22,943 LOC、769 static cases；Milestone起始與結束case總數相同，沒有coverage loss。
+- 全部Flutter package tests、88個CI Python contracts、15個documentation checker tests、inventory tooling與workspace analyze通過。
+- Generated consistency、Drift v1～v6/current schema export、Web worker／Wasm governance、historical migration／rollback及App bundle build通過。
+
+---
+
 ## [1.11.0] - 2026-07-24
 
 ### Added

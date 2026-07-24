@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.10.0
+last_reviewed_baseline: 1.12.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.10.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.10.0
+Template Baseline: 1.12.0
 Phase 1 / MVP: Completed
 Current active milestone: None
-Latest completed initiative: Milestone 28 Connectivity and Offline State Foundation
+Latest completed initiative: Milestone 30 Test Suite Audit, Rationalization & Governance
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -51,6 +51,10 @@ Milestone 26已建立development／staging／production的cross-platform mapping
 Milestone 27已建立provider-neutral production observability contract、Firebase Crashlytics reference adapter、release identity與severity routing、privacy／collection policy、Android symbols、iOS dSYM、controlled remote acceptance，以及`manual-local`／`self-hosted`／`github-hosted`三種CI execution mode。Android與iOS controlled events均已完成Firebase Console ingestion與symbolication驗證，並以Template Baseline 1.9.0封存。
 
 Milestone 28已建立App-owned typed connectivity authority、provider-neutral adapter contract、`connectivity_plus` reference adapter、startup／resume recheck、offline banner與Catalog opt-in reconnect revalidation。Backend reachability仍由operation result表達，physical-device network toggle與production distribution維持deferred，並以Template Baseline 1.10.0封存。
+
+Milestone 29已完成Drift Persistence Migration，Drift成為唯一production database authority，並保留v1～v6 historical migration與rollback compatibility。
+
+Milestone 30已建立repository-wide test inventory、primary coverage owner、production／historical boundary、controlled deletion manifest與Tier 1～5 execution governance。Auth與Catalog current integration均使用production Drift path；historical sqflite只保留於migration、rollback與fixture oracle。Template Baseline提升為1.12.0。
 
 Repository CI已採change-aware execution：純文件變更只執行輕量治理與穩定check no-op；source、native、dependency、classifier或release變更依contract執行完整CI及相關平台代表build。Unknown path、無效Git range與classification failure會fail-safe到完整矩陣。詳細操作矩陣由`docs/guides/ci_cd_operations.md`擁有。
 
@@ -339,13 +343,13 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.11.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.12.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Active Work
 
-目前沒有active milestone。Milestone 29已完成final holistic review並以Template Baseline 1.11.0封存；下一個正式方向必須先從candidate／backlog完成scope review與planning promotion。
+Milestone 30已完成implementation、holistic review與Template Baseline 1.12.0 local release；目前只等待explicit push與post-release validation。完成remote closure後，下一個正式方向必須先從candidate／backlog完成scope review與planning promotion。
 
 Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。
 

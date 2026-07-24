@@ -3,7 +3,7 @@ document_type: active-milestone
 status: accepted
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.11.0
+last_reviewed_baseline: 1.12.0
 ---
 
 # Active Milestone
@@ -12,12 +12,12 @@ last_reviewed_baseline: 1.11.0
 
 ```txt
 Milestone 30 — Test Suite Audit, Rationalization & Governance
-Baseline: 1.11.0
+Baseline: 1.12.0
 ```
 
 ## Active Scope
 
-本階段先建立repository-wide test inventory、coverage ownership、production／historical boundary、deletion evidence與execution tiers，再依證據進行Auth、Catalog、Persistence、CI／Platform與shared fixture的受控rationalization。不得以測試數下降作為唯一成功標準，也不得降低核心business invariant、安全、migration與platform regression coverage。
+Milestone 30 implementation、Task reviews、holistic regression與Template Baseline 1.12.0 local release均已完成。因repository規則禁止未經使用者明確要求push，目前只剩push與post-release validation；在此之前不得宣稱Milestone正式remote closure。
 
 - Design Spec：`docs/superpowers/specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md`
 - Design review：`docs/audits/milestone_30/30-0_design_spec_review.md`
@@ -58,7 +58,8 @@ Backend reachability service、generic reconnect framework、write queue、produ
 ## Current Next Action
 
 ```txt
-執行Task 30-11 — Holistic Regression and Final Review
-→ 完成完整Task審查循環與commit
-→ 完成Milestone 30 holistic final review與release closure
+等待使用者明確要求push
+→ push Template Baseline 1.12.0
+→ 執行post-release remote／clean-checkout validation
+→ Milestone 30正式closure
 ```

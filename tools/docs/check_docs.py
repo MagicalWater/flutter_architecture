@@ -116,7 +116,9 @@ def _check_milestone_routing(root: Path) -> list[CheckIssue]:
     index_text = _without_fenced_code(index_path.read_text(encoding="utf-8"))
     issues: list[CheckIssue] = []
     if re.search(r"currently? active milestone|目前active milestone", active_text, re.IGNORECASE) and re.search(r"\bNone\b", active_text):
-        if re.search(r"Local release complete|post-release pending|Active routing[\s\S]*?\|\s*\d+\s*\|", index_text, re.IGNORECASE):
+        active_section_match = re.search(r"## Active routing(?P<body>[\s\S]*?)(?=\n## |\Z)", index_text, re.IGNORECASE)
+        active_section = active_section_match.group("body") if active_section_match else ""
+        if re.search(r"Local release complete|post-release pending|^\|\s*\d+\s*\|", active_section, re.IGNORECASE | re.MULTILINE):
             issues.append(CheckIssue("stale-milestone-routing", index_path, "active milestone is None but milestone index retains pending active routing"))
     rows = re.findall(r"^\|\s*(\d+)\s*\|\s*([^|]+)\|", index_text, re.MULTILINE)
     seen: dict[str, list[str]] = {}

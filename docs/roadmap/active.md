@@ -58,7 +58,7 @@ Backend reachability service、generic reconnect framework、write queue、produ
 ## Current Next Action
 
 ```txt
-執行Task 30-9 — Controlled Cleanup and Deletion Manifest
+執行Task 30-10 — Governance and Adoption Documentation
 → 完成完整Task審查循環與commit
-→ 直接進入Task 30-10
+→ 直接進入Task 30-11
 ```

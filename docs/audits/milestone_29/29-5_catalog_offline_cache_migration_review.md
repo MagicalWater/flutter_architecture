@@ -48,6 +48,23 @@ Analyzer指出六個 `_ThrowingCatalogLocalDataSource` call site仍使用raw sqf
 **Disposition:** 全部明確包成 `SqfliteCatalogCacheDao`，不在 feature contract洩漏
 provider type。
 
+## Focused Re-review
+
+完成上述 findings 修正後，重新執行 provider boundary 與 call-site focused review：
+
+- `CatalogLocalDataSource` 已無 `Database`、`DatabaseExecutor`、
+  `ConflictAlgorithm`、`DatabaseException` 或直接 sqflite import。
+- Drift 與 transitional sqflite implementation皆只透過 `CatalogCacheDao` contract
+  進入 feature boundary。
+- Provider operational failures皆先包裝為 `CatalogCacheDaoException`，再由 feature
+  映射為既有 `AppExceptionKind.localStorage`，unknown non-provider errors不被吞掉。
+- Repository、data layer、logout與local source tests的raw `Database` call sites皆已
+  明確包裝為 `SqfliteCatalogCacheDao`。
+- 真正 Drift execution path由 `drift_catalog_local_data_source_test.dart`直接覆蓋，
+  不是只依賴 transitional adapter通過。
+
+Focused re-review結果：無新增 P0／P1 finding。
+
 ## Whole-task Review
 
 - Cursor-chain decision ownership未移動。
@@ -68,8 +85,21 @@ provider type。
   - 104 passed
 - `dart run melos run analyze`
   - passed
+- `dart run melos run docs_check`
+  - passed；初次檢查發現review metadata不符合repository schema，修正為
+    `phase-review`／`accepted`並補齊authority與baseline後重新通過
 - `git diff --check`
   - passed
+
+## Documentation Authority Check
+
+- 本文件是 Task 29-5 review evidence authority，不取代approved Design Spec或
+  Implementation Plan。
+- Production single-owner cutover仍由Task 29-8負責；本 Task未提前宣稱sqflite
+  production authority已移除。
+- Transitional `SqfliteCatalogCacheDao` removal gate已明確記錄，未形成永久雙owner
+  架構承諾。
+- `docs_check`已確認metadata、authority identifier與baseline格式符合文件治理規則。
 
 ## Exit Criteria
 

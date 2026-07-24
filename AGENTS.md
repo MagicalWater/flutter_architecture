@@ -236,6 +236,15 @@ Commit
 
 ---
 
+## 測試治理
+
+新增、搬移、合併或刪除測試前，先閱讀`docs/guides/testing_governance.md`。Current behavior不得依賴historical fixture；刪除測試必須有replacement evidence與deletion manifest。盤點命令：
+
+```bash
+python3 -m unittest tools.testing.test_test_inventory
+python3 tools/testing/inventory.py
+```
+
 ## Commit 前檢查
 
 Commit 前至少確認：

@@ -87,6 +87,7 @@ def check_repository(root: Path) -> list[CheckIssue]:
     issues.extend(_check_status(metadata_by_path))
     issues.extend(_check_adrs(root, metadata_by_path))
     issues.extend(_check_readme_coverage(root))
+    issues.extend(_check_milestone_routing(root))
     return sorted(issues, key=lambda issue: (issue.code, str(issue.path), issue.message))
 
 
@@ -96,6 +97,35 @@ def _iter_markdown_files(root: Path) -> Iterable[Path]:
         if not any(part in ignored for part in path.parts):
             yield path
 
+
+
+def _is_agent_skill(path: Path, root: Path) -> bool:
+    try:
+        relative = path.relative_to(root)
+    except ValueError:
+        return False
+    return len(relative.parts) >= 4 and relative.parts[0:2] == (".agents", "skills") and path.name == "SKILL.md"
+
+
+def _check_milestone_routing(root: Path) -> list[CheckIssue]:
+    active_path = root / "docs" / "roadmap" / "active.md"
+    index_path = root / "docs" / "milestones" / "README.md"
+    if not active_path.exists() or not index_path.exists():
+        return []
+    active_text = active_path.read_text(encoding="utf-8")
+    index_text = _without_fenced_code(index_path.read_text(encoding="utf-8"))
+    issues: list[CheckIssue] = []
+    if re.search(r"currently? active milestone|目前active milestone", active_text, re.IGNORECASE) and re.search(r"\bNone\b", active_text):
+        if re.search(r"Local release complete|post-release pending|Active routing[\s\S]*?\|\s*\d+\s*\|", index_text, re.IGNORECASE):
+            issues.append(CheckIssue("stale-milestone-routing", index_path, "active milestone is None but milestone index retains pending active routing"))
+    rows = re.findall(r"^\|\s*(\d+)\s*\|\s*([^|]+)\|", index_text, re.MULTILINE)
+    seen: dict[str, list[str]] = {}
+    for number, status in rows:
+        seen.setdefault(number, []).append(status.strip())
+    for number, statuses in seen.items():
+        if len(statuses) > 1 and any("Completed" in status or "Archived" in status for status in statuses):
+            issues.append(CheckIssue("duplicate-milestone-routing", index_path, f"Milestone {number} has duplicate routing rows: {statuses}"))
+    return issues
 
 def _check_links(root: Path, files: list[Path]) -> list[CheckIssue]:
     issues: list[CheckIssue] = []
@@ -174,6 +204,8 @@ def _check_metadata(
     metadata_by_path: dict[Path, dict[str, object]] = {}
     issues: list[CheckIssue] = []
     for path in files:
+        if _is_agent_skill(path, root):
+            continue
         metadata = _parse_front_matter(path.read_text(encoding="utf-8"))
         if not metadata:
             continue

@@ -53,6 +53,20 @@ Historical 文件只能用來理解過去，不能覆蓋 current authority。
 
 ---
 
+## Development Workflow Governance
+
+任何新需求、Bug、Refactor、Migration、Architecture、Release或repository governance工作，在開始Design、Plan或Implementation前，必須先使用repository-local `governing-template-development` Skill：
+
+```txt
+.agents/skills/governing-template-development/SKILL.md
+```
+
+該Skill負責Requirement Decision、Level 0～5分類、Superpowers routing與雙層Task模式。不得直接以brainstorming、TDD、systematic-debugging或writing-plans跳過此入口。
+
+Repository policy與current artifacts高於Skill；完整人類治理總覽見`docs/governance/development_workflow.md`。
+
+---
+
 ## 架構守則
 
 ### Clean Architecture

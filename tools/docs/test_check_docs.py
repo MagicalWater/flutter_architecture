@@ -52,6 +52,33 @@ class DocumentationCheckerTest(unittest.TestCase):
 
             self.assertEqual(codes.count("missing-readme"), 3)
 
+    def test_allows_agent_skill_frontmatter(self) -> None:
+        with _fixture() as root:
+            _write(
+                root,
+                ".agents/skills/example/SKILL.md",
+                "---\nname: example\ndescription: Use when testing a repository skill.\n---\n",
+            )
+
+            self.assertNotIn("invalid-metadata", _codes(root))
+
+    def test_reports_stale_and_duplicate_milestone_routing(self) -> None:
+        with _fixture() as root:
+            _write(root, "docs/roadmap/active.md", "目前active milestone：\n\n```txt\nNone\n```\n")
+            _write(
+                root,
+                "docs/milestones/README.md",
+                "## Active routing\n\n| Milestone | Status | Primary routing |\n|---|---|---|\n"
+                "| 30 | Local release complete; post-release pending | x |\n"
+                "## Closed\n| Milestone | Status | Primary routing |\n|---|---|---|\n"
+                "| 30 | Completed / Archived | y |\n",
+            )
+
+            codes = _codes(root)
+
+            self.assertIn("stale-milestone-routing", codes)
+            self.assertIn("duplicate-milestone-routing", codes)
+
     def test_reports_invalid_managed_metadata(self) -> None:
         with _fixture() as root:
             _write(

@@ -133,6 +133,7 @@ Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆
 - `docs/milestones/README.md`：Milestone routing 與 archive manifest 入口。
 - `docs/archive/README.md`：已明確封存的歷史內容。
 - `docs/governance/documentation_policy.md`：文件治理與 metadata contract。
+- `docs/governance/development_workflow.md`：需求分類、Superpowers、雙層Task與repository-local workflow Skill的治理總覽。
 - `docs/guides/`：可重複使用的操作指南；CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
 - `docs/mistakes/`：已知反模式與錯誤案例。
 - `docs/evolution/`：架構演進知識入口。

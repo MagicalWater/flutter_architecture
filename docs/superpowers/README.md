@@ -29,7 +29,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
-- [`plans/2026-07-25-karpathy-guidelines-adoption.md`](plans/2026-07-25-karpathy-guidelines-adoption.md)：提前建立的`proposed`草稿，目前blocked by Design approval；Design核准後必須重新執行完整Plan Task review。
+- [`plans/2026-07-25-karpathy-guidelines-adoption.md`](plans/2026-07-25-karpathy-guidelines-adoption.md)：以固定上游commit、受限制automatic routing、Skill TDD壓力測試與Pilot closure加入Karpathy coding companion；目前為`proposed`，已完成Plan Task review，等待使用者核准。
 - [`plans/2026-07-24-milestone-31-template-development-workflow-governance.md`](plans/2026-07-24-milestone-31-template-development-workflow-governance.md)：原計畫已降回`proposed`，等待Design Spec recovery核准後再進行Plan雙層review。
 - [`plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md`](plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md)：Repository-wide test inventory、coverage ownership、production／historical boundary、controlled cleanup與execution governance。
 - [`plans/2026-07-24-milestone-29-drift-persistence-migration.md`](plans/2026-07-24-milestone-29-drift-persistence-migration.md)：Drift整體遷移、historical compatibility、single-owner cutover與platform acceptance。

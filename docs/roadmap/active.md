@@ -58,7 +58,7 @@ Backend reachability service、generic reconnect framework、write queue、produ
 ## Current Next Action
 
 ```txt
-執行Task 30-2 — Test Inventory, Ownership and Baseline
+執行Task 30-3 — Historical and Persistence Boundary Audit
 → 完成完整Task審查循環與commit
-→ 直接進入Task 30-3
+→ 直接進入Task 30-4
 ```

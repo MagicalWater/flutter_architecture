@@ -26,7 +26,7 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-None
+Milestone 30 — Test Suite Audit, Rationalization & Governance
 Baseline: 1.11.0
 ```
 

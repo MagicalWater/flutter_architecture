@@ -11,9 +11,16 @@ last_reviewed_baseline: 1.11.0
 目前active milestone：
 
 ```txt
-None
+Milestone 30 — Test Suite Audit, Rationalization & Governance
 Baseline: 1.11.0
 ```
+
+## Active Scope
+
+本階段先建立repository-wide test inventory、coverage ownership、production／historical boundary、deletion evidence與execution tiers，再依證據進行Auth、Catalog、Persistence、CI／Platform與shared fixture的受控rationalization。不得以測試數下降作為唯一成功標準，也不得降低核心business invariant、安全、migration與platform regression coverage。
+
+- Design Spec：`docs/superpowers/specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md`
+- Design review：`docs/audits/milestone_30/30-0_design_spec_review.md`
 
 ## Latest Completed Milestone
 
@@ -49,7 +56,7 @@ Backend reachability service、generic reconnect framework、write queue、produ
 ## Current Next Action
 
 ```txt
-Review candidates／backlog
-→ 選擇下一個正式方向
-→ 完成Design Spec與Implementation Plan後再建立active milestone
+建立Milestone 30 Implementation Plan
+→ 完成Plan審查與commit
+→ 依Task 30-2～30-11執行雙層Task治理
 ```

@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.9.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.8.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.8.0
+Template Baseline: 1.9.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 27 — Production Observability Foundation
-Latest completed initiative: Milestone 26 Native Flavor & Product Identity Foundation
+Current active milestone: None
+Latest completed initiative: Milestone 27 Production Observability Foundation
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -47,6 +47,8 @@ Milestone 24 已建立GitHub Actions repository quality gates、exact toolchain 
 Milestone 25已建立tracked iOS runner、原始iOS 13 native contract、CocoaPods resolution、Face ID／Keychain設定、Simulator runtime smoke、macOS golden authority與GitHub-hosted unsigned Simulator build gate，並以Template Baseline 1.7.0封存。Milestone 27因Firebase Apple SDK 12.x最低需求，已將current iOS deployment baseline提升為15.0。Physical-device biometric acceptance、production signing、IPA與App Store distribution仍為deferred scope。
 
 Milestone 26已建立development／staging／production的cross-platform mapping manifest、Android product flavors、iOS shared schemes與九組build configurations、native／Dart mismatch fail-fast、environment-aware local artifact commands、GitHub-hosted development／production代表性build matrix與manifest-first adoption guide，並以Template Baseline 1.8.0封存。Repository artifacts仍只屬verification evidence，不包含production signing或Store distribution。
+
+Milestone 27已建立provider-neutral production observability contract、Firebase Crashlytics reference adapter、release identity與severity routing、privacy／collection policy、Android symbols、iOS dSYM、controlled remote acceptance，以及`manual-local`／`self-hosted`／`github-hosted`三種CI execution mode。Android與iOS controlled events均已完成Firebase Console ingestion與symbolication驗證，並以Template Baseline 1.9.0封存。
 
 Repository CI已採change-aware execution：純文件變更只執行輕量治理與穩定check no-op；source、native、dependency、classifier或release變更依contract執行完整CI及相關平台代表build。Unknown path、無效Git range與classification failure會fail-safe到完整矩陣。詳細操作矩陣由`docs/guides/ci_cd_operations.md`擁有。
 
@@ -340,7 +342,7 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-目前active milestone為Milestone 27 — Production Observability Foundation。此Milestone已完成capability audit、architecture design、ADR-026、implementation plan與planning review，下一步為Task 27-1 Release Identity and Provider-neutral Contracts；目前尚未加入Firebase或Sentry dependency，也沒有production remote adapter或provider-backed runtime evidence。
+目前沒有active milestone。Milestone 27已完成final holistic review並以Template Baseline 1.9.0封存；下一個正式方向必須先從candidate／backlog完成scope review與planning promotion。
 
 Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。
 

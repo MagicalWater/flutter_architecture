@@ -1,9 +1,9 @@
 ---
 document_type: phase-review
-status: active
+status: completed
 authoritative_for:
   - milestone-27-task-27-6-ci-secrets-remote-acceptance-review
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.9.0
 ---
 
 # Task 27-6 — CI Secrets and Remote Acceptance Review
@@ -57,12 +57,29 @@ Secrets只在non-PR jobs materialize到runner temporary filesystem或ignored pro
 - Android remote event／symbolication：verified。
 - iOS matching dSYM upload：executed；最新本機Simulator build的Runner與App.framework UUID已核對並提交。
 - iOS report transport：Crashlytics endpoint HTTP 200。
-- iOS Firebase Console ingestion／symbolication：pending manual confirmation。
+- iOS Firebase Console ingestion：verified。Firebase Crashlytics後台已顯示staging Simulator controlled non-fatal event。
+- iOS Dart stack symbolication：verified。後台已解析`ObservabilityAcceptanceEvent.emit`、`bootstrap.<fn>`、`runBootstrapGuarded`、`bootstrap`及其source file／line。
 - 舊missing UUID屬於先前binary；除非找回原始archive／dSYM，不能由新build UUID補救。
+
+## Console closure evidence
+
+2026-07-24人工檢查Firebase Crashlytics後台，確認最新iOS staging acceptance event：
+
+```txt
+Non-fatal Exception: FlutterError
+ObservabilityAcceptanceEvent.emit (observability_acceptance_event.dart:17)
+bootstrap.<fn> (bootstrap.dart:79)
+runBootstrapGuarded (bootstrap_error_guard.dart:11)
+bootstrap (bootstrap.dart:40)
+```
+
+此證據同時關閉event ingestion與Dart／Flutter stack symbolication。畫面中的module欄位仍顯示`???`，但函式名稱、source file與line已解析，不構成本Task blocker。
+
+舊UUID `F008CAED-0530-3A90-AF1A-81CF79739C2F`對應舊版`0.1.0 (1)` binary。它保留為historical unmatched dSYM，不能以新build symbols回補，但不影響新acceptance event已成功symbolicate的closure判定。
 
 ## Disposition
 
-IMPLEMENTATION ACCEPTED；iOS CONSOLE CLOSURE PENDING。
+ACCEPTED。
 
-Open implementation P0／P1 = 0。剩餘external closure只有人工在Firebase Console確認最新iOS event ingestion與symbolicated stack；在此之前不得標成verified。
+Open P0 = 0。Open P1 = 0。Android與iOS remote event ingestion、symbol upload及新acceptance stack symbolication均已完成驗證；historical unmatched dSYM已有明確non-blocking disposition。
 

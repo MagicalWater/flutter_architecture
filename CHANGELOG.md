@@ -18,16 +18,34 @@
 
 ## [Unreleased]
 
+目前沒有尚未發布的變更。
+
+---
+
+## [1.9.0] - 2026-07-24
+
 ### Added
 
-- 新增`manual-local`、`self-hosted`與`github-hosted`三種CI execution mode，以及`repository-default`manual override sentinel。
-- 新增repository-scoped macOS ARM64 self-hosted runner，僅接受trusted `main` push與manual dispatch；PR、fork與Dependabot程式碼不會進入本機runner。
-- 新增self-hosted persistent workspace Firebase secret cleanup與完整routing／offline no-fallback runtime evidence。
+- 完成Milestone 27 Production Observability Foundation，建立provider-neutral reporting contract與Firebase Crashlytics reference adapter。
+- 新增release identity、fatal／unexpected／degraded routing、privacy／collection policy與provider failure isolation。
+- 新增Android mapping／Flutter symbols、iOS dSYM、controlled staging non-fatal與protected Environment remote acceptance。
+- 新增`manual-local`／`self-hosted`／`github-hosted`三種CI execution mode、`repository-default`manual sentinel與repository-scoped Mac ARM64 self-hosted runner。
 
 ### Changed
 
 - Self-hosted runner停用GitHub remote Flutter／Pub cache transport，避免大型cache storage與網路成本；GitHub-hosted模式仍可使用explicit Pub cache。
 - Android Firebase Gradle task改為依各environment config啟用；缺少development config時不再阻擋development build。
+
+### Verified
+
+- Android與iOS controlled non-fatal均已在Firebase Console完成event ingestion與symbolication驗證。
+- iOS stack已解析`ObservabilityAcceptanceEvent.emit`、bootstrap guard相關函式、source file與line。
+- Self-hosted main／manual routing、PR denial、offline no-fallback、persistent workspace secret cleanup與完整Android／iOS代表build均通過。
+
+### Security
+
+- Pull Request不讀取provider secrets，也不進入`water`帳號self-hosted runner。
+- Observability remote acceptance只允許manual explicit gate；普通main push不會建立受控事件或執行symbol upload。
 
 ---
 

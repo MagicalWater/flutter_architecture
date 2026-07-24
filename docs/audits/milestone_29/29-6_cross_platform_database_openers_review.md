@@ -81,6 +81,21 @@ Dependency-ready，禁止只為本Task暗中提升為Supported或新增runner sc
 - `sqflite_sw.js`依plan保留到Task 29-8 removal gate。
 - 未提升Web／Desktop Supported claim。
 
+## Whole-task Review
+
+- Native與Web opener均由App-owned boundary統一建立，Feature與Repository不感知platform差異。
+- Android／iOS精確沿用`flutter_architecture.db`檔名；desktop使用document directory且不混淆mobile upgrade contract。
+- Web已依實際storage／worker差異選擇`explicit reset`，沒有誤宣稱automatic preservation。
+- background executor、database singleton與idempotent close責任一致，未建立per-DAO connection或isolate。
+- Web與desktop仍維持既有Dependency-ready classification，沒有因Drift capability而提升Supported claim。
+
+## Documentation Authority Check
+
+- Design Spec與Implementation Plan中的native same-file、Web disposition、asset與platform claim限制均已落實。
+- `app_database_opener*.dart`、path policy、Web storage policy與本review分別承載runtime與evidence authority。
+- `sqflite_sw.js`保留至Task 29-8 removal gate，與plan sequencing一致。
+- `flutter build web` blocked evidence明確歸因於既有platform policy，不被記錄為runtime pass。
+
 ## Validation
 
 - Native path policy tests：passed。

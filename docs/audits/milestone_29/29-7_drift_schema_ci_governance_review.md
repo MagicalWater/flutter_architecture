@@ -60,6 +60,13 @@ v1～v6；current則由`AppDatabase` source dump。
 - Schema／DAO／asset變更均進入generation、analyze、tests與platform builds。
 - No new platform support claim。
 
+## Documentation Authority Check
+
+- `tools/database/export_drift_schemas.sh`是v1～v6/current snapshot的canonical export command。
+- `tools/ci/verify_generated.sh`是generated source、schema snapshot與worker consistency的clean-tree authority。
+- change classifier tests定義database-critical paths，workflow只消費classifier output，不重複維護第二套規則。
+- Audit保留cold／warm generation量測與post-commit clean-tree結果，不把工具輸出散落到README或ADR。
+
 ## Validation
 
 - `python3 -m unittest tools.ci.test_change_classifier tools.ci.test_drift_schema_governance`：26 passed。
@@ -68,7 +75,7 @@ v1～v6；current則由`AppDatabase` source dump。
 - `dart run melos run build_runner` warm：7.03s。
 - `dart run melos run docs_check`：passed。
 - `dart run melos run analyze`：passed。
-- Clean checkout `bash tools/ci/verify_generated.sh`：pending post-commit clean-tree gate。
+- Post-commit clean-tree `bash tools/ci/verify_generated.sh`：passed；輸出為`Generated files are consistent with source.`。
 
 ## Exit Criteria
 

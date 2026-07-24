@@ -1,3 +1,11 @@
+---
+document_type: backlog
+status: active
+authoritative_for:
+  - uncommitted-deferred-and-not-planned-work
+last_reviewed_baseline: 1.9.0
+---
+
 # Backlog
 
 本文件只記錄尚未承諾、延後處理或明確不在目前baseline範圍內的工作。已完成能力由Roadmap、Project Context、Architecture Decisions與CHANGELOG保存，不再重複列入Backlog。
@@ -8,7 +16,6 @@
 - Notification feature。
 - Payment feature。
 - Analytics adapter與事件治理範例。
-- Firebase Crashlytics production adapter；目前僅有App-owned error reporting boundary，不引入Firebase dependency。
 
 ## Deferred commitments
 
@@ -22,7 +29,7 @@
 - Generic Navigation Service或通用Coordinator framework。
 - Generic Cache／Generic Pagination framework。
 - 所有API自動寫入SQLite的generic HTTP cache。
-- 未經產品需求支持的Firebase、支付、通知或analytics依賴。
+- 未經產品需求支持的額外Firebase產品、支付、通知或analytics依賴。
 
 ## Scope rule
 

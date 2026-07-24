@@ -3,7 +3,7 @@ document_type: roadmap-candidates
 status: active
 authoritative_for:
   - concrete-roadmap-candidates
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.9.0
 ---
 
 # Roadmap Candidates
@@ -11,10 +11,6 @@ last_reviewed_baseline: 1.8.0
 本文件保存已有明確價值與邊界、但尚未核准為 active milestone 的候選方向。
 
 Candidate 不代表 commitment。開始 implementation 前仍需 scope review、Architecture Decision 判斷、acceptance criteria 與正式 active promotion。
-
-Architecture Decision Record Extraction & Normalization 已提升為 Milestone 23；current status由 `docs/roadmap/active.md` 擁有，不再列為 candidate。
-
-CI/CD Foundation已由 Milestone 24完成並封存；current capability由`docs/project_context.md`、ADR-023與final review保存，不再列為 candidate。
 
 ## Candidate — Additional Platform Support
 
@@ -24,21 +20,13 @@ CI/CD Foundation已由 Milestone 24完成並封存；current capability由`docs/
 
 每個平台應獨立評估 scaffold、artifact、runtime smoke、plugin support 與維護成本，不建議一次綁成單一大 milestone。
 
-## Promoted — Production Observability Foundation
-
-Production Observability候選已完成capability audit、architecture design、ADR-026、implementation plan與planning review，提升為Milestone 27 — Production Observability Foundation。
-
-Current scope與next action由`docs/roadmap/active.md`擁有，不再列為candidate。Baseline 1.8.0目前仍未加入Firebase dependency；reference adapter將依Milestone 27 Task 27-3導入。
-
-Native Flavor and Product Identity已提升為Milestone 26；current scope與next action由`docs/roadmap/active.md`擁有，不再列為candidate。
-
 ## Disposition — Documentation Knowledge Expansion
 
 此大型文件擴張方向不再列為 candidate。
 
-已接受的 Documentation Usability & Coverage Audit 確認，目前缺口集中在少量 navigation、task route 與 stale placeholder，不足以支持大型 Milestone、通用 Troubleshooting Guide 或 Architecture Evolution handbook。
+已接受的 Documentation Usability & Coverage Audit 確認，當時缺口集中在少量 navigation、task route 與 stale placeholder，不足以支持大型 Milestone、通用 Troubleshooting Guide 或 Architecture Evolution handbook。
 
-已確認的缺口由有界的 Documentation Usability Hardening design 與 implementation plan 處理，不建立 Milestone 27，也不形成開放式 knowledge expansion commitment。
+已確認的缺口已由有界的 Documentation Usability Hardening design 與 implementation plan 處理，不形成開放式 knowledge expansion commitment。
 
 未來若要重新提出大型文件擴張，必須先提供新的可驗證 evidence、明確 scope／non-goals 與獨立 candidate review，不得只因文件數量增加或既有 metadata baseline 較舊而重新啟動。
 

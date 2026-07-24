@@ -31,3 +31,16 @@ A skill never replaces repository authority, source, tests, CI, security policy,
 ## Upgrade rule
 
 Re-run adoption review and pressure scenarios when triggers, artifacts, permissions, managed files, workflow order or supported agents change. More installed skills are not inherently better; reject a skill whose value is already covered without a clear gap.
+
+
+## Registry contract
+
+For every adopted or evaluated Skill, record name, source, pinned version or commit, status, trigger, responsibility, forbidden responsibility, overlaps, companion Skills, repository mutations, required permissions, validation evidence, last review and rollback／upgrade policy.
+
+## Revalidation triggers
+
+Re-run focused adoption review and relevant pressure scenarios when the Skill changes trigger wording, artifact paths, files it manages, permissions, workflow ordering, review／commit behavior, supported runtimes or automatic loading. An update that writes managed `AGENTS.md` or introduces a parallel authority cannot be accepted without an explicit repository decision.
+
+## Rollback and deprecation
+
+Pilot and restricted Skills must have a removal path. Deprecation records the replacement or reason for removal, removes trigger wiring, verifies no repository workflow still depends on it and preserves only necessary historical evidence.

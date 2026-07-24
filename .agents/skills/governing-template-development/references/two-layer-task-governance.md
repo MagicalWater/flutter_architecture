@@ -15,7 +15,11 @@ reproduce／confirm → implement with TDD or focused fix → focused review
 → findings → fix → re-review → affected validation → authority check → commit
 ```
 
-### Standard／Full — Level 2–5
+### Standard — Level 2
+
+Use the complete formal Task cycle for Design, Plan and each implementation unit. Feature regression is required; full workspace regression is conditional on affected boundaries.
+
+### Full — Level 3–4
 
 Every Design Spec, Implementation Plan and implementation unit is a formal Task:
 
@@ -60,6 +64,16 @@ holistic review
 ```
 
 The last implementation Task does not complete a Milestone. Open P0 must be zero and every P1 must have disposition.
+
+## Acceptance and commit gate
+
+A Task may be committed with completion semantics only after all required validation passes. A failing Task stays open or is explicitly blocked／rejected. A later Task may repair it, but must record the recovery and cannot rewrite the earlier gate as passed.
+
+Design and Plan remain `proposed` until their full Task cycle and explicit user approval complete. Implementation cannot start from a proposed Plan.
+
+## Evidence chain
+
+Each formal Task records Task ID, artifact scope, focused findings, fixes, fresh re-review, whole-task coverage, authority check, exact validation and independent commit. `Resolved` without fix and re-review evidence is insufficient.
 
 ## Critical additions — Level 5
 

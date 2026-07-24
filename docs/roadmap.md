@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-None
-Latest completed: Milestone 28 — Connectivity and Offline State Foundation
+Milestone 29 — Drift Persistence Migration
+Current phase: Design Spec accepted；Implementation Plan pending
 Baseline: 1.10.0
 ```
 

@@ -75,6 +75,12 @@ Do not invent artifacts for Level 0／1. Do not downgrade cross-cutting, archite
 - Use review skills and `verification-before-completion` as methods inside repository review gates.
 - `finishing-a-development-branch` cannot declare repository or Milestone closure before release and post-release gates pass.
 
+## Coding companion
+
+After classification and all required Design／Plan approvals, implementation, refactor and production code review routes must also load `karpathy-guidelines`. It is a subordinate heuristic companion only; it never becomes the user-facing entry point or an authority for Level, scope, approval, Task, validation, release or closure.
+
+Do not load it for pure requirement discussion, approval decisions, roadmap disposition, documentation-only Level 0 work or release metadata unless production code is also being reviewed.
+
 ## Stop and continue
 
 Continue automatically after an accepted Task. Stop only for:

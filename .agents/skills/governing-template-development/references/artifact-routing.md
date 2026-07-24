@@ -35,6 +35,7 @@ Classification
 → Plan Task governance and user approval
 → worktree when routed
 → TDD／systematic debugging
+→ karpathy-guidelines for implementation／refactor／production code review
 → executing-plans or subagent-driven-development
 → requesting／receiving code review
 → verification-before-completion
@@ -43,6 +44,8 @@ Classification
 ```
 
 Repository gates override a Superpowers shortcut. In particular, writing-plans cannot begin before the Design Spec is accepted, and implementation cannot begin before the Plan is accepted.
+
+`karpathy-guidelines` is never a workflow entry point. It loads only after classification and required approvals, and is excluded from pure discussion, approval gates, Level 0 documentation-only work, roadmap disposition and release closure unless production code is also under review.
 
 
 ## Acceptance state transitions

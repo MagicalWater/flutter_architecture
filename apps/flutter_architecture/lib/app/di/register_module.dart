@@ -6,6 +6,7 @@ import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart'
 import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_plus_adapter.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import 'package:flutter_architecture/app/database/dao/sqflite_catalog_cache_dao.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
@@ -321,7 +322,7 @@ abstract class RegisterModule {
 
   @lazySingleton
   CatalogLocalDataSource catalogLocalDataSource(Database database) {
-    return CatalogLocalDataSource(database);
+    return CatalogLocalDataSource(SqfliteCatalogCacheDao(database));
   }
 
   @lazySingleton

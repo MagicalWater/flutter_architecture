@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import 'package:flutter_architecture/app/database/dao/sqflite_catalog_cache_dao.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache_page_mapper.dart';
@@ -27,7 +28,7 @@ void main() {
         onUpgrade: AppDatabaseSchema.onUpgrade,
       ),
     );
-    dataSource = CatalogLocalDataSource(database);
+    dataSource = CatalogLocalDataSource(SqfliteCatalogCacheDao(database));
   });
 
   tearDown(() => database.close());
@@ -489,7 +490,9 @@ void main() {
 
   test('unknown TypeError 不會被映射為 localStorage 或 corruption', () async {
     final error = TypeError();
-    final source = CatalogLocalDataSource(_ThrowingDatabase(error));
+    final source = CatalogLocalDataSource(
+      SqfliteCatalogCacheDao(_ThrowingDatabase(error)),
+    );
 
     await expectLater(
       source.readPage(

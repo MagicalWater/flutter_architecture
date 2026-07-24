@@ -2,6 +2,7 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import 'package:flutter_architecture/app/database/dao/sqflite_catalog_cache_dao.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
@@ -51,7 +52,9 @@ void main() {
       ),
       const _NoopLifecycleDiagnosticSink(),
     );
-    final catalogLocal = CatalogLocalDataSource(database);
+    final catalogLocal = CatalogLocalDataSource(
+      SqfliteCatalogCacheDao(database),
+    );
     final updatedAt = DateTime.utc(2026, 7, 17, 6);
 
     final login = await authRepository.login(

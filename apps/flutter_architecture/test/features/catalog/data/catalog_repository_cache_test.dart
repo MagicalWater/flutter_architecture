@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:api_client/api_client.dart';
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import 'package:flutter_architecture/app/database/dao/sqflite_catalog_cache_dao.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
@@ -34,7 +35,7 @@ void main() {
         onUpgrade: AppDatabaseSchema.onUpgrade,
       ),
     );
-    local = CatalogLocalDataSource(database);
+    local = CatalogLocalDataSource(SqfliteCatalogCacheDao(database));
     clock = _FixedCatalogClock(DateTime.utc(2026, 7, 17, 12));
   });
 
@@ -588,7 +589,10 @@ void main() {
     );
     final repository = _repository(
       _RecordingCatalogApi(),
-      _ThrowingCatalogLocalDataSource(database, readPageError: error),
+      _ThrowingCatalogLocalDataSource(
+        SqfliteCatalogCacheDao(database),
+        readPageError: error,
+      ),
       clock,
     );
 
@@ -612,7 +616,7 @@ void main() {
     final repository = _repository(
       _RecordingCatalogApi(),
       _ThrowingCatalogLocalDataSource(
-        database,
+        SqfliteCatalogCacheDao(database),
         readLinkedChainRevisionError: error,
       ),
       clock,
@@ -639,7 +643,10 @@ void main() {
       );
       final repository = _repository(
         _RecordingCatalogApi(),
-        _ThrowingCatalogLocalDataSource(database, replacePageError: error),
+        _ThrowingCatalogLocalDataSource(
+          SqfliteCatalogCacheDao(database),
+          replacePageError: error,
+        ),
         clock,
       );
 
@@ -659,7 +666,10 @@ void main() {
     final error = StateError('cache implementation bug');
     final repository = _repository(
       _RecordingCatalogApi(),
-      _ThrowingCatalogLocalDataSource(database, readPageError: error),
+      _ThrowingCatalogLocalDataSource(
+        SqfliteCatalogCacheDao(database),
+        readPageError: error,
+      ),
       clock,
     );
 
@@ -776,7 +786,10 @@ void main() {
     final sink = _RecordingCatalogCacheDiagnosticSink();
     final repository = _repository(
       _RecordingCatalogApi(),
-      _ThrowingCatalogLocalDataSource(database, readPageError: error),
+      _ThrowingCatalogLocalDataSource(
+        SqfliteCatalogCacheDao(database),
+        readPageError: error,
+      ),
       clock,
       diagnosticSink: sink,
     );
@@ -814,7 +827,10 @@ void main() {
       );
       final repository = _repository(
         _RecordingCatalogApi(),
-        _ThrowingCatalogLocalDataSource(database, readPageError: error),
+        _ThrowingCatalogLocalDataSource(
+          SqfliteCatalogCacheDao(database),
+          readPageError: error,
+        ),
         clock,
         diagnosticSink: const _ThrowingCatalogCacheDiagnosticSink(),
       );
@@ -943,7 +959,7 @@ class _ControlledCatalogApi implements CatalogApi {
 
 class _ThrowingCatalogLocalDataSource extends CatalogLocalDataSource {
   _ThrowingCatalogLocalDataSource(
-    super.database, {
+    super.dao, {
     this.readPageError,
     this.readLinkedChainRevisionError,
     this.replacePageError,

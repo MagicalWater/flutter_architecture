@@ -1,8 +1,8 @@
 import 'package:core/core.dart';
+import 'package:flutter_architecture/app/database/dao/catalog_cache_dao.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
 import 'package:flutter_architecture/features/catalog/data/models/catalog_cache_item_entity.dart';
 import 'package:flutter_architecture/features/catalog/data/models/catalog_cache_page_entity.dart';
-import 'package:sqflite/sqflite.dart';
 
 /// Catalog Offline Cache 的 SQLite boundary。
 class CatalogLocalDataSource {
@@ -12,7 +12,7 @@ class CatalogLocalDataSource {
   static const String _itemTable = 'catalog_cache_page_item';
   static const String _firstPageCursor = '';
 
-  final Database _database;
+  final CatalogCacheDao _database;
 
   Future<CatalogCachePageEntity?> readPage({
     required String query,
@@ -183,7 +183,7 @@ class CatalogLocalDataSource {
             'next_cursor': page.nextCursor,
             'updated_at': page.updatedAt.toUtc().millisecondsSinceEpoch,
             'chain_revision': chainRevision,
-          }, conflictAlgorithm: ConflictAlgorithm.replace);
+          }, replace: true);
 
           for (final item in page.items) {
             await transaction.insert(_itemTable, <String, Object?>{
@@ -346,7 +346,7 @@ class CatalogLocalDataSource {
               'next_cursor': page.nextCursor,
               'updated_at': page.updatedAt.toUtc().millisecondsSinceEpoch,
               'chain_revision': currentRevision,
-            }, conflictAlgorithm: ConflictAlgorithm.replace);
+            }, replace: true);
 
             for (final item in page.items) {
               await transaction.insert(_itemTable, <String, Object?>{
@@ -470,7 +470,7 @@ class CatalogLocalDataSource {
   }
 
   Future<void> _deleteChainInTransaction(
-    DatabaseExecutor executor, {
+    CatalogCacheDao executor, {
     required String query,
     required int limit,
   }) async {
@@ -615,12 +615,12 @@ class CatalogLocalDataSource {
       return await action();
     } on AppException {
       rethrow;
-    } on DatabaseException catch (error, stackTrace) {
+    } on CatalogCacheDaoException catch (error, stackTrace) {
       Error.throwWithStackTrace(
         AppException(
           kind: AppExceptionKind.localStorage,
           message: message,
-          cause: details(error),
+          cause: details(error.cause),
           stackTrace: stackTrace,
         ),
         stackTrace,

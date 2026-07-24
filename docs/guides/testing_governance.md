@@ -3,7 +3,7 @@ document_type: guide
 status: accepted
 authoritative_for:
   - repository-testing-governance
-last_reviewed_baseline: 1.11.0
+last_reviewed_baseline: 1.12.0
 ---
 
 # Testing Governance

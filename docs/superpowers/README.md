@@ -29,12 +29,13 @@ docs/superpowers/plans/
 
 目前已核准的最新計畫：
 
+- [`plans/2026-07-24-milestone-31-template-development-workflow-governance.md`](plans/2026-07-24-milestone-31-template-development-workflow-governance.md)：Requirement Decision、repository-local Skill、Superpowers routing、雙層Task治理與closure consistency。
 - [`plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md`](plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md)：Repository-wide test inventory、coverage ownership、production／historical boundary、controlled cleanup與execution governance。
 - [`plans/2026-07-24-milestone-29-drift-persistence-migration.md`](plans/2026-07-24-milestone-29-drift-persistence-migration.md)：Drift整體遷移、historical compatibility、single-owner cutover與platform acceptance。
 - [`plans/2026-07-23-milestone-27-production-observability-foundation.md`](plans/2026-07-23-milestone-27-production-observability-foundation.md)
 - [`plans/2026-07-24-self-hosted-ci-execution-mode.md`](plans/2026-07-24-self-hosted-ci-execution-mode.md)：Task 27-7三種CI執行端、Mac self-hosted runner與closure實作計畫。
 
-Milestone 30已完成implementation與local holistic closure；Plan保留執行順序與驗證gate，push／post-release狀態仍以`docs/roadmap/active.md`為準。
+Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計、執行順序與歷史追溯，不保存runtime pending狀態。
 
 ## Reading rule
 
@@ -42,6 +43,7 @@ Milestone 30已完成implementation與local holistic closure；Plan保留執行�
 
 目前最新已完成implementation的架構設計：
 
+- [`specs/2026-07-24-milestone-31-template-development-workflow-governance-design.md`](specs/2026-07-24-milestone-31-template-development-workflow-governance-design.md)：`.agents` workflow governance、Level 0～5、authority boundary與OpenSpec reject disposition。
 - [`specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md`](specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md)：測試ownership、historical boundary、disposition evidence與execution tiers。
 - [`specs/2026-07-24-milestone-29-drift-persistence-migration-design.md`](specs/2026-07-24-milestone-29-drift-persistence-migration-design.md)：Drift single-owner persistence、migration、opener與platform boundary。
 - [`specs/2026-07-23-production-observability-foundation-design.md`](specs/2026-07-23-production-observability-foundation-design.md)：Production Observability Foundation scope、provider策略、platform／CI boundary與Task拆分。

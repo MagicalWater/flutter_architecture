@@ -349,7 +349,7 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-Milestone 30已完成implementation、holistic review與Template Baseline 1.12.0 local release；目前只等待explicit push與post-release validation。完成remote closure後，下一個正式方向必須先從candidate／backlog完成scope review與planning promotion。
+Milestone 30已完成implementation、holistic review、Template Baseline 1.12.0 release、push、clean-checkout與remote CI／Android／iOS post-release validation，並正式closure。Milestone 31目前建立Template Development Workflow Governance，整合Requirement Decision、Superpowers與雙層Task治理。
 
 Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。
 

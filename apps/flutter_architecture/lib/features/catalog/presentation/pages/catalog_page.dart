@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_architecture/app/connectivity/connectivity_scope.dart';
 import 'package:flutter_architecture/features/catalog/presentation/catalog_presentation_localization.dart';
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
@@ -17,6 +20,7 @@ class CatalogPage extends HookWidget {
     final state = useBlocBuilder(bloc);
     final scrollController = useScrollController();
     final l10n = AppLocalizations.of(context);
+    final connectivityController = ConnectivityScope.of(context);
 
     useEffect(() {
       bloc.add(const CatalogEvent.initialRequested());
@@ -32,6 +36,13 @@ class CatalogPage extends HookWidget {
       scrollController.addListener(onScroll);
       return () => scrollController.removeListener(onScroll);
     }, <Object?>[bloc, scrollController]);
+
+    useEffect(() {
+      final subscription = connectivityController.reconnects.listen((_) {
+        bloc.add(const CatalogEvent.reconnectObserved());
+      });
+      return () => unawaited(subscription.cancel());
+    }, <Object?>[bloc, connectivityController]);
 
     return Column(
       children: <Widget>[
@@ -123,6 +134,8 @@ class CatalogView extends StatelessWidget {
     return Column(
       children: <Widget>[
         if (_shouldShowCacheStatus(state)) _CatalogCacheStatus(state: state),
+        if (state.isReconnectRevalidating || state.reconnectFailure != null)
+          _CatalogReconnectStatus(state: state),
         Expanded(
           child: state.hasCompletedInitialLoad && state.items.isEmpty
               ? RefreshIndicator(
@@ -233,6 +246,45 @@ class CatalogView extends StatelessWidget {
                 ),
         ),
       ],
+    );
+  }
+}
+
+class _CatalogReconnectStatus extends StatelessWidget {
+  const _CatalogReconnectStatus({required this.state});
+
+  final CatalogState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final failure = state.reconnectFailure;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        DsSpace.lg,
+        0,
+        DsSpace.lg,
+        DsSpace.sm,
+      ),
+      child: DsStatusBanner(
+        key: Key(
+          failure == null
+              ? 'catalog-reconnect-loading'
+              : 'catalog-reconnect-failure',
+        ),
+        tone: failure == null ? DsStatusTone.info : DsStatusTone.warning,
+        title: failure == null
+            ? l10n.catalogReconnectUpdatingTitle
+            : l10n.catalogReconnectFailureTitle,
+        message: failure == null
+            ? l10n.catalogReconnectUpdatingMessage
+            : localizedCatalogFailure(
+                l10n,
+                failure: failure,
+                surface: CatalogFailureSurface.reconnect,
+              ),
+        icon: failure == null ? Icons.sync : Icons.sync_problem_outlined,
+      ),
     );
   }
 }

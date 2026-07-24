@@ -40,6 +40,10 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       _onRefreshRequested,
       transformer: _exhaustEvents(),
     );
+    on<CatalogReconnectObserved>(
+      _onReconnectObserved,
+      transformer: _exhaustEvents(),
+    );
   }
 
   final SearchCatalogUseCase _searchCatalogUseCase;
@@ -55,6 +59,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   Completer<void>? _firstPageCompleter;
   _SingleSnapshotRequest? _refreshRequest;
   _SingleSnapshotRequest? _appendRequest;
+  _SingleSnapshotRequest? _reconnectRequest;
   final Set<String> _consumedAppendCursors = <String>{};
 
   Future<void> _onInitialRequested(
@@ -99,8 +104,10 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         isStale: false,
         lastUpdatedAt: null,
         isRevalidating: false,
+        isReconnectRevalidating: false,
         initialFailure: null,
         revalidationFailure: null,
+        reconnectFailure: null,
         refreshFailure: null,
         appendFailure: null,
       ),
@@ -229,6 +236,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     final requestedCursor = state.nextCursor;
     if (state.isInitialLoading ||
         state.isRefreshing ||
+        state.isReconnectRevalidating ||
         state.isLoadingMore ||
         state.items.isEmpty ||
         requestedCursor == null) {
@@ -319,6 +327,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
     await _cancelFirstPageSearch();
     await _cancelAppendRequest();
+    await _cancelReconnectRequest();
     final generation = ++_searchGeneration;
     final query = state.query;
 
@@ -328,8 +337,10 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         isRefreshing: true,
         isLoadingMore: false,
         isRevalidating: false,
+        isReconnectRevalidating: false,
         initialFailure: null,
         revalidationFailure: null,
+        reconnectFailure: null,
         refreshFailure: null,
         appendFailure: null,
       ),
@@ -390,6 +401,81 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     );
   }
 
+  Future<void> _onReconnectObserved(
+    CatalogReconnectObserved event,
+    Emitter<CatalogState> emit,
+  ) async {
+    if (!state.hasCompletedInitialLoad ||
+        state.items.isEmpty ||
+        state.isInitialLoading ||
+        state.isRefreshing ||
+        state.isLoadingMore ||
+        state.isReconnectRevalidating) {
+      return;
+    }
+
+    final generation = _searchGeneration;
+    final query = state.query;
+    emit(
+      state.copyWith(
+        isReconnectRevalidating: true,
+        reconnectFailure: null,
+      ),
+    );
+
+    late final Result<CatalogPageSnapshot> result;
+    final request = _SingleSnapshotRequest(
+      _searchCatalogUseCase.watch(
+        query: query,
+        cursor: null,
+        limit: pageSize,
+        policy: CatalogLoadPolicy.refresh,
+      ),
+    );
+    _reconnectRequest = request;
+    try {
+      result = await request.load(operation: 'reconnect');
+    } catch (error, stackTrace) {
+      if (request.isCancelled) return;
+      if (generation == _searchGeneration && query == state.query) {
+        emit(state.copyWith(isReconnectRevalidating: false));
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    } finally {
+      if (identical(_reconnectRequest, request)) {
+        _reconnectRequest = null;
+      }
+    }
+
+    if (generation != _searchGeneration || query != state.query) return;
+
+    result.when(
+      success: (snapshot) {
+        _consumedAppendCursors.clear();
+        emit(
+          state.copyWith(
+            items: snapshot.page.items,
+            nextCursor: snapshot.page.nextCursor,
+            isReconnectRevalidating: false,
+            isUsingCachedData:
+                snapshot.source == CatalogDataSource.cache,
+            isStale: snapshot.freshness == CatalogFreshness.stale,
+            lastUpdatedAt: snapshot.lastUpdatedAt,
+            reconnectFailure: null,
+          ),
+        );
+      },
+      failure: (error) {
+        emit(
+          state.copyWith(
+            isReconnectRevalidating: false,
+            reconnectFailure: error,
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _cancelFirstPageSearch() async {
     final subscription = _firstPageSubscription;
     final completer = _firstPageCompleter;
@@ -413,10 +499,17 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     await request?.cancel();
   }
 
+  Future<void> _cancelReconnectRequest() async {
+    final request = _reconnectRequest;
+    _reconnectRequest = null;
+    await request?.cancel();
+  }
+
   Future<void> _cancelTransientOperations() async {
     await Future.wait<void>(<Future<void>>[
       _cancelAppendRequest(),
       _cancelRefreshRequest(),
+      _cancelReconnectRequest(),
     ]);
   }
 

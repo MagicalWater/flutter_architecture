@@ -699,6 +699,30 @@ abstract class AppLocalizations {
   /// **'Unable to refresh the catalog. Please try again.'**
   String get catalogRefreshFailureMessage;
 
+  /// No description provided for @catalogReconnectUpdatingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection restored'**
+  String get catalogReconnectUpdatingTitle;
+
+  /// No description provided for @catalogReconnectUpdatingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating the catalog in the background.'**
+  String get catalogReconnectUpdatingMessage;
+
+  /// No description provided for @catalogReconnectFailureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Background update failed'**
+  String get catalogReconnectFailureTitle;
+
+  /// No description provided for @catalogReconnectFailureMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The current catalog is still available, but it could not be updated.'**
+  String get catalogReconnectFailureMessage;
+
   /// No description provided for @catalogCachedDataTitle.
   ///
   /// In en, this message translates to:

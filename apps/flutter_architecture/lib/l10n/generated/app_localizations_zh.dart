@@ -323,6 +323,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get catalogRefreshFailureMessage => '目前無法重新整理目錄，請稍後再試。';
 
   @override
+  String get catalogReconnectUpdatingTitle => '網路連線已恢復';
+
+  @override
+  String get catalogReconnectUpdatingMessage => '正在背景更新目錄資料。';
+
+  @override
+  String get catalogReconnectFailureTitle => '背景更新失敗';
+
+  @override
+  String get catalogReconnectFailureMessage => '目前資料仍可使用，但暫時無法完成更新。';
+
+  @override
   String get catalogCachedDataTitle => '正在顯示快取資料';
 
   @override
@@ -661,6 +673,18 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get catalogRefreshFailureMessage => '目前無法重新整理目錄，請稍後再試。';
+
+  @override
+  String get catalogReconnectUpdatingTitle => '網路連線已恢復';
+
+  @override
+  String get catalogReconnectUpdatingMessage => '正在背景更新目錄資料。';
+
+  @override
+  String get catalogReconnectFailureTitle => '背景更新失敗';
+
+  @override
+  String get catalogReconnectFailureMessage => '目前資料仍可使用，但暫時無法完成更新。';
 
   @override
   String get catalogCachedDataTitle => '正在顯示快取資料';

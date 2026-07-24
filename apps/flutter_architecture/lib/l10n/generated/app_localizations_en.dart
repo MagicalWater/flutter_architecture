@@ -341,6 +341,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unable to refresh the catalog. Please try again.';
 
   @override
+  String get catalogReconnectUpdatingTitle => 'Connection restored';
+
+  @override
+  String get catalogReconnectUpdatingMessage =>
+      'Updating the catalog in the background.';
+
+  @override
+  String get catalogReconnectFailureTitle => 'Background update failed';
+
+  @override
+  String get catalogReconnectFailureMessage =>
+      'The current catalog is still available, but it could not be updated.';
+
+  @override
   String get catalogCachedDataTitle => 'Showing cached data';
 
   @override

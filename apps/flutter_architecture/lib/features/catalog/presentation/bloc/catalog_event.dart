@@ -12,4 +12,7 @@ sealed class CatalogEvent with _$CatalogEvent {
   const factory CatalogEvent.loadMoreRequested() = CatalogLoadMoreRequested;
 
   const factory CatalogEvent.refreshRequested() = CatalogRefreshRequested;
+
+  /// App-owned connectivity authority觀察到真正offline→online transition。
+  const factory CatalogEvent.reconnectObserved() = CatalogReconnectObserved;
 }

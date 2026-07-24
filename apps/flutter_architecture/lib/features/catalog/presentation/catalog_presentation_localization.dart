@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 
-enum CatalogFailureSurface { initial, refresh, append, revalidation }
+enum CatalogFailureSurface { initial, refresh, append, revalidation, reconnect }
 
 String localizedCatalogFailure(
   AppLocalizations l10n, {
@@ -22,6 +22,7 @@ String localizedCatalogFailure(
     CatalogFailureSurface.append => l10n.catalogAppendFailureMessage,
     CatalogFailureSurface.revalidation =>
       l10n.catalogRevalidationFailureMessage,
+    CatalogFailureSurface.reconnect => l10n.catalogReconnectFailureMessage,
   };
 }
 

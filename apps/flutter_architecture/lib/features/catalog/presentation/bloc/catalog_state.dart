@@ -17,8 +17,10 @@ abstract class CatalogState with _$CatalogState {
     required bool isStale,
     required DateTime? lastUpdatedAt,
     required bool isRevalidating,
+    required bool isReconnectRevalidating,
     required Failure? initialFailure,
     required Failure? revalidationFailure,
+    required Failure? reconnectFailure,
     required Failure? refreshFailure,
     required Failure? appendFailure,
   }) = _CatalogState;
@@ -37,8 +39,10 @@ abstract class CatalogState with _$CatalogState {
     isStale: false,
     lastUpdatedAt: null,
     isRevalidating: false,
+    isReconnectRevalidating: false,
     initialFailure: null,
     revalidationFailure: null,
+    reconnectFailure: null,
     refreshFailure: null,
     appendFailure: null,
   );

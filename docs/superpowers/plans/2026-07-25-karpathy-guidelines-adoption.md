@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - karpathy-guidelines-skill-adoption-implementation
 last_reviewed_baseline: 1.13.0
@@ -405,4 +405,4 @@ Use `superpowers:finishing-a-development-branch` only after all Task gates pass.
 
 ## Approval Gate
 
-本 Plan 已在 Design Spec 取得使用者明確核准後，重新對照 accepted Design 完成完整 Plan Task review，目前維持 `proposed`。Plan 取得使用者明確核准前，不得建立 worktree、下載並安裝上游 Skill、修改中央 routing 或開始 RED／GREEN 執行。
+本 Plan 已於 2026-07-25 取得使用者明確核准並轉為 `accepted`。下一步依本 Plan 建立隔離 worktree，從 Task 1 開始執行；任何 Task 驗證失敗時維持 open／blocked，修正並 fresh re-verify 後才可進入下一 Task。

@@ -74,11 +74,11 @@ Behavior probes涵蓋 explicit discovery、automatic discovery、non-trigger、s
 ## Authority and validation gate
 
 - Accepted Design：Yes。
-- Plan status：`proposed`。
+- Plan status：`accepted`；使用者已於 2026-07-25 明確核准。
 - Implementation：forbidden until explicit Plan approval。
 - Open P0：0。
 - Open P1 without disposition：0。
-- Next user-owned gate：明確核准或要求修改 Implementation Plan。
+- Next step：建立隔離 worktree並從 Task 1 開始執行。
 
 ## Disposition
 

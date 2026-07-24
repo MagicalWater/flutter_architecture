@@ -4,6 +4,7 @@ import 'package:auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/auth/local_unlock_lifecycle_coordinator.dart';
 import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.dart';
+import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
 import 'package:flutter_architecture/app/localization/app_locale_resolution.dart';
@@ -41,6 +42,7 @@ class _ArchitectureAppState extends State<ArchitectureApp>
   late final AuthNavigationCoordinator _authNavigationCoordinator;
   late final StartupLocalUnlockCoordinator _startupLocalUnlockCoordinator;
   late final LocalUnlockLifecycleCoordinator _localUnlockLifecycleCoordinator;
+  late final ConnectivityController _connectivityController;
   final Stopwatch _monotonicClock = Stopwatch()..start();
   bool _authNavigationStarted = false;
 
@@ -48,6 +50,8 @@ class _ArchitectureAppState extends State<ArchitectureApp>
   void initState() {
     super.initState();
     _router = getIt<AppRouter>();
+    _connectivityController = getIt<ConnectivityController>();
+    unawaited(_connectivityController.start());
     final authBloc = getIt<AuthBloc>();
     _authNavigationCoordinator = AuthNavigationCoordinator(
       initialState: authBloc.state,
@@ -113,6 +117,7 @@ class _ArchitectureAppState extends State<ArchitectureApp>
         _localUnlockLifecycleCoordinator.onBackgrounded();
       case AppLifecycleState.resumed:
         unawaited(_localUnlockLifecycleCoordinator.onResumed());
+        unawaited(_connectivityController.recheck());
       case AppLifecycleState.detached:
         break;
     }
@@ -131,6 +136,7 @@ class _ArchitectureAppState extends State<ArchitectureApp>
     }
     _startupLocalUnlockCoordinator.dispose();
     _authNavigationCoordinator.dispose();
+    unawaited(_connectivityController.dispose());
     super.dispose();
   }
 

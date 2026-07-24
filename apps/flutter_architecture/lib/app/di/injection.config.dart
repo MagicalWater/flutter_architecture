@@ -16,6 +16,8 @@ import 'package:dio/dio.dart' as _i361;
 import 'package:flutter_architecture/app/config/api_config.dart' as _i46;
 import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart'
     as _i1037;
+import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart'
+    as _i461;
 import 'package:flutter_architecture/app/di/register_module.dart' as _i712;
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart'
     as _i1041;
@@ -139,6 +141,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i460.CatalogCacheDiagnosticSink>(
       () =>
           registerModule.catalogCacheDiagnosticSink(gh<_i1041.ErrorReporter>()),
+    );
+    gh.lazySingleton<_i461.ConnectivityController>(
+      () => registerModule.connectivityController(
+        gh<_i1037.ConnectivityAdapter>(),
+      ),
     );
     gh.lazySingleton<_i633.AuthRefreshApi>(
       () => registerModule.authRefreshApi(

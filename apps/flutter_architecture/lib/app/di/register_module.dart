@@ -3,6 +3,7 @@ import 'package:auth/auth.dart' as auth;
 import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart';
+import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_plus_adapter.dart';
 import 'package:flutter_architecture/app/database/app_database_schema.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
@@ -49,6 +50,10 @@ abstract class RegisterModule {
   @lazySingleton
   ConnectivityAdapter connectivityAdapter(Connectivity connectivity) =>
       ConnectivityPlusAdapter(connectivity: connectivity);
+
+  @lazySingleton
+  ConnectivityController connectivityController(ConnectivityAdapter adapter) =>
+      ConnectivityController(adapter);
 
   @lazySingleton
   AuthMigrationErrorReporterAdapter authMigrationErrorReporterAdapter(

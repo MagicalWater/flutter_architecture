@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.9.0
+last_reviewed_baseline: 1.10.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.9.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.9.0
+Template Baseline: 1.10.0
 Phase 1 / MVP: Completed
 Current active milestone: None
-Latest completed initiative: Milestone 27 Production Observability Foundation
+Latest completed initiative: Milestone 28 Connectivity and Offline State Foundation
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -49,6 +49,8 @@ Milestone 25已建立tracked iOS runner、原始iOS 13 native contract、CocoaPo
 Milestone 26已建立development／staging／production的cross-platform mapping manifest、Android product flavors、iOS shared schemes與九組build configurations、native／Dart mismatch fail-fast、environment-aware local artifact commands、GitHub-hosted development／production代表性build matrix與manifest-first adoption guide，並以Template Baseline 1.8.0封存。Repository artifacts仍只屬verification evidence，不包含production signing或Store distribution。
 
 Milestone 27已建立provider-neutral production observability contract、Firebase Crashlytics reference adapter、release identity與severity routing、privacy／collection policy、Android symbols、iOS dSYM、controlled remote acceptance，以及`manual-local`／`self-hosted`／`github-hosted`三種CI execution mode。Android與iOS controlled events均已完成Firebase Console ingestion與symbolication驗證，並以Template Baseline 1.9.0封存。
+
+Milestone 28已建立App-owned typed connectivity authority、provider-neutral adapter contract、`connectivity_plus` reference adapter、startup／resume recheck、offline banner與Catalog opt-in reconnect revalidation。Backend reachability仍由operation result表達，physical-device network toggle與production distribution維持deferred，並以Template Baseline 1.10.0封存。
 
 Repository CI已採change-aware execution：純文件變更只執行輕量治理與穩定check no-op；source、native、dependency、classifier或release變更依contract執行完整CI及相關平台代表build。Unknown path、無效Git range與classification failure會fail-safe到完整矩陣。詳細操作矩陣由`docs/guides/ci_cd_operations.md`擁有。
 
@@ -95,6 +97,7 @@ root/
 - Router、Route Guard 與 authentication navigation orchestration。
 - Dependency Injection composition。
 - Flutter plugin adapters 與 platform integration。
+- Connectivity lifecycle、reconnect signal與App-wide offline presentation。
 - SQLite database lifecycle 與 migration。
 - Theme、Locale 與 local unlock preference。
 - Feature presentation composition。

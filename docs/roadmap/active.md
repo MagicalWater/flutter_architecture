@@ -3,7 +3,7 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.9.0
+last_reviewed_baseline: 1.10.0
 ---
 
 # Active Milestone
@@ -11,34 +11,26 @@ last_reviewed_baseline: 1.9.0
 目前active milestone：
 
 ```txt
-Milestone 28 — Connectivity and Offline State Foundation
-Baseline: 1.9.0
+None
+Baseline: 1.10.0
 ```
 
 ## Active Scope
 
-建立App-owned typed connectivity authority，明確區分本機網路介面可用性、backend reachability與單次operation failure，並以Catalog既有Offline Cache／SWR作為第一個feature opt-in reconnect integration。
-
-- Design：`docs/superpowers/specs/2026-07-24-connectivity-offline-state-foundation-design.md`
-- Implementation plan：`docs/superpowers/plans/2026-07-24-milestone-28-connectivity-offline-state-foundation.md`
-- Planning review：`docs/audits/connectivity_offline_state_plan_review.md`
-- Architecture Decision：`docs/adr/adr-027-connectivity-offline-state-foundation.md`
-
-Implementation依Task 28-1～28-8執行；所有Task完成後仍需Milestone holistic final review、release、push與post-release validation。
+目前沒有active milestone。新的正式方向必須先完成capability audit、scope review、Design Spec與Implementation Plan治理循環，再提升為active。
 
 ## Latest Completed Milestone
 
-Milestone 27已建立provider-neutral production observability contract、Firebase Crashlytics reference adapter、release identity、severity routing、privacy／collection policy、Android symbols、iOS dSYM、controlled remote acceptance，以及三種CI execution mode與trusted Mac self-hosted runner，並以Template Baseline 1.9.0封存。
+Milestone 28已建立typed connectivity三態、provider-neutral adapter、`connectivity_plus` reference implementation、App lifecycle recheck、全域offline banner與Catalog opt-in reconnect revalidation，並以Template Baseline 1.10.0封存。
 
-- Architecture Decision：`docs/adr/adr-026-production-observability-provider-release-symbol-contract.md`
-- Design：`docs/superpowers/specs/2026-07-23-production-observability-foundation-design.md`
-- Implementation plan：`docs/superpowers/plans/2026-07-23-milestone-27-production-observability-foundation.md`
-- Final review：`docs/audits/milestone_27/27-8_final_review.md`
-- Post-release validation：`docs/audits/milestone_27/27-9_post_release_remote_validation.md`
-- Remote acceptance：`docs/audits/milestone_27/27-6_ci_secrets_remote_acceptance_review.md`
-- Self-hosted runtime evidence：`docs/audits/milestone_27/27-7_self_hosted_ci_runtime_evidence.md`
+- Architecture Decision：`docs/adr/adr-027-connectivity-offline-state-foundation.md`
+- Design：`docs/superpowers/specs/2026-07-24-connectivity-offline-state-foundation-design.md`
+- Implementation plan：`docs/superpowers/plans/2026-07-24-milestone-28-connectivity-offline-state-foundation.md`
+- Platform evidence：`docs/audits/milestone_28/28-7_platform_runtime_evidence.md`
+- Final review：`docs/audits/milestone_28/28-9_final_review.md`
+- Post-release validation：`docs/audits/milestone_28/28-10_post_release_validation.md`
 
-Sentry第二adapter、Analytics／APM、production signing、Store distribution、physical-device acceptance與Connectivity／Offline foundation仍未納入Milestone 27。
+Backend reachability service、generic reconnect framework、write queue、production signing、Store distribution與physical-device network acceptance仍未納入Milestone 28。
 
 ## Historical Artifact Routing
 
@@ -47,7 +39,7 @@ Sentry第二adapter、Analytics／APM、production signing、Store distribution�
 ## Current Next Action
 
 ```txt
-執行Milestone 28 implementation plan
-→ 每個Task完整審查循環與commit
-→ Milestone holistic final review
+評估下一個candidate
+→ 完成capability audit與正式規劃治理
+→ 核准後才建立新的active milestone
 ```

@@ -22,6 +22,27 @@
 
 ---
 
+## [1.10.0] - 2026-07-24
+
+### Added
+
+- 完成Milestone 28 Connectivity and Offline State Foundation，建立App-owned `unknown`／`offline`／`online` typed connectivity authority。
+- 新增provider-neutral `ConnectivityAdapter`、`connectivity_plus` reference adapter、startup snapshot、stream coordination與resume recheck。
+- 新增App-wide localized offline banner，以及Catalog頁面可見期間的opt-in reconnect revalidation。
+
+### Changed
+
+- Catalog reconnect使用獨立operation state與failure surface，不偽裝成manual refresh；manual refresh、append、query switching與reconnect具明確ordering、dedupe與generation protection。
+- Backend reachability與單次operation failure仍由Repository／Result／Failure邊界表達，不由network interface狀態推導。
+
+### Verified
+
+- Connectivity、Catalog與Auth跨層focused suite共150 tests通過；Catalog presentation focused suite共57 tests通過。
+- Workspace analyze、documentation checks與generated consistency通過。
+- Android development APK與iOS Development Simulator app完成native plugin integration build；production signing、Store distribution與physical-device network toggle維持deferred。
+
+---
+
 ## [1.9.0] - 2026-07-24
 
 ### Added

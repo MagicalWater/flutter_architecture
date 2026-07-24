@@ -3,7 +3,7 @@ document_type: app-readme
 status: accepted
 authoritative_for:
   - flutter-architecture-app-local-contract
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.10.0
 ---
 
 # Flutter Architecture App
@@ -19,6 +19,7 @@ last_reviewed_baseline: 1.8.0
 - Flutter Secure Storage、SharedPreferences、local_auth 等 plugin adapters。
 - Theme、locale 與 local unlock preference controller。
 - Error reporter adapter 與 Flutter／platform uncaught error boundary。
+- Typed connectivity authority、platform adapter、lifecycle recheck與App-wide offline presentation。
 - Feature presentation composition。
 
 ## Non-responsibilities
@@ -60,7 +61,8 @@ App-owned adapters 包含：
 - SQLite Auth User 與 Catalog Cache adapters。
 - `local_auth` user-presence verifier。
 - Theme、locale、local unlock preference stores。
-- ErrorReporter composition seam、Debug adapter與Flutter／platform uncaught boundaries；production remote adapter仍待Milestone 27。
+- ErrorReporter composition seam、Firebase Crashlytics reference adapter與Flutter／platform uncaught boundaries。
+- `connectivity_plus` adapter、`ConnectivityController`、`ConnectivityScope`與offline banner。
 
 Package 只定義 interface、policy 或純 Dart orchestration；plugin ownership 留在 App。
 

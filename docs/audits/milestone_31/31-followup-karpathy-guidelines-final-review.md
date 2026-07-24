@@ -1,12 +1,14 @@
 ---
 document_type: final-review
-status: accepted
+status: superseded
 authoritative_for:
   - karpathy-guidelines-adoption-final-review
 last_reviewed_baseline: 1.13.0
 ---
 
 # Karpathy Guidelines Adoption Holistic Final Review
+
+> **Superseded on 2026-07-25:** 本review的RED controls由Codex CLI執行，且自動載入只存在於本機Codex Plugin runtime的Ponytail。正式主要工作流是ChatGPT網頁＋`bridge-mac`，不會繼承該Plugin或hooks，因此本review不得再作為Karpathy adoption的current disposition authority。後續由`31-followup-karpathy-primary-workflow-recovery-review.md`接管。
 
 ## Scope
 

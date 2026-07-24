@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: completed
+status: active
 authoritative_for:
   - karpathy-guidelines-skill-adoption-implementation
 last_reviewed_baseline: 1.13.0
@@ -409,7 +409,9 @@ Use `superpowers:finishing-a-development-branch` only after all Task gates pass.
 
 ## Execution Disposition
 
-本 Plan 已執行至 Task 2 的 admission stop rule：五個 RED controls 全部合規，未確認到可由新 Skill 修正的行為缺口。因此採用在 Pilot activation 前正式判定為 `Rejected`，Tasks 3～7 的 Skill 建立、routing、GREEN、registry與Pilot promotion不得執行。
+原Task 2 disposition已於2026-07-25失效並重新開啟。原因是五個RED controls實際在Codex CLI執行，且受測runtime自動載入本機Ponytail Plugin；正式主要工作流ChatGPT網頁＋`bridge-mac`不具備該Plugin／hooks。這個supported-runtime mismatch使「no confirmed gap」無法外推至repository主要工作流。
+
+Recovery decision：保留Task 1來源證據，將原Task 2標記為historical／environment-contaminated evidence；依使用者明確同意，從Task 3恢復受限制Pilot，並以primary-workflow discovery、authority、non-trigger與文件驗證取代不可自動建立的fresh ChatGPT子對話。不得再把Ponytail視為repository capability。
 
 完成證據：
 
@@ -417,4 +419,4 @@ Use `superpowers:finishing-a-development-branch` only after all Task gates pass.
 - `docs/audits/milestone_31/31-followup-karpathy-guidelines-red-validation.md`
 - `docs/audits/milestone_31/31-followup-karpathy-guidelines-final-review.md`
 
-本 Plan 的 `completed` 表示已依核准流程走到其明定停止條件，不表示 `karpathy-guidelines` 已安裝。
+Recovery完成前本Plan維持`active`。

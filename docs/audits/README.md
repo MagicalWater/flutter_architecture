@@ -112,6 +112,7 @@ Final / Holistic Review
 
 - [`milestone_31/31-followup-karpathy-guidelines-source-review.md`](milestone_31/31-followup-karpathy-guidelines-source-review.md)：固定上游commit、來源hash與授權觀察。
 - [`milestone_31/31-followup-karpathy-guidelines-red-validation.md`](milestone_31/31-followup-karpathy-guidelines-red-validation.md)：五個fresh RED controls與「無confirmed gap」拒絕證據。
-- [`milestone_31/31-followup-karpathy-guidelines-final-review.md`](milestone_31/31-followup-karpathy-guidelines-final-review.md)：Karpathy Skill adoption follow-up整體終審與Rejected disposition。
+- [`milestone_31/31-followup-karpathy-guidelines-final-review.md`](milestone_31/31-followup-karpathy-guidelines-final-review.md)：已superseded的Codex＋Ponytail環境Rejected歷史結論。
+- [`milestone_31/31-followup-karpathy-primary-workflow-recovery-review.md`](milestone_31/31-followup-karpathy-primary-workflow-recovery-review.md)：ChatGPT＋bridge-mac主要工作流runtime mismatch finding與recovery authority。
 
 其他位於 `docs/audits/` root 的 planning、runtime 或 holistic review 仍保留原 stable path。Index 只負責 routing，不複製 findings、test counts、commit hashes或 final gate內容。

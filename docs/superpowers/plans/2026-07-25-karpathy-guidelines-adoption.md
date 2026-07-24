@@ -405,4 +405,4 @@ Use `superpowers:finishing-a-development-branch` only after all Task gates pass.
 
 ## Approval Gate
 
-本 Plan 為 `proposed`。在使用者明確核准前，不得建立 worktree、下載並安裝上游 Skill、修改中央 routing 或開始 RED／GREEN 執行。
+本 Plan 為提前建立的 `proposed` 草稿，目前 blocked by Design approval。它不能作為正式執行 authority；在 Design Spec 完整通過 Task gate並由使用者明確核准後，必須重新對照核准後 Design 執行完整 Plan Task review。Plan 取得使用者明確核准前，不得建立 worktree、下載並安裝上游 Skill、修改中央 routing 或開始 RED／GREEN 執行。

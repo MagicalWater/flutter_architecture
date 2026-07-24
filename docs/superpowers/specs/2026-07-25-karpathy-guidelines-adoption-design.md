@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: accepted
+status: proposed
 authoritative_for:
   - karpathy-guidelines-skill-adoption-design
 last_reviewed_baseline: 1.13.0
@@ -88,4 +88,4 @@ User instruction
 
 ## Approval
 
-前置採用審查已向使用者說明實際用法、限制與協作位置；使用者確認理解並要求進入加入規劃，因此本 Design Spec 視為 accepted，下一步建立 Implementation Plan，實作仍需 Plan 明確核准。
+前置採用審查已完成，使用者已要求進入正式規劃；這只代表允許建立並審查 Design Spec，不等同於核准落檔後的 Design。依 `governing-template-development`，本文件在完成完整 Design Task gate 並取得使用者明確核准前維持 `proposed`。

@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: completed
+status: superseded
 authoritative_for:
   - karpathy-guidelines-adoption-planning-review
 last_reviewed_baseline: 1.13.0
@@ -45,6 +45,10 @@ Plan 將 installation、routing、behavior validation、documentation與clean-ch
 
 - Open P0：0。
 - Open P1 without disposition：0。
-- Design Spec：accepted，依使用者已核准的採用方向。
-- Implementation Plan：proposed，等待使用者明確核准。
+- Design Spec：原先誤標為 `accepted`；依 recovery review 已降回 `proposed`，等待完整 Design Task gate與使用者明確核准。
+- Implementation Plan：提前建立的 `proposed` 草稿，blocked by Design approval；本 review 不再作為有效 Plan gate evidence。
 - Implementation：未開始。
+
+## Supersession
+
+本 review 將「同意進入規劃」錯誤視為 Design approval，且在 Design Task 尚未完整通過前即審查 Plan，因此於 recovery 中標記為 `superseded`。歷史內容保留，不回寫成當時已正確通過。

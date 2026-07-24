@@ -216,9 +216,9 @@ injection.config.dart
 ### Persistence and Platform
 
 - Flutter Secure Storage：Auth credential authority。
-- SQLite／sqflite：AuthUser、Catalog Cache 與 App database。
+- Drift／SQLite：AuthUser、Catalog Cache、schema與App database唯一production authority。
 - SharedPreferences：Theme、Locale、local unlock preference，以及 legacy credential migration／cleanup。
-- `sqflite_common_ffi` 與 `sqflite_common_ffi_web`：dependency-ready platform database implementations。
+- sqflite／`sqflite_common_ffi`：只保留historical fixture與rollback test harness。
 - `local_auth`：App-owned Android biometric user-presence adapter。
 
 ### Design and Localization
@@ -258,7 +258,7 @@ Credential Token Pair
   → FlutterSecureStorage
 
 Public AuthUser identity
-  → SQLite
+  → Drift / SQLite
 
 Legacy SharedPreferences credential
   → migration / cleanup only
@@ -327,7 +327,7 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 |---|---|
 | Android | Supported；tracked runner、release artifact 與 runtime smoke evidence |
 | iOS | Supported；tracked runner、local Simulator runtime、macOS golden與GitHub-hosted unsigned build evidence |
-| Web | Dependency-ready；有 SQLite assets，但沒有 tracked Web runner |
+| Web | Dependency-ready；有Drift Wasm／worker assets，但沒有tracked Web runner；舊experimental storage採explicit reset |
 | Windows | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
 | macOS | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
 | Linux | Dependency-ready；沒有 tracked runner 與 release runtime evidence |
@@ -339,13 +339,13 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.9.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.11.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Active Work
 
-目前沒有active milestone。Milestone 27已完成final holistic review並以Template Baseline 1.9.0封存；下一個正式方向必須先從candidate／backlog完成scope review與planning promotion。
+目前沒有active milestone。Milestone 29已完成final holistic review並以Template Baseline 1.11.0封存；下一個正式方向必須先從candidate／backlog完成scope review與planning promotion。
 
 Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。
 

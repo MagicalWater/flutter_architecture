@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.10.0
+- Template Baseline Version：1.11.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -166,10 +166,10 @@ API_BASE_URL=https://api.your-domain.example \
 ### Storage
 
 - SharedPreferences
-- SQLite
-- sqflite
-- sqflite_common_ffi
-- sqflite_common_ffi_web
+- Drift / SQLite
+- Native background database executor
+- Drift Wasm + worker assets for dependency-ready Web
+- sqflite test-only historical compatibility harness
 
 ### Reactive
 
@@ -471,11 +471,11 @@ Secure credential storage只提供credential-at-rest hardening，不代表可防
 
 ## Flutter Web 注意事項
 
-若要在 Flutter Web 使用 SQLite，需要先準備 sqflite_common_ffi_web 的 Web binary：
+若要更新 Drift Web database assets，請從App package context重新編譯worker，並維持resolved sqlite3 Wasm hash：
 
 ```bash
 cd apps/flutter_architecture
-dart run sqflite_common_ffi_web:setup
+dart compile js web/drift_worker.dart -O4 -o web/drift_worker.js
 ```
 
 Web 目前是 Dependency-ready，repository 不包含 tracked Web runner。要在自己的分支提升為可執行 Web application，可先建立 runner：
@@ -491,17 +491,17 @@ flutter create . --platforms web
 flutter build web
 ```
 
-SQLite 初始化已透過條件匯入處理：
+Drift opener已透過條件匯入處理：
 
 ```txt
 Mobile
-  使用 sqflite 原生實作
+  使用NativeDatabase background executor與精確flutter_architecture.db path
 
 Desktop
-  使用 sqflite_common_ffi
+  使用NativeDatabase與App documents path
 
 Web
-  使用 sqflite_common_ffi_web
+  使用WasmDatabase、sqlite3.wasm與drift_worker.js
 ```
 
 ---

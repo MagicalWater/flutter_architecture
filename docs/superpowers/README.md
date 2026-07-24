@@ -3,7 +3,7 @@ document_type: design-plan-index
 status: active
 authoritative_for:
   - design-spec-and-implementation-plan-routing
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.11.0
 ---
 
 # Design Specifications and Implementation Plans
@@ -29,17 +29,19 @@ docs/superpowers/plans/
 
 目前已核准的最新計畫：
 
+- [`plans/2026-07-24-milestone-29-drift-persistence-migration.md`](plans/2026-07-24-milestone-29-drift-persistence-migration.md)：Drift整體遷移、historical compatibility、single-owner cutover與platform acceptance。
 - [`plans/2026-07-23-milestone-27-production-observability-foundation.md`](plans/2026-07-23-milestone-27-production-observability-foundation.md)
 - [`plans/2026-07-24-self-hosted-ci-execution-mode.md`](plans/2026-07-24-self-hosted-ci-execution-mode.md)：Task 27-7三種CI執行端、Mac self-hosted runner與closure實作計畫。
 
-Task 27-7已完成implementation與holistic closure；Plan保留執行順序與驗證gate，current Task仍以`docs/roadmap/active.md`為準。
+Milestone 29已完成implementation與holistic closure；Plan保留執行順序與驗證gate，current Task仍以`docs/roadmap/active.md`為準。
 
 ## Reading rule
 
 執行某個 Milestone 或 phase 時，只讀該工作相關的 spec、plan 與 review；不要把所有歷史 plans 加入 AI 每次進入 repository 的必讀集合。
 
-目前最新已核准、尚未進入implementation的架構設計：
+目前最新已完成implementation的架構設計：
 
+- [`specs/2026-07-24-milestone-29-drift-persistence-migration-design.md`](specs/2026-07-24-milestone-29-drift-persistence-migration-design.md)：Drift single-owner persistence、migration、opener與platform boundary。
 - [`specs/2026-07-23-production-observability-foundation-design.md`](specs/2026-07-23-production-observability-foundation-design.md)：Production Observability Foundation scope、provider策略、platform／CI boundary與Task拆分。
 - [`specs/2026-07-24-self-hosted-ci-execution-mode-design.md`](specs/2026-07-24-self-hosted-ci-execution-mode-design.md)：Task 27-7三種CI execution mode、trusted self-hosted runner與本機回退設計。
 

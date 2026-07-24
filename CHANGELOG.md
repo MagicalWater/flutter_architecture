@@ -22,6 +22,29 @@
 
 ---
 
+## [1.11.0] - 2026-07-24
+
+### Added
+
+- 完成Milestone 29 Drift Persistence Migration，建立App-owned Drift schema、DAO、native／Web opener與v1～v6 historical migration contract。
+- 新增tracked Drift schema snapshots、worker／Wasm asset治理、clean generation gate與database-critical change-aware CI分類。
+- 新增Android／iOS精確同檔path bridge、macOS background opener smoke與Web experimental storage `explicit reset` disposition。
+
+### Changed
+
+- Drift成為唯一production database authority；AuthUser與Catalog Offline Cache均由同一個`AppDatabase` singleton管理。
+- sqflite schema、initializer與production adapters移至或替換為test-only historical compatibility harness；移除`sqflite_common_ffi_web`與`sqflite_sw.js`。
+- Flutter 3.44 iOS integration明確維持CocoaPods-compatible mode，避免auto-SPM與current runner contract衝突。
+
+### Verified
+
+- v1～v6 fixtures全部可升級至canonical v6，migration failure rollback、foreign keys、AuthUser single-row與Catalog chain invariants均通過。
+- Workspace完整analyze、documentation、generated consistency與全部tests通過；App suite共467 tests。
+- Android production verification APK、iOS Development Simulator unsigned app與dSYM、macOS production opener及App bundle build均通過。
+- Web、Windows、macOS與Linux未因套件能力被提升為Supported；Web仍採明確reset且無false runtime claim。
+
+---
+
 ## [1.10.0] - 2026-07-24
 
 ### Added

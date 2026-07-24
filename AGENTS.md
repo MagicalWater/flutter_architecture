@@ -197,11 +197,11 @@ CI、Branch Protection、failure與rollback操作請讀：
 docs/guides/ci_cd_operations.md
 ```
 
-Web SQLite setup：
+Drift Web assets重新生成：
 
 ```bash
 cd apps/flutter_architecture
-dart run sqflite_common_ffi_web:setup
+dart compile js web/drift_worker.dart -O4 -o web/drift_worker.js
 ```
 
 若 app 已有 Web platform scaffold：

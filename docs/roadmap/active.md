@@ -19,11 +19,13 @@ Baseline: 1.10.0
 
 已接受Drift adoption feasibility audit與Milestone 29 Design Spec。正式方向為Option D一次性整體遷移，目標是在保留既有SQLite file、v1～v6 migration、AuthUser與Catalog correctness的前提下，將App database authority完整切換為Drift。
 
-目前只完成Design Spec，不得直接修改production persistence；下一步必須先建立Implementation Plan並完成同一套Task審查循環。
+Design Spec與Implementation Plan均已接受。production persistence仍未修改；下一步依Plan開始Task 29-1 historical fixtures與compatibility harness，該gate通過前不得切換production DI。
 
 - Feasibility audit：`docs/audits/drift_adoption_feasibility_audit.md`
 - Design Spec：`docs/superpowers/specs/2026-07-24-milestone-29-drift-persistence-migration-design.md`
 - Design review：`docs/audits/milestone_29/29-0_design_spec_review.md`
+- Implementation Plan：`docs/superpowers/plans/2026-07-24-milestone-29-drift-persistence-migration.md`
+- Plan review：`docs/audits/milestone_29/29-0_implementation_plan_review.md`
 
 ## Latest Completed Milestone
 
@@ -45,7 +47,7 @@ Backend reachability service、generic reconnect framework、write queue、produ
 ## Current Next Action
 
 ```txt
-建立Milestone 29 Implementation Plan
-→ 完整Task review與validation
-→ 通過後才開始Task 29-1 compatibility fixtures
+Task 29-1 — Historical Database Fixtures and Compatibility Harness
+→ 完整Task review、validation與commit
+→ 自動進入Task 29-2
 ```

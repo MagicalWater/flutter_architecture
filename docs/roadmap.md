@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Milestone 29 — Drift Persistence Migration
-Current phase: Design Spec accepted；Implementation Plan pending
+Current phase: Design Spec and Implementation Plan accepted；Task 29-1 pending
 Baseline: 1.10.0
 ```
 

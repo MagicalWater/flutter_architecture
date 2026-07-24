@@ -18,6 +18,10 @@ Disposition：Resolved。三個migration cases移至專屬database historical co
 Severity：P1
 Disposition：Rejected。owner clarity與coverage preservation優先，新增owner file是合理結果。
 
+### F-30-9-03 — 首次inventory未計入尚未tracked的新owner file
+Severity：P2
+Disposition：Resolved。首次生成發生於新檔加入Git index前，`git ls-files`因此只回報766 cases；提交owner file後重新生成，正確結果為136 files／22,943 LOC／769 cases。
+
 ## Focused re-review
 
 - Current Catalog local test不再import sqflite或historical helpers。

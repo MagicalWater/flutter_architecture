@@ -25,4 +25,4 @@ last_reviewed_baseline: 1.11.0
 
 ## Inventory result
 
-Cleanup後仍為769 static cases；新增historical owner file取代原檔內位置，沒有coverage loss。檔案數因governance tooling與owner split增加，不以檔案數下降作為成功標準。
+Cleanup後為136 files／22,943 LOC／769 static cases；新增historical owner file取代原檔內位置，沒有coverage loss。檔案數因governance tooling與owner split增加，不以檔案數下降作為成功標準。

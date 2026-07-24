@@ -48,6 +48,8 @@ Open P1 without disposition: 0
 
 Task 27-7 closure commit `e3da593`的self-hosted remote gate亦已完成：CI `30055779238`、Android `30055779237`與iOS `30055779241`成功，Observability普通push `30055779243`依契約skipped。
 
+Template Baseline 1.9.0 release commit `5e18942`的post-release gate亦完整成功：CI `30058125188`、Android `30058125179`與iOS `30058125182`成功，Observability普通push `30058125187`依契約skipped。完整證據見`27-9_post_release_remote_validation.md`。
+
 ## Release decision
 
 Milestone 27新增可直接採用的production observability foundation與三種CI execution mode，屬新增模板能力，因此發布MINOR baseline：

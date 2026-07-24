@@ -62,6 +62,7 @@ Final / Holistic Review
 - [`milestone_27/27-7_self_hosted_ci_implementation_review.md`](milestone_27/27-7_self_hosted_ci_implementation_review.md)：Task 27-7各小Task findings與holistic closure。
 - [`milestone_27/27-7_cross_task_final_revalidation.md`](milestone_27/27-7_cross_task_final_revalidation.md)：Task 27-6完成後的runner、secret、routing與authority跨Task重驗。
 - [`milestone_27/27-8_final_review.md`](milestone_27/27-8_final_review.md)：Milestone 27整體holistic review、release decision與final claim boundary。
+- [`milestone_27/27-9_post_release_remote_validation.md`](milestone_27/27-9_post_release_remote_validation.md)：Template Baseline 1.9.0 release-SHA self-hosted CI、Android與iOS完整驗證。
 - [`milestone_27/27-7_task_1_activation_adr_review.md`](milestone_27/27-7_task_1_activation_adr_review.md)：Task 27-7 activation、ADR authority與current roadmap同步review。
 - [`milestone_27/27-3_firebase_crashlytics_reference_adapter_review.md`](milestone_27/27-3_firebase_crashlytics_reference_adapter_review.md)：Firebase Core／Crashlytics App-owned reference adapter、collection policy與failure isolation review。
 - [`milestone_27/27-2_reporting_routing_hardening_review.md`](milestone_27/27-2_reporting_routing_hardening_review.md)：Severity routing、closed metadata、recursive guard、degraded rate limiting與typed breadcrumb review。

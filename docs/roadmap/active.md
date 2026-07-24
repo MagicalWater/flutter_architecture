@@ -23,6 +23,7 @@ Milestone 27已建立provider-neutral production observability contract、Fireba
 - Design：`docs/superpowers/specs/2026-07-23-production-observability-foundation-design.md`
 - Implementation plan：`docs/superpowers/plans/2026-07-23-milestone-27-production-observability-foundation.md`
 - Final review：`docs/audits/milestone_27/27-8_final_review.md`
+- Post-release validation：`docs/audits/milestone_27/27-9_post_release_remote_validation.md`
 - Remote acceptance：`docs/audits/milestone_27/27-6_ci_secrets_remote_acceptance_review.md`
 - Self-hosted runtime evidence：`docs/audits/milestone_27/27-7_self_hosted_ci_runtime_evidence.md`
 

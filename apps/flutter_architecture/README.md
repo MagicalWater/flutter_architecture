@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.10.0
 - Environment entrypoints 與 `AppConfig`。
 - GetIt／Injectable registration 與 lifecycle ownership。
 - Auto Route、AuthGuard 與 authentication navigation coordination。
-- SQLite factory、database lifecycle 與 App-owned persistence adapters。
+- Drift database opener、lifecycle 與 App-owned persistence adapters。
 - Flutter Secure Storage、SharedPreferences、local_auth 等 plugin adapters。
 - Theme、locale 與 local unlock preference controller。
 - Error reporter adapter 與 Flutter／platform uncaught error boundary。
@@ -58,7 +58,7 @@ App-owned adapters 包含：
 
 - Flutter Secure Storage credential adapter。
 - Legacy SharedPreferences credential migration adapter。
-- SQLite Auth User 與 Catalog Cache adapters。
+- Drift Auth User 與 Catalog Cache adapters。
 - `local_auth` user-presence verifier。
 - Theme、locale、local unlock preference stores。
 - ErrorReporter composition seam、Firebase Crashlytics reference adapter與Flutter／platform uncaught boundaries。
@@ -96,10 +96,11 @@ Logout 清除 Auth credential、Auth User 與 runtime Session，但保留 public
 
 ## Database Schema and Migration Route
 
-App SQLite schema 與 migration 的 current source 位於：
+App Drift schema 與 migration 的 current source 位於：
 
 ```txt
-lib/app/database/app_database_schema.dart
+lib/app/database/app_database.dart
+lib/app/database/schema/app_database.drift
 ```
 
 新增 table、column、index、constraint 或資料清理 migration 時，依下列順序處理：
@@ -124,13 +125,15 @@ lib/app/database/app_database_schema.dart
 
 主要 integration points：
 
-- `lib/app/database/app_database_schema.dart`：schema version、fresh-create與incremental upgrade。
-- `lib/app/di/register_module.dart`：Database open lifecycle、`onConfigure`、`onCreate`與`onUpgrade` wiring。
+- `lib/app/database/app_database.dart`：schema version、migration strategy與database lifecycle。
+- `lib/app/database/schema/app_database.drift`：canonical table／index／constraint schema。
+- `lib/app/database/app_database_opener*.dart`：native／Web production opener與path policy。
+- `lib/app/di/register_module.dart`：單一`AppDatabase` singleton與DAO／adapter wiring。
 - `lib/features/<feature>/data/`：Feature-local LocalDataSource、store或Repository coordination。
 - `test/app/database/`：App database lifecycle與foreign-key contract。
 - `test/features/<feature>/data/`：Feature persistence behavior與migration regression。
 
-不要把 exact DDL、逐版 migration journal 或歷史測試流水帳複製進本 README。SQLite initialization與Feature persistence policy分別以 [ADR-010](../../docs/adr/adr-010-cross-platform-sqlite-initialization.md)、相關 persistence ADR、source與tests為準。
+不要把 exact DDL、逐版 migration journal 或歷史測試流水帳複製進本 README。Current database authority以 [ADR-010](../../docs/adr/adr-010-cross-platform-sqlite-initialization.md)、source、schema snapshots與tests為準。
 
 ## App Integration Route
 

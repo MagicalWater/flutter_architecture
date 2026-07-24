@@ -1,7 +1,7 @@
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
-import 'package:flutter_architecture/app/database/app_database_schema.dart';
-import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
+import '../../../../support/historical_sqflite_auth_user_store.dart';
+import '../../../../support/historical_sqflite_schema.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 

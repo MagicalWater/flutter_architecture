@@ -1,11 +1,12 @@
-import 'dart:io';
-
 import 'package:api_client/api_client.dart' as api_client;
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
+import 'package:drift/native.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
+import 'package:flutter_architecture/app/database/app_database.dart'
+    show AppDatabase;
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart';
@@ -13,25 +14,9 @@ import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_au
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  late Directory databaseDirectory;
-
-  setUpAll(() async {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-    databaseDirectory = await Directory.systemTemp.createTemp(
-      'register-module-secure-auth-store-',
-    );
-    await databaseFactory.setDatabasesPath(databaseDirectory.path);
-  });
-
-  tearDownAll(() async {
-    await databaseDirectory.delete(recursive: true);
-  });
-
   setUp(() {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     FlutterSecureStorage.setMockInitialValues(<String, String>{});
@@ -50,7 +35,11 @@ void main() {
       ),
     );
 
-    await configureDependencies(config, const NoopErrorReporter());
+    await configureDependencies(
+      config,
+      const NoopErrorReporter(),
+      database: AppDatabase.forTesting(NativeDatabase.memory()),
+    );
 
     final defaultStore = getIt<AuthCredentialStore>();
     final coordinator = getIt<AuthCredentialMigrationCoordinator>();
@@ -118,9 +107,6 @@ void main() {
     final secureCredential =
         await defaultStore.readCredential() as AuthCredentialReadPresent;
     expect(secureCredential.tokens.accessToken, 'mock-refreshed-access-token');
-    expect(
-      secureCredential.tokens.refreshToken,
-      'mock-rotated-refresh-token',
-    );
+    expect(secureCredential.tokens.refreshToken, 'mock-rotated-refresh-token');
   });
 }

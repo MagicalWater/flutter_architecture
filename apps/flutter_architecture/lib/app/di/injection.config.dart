@@ -18,6 +18,7 @@ import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart'
     as _i1037;
 import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart'
     as _i462;
+import 'package:flutter_architecture/app/database/app_database.dart' as _i1048;
 import 'package:flutter_architecture/app/di/register_module.dart' as _i712;
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart'
     as _i1041;
@@ -60,7 +61,6 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:local_auth/local_auth.dart' as _i152;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
-import 'package:sqflite/sqflite.dart' as _i779;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -72,10 +72,6 @@ extension GetItInjectableX on _i174.GetIt {
     final registerModule = _$RegisterModule();
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => registerModule.sharedPreferences,
-      preResolve: true,
-    );
-    await gh.factoryAsync<_i779.Database>(
-      () => registerModule.database,
       preResolve: true,
     );
     gh.lazySingleton<_i895.Connectivity>(() => registerModule.connectivity);
@@ -94,18 +90,18 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModule.catalogCachePolicy,
     );
     gh.lazySingleton<_i401.CatalogClock>(() => registerModule.catalogClock);
-    gh.lazySingleton<_i662.AuthUserStore>(
-      () => registerModule.authUserStore(gh<_i779.Database>()),
-    );
-    gh.lazySingleton<_i538.CatalogLocalDataSource>(
-      () => registerModule.catalogLocalDataSource(gh<_i779.Database>()),
-    );
     gh.lazySingleton<_i662.AuthCredentialStore>(
       () =>
           registerModule.authCredentialStore(gh<_i558.FlutterSecureStorage>()),
     );
     gh.lazySingleton<_i633.AuthTokenProvider>(
       () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
+    );
+    gh.lazySingleton<_i662.AuthUserStore>(
+      () => registerModule.authUserStore(gh<_i1048.AppDatabase>()),
+    );
+    gh.lazySingleton<_i538.CatalogLocalDataSource>(
+      () => registerModule.catalogLocalDataSource(gh<_i1048.AppDatabase>()),
     );
     gh.lazySingleton<_i1037.ConnectivityAdapter>(
       () => registerModule.connectivityAdapter(gh<_i895.Connectivity>()),

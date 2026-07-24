@@ -5,8 +5,9 @@ import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_plus_adapter.dart';
-import 'package:flutter_architecture/app/database/app_database_schema.dart';
-import 'package:flutter_architecture/app/database/dao/sqflite_catalog_cache_dao.dart';
+import 'package:flutter_architecture/app/database/app_database.dart';
+import 'package:flutter_architecture/app/database/dao/auth_user_dao.dart';
+import 'package:flutter_architecture/app/database/dao/catalog_cache_dao.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
@@ -15,7 +16,7 @@ import 'package:flutter_architecture/features/auth/data/local_user_presence/loca
 import 'package:flutter_architecture/features/auth/data/local_unlock/shared_preferences_local_unlock_preference_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
-import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/drift_auth_user_store.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
@@ -28,9 +29,7 @@ import 'package:flutter_architecture/features/profile/data/data_sources/profile_
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -71,20 +70,6 @@ abstract class RegisterModule {
   @preResolve
   Future<SharedPreferences> get sharedPreferences =>
       SharedPreferences.getInstance();
-
-  @preResolve
-  Future<Database> get database async {
-    final databasePath = await getDatabasesPath();
-    final path = p.join(databasePath, 'flutter_architecture.db');
-
-    return openDatabase(
-      path,
-      version: AppDatabaseSchema.version,
-      onConfigure: AppDatabaseSchema.onConfigure,
-      onCreate: AppDatabaseSchema.onCreate,
-      onUpgrade: AppDatabaseSchema.onUpgrade,
-    );
-  }
 
   @lazySingleton
   api_client.AppDioFactory get appDioFactory =>
@@ -128,8 +113,8 @@ abstract class RegisterModule {
   ) => SharedPreferencesAuthLegacyCredentialStore(preferences);
 
   @lazySingleton
-  auth.AuthUserStore authUserStore(Database database) =>
-      SqfliteAuthUserStore(database);
+  auth.AuthUserStore authUserStore(AppDatabase database) =>
+      DriftAuthUserStore(AuthUserDao(database));
 
   @lazySingleton
   auth.LocalUnlockPreferenceStore localUnlockPreferenceStore(
@@ -321,8 +306,8 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
-  CatalogLocalDataSource catalogLocalDataSource(Database database) {
-    return CatalogLocalDataSource(SqfliteCatalogCacheDao(database));
+  CatalogLocalDataSource catalogLocalDataSource(AppDatabase database) {
+    return CatalogLocalDataSource(DriftCatalogCacheDao(database));
   }
 
   @lazySingleton

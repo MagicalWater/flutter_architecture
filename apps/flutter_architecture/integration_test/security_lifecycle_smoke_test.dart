@@ -5,7 +5,6 @@ import 'package:flutter_architecture/app/auth/local_unlock_lifecycle_coordinator
 import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
-import 'package:flutter_architecture/app/database/database_initializer.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -148,7 +147,6 @@ void main() {
 }
 
 Future<void> _configureDependencies() async {
-  await initializeDatabaseFactory();
   await configureDependencies(
     AppConfigFactory.fromValues(
       environment: AppEnvironment.development,

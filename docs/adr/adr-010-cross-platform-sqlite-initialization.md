@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-010-cross-platform-sqlite-initialization
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.10.0
 id: ADR-010
 title: Cross-platform SQLite Initialization
 supersedes:
@@ -22,36 +22,36 @@ Accepted。
 
 ## Authoritative Scope
 
-本 Decision 定義 SQLite platform initialization 隔離與 conditional import boundary；它不定義某平台是否已達 runtime supported。
+本 Decision 定義Drift database opener、platform path與single-owner lifecycle boundary；它不定義某平台是否已達runtime supported。
 
 ## Context
 
-`sqflite` 在 mobile、desktop 與 Web 使用不同 database factory／初始化方式。若 executable entrypoint 直接 import `dart:io` 或散落平台判斷，Web compilation 與 App bootstrap 責任會變得脆弱。
+App曾以sqflite在mobile、desktop與Web使用不同factory。Milestone 29完成整體遷移後，Drift成為唯一production database authority，platform差異仍須隔離在App-owned opener。
 
 ## Decision
 
-SQLite platform 差異隔離在 App-owned database initializer，透過 conditional import 選擇 implementation：
+Database platform差異隔離在App-owned opener，透過conditional import選擇implementation：
 
 ```txt
-Mobile
-  sqflite native
-
-Desktop
-  sqflite_common_ffi
+Native
+  Drift NativeDatabase background executor
 
 Web
-  sqflite_common_ffi_web
+  Drift WasmDatabase + drift_worker.js + sqlite3.wasm
 ```
 
-`main.dart` 與共用 bootstrap 不直接依賴 `dart:io` 進行平台分支。Database instance 與 lifecycle 仍由 App Composition Root 建立。
+`main.dart`與共用bootstrap不直接依賴`dart:io`進行平台分支。Composition Root只建立一個`AppDatabase` singleton，Auth與Catalog共用該instance。
 
-Web asset setup 屬操作步驟，由 guide／README 保存，不作為本 ADR 的平台支援證據。
+Android／iOS沿用既有database directory與`flutter_architecture.db`檔名；Desktop使用App documents directory。sqflite僅允許存在於test-only historical compatibility harness。
+
+Web採explicit reset disposition，不宣稱舊sqflite browser storage可自動保留。Web assets由repository追蹤與CI generation gate驗證。
 
 ## Consequences
 
-- 共用 bootstrap 保持 Web compilation-safe。
+- 共用bootstrap保持platform-safe。
 - Platform implementation detail 不穿透 Feature、Domain 或 reusable package。
-- 新平台可以在 initializer boundary 新增 implementation，而不修改上層資料存取 contract。
+- 新平台可以在opener boundary新增implementation，而不修改上層資料存取contract。
+- Drift是schema、migration與production lifecycle唯一authority。
 - Conditional implementation 或 dependency 存在，只代表 dependency-ready；Supported classification 必須由 tracked runner、artifact 與 runtime evidence 另外判定。
 
 ## Supersession
@@ -72,4 +72,4 @@ Web asset setup 屬操作步驟，由 guide／README 保存，不作為本 ADR �
 
 ## Last Reviewed Baseline
 
-1.5.1。
+1.10.0。

@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 
-/// App SQLite schema 與 migration 入口。
+/// Cutover前sqflite schema，只供historical fixture與rollback tests使用。
 abstract final class AppDatabaseSchema {
   static const int version = 6;
 
@@ -18,21 +18,13 @@ abstract final class AppDatabaseSchema {
     int oldVersion,
     int newVersion,
   ) async {
-    if (oldVersion < 2) {
-      await _createCatalogCacheTables(db);
-    }
+    if (oldVersion < 2) await _createCatalogCacheTables(db);
     if (oldVersion >= 2 && oldVersion < 3) {
       await _upgradeCatalogItemPositionIndex(db);
     }
-    if (oldVersion < 4) {
-      await _addCatalogChainRevision(db);
-    }
-    if (oldVersion < 5) {
-      await _upgradeAuthUserToSingleActiveRecord(db);
-    }
-    if (oldVersion < 6) {
-      await _removeCatalogCacheOrphans(db);
-    }
+    if (oldVersion < 4) await _addCatalogChainRevision(db);
+    if (oldVersion < 5) await _upgradeAuthUserToSingleActiveRecord(db);
+    if (oldVersion < 6) await _removeCatalogCacheOrphans(db);
   }
 
   static Future<void> _createAuthUserTable(DatabaseExecutor db) {
@@ -60,7 +52,6 @@ abstract final class AppDatabaseSchema {
     final rows = await db.query('auth_user');
     await db.execute('ALTER TABLE auth_user RENAME TO auth_user_legacy');
     await _createAuthUserTable(db);
-
     if (rows.length == 1) {
       await db.insert('auth_user', <String, Object?>{
         'slot': 1,
@@ -68,7 +59,6 @@ abstract final class AppDatabaseSchema {
         'name': rows.single['name'],
       });
     }
-
     await db.execute('DROP TABLE auth_user_legacy');
   }
 
@@ -84,7 +74,6 @@ abstract final class AppDatabaseSchema {
         PRIMARY KEY (query, request_cursor, request_limit)
       )
     ''');
-
     await db.execute('''
       CREATE TABLE catalog_cache_page_item (
         query TEXT NOT NULL,
@@ -100,14 +89,10 @@ abstract final class AppDatabaseSchema {
           ON DELETE CASCADE
       )
     ''');
-
     await db.execute('''
       CREATE UNIQUE INDEX catalog_cache_page_item_position_idx
       ON catalog_cache_page_item (
-        query,
-        request_cursor,
-        request_limit,
-        item_position
+        query, request_cursor, request_limit, item_position
       )
     ''');
   }
@@ -136,28 +121,21 @@ abstract final class AppDatabaseSchema {
     await db.execute('''
       CREATE UNIQUE INDEX catalog_cache_page_item_position_idx
       ON catalog_cache_page_item (
-        query,
-        request_cursor,
-        request_limit,
-        item_position
+        query, request_cursor, request_limit, item_position
       )
     ''');
   }
 
-  static Future<void> _removeCatalogCacheOrphans(
-    DatabaseExecutor db,
-  ) async {
+  static Future<void> _removeCatalogCacheOrphans(DatabaseExecutor db) async {
     final tables = await db.rawQuery(
       "SELECT name FROM sqlite_master WHERE type = 'table' "
       "AND name IN ('catalog_cache_page', 'catalog_cache_page_item')",
     );
     if (tables.length != 2) return;
-
     await db.execute('''
       DELETE FROM catalog_cache_page_item
       WHERE NOT EXISTS (
-        SELECT 1
-        FROM catalog_cache_page
+        SELECT 1 FROM catalog_cache_page
         WHERE catalog_cache_page.query = catalog_cache_page_item.query
           AND catalog_cache_page.request_cursor =
             catalog_cache_page_item.request_cursor

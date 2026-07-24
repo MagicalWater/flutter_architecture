@@ -2,12 +2,8 @@ import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:sqflite/sqflite.dart';
 
-/// 使用既有 `auth_user` single-active-row schema 保存 AuthUser。
 final class SqfliteAuthUserStore implements AuthUserStore {
   const SqfliteAuthUserStore(this._database);
-
-  static const String _table = 'auth_user';
-  static const int _slot = 1;
 
   final Database _database;
 
@@ -15,15 +11,16 @@ final class SqfliteAuthUserStore implements AuthUserStore {
   Future<AuthUser?> readUser() async {
     try {
       final rows = await _database.query(
-        _table,
+        'auth_user',
         where: 'slot = ?',
-        whereArgs: const <Object?>[_slot],
+        whereArgs: const <Object?>[1],
         limit: 1,
       );
       if (rows.isEmpty) return null;
-
-      final row = rows.single;
-      return AuthUser(id: row['id'] as String, name: row['name'] as String);
+      return AuthUser(
+        id: rows.single['id'] as String,
+        name: rows.single['name'] as String,
+      );
     } on DatabaseException catch (error, stackTrace) {
       Error.throwWithStackTrace(
         AppException(
@@ -40,8 +37,8 @@ final class SqfliteAuthUserStore implements AuthUserStore {
   @override
   Future<void> writeUser(AuthUser user) async {
     try {
-      await _database.insert(_table, <String, Object?>{
-        'slot': _slot,
+      await _database.insert('auth_user', <String, Object?>{
+        'slot': 1,
         'id': user.id,
         'name': user.name,
       }, conflictAlgorithm: ConflictAlgorithm.replace);
@@ -62,9 +59,9 @@ final class SqfliteAuthUserStore implements AuthUserStore {
   Future<void> clearUser() async {
     try {
       await _database.delete(
-        _table,
+        'auth_user',
         where: 'slot = ?',
-        whereArgs: const <Object?>[_slot],
+        whereArgs: const <Object?>[1],
       );
     } on DatabaseException catch (error, stackTrace) {
       Error.throwWithStackTrace(

@@ -1,9 +1,12 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:dio/dio.dart';
+import 'package:drift/native.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
+import 'package:flutter_architecture/app/database/app_database.dart'
+    show AppDatabase;
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
@@ -16,15 +19,12 @@ import 'package:flutter_architecture/features/catalog/domain/use_cases/search_ca
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() {
     SharedPreferences.setMockInitialValues({});
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
   });
 
   tearDown(() async {
@@ -41,7 +41,11 @@ void main() {
     );
 
     const reporter = NoopErrorReporter();
-    await configureDependencies(config, reporter);
+    await configureDependencies(
+      config,
+      reporter,
+      database: AppDatabase.forTesting(NativeDatabase.memory()),
+    );
 
     expect(getIt<AppConfig>(), same(config));
     expect(getIt<ApiConfig>(), same(config.api));
@@ -58,10 +62,10 @@ void main() {
     expect(getIt<CatalogRepository>(), isA<CatalogRepositoryImpl>());
     expect(getIt<SearchCatalogUseCase>(), isNotNull);
     expect(
-      (await getIt<Database>().rawQuery('PRAGMA foreign_keys'))
-          .single
-          .values
-          .single,
+      (await getIt<AppDatabase>()
+              .customSelect('PRAGMA foreign_keys')
+              .getSingle())
+          .read<int>('foreign_keys'),
       1,
     );
     await _expectCatalogScopes();
@@ -94,7 +98,11 @@ void main() {
     );
 
     const reporter = NoopErrorReporter();
-    await configureDependencies(config, reporter);
+    await configureDependencies(
+      config,
+      reporter,
+      database: AppDatabase.forTesting(NativeDatabase.memory()),
+    );
 
     expect(getIt<AuthApi>(), isNot(isA<MockAuthApi>()));
     expect(getIt<ErrorReporter>(), same(reporter));
@@ -108,10 +116,10 @@ void main() {
     expect(getIt<CatalogRepository>(), isA<CatalogRepositoryImpl>());
     expect(getIt<SearchCatalogUseCase>(), isNotNull);
     expect(
-      (await getIt<Database>().rawQuery('PRAGMA foreign_keys'))
-          .single
-          .values
-          .single,
+      (await getIt<AppDatabase>()
+              .customSelect('PRAGMA foreign_keys')
+              .getSingle())
+          .read<int>('foreign_keys'),
       1,
     );
     await _expectCatalogScopes();

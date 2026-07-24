@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_architecture/app/app.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
-import 'package:flutter_architecture/app/database/database_initializer.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/error_reporting/app_bloc_observer.dart';
 import 'package:flutter_architecture/app/error_reporting/app_uncaught_error_handler.dart';
@@ -80,8 +79,6 @@ Future<void> bootstrap(
         reporter: errorReporter,
         config: observabilityConfig,
       );
-
-      await initializeDatabaseFactory();
 
       final config = AppConfigFactory.fromEnvironment(
         environment: environment,

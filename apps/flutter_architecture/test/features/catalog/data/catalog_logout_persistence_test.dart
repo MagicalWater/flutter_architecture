@@ -1,11 +1,11 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
-import 'package:flutter_architecture/app/database/app_database_schema.dart';
-import 'package:flutter_architecture/app/database/dao/sqflite_catalog_cache_dao.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
-import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
+import '../../../support/historical_sqflite_auth_user_store.dart';
+import '../../../support/historical_sqflite_catalog_cache_dao.dart';
+import '../../../support/historical_sqflite_schema.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache_page_mapper.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';

@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:auth/auth.dart';
 import 'package:design_system/design_system.dart';
+import 'package:drift/native.dart';
 import 'package:flutter_architecture/app/app.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
+import 'package:flutter_architecture/app/database/app_database.dart'
+    show AppDatabase;
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
@@ -21,15 +24,9 @@ import 'package:flutter_architecture/features/protected/presentation/pages/prote
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooked_bloc/hooked_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-
-  setUpAll(() {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  });
 
   setUp(() async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
@@ -41,6 +38,7 @@ void main() {
         apiBaseUrlValue: '',
       ),
       const NoopErrorReporter(),
+      database: AppDatabase.forTesting(NativeDatabase.memory()),
     );
   });
 
@@ -48,74 +46,73 @@ void main() {
     await getIt.reset();
   });
 
-  testWidgets(
-    'App-mounted router完成Login→Profile，Protected上返回Login且不重複Shell',
-    (tester) async {
-      final defaultTheme = DefaultThemeDefinition();
-      final registry = DsThemeRegistry(
-        definitions: <DsThemeDefinition>[defaultTheme],
-        defaultThemeId: defaultTheme.id,
-      );
-      final themeController = ThemeController(
-        registry: registry,
-        store: ThemePreferenceStore(
-          const _MemoryThemePreferenceStorage(),
-          ThemePreferenceCodec(registry),
+  testWidgets('App-mounted router完成Login→Profile，Protected上返回Login且不重複Shell', (
+    tester,
+  ) async {
+    final defaultTheme = DefaultThemeDefinition();
+    final registry = DsThemeRegistry(
+      definitions: <DsThemeDefinition>[defaultTheme],
+      defaultThemeId: defaultTheme.id,
+    );
+    final themeController = ThemeController(
+      registry: registry,
+      store: ThemePreferenceStore(
+        const _MemoryThemePreferenceStorage(),
+        ThemePreferenceCodec(registry),
+      ),
+      initialPreference: ThemePreference.defaults(registry),
+      errorReporter: const NoopErrorReporter(),
+    );
+    final localeController = LocaleController(
+      store: const LocalePreferenceStore(
+        _MemoryLocalePreferenceStorage(),
+        LocalePreferenceCodec(),
+      ),
+      initialPreference: AppLocalePreference.english,
+      errorReporter: const NoopErrorReporter(),
+    );
+
+    await tester.pumpWidget(
+      HookedBlocConfigProvider(
+        injector: () => getIt.get,
+        child: ArchitectureApp(
+          themeController: themeController,
+          localeController: localeController,
         ),
-        initialPreference: ThemePreference.defaults(registry),
-        errorReporter: const NoopErrorReporter(),
-      );
-      final localeController = LocaleController(
-        store: const LocalePreferenceStore(
-          _MemoryLocalePreferenceStorage(),
-          LocalePreferenceCodec(),
-        ),
-        initialPreference: AppLocalePreference.english,
-        errorReporter: const NoopErrorReporter(),
-      );
+      ),
+    );
+    await _pumpFrames(tester);
 
-      await tester.pumpWidget(
-        HookedBlocConfigProvider(
-          injector: () => getIt.get,
-          child: ArchitectureApp(
-            themeController: themeController,
-            localeController: localeController,
-          ),
-        ),
-      );
-      await _pumpFrames(tester);
+    expect(find.byType(LoginPage), findsOneWidget);
 
-      expect(find.byType(LoginPage), findsOneWidget);
+    final router = getIt<AppRouter>();
+    await reconcileAuthDestination(router, AuthNavigationDestination.profile);
+    await _pumpFrames(tester);
 
-      final router = getIt<AppRouter>();
-      await reconcileAuthDestination(
-        router,
-        AuthNavigationDestination.profile,
-      );
-      await _pumpFrames(tester);
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(
+      router.stack.where((route) => route.name == ShellRoute.name),
+      hasLength(1),
+    );
 
-      expect(find.byType(ProfilePage), findsOneWidget);
-      expect(router.stack.where((route) => route.name == ShellRoute.name), hasLength(1));
+    getIt<SessionManager>().setAuthenticated(
+      accessToken: 'access-token',
+      userId: 'user-1',
+    );
+    unawaited(router.push(const ProtectedRoute()));
+    await _pumpFrames(tester);
+    expect(find.byType(ProtectedPage), findsOneWidget);
 
-      getIt<SessionManager>().setAuthenticated(
-        accessToken: 'access-token',
-        userId: 'user-1',
-      );
-      unawaited(router.push(const ProtectedRoute()));
-      await _pumpFrames(tester);
-      expect(find.byType(ProtectedPage), findsOneWidget);
+    await reconcileAuthDestination(router, AuthNavigationDestination.login);
+    await _pumpFrames(tester);
 
-      await reconcileAuthDestination(
-        router,
-        AuthNavigationDestination.login,
-      );
-      await _pumpFrames(tester);
-
-      expect(find.byType(LoginPage), findsOneWidget);
-      expect(find.byType(ProtectedPage), findsNothing);
-      expect(router.stack.where((route) => route.name == ShellRoute.name), hasLength(1));
-    },
-  );
+    expect(find.byType(LoginPage), findsOneWidget);
+    expect(find.byType(ProtectedPage), findsNothing);
+    expect(
+      router.stack.where((route) => route.name == ShellRoute.name),
+      hasLength(1),
+    );
+  });
 }
 
 Future<void> _pumpFrames(WidgetTester tester) async {

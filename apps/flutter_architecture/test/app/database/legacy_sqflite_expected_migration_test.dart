@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_architecture/app/database/app_database_schema.dart';
+import '../../support/historical_sqflite_schema.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';

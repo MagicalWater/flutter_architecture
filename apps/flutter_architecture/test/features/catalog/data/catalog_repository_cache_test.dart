@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:api_client/api_client.dart';
 import 'package:core/core.dart';
-import 'package:flutter_architecture/app/database/app_database_schema.dart';
-import 'package:flutter_architecture/app/database/dao/sqflite_catalog_cache_dao.dart';
+import '../../../support/historical_sqflite_catalog_cache_dao.dart';
+import '../../../support/historical_sqflite_schema.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';

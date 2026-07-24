@@ -6,11 +6,14 @@ import 'package:core/core.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';
 import 'package:flutter_architecture/app/config/app_environment.dart';
+import 'package:flutter_architecture/app/database/app_database.dart'
+    show AppDatabase;
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
-import 'package:flutter_architecture/features/auth/data/stores/sqflite_auth_user_store.dart';
+import 'package:flutter_architecture/features/auth/data/stores/drift_auth_user_store.dart';
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,7 +54,11 @@ void main() {
       ),
     );
 
-    await configureDependencies(config, const NoopErrorReporter());
+    await configureDependencies(
+      config,
+      const NoopErrorReporter(),
+      database: AppDatabase.forTesting(NativeDatabase.memory()),
+    );
 
     expect(
       getIt<AuthCredentialStore>(),
@@ -61,7 +68,7 @@ void main() {
       getIt<AuthLegacyCredentialStore>(),
       isA<SharedPreferencesAuthLegacyCredentialStore>(),
     );
-    expect(getIt<AuthUserStore>(), isA<SqfliteAuthUserStore>());
+    expect(getIt<AuthUserStore>(), isA<DriftAuthUserStore>());
 
     expect(
       identical(getIt<AuthCredentialStore>(), getIt<AuthCredentialStore>()),

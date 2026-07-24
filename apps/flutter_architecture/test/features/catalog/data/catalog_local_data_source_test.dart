@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:core/core.dart';
-import 'package:flutter_architecture/app/database/app_database_schema.dart';
-import 'package:flutter_architecture/app/database/dao/sqflite_catalog_cache_dao.dart';
+import '../../../support/historical_sqflite_catalog_cache_dao.dart';
+import '../../../support/historical_sqflite_schema.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache_page_mapper.dart';

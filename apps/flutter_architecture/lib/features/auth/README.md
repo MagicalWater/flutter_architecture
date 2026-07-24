@@ -70,7 +70,7 @@ Credential Token Pair
 → Flutter Secure Storage
 
 Public AuthUser
-→ SqfliteAuthUserStore
+→ DriftAuthUserStore
 → SQLite
 
 Legacy SharedPreferences credential

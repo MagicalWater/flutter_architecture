@@ -131,6 +131,7 @@ jobs:
           tools.ci.test_environment_contract
           tools.ci.test_environment_workflow_matrix_contract
           tools.ci.test_change_classifier
+          tools.ci.test_drift_schema_governance
           tools.ci.test_ios_workflow_contract
           tools.ci.test_local_build_commands
           tools.ci.test_ci_execution_mode_contract

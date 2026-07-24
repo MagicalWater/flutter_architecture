@@ -83,10 +83,25 @@ def _is_shared_app_build_path(path: str) -> bool:
     )
 
 
+def _is_database_critical_path(path: str) -> bool:
+    return (
+        path.startswith("apps/flutter_architecture/lib/app/database/")
+        or path.startswith("apps/flutter_architecture/test/drift_schemas/")
+        or path in {
+            "apps/flutter_architecture/web/sqlite3.wasm",
+            "apps/flutter_architecture/web/drift_worker.dart",
+            "apps/flutter_architecture/web/drift_worker.js",
+        }
+        or path.startswith("tools/database/")
+        or path == "tools/ci/test_drift_schema_governance.py"
+    )
+
+
 def _is_android_path(path: str) -> bool:
     return (
         path.startswith("apps/flutter_architecture/android/")
         or _is_shared_app_build_path(path)
+        or _is_database_critical_path(path)
         or path.startswith("packages/")
         or path.startswith("tools/ci/build_android_")
         or path == "tools/ci/verify_environment_contract.py"
@@ -101,6 +116,7 @@ def _is_ios_path(path: str) -> bool:
     return (
         path.startswith("apps/flutter_architecture/ios/")
         or _is_shared_app_build_path(path)
+        or _is_database_critical_path(path)
         or path.startswith("packages/")
         or path.startswith("tools/ci/build_ios_")
         or path == "tools/ci/verify_environment_contract.py"

@@ -11,6 +11,15 @@ if [[ -n "$(git status --porcelain)" ]]; then
 fi
 
 dart run melos run build_runner
+bash tools/database/export_drift_schemas.sh
+
+(
+  cd apps/flutter_architecture
+  dart compile js web/drift_worker.dart -O4 -o web/drift_worker.js
+  rm -f web/drift_worker.js.deps web/drift_worker.js.map
+)
+
+python3 -m unittest tools.ci.test_drift_schema_governance
 
 if ! git diff --ignore-space-at-eol --quiet --exit-code; then
   echo "Generated tracked files are out of date." >&2

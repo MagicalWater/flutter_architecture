@@ -129,6 +129,46 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
         self.assertFalse(result.android_build)
         self.assertFalse(result.ios_build)
 
+    def test_drift_schema_change_runs_database_critical_matrix(self) -> None:
+        result = classify_paths(
+            ["apps/flutter_architecture/lib/app/database/schema/app_database.drift"]
+        )
+
+        self.assertTrue(result.full_ci)
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
+    def test_drift_dao_change_runs_database_critical_matrix(self) -> None:
+        result = classify_paths(
+            ["apps/flutter_architecture/lib/app/database/dao/catalog_cache_dao.dart"]
+        )
+
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
+    def test_drift_snapshot_change_runs_database_critical_matrix(self) -> None:
+        result = classify_paths(
+            ["apps/flutter_architecture/test/drift_schemas/app_database/drift_schema_v6.json"]
+        )
+
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
+    def test_database_web_asset_change_runs_database_critical_matrix(self) -> None:
+        for path in (
+            "apps/flutter_architecture/web/sqlite3.wasm",
+            "apps/flutter_architecture/web/drift_worker.js",
+        ):
+            result = classify_paths([path])
+            self.assertTrue(result.android_build, path)
+            self.assertTrue(result.ios_build, path)
+
+    def test_database_tooling_change_runs_database_critical_matrix(self) -> None:
+        result = classify_paths(["tools/database/export_drift_schemas.sh"])
+
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
 
 class ChangeClassifierRangeContractTest(unittest.TestCase):
     def test_valid_git_range_uses_changed_paths(self) -> None:

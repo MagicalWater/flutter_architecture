@@ -1,0 +1,287 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": false
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "auth_user",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "slot",
+            "getter_name": "slot",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY CHECK (slot = 1)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL UNIQUE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "catalog_cache_page",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "query",
+            "getter_name": "query",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "request_cursor",
+            "getter_name": "requestCursor",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "request_limit",
+            "getter_name": "requestLimit",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_cursor",
+            "getter_name": "nextCursor",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "chain_revision",
+            "getter_name": "chainRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(\"query\", request_cursor, request_limit)"
+        ],
+        "explicit_pk": [
+          "query",
+          "request_cursor",
+          "request_limit"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [
+        1
+      ],
+      "type": "table",
+      "data": {
+        "name": "catalog_cache_page_item",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "query",
+            "getter_name": "query",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "request_cursor",
+            "getter_name": "requestCursor",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "request_limit",
+            "getter_name": "requestLimit",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "item_id",
+            "getter_name": "itemId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "item_position",
+            "getter_name": "itemPosition",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "item_name",
+            "getter_name": "itemName",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "item_description",
+            "getter_name": "itemDescription",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(\"query\", request_cursor, request_limit, item_id)",
+          "FOREIGN KEY(\"query\", request_cursor, request_limit)REFERENCES catalog_cache_page(\"query\", request_cursor, request_limit)ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "query",
+          "request_cursor",
+          "request_limit",
+          "item_id"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [
+        2
+      ],
+      "type": "index",
+      "data": {
+        "on": 2,
+        "name": "catalog_cache_page_item_position_idx",
+        "sql": "CREATE UNIQUE INDEX catalog_cache_page_item_position_idx\nON catalog_cache_page_item (\n  \"query\",\n  request_cursor,\n  request_limit,\n  item_position\n);",
+        "unique": true,
+        "columns": []
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "auth_user",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"auth_user\" (\"slot\" INTEGER NOT NULL PRIMARY KEY CHECK (slot = 1), \"id\" TEXT NOT NULL UNIQUE, \"name\" TEXT NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "catalog_cache_page",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"catalog_cache_page\" (\"query\" TEXT NOT NULL, \"request_cursor\" TEXT NOT NULL, \"request_limit\" INTEGER NOT NULL, \"next_cursor\" TEXT, \"updated_at\" INTEGER NOT NULL, \"chain_revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(\"query\", request_cursor, request_limit));"
+        }
+      ]
+    },
+    {
+      "name": "catalog_cache_page_item",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"catalog_cache_page_item\" (\"query\" TEXT NOT NULL, \"request_cursor\" TEXT NOT NULL, \"request_limit\" INTEGER NOT NULL, \"item_id\" TEXT NOT NULL, \"item_position\" INTEGER NOT NULL, \"item_name\" TEXT NOT NULL, \"item_description\" TEXT NOT NULL, PRIMARY KEY(\"query\", request_cursor, request_limit, item_id), FOREIGN KEY(\"query\", request_cursor, request_limit)REFERENCES catalog_cache_page(\"query\", request_cursor, request_limit)ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "catalog_cache_page_item_position_idx",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX catalog_cache_page_item_position_idx ON catalog_cache_page_item (\"query\", request_cursor, request_limit, item_position)"
+        }
+      ]
+    }
+  ]
+}

@@ -107,4 +107,51 @@ Generated Consistency: success
 
 ### Pending acceptance
 
-尚待main push、PR denial與offline queue證據。
+### Main push self-hosted acceptance
+
+Repository variable切換為`self-hosted`後，main push commit `72b1799`由同一台Mac依序執行：
+
+```txt
+CI run 30029793095: success
+Android run 30029793179: success
+iOS run 30029793220: success
+Observability run 30029793150: skipped
+```
+
+本次為文件變更，因此classifier保留docs-only語意；Android／iOS沒有建立不必要的平台artifact。三份execution workflow在單一runner上排隊完成，未平行搶占。
+
+### Pull Request denial acceptance
+
+建立temporary same-repository PR #1後：
+
+```txt
+CI run 30029988493: skipped
+iOS run 30029988740: skipped
+Observability run 30029990408: skipped
+```
+
+沒有job派送到Mac。此結果只證明trusted boundary生效，`skipped`不代表PR內容已驗證。測試PR與remote branch均已關閉／刪除。
+
+### Runner offline fail-safe
+
+停止LaunchAgent後manual dispatch self-hosted CI：
+
+```txt
+Run ID: 30030025506
+Classify Changes: queued
+Fallback GitHub-hosted job: none
+```
+
+確認queued後主動取消，不等待GitHub的24小時queue上限；重新啟動service後runner恢復`online`、`busy=false`。
+
+### Runtime disposition
+
+```txt
+manual-local: verified
+manual self-hosted: verified
+main push self-hosted: verified
+PR denial: verified
+offline no-fallback: verified
+github-hosted: static only, no paid run executed
+observability: manual explicit gate only
+```

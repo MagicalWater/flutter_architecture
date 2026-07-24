@@ -108,3 +108,24 @@ Open P1: 0
 ### Whole-task review
 
 Runner實際身份、workspace、service與GitHub API state均符合Spec。使用`water`帳號的隔離限制已明確保留，沒有誤稱為sandbox；未發現新的P0／P1。
+
+## Task 6 — Runtime Routing Acceptance
+
+```txt
+Disposition: ACCEPTED
+Open P0: 0
+Open P1: 0
+```
+
+### Runtime review
+
+- `manual-local` main push四份workflow全部skipped，runner保持idle。
+- Manual self-hosted CI在cache修正後四個jobs全部成功回報GitHub Checks。
+- `self-hosted` main push由CI、Android、iOS依序在單一Mac完成，Observability push保持skipped。
+- Temporary PR的CI、iOS與Observability全部skipped，沒有job派送到Mac。
+- Runner service停止時manual self-hosted job維持queued，沒有自動fallback；取消後service成功恢復online。
+- GitHub-hosted只做static contract，未因本月額度已滿而實際啟動。
+
+### Whole-task review
+
+Run IDs、event、mode、runner與結果均已保存為文字證據。測試PR、remote branch與queued smoke均已清理；runtime沒有留下open P0／P1。

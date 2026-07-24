@@ -2,6 +2,8 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    - "**/build/**"
+    - "**/.dart_tool/**"
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - "**/*.gr.dart"
@@ -11,6 +13,8 @@ linter:
     always_use_package_imports: true
     avoid_print: true
     prefer_single_quotes: true
+    # Flutter 3.44新增的純風格lint；既有constructor風格不在本次資料庫遷移重構。
+    prefer_initializing_formals: false
     require_trailing_commas: true
     sort_constructors_first: true
     sort_unnamed_constructors_first: true

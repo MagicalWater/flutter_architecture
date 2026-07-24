@@ -17,7 +17,7 @@ import 'package:flutter_architecture/app/config/api_config.dart' as _i46;
 import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart'
     as _i1037;
 import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart'
-    as _i461;
+    as _i462;
 import 'package:flutter_architecture/app/di/register_module.dart' as _i712;
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart'
     as _i1041;
@@ -30,7 +30,7 @@ import 'package:flutter_architecture/features/auth/data/migration/auth_migration
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart'
     as _i1024;
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart'
-    as _i460;
+    as _i461;
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart'
     as _i923;
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart'
@@ -138,11 +138,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1041.ErrorReporter>(),
       ),
     );
-    gh.lazySingleton<_i460.CatalogCacheDiagnosticSink>(
+    gh.lazySingleton<_i461.CatalogCacheDiagnosticSink>(
       () =>
           registerModule.catalogCacheDiagnosticSink(gh<_i1041.ErrorReporter>()),
     );
-    gh.lazySingleton<_i461.ConnectivityController>(
+    gh.lazySingleton<_i462.ConnectivityController>(
       () => registerModule.connectivityController(
         gh<_i1037.ConnectivityAdapter>(),
       ),
@@ -248,7 +248,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i538.CatalogLocalDataSource>(),
         gh<_i923.CatalogCachePolicy>(),
         gh<_i401.CatalogClock>(),
-        gh<_i460.CatalogCacheDiagnosticSink>(),
+        gh<_i461.CatalogCacheDiagnosticSink>(),
       ),
     );
     gh.lazySingleton<_i511.ProfileRepository>(

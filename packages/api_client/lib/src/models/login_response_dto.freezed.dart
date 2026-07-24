@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'login_response_dto.dart';
@@ -9,6 +9,7 @@ part of 'login_response_dto.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 LoginResponseDto _$LoginResponseDtoFromJson(
@@ -197,7 +198,7 @@ return otpChallenge(_that.challenge);case _:
 @JsonSerializable()
 
 class AuthenticatedLoginResponseDto implements LoginResponseDto {
-  const AuthenticatedLoginResponseDto({@JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson) required this.authenticated, final  String? $type}): $type = $type ?? 'authenticated';
+  const AuthenticatedLoginResponseDto({@JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson) required this.authenticated,  String? $type}): $type = $type ?? 'authenticated';
   factory AuthenticatedLoginResponseDto.fromJson(Map<String, dynamic> json) => _$AuthenticatedLoginResponseDtoFromJson(json);
 
 @JsonKey(fromJson: AuthenticatedResponseDto.fromJson, toJson: _authenticatedToJson) final  AuthenticatedResponseDto authenticated;
@@ -275,7 +276,7 @@ $AuthenticatedResponseDtoCopyWith<$Res> get authenticated {
 @JsonSerializable()
 
 class OtpChallengeLoginResponseDto implements LoginResponseDto {
-  const OtpChallengeLoginResponseDto({@JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson) required this.challenge, final  String? $type}): $type = $type ?? 'otpChallenge';
+  const OtpChallengeLoginResponseDto({@JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson) required this.challenge,  String? $type}): $type = $type ?? 'otpChallenge';
   factory OtpChallengeLoginResponseDto.fromJson(Map<String, dynamic> json) => _$OtpChallengeLoginResponseDtoFromJson(json);
 
 @JsonKey(fromJson: OtpChallengeDto.fromJson, toJson: _challengeToJson) final  OtpChallengeDto challenge;

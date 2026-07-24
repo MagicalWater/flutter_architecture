@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'catalog_bloc.dart';
@@ -9,6 +9,7 @@ part of 'catalog_bloc.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -435,7 +436,7 @@ class _$CatalogStateCopyWithImpl<$Res>
 /// Create a copy of CatalogState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? query = null,Object? items = null,Object? nextCursor = freezed,Object? isInitialLoading = null,Object? isRefreshing = null,Object? isLoadingMore = null,Object? hasCompletedInitialLoad = null,Object? isUsingCachedData = null,Object? isStale = null,Object? lastUpdatedAt = freezed,Object? isRevalidating = null,Object? isReconnectRevalidating = null,Object? initialFailure = freezed,Object? revalidationFailure = freezed,Object? reconnectFailure = freezed,Object? refreshFailure = freezed,Object? appendFailure = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(CatalogState(
 query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<CatalogItem>,nextCursor: freezed == nextCursor ? _self.nextCursor : nextCursor // ignore: cast_nullable_to_non_nullable
@@ -594,7 +595,7 @@ return $default(_that.query,_that.items,_that.nextCursor,_that.isInitialLoading,
 
 
 class _CatalogState extends CatalogState {
-  const _CatalogState({required this.query, required final  List<CatalogItem> items, required this.nextCursor, required this.isInitialLoading, required this.isRefreshing, required this.isLoadingMore, required this.hasCompletedInitialLoad, required this.isUsingCachedData, required this.isStale, required this.lastUpdatedAt, required this.isRevalidating, required this.isReconnectRevalidating, required this.initialFailure, required this.revalidationFailure, required this.reconnectFailure, required this.refreshFailure, required this.appendFailure}): _items = items,super._();
+  const _CatalogState({required this.query, required  List<CatalogItem> items, required this.nextCursor, required this.isInitialLoading, required this.isRefreshing, required this.isLoadingMore, required this.hasCompletedInitialLoad, required this.isUsingCachedData, required this.isStale, required this.lastUpdatedAt, required this.isRevalidating, required this.isReconnectRevalidating, required this.initialFailure, required this.revalidationFailure, required this.reconnectFailure, required this.refreshFailure, required this.appendFailure}): _items = items,super._();
 
 
 @override final  String query;

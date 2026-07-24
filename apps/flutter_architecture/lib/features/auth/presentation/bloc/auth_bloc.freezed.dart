@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'auth_bloc.dart';
@@ -9,6 +9,7 @@ part of 'auth_bloc.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -378,7 +379,7 @@ int get hashCode => runtimeType.hashCode;
 
 class AuthLogoutRequested implements AuthEvent {
   const AuthLogoutRequested();
-  
+
 
 
 
@@ -406,7 +407,7 @@ int get hashCode => runtimeType.hashCode;
 
 class AuthSessionCleared implements AuthEvent {
   const AuthSessionCleared();
-  
+
 
 
 
@@ -481,7 +482,7 @@ class _$AuthStateCopyWithImpl<$Res>
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? isLoading = null,Object? user = freezed,Object? otpChallenge = freezed,Object? failure = freezed,Object? failureOperation = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(AuthState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as AuthPresentationStatus,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
@@ -642,7 +643,7 @@ return $default(_that.status,_that.isLoading,_that.user,_that.otpChallenge,_that
 
 class _AuthState extends AuthState {
   const _AuthState({this.status = AuthPresentationStatus.unauthenticated, required this.isLoading, required this.user, this.otpChallenge = null, required this.failure, required this.failureOperation}): super._();
-  
+
 
 @override@JsonKey() final  AuthPresentationStatus status;
 @override final  bool isLoading;

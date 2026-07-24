@@ -1,0 +1,37 @@
+CREATE TABLE auth_user (
+  slot INTEGER NOT NULL PRIMARY KEY CHECK (slot = 1),
+  id TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE catalog_cache_page (
+  "query" TEXT NOT NULL,
+  request_cursor TEXT NOT NULL,
+  request_limit INTEGER NOT NULL,
+  next_cursor TEXT,
+  updated_at INTEGER NOT NULL,
+  chain_revision INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY ("query", request_cursor, request_limit)
+);
+
+CREATE TABLE catalog_cache_page_item (
+  "query" TEXT NOT NULL,
+  request_cursor TEXT NOT NULL,
+  request_limit INTEGER NOT NULL,
+  item_id TEXT NOT NULL,
+  item_position INTEGER NOT NULL,
+  item_name TEXT NOT NULL,
+  item_description TEXT NOT NULL,
+  PRIMARY KEY ("query", request_cursor, request_limit, item_id),
+  FOREIGN KEY ("query", request_cursor, request_limit)
+    REFERENCES catalog_cache_page ("query", request_cursor, request_limit)
+    ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX catalog_cache_page_item_position_idx
+ON catalog_cache_page_item (
+  "query",
+  request_cursor,
+  request_limit,
+  item_position
+);

@@ -3,7 +3,7 @@ document_type: governance-policy
 status: accepted
 authoritative_for:
   - template-development-workflow-governance-overview
-last_reviewed_baseline: 1.12.0
+last_reviewed_baseline: 1.13.0
 ---
 
 # Template Development Workflow Governance
@@ -56,7 +56,7 @@ Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不�
 
 ## Skill adoption
 
-新增Skill必須先做confirmed gap、overlap、authority、permission、version、rollback與pressure-scenario審查。Approved、Restricted、Pilot、Deprecated與Rejected disposition由Workflow Governance Skill reference定義。
+新增Skill必須先做confirmed gap、overlap、authority、permission、version、rollback與pressure-scenario審查。Approved、Approved with restrictions、Pilot、Deprecated與Rejected disposition由Workflow Governance Skill reference定義。
 
 ## Change policy
 

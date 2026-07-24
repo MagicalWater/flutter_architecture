@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: accepted
+status: proposed
 authoritative_for:
   - milestone-31-template-development-workflow-governance-plan
 last_reviewed_baseline: 1.12.0

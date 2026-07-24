@@ -42,6 +42,24 @@ val hasFirebaseConfig = firebaseConfigCandidates.any { it.isFile }
 if (hasFirebaseConfig) {
     pluginManager.apply("com.google.gms.google-services")
     pluginManager.apply("com.google.firebase.crashlytics")
+
+    tasks.configureEach {
+        val normalizedTaskName = name.lowercase()
+        val environment = androidEnvironments.singleOrNull { candidate ->
+            normalizedTaskName.contains(candidate.name)
+        }
+        if (environment != null &&
+            (normalizedTaskName.contains("googleservices") ||
+                normalizedTaskName.contains("crashlytics"))) {
+            val config = file("src/${environment.name}/google-services.json")
+            if (!config.isFile) {
+                logger.lifecycle(
+                    "Firebase task $name disabled because ${environment.name} config is absent.",
+                )
+                enabled = false
+            }
+        }
+    }
 } else {
     logger.lifecycle(
         "Firebase Android config not present; Google Services and Crashlytics Gradle plugins are skipped.",

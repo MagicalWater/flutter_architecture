@@ -32,7 +32,7 @@ docs/superpowers/plans/
 - [`plans/2026-07-23-milestone-27-production-observability-foundation.md`](plans/2026-07-23-milestone-27-production-observability-foundation.md)
 - [`plans/2026-07-24-self-hosted-ci-execution-mode.md`](plans/2026-07-24-self-hosted-ci-execution-mode.md)：Task 27-7三種CI執行端、Mac self-hosted runner與closure實作計畫。
 
-Task 27-7已進入implementation；目前由`docs/roadmap/active.md`保存current Task，Plan只保存執行順序與驗證gate。
+Task 27-7已完成implementation與holistic closure；Plan保留執行順序與驗證gate，current Task仍以`docs/roadmap/active.md`為準。
 
 ## Reading rule
 

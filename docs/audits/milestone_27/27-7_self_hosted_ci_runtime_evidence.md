@@ -1,6 +1,6 @@
 ---
 document_type: runtime-evidence
-status: active
+status: completed
 authoritative_for:
   - milestone-27-task-27-7-self-hosted-ci-runtime-evidence
 last_reviewed_baseline: 1.8.0
@@ -105,8 +105,6 @@ Generated Consistency: success
 
 所有self-hosted jobs均略過GitHub Pub cache transport，沒有再次上傳遠端cache。
 
-### Pending acceptance
-
 ### Main push self-hosted acceptance
 
 Repository variable切換為`self-hosted`後，main push commit `72b1799`由同一台Mac依序執行：
@@ -155,3 +153,24 @@ offline no-fallback: verified
 github-hosted: static only, no paid run executed
 observability: manual explicit gate only
 ```
+
+## Final local regression and platform builds
+
+Task 27-7 closure前重新執行完整repository verification：
+
+```txt
+tools/ci unittest discovery: 78 passed
+run_local_ci.sh shell syntax: passed
+cleanup_ci_secrets.sh shell syntax: passed
+actionlint without ShellCheck style layer: passed
+documentation checker: passed
+quality suite: passed
+Android development Debug build: passed
+Android production Release build: passed
+iOS development Simulator build: passed
+iOS production unsigned device build: passed
+```
+
+Android代表build最初揭露：只要staging／production任一Firebase設定存在，Google Services plugin會全域建立development task，造成沒有development config的build失敗。修正後，缺少對應environment config的Google Services／Crashlytics tasks會被停用；production provider build仍正常產生mapping與Flutter symbols。
+
+iOS兩個代表build均完成：development產生unsigned Simulator app，production產生unsigned `iphoneos` app與dSYM。這些artifact只屬verification evidence，不代表distribution readiness。

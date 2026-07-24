@@ -15,6 +15,9 @@ class AndroidObservabilityContractTest(unittest.TestCase):
         self.assertIn('pluginManager.apply("com.google.gms.google-services")', app_gradle)
         self.assertIn('pluginManager.apply("com.google.firebase.crashlytics")', app_gradle)
         self.assertIn("google-services.json", app_gradle)
+        self.assertIn("Firebase task", app_gradle)
+        self.assertIn("enabled = false", app_gradle)
+        self.assertIn("config.isFile", app_gradle)
 
     def test_release_builds_generate_flutter_symbols(self) -> None:
         script = (ROOT / "tools/ci/build_android_environment.sh").read_text()

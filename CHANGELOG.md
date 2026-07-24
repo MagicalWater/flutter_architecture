@@ -18,7 +18,16 @@
 
 ## [Unreleased]
 
-目前沒有尚未發布的變更。
+### Added
+
+- 新增`manual-local`、`self-hosted`與`github-hosted`三種CI execution mode，以及`repository-default`manual override sentinel。
+- 新增repository-scoped macOS ARM64 self-hosted runner，僅接受trusted `main` push與manual dispatch；PR、fork與Dependabot程式碼不會進入本機runner。
+- 新增self-hosted persistent workspace Firebase secret cleanup與完整routing／offline no-fallback runtime evidence。
+
+### Changed
+
+- Self-hosted runner停用GitHub remote Flutter／Pub cache transport，避免大型cache storage與網路成本；GitHub-hosted模式仍可使用explicit Pub cache。
+- Android Firebase Gradle task改為依各environment config啟用；缺少development config時不再阻擋development build。
 
 ---
 

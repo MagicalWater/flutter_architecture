@@ -39,10 +39,10 @@ Baseline: 1.8.0
 ## Current Task
 
 ```txt
-Task 27-7 — CI Execution Mode and Self-hosted Runner Foundation（closure review）
+Task 27-6 — CI Secrets and Remote Acceptance（iOS Console closure pending）
 ```
 
-Task 27-7已完成三種execution mode、trusted Mac runner、persistent workspace cleanup、main／manual routing、PR denial與offline no-fallback runtime acceptance，目前正在進行完整regression與holistic closure。Repository目前預設`CI_EXECUTION_MODE=self-hosted`。
+Task 27-7已完成三種execution mode、trusted Mac runner、persistent workspace cleanup、main／manual routing、PR denial、offline no-fallback、完整regression與holistic closure。Repository目前預設`CI_EXECUTION_MODE=self-hosted`。
 
 Task 27-6已完成CI secret boundary、Android／iOS explicit symbol upload、staging controlled non-fatal入口與本機iOS runtime傳送證據。Firebase secrets與App設定已完成；Android remote event與symbolication已有證據。iOS新build的symbols已成功提交，Simulator第二次啟動後Crashlytics report endpoint回應HTTP 200；Firebase Console ingestion與最終symbolication closure仍待確認。Task 27-7不得取代或提前關閉Task 27-6。
 
@@ -64,4 +64,4 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-完成Task 27-7完整regression與holistic closure；通過後回到Task 27-6，人工確認Firebase Console中的新iOS event ingestion與symbolicated stack。
+人工確認Firebase Console中的新iOS event ingestion與symbolicated stack；確認後進入Milestone 27 holistic final review。

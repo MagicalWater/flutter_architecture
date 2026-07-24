@@ -148,3 +148,53 @@ Open P1: 0
 ### Whole-task review
 
 ADR、guide、roadmap、runtime evidence與review的authority沒有重疊；Task 27-6與Task 27-7責任維持分離，未發現新的P0／P1。
+
+## Task 8 — Full Regression and Holistic Closure
+
+```txt
+Disposition: ACCEPTED
+Open P0: 0
+Open P1: 0
+```
+
+### Full regression
+
+- 78個`tools/ci` tests全部通過。
+- `run_local_ci.sh`與`cleanup_ci_secrets.sh` shell syntax通過。
+- `actionlint -shellcheck=`、documentation checker與`git diff --check`通過。
+- Repository quality suite完成dependency resolution、docs、contracts、analyze、generated consistency與所有Flutter tests。
+- Android development Debug與production Release代表build通過。
+- iOS development Simulator與production unsigned device代表build通過。
+
+### Findings and disposition
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| Self-hosted首次執行嘗試上傳大型Flutter／Pub remote cache | P1 | 停用Flutter action cache，explicit cache transport只允許GitHub-hosted runner；重新manual acceptance成功 |
+| Python 3.9不支援初版`str | None`runtime annotation | P1 | 改用`typing.Optional`並維持既有tooling baseline |
+| 任一Firebase config存在時Android plugin全域建立development Google Services task | P1 | 依environment config停用不適用的Google Services／Crashlytics tasks；focused test與兩個Android代表build通過 |
+| `actionlint`既有SC2129 style findings會使預設命令非零 | P2 | Workflow語法與expression以`actionlint -shellcheck=`驗證；既有style debt不影響本Task正確性 |
+| Android `apkanalyzer` wrapper輸出integer expression warning | P2 | APK、metadata、package ID與兩個build結果均成功；保留為非阻擋tooling warning |
+
+### Holistic review
+
+重新跨Task檢查以下邊界：
+
+```txt
+mode semantics
+trusted event security
+runner labels and routing
+offline no-fallback
+persistent secret cleanup
+single-runner queue and concurrency
+remote cache and artifact cost
+ADR ownership
+roadmap truthfulness
+Task 27-6 handoff
+```
+
+三種mode語意互斥，unknown／legacy mode fail closed；PR不會進入`water`帳號runner；offline不會產生付費fallback；Observability維持manual explicit gate；current state與durable contract已回寫各自authority。Task 27-6的iOS Console ingestion／symbolication仍明確pending，未被Task 27-7提前關閉。
+
+## Final decision
+
+Task 27-7 implementation、runtime acceptance、full regression、文件治理與whole-task review均已完成，沒有open P0／P1，可正式closure。

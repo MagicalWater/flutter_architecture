@@ -18,6 +18,7 @@ Before design, planning, implementation or review, classify the work and produce
 5. Apply [two-layer Task governance](references/two-layer-task-governance.md) at the selected mode.
 6. Use the routed Superpowers skills in order.
 7. Keep current authority, review evidence and release state synchronized.
+8. If any required validation fails, keep the current Task open; fix and fresh re-verify before acceptance or completion commit.
 
 ## Requirement Decision
 
@@ -46,7 +47,15 @@ Before design, planning, implementation or review, classify the work and produce
 - Required artifacts:
 ```
 
-Do not invent artifacts for Level 0／1. Do not downgrade cross-cutting, architecture, migration, security, platform or release-critical work to avoid governance.
+Do not invent artifacts for Level 0／1. Do not downgrade cross-cutting, architecture, migration, security, platform or release-critical work to avoid governance. Record the selected level, decision, routed artifacts, required validations and stop conditions before invoking another workflow skill.
+
+## Approval and acceptance gates
+
+- A Design Spec may move from `proposed` to `accepted` only after its full Task gate and explicit user approval.
+- An Implementation Plan may move from `proposed` to `accepted` only after its full Task gate and explicit user approval.
+- Implementation may not begin while the parent Plan remains proposed.
+- A Task with failed required validation remains open or blocked; a later Task cannot retroactively prove it passed.
+- Release identity does not imply Milestone closure. Closure requires push and post-release evidence.
 
 ## Decision gates
 

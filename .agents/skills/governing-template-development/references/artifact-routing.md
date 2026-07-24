@@ -43,3 +43,15 @@ Classification
 ```
 
 Repository gates override a Superpowers shortcut. In particular, writing-plans cannot begin before the Design Spec is accepted, and implementation cannot begin before the Plan is accepted.
+
+
+## Acceptance state transitions
+
+```txt
+Design proposed → full Design Task gate → user approval → Design accepted
+Plan proposed → full Plan Task gate → user approval → Plan accepted
+Accepted Plan → implementation Tasks
+Local final review → push／clean-checkout／remote validation → Milestone closure
+```
+
+A failed gate leaves the current artifact proposed, active, blocked or rejected. Do not label it accepted merely because its file or commit exists.

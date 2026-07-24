@@ -21,3 +21,8 @@ Upgrade when work changes dependency direction, public contract, persistence aut
 - Level 1 uses an inline decision and simplified Task cycle unless behavior or architecture is uncertain.
 - Test count or file count alone does not justify Level 3+.
 - A tool or skill installation is Level 4 only when it changes repository workflow or authority; a local optional helper may be Level 1–2.
+
+
+## Classification evidence
+
+Before routing, record the signals that selected the level and any higher-level signal considered. When two levels appear plausible, choose the higher level until repository evidence proves the lower one is safe. Classification may be revised only through a new Requirement Decision; it must not be silently downgraded during implementation.

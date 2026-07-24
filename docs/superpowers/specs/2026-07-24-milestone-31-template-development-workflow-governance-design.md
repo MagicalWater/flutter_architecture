@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-31-template-development-workflow-governance-design
 last_reviewed_baseline: 1.12.0

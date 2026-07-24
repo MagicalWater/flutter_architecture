@@ -78,6 +78,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get commonRetryAction => '重試';
 
   @override
+  String get connectivityOfflineMessage => '目前沒有網路連線，部分內容可能不是最新資料。';
+
+  @override
   String get loginTitle => '登入';
 
   @override
@@ -418,6 +421,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get commonRetryAction => '重試';
+
+  @override
+  String get connectivityOfflineMessage => '目前沒有網路連線，部分內容可能不是最新資料。';
 
   @override
   String get loginTitle => '登入';

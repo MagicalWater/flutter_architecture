@@ -23,6 +23,7 @@
   "themeOceanName": "海洋",
   "commonDoneAction": "完成",
   "commonRetryAction": "重試",
+  "connectivityOfflineMessage": "目前沒有網路連線，部分內容可能不是最新資料。",
   "loginTitle": "登入",
   "loginAccountLabel": "帳號",
   "loginPasswordLabel": "密碼",

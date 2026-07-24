@@ -26,6 +26,7 @@
   "themeOceanName": "Ocean",
   "commonDoneAction": "Done",
   "commonRetryAction": "Retry",
+  "connectivityOfflineMessage": "You are offline. Some content may be out of date.",
   "loginTitle": "Login",
   "loginAccountLabel": "Account",
   "loginPasswordLabel": "Password",

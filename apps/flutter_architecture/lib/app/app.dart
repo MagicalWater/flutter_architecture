@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/auth/local_unlock_lifecycle_coordinator.dart';
 import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart';
+import 'package:flutter_architecture/app/connectivity/connectivity_scope.dart';
+import 'package:flutter_architecture/app/connectivity/connectivity_status_banner.dart';
 import 'package:flutter_architecture/app/di/injection.dart';
 import 'package:flutter_architecture/app/localization/locale_controller.dart';
 import 'package:flutter_architecture/app/localization/app_locale_resolution.dart';
@@ -163,6 +165,12 @@ class _ArchitectureAppState extends State<ArchitectureApp>
                   theme: lightTheme,
                   darkTheme: darkTheme,
                   themeMode: themeMode,
+                  builder: (context, child) => ConnectivityScope(
+                    controller: _connectivityController,
+                    child: ConnectivityStatusBanner(
+                      child: child ?? const SizedBox.shrink(),
+                    ),
+                  ),
                   routerConfig: _router.config(),
                 );
               },

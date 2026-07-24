@@ -103,8 +103,10 @@ final class ConnectivityController {
     _disposed = true;
     await _subscription?.cancel();
     await _adapter.dispose();
-    await _stateController.close();
-    await _reconnectController.close();
+    // Outward-facing broadcast streams may still have presentation listeners
+    // during widget teardown. Their close futures must not block App dispose.
+    unawaited(_stateController.close());
+    unawaited(_reconnectController.close());
   }
 
   void _ensureActive() {

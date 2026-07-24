@@ -237,6 +237,12 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get commonRetryAction;
 
+  /// No description provided for @connectivityOfflineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You are offline. Some content may be out of date.'**
+  String get connectivityOfflineMessage;
+
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:

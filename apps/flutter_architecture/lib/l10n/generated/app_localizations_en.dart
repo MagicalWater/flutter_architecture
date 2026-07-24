@@ -78,6 +78,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonRetryAction => 'Retry';
 
   @override
+  String get connectivityOfflineMessage =>
+      'You are offline. Some content may be out of date.';
+
+  @override
   String get loginTitle => 'Login';
 
   @override

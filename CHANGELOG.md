@@ -20,8 +20,9 @@
 
 ### Governance Recovery
 
-- Template Baseline 1.13.0 已發布，但 Milestone 31 的 completed／archived 宣告因雙層 Task 治理證據不足而撤回。
-- 既有 Skill、文件與 checker 實作保留；Design Spec、Plan、R0～R10逐Task治理、behavior pressure、holistic review與fresh full regression已完成，等待R11 push、clean-checkout與remote／post-release validation。
+- Template Baseline 1.13.0發布後發現Milestone 31雙層Task治理證據不足，已完成R0～R11 Governance Recovery。
+- Design Spec、Implementation Plan、逐Taskreview／re-review、Codex RED／DISCOVERY／EXPLICIT GREEN／REFACTOR、checker歷史RED／current GREEN、holistic review、fresh full regression、push、clean-checkout與remote CI／Android／iOS validation均完成。
+- Recovery修正治理證據與authority，不改寫1.13.0既有發布身份。
 
 ---
 

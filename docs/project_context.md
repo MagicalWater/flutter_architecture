@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.13.0
 ```txt
 Template Baseline: 1.13.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 31 Template Development Workflow Governance Recovery
-Latest completed initiative: Milestone 30 Test Suite Audit, Rationalization & Governance
+Current active milestone: None
+Latest completed initiative: Milestone 31 Template Development Workflow Governance
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -349,7 +349,7 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-Milestone 30已完成implementation、holistic review、Template Baseline 1.12.0 release、push、clean-checkout與remote CI／Android／iOS post-release validation，並正式closure。Milestone 31的實作與Template Baseline 1.13.0已發布，但原執行未完整證明Spec、Plan、各Task與Milestone closure遵守雙層Task治理；目前已完成R0～R10本地治理恢復與fresh regression，維持active直到R11 push、clean-checkout、remote與post-release validation完成。
+Milestone 30已完成implementation、holistic review、Template Baseline 1.12.0 release、push、clean-checkout與remote CI／Android／iOS post-release validation，並正式closure。Milestone 31的Template Baseline 1.13.0已發布；其原執行治理缺口已透過R0～R11 Governance Recovery補正，Design、Plan、逐Task、behavior pressure、holistic review、fresh regression、push、clean-checkout與remote CI／Android／iOS post-release validation均完成，並正式closure。
 
 Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。
 

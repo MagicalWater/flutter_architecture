@@ -6,6 +6,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "ios.yml"
 QUALITY_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
+APP_PUBSPEC = ROOT / "apps" / "flutter_architecture" / "pubspec.yaml"
 
 
 class IosWorkflowContractTest(unittest.TestCase):
@@ -88,6 +89,15 @@ class IosWorkflowContractTest(unittest.TestCase):
             "tools.ci.test_environment_workflow_matrix_contract",
             self.text,
         )
+
+    def test_current_ios_dependency_manager_remains_cocoapods_compatible(self) -> None:
+        pubspec = APP_PUBSPEC.read_text(encoding="utf-8")
+        build_script = (
+            ROOT / "tools" / "ci" / "build_ios_environment.sh"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("enable-swift-package-manager: false", pubspec)
+        self.assertIn('cd "$ios_dir" && pod install', build_script)
 
 
 if __name__ == "__main__":

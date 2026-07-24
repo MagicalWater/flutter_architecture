@@ -66,5 +66,7 @@ dev_dependencies:
   sqflite_common_ffi: ^2.4.0+3
 
 flutter:
+  config:
+    enable-swift-package-manager: false
   generate: true
   uses-material-design: true

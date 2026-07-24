@@ -22,10 +22,10 @@ Milestone 31 的原始執行未完整證明 Design Spec、Implementation Plan、
 ## Current phase
 
 ```txt
-Recovery Task 31-R0：狀態與authority校正
-→ Recovery Task 31-R5：Behavioral pressure RED／GREEN／REFACTOR
-→ BLOCKED：Codex CLI authentication／provider configuration
-→ 修復外部阻塞後重跑相同RED／GREEN cases
+Recovery Tasks 31-R0～31-R9：Accepted
+Recovery Task 31-R10：Local final review accepted
+Current state：Local recovery complete; post-release validation pending
+Next：31-R11 push、clean-checkout、remote CI與post-release closure
 ```
 
 ## Current routing

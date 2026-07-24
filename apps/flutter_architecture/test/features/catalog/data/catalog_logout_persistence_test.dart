@@ -1,41 +1,34 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_architecture/app/database/app_database.dart' as db;
+import 'package:flutter_architecture/app/database/dao/auth_user_dao.dart';
+import 'package:flutter_architecture/app/database/dao/catalog_cache_dao.dart';
+import 'package:flutter_architecture/features/auth/data/stores/drift_auth_user_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_credential_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/shared_preferences_auth_legacy_credential_store.dart';
-import '../../../support/historical_sqflite_auth_user_store.dart';
-import '../../../support/historical_sqflite_catalog_cache_dao.dart';
-import '../../../support/historical_sqflite_schema.dart';
 import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_local_data_source.dart';
 import 'package:flutter_architecture/features/catalog/data/mappers/catalog_cache_page_mapper.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  sqfliteFfiInit();
 
   test('Logout 清除 Auth state，但保留 public Catalog Cache', () async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     final preferences = await SharedPreferences.getInstance();
-    final database = await databaseFactoryFfi.openDatabase(
-      inMemoryDatabasePath,
-      options: OpenDatabaseOptions(
-        version: AppDatabaseSchema.version,
-        onCreate: AppDatabaseSchema.onCreate,
-        onUpgrade: AppDatabaseSchema.onUpgrade,
-      ),
-    );
+    final database = db.AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(database.close);
 
     final credentialStore = SharedPreferencesAuthCredentialStore(preferences);
     final legacyCredentialStore = SharedPreferencesAuthLegacyCredentialStore(
       preferences,
     );
-    final userStore = SqfliteAuthUserStore(database);
+    final userStore = DriftAuthUserStore(AuthUserDao(database));
     final sessionManager = SessionManager();
     addTearDown(sessionManager.dispose);
     final authRepository = AuthRepositoryImpl(
@@ -53,7 +46,7 @@ void main() {
       const _NoopLifecycleDiagnosticSink(),
     );
     final catalogLocal = CatalogLocalDataSource(
-      SqfliteCatalogCacheDao(database),
+      DriftCatalogCacheDao(database),
     );
     final updatedAt = DateTime.utc(2026, 7, 17, 6);
 

@@ -1,6 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:core/core.dart';
+import 'package:drift/drift.dart' show Table, TableInfo, Variable;
+import 'package:drift/native.dart';
+import 'package:flutter_architecture/app/database/app_database.dart' as drift_db;
+import 'package:flutter_architecture/app/database/dao/catalog_cache_dao.dart';
 import '../../../support/historical_sqflite_catalog_cache_dao.dart';
 import '../../../support/historical_sqflite_schema.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
@@ -16,19 +20,14 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 void main() {
   sqfliteFfiInit();
 
-  late Database database;
+  late drift_db.AppDatabase database;
+  late DriftCatalogCacheDao dao;
   late CatalogLocalDataSource dataSource;
 
   setUp(() async {
-    database = await databaseFactoryFfi.openDatabase(
-      inMemoryDatabasePath,
-      options: OpenDatabaseOptions(
-        version: AppDatabaseSchema.version,
-        onCreate: AppDatabaseSchema.onCreate,
-        onUpgrade: AppDatabaseSchema.onUpgrade,
-      ),
-    );
-    dataSource = CatalogLocalDataSource(SqfliteCatalogCacheDao(database));
+    database = drift_db.AppDatabase.forTesting(NativeDatabase.memory());
+    dao = DriftCatalogCacheDao(database);
+    dataSource = CatalogLocalDataSource(dao);
   });
 
   tearDown(() => database.close());
@@ -303,8 +302,8 @@ void main() {
       now: updatedAt.add(const Duration(days: 8)),
       retainFor: const Duration(days: 7),
     );
-    final pageRows = await database.query('catalog_cache_page');
-    final itemRows = await database.query('catalog_cache_page_item');
+    final pageRows = await dao.query('catalog_cache_page');
+    final itemRows = await dao.query('catalog_cache_page_item');
 
     expect(expired, isNull);
     expect(pageRows, isEmpty);
@@ -348,14 +347,15 @@ void main() {
       _page(query: '', cursor: null, updatedAt: now),
       resetFollowingPages: true,
     );
-    await database.update('catalog_cache_page_item', <String, Object?>{
-      'item_name': '   ',
-    });
+    await database.customUpdate(
+      "UPDATE catalog_cache_page_item SET item_name = '   '",
+      updates: <TableInfo<Table, Object?>>{database.catalogCachePageItem},
+    );
 
     final cached = await _read(dataSource, '', null, 20, now);
     expect(cached, isNull);
-    expect(await database.query('catalog_cache_page'), isEmpty);
-    expect(await database.query('catalog_cache_page_item'), isEmpty);
+    expect(await dao.query('catalog_cache_page'), isEmpty);
+    expect(await dao.query('catalog_cache_page_item'), isEmpty);
   });
 
   test('persisted row 型別損壞會刪除 page 並視為 cache miss', () async {
@@ -364,15 +364,17 @@ void main() {
       _page(query: '', cursor: null, updatedAt: now),
       resetFollowingPages: true,
     );
-    await database.update('catalog_cache_page', <String, Object?>{
-      'updated_at': 'invalid',
-    });
+    await database.customUpdate(
+      'UPDATE catalog_cache_page SET updated_at = ?',
+      variables: <Variable<Object>>[const Variable<Object>('invalid')],
+      updates: <TableInfo<Table, Object?>>{database.catalogCachePage},
+    );
 
     final cached = await _read(dataSource, '', null, 20, now);
 
     expect(cached, isNull);
-    expect(await database.query('catalog_cache_page'), isEmpty);
-    expect(await database.query('catalog_cache_page_item'), isEmpty);
+    expect(await dao.query('catalog_cache_page'), isEmpty);
+    expect(await dao.query('catalog_cache_page_item'), isEmpty);
   });
 
   test('第一頁舊 chain revision 損壞時 replacement 會重建該 chain', () async {
@@ -385,11 +387,10 @@ void main() {
       _page(query: 'flutter', cursor: 'cursor-1', updatedAt: now),
       resetFollowingPages: false,
     );
-    await database.update(
-      'catalog_cache_page',
-      <String, Object?>{'chain_revision': 'invalid'},
-      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
-      whereArgs: <Object?>['flutter', '', 20],
+    await _corruptPage(
+      database,
+      column: 'chain_revision',
+      value: 'invalid',
     );
 
     final revision = await dataSource.replacePage(
@@ -412,11 +413,10 @@ void main() {
       _page(query: 'flutter', cursor: null, updatedAt: now),
       resetFollowingPages: true,
     );
-    await database.update(
-      'catalog_cache_page',
-      <String, Object?>{'chain_revision': 'invalid'},
-      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
-      whereArgs: <Object?>['flutter', '', 20],
+    await _corruptPage(
+      database,
+      column: 'chain_revision',
+      value: 'invalid',
     );
 
     final revision = await dataSource.readLinkedChainRevision(
@@ -435,11 +435,10 @@ void main() {
       _page(query: 'flutter', cursor: null, updatedAt: now),
       resetFollowingPages: true,
     );
-    await database.update(
-      'catalog_cache_page',
-      <String, Object?>{'chain_revision': 'invalid'},
-      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
-      whereArgs: <Object?>['flutter', '', 20],
+    await _corruptPage(
+      database,
+      column: 'chain_revision',
+      value: 'invalid',
     );
 
     final written = await dataSource.replaceAppendPageIfLinked(
@@ -464,13 +463,10 @@ void main() {
       _page(query: 'flutter', cursor: null, updatedAt: now),
       resetFollowingPages: true,
     );
-    await database.update(
-      'catalog_cache_page',
-      <String, Object?>{
-        'next_cursor': Uint8List.fromList(<int>[1, 2, 3]),
-      },
-      where: 'query = ? AND request_cursor = ? AND request_limit = ?',
-      whereArgs: <Object?>['flutter', '', 20],
+    await _corruptPage(
+      database,
+      column: 'next_cursor',
+      value: Uint8List.fromList(<int>[1, 2, 3]),
     );
 
     final written = await dataSource.replaceAppendPageIfLinked(
@@ -491,7 +487,7 @@ void main() {
   test('unknown TypeError 不會被映射為 localStorage 或 corruption', () async {
     final error = TypeError();
     final source = CatalogLocalDataSource(
-      SqfliteCatalogCacheDao(_ThrowingDatabase(error)),
+      _ThrowingCatalogCacheDao(error),
     );
 
     await expectLater(
@@ -507,10 +503,14 @@ void main() {
   });
 
   test('readPage SQLite failure 會映射為 AppException', () async {
-    await database.close();
+    final source = CatalogLocalDataSource(
+      _ThrowingCatalogCacheDao(
+        const CatalogCacheDaoException('database unavailable'),
+      ),
+    );
 
     await expectLater(
-      dataSource.readPage(
+      source.readPage(
         query: '',
         cursor: null,
         limit: 20,
@@ -757,8 +757,8 @@ void main() {
   });
 }
 
-final class _ThrowingDatabase implements Database {
-  _ThrowingDatabase(this.error);
+final class _ThrowingCatalogCacheDao implements CatalogCacheDao {
+  _ThrowingCatalogCacheDao(this.error);
 
   final Object error;
 
@@ -766,6 +766,27 @@ final class _ThrowingDatabase implements Database {
   dynamic noSuchMethod(Invocation invocation) {
     throw error;
   }
+}
+
+Future<void> _corruptPage(
+  drift_db.AppDatabase database, {
+  required String column,
+  required Object value,
+}) {
+  if (column != 'chain_revision' && column != 'next_cursor') {
+    throw ArgumentError.value(column, 'column');
+  }
+  return database.customUpdate(
+    'UPDATE catalog_cache_page SET $column = ? '
+    'WHERE query = ? AND request_cursor = ? AND request_limit = ?',
+    variables: <Variable<Object>>[
+      Variable<Object>(value),
+      const Variable<Object>('flutter'),
+      const Variable<Object>(''),
+      const Variable<Object>(20),
+    ],
+    updates: <TableInfo<Table, Object?>>{database.catalogCachePage},
+  ).then((_) {});
 }
 
 Future<CatalogCachePageEntity?> _read(

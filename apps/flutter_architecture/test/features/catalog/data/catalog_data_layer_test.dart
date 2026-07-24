@@ -1,8 +1,9 @@
 import 'package:api_client/api_client.dart';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
-import '../../../support/historical_sqflite_catalog_cache_dao.dart';
-import '../../../support/historical_sqflite_schema.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_architecture/app/database/app_database.dart';
+import 'package:flutter_architecture/app/database/dao/catalog_cache_dao.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_policy.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_clock.dart';
@@ -17,24 +18,14 @@ import 'package:flutter_architecture/features/catalog/domain/entities/catalog_pa
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
-  sqfliteFfiInit();
-
-  late Database database;
+  late AppDatabase database;
   late CatalogLocalDataSource localDataSource;
 
   setUp(() async {
-    database = await databaseFactoryFfi.openDatabase(
-      inMemoryDatabasePath,
-      options: OpenDatabaseOptions(
-        version: AppDatabaseSchema.version,
-        onCreate: AppDatabaseSchema.onCreate,
-        onUpgrade: AppDatabaseSchema.onUpgrade,
-      ),
-    );
-    localDataSource = CatalogLocalDataSource(SqfliteCatalogCacheDao(database));
+    database = AppDatabase.forTesting(NativeDatabase.memory());
+    localDataSource = CatalogLocalDataSource(DriftCatalogCacheDao(database));
   });
 
   tearDown(() => database.close());

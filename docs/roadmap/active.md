@@ -39,10 +39,10 @@ Baseline: 1.8.0
 ## Current Task
 
 ```txt
-Task 27-7 — CI Execution Mode and Self-hosted Runner Foundation
+Task 27-7 — CI Execution Mode and Self-hosted Runner Foundation（closure review）
 ```
 
-Task 27-7目前已完成Design與Implementation Plan的完整審查，正在執行Task 1：activation與ADR authority同步。此Task將建立`manual-local`、`self-hosted`與`github-hosted`三種正式CI execution mode，讓可信`main` push與人工dispatch可由Mac self-hosted runner執行，同時保留人工本機與GitHub-hosted回退路徑。
+Task 27-7已完成三種execution mode、trusted Mac runner、persistent workspace cleanup、main／manual routing、PR denial與offline no-fallback runtime acceptance，目前正在進行完整regression與holistic closure。Repository目前預設`CI_EXECUTION_MODE=self-hosted`。
 
 Task 27-6已完成CI secret boundary、Android／iOS explicit symbol upload、staging controlled non-fatal入口與本機iOS runtime傳送證據。Firebase secrets與App設定已完成；Android remote event與symbolication已有證據。iOS新build的symbols已成功提交，Simulator第二次啟動後Crashlytics report endpoint回應HTTP 200；Firebase Console ingestion與最終symbolication closure仍待確認。Task 27-7不得取代或提前關閉Task 27-6。
 
@@ -64,4 +64,4 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA、TestFlig
 
 ## Current Next Action
 
-完成Task 27-7 Task 1的ADR與current authority同步，接著進入Task 2 execution mode contract與舊`local`命名遷移。Task 27-7完成後，再依最新iOS Firebase Console證據關閉Task 27-6。
+完成Task 27-7完整regression與holistic closure；通過後回到Task 27-6，人工確認Firebase Console中的新iOS event ingestion與symbolicated stack。

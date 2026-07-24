@@ -21,14 +21,15 @@ Durable architecture contract 由 `docs/adr/adr-023-repository-ci-quality-gates-
 Repository以GitHub Actions variable `CI_EXECUTION_MODE`控制驗證執行端：
 
 ```txt
-local   → push／Pull Request不啟動GitHub-hosted jobs，改由開發機執行
-github  → 恢復GitHub-hosted CI、Android、iOS與Observability jobs
+manual-local  → GitHub execution jobs全部skip，由人員執行本機入口
+self-hosted   → trusted main push與manual dispatch派送到Mac runner
+github-hosted → 使用GitHub提供的Ubuntu／macOS runner
 ```
 
 額度不足或希望避免macOS runner成本時，使用：
 
 ```bash
-gh variable set CI_EXECUTION_MODE --body local
+gh variable set CI_EXECUTION_MODE --body manual-local
 bash tools/ci/run_local_ci.sh quality
 bash tools/ci/run_local_ci.sh android
 bash tools/ci/run_local_ci.sh ios
@@ -38,10 +39,29 @@ bash tools/ci/run_local_ci.sh observability
 恢復GitHub-hosted自動驗證：
 
 ```bash
-gh variable set CI_EXECUTION_MODE --body github
+gh variable set CI_EXECUTION_MODE --body github-hosted
 ```
 
-四份workflow的manual dispatch都有`run_hosted`布林輸入。即使repository variable維持`local`，仍可在需要遠端runner evidence時勾選`run_hosted=true`執行單次遠端驗證。這是執行端切換，不改變測試、build、symbol或secret contract。
+四份workflow的manual dispatch都有`execution_mode` choice：`repository-default`沿用repository variable，另外三個選項只覆寫該次run。未知值、舊`local`／`github`或空值一律fail closed；不會自動fallback到付費runner。
+
+Self-hosted runner：
+
+```txt
+name: water-mac-flutter-architecture
+labels: self-hosted, macOS, ARM64, flutter-architecture, trusted-main
+install root: /Users/water/actions-runner/flutter-architecture
+```
+
+Service操作必須從runner root執行：
+
+```bash
+cd /Users/water/actions-runner/flutter-architecture
+./svc.sh status
+./svc.sh stop
+./svc.sh start
+```
+
+Runner離線時job保持queued，GitHub目前最多等待24小時後失敗；repository不自動改派GitHub-hosted。Self-hosted PR全部skipped，且`skipped`不代表PR已驗證。
 
 ### Repository CI
 
@@ -87,7 +107,7 @@ iOS / Production Release Build
 | 一般repository tooling | 是 | 依分類 | 依分類 | 未知path fail-safe完整矩陣 |
 | Classifier／workflow wiring | 是 | 是 | 是 | 防止錯誤分類自行略過平台驗證 |
 | `VERSION` | 是 | 是 | 是 | Release override |
-| `workflow_dispatch`＋`run_hosted=true` | 是 | 是 | 是 | 明確要求單次GitHub-hosted完整驗證 |
+| `workflow_dispatch`＋明確execution mode | 是 | 是 | 是 | 明確要求單次指定執行端完整驗證 |
 
 `CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`是穩定required-check候選。Documentation-only時它們會成功完成no-op，而不是整個job skipped。Android兩個build jobs目前不是PR required checks，因此可在`android_build=false`時skipped；`Android / Summary`會驗證skip或build結果是否符合classifier決策。
 
@@ -148,15 +168,15 @@ iOS / Simulator Build
 
 ### Manual verification
 
-三份workflow都支援`workflow_dispatch`。當`CI_EXECUTION_MODE=local`時，manual run需明確設定`run_hosted=true`才會啟動GitHub-hosted完整CI、Android與iOS代表矩陣。Manual run只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit的結果。
+三份workflow都支援`workflow_dispatch`。Manual run可選`repository-default`、`manual-local`、`self-hosted`或`github-hosted`；只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit結果。
 
 ## Observability Acceptance
 
 `.github/workflows/observability-acceptance.yml`提供獨立的Crashlytics acceptance route。
 
-Pull Request只執行`PR-safe Contract`，不讀取secrets、不materialize Firebase config，也不執行任何upload。Fork PR與Dependabot PR即使沒有secrets也必須成功完成static validation，並明確輸出`Upload skipped`。
+`github-hosted`模式下Pull Request可執行`PR-safe Contract`；`self-hosted`與`manual-local`模式下PR整份workflow為skipped，未信任程式碼不會進入Mac runner。
 
-當`CI_EXECUTION_MODE=github`時，main push可使用GitHub Environment；local模式則只有manual dispatch明確勾選`run_hosted=true`與`remote_acceptance=true`才啟動遠端acceptance：
+Observability symbols與受控事件不接受main push。只有manual dispatch選擇`self-hosted`或`github-hosted`，並明確設定`remote_acceptance=true`時才可使用GitHub Environment：
 
 ```txt
 staging-observability
@@ -182,6 +202,8 @@ Secret-ready run會：
 3. 保存commit SHA、release、environment、upload與remote event evidence。
 
 Workflow不會自動把「symbol upload command成功」解讀成「remote event已symbolicated」。在Firebase Console核對Android與iOS stack前，`remote_event_status`與`symbolication_status`必須維持`not-executed`或pending，不得改成verified。
+
+Android與iOS secret-backed jobs最後均以`if: always()`執行`tools/ci/cleanup_ci_secrets.sh`，清理workspace與`RUNNER_TEMP`中的materialized service account及provider config。Self-hosted模式不使用GitHub Flutter／Pub cache transport，避免持久Mac反覆上傳大型cache。
 
 ## Cache Degradation
 

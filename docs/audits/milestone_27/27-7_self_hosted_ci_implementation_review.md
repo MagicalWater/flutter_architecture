@@ -129,3 +129,22 @@ Open P1: 0
 ### Whole-task review
 
 Run IDs、event、mode、runner與結果均已保存為文字證據。測試PR、remote branch與queued smoke均已清理；runtime沒有留下open P0／P1。
+
+## Task 7 — Operations and Authority Synchronization
+
+```txt
+Disposition: ACCEPTED
+Open P0: 0
+Open P1: 0
+```
+
+### Documentation review
+
+- Operations guide已改用三種正式mode與`repository-default`manual sentinel。
+- Runner service、offline queue、PR skipped語意、secret cleanup與no automatic paid fallback均有可操作說明。
+- Task 27-6 evidence已同步Android完成、iOS transport成功但Console closure pending的真實狀態。
+- Active roadmap在Task 8通過前維持closure review，不提前宣稱Task 27-7 completed。
+
+### Whole-task review
+
+ADR、guide、roadmap、runtime evidence與review的authority沒有重疊；Task 27-6與Task 27-7責任維持分離，未發現新的P0／P1。

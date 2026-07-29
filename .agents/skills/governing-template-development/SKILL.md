@@ -81,6 +81,12 @@ After classification and all required Design／Plan approvals, implementation, r
 
 Do not load it for pure requirement discussion, approval decisions, roadmap disposition, documentation-only Level 0 work or release metadata unless production code is also being reviewed.
 
+## Template product identity domain route
+
+After an accepted Requirement Decision identifies full template adoption that changes cross-platform Android／iOS product identity or development／staging／production display-name mapping, use `adopting-template-product-identity` as a subordinate domain Skill.
+
+Do not route API-only changes, visual-only rebranding, bounded single-platform repair, environment contract changes, signing, or Store distribution through this Skill without a separate central classification. The domain Skill does not classify or approve its own request and does not replace this governance Skill.
+
 ## Stop and continue
 
 Continue automatically after an accepted Task. Stop only for:

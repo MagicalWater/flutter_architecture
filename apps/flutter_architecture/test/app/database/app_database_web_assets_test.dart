@@ -11,14 +11,23 @@ void main() {
     expect(await worker.length(), greaterThan(1000));
     expect(wasm.existsSync(), isTrue);
 
-    final result = await Process.run('shasum', <String>[
-      '-a',
-      '256',
-      wasm.path,
-    ]);
+    final result = Platform.isWindows
+        ? await Process.run('certutil', <String>[
+            '-hashfile',
+            wasm.absolute.path,
+            'SHA256',
+          ])
+        : await Process.run('shasum', <String>[
+            '-a',
+            '256',
+            wasm.path,
+          ]);
     expect(result.exitCode, 0);
+    final hash = RegExp(
+      r'\b[a-fA-F0-9]{64}\b',
+    ).firstMatch(result.stdout as String)?.group(0)?.toLowerCase();
     expect(
-      (result.stdout as String).split(' ').first,
+      hash,
       '41cf968998241465d8b1dfffb1eb60dd10c35de5022a3647e14174ea3af84143',
     );
   });

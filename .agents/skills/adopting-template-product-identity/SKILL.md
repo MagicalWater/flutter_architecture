@@ -89,3 +89,5 @@ Do not weaken verifier rules, change supported-platform claims, create a second 
 ## Forbidden responsibility
 
 This Skill must not classify its own work, approve Design or Plan, choose branch／worktree policy, accept Tasks, close releases, change the environment contract, own signing, or claim Store readiness.
+
+Pressure protocol: [references/pressure-scenarios.md](references/pressure-scenarios.md).

@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: completed
+status: accepted
 authoritative_for:
   - adopting-template-product-identity-design-task-review
 last_reviewed_baseline: 1.13.0
@@ -147,10 +147,14 @@ git diff --check                                      passed
 - Open P0：0。
 - Open P1 without disposition：0。
 - Open P2 without disposition：0。
-- Design status：`proposed`，等待使用者對修正後書面Spec明確核准。
-- Implementation Plan：forbidden until Design becomes `accepted`。
+- Design status：使用者於2026-07-30明確核准修正後書面Spec，已轉為`accepted`。
+- Implementation Plan：可開始建立，但必須維持`proposed`直到Plan Full Task gate與使用者核准完成。
 - Implementation：not started。
+
+## User approval gate
+
+使用者於2026-07-30明確核准修正後書面Spec與本Design Task review結果，完成最後的user-owned acceptance gate。
 
 ## Conclusion
 
-Design內容已完成focused review、findings修正、fresh re-review、whole-Task holistic review、authority check與fresh validation。雙層Task治理的repository review層已補齊；最後的user-owned acceptance gate仍未完成。使用者明確核准本次修正後書面Spec後，才可將Design轉為`accepted`並進入Implementation Plan Task。
+Design內容已完成focused review、findings修正、fresh re-review、whole-Task holistic review、authority check與fresh validation，並於2026-07-30取得使用者明確核准。Design Task正式通過，可進入Implementation Plan Task；此結論不允許跳過Plan review或直接開始Skill implementation。

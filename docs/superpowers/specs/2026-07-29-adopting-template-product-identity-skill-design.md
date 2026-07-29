@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - adopting-template-product-identity-skill-design
 last_reviewed_baseline: 1.13.0
@@ -472,6 +472,6 @@ Rollback不影響ADR、Guide完整程序、environment manifest或中央治理�
 
 ## Approval
 
-使用者於2026-07-29依序核准Design Section 1至4，包括薄型Skill architecture、trigger／input／reading route、safety／validation／pressure scenarios，以及artifact／routing／registry／Pilot boundary。Section approval允許本Spec進入書面Task review，但不等於落檔版本已完成完整Task gate。Current Spec維持`proposed`，必須完成focused review、findings修正、fresh re-review、whole-Task review與使用者對書面Spec的明確核准後，才能轉為`accepted`並進入Implementation Plan。
+使用者於2026-07-29依序核准Design Section 1至4，包括薄型Skill architecture、trigger／input／reading route、safety／validation／pressure scenarios，以及artifact／routing／registry／Pilot boundary。書面Spec於2026-07-30完成focused review、findings修正、fresh re-review、whole-Task review與authority validation後，取得使用者明確核准，正式轉為`accepted`。Implementation Plan可開始建立，但仍須獨立完成Full Task review與使用者核准後才能實作。
 
 

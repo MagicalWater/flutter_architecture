@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - adopting-template-product-identity-skill-implementation
 last_reviewed_baseline: 1.13.0
@@ -715,5 +715,5 @@ Use `superpowers:verification-before-completion` and `superpowers:finishing-a-de
 
 ## Approval Gate
 
-This Plan remains `proposed` until it completes focused review、findings repair、fresh re-review、whole-Task review、authority check、fresh validation and explicit user approval. No Skill implementation、implementation worktree or Task 1 execution may begin before the Plan becomes `accepted`.
+使用者已於2026-07-30明確核准本Plan與Plan Task review。Plan已完成focused review、findings repair、fresh re-review、whole-Task review、authority check與fresh validation，現正式為`accepted`；可建立dedicated implementation worktree並從Task 1依序執行。任何Task若未通過完整雙層Task gate，後續Task不得開始。
 

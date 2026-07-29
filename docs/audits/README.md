@@ -120,5 +120,6 @@ Final / Holistic Review
 ### Repository-local Skill adoption reviews
 
 - [`adopting_template_product_identity_design_review.md`](adopting_template_product_identity_design_review.md)：`adopting-template-product-identity`薄型Skill Design的Level 3 Full Task review、P1修正、authority check與user approval gate。
+- [`adopting_template_product_identity_plan_review.md`](adopting_template_product_identity_plan_review.md)：對應Implementation Plan的六Task拆分、RED／GREEN、registry contract、authority與clean-checkout完整Plan Task review。
 
 其他位於 `docs/audits/` root 的 planning、runtime 或 holistic review 仍保留原 stable path。Index 只負責 routing，不複製 findings、test counts、commit hashes或 final gate內容。

@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: accepted
+status: proposed
 authoritative_for:
   - adopting-template-product-identity-skill-design
 last_reviewed_baseline: 1.13.0
@@ -136,6 +136,10 @@ Skill不得只因訊息出現`applicationId`或`bundle identifier`就認定為�
 `base identifier`不得由Agent自行猜測。缺少時可以完成只讀盤點、命名規則說明與Requirement Decision，但不得開始identity mutation。
 
 Skill只能驗證reverse-DNS格式，不能替使用者宣稱其擁有某個domain或organization namespace。
+
+完整產品identity mutation開始前，還必須取得使用者明確確認的development／staging／production display names。產品名稱只能用來產生候選值，不能替代確認。
+
+若本次acceptance包含staging／production real API build或runtime evidence，還必須先取得有效的staging／production API domains。缺少domain時可以完成identity projection與static verification，但對應build／runtime evidence只能標記為`Pending`，不得使用template placeholder冒充完成。
 
 ### Inferable but explicit inputs
 
@@ -307,6 +311,8 @@ dart run melos run docs_check
 git diff --check
 ```
 
+上述是本Skill adoption與文件治理的最低驗證，不是實際產品identity mutation的完整contract suite。真正執行模板採用時，必須以`docs/guides/native_environment_adoption.md`的「Exact Local Verification Commands」與「執行完整 contract verification」為current command authority，包括environment workflow matrix、local build commands、iOS workflow與shell portability tests；Skill與本Spec不得複製或縮減該清單。
+
 ### Repository regression
 
 ```bash
@@ -466,6 +472,6 @@ Rollback不影響ADR、Guide完整程序、environment manifest或中央治理�
 
 ## Approval
 
-使用者於2026-07-29依序核准Design Section 1至4，包括薄型Skill architecture、trigger／input／reading route、safety／validation／pressure scenarios，以及artifact／routing／registry／Pilot boundary。本Spec可進入書面review gate；Implementation Plan仍須獨立完成並取得使用者明確核准後才能開始實作。
+使用者於2026-07-29依序核准Design Section 1至4，包括薄型Skill architecture、trigger／input／reading route、safety／validation／pressure scenarios，以及artifact／routing／registry／Pilot boundary。Section approval允許本Spec進入書面Task review，但不等於落檔版本已完成完整Task gate。Current Spec維持`proposed`，必須完成focused review、findings修正、fresh re-review、whole-Task review與使用者對書面Spec的明確核准後，才能轉為`accepted`並進入Implementation Plan。
 
 

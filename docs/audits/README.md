@@ -121,5 +121,11 @@ Final / Holistic Review
 
 - [`adopting_template_product_identity_design_review.md`](adopting_template_product_identity_design_review.md)：`adopting-template-product-identity`薄型Skill Design的Level 3 Full Task review、P1修正、authority check與user approval gate。
 - [`adopting_template_product_identity_plan_review.md`](adopting_template_product_identity_plan_review.md)：對應Implementation Plan的六Task拆分、RED／GREEN、registry contract、authority與clean-checkout完整Plan Task review。
+- [`adopting_template_product_identity_task_1_red_discovery_review.md`](adopting_template_product_identity_task_1_red_discovery_review.md)：候選Skill不存在時的machine discovery RED與behavioral runtime限制。
+- [`adopting_template_product_identity_task_2_skill_core_review.md`](adopting_template_product_identity_task_2_skill_core_review.md)：薄型Skill核心、trigger、input與authority boundary review。
+- [`adopting_template_product_identity_task_3_pressure_validation.md`](adopting_template_product_identity_task_3_pressure_validation.md)：R1–R10 pressure protocol、machine discovery GREEN與restricted evidence disposition。
+- [`adopting_template_product_identity_task_4_routing_registry_review.md`](adopting_template_product_identity_task_4_routing_registry_review.md)：中央narrow routing、entry-point matrix與Skill registry review。
+- [`adopting_template_product_identity_task_5_guide_authority_review.md`](adopting_template_product_identity_task_5_guide_authority_review.md)：Guide入口、authority matrix、environment contract與Windows test portability review。
+- [`adopting_template_product_identity_final_review.md`](adopting_template_product_identity_final_review.md)：跨Task consistency、clean-checkout discovery與`Pilot accepted with restrictions`最終結論。
 
 其他位於 `docs/audits/` root 的 planning、runtime 或 holistic review 仍保留原 stable path。Index 只負責 routing，不複製 findings、test counts、commit hashes或 final gate內容。

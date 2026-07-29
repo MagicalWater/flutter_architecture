@@ -1,4 +1,6 @@
 from pathlib import Path
+import os
+import subprocess
 import unittest
 
 
@@ -18,7 +20,23 @@ class LocalBuildCommandsTest(unittest.TestCase):
     def test_local_ci_switch_entrypoint_exists(self) -> None:
         entrypoint = ROOT / "tools/ci/run_local_ci.sh"
         self.assertTrue(entrypoint.is_file())
-        self.assertTrue(entrypoint.stat().st_mode & 0o111)
+        if os.name == "nt":
+            result = subprocess.run(
+                [
+                    "git",
+                    "ls-files",
+                    "-s",
+                    "--",
+                    entrypoint.relative_to(ROOT).as_posix(),
+                ],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.stdout.split()[0], "100755")
+        else:
+            self.assertTrue(entrypoint.stat().st_mode & 0o111)
 
     def test_ios_production_uses_unsigned_device_release_not_simulator_aot(self) -> None:
         wrapper = (ROOT / "tools" / "ci" / "build_ios_production.sh").read_text(

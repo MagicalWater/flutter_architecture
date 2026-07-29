@@ -20,6 +20,10 @@ apps/flutter_architecture/config/environments.json
 
 Android Gradle、iOS scheme／configuration、Dart entrypoint 與 verification tooling 都是此 mapping 的 projection。不要只修改單一平台或單一 build command。
 
+## Agent-assisted Entry
+
+將模板跨Android與iOS採用為具體產品時，Agent可使用repository-local [`adopting-template-product-identity`](../../.agents/skills/adopting-template-product-identity/SKILL.md) Skill作為薄型入口。該Skill必須先委派`governing-template-development`；本Guide仍是完整adoption procedure與exact-command authority，ADR-014、ADR-025、`environments.json`、source與tests仍分別擁有產品contract與runtime truth。
+
 ## Repository Default Mapping
 
 | Environment | Android flavor | iOS scheme | Entrypoint | Display name | Identifier |

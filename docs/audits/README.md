@@ -119,7 +119,15 @@ Final / Holistic Review
 
 ### Repository-local Skill adoption reviews
 
-- [`repository_local_skills_traditional_chinese_review.md`](repository_local_skills_traditional_chinese_review.md)：四個repository-local Skills共12份文件的繁體中文化、trigger語意等價、authority與clean-checkout discovery審查。
+- [`repository_local_skills_traditional_chinese_review.md`](repository_local_skills_traditional_chinese_review.md)：commit `c8a77a5`當時的Level 1歷史審查；其classification與closure authority已被後續Level 3 recovery supersede。
+- [`repository_local_skills_zh_tw_design_review.md`](repository_local_skills_zh_tw_design_review.md)：繁體中文化Level 3 governance recovery Design Task review。
+- [`repository_local_skills_zh_tw_plan_review.md`](repository_local_skills_zh_tw_plan_review.md)：六Task review execution Plan的完整Task review。
+- [`repository_local_skills_zh_tw_task_1_central_governance_review.md`](repository_local_skills_zh_tw_task_1_central_governance_review.md)：中央治理Skill與五份references的semantic equivalence、classification與gate review。
+- [`repository_local_skills_zh_tw_task_2_product_identity_review.md`](repository_local_skills_zh_tw_task_2_product_identity_review.md)：產品識別Skill trigger、安全、pressure status與authority review。
+- [`repository_local_skills_zh_tw_task_3_starting_feature_review.md`](repository_local_skills_zh_tw_task_3_starting_feature_review.md)：Starting Feature Work短入口、中央委派與pressure controls review。
+- [`repository_local_skills_zh_tw_task_4_karpathy_review.md`](repository_local_skills_zh_tw_task_4_karpathy_review.md)：Karpathy source pin、subordinate routing與restricted boundary review。
+- [`repository_local_skills_zh_tw_task_5_language_governance_review.md`](repository_local_skills_zh_tw_task_5_language_governance_review.md)：語言policy、歷史supersession與`agent-skill-language` RED／GREEN evidence。
+- [`repository_local_skills_zh_tw_holistic_final_review.md`](repository_local_skills_zh_tw_holistic_final_review.md)：Tasks 1～5完成後，對全部中文化變更與recovery修正的holistic final review及remote closure authority。
 - [`adopting_template_product_identity_design_review.md`](adopting_template_product_identity_design_review.md)：`adopting-template-product-identity`薄型Skill Design的Level 3 Full Task review、P1修正、authority check與user approval gate。
 - [`adopting_template_product_identity_plan_review.md`](adopting_template_product_identity_plan_review.md)：對應Implementation Plan的六Task拆分、RED／GREEN、registry contract、authority與clean-checkout完整Plan Task review。
 - [`adopting_template_product_identity_main_integration_holistic_review.md`](adopting_template_product_identity_main_integration_holistic_review.md)：合併後`main`的完整文件／Skill authority審查、Windows portability修正、full regression與remote push gate。

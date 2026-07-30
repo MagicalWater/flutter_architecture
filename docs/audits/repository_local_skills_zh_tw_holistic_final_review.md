@@ -1,6 +1,6 @@
 ---
 document_type: final-review
-status: active
+status: completed
 authoritative_for:
   - repository-local-skills-zh-tw-governance-recovery-final-review
 last_reviewed_baseline: 1.13.0
@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.13.0
 
 本Review在Tasks 1～5全部通過並各自建立independent commit後，對commit `c8a77a5`的原始15個變更檔、Level 3 recovery Design／Plan、逐Task reviews、current authority修正、docs checker TDD與完整workspace regression做跨Task總審查。
 
-本文件目前保存local holistic gate。Push與`origin/main` clean-checkout evidence完成前，status維持`active`，不得宣稱formal closure。
+本文件保存local holistic gate、push與`origin/main` clean-checkout closure evidence。所有必要gate已完成，status為`completed`。
 
 ## Governance recovery chain
 
@@ -149,13 +149,57 @@ Dependency outdated提示不代表resolution failure；本recovery未修改depen
 - Open P1 without disposition：0。
 - Open P2 without disposition：0。
 
-## Local disposition
+## Push and remote clean-checkout evidence
+
+第一次closure push：
+
+```txt
+local main before push                         060d2fd0b5b250022a501e713ca72d563626e571
+origin/main before push                        c8a77a513051b8f9c39e9356472be97f31f6b913
+push                                           c8a77a5..060d2fd main -> main
+local／remote after push                        060d2fd0b5b250022a501e713ca72d563626e571
+force push                                     No
+```
+
+Remote clean checkout：
+
+```txt
+Worktree                                       C:\Users\crazy\.devspace\worktrees\flutter_architecture-b3014d0f
+Base                                           origin/main
+HEAD                                           060d2fd0b5b250022a501e713ca72d563626e571
+Checkout                                       detached／clean
+```
+
+Fresh `bridge-win.open_workspace` discovery載入：
+
+```txt
+adopting-template-product-identity             Traditional Chinese description
+governing-template-development                 Traditional Chinese description
+karpathy-guidelines                            Traditional Chinese description
+starting-feature-work                          Traditional Chinese description
+```
+
+Remote fresh validation：
+
+```txt
+Skill language scan                            4 Skills／12 files passed
+Environment mapping verifier                   passed
+Environment／workflow／platform Python tests    40 passed
+Documentation checker tests                    19 passed
+docs_check                                     passed
+git diff --check                               passed
+working tree                                   clean
+```
+
+## Final disposition
 
 ```txt
 Tasks 1～5 full two-layer governance：Passed
 Holistic local review：Passed
-Push／remote clean checkout：Pending
-Formal closure：Not yet complete
+Push／remote clean checkout：Passed
+Original Level 1 classification：Superseded
+Current governance recovery：Completed
+Formal closure：Completed
 ```
 
-完成push與remote clean checkout後，必須在本文件加入remote SHA、discovery與validation evidence，將status改為`completed`，並把Implementation Plan改為`completed`。
+本recovery不建立Milestone、不提升VERSION，也不修改產品runtime。後續若任何repository-local Skill的trigger、permissions、managed paths、workflow order或supported runtime改變，仍須依Skill adoption governance重新執行focused review與相關pressure scenarios。

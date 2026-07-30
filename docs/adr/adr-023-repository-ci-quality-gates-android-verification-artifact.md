@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-023-repository-ci-quality-gates-android-verification-artifact
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.13.0
 id: ADR-023
 title: Repository CI Quality Gates and Platform Verification Artifacts
 supersedes: []
@@ -24,7 +24,7 @@ Accepted。
 
 ## Authoritative Scope
 
-本Decision定義repository CI host、execution mode、required quality gates、toolchain reproducibility、generated source consistency、Android verification artifact、iOS Simulator build gate與CI security boundary。
+本Decision定義repository CI host、execution mode、required quality gates、toolchain reproducibility、generated source consistency、Android／iOS verification artifact、artifact ownership／transport／retention／cleanup，以及CI security boundary。
 
 ## Context
 
@@ -50,6 +50,18 @@ Self-hosted runner使用`water`帳號下的獨立runner workspace與完整專用
 
 三種execution mode必須共用repository-owned scripts作為build、test與symbol handling實作來源。Workflow只負責event policy、runner routing、secret materialization與artifact transport，不得維護平行build contract。
 
+GitHub Actions是CI control plane，不是`manual-local`或`self-hosted`的主要artifact owner。`manual-local`與`self-hosted`產生的verification artifact、bounded diagnostics、checksums與Observability evidence必須寫入repository checkout外的managed local artifact store；self-hosted不得使用`actions/upload-artifact`或`actions/cache`把日常成功／失敗證據重新送回GitHub storage。
+
+`github-hosted`保留為人工、偶發的clean-run驗證入口。其repository default artifact transport為`none`，cache亦預設停用；只有`workflow_dispatch`明確要求的有界diagnostics或短期full transport可以例外使用GitHub artifact storage。Push、Pull Request與`repository-default`不得隱式啟用remote artifact transport。
+
+Managed artifact root必須由受控環境解析並驗證，且不得位於repository root、任何Git worktree、runner `_work`、runner temp、filesystem root或home root本身。Self-hosted缺少明確external root時必須fail closed；manual-local可以使用platform-specific user-state default，但不得回退到repository checkout。
+
+每個execution job必須先在同一filesystem的in-progress staging建立allowlist metadata、artifact entries與SHA-256，完成後以atomic publish形成job-level manifest。Multi-job workflow另由run-level manifest聚合已finalize job records；最後完成的job不得覆蓋其他job evidence。Manifest不得序列化完整process environment、credential、token、service account或provider config。
+
+Artifact retention必須同時受到age、per-class count、global capacity與minimum-free-space治理。Pin必須具owner、reason與有限`expires_at`；不得形成永久容量豁免。Local cleanup預設dry-run，apply必須依完整manifest與store generation執行，先移入有界trash窗口再purge，並拒絕path traversal、symlink escape、active lock與in-progress run。
+
+既有GitHub Actions artifacts與caches只有在replacement local runtime evidence成立後，才能依exact GitHub object IDs產生deletion manifest。GitHub deletion屬不可逆操作，必須完成focused review、whole-cleanup review並再次取得使用者明確核准；Milestone或Implementation Plan核准本身不構成delete approval。
+
 在`github-hosted`模式下，Pull Request到`main`與Push到`main`都必須先建立穩定、可審查的change classification。Repository-owned classifier依changed paths輸出`full_ci`、`android_build`與`ios_build`；unknown path、無效Git range與classifier execution failure一律fail-safe到完整矩陣。
 
 在`self-hosted`模式下，只有`main` push與`workflow_dispatch`可以建立execution jobs；Pull Request checks可以顯示為skipped，但`skipped`不得被解讀為已完成驗證。Branch Protection required checks必須依實際mode治理，不得要求一個在該mode永久不執行的job成功。
@@ -64,11 +76,11 @@ Generated source維持tracked。CI重跑generator後必須檢查Git tree；任�
 
 Android artifact使用default development／Mock entrypoint與repository既有verification signing。Artifact必須帶commit traceability與明確的非production classification。`flutter build bundle`不能替代Android APK artifact驗證。
 
-Cache只用於加速Pub、Flutter SDK與Gradle dependency取得；cache miss不得改變correctness。`.dart_tool`、workspace build output、generated source與APK不作為shared cache authority。
+Cache不得成為correctness或artifact authority。Self-hosted與repository-default github-hosted route不使用GitHub Actions cache；任何未來人工例外cache都必須另行review，且`.dart_tool`、workspace build output、generated source與platform artifact永遠不得成為shared cache authority。
 
 Workflow permissions採最小權限，不讀取secrets，不使用`pull_request_target`。所有external Actions pin immutable full commit SHA。
 
-iOS workflow只在失敗時上傳有界限的toolchain與build diagnostics，不上傳`.app`作為distribution artifact。Simulator build只能證明native integration與unsigned build contract，不能宣稱App Store readiness或實體裝置驗證完成。
+iOS failure evidence預設由job log、summary與managed local store保存；只有人工明確選擇的`github-hosted` bounded diagnostics例外才可短期上傳。`.app`、dSYM、symbols與mapping不得因failure-only transport進入GitHub artifact storage。Simulator build只能證明native integration與unsigned build contract，不能宣稱App Store readiness或實體裝置驗證完成。
 
 Production signing、Store publishing、GitHub Release、environment promotion與deployment credentials必須由未來獨立release workflow與protected Environment決定，不屬本Decision第一版實作。
 
@@ -82,6 +94,8 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 - Documentation-only不執行analyze、generated consistency、全部Flutter tests或Android／iOS代表build，避免evidence-only commit形成無限驗證循環。
 - CI workflow與pinned Actions需要後續maintenance；Dependabot不因本Decision自動加入。
 - Self-hosted runner不消耗GitHub-hosted execution minutes，但會引入本機可用性、持久workspace、cache與secret清理責任。
+- Self-hosted與manual-local的artifact traceability由external managed store、job／run manifest與checksums承擔；GitHub job summary只能提供local-only定位與摘要，不代表遠端可下載。
+- Artifact容量由retention class、count、capacity、minimum-free-space與bounded pin共同治理；cleanup具本機短期restore，但GitHub object deletion不可restore。
 - Runner離線時job維持queued；不得自動切換至GitHub-hosted runner。操作人員必須恢復runner或明確切換mode。
 - GitHub Branch Protection settings仍需repository管理者依文件人工設定，code不能宣稱已完成settings變更。
 
@@ -105,7 +119,9 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 - [Change-aware CI planning review](../audits/change_aware_ci_plan_review.md)
 - [Task 27-7 self-hosted CI design](../superpowers/specs/2026-07-24-self-hosted-ci-execution-mode-design.md)
 - [Task 27-7 self-hosted CI plan](../superpowers/plans/2026-07-24-self-hosted-ci-execution-mode.md)
+- [Milestone 32 accepted Design](../superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md)
+- [Milestone 32 accepted Implementation Plan](../superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md)
 
 ## Last Reviewed Baseline
 
-1.8.0。
+1.13.0。

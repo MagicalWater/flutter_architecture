@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 1 durable artifact authority
+Status: Active — Task 2 artifact contract and root validation
 ```
 
 ## Current Problem
@@ -54,7 +54,7 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec已於2026-07-30 13:41（Asia/Taipei）取得使用者明確核准並轉為`accepted`。Implementation Plan已完成完整雙層Task治理，並於2026-07-30 14:04（Asia/Taipei）取得使用者明確核准並轉為`accepted`。目前進入Task 1；在Task 1完成前：
+Design Spec與Implementation Plan均已取得使用者明確核准。Task 1已將artifact ownership、transport、root、manifest、retention與cleanup durable contract寫入ADR-023，並完成focused review與whole-Task review。現在進入Task 2；在Task 2完成前：
 
 ```txt
 不得修改workflows或CI scripts
@@ -66,9 +66,11 @@ Design Spec已於2026-07-30 13:41（Asia/Taipei）取得使用者明確核准並
 ## Current Next Action
 
 ```txt
-Task 1更新ADR-023 durable artifact authority
-→ focused review與findings修正
-→ fresh re-review與whole-Task review
+Task 2以TDD建立artifact root與manifest contract
+→ RED root／path／schema tests
+→ minimal implementation
+→ GREEN與portability regression
+→ focused review與whole-Task review
 → validation與獨立commit
-→ 自動進入Task 2
+→ 自動進入Task 3
 ```

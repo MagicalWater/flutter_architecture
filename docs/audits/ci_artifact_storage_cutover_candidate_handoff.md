@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: active
+status: completed
 authoritative_for:
   - ci-artifact-storage-cutover-candidate-handoff
 last_reviewed_baseline: 1.13.0
@@ -199,8 +199,20 @@ Design Spec: Not created
 Implementation Plan: Not created
 Workflow mutation: Not started
 GitHub storage cleanup: Not started
-Push／remote clean checkout for this handoff: Pending
-Cross-conversation readiness: Pending final closure
+Push／remote clean checkout for candidate content: Passed
+Cross-conversation readiness: Passed
+Formal candidate handoff closure: Completed
 ```
 
-完成本次文件push與remote clean-checkout後，更新本文件為`completed`並記錄final SHA。此後新對話不需要依賴本對話的隱藏或口頭上下文。
+## Remote closure evidence
+
+```txt
+Validated origin/main SHA: 020bbd4d4ca6a86ff52c5cd28071aec74fc9625e
+Candidate／Guide／handoff contract scan: passed
+Documentation checker tests: 19 passed
+docs_check: passed
+git diff --check: passed
+Remote clean checkout: clean
+```
+
+本文件的completion metadata由後續closure commit保存；新對話應以當下`main`／`origin/main`與本文件內容為準，不需依賴本對話的隱藏或口頭上下文。

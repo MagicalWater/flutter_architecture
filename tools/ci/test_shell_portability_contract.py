@@ -6,6 +6,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class ShellPortabilityContractTest(unittest.TestCase):
+    def test_artifact_contract_avoids_python_310_union_annotations(self) -> None:
+        source = (REPO_ROOT / "tools/ci/artifact_contract.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertNotRegex(source, r"\b[A-Za-z_][A-Za-z0-9_\.\[\], ]*\s*\|\s*None\b")
+
     def test_generated_verifier_supports_macos_bash_3(self) -> None:
         script = (REPO_ROOT / "tools/ci/verify_generated.sh").read_text(
             encoding="utf-8"

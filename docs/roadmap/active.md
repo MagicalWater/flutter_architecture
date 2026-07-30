@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 2 artifact contract and root validation
+Status: Active — Task 3 atomic artifact writer and run aggregation
 ```
 
 ## Current Problem
@@ -54,23 +54,23 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Task 1已將artifact ownership、transport、root、manifest、retention與cleanup durable contract寫入ADR-023，並完成focused review與whole-Task review。現在進入Task 2；在Task 2完成前：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–2已完成durable authority、artifact root resolution、path safety、key sanitization、manifest allowlist與retention constants，並完成各自focused review、fresh re-review與whole-Task review。現在進入Task 3；在Task 3完成前：
 
 ```txt
-不得修改workflows或CI scripts
+不得修改workflows
 不得修改CI_EXECUTION_MODE
-不得建立artifact storage目錄
+不得建立正式operator artifact root
 不得刪除GitHub artifacts或caches
 ```
 
 ## Current Next Action
 
 ```txt
-Task 2以TDD建立artifact root與manifest contract
-→ RED root／path／schema tests
-→ minimal implementation
-→ GREEN與portability regression
+Task 3以TDD建立job staging與atomic publish
+→ RED begin／finalize、multi-job aggregation與primary-result precedence
+→ minimal writer／checksum／run aggregation implementation
+→ GREEN與Task 2 contract regression
 → focused review與whole-Task review
 → validation與獨立commit
-→ 自動進入Task 3
+→ 自動進入Task 4
 ```

@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - repository-ci-cd-operations
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.13.0
 ---
 
 # CI/CD Operations Guide
@@ -43,6 +43,23 @@ gh variable set CI_EXECUTION_MODE --body github-hosted
 ```
 
 四份workflow的manual dispatch都有`execution_mode` choice：`repository-default`沿用repository variable，另外三個選項只覆寫該次run。未知值、舊`local`／`github`或空值一律fail closed；不會自動fallback到付費runner。
+
+### Current GitHub quota constraint
+
+`self-hosted`只代表job不使用GitHub-hosted runner分鐘，不代表GitHub storage為零。只要workflow仍執行`actions/upload-artifact`，產物就會進入GitHub Actions storage；GitHub-hosted模式使用的`actions/cache`也會占用GitHub cache storage。
+
+目前GitHub Actions分鐘與storage均已達限制。在正式完成本機artifact storage cutover前，需要完全避免新的GitHub execution或artifact upload時，使用：
+
+```bash
+gh variable set CI_EXECUTION_MODE --body manual-local
+```
+
+這只是既有緊急operational route，不代表候選架構已核准。下一個候選大階段、目前storage盤點、Design待決事項與禁止提前清理的邊界，見：
+
+- `docs/roadmap/candidates.md`
+- `docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
+
+在新本機artifact路線取得acceptance、cleanup manifest獲得核准前，不得批量刪除GitHub artifacts或caches。
 
 Self-hosted runner：
 

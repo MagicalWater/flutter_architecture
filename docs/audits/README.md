@@ -73,6 +73,7 @@ Final / Holistic Review
 
 ### Change-aware CI initiative
 
+- [`ci_artifact_storage_cutover_candidate_handoff.md`](ci_artifact_storage_cutover_candidate_handoff.md)：Proposed Milestone 32的quota盤點、候選scope、Design待決事項、禁止提前cleanup邊界與跨對話handoff。
 - [`change_aware_ci_spec_review.md`](change_aware_ci_spec_review.md)：Design spec scope 與 acceptance review。
 - [`change_aware_ci_plan_review.md`](change_aware_ci_plan_review.md)：Implementation plan review。
 - [`change_aware_ci_implementation_review.md`](change_aware_ci_implementation_review.md)：Whole implementation review routing。

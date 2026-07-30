@@ -29,7 +29,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
-- [`plans/2026-07-30-adopting-template-product-identity-skill.md`](plans/2026-07-30-adopting-template-product-identity-skill.md)：薄型模板產品識別Skill的RED／GREEN、中央routing、Guide authority與clean-checkout計畫；Tasks 1–6已完成，最終為`Pilot／Approved with restrictions`。
+- [`plans/2026-07-30-adopting-template-product-identity-skill.md`](plans/2026-07-30-adopting-template-product-identity-skill.md)：薄型模板產品識別Skill的RED／GREEN、中央routing、Guide authority與clean-checkout計畫；Tasks 1–6原以restricted Pilot完成，後續fresh isolated behavioral evidence closure已將current registry狀態升級為`Approved`。
 - [`plans/2026-07-25-karpathy-guidelines-adoption.md`](plans/2026-07-25-karpathy-guidelines-adoption.md)：primary-workflow recovery已完成，Karpathy companion目前為`Pilot／Approved with restrictions`；不依賴Ponytail，fresh isolated ChatGPT behavioral GREEN仍待平台能力。
 - [`plans/2026-07-24-milestone-31-template-development-workflow-governance.md`](plans/2026-07-24-milestone-31-template-development-workflow-governance.md)：原計畫已降回`proposed`，等待Design Spec recovery核准後再進行Plan雙層review。
 - [`plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md`](plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md)：Repository-wide test inventory、coverage ownership、production／historical boundary、controlled cleanup與execution governance。
@@ -45,7 +45,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
-- [`specs/2026-07-29-adopting-template-product-identity-skill-design.md`](specs/2026-07-29-adopting-template-product-identity-skill-design.md)：已核准的薄型模板產品識別Skill設計，保留中央治理、manifest／Guide authority、安全邊界與restricted Pilot條件。
+- [`specs/2026-07-29-adopting-template-product-identity-skill-design.md`](specs/2026-07-29-adopting-template-product-identity-skill-design.md)：已核准的薄型模板產品識別Skill設計，保留中央治理、manifest／Guide authority與安全邊界；其Pilot upgrade conditions已由後續fresh behavioral evidence closure滿足。
 - [`specs/2026-07-25-karpathy-guidelines-adoption-design.md`](specs/2026-07-25-karpathy-guidelines-adoption-design.md)：已核准的Pilot採用設計；執行期間因RED無confirmed gap而未啟用，最終Disposition見對應final review。
 - [`specs/2026-07-24-milestone-31-template-development-workflow-governance-design.md`](specs/2026-07-24-milestone-31-template-development-workflow-governance-design.md)：已降回`proposed`並進行完整雙層review；既有實作不等於設計已重新核准。
 - [`specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md`](specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md)：測試ownership、historical boundary、disposition evidence與execution tiers。

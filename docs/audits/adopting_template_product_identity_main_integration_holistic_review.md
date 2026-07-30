@@ -144,3 +144,9 @@ main integration approved for push
 保留限制仍是fresh isolated no-memory behavioral discovery、explicit safety與non-trigger outputs缺少可程式化runtime evidence；在取得該證據前不得升級為fully `Approved`。
 
 本工作不改Template Baseline、不建立release或Milestone。Push完成後必須核對local HEAD與`origin/main`，並以remote HEAD clean checkout重新驗證Skill discovery與核心contract gates。
+
+## Subsequent approval closure
+
+本Review在main integration當時刻意保留restricted Pilot，因為fresh isolated behavioral outputs尚未取得。2026-07-30使用者後續提供三個獨立新對話輸出，已通過unnamed discovery／discussion-only、governance bypass／secret safety與API-only non-trigger。
+
+Current disposition由[`adopting_template_product_identity_approval_closure_review.md`](adopting_template_product_identity_approval_closure_review.md)取代為`Approved`；本Review的integration與regression evidence仍維持有效。

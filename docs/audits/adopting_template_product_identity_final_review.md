@@ -143,3 +143,17 @@ Accepted evidence：thin Skill、machine discovery GREEN、central routing、reg
 Remaining restriction：fresh isolated no-memory behavioral discovery、explicit safety與non-trigger outputs尚無可程式化runtime evidence。未完成前不得將Skill升級為fully `Approved`。
 
 此disposition代表implementation branch具備整合條件，不代表已合併、推送、release或Milestone closure。
+
+## Subsequent approval closure
+
+上述`Pilot accepted with restrictions`是Task 6當時的歷史結論。2026-07-30後續取得三個fresh isolated behavioral outputs，已補齊原本唯一缺少的unnamed discovery、explicit safety與API-only non-trigger evidence。
+
+Evidence：[`adopting_template_product_identity_behavioral_pressure_evidence.md`](adopting_template_product_identity_behavioral_pressure_evidence.md)。
+
+Current registry disposition已由後續approval closure review升級為：
+
+```txt
+Approved
+```
+
+本段只記錄supersession，不回寫或偽造Task 6當時尚未取得的behavioral evidence。

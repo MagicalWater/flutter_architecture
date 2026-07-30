@@ -65,7 +65,7 @@ Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不�
 | `governing-template-development` | Approved | 所有新需求、Bug、Refactor、Migration、Architecture、Release與治理工作 | Requirement Decision、Level 0～5、artifact／Superpowers／Task routing | 取代repository authority、source、tests、CI或release evidence | Superpowers | 移除`AGENTS.md` wiring前須先完成替代治理與pressure validation |
 | `starting-feature-work` | Approved | 新功能、新畫面、user flow或Figma-driven implementation | 接收短feature brief並強制委派中央治理 | Level、approval、branch、Task、validation、release與closure policy | `governing-template-development` | 移除Skill與本registry row；中央治理入口不受影響 |
 | `karpathy-guidelines` | Pilot／Approved with restrictions | 已完成分類與必要核准後的production code implementation、refactor與code review | simplicity、surgical changes、explicit assumptions與verifiable goals | Level、scope approval、branch、Task acceptance、release／closure；不得移除安全、migration、accessibility或validation evidence | `governing-template-development`＋routed Superpowers | 移除中央routing與`.agents/skills/karpathy-guidelines/`；中央治理不受影響 |
-| `adopting-template-product-identity` | Pilot／Approved with restrictions | 已接受的跨Android／iOS模板產品identity或三環境display-name mapping採用 | 接收短input、authority routing、pre-inventory、manifest-first與evidence boundary | Level、approval、environment contract、signing、Store、release與closure | `governing-template-development`；只有實際進入production code／script implementation時才搭配`karpathy-guidelines` | 移除Skill、中央route、registry row與Guide entry；既有authority不受影響 |
+| `adopting-template-product-identity` | Approved | 已接受的跨Android／iOS模板產品identity或三環境display-name mapping採用 | 接收短input、authority routing、pre-inventory、manifest-first與evidence boundary | Level、approval、environment contract、signing、Store、release與closure | `governing-template-development`；只有實際進入production code／script implementation時才搭配`karpathy-guidelines` | 移除Skill、中央route、registry row與Guide entry；既有authority不受影響 |
 
 #### `adopting-template-product-identity` admission details
 
@@ -73,7 +73,8 @@ Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不�
 - Overlaps：`governing-template-development`、`starting-feature-work`、`karpathy-guidelines`、`native_environment_adoption.md`；責任以中央治理與Guide authority切分。
 - Repository mutations：Skill path、narrow central route、registry row、Guide entry與audit evidence。
 - Permissions：不需要network、external credential、MCP或signing access。
-- Validation evidence：Task 1 RED、Task 3 pressure validation、Task 5 authority review與Task 6 final review。
+- Validation evidence：Task 1 RED、Task 3 pressure validation、Task 5 authority review、Task 6 final review、remote clean-checkout discovery與2026-07-30 fresh isolated behavioral approval closure。
+- Approval basis：未指定Skill名稱的discovery／discussion-only、明確跳過治理＋secret pressure，以及API-only non-trigger三個獨立新對話均通過。
 - Last review：2026-07-30。
 - Upgrade triggers：trigger wording、managed paths、permissions、workflow order、automatic loading或supported runtime變更。
 

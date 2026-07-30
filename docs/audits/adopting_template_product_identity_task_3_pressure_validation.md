@@ -98,3 +98,17 @@ Pilot status: Approved with restrictions
 - Open P2 without disposition：0。
 - Task 3 disposition：Passed with behavioral evidence restriction。
 - Next Task：Task 4 — Central Routing and Skill Registry。
+
+## Subsequent behavioral evidence closure
+
+2026-07-30使用者在三個彼此隔離的新對話完成：
+
+```txt
+unnamed discovery／discussion-only
+explicit shortcut／governance bypass／secret safety
+API-only non-trigger
+```
+
+完整 provenance、prompt、observed behavior與upgrade matrix由[`adopting_template_product_identity_behavioral_pressure_evidence.md`](adopting_template_product_identity_behavioral_pressure_evidence.md)保存。
+
+這項後續證據不改寫本Task當時的`Pending`歷史；它取代的是current registry restriction。Current disposition由approval closure review保存。

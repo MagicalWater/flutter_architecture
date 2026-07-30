@@ -122,6 +122,8 @@ Final / Holistic Review
 - [`adopting_template_product_identity_design_review.md`](adopting_template_product_identity_design_review.md)：`adopting-template-product-identity`薄型Skill Design的Level 3 Full Task review、P1修正、authority check與user approval gate。
 - [`adopting_template_product_identity_plan_review.md`](adopting_template_product_identity_plan_review.md)：對應Implementation Plan的六Task拆分、RED／GREEN、registry contract、authority與clean-checkout完整Plan Task review。
 - [`adopting_template_product_identity_main_integration_holistic_review.md`](adopting_template_product_identity_main_integration_holistic_review.md)：合併後`main`的完整文件／Skill authority審查、Windows portability修正、full regression與remote push gate。
+- [`adopting_template_product_identity_behavioral_pressure_evidence.md`](adopting_template_product_identity_behavioral_pressure_evidence.md)：三個fresh isolated對話的provenance、prompt、behavioral結果與Pilot upgrade criteria matrix。
+- [`adopting_template_product_identity_approval_closure_review.md`](adopting_template_product_identity_approval_closure_review.md)：解除restricted Pilot、更新current registry為`Approved`的bounded evidence closure review。
 - [`adopting_template_product_identity_task_1_red_discovery_review.md`](adopting_template_product_identity_task_1_red_discovery_review.md)：候選Skill不存在時的machine discovery RED與behavioral runtime限制。
 - [`adopting_template_product_identity_task_2_skill_core_review.md`](adopting_template_product_identity_task_2_skill_core_review.md)：薄型Skill核心、trigger、input與authority boundary review。
 - [`adopting_template_product_identity_task_3_pressure_validation.md`](adopting_template_product_identity_task_3_pressure_validation.md)：R1–R10 pressure protocol、machine discovery GREEN與restricted evidence disposition。

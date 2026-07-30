@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 3 atomic artifact writer and run aggregation
+Status: Active — Task 4 retention and safe local cleanup
 ```
 
 ## Current Problem
@@ -54,7 +54,7 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–2已完成durable authority、artifact root resolution、path safety、key sanitization、manifest allowlist與retention constants，並完成各自focused review、fresh re-review與whole-Task review。現在進入Task 3；在Task 3完成前：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–3已完成durable authority、root／manifest contract、job lock／staging、atomic publish、checksums與multi-job run aggregation，並完成各自focused review、fresh re-review與whole-Task review。現在進入Task 4；在Task 4完成前：
 
 ```txt
 不得修改workflows
@@ -66,11 +66,12 @@ Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–2
 ## Current Next Action
 
 ```txt
-Task 3以TDD建立job staging與atomic publish
-→ RED begin／finalize、multi-job aggregation與primary-result precedence
-→ minimal writer／checksum／run aggregation implementation
-→ GREEN與Task 2 contract regression
+Task 4以TDD建立retention evaluation與cleanup recovery
+→ RED age／count／capacity／minimum-free／pin tests
+→ RED path／lock／manifest drift／trash restore tests
+→ minimal cleanup implementation
+→ GREEN與Tasks 2–3 regression
 → focused review與whole-Task review
 → validation與獨立commit
-→ 自動進入Task 4
+→ 自動進入Task 5
 ```

@@ -349,7 +349,7 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-Milestone 32已完成fresh Requirement Decision並正式promotion為Level 4 active Milestone。Accepted Design將一般CI、Android／iOS verification、Observability與failure evidence的主要ownership切換至本機managed artifact store，同時保留GitHub Actions作為workflow控制面、status與人工`github-hosted`例外入口。Design已完成repository內部雙層review並於2026-07-30取得使用者核准；Implementation Plan正在建立與審查，workflow mutation、artifact目錄建立與GitHub storage cleanup均尚未開始。
+Milestone 32已完成fresh Requirement Decision並正式promotion為Level 4 active Milestone。Accepted Design將一般CI、Android／iOS verification、Observability與failure evidence的主要ownership切換至本機managed artifact store，同時保留GitHub Actions作為workflow控制面、status與人工`github-hosted`例外入口。Design已於2026-07-30取得使用者核准；proposed Implementation Plan已完成repository內部雙層review，目前等待使用者核准，workflow mutation、artifact目錄建立與GitHub storage cleanup均尚未開始。
 
 Milestone 30已完成implementation、holistic review、Template Baseline 1.12.0 release、push、clean-checkout與remote CI／Android／iOS post-release validation，並正式closure。Milestone 31的Template Baseline 1.13.0已發布；其原執行治理缺口已透過R0～R11 Governance Recovery補正，Design、Plan、逐Task、behavior pressure、holistic review、fresh regression、push、clean-checkout與remote CI／Android／iOS post-release validation均完成，並正式closure。
 

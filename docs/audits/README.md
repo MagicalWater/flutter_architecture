@@ -73,7 +73,8 @@ Final / Holistic Review
 
 ### Change-aware CI initiative
 
-- [`milestone_32/32-0_design_spec_review.md`](milestone_32/32-0_design_spec_review.md)：Milestone 32 promotion、proposed Design focused findings、fixes、fresh re-review、whole-Design與使用者核准gate。
+- [`milestone_32/32-0_design_spec_review.md`](milestone_32/32-0_design_spec_review.md)：Milestone 32 promotion、Design focused findings、fixes、fresh re-review、whole-Design與使用者核准closure。
+- [`milestone_32/32-1_implementation_plan_review.md`](milestone_32/32-1_implementation_plan_review.md)：Milestone 32 Implementation Plan的Task順序、TDD interfaces、runtime acceptance、cleanup雙重approval與release closure review。
 - [`ci_artifact_storage_cutover_candidate_handoff.md`](ci_artifact_storage_cutover_candidate_handoff.md)：Proposed Milestone 32的quota盤點、候選scope、Design待決事項、禁止提前cleanup邊界與跨對話handoff。
 - [`change_aware_ci_spec_review.md`](change_aware_ci_spec_review.md)：Design spec scope 與 acceptance review。
 - [`change_aware_ci_plan_review.md`](change_aware_ci_plan_review.md)：Implementation plan review。

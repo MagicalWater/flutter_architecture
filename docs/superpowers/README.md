@@ -29,6 +29,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
+- [`plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`](plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md)：Milestone 32 managed artifact store、workflow transport、retention／cleanup、runtime acceptance與GitHub storage cutover的proposed Implementation Plan；已完成內部Plan review，等待使用者核准。
 - [`plans/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery.md`](plans/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery.md)：對四個repository-local Skills繁體中文化補做Level 3 full two-layer Task governance、mechanical language gate與holistic remote closure；current execution進度見對應final review。
 - [`plans/2026-07-30-adopting-template-product-identity-skill.md`](plans/2026-07-30-adopting-template-product-identity-skill.md)：薄型模板產品識別Skill的RED／GREEN、中央routing、Guide authority與clean-checkout計畫；Tasks 1–6原以restricted Pilot完成，後續fresh isolated behavioral evidence closure已將current registry狀態升級為`Approved`。
 - [`plans/2026-07-25-karpathy-guidelines-adoption.md`](plans/2026-07-25-karpathy-guidelines-adoption.md)：primary-workflow recovery已完成，Karpathy companion目前為`Pilot／Approved with restrictions`；不依賴Ponytail，fresh isolated ChatGPT behavioral GREEN仍待平台能力。

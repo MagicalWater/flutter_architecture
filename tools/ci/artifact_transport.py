@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 from typing import Iterable, List, Optional, Sequence
 
+from tools.ci.secret_leakage import scan_evidence_paths
+
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -98,6 +100,7 @@ def collect_remote_upload_entries(
         )
     if transport == "full" and not entries:
         raise ValueError("full artifact transport resolved no files")
+    scan_evidence_paths([entry.path for entry in entries])
     return entries
 
 

@@ -302,6 +302,76 @@ class ArtifactStoreTest(unittest.TestCase):
         self.assertIn("Primary result: failure", summary)
         self.assertIn("Evidence status: degraded", summary)
 
+    def test_secret_bearing_diagnostics_block_atomic_publish_without_echo(self) -> None:
+        context = begin_job(
+            self.root,
+            self.repo,
+            self.commit_sha,
+            self.run_key,
+            "ci-secret-diagnostic",
+            _metadata("secret-diagnostic"),
+        )
+        secret = "gho_0123456789abcdefghijklmnop"
+        diagnostic = context.diagnostics_dir / "primary" / "command.log"
+        diagnostic.parent.mkdir(parents=True)
+        diagnostic.write_text(f"authorization={secret}\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "secret leakage") as caught:
+            finalize_job(
+                context,
+                "failure",
+                _validations("failure"),
+                _cleanup("verification-failure"),
+            )
+
+        self.assertNotIn(secret, str(caught.exception))
+        self.assertFalse(context.published_dir.exists())
+        self.assertFalse(context.staging_dir.exists())
+        self.assertFalse(context.lock_path.exists())
+
+    def test_secret_bearing_metadata_is_rejected_before_store_side_effects(self) -> None:
+        secret = "gho_0123456789abcdefghijklmnop"
+        metadata = _metadata("secret-metadata")
+        metadata["classifier_reason"] = f"token={secret}"
+
+        with self.assertRaisesRegex(ValueError, "secret leakage") as caught:
+            begin_job(
+                self.root,
+                self.repo,
+                self.commit_sha,
+                self.run_key,
+                "ci-secret-metadata",
+                metadata,
+            )
+
+        self.assertNotIn(secret, str(caught.exception))
+        self.assertFalse(self.root.exists())
+
+    def test_oversized_diagnostics_block_atomic_publish(self) -> None:
+        context = begin_job(
+            self.root,
+            self.repo,
+            self.commit_sha,
+            self.run_key,
+            "ci-oversized-diagnostic",
+            _metadata("oversized-diagnostic"),
+        )
+        diagnostic = context.diagnostics_dir / "primary" / "command.log"
+        diagnostic.parent.mkdir(parents=True)
+        diagnostic.write_bytes(b"x" * (25 * 1024 * 1024 + 1))
+
+        with self.assertRaisesRegex(ValueError, "25 MiB"):
+            finalize_job(
+                context,
+                "failure",
+                _validations("failure"),
+                _cleanup("verification-failure"),
+            )
+
+        self.assertFalse(context.published_dir.exists())
+        self.assertFalse(context.staging_dir.exists())
+        self.assertFalse(context.lock_path.exists())
+
     def test_context_file_integrity_prevents_path_redirection(self) -> None:
         context = begin_job(
             self.root,

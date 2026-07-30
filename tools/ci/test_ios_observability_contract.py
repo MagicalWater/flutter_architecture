@@ -49,6 +49,30 @@ class IosObservabilityContractTest(unittest.TestCase):
         )
         self.assertIn("IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'", podfile)
 
+    def test_dsym_acceptance_does_not_require_controlled_event(self) -> None:
+        workflow = (
+            ROOT / ".github/workflows/observability-acceptance.yml"
+        ).read_text()
+        ios_job = workflow.split("  ios-symbols:", 1)[1].split(
+            "  observability-summary:", 1
+        )[0]
+
+        self.assertIn("Build iOS production dSYM", ios_job)
+        self.assertIn("Upload iOS dSYM", ios_job)
+        self.assertIn("inputs.emit_controlled_event == true", ios_job)
+        self.assertNotIn(
+            "if: inputs.emit_controlled_event == true",
+            ios_job,
+        )
+
+        upload_block = ios_job.split(
+            "      - name: Upload iOS observability full artifact",
+            1,
+        )[1].split("      - name: Clean iOS observability secrets", 1)[0]
+        self.assertIn("runner.temp }}/observability/", upload_block)
+        self.assertNotIn("ios-staging-acceptance", upload_block)
+        self.assertNotIn("dSYMs", upload_block)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -127,6 +127,16 @@ class ArtifactTransportPolicyTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "no files"):
                 collect_remote_upload_entries([missing], "full")
 
+    def test_remote_diagnostics_secret_scan_blocks_without_echo(self) -> None:
+        secret = "-----BEGIN PRIVATE KEY-----"
+        with tempfile.TemporaryDirectory() as directory:
+            diagnostic = Path(directory) / "build.log"
+            diagnostic.write_text(secret, encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "secret leakage") as caught:
+                collect_remote_upload_entries([diagnostic], "failure-only")
+
+        self.assertNotIn(secret, str(caught.exception))
+
 
 class ArtifactWorkflowContractTest(unittest.TestCase):
     def test_all_workflows_expose_the_same_artifact_transport_choice(self) -> None:

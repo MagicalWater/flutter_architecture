@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 7 Observability and bounded failure evidence
+Status: Active — Task 8 operations guide and runtime readiness
 ```
 
 ## Current Problem
@@ -54,7 +54,7 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–6已完成durable authority、root／manifest contract、atomic writer、retention／capacity、safe local cleanup、manual-local／platform build integration，以及四份workflow的local-first transport policy。Task 6已完成self-hosted multi-job aggregation、bounded GitHub remote exception與local-only summary review。現在進入Task 7；在Task 7完成前：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–7已完成durable authority、root／manifest contract、atomic writer、retention／capacity、safe local cleanup、manual-local／platform build integration、四份workflow local-first transport，以及Observability／failure evidence安全收斂。Task 7已完成controlled-event explicit opt-in、secret leakage scanner與blocked staging安全處置。現在進入Task 8；在Task 8完成前：
 
 ```txt
 不得修改CI_EXECUTION_MODE
@@ -65,11 +65,11 @@ Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–6
 ## Current Next Action
 
 ```txt
-Task 7以TDD收斂Observability與failure evidence
-→ 將controlled event emission預設改為false並保持explicit opt-in
-→ 強化failure diagnostics allowlist／redaction／secret scan
-→ 驗證Android／iOS symbols與dSYM只保留於managed local store
+Task 8完成operator operations guide與runtime readiness
+→ 建立root設定、查詢、pin／unpin、cleanup dry-run／apply／restore操作路徑
+→ 加入static regression與runtime preflight contracts
+→ 驗證clean checkout與正式Mac runtime前置條件
 → focused review與whole-Task review
 → validation與獨立commit
-→ 自動進入Task 8
+→ 自動進入Task 9
 ```

@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import sys
 import tempfile
 from typing import Any, Dict, List, Mapping, Optional, Sequence
@@ -18,6 +19,11 @@ from tools.ci.artifact_contract import (
     sanitize_key,
     validate_artifact_root,
     validate_job_manifest,
+)
+from tools.ci.secret_leakage import (
+    MAX_DIAGNOSTIC_BYTES,
+    assert_secret_safe_text,
+    scan_evidence_paths,
 )
 
 
@@ -270,6 +276,26 @@ def finalize_job(
         validate_job_manifest(manifest)
         summary = _fallback_job_summary(result, evidence_status)
 
+    try:
+        assert_secret_safe_text(
+            json.dumps(manifest, sort_keys=True, separators=(",", ":")),
+            label="job-manifest",
+        )
+        assert_secret_safe_text(summary, label="job-summary")
+        scan_evidence_paths(
+            [context.diagnostics_dir],
+            max_total_bytes=MAX_DIAGNOSTIC_BYTES,
+        )
+    except ValueError:
+        try:
+            shutil.rmtree(context.staging_dir)
+            context.lock_path.unlink(missing_ok=True)
+        except OSError as cleanup_error:
+            raise RuntimeError(
+                "blocked evidence could not be discarded safely; active lock retained"
+            ) from cleanup_error
+        raise
+
     _atomic_write_json(context.staging_dir / "manifest.json", manifest)
     _atomic_write_text(context.staging_dir / "summary.md", summary)
     context.context_path.unlink(missing_ok=True)
@@ -489,7 +515,12 @@ def _validate_begin_metadata(metadata: Mapping[str, Any]) -> Dict[str, Any]:
             value = metadata[field]
             if not isinstance(value, str) or not value:
                 raise ValueError(f"metadata {field} must be a non-empty string")
-    return dict(metadata)
+    validated = dict(metadata)
+    assert_secret_safe_text(
+        json.dumps(validated, sort_keys=True, separators=(",", ":")),
+        label="job-metadata",
+    )
+    return validated
 
 
 def _validate_context_integrity(

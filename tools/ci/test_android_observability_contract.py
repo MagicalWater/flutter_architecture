@@ -45,6 +45,30 @@ class AndroidObservabilityContractTest(unittest.TestCase):
         self.assertIn('verify_android_firebase_config.py', build)
         self.assertIn('Expected Flutter symbols were not generated', build)
 
+    def test_symbol_acceptance_build_does_not_require_controlled_event(self) -> None:
+        workflow = (
+            ROOT / ".github/workflows/observability-acceptance.yml"
+        ).read_text()
+        android_job = workflow.split("  android-symbols:", 1)[1].split(
+            "  ios-symbols:", 1
+        )[0]
+
+        self.assertIn("Build Android production symbols", android_job)
+        self.assertIn("Upload Android Flutter symbols", android_job)
+        self.assertIn("inputs.emit_controlled_event == true", android_job)
+        self.assertNotIn(
+            "if: inputs.emit_controlled_event == true",
+            android_job,
+        )
+
+        upload_block = android_job.split(
+            "      - name: Upload Android observability full artifact",
+            1,
+        )[1].split("      - name: Clean Android observability secrets", 1)[0]
+        self.assertIn("runner.temp }}/observability/", upload_block)
+        self.assertNotIn("android-staging-acceptance", upload_block)
+        self.assertNotIn("flutter-symbols", upload_block)
+
 
 if __name__ == "__main__":
     unittest.main()

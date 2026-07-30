@@ -24,6 +24,11 @@ on:
         required: false
         default: false
         type: boolean
+      emit_controlled_event:
+        description: Opt in to controlled staging event emission
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -48,7 +53,13 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify observability acceptance contract
-        run: python3 -m unittest tools.ci.test_observability_acceptance_workflow
+        run: >-
+          python3 -m unittest
+          tools.ci.test_observability_acceptance_workflow
+          tools.ci.test_android_observability_contract
+          tools.ci.test_ios_observability_contract
+          tools.ci.test_secret_leakage
+          tools.ci.test_artifact_workflow_contract
       - name: Record upload disposition
         run: |
           echo "Upload skipped: PR-safe contract job never reads provider secrets."
@@ -125,7 +136,7 @@ jobs:
           API_BASE_URL: https://api.acme.test
           ARTIFACT_DIR: ${{ runner.temp }}/android-staging-acceptance
           OBSERVABILITY_REMOTE_COLLECTION_ENABLED: 'true'
-          OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED: 'true'
+          OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED: ${{ inputs.emit_controlled_event == true && 'true' || 'false' }}
         run: >-
           bash tools/ci/build_android_environment.sh
           staging release lib/main_staging.dart real
@@ -139,13 +150,14 @@ jobs:
         if: runner.environment == 'github-hosted'
         env:
           STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && 'uploaded' || 'not-executed' }}
+          EVENT_STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && inputs.emit_controlled_event == true && 'requested' || 'not-executed' }}
         run: |
           python3 tools/ci/write_observability_acceptance_evidence.py \
             --output "$RUNNER_TEMP/observability/android.txt" \
             --platform android \
             --commit-sha "$GITHUB_SHA" \
             --release "1.8.0+${GITHUB_RUN_NUMBER}" \
-            --remote-event-status not-executed \
+            --remote-event-status "$EVENT_STATUS" \
             --symbolication-status "$STATUS"
 
       - name: Build managed self-hosted Android observability evidence
@@ -163,6 +175,8 @@ jobs:
           CI_ARTIFACT_ENVIRONMENT: multiple
           CI_ARTIFACT_BUILD_MODE: release
           CI_ARTIFACT_KIND: observability-android
+          EMIT_CONTROLLED_EVENT: ${{ inputs.emit_controlled_event == true && 'true' || 'false' }}
+          CONTROLLED_EVENT_STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && inputs.emit_controlled_event == true && 'requested' || 'not-executed' }}
         run: |
           # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
           bash tools/ci/run_local_ci.sh managed-command observability android bash -lc '
@@ -174,7 +188,7 @@ jobs:
             FIREBASE_ANDROID_APP_ID="$FIREBASE_ANDROID_STAGING_APP_ID" \
               ARTIFACT_DIR="$managed_artifact_dir/android-staging" \
               OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true \
-              OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true \
+              OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED="$EMIT_CONTROLLED_EVENT" \
               bash tools/ci/build_android_environment.sh staging release lib/main_staging.dart real &&
             FIREBASE_ANDROID_APP_ID="$FIREBASE_ANDROID_STAGING_APP_ID" \
               bash tools/ci/upload_android_flutter_symbols.sh \
@@ -185,7 +199,7 @@ jobs:
               --platform android \
               --commit-sha "$GITHUB_SHA" \
               --release "1.8.0+$GITHUB_RUN_NUMBER" \
-              --remote-event-status not-executed \
+              --remote-event-status "$CONTROLLED_EVENT_STATUS" \
               --symbolication-status uploaded
           '
 
@@ -198,7 +212,6 @@ jobs:
           python3 tools/ci/artifact_transport.py preflight
           --transport full
           --path "$RUNNER_TEMP/observability"
-          --path "$RUNNER_TEMP/android-staging-acceptance"
 
       - name: GitHub storage warning for full Android observability artifact
         if: >-
@@ -215,9 +228,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: observability-android-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/observability/
-            ${{ runner.temp }}/android-staging-acceptance/
+          path: ${{ runner.temp }}/observability/
           if-no-files-found: error
           retention-days: 1
       - name: Clean Android observability secrets
@@ -283,7 +294,7 @@ jobs:
           API_BASE_URL: https://api.acme.test
           ARTIFACT_DIR: ${{ runner.temp }}/ios-staging-acceptance
           OBSERVABILITY_REMOTE_COLLECTION_ENABLED: 'true'
-          OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED: 'true'
+          OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED: ${{ inputs.emit_controlled_event == true && 'true' || 'false' }}
           GENERATE_DSYM_FOR_ACCEPTANCE: 'true'
         run: >-
           bash tools/ci/build_ios_environment.sh
@@ -297,13 +308,14 @@ jobs:
         if: runner.environment == 'github-hosted'
         env:
           STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && 'uploaded' || 'not-executed' }}
+          EVENT_STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && inputs.emit_controlled_event == true && 'requested' || 'not-executed' }}
         run: |
           python3 tools/ci/write_observability_acceptance_evidence.py \
             --output "$RUNNER_TEMP/observability/ios.txt" \
             --platform ios \
             --commit-sha "$GITHUB_SHA" \
             --release "1.8.0+${GITHUB_RUN_NUMBER}" \
-            --remote-event-status not-executed \
+            --remote-event-status "$EVENT_STATUS" \
             --symbolication-status "$STATUS"
 
       - name: Build managed self-hosted iOS observability evidence
@@ -318,6 +330,8 @@ jobs:
           CI_ARTIFACT_ENVIRONMENT: multiple
           CI_ARTIFACT_BUILD_MODE: release
           CI_ARTIFACT_KIND: observability-ios
+          EMIT_CONTROLLED_EVENT: ${{ inputs.emit_controlled_event == true && 'true' || 'false' }}
+          CONTROLLED_EVENT_STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && inputs.emit_controlled_event == true && 'requested' || 'not-executed' }}
         run: |
           # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
           bash tools/ci/run_local_ci.sh managed-command observability ios bash -lc '
@@ -328,7 +342,7 @@ jobs:
               "$managed_artifact_dir/ios-production/dSYMs" &&
             ARTIFACT_DIR="$managed_artifact_dir/ios-staging" \
               OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true \
-              OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true \
+              OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED="$EMIT_CONTROLLED_EVENT" \
               GENERATE_DSYM_FOR_ACCEPTANCE=true \
               bash tools/ci/build_ios_environment.sh staging Staging Debug-staging iphonesimulator lib/main_staging.dart real &&
             bash tools/ci/upload_ios_dsyms.sh staging \
@@ -339,7 +353,7 @@ jobs:
               --platform ios \
               --commit-sha "$GITHUB_SHA" \
               --release "1.8.0+$GITHUB_RUN_NUMBER" \
-              --remote-event-status not-executed \
+              --remote-event-status "$CONTROLLED_EVENT_STATUS" \
               --symbolication-status uploaded
           '
 
@@ -352,7 +366,6 @@ jobs:
           python3 tools/ci/artifact_transport.py preflight
           --transport full
           --path "$RUNNER_TEMP/observability"
-          --path "$RUNNER_TEMP/ios-staging-acceptance"
 
       - name: GitHub storage warning for full iOS observability artifact
         if: >-
@@ -369,11 +382,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: observability-ios-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/observability/
-            ${{ runner.temp }}/ios-staging-acceptance/*.app
-            ${{ runner.temp }}/ios-staging-acceptance/dSYMs/
-            ${{ runner.temp }}/ios-staging-acceptance/artifact-metadata.txt
+          path: ${{ runner.temp }}/observability/
           if-no-files-found: error
           retention-days: 1
       - name: Clean iOS observability secrets

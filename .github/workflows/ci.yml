@@ -145,6 +145,12 @@ jobs:
               tools.ci.test_local_build_commands \
               tools.ci.test_ci_execution_mode_contract \
               tools.ci.test_artifact_workflow_contract \
+              tools.ci.test_artifact_store \
+              tools.ci.test_secret_leakage \
+              tools.ci.test_observability_acceptance_workflow \
+              tools.ci.test_android_observability_contract \
+              tools.ci.test_ios_observability_contract \
+              tools.ci.test_ci_secret_cleanup_contract \
               tools.ci.test_shell_portability_contract &&
             dart run melos run analyze &&
             git diff --check
@@ -171,6 +177,12 @@ jobs:
           tools.ci.test_local_build_commands
           tools.ci.test_ci_execution_mode_contract
           tools.ci.test_artifact_workflow_contract
+          tools.ci.test_artifact_store
+          tools.ci.test_secret_leakage
+          tools.ci.test_observability_acceptance_workflow
+          tools.ci.test_android_observability_contract
+          tools.ci.test_ios_observability_contract
+          tools.ci.test_ci_secret_cleanup_contract
           tools.ci.test_shell_portability_contract
 
       - name: Analyze workspace

@@ -147,6 +147,8 @@ jobs:
           python3 -m unittest
           tools.ci.test_environment_workflow_matrix_contract
           tools.ci.test_ios_workflow_contract
+          tools.ci.test_ios_observability_contract
+          tools.ci.test_secret_leakage
 
       - name: Build unsigned iOS Simulator app
         if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'github-hosted'

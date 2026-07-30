@@ -13,12 +13,16 @@ run_key="${CI_RUN_KEY:-unmanaged}"
 job_key="${CI_JOB_KEY:-unmanaged-android-$environment}"
 python_bin="${PYTHON_BIN:-python3}"
 if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is required for $environment Android verification." >&2; exit 1; fi
+observability_remote_collection="${OBSERVABILITY_REMOTE_COLLECTION_ENABLED:-false}"
+observability_acceptance_event="${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}"
+case "$observability_remote_collection" in true|false) ;; *) echo "OBSERVABILITY_REMOTE_COLLECTION_ENABLED must be true or false." >&2; exit 64 ;; esac
+case "$observability_acceptance_event" in true|false) ;; *) echo "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED must be true or false." >&2; exit 64 ;; esac
 "$python_bin" "$repo_root/tools/ci/verify_android_firebase_config.py" "$environment"
 mkdir -p "$artifact_dir"; rm -rf "$flutter_symbols_dir"; rm -f "$artifact_dir"/*.apk "$artifact_dir/artifact-metadata.txt" "$artifact_dir/mapping.txt"
 args=(apk "--$build_mode" --flavor "$environment" -t "$entrypoint" "--dart-define=NATIVE_ENVIRONMENT=$environment" "--dart-define=API_MODE=$api_mode")
 args+=("--dart-define=APP_COMMIT_SHA=$commit_sha")
-[[ "${OBSERVABILITY_REMOTE_COLLECTION_ENABLED:-false}" == "true" ]] && args+=("--dart-define=OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")
-[[ "${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}" == "true" ]] && args+=("--dart-define=OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")
+[[ "$observability_remote_collection" == "true" ]] && args+=("--dart-define=OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")
+[[ "$observability_acceptance_event" == "true" ]] && args+=("--dart-define=OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")
 [[ -z "$api_base_url" ]] || args+=("--dart-define=API_BASE_URL=$api_base_url")
 if [[ "$build_mode" == "release" ]]; then
   mkdir -p "$flutter_symbols_dir"
@@ -103,6 +107,8 @@ package_id=$package_id
 signing=debug signing for verification only
 distribution=not production-ready
 artifact=$(basename "$target_apk")
+observability_remote_collection=$observability_remote_collection
+observability_acceptance_event=$observability_acceptance_event
 flutter_symbols=$([[ -d "$flutter_symbols_dir" ]] && find "$flutter_symbols_dir" -type f | wc -l | tr -d ' ' || echo 0)
 mapping_file=$([[ -f "$artifact_dir/mapping.txt" ]] && echo present || echo not-generated)
 EOF

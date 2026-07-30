@@ -77,6 +77,8 @@ class LocalBuildCommandsTest(unittest.TestCase):
                 "signing=",
                 "distribution=",
                 "artifact=",
+                "observability_remote_collection=",
+                "observability_acceptance_event=",
             ):
                 self.assertIn(field, script)
         self.assertIn("not production-ready", android)
@@ -190,9 +192,30 @@ class LocalBuildCommandsTest(unittest.TestCase):
         self.assertIn('rm -f "$artifact_dir"/*.apk', android)
         self.assertNotIn('rm -rf "$artifact_dir"', android)
         self.assertIn('rm -rf "$artifact_dir"/*.app', ios)
-        self.assertIn('"$artifact_dir/DerivedData"', ios)
+        self.assertIn('build_workspace="$artifact_dir/.build"', ios)
+        self.assertIn('derived_data_dir="$build_workspace/DerivedData"', ios)
+        self.assertIn('cleanup_ios_build_workspace', ios)
+        self.assertIn('trap cleanup_ios_build_workspace EXIT', ios)
+        self.assertIn('[[ "$build_workspace" == "$artifact_dir/.build" ]]', ios)
+        self.assertNotIn('"$artifact_dir/DerivedData"', ios)
         self.assertNotIn('rm -rf "$repo_root/artifacts"', android)
         self.assertNotIn('rm -rf "$repo_root/artifacts"', ios)
+
+    def test_local_observability_controlled_event_defaults_off(self) -> None:
+        script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
+        observability = script.split("execute_observability() {", 1)[1].split(
+            "execute_suite() {", 1
+        )[0]
+
+        self.assertIn(
+            'observability_acceptance_event_enabled="${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}"',
+            observability,
+        )
+        self.assertIn(
+            'OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED="$observability_acceptance_event_enabled"',
+            observability,
+        )
+        self.assertNotIn("OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true", observability)
 
 
 if __name__ == "__main__":

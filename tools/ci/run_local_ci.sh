@@ -145,6 +145,11 @@ execute_ios() {
 execute_observability() {
   local artifact_dir="$1"
   local api_base_url="${API_BASE_URL:-https://api.acme.test}"
+  local observability_acceptance_event_enabled="${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}"
+  case "$observability_acceptance_event_enabled" in
+    true|false) ;;
+    *) echo "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED must be true or false." >&2; return 64 ;;
+  esac
 
   API_BASE_URL="$api_base_url" \
     ARTIFACT_DIR="$artifact_dir/observability/android-production" \
@@ -159,7 +164,7 @@ execute_observability() {
   API_BASE_URL="$api_base_url" \
     ARTIFACT_DIR="$artifact_dir/observability/android-staging" \
     OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true \
-    OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true \
+    OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED="$observability_acceptance_event_enabled" \
     bash tools/ci/build_android_environment.sh \
       staging release lib/main_staging.dart real || return $?
   if [[ -n "${FIREBASE_ANDROID_STAGING_APP_ID:-}" ]]; then
@@ -184,7 +189,7 @@ execute_observability() {
   API_BASE_URL="$api_base_url" \
     ARTIFACT_DIR="$artifact_dir/observability/ios-staging" \
     OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true \
-    OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true \
+    OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED="$observability_acceptance_event_enabled" \
     GENERATE_DSYM_FOR_ACCEPTANCE=true \
     bash tools/ci/build_ios_environment.sh \
       staging Staging Debug-staging iphonesimulator lib/main_staging.dart real || return $?

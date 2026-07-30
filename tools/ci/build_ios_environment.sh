@@ -6,21 +6,41 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 app_dir="$repo_root/apps/flutter_architecture"; ios_dir="$app_dir/ios"
 [[ -n "${ARTIFACT_DIR:-}" ]] || { echo "ARTIFACT_DIR is required for iOS verification." >&2; exit 64; }
 artifact_dir="$ARTIFACT_DIR"; api_base_url="${API_BASE_URL:-}"
+build_workspace="$artifact_dir/.build"
+derived_data_dir="$build_workspace/DerivedData"
 commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
 run_key="${CI_RUN_KEY:-unmanaged}"
 job_key="${CI_JOB_KEY:-unmanaged-ios-$environment}"
 python_bin="${PYTHON_BIN:-python3}"
 if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is required for $environment iOS verification." >&2; exit 1; fi
+observability_remote_collection="${OBSERVABILITY_REMOTE_COLLECTION_ENABLED:-false}"
+observability_acceptance_event="${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}"
+case "$observability_remote_collection" in true|false) ;; *) echo "OBSERVABILITY_REMOTE_COLLECTION_ENABLED must be true or false." >&2; exit 64 ;; esac
+case "$observability_acceptance_event" in true|false) ;; *) echo "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED must be true or false." >&2; exit 64 ;; esac
+
+cleanup_ios_build_workspace() {
+  [[ "$artifact_dir" == /* ]] || { echo "iOS artifact directory must be absolute." >&2; return 64; }
+  [[ "$artifact_dir" != "/" && "$artifact_dir" != "$HOME" ]] || { echo "Unsafe iOS artifact directory." >&2; return 64; }
+  [[ "$build_workspace" == "$artifact_dir/.build" ]] || { echo "Unexpected iOS build workspace: $build_workspace" >&2; return 64; }
+  [[ ! -L "$build_workspace" ]] || { echo "iOS build workspace cannot be a symlink." >&2; return 64; }
+  [[ ! -e "$build_workspace" ]] || rm -rf -- "$build_workspace"
+}
+
+trap cleanup_ios_build_workspace EXIT
 "$python_bin" "$repo_root/tools/ci/verify_ios_firebase_config.py" "$environment"
-mkdir -p "$artifact_dir"; rm -rf "$artifact_dir"/*.app "$artifact_dir/artifact-metadata.txt" "$artifact_dir/DerivedData"
+mkdir -p "$artifact_dir"
+cleanup_ios_build_workspace
+rm -rf "$artifact_dir"/*.app "$artifact_dir/dSYMs"
+rm -f "$artifact_dir/artifact-metadata.txt"
+mkdir -p "$derived_data_dir"
 (cd "$app_dir" && flutter pub get); (cd "$ios_dir" && pod install)
 encode_define() { printf '%s' "$1" | base64 | tr -d '\n'; }
 dart_defines="$(encode_define "NATIVE_ENVIRONMENT=$environment"),$(encode_define "API_MODE=$api_mode"),$(encode_define "APP_COMMIT_SHA=$commit_sha")"
-[[ "${OBSERVABILITY_REMOTE_COLLECTION_ENABLED:-false}" == "true" ]] && dart_defines="$dart_defines,$(encode_define "OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")"
-[[ "${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}" == "true" ]] && dart_defines="$dart_defines,$(encode_define "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")"
+[[ "$observability_remote_collection" == "true" ]] && dart_defines="$dart_defines,$(encode_define "OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")"
+[[ "$observability_acceptance_event" == "true" ]] && dart_defines="$dart_defines,$(encode_define "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")"
 [[ -z "$api_base_url" ]] || dart_defines="$dart_defines,$(encode_define "API_BASE_URL=$api_base_url")"
-xcodebuild -workspace "$ios_dir/Runner.xcworkspace" -scheme "$scheme" -configuration "$configuration" -sdk "$sdk" -derivedDataPath "$artifact_dir/DerivedData" FLUTTER_TARGET="$entrypoint" DART_DEFINES="$dart_defines" CODE_SIGNING_ALLOWED=NO build
-products="$artifact_dir/DerivedData/Build/Products"; app_bundle="$(find "$products" -maxdepth 2 -type d -name '*.app' -print -quit)"
+xcodebuild -workspace "$ios_dir/Runner.xcworkspace" -scheme "$scheme" -configuration "$configuration" -sdk "$sdk" -derivedDataPath "$derived_data_dir" FLUTTER_TARGET="$entrypoint" DART_DEFINES="$dart_defines" CODE_SIGNING_ALLOWED=NO build
+products="$derived_data_dir/Build/Products"; app_bundle="$(find "$products" -maxdepth 2 -type d -name '*.app' -print -quit)"
 [[ -n "$app_bundle" ]] || { echo "Expected iOS app not found under $products" >&2; exit 1; }
 target_app="$artifact_dir/$(basename "$app_bundle")"; cp -R "$app_bundle" "$target_app"
 expected_dsym_name="$(basename "$app_bundle").dSYM"
@@ -92,6 +112,10 @@ bundle_id=$bundle_id
 signing=unsigned verification build
 distribution=not production-ready
 artifact=$(basename "$target_app")
+observability_remote_collection=$observability_remote_collection
+observability_acceptance_event=$observability_acceptance_event
 dsym=$([[ -d "$dsym_set_dir" ]] && echo present || echo not-generated)
 EOF
+cleanup_ios_build_workspace
+trap - EXIT
 echo "iOS verification artifact: $target_app"; cat "$artifact_dir/artifact-metadata.txt"

@@ -20,37 +20,18 @@ Candidate 不代表 commitment。開始 implementation 前仍需 scope review、
 
 每個平台應獨立評估 scaffold、artifact、runtime smoke、plugin support 與維護成本，不建議一次綁成單一大 milestone。
 
-## Candidate — Proposed Milestone 32：CI產物本機化與GitHub儲存空間切換
+## Promoted — Milestone 32：CI產物本機化與GitHub儲存空間切換
 
-目前GitHub私有repository的Actions分鐘與儲存空間已達限制。Repository雖已提供`manual-local`、`self-hosted`與`github-hosted`三種execution mode，但`self-hosted`只避免GitHub-hosted runner分鐘；workflow中的`actions/upload-artifact`仍會把Android、iOS、Observability與failure evidence上傳到GitHub Actions storage。
+此候選已於2026-07-30完成fresh GitHub inventory與Requirement Decision，正式提升為Level 4 active Milestone。
 
-2026-07-30的候選前盤點已確認repository variable為`self-hosted`，且GitHub artifacts與caches均已形成顯著storage壓力。精確數量、bytes、最大來源與可變性限制只由`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`保存；正式Design前必須重新查詢。
+Current authority：
 
-候選目標：
+- Active state：`docs/roadmap/active.md`
+- Proposed Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
+- Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
+- Candidate handoff與舊快照：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
-- 將一般CI、Android／iOS verification artifacts與診斷產物的主要ownership切換到本機或trusted self-hosted Mac。
-- 保留GitHub Actions作為workflow控制面、manual dispatch、status與未來偶發GitHub-hosted驗證入口。
-- 為本機artifact建立commit identity、metadata、retention、容量上限、cleanup與failure evidence規則。
-- 在新本機路線取得runtime acceptance後，才依核准的cleanup manifest刪除既有GitHub artifacts與caches。
-
-Design必須先拍板：
-
-1. Repository預設使用`manual-local`或`self-hosted`。
-2. 本機artifact root、worktree隔離與commit SHA目錄結構。
-3. 成功、失敗、Observability與正式release evidence的retention差異。
-4. Self-hosted模式是否完全禁止`upload-artifact`，以及GitHub job summary要保存哪些可追溯資訊。
-5. `github-hosted`手動例外模式是否仍允許cache與artifact upload。
-6. Branch Protection與required checks在manual-local／self-hosted下的可信語意。
-7. GitHub artifacts／caches的封存、刪除manifest、rollback與清理後驗證。
-
-非目標：
-
-- 不移除`.github/workflows/`。
-- 不把credential、keystore、Apple private key或Firebase service account寫入repository。
-- 不在未確認本機方案不足前導入R2、S3、NAS或新的雲端artifact服務。
-- 不處理production signing、Store distribution或Flutter產品功能。
-
-目前狀態：Candidate only。`Milestone 32`編號與名稱仍是proposed；尚未建立active Milestone、Design Spec、Implementation Plan、branch或implementation。完整候選審查與跨對話handoff見`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`。
+Design尚未取得使用者核准，Implementation Plan與implementation均未開始。
 
 ## Disposition — Documentation Knowledge Expansion
 

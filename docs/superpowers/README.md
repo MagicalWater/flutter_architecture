@@ -46,6 +46,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
+- [`specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`](specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md)：Milestone 32本機artifact ownership、retention、capacity、GitHub transport、cleanup與runtime acceptance的proposed Design；等待使用者核准，尚未建立Plan。
 - [`specs/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery-design.md`](specs/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery-design.md)：修復原Level 1分類不足，定義逐Skill semantic review、TDD language enforcement與holistic closure的Level 3治理設計。
 - [`specs/2026-07-29-adopting-template-product-identity-skill-design.md`](specs/2026-07-29-adopting-template-product-identity-skill-design.md)：已核准的薄型模板產品識別Skill設計，保留中央治理、manifest／Guide authority與安全邊界；其Pilot upgrade conditions已由後續fresh behavioral evidence closure滿足。
 - [`specs/2026-07-25-karpathy-guidelines-adoption-design.md`](specs/2026-07-25-karpathy-guidelines-adoption-design.md)：已核准的Pilot採用設計；執行期間因RED無confirmed gap而未啟用，最終Disposition見對應final review。

@@ -31,8 +31,14 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-None
+Milestone 32 — CI產物本機化與GitHub儲存空間切換
+Status: Active — Design approval gate
 ```
+
+- Active state：`docs/roadmap/active.md`
+- Proposed Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
+- Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
+- Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
 ## Closed milestone routing
 

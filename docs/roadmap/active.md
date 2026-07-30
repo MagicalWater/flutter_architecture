@@ -14,19 +14,19 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 9 runtime acceptance
+Status: Active — Task 10 GitHub storage inventory and exact deletion manifest
 ```
 
 ## Current Problem
 
-Repository目前以`CI_EXECUTION_MODE=self-hosted`執行可信`main`與manual workflow。Self-hosted runner不消耗GitHub-hosted分鐘，但Android、iOS、Observability與failure evidence仍可能透過`actions/upload-artifact`進入GitHub Actions storage。
+Repository目前以`CI_EXECUTION_MODE=self-hosted`執行可信`main`與manual workflow；Task 9已證明CI、Android與iOS self-hosted runs不會增加GitHub artifact或cache。現在的問題是cutover前累積的歷史GitHub storage仍存在，而刪除不可逆，必須先建立fresh inventory、exact-ID deletion manifest、integrity與inventory drift gate。
 
-2026-07-30 Task 9 pre-run與Windows post-run fresh inventory確認：
+2026-07-30 Task 9 final inventory確認：
 
 ```txt
 GitHub Actions artifacts: 110 / 7,835,943,504 bytes
-GitHub Actions caches: 12 / 8,558,394,658 bytes
-Self-hosted runner: water-mac-flutter-architecture / offline / idle
+GitHub Actions caches: 10 / 8,415,432,007 bytes
+Self-hosted runner: water-mac-flutter-architecture / online / idle
 ```
 
 Runtime inventory只由`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`與本Milestone後續runtime evidence保存；Roadmap不承擔可變數字的持續authority。
@@ -54,23 +54,22 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–8已完成。Task 9 Windows manual-local quality／Android、controlled failure、GitHub storage no-growth與self-hosted offline／no-fallback acceptance已通過；Windows runtime findings已修正並由fresh pass驗證。Mac connector目前無法連接、runner offline，且repository尚未設定`CI_ARTIFACT_ROOT`，因此Mac manual-local與self-hosted success仍為blocked。Task 9完成前：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–9已完成。Task 9已通過Windows／Mac manual-local、controlled failure、Observability secret-safe、self-hosted offline no-fallback、self-hosted CI／Android／iOS success與GitHub storage no-growth；正式Mac root為`/Users/water/Developer/ci-artifacts/flutter_architecture`。現在進入Task 10 exact inventory與deletion manifest；Task 10期間：
 
 ```txt
-正式Mac operator artifact root只能依Task 9 acceptance步驟建立與驗證，不得自行擴大路徑或直接清理
-CI_EXECUTION_MODE只能在Task 9受控self-hosted acceptance中切換，並保留前後值與rollback evidence
+只允許只讀盤點、offline fixtures、exact ID分類與manifest integrity gate
+不得依名稱、prefix、workflow或時間範圍直接送出DELETE
+manifest必須完成雙層review並取得使用者再次明確核准後才可進入實際刪除
 不得刪除GitHub artifacts或caches
 ```
 
 ## Current Next Action
 
 ```txt
-恢復bridge-mac connector與self-hosted runner
-→ 只讀確認Mac checkout、toolchain與external root前置條件
-→ 在Mac正式operator root執行manual-local quality／Android／iOS／Observability acceptance
-→ 執行至少一個source-changing self-hosted run並核對GitHub summary與local manifests
-→ 盤點GitHub artifacts／caches但不刪除
+建立GitHub artifact／cache offline API fixtures與RED tests
+→ 實作只讀inventory與exact-ID candidate classification
+→ 實作reviewed manifest、SHA-256、approval token與inventory drift gate
+→ 對fresh GitHub inventory產生deletion manifest但不DELETE
 → focused review與whole-Task review
-→ validation與獨立commit
-→ 自動進入Task 10 exact GitHub cleanup manifest
+→ 停在不可逆刪除前的使用者明確核准gate
 ```

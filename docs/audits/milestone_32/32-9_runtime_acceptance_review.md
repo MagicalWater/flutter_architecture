@@ -1,6 +1,6 @@
 ---
 document_type: runtime-evidence
-status: active
+status: completed
 authoritative_for:
   - milestone-32-task-9-runtime-acceptance-review
 last_reviewed_baseline: 1.13.0
@@ -14,12 +14,12 @@ last_reviewed_baseline: 1.13.0
 Windows manual-local quality: Passed
 Windows manual-local Android: Passed after runtime portability repair
 Controlled quality failure evidence: Passed
-GitHub storage no-growth: Passed for all Windows local runs
+Mac manual-local quality / Android / iOS / Observability: Passed
+Mac self-hosted CI / Android / iOS: Passed
+GitHub storage no-growth: Passed across Windows、Mac manual-local與self-hosted runs
 Self-hosted offline / no-fallback: Passed
-Mac manual-local quality / Android / iOS / Observability: Blocked — bridge-mac account connection unavailable
-Mac self-hosted source-change success: Blocked — runner offline and CI_ARTIFACT_ROOT unset
-Task 9 whole-Task review: Open
-Task 10 cleanup manifest: Forbidden until Task 9 completes
+Task 9 whole-Task review: Passed
+Task 10 cleanup manifest: Unblocked；仍不得刪除GitHub artifacts或caches
 ```
 
 本文件只保存Task 9 runtime evidence。它不核准GitHub artifact／cache刪除，也不建立、apply或purge任何local cleanup manifest。
@@ -42,7 +42,7 @@ Caches
   latest_last_accessed_at: 2026-07-23T17:25:45.915783000Z
 ```
 
-Task 9 Windows local runs與offline queued run後fresh re-query完全相同；count、bytes與latest timestamps均未增加。
+Task 9 Windows local runs與offline queued run後fresh re-query完全相同；count、bytes與latest timestamps均未增加。Mac acceptance開始前再次凍結inventory，artifact數值仍完全相同；cache已由GitHub自然淘汰為10筆，但latest timestamps沒有前進。
 
 ## Windows manual-local quality acceptance
 
@@ -276,48 +276,239 @@ GitHub artifact growth: none
 
 取得證據後已取消run；最終status為`completed / cancelled`。Manual-local仍以相同managed job／run schema產生Windows evidence，因此runner offline不阻止operator本機驗證。
 
-## Mac and self-hosted success blocker
+## Mac operator root and toolchain acceptance
 
-`bridge-mac`對：
+Mac connector恢復後，在不修改`main`的隔離worktree接續：
 
 ```txt
-/Users/water/Developer/projects/flutter_architecture
+worktree: /Users/water/.devspace/worktrees/flutter_architecture-57b58169
+branch: milestone-32-ci-artifact-storage-cutover
+runner: water-mac-flutter-architecture
+runner labels: self-hosted / macOS / ARM64 / flutter-architecture / trusted-main
 ```
 
-連續三次在workspace開啟前回傳connector account error：
+Fresh preflight確認Python、Flutter、Dart、Xcode、CocoaPods、GitHub CLI與磁碟空間可用。正式operator root依Plan指定建立：
 
 ```txt
-We couldn't connect your account. Please try again.
+/Users/water/Developer/ci-artifacts/flutter_architecture
+mode: 0700
+symlink: false
+repository descendant: false
+runner _work descendant: false
+validated by artifact_contract.validate_artifact_root: passed
+repository variable CI_ARTIFACT_ROOT: configured
 ```
 
-同時GitHub runner為`offline`，repository variable狀態為：
+全程只執行retention dry-run；沒有apply、restore、purge或任何手動filesystem cleanup。
+
+## Mac runtime findings and repairs
+
+### Test fixture path portability
+
+首次Mac quality揭露兩項test portability問題：macOS的`/var → /private/var`system alias使`tempfile`fixture被strict symlink contract拒絕；Windows default path test則使用host `Path`語意比較Windows path。
+
+Production symlink拒絕規則沒有放寬。修正只限測試：temporary root先`resolve()`，Windows path改用`PureWindowsPath`比較。54個focused tests與完整186個CI contracts fresh通過。
 
 ```txt
-CI_EXECUTION_MODE=self-hosted
-CI_ARTIFACT_ROOT=<not configured>
+6d52a6d9a7099793e7c537b9a54c754c47ca03b5
+test(ci): 修正Mac路徑可攜性
 ```
 
-依accepted Design，self-hosted缺少explicit root必須fail closed，不得回退到repository、runner `_work`或temp。未取得Mac filesystem access前，不應猜測或建立正式operator root，也不能聲稱iOS、dSYM、Mac Android／quality、Observability或self-hosted local manifest已通過。
+### iOS volatile build output entered permanent evidence
 
-## Remaining gate
-
-Task 9保持open。恢復Mac connector／runner後必須依序完成：
+首次iOS雙建置本身成功，但manifest錯誤納入整個Xcode `DerivedData`：
 
 ```txt
-1. 只讀確認Mac checkout、toolchain、disk與既有runner service
-2. 建立並驗證正式external CI_ARTIFACT_ROOT
-3. Mac manual-local quality、Android、iOS、Observability（emit_controlled_event=false）
-4. 核對App、dSYM、symbols、mapping、redacted evidence與secret absence
-5. Source-changing self-hosted success run
-6. 核對GitHub summary、local manifests與storage no-growth
-7. Task 9 whole-Task review與final commit
+files: 23,689
+bytes: approximately 3.06 GB
 ```
 
-Task 9完成前：
+這違反bounded evidence目標，也會放大checksum、secret scan與retention成本。依TDD修正後：
 
 ```txt
-不得進入Task 10
-不得產生GitHub deletion manifest
-不得刪除GitHub artifacts或caches
-不得直接filesystem-clean managed store
+build workspace: $ARTIFACT_DIR/.build
+DerivedData: $ARTIFACT_DIR/.build/DerivedData
+cleanup target: exact $ARTIFACT_DIR/.build only
+symlink target: rejected
+cleanup timing: before managed job finalize
+```
+
+同一修正也讓Android與iOS metadata持久記錄：
+
+```txt
+observability_remote_collection
+observability_acceptance_event
+```
+
+Manual-local Observability event預設改為`false`，只有明確環境變數才能opt in。
+
+```txt
+08caafecc0d6c1ec3ff1f6f1c322b0768d74a86e
+fix(ci): 收斂Mac產物與事件邊界
+```
+
+Fresh regression：187個CI contracts、shell syntax、documentation checks、workflow semantic lint與diff check均通過。
+
+## Mac manual-local acceptance
+
+### Quality
+
+```txt
+run_key: local-20260730t133038z-11529-d5870ef5
+commit_sha: 6d52a6d9a7099793e7c537b9a54c754c47ca03b5
+run_result: success
+job_key: quality-macos
+execution_mode: manual-local
+host_os: macos
+evidence_status: complete
+checksums: all OK
+cleanup dry-run: passed / no candidates
+```
+
+Coverage包含186個CI contracts、五個package analyze、generated consistency與全部Flutter tests。後續final commit另由self-hosted CI完整重驗。
+
+### Android
+
+```txt
+run_key: local-20260730t133421z-14796-28f9050a
+run_result: success
+development package: com.example.flutterarchitecture.development
+production package: com.example.flutterarchitecture
+Flutter symbols: 3
+mapping.txt: present
+checksums: all OK
+secret scan: passed
+```
+
+Android SDK `apkanalyzer`wrapper在macOS JBR環境會輸出一行非致命Java版本判斷warning；development與production驗證命令皆exit `0`並回傳正確application ID。
+
+### iOS fresh bounded acceptance
+
+```txt
+run_key: local-20260730t134900z-28192-bf4f527d
+commit_sha: 08caafecc0d6c1ec3ff1f6f1c322b0768d74a86e
+run_result: success
+artifact files: 266
+artifact bytes: 232,618,842
+DerivedData entries: 0
+.build entries: 0
+checksums: all OK
+secret scan: passed
+```
+
+Artifacts與identity：
+
+```txt
+Development Simulator .app: com.example.flutterarchitecture.development
+Production unsigned device .app: com.example.flutterarchitecture
+Development dSYM: present
+Production dSYM: present
+provider config / signing material: absent
+observability event: false
+```
+
+### Observability secret-safe acceptance
+
+```txt
+run_key: local-20260730t135207z-34393-ddfe43be
+commit_sha: 08caafecc0d6c1ec3ff1f6f1c322b0768d74a86e
+run_result: success
+retention_class: observability-raw
+artifact files: 282
+artifact bytes: 407,714,127
+DerivedData entries: 0
+.build entries: 0
+checksums: all OK
+secret scan: passed
+```
+
+Closed metadata matrix：
+
+```txt
+Android production: remote_collection=false / acceptance_event=false
+Android staging:    remote_collection=true  / acceptance_event=false
+iOS production:     remote_collection=false / acceptance_event=false
+iOS staging:        remote_collection=true  / acceptance_event=false
+```
+
+Provider config與Firebase app IDs未提供，因此symbol／dSYM upload安全略過，沒有發送controlled event。
+
+## Self-hosted source-change success acceptance
+
+在runner online且`CI_ARTIFACT_ROOT`設定完成後，對commit `08caafe`受控dispatch：
+
+```txt
+CI run:      30549370714 / success
+Android run: 30549373444 / success
+iOS run:     30549376547 / success
+```
+
+全部jobs都由`water-mac-flutter-architecture`執行，沒有fallback至GitHub-hosted：
+
+```txt
+CI:      quality + tests + generated consistency + artifact summary
+Android: development debug + production release + Android summary
+iOS:     development Simulator + production release + iOS summary
+```
+
+Local run aggregation：
+
+```txt
+gh-30549370714-1: success / 3 managed jobs / 0 artifact bytes
+gh-30549373444-1: success / 2 managed jobs / 257,599,547 artifact bytes
+gh-30549376547-1: success / 2 managed jobs / 245,977,066 artifact bytes
+```
+
+每個job均符合：
+
+```txt
+execution_mode=self-hosted
+host_os=macos
+runner_name=water-mac-flutter-architecture
+evidence_status=complete
+checksums=all OK
+summary=Local-only evidence; not downloadable from GitHub.
+DerivedData / .build entries=0
+```
+
+## Final GitHub storage no-growth evidence
+
+三個self-hosted run各自GitHub artifact count與bytes均為`0`。Final aggregate inventory：
+
+```txt
+Artifacts
+  count: 110
+  bytes: 7,835,943,504
+  latest_created_at: 2026-07-24T14:52:05Z
+  latest_updated_at: 2026-07-24T14:52:05Z
+
+Caches
+  count: 10
+  bytes: 8,415,432,007
+  latest_created_at: 2026-07-23T17:25:23.379841000Z
+  latest_last_accessed_at: 2026-07-23T17:25:45.915783000Z
+```
+
+Artifact count、bytes與latest timestamps完全未增加。Cache由pre-run 12筆自然下降為10筆，latest timestamps沒有前進；沒有任何Task 9 run建立GitHub cache。
+
+## Whole-Task review
+
+Task 9全部acceptance gates已完成：
+
+```txt
+Windows manual-local success / controlled failure / fresh recovery: passed
+Mac manual-local quality / Android / iOS / Observability: passed
+Self-hosted offline no-fallback: passed
+Self-hosted CI / Android / iOS success: passed
+Local manifest / checksum / retention / secret-safe evidence: passed
+GitHub artifact and cache no-growth: passed
+```
+
+Task 10 exact GitHub cleanup manifest現在可以開始，但邊界維持：
+
+```txt
+只允許inventory與exact-ID deletion manifest
+不得只依名稱或prefix刪除
+不得在manifest review與使用者再次明確核准前送出DELETE
+不得直接filesystem-clean managed local store
 ```

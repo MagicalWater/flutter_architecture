@@ -32,7 +32,7 @@ Milestone routing 只回答：
 
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Status: Active — Task 9 runtime acceptance
+Status: Active — Task 10 GitHub storage inventory and exact deletion manifest
 ```
 
 - Active state：`docs/roadmap/active.md`
@@ -42,7 +42,7 @@ Status: Active — Task 9 runtime acceptance
 - Plan review：`docs/audits/milestone_32/32-1_implementation_plan_review.md`
 - Task 2–7 reviews：`docs/audits/milestone_32/32-2_artifact_contract_review.md`至`docs/audits/milestone_32/32-7_observability_failure_evidence_review.md`
 - Task 8 runtime readiness：`docs/audits/milestone_32/32-8_runtime_acceptance.md`
-- Task 9 runtime acceptance：`docs/audits/milestone_32/32-9_runtime_acceptance_review.md`
+- Task 9 runtime acceptance：`docs/audits/milestone_32/32-9_runtime_acceptance_review.md`（Windows／Mac manual-local、self-hosted success／offline與GitHub no-growth均已完成）
 - Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
 ## Closed milestone routing

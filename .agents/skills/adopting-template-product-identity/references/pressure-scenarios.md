@@ -159,15 +159,18 @@ Guide摘要與ADR、environments.json、source或tests衝突時，以Skill內容
 
 Expected：由中央治理分類需求；此 Skill 不成為 owning domain route。
 
-## 受限 Evidence 規則
+## Behavioral evidence 規則
 
-當無法取得真正獨立、無既有記憶的 behavioral context 時，必須精確記錄：
+當某次 revalidation 無法取得真正獨立、無既有記憶的 behavioral context 時，必須精確記錄該次執行能證明與不能證明的範圍：
 
 ```txt
 machine discovery GREEN: Verified
 explicit static contract: Verified
-fresh no-memory behavioral discovery: Pending
-Pilot status: Approved with restrictions
+fresh no-memory behavioral revalidation: Pending
+Skill status: retain current registry status
+new behavioral evidence claimed by this run: No
 ```
 
-不得以目前對話已知的先前內容取代 isolated behavioral evidence。
+不得以目前對話已知的先前內容取代 isolated behavioral evidence，也不得因單次 runtime 無法建立 fresh context，就靜默覆蓋已由正式 evidence closure 支持的 current registry status。
+
+此 Skill 已由 [`adopting_template_product_identity_behavioral_pressure_evidence.md`](../../../../docs/audits/adopting_template_product_identity_behavioral_pressure_evidence.md) 與 [`adopting_template_product_identity_approval_closure_review.md`](../../../../docs/audits/adopting_template_product_identity_approval_closure_review.md) 完成 `Approved` closure。未來若 trigger、permissions、managed paths、workflow order 或 supported runtime 改變，仍必須依中央 Skill adoption governance 重新評估所需 behavioral evidence。

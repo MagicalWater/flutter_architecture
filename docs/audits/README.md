@@ -119,6 +119,7 @@ Final / Holistic Review
 
 ### Repository-local Skill adoption reviews
 
+- [`repository_local_skills_traditional_chinese_review.md`](repository_local_skills_traditional_chinese_review.md)：四個repository-local Skills共12份文件的繁體中文化、trigger語意等價、authority與clean-checkout discovery審查。
 - [`adopting_template_product_identity_design_review.md`](adopting_template_product_identity_design_review.md)：`adopting-template-product-identity`薄型Skill Design的Level 3 Full Task review、P1修正、authority check與user approval gate。
 - [`adopting_template_product_identity_plan_review.md`](adopting_template_product_identity_plan_review.md)：對應Implementation Plan的六Task拆分、RED／GREEN、registry contract、authority與clean-checkout完整Plan Task review。
 - [`adopting_template_product_identity_main_integration_holistic_review.md`](adopting_template_product_identity_main_integration_holistic_review.md)：合併後`main`的完整文件／Skill authority審查、Windows portability修正、full regression與remote push gate。

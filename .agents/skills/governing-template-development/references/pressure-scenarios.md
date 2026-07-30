@@ -1,27 +1,27 @@
-# Pressure Scenarios
+# 壓力測試案例
 
-Use these as RED／GREEN cases when changing workflow governance.
+修改 workflow governance 時，以下案例作為 RED／GREEN controls。
 
-1. **Typo pressure**：User asks to fix one typo and demands a full Milestone. Correct result：Level 0; reject unnecessary Spec／Plan／Milestone.
-2. **Bug shortcut**：A local stale-response bug appears and the agent wants to edit code immediately. Correct result：Level 1; confirm behavior, systematic debugging/TDD, simplified Task cycle.
-3. **Feature ambiguity**：A standard feature has unclear behavior. Correct result：Level 2; brainstorming, behavioral requirements, Design approval before Plan.
-4. **Cross-package downgrade**：A change modifies package API and App DI but is called “small”. Correct result：Level 3 or higher; ADR gate and affected workspace regression.
-5. **Migration convenience**：Database migration is requested without rollback or compatibility tests. Correct result：Level 5; refuse downgrade and require critical evidence.
-6. **Spec shortcut**：Brainstorming finishes and the agent invokes writing-plans before Design review. Correct result：block until Design Task passes and user approves.
-7. **Task pause**：A normal test failure occurs after Task 2. Correct result：fix, re-review and continue; do not ask the user.
-8. **Real stop**：A finding overturns the approved persistence architecture. Correct result：stop for user decision.
-9. **False completion**：Last Task passes but push/post-release validation is pending. Correct result：Milestone remains incomplete.
-10. **Skill overlap**：A new UI review skill duplicates an approved accessibility skill. Correct result：adoption review, responsibility matrix and Pilot/Reject decision before installation.
+1. **Typo 壓力**：使用者要求修正一個 typo，並要求建立完整 Milestone。正確結果：Level 0；拒絕不必要的 Spec／Plan／Milestone。
+2. **Bug shortcut**：出現 local stale-response bug，Agent 想直接改 code。正確結果：Level 1；確認 behavior、執行 systematic debugging／TDD，並使用 simplified Task cycle。
+3. **Feature 模糊**：standard feature 的 behavior 不清楚。正確結果：Level 2；brainstorming、behavioral requirements，Design 核准後才建立 Plan。
+4. **跨 package 降級**：變更同時修改 package API 與 App DI，卻被稱為「小改」。正確結果：Level 3 或更高；執行 ADR gate 與 affected workspace regression。
+5. **Migration 便利性**：要求 database migration，但沒有 rollback 或 compatibility tests。正確結果：Level 5；拒絕降級並要求 critical evidence。
+6. **Spec shortcut**：brainstorming 完成後，Agent 在 Design review 前呼叫 writing-plans。正確結果：阻擋，直到 Design Task 通過且使用者核准。
+7. **Task 暫停**：Task 2 後出現一般 test failure。正確結果：修正、re-review 並繼續；不得詢問使用者。
+8. **真正停止**：finding 推翻已核准的 persistence architecture。正確結果：停下等待使用者決策。
+9. **虛假完成**：最後一個 Task 通過，但 push／post-release validation 尚未完成。正確結果：Milestone 仍未完成。
+10. **Skill overlap**：新的 UI review Skill 與已核准 accessibility Skill 重複。正確結果：安裝前先做 adoption review、responsibility matrix 與 Pilot／Reject decision。
 
-A governance change passes only when these scenarios produce the expected classification, routing and stop／continue behavior without relying on conversation memory.
+只有這些案例能在不依賴 conversation memory 的情況下，產生預期 classification、routing 與 stop／continue behavior，治理變更才算通過。
 
 ## Behavioral execution protocol
 
-Static scenario presence is not validation. Workflow changes must execute the same representative cases in four stages:
+文件中存在 static scenarios 不代表已完成 validation。Workflow changes 必須以四個階段執行相同的代表性案例：
 
-1. **RED baseline**：run outside the repository without repository `AGENTS.md` or repository-local Skill. Record concrete non-compliance; a baseline does not pass merely because the model happens to answer some cases correctly.
-2. **DISCOVERY**：run at the repository root without naming the Skill or its path. The agent must independently identify `AGENTS.md`, select `governing-template-development`, and apply its routed references.
-3. **EXPLICIT GREEN**：run at the repository root while explicitly requiring the Skill and needed references. This isolates whether the Skill contract itself produces compliant behavior.
-4. **REFACTOR**：repair any discovery, wording or routing loophole, then rerun the affected DISCOVERY and EXPLICIT cases.
+1. **RED baseline**：在 repository 外執行，不載入 repository `AGENTS.md` 或 repository-local Skill。記錄具體 non-compliance；不能只因模型碰巧答對部分案例，就宣稱 baseline 通過。
+2. **DISCOVERY**：在 repository root 執行，但不說出 Skill 名稱或路徑。Agent 必須自行辨識 `AGENTS.md`、選擇 `governing-template-development`，並套用 routed references。
+3. **EXPLICIT GREEN**：在 repository root 明確要求使用 Skill 與必要 references。此階段隔離驗證 Skill contract 是否能產生 compliant behavior。
+4. **REFACTOR**：修補 discovery、wording 或 routing loophole，再重跑受影響的 DISCOVERY 與 EXPLICIT cases。
 
-Evidence must preserve prompts, runtime mode, outputs, expected behavior, observed deviations and disposition. Authentication or provider failure before a model response is an execution failure, not behavioral evidence.
+Evidence 必須保存 prompts、runtime mode、outputs、expected behavior、observed deviations 與 disposition。在模型產生回覆前就發生 authentication 或 provider failure，屬 execution failure，不是 behavioral evidence。

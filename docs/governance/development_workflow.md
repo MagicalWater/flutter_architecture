@@ -58,6 +58,8 @@ Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不�
 
 新增Skill必須先做confirmed gap、overlap、authority、permission、version、rollback與pressure-scenario審查。Approved、Approved with restrictions、Pilot、Deprecated與Rejected disposition由Workflow Governance Skill reference定義。
 
+Repository-local Skill 的`SKILL.md`、references、範例與pressure scenarios預設使用繁體中文；Skill名稱、檔名、路徑、status values與必要技術識別保留英文。翻譯trigger或gate wording後必須重新執行focused adoption review，不能把語言修正當成不需驗證的純排版變更。
+
 ### Adopted Skill registry
 
 | Skill | Status | Trigger | Responsibility | Forbidden responsibility | Companion | Rollback |

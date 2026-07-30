@@ -1,36 +1,36 @@
 ---
 name: starting-feature-work
-description: Use when starting a new product feature, screen, user flow, or Figma-driven implementation in this repository.
+description: 當此 repository 要開始新的產品功能、畫面、使用者流程或 Figma-driven implementation 時使用。
 ---
 
-# Starting Feature Work
+# 開始功能開發
 
-## Core rule
+## 核心規則
 
-This is a thin user-facing entry point. It does not own classification, approval, branch, Task, validation, or release policy.
+這是一個薄型的使用者入口。它不擁有工作分類、核准、branch、Task、validation 或 release policy。
 
-**REQUIRED SUB-SKILL:** Use `governing-template-development` before feature analysis, Design, Plan, or implementation.
+**必要子 Skill：**在進行 feature analysis、Design、Plan 或 implementation 前，必須先使用 `governing-template-development`。
 
-## Input contract
+## 輸入 contract
 
-Accept a short brief containing any available combination of:
+接受簡短需求描述，其中可以包含下列任意組合：
 
-- feature or screen goal;
-- Figma or other design source;
-- behaviors or integrations to add;
-- constraints, exclusions, or known dependencies.
+- feature 或 screen 目標；
+- Figma 或其他 design source；
+- 要加入的 behaviors 或 integrations；
+- constraints、exclusions 或已知 dependencies。
 
-Do not require the user to restate governance templates.
+不得要求使用者重新貼一次治理模板。
 
-## Required behavior
+## 必要行為
 
-1. Preserve the user's wording and intent as the request input.
-2. Invoke `governing-template-development` and produce its Requirement Decision first.
-3. Inspect the current feature, Design System, navigation, domain, data, API, state, accessibility, localization, offline, testing, and documentation boundaries only as routed by that decision.
-4. If the user asked only to discuss or explore, do not start Design or implementation.
-5. Follow the central governance Skill's approval, worktree／branch, Task, validation, release, and stop rules without duplicating them here.
+1. 把使用者原始 wording 與 intent 保留為 request input。
+2. 先呼叫 `governing-template-development` 並產生其 Requirement Decision。
+3. 只依該 Decision 的 routing，檢查目前 feature、Design System、navigation、domain、data、API、state、accessibility、localization、offline、testing 與 documentation boundaries。
+4. 使用者只要求討論或探索時，不得開始 Design 或 implementation。
+5. 完整遵守中央治理 Skill 的 approval、worktree／branch、Task、validation、release 與 stop rules，不得在此重複建立第二套規則。
 
-## User-facing invocation
+## 給使用者的呼叫方式
 
 ```txt
 使用 repository-local starting-feature-work Skill。

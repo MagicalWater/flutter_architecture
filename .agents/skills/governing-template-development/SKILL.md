@@ -1,103 +1,103 @@
 ---
 name: governing-template-development
-description: Use when evaluating, planning, implementing, reviewing, migrating, releasing, or governing work in this Flutter template repository.
+description: 當此 Flutter 模板 repository 中的工作需要評估、規劃、實作、審查、遷移、發布或治理時使用。
 ---
 
-# Governing Template Development
+# 治理模板開發
 
-## Core rule
+## 核心規則
 
-Before design, planning, implementation or review, classify the work and produce a Requirement Decision. Repository policy and current artifacts override this skill. This skill orchestrates Superpowers; it does not replace them.
+開始 Design、Plan、implementation 或 review 前，必須先分類工作並產生 Requirement Decision。Repository policy 與 current artifacts 的權威高於此 Skill。此 Skill 負責編排 Superpowers，不取代 Superpowers。
 
-## Required sequence
+## 必要順序
 
-1. Inspect the request and relevant current authority.
-2. Read [work classification](references/work-classification.md) and select Level 0–5.
-3. Produce the Requirement Decision below.
-4. Read [artifact routing](references/artifact-routing.md) and select mandatory, optional and forbidden artifacts, skills and validation.
-5. Apply [two-layer Task governance](references/two-layer-task-governance.md) at the selected mode.
-6. Use the routed Superpowers skills in order.
-7. Keep current authority, review evidence and release state synchronized.
-8. If any required validation fails, keep the current Task open; fix and fresh re-verify before acceptance or completion commit.
+1. 檢查需求與相關 current authority。
+2. 閱讀[工作分類](references/work-classification.md)，選擇 Level 0～5。
+3. 產生下方 Requirement Decision。
+4. 閱讀[artifact routing](references/artifact-routing.md)，選擇必要、可選與禁止的 artifacts、Skills 與 validation。
+5. 依選定模式套用[雙層 Task 治理](references/two-layer-task-governance.md)。
+6. 依序使用已路由的 Superpowers Skills。
+7. 保持 current authority、review evidence 與 release state 同步。
+8. 任一必要 validation 失敗時，維持目前 Task 開啟；修正並 fresh re-verify 後，才可接受或建立 completion commit。
 
 ## Requirement Decision
 
 ```md
 ## Requirement Decision
 
-- Request:
-- Problem:
-- Current behavior:
-- Expected behavior:
-- Value:
-- Classification:
-- Decision: Accept | Accept with reduced scope | Defer | Reject
-- Scope:
-- Non-goals:
-- Behavioral requirements required:
-- Design Spec required:
-- Implementation Plan required:
-- ADR required:
-- Task governance mode:
-- Worktree／branch:
-- Regression level:
-- Release required:
-- Post-release validation:
-- Required Superpowers skills:
-- Required artifacts:
+- Request（需求）：
+- Problem（問題）：
+- Current behavior（目前行為）：
+- Expected behavior（預期行為）：
+- Value（價值）：
+- Classification（分類）：
+- Decision（決策）：Accept | Accept with reduced scope | Defer | Reject
+- Scope（範圍）：
+- Non-goals（非目標）：
+- Behavioral requirements required（是否需要行為需求）：
+- Design Spec required（是否需要 Design Spec）：
+- Implementation Plan required（是否需要 Implementation Plan）：
+- ADR required（是否需要 ADR）：
+- Task governance mode（Task 治理模式）：
+- Worktree／branch：
+- Regression level（Regression 等級）：
+- Release required（是否需要發布）：
+- Post-release validation（發布後驗證）：
+- Required Superpowers skills（必要 Superpowers Skills）：
+- Required artifacts（必要 artifacts）：
 ```
 
-Do not invent artifacts for Level 0／1. Do not downgrade cross-cutting, architecture, migration, security, platform or release-critical work to avoid governance. Record the selected level, decision, routed artifacts, required validations and stop conditions before invoking another workflow skill.
+不得為 Level 0／1 虛構 artifacts。不得為了逃避治理而降低 cross-cutting、architecture、migration、security、platform 或 release-critical 工作的等級。呼叫其他 workflow Skill 前，必須先記錄選定 Level、Decision、routed artifacts、必要 validations 與停止條件。
 
-## Approval and acceptance gates
+## 核准與接受 gate
 
-- A Design Spec may move from `proposed` to `accepted` only after its full Task gate and explicit user approval.
-- An Implementation Plan may move from `proposed` to `accepted` only after its full Task gate and explicit user approval.
-- Implementation may not begin while the parent Plan remains proposed.
-- A Task with failed required validation remains open or blocked; a later Task cannot retroactively prove it passed.
-- Release identity does not imply Milestone closure. Closure requires push and post-release evidence.
+- Design Spec 只有在完成完整 Task gate 並取得使用者明確核准後，才能從 `proposed` 轉為 `accepted`。
+- Implementation Plan 只有在完成完整 Task gate 並取得使用者明確核准後，才能從 `proposed` 轉為 `accepted`。
+- Parent Plan 仍為 `proposed` 時，不得開始 implementation。
+- 必要 validation 失敗的 Task 必須維持 open 或 blocked；後續 Task 不能回頭冒充它當時已通過。
+- Release identity 不等於 Milestone closure。Closure 必須完成 push 與 post-release evidence。
 
-## Decision gates
+## Decision gate
 
-- `Accept`：problem、value、scope與success criteria清楚。
-- `Accept with reduced scope`：保留價值並明確削減scope與non-goals。
-- `Defer`：記錄前置條件、重新評估條件與roadmap／backlog disposition。
-- `Reject`：記錄與template定位、成本、風險或重複能力的衝突。
+- `Accept`：problem、value、scope 與 success criteria 清楚。
+- `Accept with reduced scope`：保留價值，並明確削減 scope 與 non-goals。
+- `Defer`：記錄前置條件、重新評估條件與 roadmap／backlog disposition。
+- `Reject`：記錄與 template 定位、成本、風險或重複能力的衝突。
 
-## Superpowers relationship
+## 與 Superpowers 的關係
 
-- Use `brainstorming` for accepted Level 2–5 design work.
-- Use `writing-plans` only after the Design Spec completes repository Task governance and user approval.
-- Use `test-driven-development` for feature and bug implementation.
-- Use `systematic-debugging` for failures or unexpected behavior before fixes.
-- Use `using-git-worktrees` when isolation is required by the routing matrix.
-- Use `subagent-driven-development` or `executing-plans` for approved plans.
-- Use review skills and `verification-before-completion` as methods inside repository review gates.
-- `finishing-a-development-branch` cannot declare repository or Milestone closure before release and post-release gates pass.
+- 已接受的 Level 2～5 Design 工作使用 `brainstorming`。
+- 只有 Design Spec 完成 repository Task governance 並取得使用者核准後，才使用 `writing-plans`。
+- Feature 與 bug implementation 使用 `test-driven-development`。
+- Failure 或 unexpected behavior 在修正前使用 `systematic-debugging`。
+- Routing matrix 要求隔離時使用 `using-git-worktrees`。
+- 已核准的 Plan 使用 `subagent-driven-development` 或 `executing-plans`。
+- 在 repository review gate 內使用 review Skills 與 `verification-before-completion` 作為方法。
+- Release 與 post-release gate 尚未通過前，`finishing-a-development-branch` 不得宣稱 repository 或 Milestone 已完成。
 
 ## Coding companion
 
-After classification and all required Design／Plan approvals, implementation, refactor and production code review routes must also load `karpathy-guidelines`. It is a subordinate heuristic companion only; it never becomes the user-facing entry point or an authority for Level, scope, approval, Task, validation, release or closure.
+完成分類與所有必要 Design／Plan 核准後，production code 的 implementation、refactor 與 code review route 還必須載入 `karpathy-guidelines`。它只是一個從屬的 heuristic companion，絕不成為使用者入口，也不擁有 Level、scope、approval、Task、validation、release 或 closure authority。
 
-Do not load it for pure requirement discussion, approval decisions, roadmap disposition, documentation-only Level 0 work or release metadata unless production code is also being reviewed.
+純需求討論、核准決策、roadmap disposition、只有文件的 Level 0 工作或 release metadata，不得載入此 companion；除非同時正在審查 production code。
 
-## Template product identity domain route
+## 模板產品識別 domain route
 
-After an accepted Requirement Decision identifies full template adoption that changes cross-platform Android／iOS product identity or development／staging／production display-name mapping, use `adopting-template-product-identity` as a subordinate domain Skill.
+當已接受的 Requirement Decision 辨識出完整模板採用，且工作會修改跨平台 Android／iOS 產品識別或 development／staging／production 顯示名稱映射時，使用 `adopting-template-product-identity` 作為從屬 domain Skill。
 
-Do not route API-only changes, visual-only rebranding, bounded single-platform repair, environment contract changes, signing, or Store distribution through this Skill without a separate central classification. The domain Skill does not classify or approve its own request and does not replace this governance Skill.
+API-only change、visual-only rebranding、有界的單一平台 repair、environment contract change、signing 或 Store distribution，不得在沒有獨立中央分類的情況下交由此 Skill。Domain Skill 不得自行分類或核准需求，也不取代此治理 Skill。
 
-## Stop and continue
+## 停止與繼續
 
-Continue automatically after an accepted Task. Stop only for:
+Task 通過後自動繼續下一個 Task。只有下列情況才停止：
 
-1. Scope or architecture decision requiring the user.
-2. External service, credential, manual action or environment blocker.
-3. A P0／P1 finding that overturns an approved Spec or Plan.
-4. Entire Milestone completion.
+1. 需要使用者決定的 scope 或 architecture decision。
+2. External service、credential、manual action 或 environment blocker。
+3. 推翻已核准 Spec 或 Plan 的 P0／P1 finding。
+4. 整個 Milestone 完成。
 
-Ordinary findings, test failures, implementation errors and stale documentation are fixed and re-verified without stopping.
+一般 findings、test failures、implementation errors 與 stale documentation 必須直接修正並重新驗證，不得停下詢問。
 
-## Skill adoption
+## Skill 採用
 
-Before adding or updating another skill, apply [skill adoption governance](references/skill-adoption-governance.md). Use [pressure scenarios](references/pressure-scenarios.md) to verify this skill and future workflow changes.
+新增或更新其他 Skill 前，套用[Skill 採用治理](references/skill-adoption-governance.md)。使用[壓力測試案例](references/pressure-scenarios.md)驗證此 Skill 與後續 workflow changes。

@@ -1,40 +1,40 @@
 ---
 name: karpathy-guidelines
-description: Use when implementing, refactoring, or reviewing production code where unnecessary abstraction, unrelated changes, scope creep, or unverifiable work may occur.
+description: 當 implementation、refactor 或 production code review 可能出現不必要 abstraction、無關修改、scope creep 或無法驗證的工作時使用。
 ---
 
 # Karpathy Guidelines
 
-Adapted from `multica-ai/andrej-karpathy-skills`, path `skills/karpathy-guidelines/SKILL.md`, pinned commit `2c606141936f1eeef17fa3043a72095b4765b9c2`.
+改編自 `multica-ai/andrej-karpathy-skills` 的 `skills/karpathy-guidelines/SKILL.md`，固定於 commit `2c606141936f1eeef17fa3043a72095b4765b9c2`。
 
-**REQUIRED GOVERNANCE:** The current Requirement Decision, accepted Design／Plan／ADR, repository policy and routed Superpowers workflow override these heuristics.
+**必要治理：**Current Requirement Decision、已接受的 Design／Plan／ADR、repository policy 與 routed Superpowers workflow 的權威高於這些 heuristics。
 
-## Think before coding
+## Coding 前先思考
 
-- Read the affected authority, source, callers and tests before editing.
-- Resolve ambiguity from repository evidence when possible; stop only when approved scope or architecture truly needs a user decision.
-- State assumptions that affect behavior or validation.
+- 編輯前先讀取受影響的 authority、source、callers 與 tests。
+- 能從 repository evidence 釐清 ambiguity 時直接處理；只有 approved scope 或 architecture 確實需要使用者決策時才停止。
+- 明確寫出會影響 behavior 或 validation 的 assumptions。
 
-## Simplicity first
+## 簡單優先
 
-- Implement the smallest solution that satisfies accepted scope.
-- Reuse current code, platform features and installed dependencies before adding abstractions.
-- Do not add interfaces, factories, registries, generic frameworks or future scaffolding without demonstrated need.
+- 實作滿足 accepted scope 的最小方案。
+- 新增 abstraction 前，先重用目前 code、platform features 與 installed dependencies。
+- 沒有 confirmed need 時，不新增 interfaces、factories、registries、generic frameworks 或 future scaffolding。
 
-## Surgical changes
+## 精準修改
 
-- Keep the diff inside the Task boundary.
-- Do not combine a bounded fix with renaming, formatting, comment cleanup or adjacent refactors.
-- Fix a shared root cause when evidence shows one; do not patch unrelated paths “while here”.
+- Diff 保持在 Task boundary 內。
+- 不得把有界修正與 renaming、formatting、comment cleanup 或 adjacent refactors 混在一起。
+- Evidence 證明存在 shared root cause 時，修正共同根因；不得以「順便」為理由修改無關路徑。
 
-## Goal-driven execution
+## 以目標驅動執行
 
-- Define the observable result and the command or evidence that proves it.
-- A change is not complete until required review, tests and repository validation pass freshly.
-- Record deliberate non-goals and rejected scope expansion.
+- 定義 observable result，以及能證明它的 command 或 evidence。
+- 必要 review、tests 與 repository validation fresh pass 前，變更不算完成。
+- 記錄刻意保留的 non-goals 與 rejected scope expansion。
 
-## Restrictions
+## 限制
 
-This Skill must not classify work; change approval, stop, Task, branch, commit, release or closure gates; shrink accepted scope; remove required security, migration, rollback, accessibility, error handling or validation evidence; or trigger for pure discussion, approval decisions, roadmap disposition, documentation-only Level 0 work or release metadata unless production code is also under review.
+此 Skill 不得分類工作；不得修改 approval、stop、Task、branch、commit、release 或 closure gate；不得縮減 accepted scope；不得移除必要 security、migration、rollback、accessibility、error handling 或 validation evidence；純討論、approval decision、roadmap disposition、只有文件的 Level 0 工作或 release metadata 不得觸發，除非同時正在審查 production code。
 
-Pressure protocol: [references/pressure-scenarios.md](references/pressure-scenarios.md).
+壓力測試協議：[references/pressure-scenarios.md](references/pressure-scenarios.md)。

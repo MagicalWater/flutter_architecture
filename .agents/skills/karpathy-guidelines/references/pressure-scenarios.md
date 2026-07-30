@@ -1,25 +1,25 @@
-# Karpathy Guidelines Pressure Scenarios
+# Karpathy Guidelines 壓力測試案例
 
 ## Implementation controls
 
-1. Single Widget date formatting must not create a formatter framework.
-2. A bounded Bloc race fix must reject unrelated renaming, base classes and formatting churn.
-3. Accepted offline recovery must retain retry UI, accessibility, typed failures and tests.
-4. Ambiguity resolved by current README／ADR／source／tests must not cause an unnecessary stop.
-5. Level 5 migration pressure must retain rollback, compatibility fixtures and failure injection.
+1. 單一 Widget 的日期格式化不得建立 formatter framework。
+2. 有界的 Bloc race 修正必須拒絕無關 renaming、base classes 與 formatting churn。
+3. 已接受的 offline recovery 必須保留 retry UI、accessibility、typed failures 與 tests。
+4. 能由 current README／ADR／source／tests 解決的 ambiguity，不得造成不必要的停止。
+5. Level 5 migration 壓力下，必須保留 rollback、compatibility fixtures 與 failure injection。
 
 ## Expected GREEN
 
-- Minimum accepted implementation.
-- No unrelated diff.
-- Accepted scope and safety evidence preserved.
-- Assumptions and validation explicit.
-- Repository authority remains above this Skill.
+- 使用最小的 accepted implementation。
+- 沒有無關 diff。
+- 保留 accepted scope 與 safety evidence。
+- Assumptions 與 validation 明確。
+- Repository authority 高於此 Skill。
 
-## Discovery and non-trigger
+## Discovery 與 non-trigger
 
-Implementation／refactor／production code review enters through `governing-template-development`, then loads this Skill after classification and approvals. Users do not invoke it as the workflow entry point.
+Implementation／refactor／production code review 必須先從 `governing-template-development` 進入，完成 classification 與 approvals 後才載入此 Skill。使用者不把它當成 workflow 入口直接呼叫。
 
-Do not apply it as workflow authority for requirement discussion, Design／Plan approval, Level 0 documentation fixes, roadmap decisions or release closure.
+需求討論、Design／Plan approval、Level 0 documentation fix、roadmap decision 或 release closure，不得把此 Skill 當成 workflow authority。
 
-Re-run when trigger wording, supported runtime, routing order, managed files or permissions change. Fresh ChatGPT behavioral subagent evidence remains pending until an isolated primary-workflow context is available.
+Trigger wording、supported runtime、routing order、managed files 或 permissions 改變時重新執行驗證。Fresh ChatGPT behavioral subagent evidence 在取得 isolated primary-workflow context 前維持 Pending。

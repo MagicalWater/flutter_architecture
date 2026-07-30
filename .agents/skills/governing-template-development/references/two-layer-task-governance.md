@@ -1,6 +1,6 @@
-# Two-layer Task Governance
+# 雙層 Task 治理
 
-## Modes
+## 模式
 
 ### Minimal — Level 0
 
@@ -11,17 +11,17 @@ change → diff review → focused validation → authority check → commit
 ### Simplified — Level 1
 
 ```txt
-reproduce／confirm → implement with TDD or focused fix → focused review
+reproduce／confirm → 使用 TDD 或 focused fix 實作 → focused review
 → findings → fix → re-review → affected validation → authority check → commit
 ```
 
 ### Standard — Level 2
 
-Use the complete formal Task cycle for Design, Plan and each implementation unit. Feature regression is required; full workspace regression is conditional on affected boundaries.
+Design、Plan 與每個 implementation unit 都使用完整 formal Task cycle。Feature regression 必須執行；full workspace regression 是否需要，依受影響 boundary 決定。
 
-### Full — Level 3–4
+### Full — Level 3～4
 
-Every Design Spec, Implementation Plan and implementation unit is a formal Task:
+每個 Design Spec、Implementation Plan 與 implementation unit 都是 formal Task：
 
 ```txt
 create／implement
@@ -29,7 +29,7 @@ create／implement
 → findings
 → fix
 → focused re-review
-→ whole-task holistic review
+→ whole-Task holistic review
 → documentation authority check
 → required validation
 → Open P0 = 0
@@ -38,43 +38,43 @@ create／implement
 → next Task
 ```
 
-Design must pass before Plan creation. Plan must pass before implementation.
+Design 必須先通過，才可建立 Plan。Plan 必須先通過，才可 implementation。
 
-## Automatic continuation
+## 自動繼續
 
-After a Task passes, continue directly to the next Task. Do not stop for ordinary findings, failed tests, implementation defects or stale documents; fix and re-run the gate.
+Task 通過後直接進入下一個 Task。不得因一般 findings、failed tests、implementation defects 或 stale documents 停下；必須修正並重跑 gate。
 
-Stop only for user-owned scope/architecture decisions, external/manual blockers, P0/P1 findings overturning approved artifacts, or complete Milestone closure.
+只有使用者擁有的 scope／architecture decision、external／manual blocker、推翻 approved artifacts 的 P0／P1 finding，或完整 Milestone closure 才停止。
 
 ## Milestone closure
 
 ```txt
 holistic review
 → cross-Task consistency
-→ architecture and authority review
+→ architecture 與 authority review
 → runtime／remote evidence
 → full regression
-→ findings and fixes
+→ findings 與 fixes
 → holistic re-review
-→ VERSION／CHANGELOG／roadmap/current authority sync
-→ release and archive decision
-→ commit and push
+→ VERSION／CHANGELOG／roadmap／current authority sync
+→ release 與 archive decision
+→ commit 與 push
 → clean-checkout／post-release validation
 → formal closure
 ```
 
-The last implementation Task does not complete a Milestone. Open P0 must be zero and every P1 must have disposition.
+最後一個 implementation Task 通過，不代表 Milestone 已完成。Open P0 必須為零，且每個 P1 都必須有 disposition。
 
-## Acceptance and commit gate
+## 接受與 commit gate
 
-A Task may be committed with completion semantics only after all required validation passes. A failing Task stays open or is explicitly blocked／rejected. A later Task may repair it, but must record the recovery and cannot rewrite the earlier gate as passed.
+只有全部必要 validation 通過後，Task 才能以 completion semantics commit。失敗的 Task 必須維持 open，或明確標記為 blocked／rejected。後續 Task 可以修復，但必須記錄 recovery，不能回寫早期 gate 為已通過。
 
-Design and Plan remain `proposed` until their full Task cycle and explicit user approval complete. Implementation cannot start from a proposed Plan.
+Design 與 Plan 在完成完整 Task cycle 並取得使用者明確核准前，都維持 `proposed`。不得從 proposed Plan 開始 implementation。
 
 ## Evidence chain
 
-Each formal Task records Task ID, artifact scope, focused findings, fixes, fresh re-review, whole-task coverage, authority check, exact validation and independent commit. `Resolved` without fix and re-review evidence is insufficient.
+每個 formal Task 都要記錄 Task ID、artifact scope、focused findings、fixes、fresh re-review、whole-Task coverage、authority check、exact validation 與 independent commit。只標記 `Resolved`，但沒有 fix 與 re-review evidence，不足以通過。
 
 ## Critical additions — Level 5
 
-Require rollback/recovery, compatibility matrix, migration fixtures, failure injection, platform artifacts and explicit deferred scope where applicable.
+依適用範圍要求 rollback／recovery、compatibility matrix、migration fixtures、failure injection、platform artifacts 與明確的 deferred scope。

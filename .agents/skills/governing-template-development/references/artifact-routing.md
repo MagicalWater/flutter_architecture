@@ -1,60 +1,59 @@
-# Artifact and Superpowers Routing
+# Artifact 與 Superpowers 路由
 
-| Requirement | L0 | L1 | L2 | L3 | L4 | L5 |
+| 需求 | L0 | L1 | L2 | L3 | L4 | L5 |
 |---|---|---|---|---|---|---|
 | Requirement Decision | brief | required | required | required | formal | formal |
 | Behavioral requirements | no | optional | required | required | required | required |
 | Brainstorming | no | optional | required | required | required | required |
 | Design Spec | no | usually no | required | required | required | required |
 | Implementation Plan | no | inline | required | required | required | required |
-| ADR gate | no | no | conditional | required when stable boundary changes | required | required when architecture changes |
-| Two-layer Task mode | minimal | simplified | standard | full | full | full-critical |
+| ADR gate | no | no | conditional | stable boundary 改變時 required | required | architecture 改變時 required |
+| 雙層 Task 模式 | minimal | simplified | standard | full | full | full-critical |
 | Worktree／branch | no | optional | recommended | required | required | required |
-| Regression | focused | affected | feature/integration | affected workspace | full | full + compatibility/platform |
-| Release | no | conditional | conditional | usually | required by Milestone disposition | required |
+| Regression | focused | affected | feature／integration | affected workspace | full | full＋compatibility／platform |
+| Release | no | conditional | conditional | usually | 依 Milestone disposition required | required |
 | Post-release | no | no | conditional | conditional | required | required |
 
 ## Artifact ownership
 
-- Behavioral requirements and technical design live in the approved Design Spec.
-- ADR owns stable architecture decisions, not task sequencing.
-- Implementation Plan owns ordered steps, file scope, validation and commit boundaries.
-- Audits own findings, re-review and evidence.
-- Source, tests and CI own runtime truth.
-- Project Context and Guides own current state and reusable policy.
-- VERSION and CHANGELOG own release identity and release history.
+- Behavioral requirements 與 technical design 由已核准的 Design Spec 保存。
+- ADR 擁有 stable architecture decisions，不擁有 Task sequencing。
+- Implementation Plan 擁有 ordered steps、file scope、validation 與 commit boundaries。
+- Audits 擁有 findings、re-review 與 evidence。
+- Source、tests 與 CI 擁有 runtime truth。
+- Project Context 與 Guides 擁有 current state 與 reusable policy。
+- VERSION 與 CHANGELOG 擁有 release identity 與 release history。
 
-## Superpowers order
+## Superpowers 順序
 
 ```txt
 Classification
-→ brainstorming when routed
+→ 依路由使用 brainstorming
 → Design Spec
-→ Design Task governance and user approval
+→ Design Task governance 與使用者核准
 → writing-plans
-→ Plan Task governance and user approval
-→ worktree when routed
+→ Plan Task governance 與使用者核准
+→ 依路由建立 worktree
 → TDD／systematic debugging
-→ karpathy-guidelines for implementation／refactor／production code review
-→ executing-plans or subagent-driven-development
+→ implementation／refactor／production code review 搭配 karpathy-guidelines
+→ executing-plans 或 subagent-driven-development
 → requesting／receiving code review
 → verification-before-completion
 → finishing-development-branch
-→ repository release and post-release closure
+→ repository release 與 post-release closure
 ```
 
-Repository gates override a Superpowers shortcut. In particular, writing-plans cannot begin before the Design Spec is accepted, and implementation cannot begin before the Plan is accepted.
+Repository gate 的優先順序高於 Superpowers shortcut。尤其 Design Spec 尚未 accepted 前，不得開始 writing-plans；Plan 尚未 accepted 前，不得開始 implementation。
 
-`karpathy-guidelines` is never a workflow entry point. It loads only after classification and required approvals, and is excluded from pure discussion, approval gates, Level 0 documentation-only work, roadmap disposition and release closure unless production code is also under review.
+`karpathy-guidelines` 絕不是 workflow 入口。它只在分類與必要核准完成後載入；純討論、approval gate、Level 0 documentation-only work、roadmap disposition 與 release closure 不使用它，除非同時正在審查 production code。
 
-
-## Acceptance state transitions
+## 接受狀態轉換
 
 ```txt
-Design proposed → full Design Task gate → user approval → Design accepted
-Plan proposed → full Plan Task gate → user approval → Plan accepted
+Design proposed → 完整 Design Task gate → 使用者核准 → Design accepted
+Plan proposed → 完整 Plan Task gate → 使用者核准 → Plan accepted
 Accepted Plan → implementation Tasks
 Local final review → push／clean-checkout／remote validation → Milestone closure
 ```
 
-A failed gate leaves the current artifact proposed, active, blocked or rejected. Do not label it accepted merely because its file or commit exists.
+Gate 失敗時，artifact 必須維持 proposed、active、blocked 或 rejected。不得只因檔案或 commit 已存在，就把它標記為 accepted。

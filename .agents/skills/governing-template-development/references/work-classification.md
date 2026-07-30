@@ -1,28 +1,27 @@
-# Work Classification
+# 工作分類
 
-Classify by highest applicable risk. Ambiguous work moves upward until evidence supports a lower level.
+依最高適用風險分類。模糊工作先往較高等級移動，直到 evidence 足以支持較低等級。
 
-| Level | Typical scope | Mandatory | Forbidden |
+| Level | 典型範圍 | 必要項目 | 禁止事項 |
 |---|---|---|---|
-| 0 — Trivial | typo, comment, non-semantic formatting, obvious one-line metadata correction | current authority check, focused validation | formal Spec, Plan, ADR, Milestone, full regression unless release metadata changes |
-| 1 — Small Fix | single bounded bug, local test correction, narrow refactor | problem confirmation, expected behavior, simplified Task cycle, affected tests | formal Milestone without evidence; unrelated refactor |
-| 2 — Standard Feature | one feature capability with bounded integration | brainstorming, behavioral requirements, Design, Plan, standard Task governance | skipping Spec／Plan approval; generic framework without need |
-| 3 — Cross-cutting | multiple features/packages, shared contracts, DI or integration boundary | formal Design／Plan, ADR gate, full Task governance, affected workspace regression | local-only validation; silent architecture change |
-| 4 — Architecture／Milestone | stable ownership, framework adoption, repository-wide governance | feasibility／scope decision, Design／Plan, full two-layer governance, holistic review, release decision | implementation before approval; parallel authority |
-| 5 — Critical | database/credential migration, security, platform, production release pipeline | Level 4 plus rollback, compatibility, failure injection, clean checkout, remote/platform evidence, release and post-release validation | downgrade to reduce cost; closure without runtime evidence |
+| 0 — Trivial | typo、comment、非語意 formatting、明顯的單行 metadata 修正 | current authority check、focused validation | formal Spec、Plan、ADR、Milestone；除非 release metadata 改變，否則禁止 full regression |
+| 1 — Small Fix | 單一有界 bug、local test 修正、狹窄 refactor | 確認問題與 expected behavior、simplified Task cycle、affected tests | 沒有 evidence 卻建立 formal Milestone；無關 refactor |
+| 2 — Standard Feature | 單一 feature capability 與有界 integration | brainstorming、behavioral requirements、Design、Plan、standard Task governance | 跳過 Spec／Plan 核准；沒有需求卻建立 generic framework |
+| 3 — Cross-cutting | 多個 features／packages、shared contracts、DI 或 integration boundary | formal Design／Plan、ADR gate、full Task governance、affected workspace regression | 只做 local validation；靜默 architecture change |
+| 4 — Architecture／Milestone | stable ownership、framework adoption、repository-wide governance | feasibility／scope decision、Design／Plan、full two-layer governance、holistic review、release decision | 核准前 implementation；建立平行 authority |
+| 5 — Critical | database／credential migration、security、platform、production release pipeline | Level 4，加上 rollback、compatibility、failure injection、clean checkout、remote／platform evidence、release 與 post-release validation | 為降低成本而降級；沒有 runtime evidence 卻 closure |
 
-## Upgrade signals
+## 升級訊號
 
-Upgrade when work changes dependency direction, public contract, persistence authority, security boundary, supported platform claim, release process, repository-wide governance or irreversible data state.
+當工作會改變 dependency direction、public contract、persistence authority、security boundary、supported platform claim、release process、repository-wide governance 或 irreversible data state 時，提升等級。
 
-## Anti-over-governance
+## 防止過度治理
 
-- Level 0 never creates a Milestone solely to fix wording.
-- Level 1 uses an inline decision and simplified Task cycle unless behavior or architecture is uncertain.
-- Test count or file count alone does not justify Level 3+.
-- A tool or skill installation is Level 4 only when it changes repository workflow or authority; a local optional helper may be Level 1–2.
+- Level 0 不得只為修正 wording 而建立 Milestone。
+- Level 1 使用 inline decision 與 simplified Task cycle；除非 behavior 或 architecture 不確定。
+- Test count 或 file count 本身不足以支持 Level 3 以上。
+- Tool 或 Skill installation 只有在改變 repository workflow 或 authority 時才是 Level 4；local optional helper 可以是 Level 1～2。
 
+## 分類 evidence
 
-## Classification evidence
-
-Before routing, record the signals that selected the level and any higher-level signal considered. When two levels appear plausible, choose the higher level until repository evidence proves the lower one is safe. Classification may be revised only through a new Requirement Decision; it must not be silently downgraded during implementation.
+Routing 前，記錄支持該等級的訊號，以及曾考慮的更高等級訊號。兩個等級都可能成立時，先選較高者，直到 repository evidence 證明較低等級安全。Classification 只能透過新的 Requirement Decision 修訂；implementation 期間不得靜默降級。

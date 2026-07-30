@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 10 completed / awaiting independent cleanup approval
+Status: Active — Task 10 drift re-review completed / awaiting new independent cleanup approval
 ```
 
 ## Current Problem
@@ -25,7 +25,7 @@ Repository目前以`CI_EXECUTION_MODE=self-hosted`執行可信`main`與manual wo
 
 ```txt
 GitHub Actions artifacts: 110 / 7,835,943,504 bytes
-GitHub Actions caches: 10 / 8,415,432,007 bytes
+GitHub Actions caches: 8 / 6,403,177,326 bytes
 Self-hosted runner: water-mac-flutter-architecture / online / idle
 ```
 
@@ -54,7 +54,7 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–10已完成。Task 10已建立並review exact-ID GitHub deletion manifest `48e2233a0cee0f5d9cad29e2`，範圍為110個artifacts與10個caches，共16,251,375,511 bytes。現在停在Task 11不可逆cleanup前的獨立使用者核准gate：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–10已完成。第一次Task 11核准後，fresh GET發現兩個舊cache已由GitHub移除，工具在任何DELETE前fail closed；舊manifest `48e2233a0cee0f5d9cad29e2`與approval均已失效。後續review又發現GitHub `expired`旗標會改變但不影響DELETE scope，因此以TDD把drift fingerprint收斂為exact deletion scope；intermediate manifest `b6af1142e872515b7f8252d1`也已supersede。Current reviewed manifest為`9772870197227aed2ff33db6`，範圍為110個artifacts與8個caches，共14,239,120,830 bytes。現在重新停在Task 11不可逆cleanup前的獨立使用者核准gate：
 
 ```txt
 不得修改reviewed manifest或沿用drift後的scope
@@ -66,8 +66,8 @@ Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–1
 ## Current Next Action
 
 ```txt
-報告reviewed manifest ID、SHA、object count、bytes與不可逆影響
-→ 取得使用者獨立明確cleanup核准
+報告replacement reviewed manifest ID、SHA、object count、bytes與不可逆影響
+→ 取得使用者新的獨立明確cleanup核准
 → Task 11先fresh GET並驗證manifest hash與inventory無drift
 → 只有全部gate一致時依exact IDs刪除
 → 任一drift回到Task 10重新產生／review／核准

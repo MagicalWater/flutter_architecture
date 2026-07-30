@@ -32,7 +32,7 @@ Milestone routing 只回答：
 
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Status: Active — Task 10 completed / independent cleanup approval required
+Status: Active — Task 10 drift re-review completed / new independent cleanup approval required
 ```
 
 - Active state：`docs/roadmap/active.md`
@@ -44,6 +44,7 @@ Status: Active — Task 10 completed / independent cleanup approval required
 - Task 8 runtime readiness：`docs/audits/milestone_32/32-8_runtime_acceptance.md`
 - Task 9 runtime acceptance：`docs/audits/milestone_32/32-9_runtime_acceptance_review.md`（Windows／Mac manual-local、self-hosted success／offline與GitHub no-growth均已完成）
 - Task 10 reviewed GitHub cleanup manifest：`docs/audits/milestone_32/32-9_github_cleanup_manifest_review.md`
+- Task 11 cleanup execution：`docs/audits/milestone_32/32-10_github_cleanup_execution.md`（第一次核准因fresh inventory drift在0個DELETE時fail closed；replacement manifest等待新核准）
 - Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
 ## Closed milestone routing

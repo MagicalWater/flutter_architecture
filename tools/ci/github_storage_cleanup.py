@@ -198,9 +198,39 @@ class Inventory:
             "caches": [item.to_inventory_dict() for item in self.caches],
         }
 
+    def deletion_scope_dict(self) -> Dict[str, Any]:
+        return {
+            "repository": self.repository,
+            "artifacts": [
+                {
+                    "object_type": "artifact",
+                    "object_id": item.object_id,
+                    "name": item.name,
+                    "bytes": item.bytes,
+                    "created_at": item.created_at,
+                    "updated_at": item.updated_at,
+                    "workflow_run_id": item.workflow_run_id,
+                    "ref": item.ref,
+                }
+                for item in self.artifacts
+            ],
+            "caches": [
+                {
+                    "object_type": "cache",
+                    "object_id": item.object_id,
+                    "key": item.key,
+                    "ref": item.ref,
+                    "bytes": item.bytes,
+                    "created_at": item.created_at,
+                    "last_accessed_at": item.last_accessed_at,
+                }
+                for item in self.caches
+            ],
+        }
+
     @property
     def sha256(self) -> str:
-        return _sha256_json(self.scope_dict())
+        return _sha256_json(self.deletion_scope_dict())
 
     def totals_dict(self) -> Dict[str, Dict[str, int]]:
         return {

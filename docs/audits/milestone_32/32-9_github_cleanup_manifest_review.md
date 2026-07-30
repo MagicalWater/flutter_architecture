@@ -19,7 +19,10 @@ Production read-only inventory: Passed
 Real reviewed deletion manifest: Created and verified
 GitHub DELETE requests executed: 0
 Task 10 whole-Task review: Passed
-Task 11 cleanup execution: Blocked pending independent user approval
+Task 11 cleanup execution: Fresh inventory drift blocked the first approved attempt
+Superseded approval scope: 48e2233a0cee0f5d9cad29e2
+Stable-scope reviewed manifest: 9772870197227aed2ff33db6
+GitHub DELETE requests executed: 0
 ```
 
 本Task只建立GitHub Actions storage的fresh inventory、exact-ID deletion manifest與不可逆操作前的安全gate。沒有刪除artifact、cache或local managed store內容。
@@ -105,8 +108,8 @@ replacement evidence routes
 ### GREEN and regression
 
 ```txt
-Focused GitHub cleanup tests: 14 passed
-Repository CI contract tests: 200 passed
+Focused GitHub cleanup tests: 15 passed
+Repository CI contract tests: 202 passed
 Python 3.9 compile: passed
 Documentation checks: passed
 Workflow semantic lint: passed
@@ -129,13 +132,14 @@ direct CLI import
 production exact-ID DELETE endpoints
 artifact／cache name與key secret pattern拒絕且不回顯
 partial delete structured attempts與failed exact ID
+non-delete metadata drift不阻擋相同exact scope
 ```
 
 Unit tests只使用fake API client；沒有對GitHub送出DELETE。
 
-## Real fresh inventory
+## Initial reviewed inventory — superseded by drift
 
-Production `inventory` CLI於2026-07-30只讀取得：
+Production `inventory` CLI於2026-07-30初次只讀取得：
 
 ```txt
 Repository: MagicalWater/flutter_architecture
@@ -176,7 +180,7 @@ Replacement evidence route：
 docs/audits/milestone_32/32-9_runtime_acceptance_review.md
 ```
 
-## Reviewed real deletion manifest
+初次reviewed manifest：
 
 Manifest保存在checkout與runner `_work`之外的formal managed store：
 
@@ -210,7 +214,110 @@ Approval token SHA-256:
 8032bd10d257d9c4c0611886d14df499c33e553c60118dfc1bf6d473e0ca727a
 ```
 
-Manifest含120組unique `(object_type, object_id)`，其count與bytes和fresh inventory完全一致。Reviewed manifest建立後再次fresh GET，inventory SHA、exact IDs與bytes仍一致，沒有drift。
+Manifest含120組unique `(object_type, object_id)`，其count與bytes在建立及初次review時和fresh inventory一致。
+
+2026-07-30 23:16（Asia/Taipei）使用者以完整approval token執行正式CLI時，delete前fresh GET發現inventory drift，工具在任何DELETE前fail closed：
+
+```txt
+error: GitHub inventory drift detected; regenerate and review manifest
+```
+
+Fresh comparison確認不是metadata時間變更，也沒有新增object；GitHub端已不存在下列兩個舊cache：
+
+```txt
+cache 5944279142
+  bytes: 386,978,487
+
+cache 5992099875
+  bytes: 1,625,276,194
+
+missing total:
+  count: 2
+  bytes: 2,012,254,681
+```
+
+因此manifest `48e2233a0cee0f5d9cad29e2`與其approval均正式失效，不得再次使用。
+
+## Replacement fresh inventory
+
+Drift後fresh inventory：
+
+```txt
+Repository: MagicalWater/flutter_architecture
+Initial full-metadata Inventory SHA-256: 00c6d89fb4bee1fe113413cdf5de70e2fe2cdca3450c04decc2a0b641187fa5b
+
+Artifacts
+  count: 110
+  bytes: 7,835,943,504
+
+Caches
+  count: 8
+  bytes: 6,403,177,326
+
+All objects
+  count: 118
+  bytes: 14,239,120,830
+```
+
+沒有新增object，也沒有現存object的ID、bytes或候選metadata變更。Classification更新為：
+
+```txt
+legacy-github-artifact: 110
+legacy-github-cache: 8
+```
+
+建立replacement manifest `b6af1142e872515b7f8252d1`後，fresh GET又發現artifact `8568824484`的GitHub `expired`旗標由`false`變成`true`。該object仍存在，且ID、名稱、bytes、時間、workflow run與ref均未變。原gate因把`expired`、artifact `head_sha`與cache `version`納入inventory SHA而不必要地拒絕相同DELETE scope。
+
+依TDD新增回歸後，`inventory_sha256`改為只綁定DELETE候選scope：
+
+```txt
+repository
+artifact exact ID / name / bytes / created_at / updated_at / workflow_run_id / ref
+cache exact ID / key / bytes / created_at / last_accessed_at / ref
+```
+
+完整`expired`、artifact `head_sha`與cache `version`仍保存在inventory輸出供審查，但不再影響不可逆DELETE gate。任何object增減、ID、bytes、名稱、時間或ref變更仍會fail closed。
+
+Manifest `b6af1142e872515b7f8252d1`在取得使用者核准前即被stable-scope redesign supersede，不得使用。
+
+## Current reviewed deletion manifest
+
+Replacement manifest保存在同一formal managed store：
+
+```txt
+Manifest ID:
+9772870197227aed2ff33db6
+
+Manifest path:
+/Users/water/Developer/ci-artifacts/flutter_architecture/cleanup-manifests/github/9772870197227aed2ff33db6/deletion-manifest.json
+
+Review status:
+reviewed
+
+Reviewed by:
+milestone-32-task-10-stable-scope-rereview
+
+Reviewed at:
+2026-07-30T15:27:30Z
+```
+
+Integrity：
+
+```txt
+Deletion-scope Inventory SHA-256:
+d53ec46b8fadc023a1e637f0a1cc1343a2817340bbef5f179644d99735a30235
+
+Payload SHA-256:
+28937a4da2d223aaea5868b2bae82fd092a213549db54edeb0258532d7c4cb26
+
+Whole-file SHA-256 / sidecar SHA-256:
+a1c14d0030c75cbe3ce1158417e24d86d4ae6d9624b47e5a04b111998de74979
+
+Approval token SHA-256:
+1175521c73e4ac8e6db8fd893a3d1ce2de2eaceabd4cf0853b1ebca6f8661282
+```
+
+Current manifest含118組unique `(object_type, object_id)`。建立後連續兩次fresh GET確認deletion-scope inventory SHA、totals、exact IDs與bytes完全一致。
 
 ## Irreversible delete gates
 
@@ -226,7 +333,7 @@ review.status=reviewed
 輸入exact approval token
 CLI明確提供--execute-delete
 repository一致
-fresh GET inventory SHA一致
+fresh GET deletion-scope inventory SHA一致
 fresh exact IDs與bytes一致
 ```
 
@@ -248,13 +355,14 @@ error_type
 
 ## Explicit non-actions
 
-本Task實際執行過的production commands只有：
+本Task與第一次Task 11 pre-delete gate實際執行過的production commands只有：
 
 ```txt
 inventory
 manifest pending
 manifest reviewed
 delete without --execute-delete gate rejection
+delete with valid approval blocked by fresh inventory drift before first DELETE
 ```
 
 以下皆未執行：
@@ -283,4 +391,4 @@ exact-ID production endpoints: complete
 real dry-run manifest: complete
 ```
 
-Task 10完成並強制停止。Task 11只能在使用者對上述manifest ID、數量、bytes與不可逆範圍給出獨立明確核准後開始。
+Task 10在drift與stable-scope修正後重新完成review並再次強制停止。Task 11只能在使用者對current manifest `9772870197227aed2ff33db6`、118個objects、14,239,120,830 bytes與不可逆範圍給出新的獨立明確核准後重新開始；舊approval不得沿用。

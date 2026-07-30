@@ -302,6 +302,28 @@ class GitHubStorageCleanupTest(unittest.TestCase):
 
         self.assertEqual(self.client.delete_calls, [])
 
+    def test_non_delete_metadata_drift_keeps_exact_scope_valid(self) -> None:
+        manifest_path = self._write_reviewed_manifest()
+        payload = load_deletion_manifest(manifest_path)
+        token = approval_token_for_manifest_id(payload["manifest_id"])
+        self.client.artifacts[0]["expired"] = True
+        self.client.artifacts[0]["workflow_run"]["head_sha"] = "b" * 40
+        self.client.caches[0]["version"] = "cache-version-2"
+
+        result = delete_from_manifest(self.client, manifest_path, token)
+
+        self.assertEqual(
+            self.client.delete_calls,
+            [
+                ("artifact", 101),
+                ("artifact", 102),
+                ("cache", 201),
+                ("cache", 202),
+            ],
+        )
+        self.assertEqual(result.deleted_artifact_ids, (101, 102))
+        self.assertEqual(result.deleted_cache_ids, (201, 202))
+
     def test_delete_uses_exact_ids_artifacts_first_then_caches(self) -> None:
         manifest_path = self._write_reviewed_manifest()
         payload = load_deletion_manifest(manifest_path)

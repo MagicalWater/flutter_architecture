@@ -32,7 +32,7 @@ Milestone routing 只回答：
 
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Status: Active — Task 1 durable artifact authority
+Status: Active — Task 9 runtime acceptance
 ```
 
 - Active state：`docs/roadmap/active.md`
@@ -40,6 +40,8 @@ Status: Active — Task 1 durable artifact authority
 - Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
 - Accepted Plan：`docs/superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`
 - Plan review：`docs/audits/milestone_32/32-1_implementation_plan_review.md`
+- Task 2–7 reviews：`docs/audits/milestone_32/32-2_artifact_contract_review.md`至`docs/audits/milestone_32/32-7_observability_failure_evidence_review.md`
+- Task 8 runtime readiness：`docs/audits/milestone_32/32-8_runtime_acceptance.md`
 - Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
 ## Closed milestone routing

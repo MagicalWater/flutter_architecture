@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
 set -euo pipefail
 environment="$1"; scheme="$2"; configuration="$3"; sdk="$4"; entrypoint="$5"; api_mode="$6"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

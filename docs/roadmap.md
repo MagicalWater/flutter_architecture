@@ -28,7 +28,7 @@ Other platforms: Dependency-ready
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Template Baseline: 1.13.0
-Current gate: Proposed Design Spec已完成repository review，等待使用者核准
+Current gate: Task 8已完成，進入Task 9 Windows／Mac／self-hosted runtime acceptance
 ```
 
 完整 active scope、design、gate與 next action：

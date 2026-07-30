@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.13.0
 
 ## Scope
 
-本指南說明 repository CI quality gates、Android verification artifact、Branch Protection 建議、常見失敗處理與 rollback 流程。
+本指南說明 repository CI quality gates、managed local artifact store、Android／iOS verification evidence、Branch Protection 建議、常見失敗處理、cleanup與rollback流程。
 
 Durable architecture contract 由 `docs/adr/adr-023-repository-ci-quality-gates-android-verification-artifact.md` 保存；本指南不取代 ADR，也不宣稱 GitHub repository settings 已被修改。
 
@@ -44,22 +44,28 @@ gh variable set CI_EXECUTION_MODE --body github-hosted
 
 四份workflow的manual dispatch都有`execution_mode` choice：`repository-default`沿用repository variable，另外三個選項只覆寫該次run。未知值、舊`local`／`github`或空值一律fail closed；不會自動fallback到付費runner。
 
-### Current GitHub quota constraint
+### Managed local artifact ownership and GitHub quota boundary
 
-`self-hosted`只代表job不使用GitHub-hosted runner分鐘，不代表GitHub storage為零。只要workflow仍執行`actions/upload-artifact`，產物就會進入GitHub Actions storage；GitHub-hosted模式使用的`actions/cache`也會占用GitHub cache storage。
+`manual-local`與`self-hosted`目前都使用repository-owned managed local artifact store。日常成功、失敗、Android／iOS verification與Observability raw evidence不再透過`actions/upload-artifact`進入GitHub Actions storage；四份workflow也不再使用`actions/cache`。
 
-目前GitHub Actions分鐘與storage均已達限制。在正式完成本機artifact storage cutover前，需要完全避免新的GitHub execution或artifact upload時，使用：
+GitHub仍負責event、dispatch、check、logs與`$GITHUB_STEP_SUMMARY`。`github-hosted`只保留人工例外路線，manual dispatch必須明確選擇`artifact_transport`：
+
+```txt
+repository-default → none
+none               → 不建立GitHub artifact
+failure-only       → 只允許有界文字／log／JSON與指定golden PNG，7天、每job 25 MiB
+full               → 人工明確選擇、1天retention，summary顯示storage warning
+```
+
+`failure-only`與`full`都會先執行secret leakage scanner；provider config、service account、signing material、APK、`.app`、dSYM與symbols不會因failure route被隱式上傳。
+
+若需要暫停self-hosted execution而完全改由人員本機驗證，使用：
 
 ```bash
 gh variable set CI_EXECUTION_MODE --body manual-local
 ```
 
-這只是既有緊急operational route，不代表候選架構已核准。下一個候選大階段、目前storage盤點、Design待決事項與禁止提前清理的邊界，見：
-
-- `docs/roadmap/candidates.md`
-- `docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
-
-在新本機artifact路線取得acceptance、cleanup manifest獲得核准前，不得批量刪除GitHub artifacts或caches。
+既有GitHub artifacts與caches仍不得提前批量刪除。只有Milestone 32 runtime acceptance完成、exact deletion manifest經focused／whole-cleanup review且取得使用者另一次明確核准後，才能按GitHub object ID執行刪除。
 
 Self-hosted runner：
 
@@ -79,6 +85,183 @@ cd /Users/water/actions-runner/flutter-architecture
 ```
 
 Runner離線時job保持queued，GitHub目前最多等待24小時後失敗；repository不自動改派GitHub-hosted。Self-hosted PR全部skipped，且`skipped`不代表PR已驗證。
+
+## Managed Artifact Store Operations
+
+### Artifact root configuration
+
+正式變數：
+
+```txt
+CI_ARTIFACT_ROOT
+```
+
+Self-hosted必須明確設定checkout外的absolute root；缺值時fail closed，不會回退到runner `_work`、`RUNNER_TEMP`或repository。Mac operator目標範例：
+
+```bash
+export CI_ARTIFACT_ROOT=/Users/water/Developer/ci-artifacts/flutter_architecture
+export CI_MANAGED_EXECUTION_MODE=self-hosted
+```
+
+此路徑只是operator configuration，不是source default。Windows manual-local可明確設定：
+
+```powershell
+$env:CI_ARTIFACT_ROOT = 'D:\Developer\ci-artifacts\flutter_architecture'
+$env:CI_MANAGED_EXECUTION_MODE = 'manual-local'
+```
+
+若Windows manual-local未提供`CI_ARTIFACT_ROOT`，預設為：
+
+```text
+%LOCALAPPDATA%\flutter_architecture\ci-artifacts
+```
+
+POSIX manual-local未提供時，預設為：
+
+```text
+${XDG_STATE_HOME:-$HOME/.local/state}/flutter_architecture/ci-artifacts
+```
+
+Root不得位於repository／worktree、runner `_work`、runner temp、filesystem root或home root本身。不得用`rm -rf`、`Remove-Item -Recurse`、`shutil.rmtree`或父目錄推算直接清理store；所有retention與刪除操作只能使用`tools/ci/artifact_cleanup.py`的exact root與manifest流程。
+
+### Local execution entrypoints
+
+```bash
+bash tools/ci/run_local_ci.sh quality
+bash tools/ci/run_local_ci.sh android
+bash tools/ci/run_local_ci.sh ios
+bash tools/ci/run_local_ci.sh observability
+bash tools/ci/run_local_ci.sh all
+```
+
+Windows可執行quality、Android與有界Android Observability；iOS需要macOS。每次入口都會建立唯一run key、finalize job manifest、SHA-256 checksums、run-level aggregation與retention dry evaluation。
+
+Windows由Windows Git建立的repository／worktree必須從Git Bash執行，例如：
+
+```powershell
+& 'C:\Program Files\Git\bin\bash.exe' tools/ci/run_local_ci.sh quality
+```
+
+不得讓`C:\Windows\System32\bash.exe`的WSL bash直接執行Windows Git worktree；WSL無法正確解析`.git`內的Windows `D:/.../.git/worktrees/...`gitdir，會在artifact job建立前失敗。若repository本身位於WSL filesystem，則應使用完整WSL checkout，而不是跨用Windows worktree。
+
+### Store layout and query
+
+```txt
+<root>/
+  runs/<full-sha>/<run-key>/
+    run-manifest.json
+    run-summary.md
+    jobs/<job-key>/
+      manifest.json
+      summary.md
+      checksums.sha256
+      artifacts/
+      diagnostics/
+  cleanup-manifests/
+  trash/
+  pins/
+  locks/
+```
+
+PowerShell查詢最近的run與job manifest：
+
+```powershell
+$root = $env:CI_ARTIFACT_ROOT
+Get-ChildItem -LiteralPath (Join-Path $root 'runs') -Filter run-manifest.json -Recurse |
+  Sort-Object LastWriteTime -Descending |
+  Select-Object -First 10 FullName, LastWriteTime
+
+Get-ChildItem -LiteralPath (Join-Path $root 'runs') -Filter manifest.json -Recurse |
+  Where-Object FullName -Match '[\\/]jobs[\\/]' |
+  Sort-Object LastWriteTime -Descending |
+  Select-Object -First 20 FullName, LastWriteTime
+```
+
+POSIX查詢：
+
+```bash
+find "$CI_ARTIFACT_ROOT/runs" -name run-manifest.json -print
+find "$CI_ARTIFACT_ROOT/runs" -path '*/jobs/*/manifest.json' -print
+```
+
+Checksum驗證必須從job目錄執行：
+
+```bash
+cd "$CI_ARTIFACT_ROOT/runs/<sha>/<run-key>/jobs/<job-key>"
+sha256sum --check checksums.sha256
+```
+
+Windows PowerShell若環境沒有`sha256sum`，逐行讀取`checksums.sha256`後使用`System.Security.Cryptography.SHA256`或Git Bash執行同一檔案；不得只核對檔名或manifest存在。
+
+### Pin and unpin
+
+Pin只接受已finalize的job relative path，必須有owner、reason與最長90天的UTC expiry：
+
+```bash
+python tools/ci/artifact_cleanup.py pin \
+  --root "$CI_ARTIFACT_ROOT" \
+  --job-path 'runs/<sha>/<run-key>/jobs/<job-key>' \
+  --owner '<operator>' \
+  --reason '<review-or-release-purpose>' \
+  --expires-at '2026-08-30T00:00:00Z'
+
+python tools/ci/artifact_cleanup.py unpin \
+  --root "$CI_ARTIFACT_ROOT" \
+  --job-path 'runs/<sha>/<run-key>/jobs/<job-key>'
+```
+
+Pin不代表容量豁免。若pin或尚未過期的evidence使30 GiB store upper bound或15 GiB minimum-free policy無法滿足，新run會在build前fail closed並回報blocking bytes。
+
+### Cleanup dry-run, apply, restore, and purge
+
+第一步永遠是dry evaluation；它只建立immutable cleanup manifest，不移除檔案：
+
+```bash
+python tools/ci/artifact_cleanup.py evaluate \
+  --root "$CI_ARTIFACT_ROOT" \
+  --dry-run
+```
+
+Review輸出的`manifest_id`以及：
+
+```txt
+<root>/cleanup-manifests/<manifest-id>.json
+```
+
+確認exact relative paths、bytes、retention reason、store generation與manifest SHA-256後，才可apply：
+
+```bash
+python tools/ci/artifact_cleanup.py apply \
+  --root "$CI_ARTIFACT_ROOT" \
+  --manifest-id '<manifest-id>'
+```
+
+Apply只會atomic move到`trash/<cleanup-id>`。24小時內可復原：
+
+```bash
+python tools/ci/artifact_cleanup.py restore \
+  --root "$CI_ARTIFACT_ROOT" \
+  --cleanup-id '<cleanup-id>'
+```
+
+滿24小時後才允許不可逆purge：
+
+```bash
+python tools/ci/artifact_cleanup.py purge \
+  --root "$CI_ARTIFACT_ROOT" \
+  --cleanup-id '<cleanup-id>'
+```
+
+Root mismatch、path traversal、symlink escape、active job lock、cleanup lock、store generation drift、destination collision或24小時未滿都會fail closed。任何失敗都不得改用直接filesystem delete繞過。
+
+### Runner offline and operational fallback
+
+Self-hosted runner離線時：
+
+1. 不修改workflow讓它自動fallback到GitHub-hosted。
+2. 需要立即驗證時，在可信Windows／Mac checkout設定`CI_MANAGED_EXECUTION_MODE=manual-local`並執行相同`run_local_ci.sh`入口。
+3. Manual-local manifest只代表本機驗證，不冒充GitHub check。
+4. Runner恢復後，再依原commit或新commit觸發self-hosted run。
 
 ### Repository CI
 
@@ -185,7 +368,7 @@ iOS / Simulator Build
 
 ### Manual verification
 
-三份workflow都支援`workflow_dispatch`。Manual run可選`repository-default`、`manual-local`、`self-hosted`或`github-hosted`；只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit結果。
+四份workflow都支援`workflow_dispatch`。Manual run可選`repository-default`、`manual-local`、`self-hosted`或`github-hosted`；只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit結果。
 
 ## Observability Acceptance
 
@@ -215,8 +398,9 @@ FIREBASE_IOS_STAGING_CONFIG_B64
 Secret-ready run會：
 
 1. 建立production Android Flutter symbols與iOS dSYM並執行explicit upload。
-2. 建立Android與iOS staging acceptance artifacts；只有`OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true`與`OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true`同時存在時，App才會送出一次controlled handled non-fatal。
-3. 保存commit SHA、release、environment、upload與remote event evidence。
+2. 建立Android與iOS staging acceptance artifacts。只有manual dispatch明確設定`emit_controlled_event=true`，且`OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true`與`OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true`同時存在時，App才會送出一次controlled handled non-fatal。
+3. 將App、dSYM、Flutter symbols、mapping、redacted evidence與checksums保存到managed local store；原始provider config與service account永遠不進store。
+4. GitHub只保存redacted summary／有界safe evidence；raw Observability artifact不透過GitHub transport。
 
 Workflow不會自動把「symbol upload command成功」解讀成「remote event已symbolicated」。在Firebase Console核對Android與iOS stack前，`remote_event_status`與`symbolication_status`必須維持`not-executed`或pending，不得改成verified。
 
@@ -281,7 +465,7 @@ dart run melos exec -- flutter test
 
 確認是否可重現、是否為flaky test、shared state或平台差異。沒有證據前不得直接rerun直到變綠；若確認flaky，先建立focused fix與regression evidence。
 
-Design System golden test使用`design_system_gallery_<platform>.png`保存各host renderer的獨立authority；Windows、Linux與macOS均有reviewed baseline。失敗時，`CI / Tests`會嘗試上傳`golden-test-failures-<full-sha>` artifact並保存14天。應下載比較master、test與isolated diff images，先確認字型、renderer與host差異，再判斷是否為真正UI regression；不得只放寬pixel tolerance掩蓋失敗。
+Design System golden test使用`design_system_gallery_<platform>.png`保存各host renderer的獨立authority；Windows、Linux與macOS均有reviewed baseline。Manual-local／self-hosted失敗時，allowlisted master／test／diff images與文字摘要保存於managed local store的`verification-failure`job，raw retention為14天。只有人工`github-hosted`＋`artifact_transport=failure-only`才可將有界golden PNG送至GitHub，retention為7天。應先核對manifest與checksums，再比較renderer與host差異；不得只放寬pixel tolerance掩蓋失敗。
 
 ## Android Artifact Failure
 
@@ -335,7 +519,7 @@ API_BASE_URL=https://api.your-domain.example bash tools/ci/build_ios_production.
 
 Production iOS verification使用`Release-production`、generic `iphoneos` SDK與`CODE_SIGNING_ALLOWED=NO`，不產生可上架IPA。不得改成Release Simulator；Flutter toolchain會以「release/profile builds are only supported for physical devices」拒絕該組合。
 
-需要iOS build時，此gate會重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`，不讀取Apple signing secrets，也不把`.app`當成distribution artifact。失敗時會保留7天的`toolchain.txt`與`build.log` diagnostics。Documentation-only時，`iOS / Simulator Build`改在Ubuntu執行同名no-op，Production job skipped，完全不啟動macOS runner或上傳iOS artifacts。
+需要iOS build時，此gate會重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`，不讀取Apple signing secrets，也不把`.app`當成distribution artifact。Manual-local／self-hosted失敗時，`toolchain.txt`與`build.log`等allowlisted diagnostics保存於managed local store的`verification-failure`job；人工`github-hosted`＋`failure-only`例外才保存7天GitHub diagnostics。Documentation-only時，`iOS / Simulator Build`改在Ubuntu執行同名no-op，Production job skipped，完全不啟動macOS runner或建立platform artifact。
 
 ## Change Classification Failure
 
@@ -358,24 +542,26 @@ Production iOS verification使用`Release-production`、generic `iphoneos` SDK�
 
 ## Artifact Contract
 
-Environment-aware local artifact預設放在：
+Environment-aware build scripts仍會在managed job的`artifacts/`內建立platform-local projection，例如Android／iOS environment目錄與`artifact-metadata.txt`；但retention、cleanup與run identity的正式authority是job `manifest.json`與run `run-manifest.json`。
 
-```txt
-artifacts/android/<environment>/
-artifacts/ios/<environment>/
-artifact-metadata.txt
-```
-
-一般GitHub verification artifact名稱包含full SHA，retention依workflow為7或14天。Observability acceptance artifact只保存必要App、dSYM、metadata與evidence，不保存DerivedData，retention固定為1天。
-
-Metadata至少包含commit SHA、environment、platform、flavor或scheme、configuration／SDK、entrypoint、API mode、native identifier、artifact filename與以下分類：
+Job metadata至少包含commit SHA、git ref、dirty state、execution mode、host identity、run／job key、suite、platform、environment、build mode、artifact path／bytes／SHA-256、validation result、evidence status、retention class與cleanup disposition。Platform-local metadata另外包含flavor或scheme、configuration／SDK、entrypoint、API mode、native identifier、artifact filename與以下分類：
 
 ```txt
 signing=debug signing for verification only
 distribution=not production-ready
 ```
 
-下載後應先核對metadata SHA與預期commit，再用於verification或debug。
+使用artifact前應先核對job manifest的commit SHA、result、evidence status與`checksums.sha256`，再用於verification或debug。`run-manifest.json`只聚合job manifest path／hash與結果，不重複成為第二份platform metadata authority。
+
+Retention class：
+
+| Class | Raw retention | Count bound | Metadata retention |
+|---|---|---:|---|
+| `verification-success` | 7天 | 每suite／ref最新3次 | 90天 |
+| `verification-failure` | 14天 | 最新10次 | 90天 |
+| `observability-raw` | 3天 | 每platform最新2次 | 90天 |
+| `release-verification` | 30天 | 最新3個release SHA | 365天 |
+| `pinned` | 到`expires_at`，最長90天 | 必須有owner／reason | 與pin一致 |
 
 完整三環境本地命令、manifest-first identity替換順序、placeholder與secret boundary請讀：
 
@@ -392,6 +578,8 @@ Workflow regression優先使用focused fix。若workflow本身讓repository無�
 3. 執行YAML/static contract與repository commands。
 4. 若required check名稱被改壞，repository administrator需同步修復Branch Protection settings。
 5. 不得藉rollback降低既有quality gate，除非另有正式Decision與review。
+
+Artifact transport regression時，優先將repository variable切到`manual-local`，以相同managed schema完成本機驗證；不得改成隱式`github-hosted`fallback。Cutover rollback只revert workflow／writer commits，不直接刪除managed store。若已有cleanup apply但尚未purge，使用`artifact_cleanup.py restore`；已purge的local raw artifact與已刪除的GitHub object都不可聲稱可恢復，只能由仍可checkout的commit重新產生。
 
 GitHub settings不在Git history內。任何Branch Protection修改都應由管理者另外記錄變更內容、時間與操作者。
 
@@ -418,5 +606,5 @@ Production release必須建立獨立workflow與protected Environment，至少重
 - GitHub Release automation。
 - Environment promotion。
 - Dependency auto-update。
-- Flutter flavors或production endpoint配置。
+- Production Store credential、signing與distribution pipeline。
 

@@ -6,6 +6,11 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class ShellPortabilityContractTest(unittest.TestCase):
+    def test_repository_forces_lf_for_shell_scripts(self) -> None:
+        attributes = (REPO_ROOT / ".gitattributes").read_text(encoding="utf-8")
+
+        self.assertIn("*.sh text eol=lf", attributes.splitlines())
+
     def test_artifact_contract_avoids_python_310_union_annotations(self) -> None:
         for relative_path in (
             "tools/ci/artifact_contract.py",

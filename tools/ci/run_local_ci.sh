@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck shell=bash
 set -uo pipefail
 
 requested_suite="${1:-all}"

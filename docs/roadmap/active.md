@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 8 operations guide and runtime readiness
+Status: Active — Task 9 runtime acceptance
 ```
 
 ## Current Problem
@@ -54,22 +54,22 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–7已完成durable authority、root／manifest contract、atomic writer、retention／capacity、safe local cleanup、manual-local／platform build integration、四份workflow local-first transport，以及Observability／failure evidence安全收斂。Task 7已完成controlled-event explicit opt-in、secret leakage scanner與blocked staging安全處置。現在進入Task 8；在Task 8完成前：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–8已完成durable authority、root／manifest contract、atomic writer、retention／capacity、safe local cleanup、manual-local／platform build integration、四份workflow local-first transport、Observability／failure evidence安全收斂、operator operations guide、Windows shell LF contract與managed quality readiness。現在進入Task 9；Task 9完成前：
 
 ```txt
-不得修改CI_EXECUTION_MODE
-不得建立正式operator artifact root
+正式Mac operator artifact root只能依Task 9 acceptance步驟建立與驗證，不得自行擴大路徑或直接清理
+CI_EXECUTION_MODE只能在Task 9受控self-hosted acceptance中切換，並保留前後值與rollback evidence
 不得刪除GitHub artifacts或caches
 ```
 
 ## Current Next Action
 
 ```txt
-Task 8完成operator operations guide與runtime readiness
-→ 建立root設定、查詢、pin／unpin、cleanup dry-run／apply／restore操作路徑
-→ 加入static regression與runtime preflight contracts
-→ 驗證clean checkout與正式Mac runtime前置條件
+執行Windows manual-local quality與Android acceptance
+→ 在Mac正式operator root執行manual-local quality／iOS／Observability acceptance
+→ 執行至少一個source-changing self-hosted run並核對GitHub summary與local manifests
+→ 盤點GitHub artifacts／caches但不刪除
 → focused review與whole-Task review
 → validation與獨立commit
-→ 自動進入Task 9
+→ 自動進入Task 10 exact GitHub cleanup manifest
 ```

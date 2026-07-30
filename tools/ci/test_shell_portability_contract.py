@@ -60,6 +60,14 @@ class ShellPortabilityContractTest(unittest.TestCase):
         self.assertNotIn("mapfile", script)
         self.assertIn("Android Studio.app/Contents/jbr/Contents/Home", script)
 
+    def test_android_artifact_metadata_resolves_windows_apkanalyzer_batch(self) -> None:
+        script = (REPO_ROOT / "tools/ci/build_android_environment.sh").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("cmdline-tools/latest/bin/apkanalyzer.bat", script)
+        self.assertIn("resolve_apkanalyzer", script)
+
 
 if __name__ == "__main__":
     unittest.main()

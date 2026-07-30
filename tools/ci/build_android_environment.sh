@@ -41,8 +41,46 @@ case "$build_mode" in
 esac
 mapping_source="$(find "$app_dir/build/app/outputs/mapping" -path "*/${environment}${variant_suffix}/mapping.txt" -print -quit 2>/dev/null || true)"
 if [[ -n "$mapping_source" && -f "$mapping_source" ]]; then cp "$mapping_source" "$artifact_dir/mapping.txt"; fi
-apkanalyzer="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}/cmdline-tools/latest/bin/apkanalyzer"
-[[ -x "$apkanalyzer" ]] || apkanalyzer="$(command -v apkanalyzer || true)"
+
+resolve_apkanalyzer() {
+  local sdk_root candidate local_sdk
+
+  candidate="$(command -v apkanalyzer || true)"
+  if [[ -n "$candidate" ]]; then
+    printf '%s\n' "$candidate"
+    return 0
+  fi
+
+  local_sdk="${LOCALAPPDATA:-}"
+  if [[ -n "$local_sdk" ]]; then
+    local_sdk="$local_sdk/Android/Sdk"
+    if command -v cygpath >/dev/null 2>&1; then
+      local_sdk="$(cygpath -u "$local_sdk")"
+    fi
+  fi
+
+  for sdk_root in \
+    "${ANDROID_SDK_ROOT:-}" \
+    "${ANDROID_HOME:-}" \
+    "$local_sdk" \
+    "$HOME/Library/Android/sdk"; do
+    [[ -n "$sdk_root" ]] || continue
+    for candidate in \
+      "$sdk_root/cmdline-tools/latest/bin/apkanalyzer" \
+      "$sdk_root/cmdline-tools/latest/bin/apkanalyzer.bat" \
+      "$sdk_root/tools/bin/apkanalyzer" \
+      "$sdk_root/tools/bin/apkanalyzer.bat"; do
+      if [[ -f "$candidate" ]]; then
+        printf '%s\n' "$candidate"
+        return 0
+      fi
+    done
+  done
+
+  return 1
+}
+
+apkanalyzer="$(resolve_apkanalyzer || true)"
 [[ -n "$apkanalyzer" ]] || { echo "apkanalyzer not found" >&2; exit 1; }
 if ! java -version >/dev/null 2>&1 && [[ -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]]; then
   export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"

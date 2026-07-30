@@ -25,7 +25,7 @@ Repository目前以`CI_EXECUTION_MODE=self-hosted`執行可信`main`與manual wo
 
 ```txt
 GitHub Actions artifacts: 110 / 7,835,943,504 bytes
-GitHub Actions caches: 8 / 6,403,177,326 bytes
+GitHub Actions caches: 3 / 2,411,938,195 bytes
 Self-hosted runner: water-mac-flutter-architecture / online / idle
 ```
 
@@ -54,7 +54,7 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–10已完成。第一次Task 11核准後，fresh GET發現兩個舊cache已由GitHub移除，工具在任何DELETE前fail closed；舊manifest `48e2233a0cee0f5d9cad29e2`與approval均已失效。後續review又發現GitHub `expired`旗標會改變但不影響DELETE scope，因此以TDD把drift fingerprint收斂為exact deletion scope；intermediate manifest `b6af1142e872515b7f8252d1`也已supersede。Current reviewed manifest為`9772870197227aed2ff33db6`，範圍為110個artifacts與8個caches，共14,239,120,830 bytes。現在重新停在Task 11不可逆cleanup前的獨立使用者核准gate：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–10已完成。第一次Task 11核准後，fresh GET發現兩個舊cache已由GitHub移除，工具在任何DELETE前fail closed；舊manifest `48e2233a0cee0f5d9cad29e2`與approval均已失效。後續review又發現GitHub `expired`旗標會改變但不影響DELETE scope，因此以TDD把drift fingerprint收斂為exact deletion scope。GitHub端之後再移除5個舊cache，`b6af1142e872515b7f8252d1`與`9772870197227aed2ff33db6`均已supersede。Current reviewed manifest為`7ad138bb845e42cbb133d07c`，範圍為110個artifacts與3個caches，共10,247,881,699 bytes。現在重新停在Task 11不可逆cleanup前的獨立使用者核准gate：
 
 ```txt
 不得修改reviewed manifest或沿用drift後的scope

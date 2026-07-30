@@ -21,7 +21,8 @@ GitHub DELETE requests executed: 0
 Task 10 whole-Task review: Passed
 Task 11 cleanup execution: Fresh inventory drift blocked the first approved attempt
 Superseded approval scope: 48e2233a0cee0f5d9cad29e2
-Stable-scope reviewed manifest: 9772870197227aed2ff33db6
+Superseded stable-scope manifest: 9772870197227aed2ff33db6
+Current reviewed manifest: 7ad138bb845e42cbb133d07c
 GitHub DELETE requests executed: 0
 ```
 
@@ -280,44 +281,56 @@ cache exact ID / key / bytes / created_at / last_accessed_at / ref
 
 Manifest `b6af1142e872515b7f8252d1`在取得使用者核准前即被stable-scope redesign supersede，不得使用。
 
+Stable-scope manifest `9772870197227aed2ff33db6`通過連續fresh GET後完成commit；post-commit gate再次查詢時，GitHub端又不存在5個舊cache。Artifacts仍為110個且完全不變，沒有新增object；以下cache合計3,991,239,131 bytes已不在fresh inventory：
+
+```txt
+cache 5943454374 / 1,664,959,810 bytes
+cache 5953460250 / 2,109,935,697 bytes
+cache 5991962060 /    71,939,976 bytes
+cache 5991964206 /    71,944,625 bytes
+cache 5992013233 /    72,459,023 bytes
+```
+
+因此manifest `9772870197227aed2ff33db6`也在取得使用者核准前失效，不得使用。依既有fail-closed規則重新產生只涵蓋fresh現存objects的reviewed manifest。
+
 ## Current reviewed deletion manifest
 
 Replacement manifest保存在同一formal managed store：
 
 ```txt
 Manifest ID:
-9772870197227aed2ff33db6
+7ad138bb845e42cbb133d07c
 
 Manifest path:
-/Users/water/Developer/ci-artifacts/flutter_architecture/cleanup-manifests/github/9772870197227aed2ff33db6/deletion-manifest.json
+/Users/water/Developer/ci-artifacts/flutter_architecture/cleanup-manifests/github/7ad138bb845e42cbb133d07c/deletion-manifest.json
 
 Review status:
 reviewed
 
 Reviewed by:
-milestone-32-task-10-stable-scope-rereview
+milestone-32-task-10-cache-eviction-rereview
 
 Reviewed at:
-2026-07-30T15:27:30Z
+2026-07-30T15:33:18Z
 ```
 
 Integrity：
 
 ```txt
 Deletion-scope Inventory SHA-256:
-d53ec46b8fadc023a1e637f0a1cc1343a2817340bbef5f179644d99735a30235
+f37f377593bc79114f86c5509ca22b274b04de7ed2ec2d810b4450ac00f8fe80
 
 Payload SHA-256:
-28937a4da2d223aaea5868b2bae82fd092a213549db54edeb0258532d7c4cb26
+b35ec78ecb8b8bb60a2b0ac0891fff39abb0cfd62fd964192b78052ce4797284
 
 Whole-file SHA-256 / sidecar SHA-256:
-a1c14d0030c75cbe3ce1158417e24d86d4ae6d9624b47e5a04b111998de74979
+c37c34b327cb8c7ab26677e2916aea67da791b43237da42d236523ac1fd7c1e5
 
 Approval token SHA-256:
-1175521c73e4ac8e6db8fd893a3d1ce2de2eaceabd4cf0853b1ebca6f8661282
+1163a0c049c1c69cafa4f0518bd48a38a2bc85173c8e0129812a2944ef8de586
 ```
 
-Current manifest含118組unique `(object_type, object_id)`。建立後連續兩次fresh GET確認deletion-scope inventory SHA、totals、exact IDs與bytes完全一致。
+Current manifest含113組unique `(object_type, object_id)`：110個artifacts與3個caches，共10,247,881,699 bytes。建立後連續兩次fresh GET確認deletion-scope inventory SHA、totals、exact IDs與bytes完全一致。
 
 ## Irreversible delete gates
 
@@ -391,4 +404,4 @@ exact-ID production endpoints: complete
 real dry-run manifest: complete
 ```
 
-Task 10在drift與stable-scope修正後重新完成review並再次強制停止。Task 11只能在使用者對current manifest `9772870197227aed2ff33db6`、118個objects、14,239,120,830 bytes與不可逆範圍給出新的獨立明確核准後重新開始；舊approval不得沿用。
+Task 10在多次GitHub cache縮減與stable-scope修正後重新完成review並再次強制停止。Task 11只能在使用者對current manifest `7ad138bb845e42cbb133d07c`、113個objects、10,247,881,699 bytes與不可逆範圍給出新的獨立明確核准後重新開始；所有舊approval不得沿用。

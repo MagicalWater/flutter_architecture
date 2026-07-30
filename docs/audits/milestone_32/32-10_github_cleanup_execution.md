@@ -17,7 +17,8 @@ GitHub DELETE requests executed: 0
 Objects deleted: 0
 Superseded manifest: 48e2233a0cee0f5d9cad29e2
 Superseded re-review manifest: b6af1142e872515b7f8252d1
-Current reviewed manifest: 9772870197227aed2ff33db6
+Superseded stable-scope manifest: 9772870197227aed2ff33db6
+Current reviewed manifest: 7ad138bb845e42cbb133d07c
 Current gate: New independent approval required
 ```
 
@@ -76,7 +77,7 @@ Review status: reviewed
 
 之後fresh GET只出現artifact `8568824484`的`expired=false → true`，DELETE候選scope未變。TDD確認原inventory SHA過度綁定非DELETE metadata後，工具改為stable deletion-scope fingerprint；ID、bytes、名稱、時間、workflow run或ref任何變更仍會阻擋。
 
-Current reviewed scope：
+Stable-scope reviewed scope：
 
 ```txt
 Manifest ID: 9772870197227aed2ff33db6
@@ -88,8 +89,22 @@ Whole-file SHA-256: a1c14d0030c75cbe3ce1158417e24d86d4ae6d9624b47e5a04b111998de7
 Review status: reviewed
 ```
 
+該manifest建立並commit後，post-commit fresh GET又發現5個舊cache已不存在，合計3,991,239,131 bytes。沒有新增object、沒有artifact變更、沒有DELETE attempt，因此`9772870197227aed2ff33db6`在取得核准前被supersede。
+
+Current reviewed scope：
+
+```txt
+Manifest ID: 7ad138bb845e42cbb133d07c
+Deletion-scope Inventory SHA-256: f37f377593bc79114f86c5509ca22b274b04de7ed2ec2d810b4450ac00f8fe80
+Artifacts: 110 / 7,835,943,504 bytes
+Caches: 3 / 2,411,938,195 bytes
+All: 113 / 10,247,881,699 bytes
+Whole-file SHA-256: c37c34b327cb8c7ab26677e2916aea67da791b43237da42d236523ac1fd7c1e5
+Review status: reviewed
+```
+
 Current manifest建立後連續fresh GET，deletion-scope SHA、totals、exact IDs與bytes均一致。
 
 ## Stop condition
 
-Manifest `48e2233a0cee0f5d9cad29e2`及其approval token已失效；intermediate manifest `b6af1142e872515b7f8252d1`也已被stable-scope redesign supersede，兩者都不得使用。Task 11保持open，必須針對current manifest `9772870197227aed2ff33db6`、110個artifacts、8個caches、14,239,120,830 bytes及不可逆影響取得新的獨立明確核准後，才能重新執行exact-ID DELETE。
+Manifest `48e2233a0cee0f5d9cad29e2`及其approval token已失效；`b6af1142e872515b7f8252d1`與`9772870197227aed2ff33db6`也都已supersede，不得使用。Task 11保持open，必須針對current manifest `7ad138bb845e42cbb133d07c`、110個artifacts、3個caches、10,247,881,699 bytes及不可逆影響取得新的獨立明確核准後，才能重新執行exact-ID DELETE。

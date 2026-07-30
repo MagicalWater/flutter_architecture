@@ -60,6 +60,8 @@ Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不�
 
 Repository-local Skill 的`SKILL.md`、references、範例與pressure scenarios預設使用繁體中文；Skill名稱、檔名、路徑、status values與必要技術識別保留英文。翻譯trigger或gate wording後必須重新執行focused adoption review，不能把語言修正當成不需驗證的純排版變更。
 
+`docs_check`會對`.agents/skills/**/*.md`執行最小語言contract：每個`SKILL.md`的frontmatter description與每份Skill Markdown正文都必須包含中文文字。Checker只防止英文-only回歸；繁體用字、trigger語意、gate與safety wording仍必須由focused adoption review與pressure validation審查。
+
 ### Adopted Skill registry
 
 | Skill | Status | Trigger | Responsibility | Forbidden responsibility | Companion | Rollback |
@@ -68,6 +70,15 @@ Repository-local Skill 的`SKILL.md`、references、範例與pressure scenarios�
 | `starting-feature-work` | Approved | 新功能、新畫面、user flow或Figma-driven implementation | 接收短feature brief並強制委派中央治理 | Level、approval、branch、Task、validation、release與closure policy | `governing-template-development` | 移除Skill與本registry row；中央治理入口不受影響 |
 | `karpathy-guidelines` | Pilot／Approved with restrictions | 已完成分類與必要核准後的production code implementation、refactor與code review | simplicity、surgical changes、explicit assumptions與verifiable goals | Level、scope approval、branch、Task acceptance、release／closure；不得移除安全、migration、accessibility或validation evidence | `governing-template-development`＋routed Superpowers | 移除中央routing與`.agents/skills/karpathy-guidelines/`；中央治理不受影響 |
 | `adopting-template-product-identity` | Approved | 已接受的跨Android／iOS模板產品identity或三環境display-name mapping採用 | 接收短input、authority routing、pre-inventory、manifest-first與evidence boundary | Level、approval、environment contract、signing、Store、release與closure | `governing-template-development`；只有實際進入production code／script implementation時才搭配`karpathy-guidelines` | 移除Skill、中央route、registry row與Guide entry；既有authority不受影響 |
+
+#### 2026-07-30 repository-local Skill language revalidation
+
+- `governing-template-development`：Level 0～5、artifact routing、Design／Plan gate、雙層Task、stop／continue、Skill adoption與pressure protocol完成逐檔semantic review。
+- `adopting-template-product-identity`：trigger／non-trigger、input gate、manifest-first、secret／signing hard stop與R1～R10完成review；過期restricted Pilot固定文字已修正為保留current registry status。
+- `starting-feature-work`：short brief、central delegation、discussion-only與skip-governance pressure完成review。
+- `karpathy-guidelines`：pinned source、subordinate routing、anti-overengineering、non-trigger與restricted Pilot boundary完成review。
+- Mechanical evidence：`tools/docs/check_docs.py`加入`agent-skill-language`；英文-only description與reference body的RED tests已轉GREEN。
+- Full evidence：`docs/audits/repository_local_skills_zh_tw_task_1_central_governance_review.md`至`repository_local_skills_zh_tw_task_5_language_governance_review.md`。
 
 #### `adopting-template-product-identity` admission details
 

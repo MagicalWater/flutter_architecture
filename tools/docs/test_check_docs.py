@@ -57,10 +57,39 @@ class DocumentationCheckerTest(unittest.TestCase):
             _write(
                 root,
                 ".agents/skills/example/SKILL.md",
-                "---\nname: example\ndescription: Use when testing a repository skill.\n---\n",
+                "---\nname: example\ndescription: 當需要測試 repository Skill 時使用。\n---\n\n"
+                "# 範例 Skill\n\n這是繁體中文說明。\n",
             )
 
             self.assertNotIn("invalid-metadata", _codes(root))
+            self.assertNotIn("agent-skill-language", _codes(root))
+
+    def test_reports_agent_skill_description_without_chinese(self) -> None:
+        with _fixture() as root:
+            _write(
+                root,
+                ".agents/skills/example/SKILL.md",
+                "---\nname: example\ndescription: Use when testing a repository skill.\n---\n\n"
+                "# 範例 Skill\n\n這是繁體中文說明。\n",
+            )
+
+            self.assertIn("agent-skill-language", _codes(root))
+
+    def test_reports_agent_skill_reference_without_chinese(self) -> None:
+        with _fixture() as root:
+            _write(
+                root,
+                ".agents/skills/example/SKILL.md",
+                "---\nname: example\ndescription: 當需要測試 repository Skill 時使用。\n---\n\n"
+                "# 範例 Skill\n\n這是繁體中文說明。\n",
+            )
+            _write(
+                root,
+                ".agents/skills/example/references/pressure-scenarios.md",
+                "# Pressure Scenarios\n\nEnglish-only body.\n",
+            )
+
+            self.assertIn("agent-skill-language", _codes(root))
 
     def test_reports_stale_and_duplicate_milestone_routing(self) -> None:
         with _fixture() as root:

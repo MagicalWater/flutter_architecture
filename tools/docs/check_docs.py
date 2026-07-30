@@ -59,6 +59,7 @@ _ADR_FILE_RE = re.compile(r"^adr-(\d{3})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
 _ADR_INDEX_ROW_RE = re.compile(
     r"^\|\s*(ADR-\d{3})\s*\|\s*([^|]+?)\s*\|\s*(aggregate|extracted)\s*\|$"
 )
+_CJK_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 
 
 @dataclass(frozen=True)
@@ -80,6 +81,7 @@ def check_repository(root: Path) -> list[CheckIssue]:
     markdown_files = sorted(_iter_markdown_files(root))
     issues: list[CheckIssue] = []
     issues.extend(_check_links(root, markdown_files))
+    issues.extend(_check_agent_skill_language(root, markdown_files))
     issues.extend(_check_baseline(root))
     metadata_by_path, metadata_issues = _check_metadata(root, markdown_files)
     issues.extend(metadata_issues)
@@ -105,6 +107,42 @@ def _is_agent_skill(path: Path, root: Path) -> bool:
     except ValueError:
         return False
     return len(relative.parts) >= 4 and relative.parts[0:2] == (".agents", "skills") and path.name == "SKILL.md"
+
+
+def _is_agent_skill_markdown(path: Path, root: Path) -> bool:
+    try:
+        relative = path.relative_to(root)
+    except ValueError:
+        return False
+    return len(relative.parts) >= 4 and relative.parts[0:2] == (".agents", "skills")
+
+
+def _check_agent_skill_language(root: Path, files: list[Path]) -> list[CheckIssue]:
+    issues: list[CheckIssue] = []
+    for path in files:
+        if not _is_agent_skill_markdown(path, root):
+            continue
+        text = path.read_text(encoding="utf-8")
+        if path.name == "SKILL.md":
+            description = _parse_front_matter(text).get("description")
+            if not isinstance(description, str) or not _CJK_RE.search(description):
+                issues.append(
+                    CheckIssue(
+                        "agent-skill-language",
+                        path,
+                        "frontmatter description must include Chinese prose; repository policy requires Traditional Chinese",
+                    )
+                )
+        body = _without_fenced_code(_without_front_matter(text))
+        if not _CJK_RE.search(body):
+            issues.append(
+                CheckIssue(
+                    "agent-skill-language",
+                    path,
+                    "document body must include Chinese prose; repository policy requires Traditional Chinese",
+                )
+            )
+    return issues
 
 
 def _check_milestone_routing(root: Path) -> list[CheckIssue]:
@@ -169,6 +207,17 @@ def _without_fenced_code(text: str) -> str:
         if not in_fence:
             output.append(line)
     return "\n".join(output)
+
+
+def _without_front_matter(text: str) -> str:
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return text
+    try:
+        end = next(index for index, line in enumerate(lines[1:], start=1) if line.strip() == "---")
+    except StopIteration:
+        return text
+    return "\n".join(lines[end + 1 :])
 
 
 def _check_baseline(root: Path) -> list[CheckIssue]:

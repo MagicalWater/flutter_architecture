@@ -8,6 +8,8 @@ last_reviewed_baseline: 1.13.0
 
 # Repository-local Skills 繁體中文化審查
 
+> **Historical review notice：**本文件保存commit `c8a77a5`當時實際執行的Level 1 review與validation。其classification與「已完整治理」結論已由2026-07-30的Level 3 governance recovery supersede；current authority請讀`repository_local_skills_zh_tw_holistic_final_review.md`與Task 1～5 reviews。不得把後續recovery evidence回寫成當時已存在。
+
 ## Requirement Decision
 
 - Request（需求）：所有 repository-local Skill 文件改用繁體中文。
@@ -15,7 +17,7 @@ last_reviewed_baseline: 1.13.0
 - Current behavior（目前行為）：四個已採用Skills的名稱與路由正常，但`SKILL.md`、references與pressure scenarios主要以英文撰寫。
 - Expected behavior（預期行為）：所有repository-local Skill正文、說明、規則與壓力案例使用繁體中文；Skill名稱、frontmatter key、檔名、路徑、status values與必要技術名詞保留英文。
 - Value（價值）：讓模板使用者與維護者能直接閱讀治理規則，並使Skill文件符合repository language policy。
-- Classification（分類）：Level 1 — 有界的文件／Skill contract語言修正。
+- Classification（歷史分類）：Level 1 — 後續確認低估repository-wide governance與trigger wording風險，已被Level 3 recovery supersede。
 - Decision（決策）：Accept。
 - Scope（範圍）：四個repository-local Skills的12份Markdown文件、Skill adoption語言規則與本review evidence。
 - Non-goals（非目標）：不改Skill名稱、status、trigger範圍、permissions、workflow order、authority、runtime behavior、VERSION、CHANGELOG、roadmap或Milestone state。
@@ -165,3 +167,14 @@ Skill behavior與status：Unchanged
 ```
 
 這是語言與可維護性修正，不建立新Milestone，也不提升Template Baseline版本。
+
+## Subsequent governance recovery
+
+2026-07-30後續審查確認，本變更同時影響中央治理Skill、全部adopted Skill descriptions、shared workflow gate與Skill adoption policy，必須補做Level 3 full two-layer Task governance。Recovery不否定本文件記錄的實際validation結果，但取代其classification與closure authority。
+
+Routing：
+
+- Design：`docs/superpowers/specs/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery-design.md`
+- Plan：`docs/superpowers/plans/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery.md`
+- Task reviews：`docs/audits/repository_local_skills_zh_tw_task_1_central_governance_review.md`至`repository_local_skills_zh_tw_task_5_language_governance_review.md`
+- Current final review：`docs/audits/repository_local_skills_zh_tw_holistic_final_review.md`

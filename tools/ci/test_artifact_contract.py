@@ -1,5 +1,5 @@
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import tempfile
 from typing import Any, Dict
 import unittest
@@ -85,8 +85,8 @@ class ArtifactRootResolutionTest(unittest.TestCase):
             {"LOCALAPPDATA": r"C:\Users\tester\AppData\Local"},
         )
         self.assertEqual(
-            root,
-            Path(
+            PureWindowsPath(str(root)),
+            PureWindowsPath(
                 r"C:\Users\tester\AppData\Local\flutter_architecture\ci-artifacts"
             ),
         )
@@ -136,7 +136,7 @@ class ArtifactRootSafetyTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
-        self.base = Path(self.temp_dir.name)
+        self.base = Path(self.temp_dir.name).resolve()
         self.repo = self.base / "repo"
         self.repo.mkdir()
         self.external = self.base / "external" / "ci-artifacts"

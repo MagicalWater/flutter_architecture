@@ -71,7 +71,7 @@ class ArtifactStoreTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
-        self.base = Path(self.temp_dir.name)
+        self.base = Path(self.temp_dir.name).resolve()
         self.repo = self.base / "repo"
         self.repo.mkdir()
         self.root = self.base / "managed-store"

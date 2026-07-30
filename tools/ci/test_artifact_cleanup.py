@@ -35,7 +35,7 @@ class ArtifactCleanupTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp_dir.cleanup)
-        self.root = Path(self.temp_dir.name) / "managed-store"
+        self.root = Path(self.temp_dir.name).resolve() / "managed-store"
         self.root.mkdir()
         self._index = 0
 

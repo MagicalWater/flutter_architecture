@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-32-ci-artifact-local-storage-cutover-design
 last_reviewed_baseline: 1.13.0
@@ -362,17 +362,19 @@ GitHub deletion沒有restore API。核准前必須確認replacement local runtim
 
 ## Approval and Stop Gate
 
-本Design已完成repository內部focused review、findings修正、fresh re-review、whole-Design review與documentation validation，但目前仍為`proposed`。
+本Design已完成repository內部focused review、findings修正、fresh re-review、whole-Design review與documentation validation，並於2026-07-30 13:41（Asia/Taipei）取得使用者明確核准，正式轉為`accepted`。
 
-使用者核准前：
+Design核准後：
 
 ```txt
-不得建立Implementation Plan
-不得更新ADR-023為新contract
+允許使用writing-plans建立proposed Implementation Plan
+Plan必須完成完整雙層Task review並再次取得使用者核准
+在Plan核准前不得開始implementation
+ADR-023只能依accepted Plan的Task順序更新
 不得修改workflow或CI scripts
 不得建立本機artifact root
 不得修改GitHub variable
 不得刪除GitHub artifacts或caches
 ```
 
-使用者明確核准後，Design才轉為`accepted`，下一個獨立Task才是使用`writing-plans`建立Implementation Plan。
+下一個獨立Task是使用`writing-plans`建立Implementation Plan；Plan核准前仍禁止implementation。

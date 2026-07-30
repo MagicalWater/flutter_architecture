@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: completed
+status: accepted
 authoritative_for:
   - milestone-32-design-spec-review
 last_reviewed_baseline: 1.13.0
@@ -34,8 +34,8 @@ Milestone: 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Requirement Decision: Accept
 Active promotion: Completed
-Design status: proposed
-User approval: pending
+Design status: accepted
+User approval: approved at 2026-07-30 13:41 Asia/Taipei
 ```
 
 Fresh evidence支持promotion：
@@ -146,11 +146,11 @@ git diff --check
 Internal Design review: Passed
 Open P0: 0
 Open P1 without disposition: 0
-Design status: proposed
-User approval: required
-Implementation Plan: forbidden until approval
+Design status: accepted
+User approval: completed
+Implementation Plan: allowed as a new proposed Task
 Implementation: forbidden
 GitHub cleanup: forbidden
 ```
 
-下一步只能是使用者review並明確核准本Design。核准後才可將Design轉為`accepted`並使用`writing-plans`建立Implementation Plan。
+下一步固定為使用`writing-plans`建立proposed Implementation Plan，完成完整Plan Task治理後再次停在使用者核准gate。

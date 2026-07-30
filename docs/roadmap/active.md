@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Design approval gate
+Status: Active — Implementation Plan drafting and review
 ```
 
 ## Current Problem
@@ -54,10 +54,9 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec目前維持`proposed`。Repository focused review、findings修正、fresh re-review、whole-Design review、authority check與documentation validation均已完成；在使用者明確核准前：
+Design Spec已於2026-07-30 13:41（Asia/Taipei）取得使用者明確核准並轉為`accepted`。目前允許建立proposed Implementation Plan；在Plan完成完整雙層Task治理並取得使用者明確核准前：
 
 ```txt
-不得建立Implementation Plan
 不得修改ADR-023
 不得修改workflows或CI scripts
 不得修改CI_EXECUTION_MODE
@@ -68,8 +67,9 @@ Design Spec目前維持`proposed`。Repository focused review、findings修正�
 ## Current Next Action
 
 ```txt
-使用者review proposed Design Spec
-→ 明確核准Design
-→ Design status轉為accepted
-→ 才使用writing-plans建立Implementation Plan
+使用writing-plans建立proposed Implementation Plan
+→ focused review與findings修正
+→ fresh re-review與whole-Plan review
+→ 使用者明確核准Plan
+→ 才可開始implementation
 ```

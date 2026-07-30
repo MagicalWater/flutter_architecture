@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 6 workflow transport policy and GitHub summary
+Status: Active — Task 7 Observability and bounded failure evidence
 ```
 
 ## Current Problem
@@ -54,7 +54,7 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–5已完成durable authority、root／manifest contract、atomic writer、retention／capacity、safe local cleanup，以及manual-local／platform build managed integration。Task 5的clean Windows managed quality已完整通過。現在進入Task 6；在Task 6完成前：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–6已完成durable authority、root／manifest contract、atomic writer、retention／capacity、safe local cleanup、manual-local／platform build integration，以及四份workflow的local-first transport policy。Task 6已完成self-hosted multi-job aggregation、bounded GitHub remote exception與local-only summary review。現在進入Task 7；在Task 7完成前：
 
 ```txt
 不得修改CI_EXECUTION_MODE
@@ -65,11 +65,11 @@ Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–5
 ## Current Next Action
 
 ```txt
-Task 6以TDD切換四份workflow artifact transport policy
-→ RED self-hosted prohibition／github-hosted manual transport matrix
-→ 移除self-hosted remote cache與artifact upload route
-→ 加入local-only GitHub summary與bounded remote exception
+Task 7以TDD收斂Observability與failure evidence
+→ 將controlled event emission預設改為false並保持explicit opt-in
+→ 強化failure diagnostics allowlist／redaction／secret scan
+→ 驗證Android／iOS symbols與dSYM只保留於managed local store
 → focused review與whole-Task review
 → validation與獨立commit
-→ 自動進入Task 7
+→ 自動進入Task 8
 ```

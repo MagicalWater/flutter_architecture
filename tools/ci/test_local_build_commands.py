@@ -120,9 +120,9 @@ class LocalBuildCommandsTest(unittest.TestCase):
 
         self.assertIn("artifact_platform", script)
         self.assertIn("METADATA_PLATFORM", script)
-        self.assertIn('android) artifact_platform="android"', script)
-        self.assertIn('ios) artifact_platform="ios"', script)
-        self.assertIn('observability) artifact_platform="multiple"', script)
+        self.assertIn('android) target_platform=android', script)
+        self.assertIn('ios) target_platform=ios', script)
+        self.assertIn('observability) target_platform=multiple', script)
         self.assertIn('"platform": os.environ["METADATA_PLATFORM"]', script)
 
     def test_primary_failure_precedes_evidence_preparation_failure(self) -> None:
@@ -132,6 +132,36 @@ class LocalBuildCommandsTest(unittest.TestCase):
         primary_gate = script.index('if [[ "$primary_exit_code" -ne 0 ]]')
         evidence_gate = script.index('if [[ "$evidence_prepare_exit_code" -ne 0 ]]')
         self.assertLess(primary_gate, evidence_gate)
+
+    def test_local_entrypoint_exposes_exact_managed_command_wrapper(self) -> None:
+        script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
+
+        self.assertIn("managed-command)", script)
+        self.assertIn("run_managed_job", script)
+        self.assertIn("GITHUB_STEP_SUMMARY", script)
+        self.assertIn("write-summary", script)
+        self.assertIn("CI_ARTIFACT_ENVIRONMENT", script)
+        self.assertIn("CI_ARTIFACT_BUILD_MODE", script)
+
+    def test_self_hosted_managed_root_is_explicit_and_fail_closed(self) -> None:
+        script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
+
+        self.assertIn("CI_MANAGED_EXECUTION_MODE", script)
+        self.assertIn('managed_execution_mode="${CI_MANAGED_EXECUTION_MODE:-manual-local}"', script)
+        self.assertIn("CI_MANAGED_EXECUTION_MODE_INPUT", script)
+        self.assertIn("resolve_artifact_root", script)
+        self.assertIn("managed_execution_mode", script)
+
+    def test_job_finalize_and_run_aggregation_are_separate_commands(self) -> None:
+        script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
+        managed_job = script.split("run_managed_job() {", 1)[1].split(
+            "aggregate_managed_run() {", 1
+        )[0]
+
+        self.assertNotIn("aggregate-run", managed_job)
+        self.assertNotIn("artifact_cleanup.py evaluate", managed_job)
+        self.assertIn("aggregate-managed-run)", script)
+        self.assertIn("aggregate_managed_run", script)
 
     def test_platform_builds_require_explicit_external_artifact_dir(self) -> None:
         for relative_path in (

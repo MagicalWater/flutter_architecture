@@ -349,9 +349,13 @@ def aggregate_run(root: Path, commit_sha: str, run_key: str) -> Path:
 
 
 def write_github_summary(manifest_path: Path, output_path: Path) -> Path:
+    manifest_path = Path(manifest_path)
     manifest = _read_json(manifest_path)
     validate_job_manifest(manifest)
-    summary = _render_job_summary(manifest)
+    summary = _render_job_summary(
+        manifest,
+        manifest_sha256=_sha256_file(manifest_path),
+    )
     output = Path(output_path)
     _ensure_directory(output.parent, owner_only=False)
     with output.open("a", encoding="utf-8", newline="\n") as handle:
@@ -651,9 +655,17 @@ def _collect_artifact_entries(
     return entries
 
 
-def _render_job_summary(manifest: Mapping[str, Any]) -> str:
+def _render_job_summary(
+    manifest: Mapping[str, Any],
+    manifest_sha256: Optional[str] = None,
+) -> str:
     artifact_count = len(manifest["artifacts"])
     total_bytes = sum(entry["size_bytes"] for entry in manifest["artifacts"])
+    manifest_hash_line = (
+        f"- Manifest SHA-256: `{manifest_sha256}`\n"
+        if manifest_sha256 is not None
+        else ""
+    )
     return (
         "# CI Artifact Evidence\n\n"
         f"- Execution mode: {manifest['execution_mode']}\n"
@@ -662,6 +674,8 @@ def _render_job_summary(manifest: Mapping[str, Any]) -> str:
         f"- Job key: `{manifest['job_key']}`\n"
         f"- Primary result: {manifest['result']}\n"
         f"- Evidence status: {manifest['evidence_status']}\n"
+        f"- Retention class: {manifest['cleanup_disposition']['retention_class']}\n"
+        f"{manifest_hash_line}"
         f"- Artifact count: {artifact_count}\n"
         f"- Total bytes: {total_bytes}\n\n"
         "Local-only evidence; not downloadable from GitHub.\n"

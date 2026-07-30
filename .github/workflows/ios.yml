@@ -15,6 +15,12 @@ on:
         default: repository-default
         type: choice
         options: [repository-default, manual-local, self-hosted, github-hosted]
+      artifact_transport:
+        description: GitHub artifact transport for this manual run
+        required: true
+        default: repository-default
+        type: choice
+        options: [repository-default, none, failure-only, full]
 
 permissions:
   contents: read
@@ -98,17 +104,8 @@ jobs:
           channel: stable
           cache: false
 
-      - name: Restore Pub cache
-        if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'github-hosted'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
-
       - name: Capture toolchain diagnostics
-        if: needs.classify-changes.outputs.ios_build == 'true'
+        if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'github-hosted'
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/ios-diagnostics"
@@ -120,24 +117,39 @@ jobs:
             pod --version
           } > "$RUNNER_TEMP/ios-diagnostics/toolchain.txt" 2>&1
 
+      - name: Preflight iOS development toolchain full evidence
+        if: >-
+          needs.classify-changes.outputs.ios_build == 'true' &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport full
+          --path "$RUNNER_TEMP/ios-diagnostics/toolchain.txt"
+
       - name: Upload iOS development toolchain evidence
-        if: needs.classify-changes.outputs.ios_build == 'true'
+        if: >-
+          needs.classify-changes.outputs.ios_build == 'true' &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-development-toolchain-${{ github.sha }}
           path: ${{ runner.temp }}/ios-diagnostics/toolchain.txt
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
 
       - name: Check iOS workflow contract
-        if: needs.classify-changes.outputs.ios_build == 'true'
+        if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'github-hosted'
         run: >-
           python3 -m unittest
           tools.ci.test_environment_workflow_matrix_contract
           tools.ci.test_ios_workflow_contract
 
       - name: Build unsigned iOS Simulator app
-        if: needs.classify-changes.outputs.ios_build == 'true'
+        if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'github-hosted'
         shell: bash
         run: |
           set -o pipefail
@@ -145,8 +157,53 @@ jobs:
             bash tools/ci/build_ios_development.sh \
             2>&1 | tee "$RUNNER_TEMP/ios-diagnostics/build.log"
 
+      - name: Build managed self-hosted iOS Simulator app
+        if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'self-hosted'
+        shell: bash
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: ios-development-simulator
+          CI_ARTIFACT_ENVIRONMENT: development
+          CI_ARTIFACT_BUILD_MODE: debug
+          CI_ARTIFACT_KIND: ios-app
+          CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+        run: |
+          # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command ios ios bash -lc '
+            mkdir -p "$ARTIFACT_DIR/ios-diagnostics" &&
+            { sw_vers; xcodebuild -version; flutter --version; flutter doctor -v; pod --version; } > "$ARTIFACT_DIR/ios-diagnostics/toolchain.txt" 2>&1 &&
+            python3 -m unittest tools.ci.test_environment_workflow_matrix_contract tools.ci.test_ios_workflow_contract &&
+            set -o pipefail && bash tools/ci/build_ios_development.sh 2>&1 | tee "$ARTIFACT_DIR/ios-diagnostics/build.log"
+          '
+
+      - name: Preflight iOS development full artifact
+        if: >-
+          needs.classify-changes.outputs.ios_build == 'true' &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport full
+          --path "$RUNNER_TEMP/ios-development-artifact"
+          --path "$RUNNER_TEMP/ios-diagnostics/toolchain.txt"
+
+      - name: GitHub storage warning for full iOS development artifact
+        if: >-
+          needs.classify-changes.outputs.ios_build == 'true' &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: echo "GitHub storage warning - full transport is retained for one day."
+
       - name: Upload iOS development verification artifact
-        if: needs.classify-changes.outputs.ios_build == 'true'
+        if: >-
+          needs.classify-changes.outputs.ios_build == 'true' &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-development-debug-simulator-${{ github.sha }}
@@ -154,16 +211,33 @@ jobs:
             ${{ runner.temp }}/ios-development-artifact/*.app
             ${{ runner.temp }}/ios-development-artifact/artifact-metadata.txt
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
+
+      - name: Preflight iOS failure diagnostics
+        if: >-
+          needs.classify-changes.outputs.ios_build == 'true' &&
+          failure() &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          contains(fromJSON('["failure-only","full"]'), inputs.artifact_transport)
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport "${{ inputs.artifact_transport }}"
+          --path "$RUNNER_TEMP/ios-diagnostics"
 
       - name: Upload iOS failure diagnostics
-        if: needs.classify-changes.outputs.ios_build == 'true' && failure()
+        if: >-
+          needs.classify-changes.outputs.ios_build == 'true' &&
+          failure() &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          contains(fromJSON('["failure-only","full"]'), inputs.artifact_transport)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-simulator-build-diagnostics-${{ github.sha }}
           path: ${{ runner.temp }}/ios-diagnostics/
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: ${{ inputs.artifact_transport == 'full' && 1 || 7 }}
 
       - name: Skip iOS Simulator build
         if: needs.classify-changes.outputs.ios_build != 'true'
@@ -197,16 +271,8 @@ jobs:
           channel: stable
           cache: false
 
-      - name: Restore Pub cache
-        if: runner.environment == 'github-hosted'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
-
       - name: Capture production build diagnostics
+        if: runner.environment == 'github-hosted'
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/ios-production-diagnostics"
@@ -218,15 +284,30 @@ jobs:
             pod --version
           } > "$RUNNER_TEMP/ios-production-diagnostics/toolchain.txt" 2>&1
 
+      - name: Preflight iOS production toolchain full evidence
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport full
+          --path "$RUNNER_TEMP/ios-production-diagnostics/toolchain.txt"
+
       - name: Upload iOS production toolchain evidence
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-production-toolchain-${{ github.sha }}
           path: ${{ runner.temp }}/ios-production-diagnostics/toolchain.txt
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
 
       - name: Build unsigned iOS Production Release app
+        if: runner.environment == 'github-hosted'
         shell: bash
         env:
           API_BASE_URL: https://api.acme.test
@@ -236,7 +317,50 @@ jobs:
           bash tools/ci/build_ios_production.sh \
             2>&1 | tee "$RUNNER_TEMP/ios-production-diagnostics/build.log"
 
+      - name: Build managed self-hosted iOS Production Release app
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        env:
+          API_BASE_URL: https://api.acme.test
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: ios-production-release
+          CI_ARTIFACT_ENVIRONMENT: production
+          CI_ARTIFACT_BUILD_MODE: release
+          CI_ARTIFACT_KIND: ios-app
+          CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+        run: |
+          # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command ios ios bash -lc '
+            mkdir -p "$ARTIFACT_DIR/ios-production-diagnostics" &&
+            { sw_vers; xcodebuild -version; flutter --version; flutter doctor -v; pod --version; } > "$ARTIFACT_DIR/ios-production-diagnostics/toolchain.txt" 2>&1 &&
+            set -o pipefail && bash tools/ci/build_ios_production.sh 2>&1 | tee "$ARTIFACT_DIR/ios-production-diagnostics/build.log"
+          '
+
+      - name: Preflight iOS production full artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport full
+          --path "$RUNNER_TEMP/ios-production-artifact"
+          --path "$RUNNER_TEMP/ios-production-diagnostics/toolchain.txt"
+
+      - name: GitHub storage warning for full iOS production artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: echo "GitHub storage warning - full transport is retained for one day."
+
       - name: Upload iOS production verification artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-production-release-${{ github.sha }}
@@ -244,13 +368,53 @@ jobs:
             ${{ runner.temp }}/ios-production-artifact/*.app
             ${{ runner.temp }}/ios-production-artifact/artifact-metadata.txt
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
+
+      - name: Preflight iOS production failure diagnostics
+        if: >-
+          failure() &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          contains(fromJSON('["failure-only","full"]'), inputs.artifact_transport)
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport "${{ inputs.artifact_transport }}"
+          --path "$RUNNER_TEMP/ios-production-diagnostics"
 
       - name: Upload iOS production failure diagnostics
-        if: failure()
+        if: >-
+          failure() &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          contains(fromJSON('["failure-only","full"]'), inputs.artifact_transport)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-production-build-diagnostics-${{ github.sha }}
           path: ${{ runner.temp }}/ios-production-diagnostics/
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: ${{ inputs.artifact_transport == 'full' && 1 || 7 }}
+
+  ios-summary:
+    name: iOS Summary
+    needs: [classify-changes, simulator-build, production-release-build]
+    if: >-
+      always() &&
+      needs.classify-changes.outputs.ios_build == 'true' &&
+      ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') ||
+       (github.event_name == 'workflow_dispatch' &&
+        (inputs.execution_mode == 'self-hosted' ||
+         (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted'))))
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Aggregate managed iOS run
+        shell: bash
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+        run: bash tools/ci/run_local_ci.sh aggregate-managed-run

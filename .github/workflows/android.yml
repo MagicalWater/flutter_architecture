@@ -12,6 +12,12 @@ on:
         default: repository-default
         type: choice
         options: [repository-default, manual-local, self-hosted, github-hosted]
+      artifact_transport:
+        description: GitHub artifact transport for this manual run
+        required: true
+        default: repository-default
+        type: choice
+        options: [repository-default, none, failure-only, full]
 
 permissions:
   contents: read
@@ -100,27 +106,55 @@ jobs:
           channel: stable
           cache: false
 
-      - name: Restore Pub cache
-        if: runner.environment == 'github-hosted'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
-
       - name: Build Android development Debug APK
+        if: runner.environment == 'github-hosted'
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/android-development-artifact
         run: bash tools/ci/build_android_development.sh
 
+      - name: Build managed self-hosted Android development Debug APK
+        if: runner.environment == 'self-hosted'
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: android-development-debug
+          CI_ARTIFACT_ENVIRONMENT: development
+          CI_ARTIFACT_BUILD_MODE: debug
+          CI_ARTIFACT_KIND: android-apk
+          CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+        run: |
+          # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command android android bash tools/ci/build_android_development.sh
+
+      - name: Preflight Android development full artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport full
+          --path "$RUNNER_TEMP/android-development-artifact"
+
+      - name: GitHub storage warning for full Android development artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: echo "GitHub storage warning - full transport is retained for one day."
+
       - name: Upload Android development verification artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: android-development-debug-${{ github.sha }}
           path: ${{ runner.temp }}/android-development-artifact/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
           compression-level: 0
 
   android-release-apk:
@@ -158,34 +192,67 @@ jobs:
           channel: stable
           cache: false
 
-      - name: Restore Pub cache
-        if: runner.environment == 'github-hosted'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
-
       - name: Resolve dependencies
+        if: runner.environment == 'github-hosted'
         run: dart pub get
 
       - name: Verify generated files
+        if: runner.environment == 'github-hosted'
         run: bash tools/ci/verify_generated.sh
 
       - name: Build Android release APK
+        if: runner.environment == 'github-hosted'
         env:
           API_BASE_URL: https://api.acme.test
           ARTIFACT_DIR: ${{ runner.temp }}/android-production-artifact
         run: bash tools/ci/build_android_production.sh
 
+      - name: Build managed self-hosted Android release APK
+        if: runner.environment == 'self-hosted'
+        env:
+          API_BASE_URL: https://api.acme.test
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: android-production-release
+          CI_ARTIFACT_ENVIRONMENT: production
+          CI_ARTIFACT_BUILD_MODE: release
+          CI_ARTIFACT_KIND: android-apk
+          CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+        run: |
+          # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command android android bash -lc '
+            dart pub get && bash tools/ci/verify_generated.sh && bash tools/ci/build_android_production.sh
+          '
+
+      - name: Preflight Android production full artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport full
+          --path "$RUNNER_TEMP/android-production-artifact"
+
+      - name: GitHub storage warning for full Android production artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: echo "GitHub storage warning - full transport is retained for one day."
+
       - name: Upload Android verification artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: android-production-release-${{ github.sha }}
           path: ${{ runner.temp }}/android-production-artifact/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
           compression-level: 0
 
   android-summary:
@@ -202,6 +269,21 @@ jobs:
       DEVELOPMENT_RESULT: ${{ needs.android-development-debug-apk.result }}
       RELEASE_RESULT: ${{ needs.android-release-apk.result }}
     steps:
+      - name: Checkout repository for managed aggregation
+        if: runner.environment == 'self-hosted' && env.ANDROID_BUILD == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Aggregate managed Android run
+        if: runner.environment == 'self-hosted' && env.ANDROID_BUILD == 'true'
+        shell: bash
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+        run: bash tools/ci/run_local_ci.sh aggregate-managed-run
+
       - name: Verify Android workflow result
         shell: bash
         run: |

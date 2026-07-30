@@ -24,6 +24,8 @@ resolve_python() {
 
 python_bin="$(resolve_python)" || exit 69
 export PYTHON_BIN="$python_bin"
+managed_execution_mode="${CI_MANAGED_EXECUTION_MODE:-manual-local}"
+export CI_MANAGED_EXECUTION_MODE="$managed_execution_mode"
 
 python_repo_root="$repo_root"
 if command -v cygpath >/dev/null 2>&1; then
@@ -48,6 +50,7 @@ json_path_value() {
 
 resolve_managed_root() {
   CI_ARTIFACT_ROOT_INPUT="${CI_ARTIFACT_ROOT:-}" \
+    CI_MANAGED_EXECUTION_MODE_INPUT="$managed_execution_mode" \
     REPO_ROOT_INPUT="$python_repo_root" \
     "$python_bin" -c '
 import os
@@ -57,7 +60,7 @@ from tools.ci.artifact_contract import resolve_artifact_root, validate_artifact_
 
 root = resolve_artifact_root(
     os.environ.get("CI_ARTIFACT_ROOT_INPUT") or None,
-    "manual-local",
+    os.environ["CI_MANAGED_EXECUTION_MODE_INPUT"],
     platform.system(),
     os.environ,
 )
@@ -215,18 +218,20 @@ fi
 
 build_metadata_json() {
   local suite_name="$1"
-  local job_key="$2"
-  local started_at="$3"
-  local artifact_platform
-  case "$suite_name" in
-    android) artifact_platform="android" ;;
-    ios) artifact_platform="ios" ;;
-    observability) artifact_platform="multiple" ;;
-    quality) artifact_platform="$host_platform" ;;
-    *) echo "Unsupported metadata suite: $suite_name" >&2; return 64 ;;
-  esac
+  local artifact_platform="$2"
+  local job_key="$3"
+  local started_at="$4"
+  local artifact_environment="${CI_ARTIFACT_ENVIRONMENT:-}"
+  local artifact_build_mode="${CI_ARTIFACT_BUILD_MODE:-}"
+  local artifact_kind="${CI_ARTIFACT_KIND:-${suite_name}-evidence}"
+  [[ -n "$artifact_environment" ]] || artifact_environment="$(
+    [[ "$suite_name" == "quality" ]] && printf repository || printf multiple
+  )"
+  [[ -n "$artifact_build_mode" ]] || artifact_build_mode="$(
+    [[ "$suite_name" == "quality" ]] && printf verification || printf multiple
+  )"
   METADATA_REPOSITORY="$repository_id" \
-    METADATA_GIT_REF="$git_ref" \
+    METADATA_GIT_REF="${GITHUB_REF:-$git_ref}" \
     METADATA_DIRTY_STATE="$dirty_state" \
     METADATA_JOB="$job_key" \
     METADATA_HOST_OS="$host_platform" \
@@ -234,6 +239,9 @@ build_metadata_json() {
     METADATA_RUNNER_NAME="$runner_name" \
     METADATA_SUITE="$suite_name" \
     METADATA_PLATFORM="$artifact_platform" \
+    METADATA_ENVIRONMENT="$artifact_environment" \
+    METADATA_BUILD_MODE="$artifact_build_mode" \
+    METADATA_ARTIFACT_KIND="$artifact_kind" \
     METADATA_STARTED_AT="$started_at" \
     "$python_bin" -c '
 import json
@@ -244,21 +252,21 @@ payload = {
     "repository": os.environ["METADATA_REPOSITORY"],
     "git_ref": os.environ["METADATA_GIT_REF"],
     "dirty_state": os.environ["METADATA_DIRTY_STATE"] == "true",
-    "run_id": None,
-    "run_attempt": None,
-    "workflow": None,
-    "job": os.environ["METADATA_JOB"],
-    "execution_mode": "manual-local",
+    "run_id": os.environ.get("GITHUB_RUN_ID"),
+    "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]) if os.environ.get("GITHUB_RUN_ATTEMPT") else None,
+    "workflow": os.environ.get("GITHUB_WORKFLOW"),
+    "job": os.environ.get("GITHUB_JOB") or os.environ["METADATA_JOB"],
+    "execution_mode": os.environ.get("CI_MANAGED_EXECUTION_MODE", "manual-local"),
     "host_os": os.environ["METADATA_HOST_OS"],
     "host_arch": os.environ["METADATA_HOST_ARCH"],
     "runner_name": os.environ["METADATA_RUNNER_NAME"],
     "suite": suite,
-    "classifier_reason": "manual-local-explicit-suite",
+    "classifier_reason": os.environ.get("CI_CLASSIFIER_REASON", "manual-local-explicit-suite"),
     "started_at": os.environ["METADATA_STARTED_AT"],
     "platform": os.environ["METADATA_PLATFORM"],
-    "environment": "multiple" if suite in {"android", "ios", "observability"} else "repository",
-    "build_mode": "multiple" if suite in {"android", "ios", "observability"} else "verification",
-    "artifact_kind": f"{suite}-evidence",
+    "environment": os.environ["METADATA_ENVIRONMENT"],
+    "build_mode": os.environ["METADATA_BUILD_MODE"],
+    "artifact_kind": os.environ["METADATA_ARTIFACT_KIND"],
     "sensitivity": "internal-verification",
     "signing": "verification-only",
     "distribution": "not-for-distribution",
@@ -325,7 +333,7 @@ run_managed_job() {
   local started_at
   started_at="$(utc_now)" || return $?
   local metadata_json
-  metadata_json="$(build_metadata_json "$suite_name" "$job_key" "$started_at")" || return $?
+  metadata_json="$(build_metadata_json "$suite_name" "$platform_name" "$job_key" "$started_at")" || return $?
   local begin_json
   begin_json="$(
     "$python_bin" tools/ci/artifact_store.py begin-job \
@@ -378,32 +386,34 @@ run_managed_job() {
     cleanup_json="$(json_fragment "$finalize_payload" cleanup)" || evidence_prepare_exit_code=$?
   fi
 
-  local finalize_exit_code aggregate_exit_code cleanup_exit_code
+  local finalize_exit_code summary_exit_code
+  local finalize_json published_dir manifest_path
   finalize_exit_code="$evidence_prepare_exit_code"
-  aggregate_exit_code=0
-  cleanup_exit_code=0
+  summary_exit_code=0
 
   if [[ "$evidence_prepare_exit_code" -eq 0 ]]; then
-    "$python_bin" tools/ci/artifact_store.py finalize-job \
+    finalize_json="$("$python_bin" tools/ci/artifact_store.py finalize-job \
       --context-json "$context_path" \
       --result "$result" \
       --validations-json-value "$validations_json" \
-      --cleanup-json-value "$cleanup_json" >/dev/null
+      --cleanup-json-value "$cleanup_json")"
     finalize_exit_code=$?
+    if [[ "$finalize_exit_code" -eq 0 ]]; then
+      published_dir="$(json_path_value "$finalize_json" published_dir)" || finalize_exit_code=$?
+      manifest_path="$published_dir/manifest.json"
+    fi
   else
     echo "Artifact evidence preparation failed for job_key=$job_key" >&2
   fi
 
   if [[ "$finalize_exit_code" -eq 0 ]]; then
-    "$python_bin" tools/ci/artifact_store.py aggregate-run \
-      --root "$artifact_root" \
-      --commit-sha "$commit_sha" \
-      --run-key "$run_key" >/dev/null
-    aggregate_exit_code=$?
-    "$python_bin" tools/ci/artifact_cleanup.py evaluate \
-      --root "$artifact_root" \
-      --dry-run >/dev/null
-    cleanup_exit_code=$?
+    if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+      "$python_bin" tools/ci/artifact_store.py write-summary \
+        --manifest "$manifest_path" \
+        --output "$GITHUB_STEP_SUMMARY" >/dev/null
+      summary_exit_code=$?
+      echo "Local-only evidence; not downloadable from GitHub."
+    fi
   else
     echo "Artifact finalize failed for job_key=$job_key" >&2
   fi
@@ -417,30 +427,113 @@ run_managed_job() {
   if [[ "$finalize_exit_code" -ne 0 ]]; then
     return "$finalize_exit_code"
   fi
-  if [[ "$aggregate_exit_code" -ne 0 ]]; then
-    return "$aggregate_exit_code"
-  fi
-  if [[ "$cleanup_exit_code" -ne 0 ]]; then
-    return "$cleanup_exit_code"
+  if [[ "$summary_exit_code" -ne 0 ]]; then
+    return "$summary_exit_code"
   fi
   return 0
 }
 
+aggregate_managed_run() {
+  [[ -n "$run_key" ]] || {
+    echo "A managed run key is required for aggregation." >&2
+    return 64
+  }
+
+  local manifest_count
+  manifest_count="$(
+    ARTIFACT_ROOT_INPUT="$artifact_root" \
+      COMMIT_SHA_INPUT="$commit_sha" \
+      RUN_KEY_INPUT="$run_key" \
+      "$python_bin" -c '
+import os
+from pathlib import Path
+
+jobs = (
+    Path(os.environ["ARTIFACT_ROOT_INPUT"])
+    / "runs"
+    / os.environ["COMMIT_SHA_INPUT"]
+    / os.environ["RUN_KEY_INPUT"]
+    / "jobs"
+)
+print(sum(1 for _ in jobs.glob("*/manifest.json")))
+'
+  )" || return $?
+
+  if [[ "$manifest_count" -eq 0 ]]; then
+    if [[ "${CI_ALLOW_EMPTY_AGGREGATION:-false}" == "true" ]]; then
+      echo "No finalized managed jobs were produced for run_key=$run_key."
+      if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+        printf '# Managed CI Artifact Run\n\nNo finalized managed jobs were produced.\n' >> "$GITHUB_STEP_SUMMARY"
+      fi
+      return 0
+    fi
+    echo "No finalized managed jobs were produced for run_key=$run_key." >&2
+    return 66
+  fi
+
+  local aggregate_json run_manifest_path run_summary_path
+  aggregate_json="$(
+    "$python_bin" tools/ci/artifact_store.py aggregate-run \
+      --root "$artifact_root" \
+      --commit-sha "$commit_sha" \
+      --run-key "$run_key"
+  )" || return $?
+  run_manifest_path="$(json_path_value "$aggregate_json" run_manifest_path)" || return $?
+  run_summary_path="$(dirname "$run_manifest_path")/run-summary.md"
+
+  "$python_bin" tools/ci/artifact_cleanup.py evaluate \
+    --root "$artifact_root" \
+    --dry-run >/dev/null || return $?
+
+  if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+    cat "$run_summary_path" >> "$GITHUB_STEP_SUMMARY"
+    printf '\nLocal-only evidence; not downloadable from GitHub.\n' >> "$GITHUB_STEP_SUMMARY"
+  fi
+  echo "Managed run aggregated: run_key=$run_key jobs=$manifest_count"
+}
+
 run_requested_suite() {
   local suite_name="$1"
+  local target_platform
+  case "$suite_name" in
+    quality) target_platform="$host_platform" ;;
+    android) target_platform=android ;;
+    ios) target_platform=ios ;;
+    observability) target_platform=multiple ;;
+    *) echo "Unsupported suite: $suite_name" >&2; return 64 ;;
+  esac
   run_managed_job \
     "$suite_name" \
-    "$host_platform" \
+    "$target_platform" \
     bash "$script_path" __execute "$suite_name"
 }
 
-echo "CI execution mode: manual-local (repository-owned managed artifact entrypoint)"
+echo "CI execution mode: $managed_execution_mode (repository-owned managed artifact entrypoint)"
 echo "Run key: $run_key"
 
 case "$requested_suite" in
+  aggregate-managed-run)
+    aggregate_managed_run
+    exit $?
+    ;;
+  managed-command)
+    [[ $# -ge 4 ]] || {
+      echo "Usage: $0 managed-command <suite> <platform> <command...>" >&2
+      exit 64
+    }
+    managed_suite="$2"
+    managed_platform="$3"
+    shift 3
+    run_managed_job "$managed_suite" "$managed_platform" "$@"
+    exit $?
+    ;;
   quality|android|observability)
     run_requested_suite "$requested_suite"
-    exit $?
+    primary_exit_code=$?
+    aggregate_managed_run
+    aggregate_exit_code=$?
+    [[ "$primary_exit_code" -eq 0 ]] || exit "$primary_exit_code"
+    exit "$aggregate_exit_code"
     ;;
   ios)
     [[ "$host_platform" == "macos" ]] || {
@@ -448,16 +541,27 @@ case "$requested_suite" in
       exit 69
     }
     run_requested_suite ios
-    exit $?
+    primary_exit_code=$?
+    aggregate_managed_run
+    aggregate_exit_code=$?
+    [[ "$primary_exit_code" -eq 0 ]] || exit "$primary_exit_code"
+    exit "$aggregate_exit_code"
     ;;
   all)
-    run_requested_suite quality || exit $?
-    run_requested_suite android || exit $?
-    if [[ "$host_platform" == "macos" ]]; then
-      run_requested_suite ios || exit $?
-    else
+    primary_exit_code=0
+    run_requested_suite quality || primary_exit_code=$?
+    if [[ "$primary_exit_code" -eq 0 ]]; then
+      run_requested_suite android || primary_exit_code=$?
+    fi
+    if [[ "$primary_exit_code" -eq 0 && "$host_platform" == "macos" ]]; then
+      run_requested_suite ios || primary_exit_code=$?
+    elif [[ "$host_platform" != "macos" ]]; then
       echo "iOS suite skipped in all: current host is $host_platform."
     fi
+    aggregate_managed_run
+    aggregate_exit_code=$?
+    [[ "$primary_exit_code" -eq 0 ]] || exit "$primary_exit_code"
+    exit "$aggregate_exit_code"
     ;;
   *)
     echo "Usage: $0 {quality|android|ios|observability|all}" >&2

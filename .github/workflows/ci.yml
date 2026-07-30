@@ -19,6 +19,16 @@ on:
           - manual-local
           - self-hosted
           - github-hosted
+      artifact_transport:
+        description: GitHub artifact transport for this manual run
+        required: true
+        default: repository-default
+        type: choice
+        options:
+          - repository-default
+          - none
+          - failure-only
+          - full
 
 permissions:
   contents: read
@@ -109,23 +119,47 @@ jobs:
           channel: stable
           cache: false
 
-      - name: Restore Pub cache
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
+      - name: Run managed self-hosted quality
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'self-hosted'
+        shell: bash
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: ci-quality
+          CI_ARTIFACT_ENVIRONMENT: repository
+          CI_ARTIFACT_BUILD_MODE: verification
+          CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+        run: |
+          # The managed wrapper appends Local-only evidence; not downloadable from GitHub. to $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command quality macos bash -lc '
+            dart pub get &&
+            python3 tools/docs/check_docs.py . &&
+            python3 -m unittest \
+              tools.ci.test_environment_contract \
+              tools.ci.test_environment_workflow_matrix_contract \
+              tools.ci.test_change_classifier \
+              tools.ci.test_drift_schema_governance \
+              tools.ci.test_no_sqflite_authority \
+              tools.ci.test_ios_workflow_contract \
+              tools.ci.test_local_build_commands \
+              tools.ci.test_ci_execution_mode_contract \
+              tools.ci.test_artifact_workflow_contract \
+              tools.ci.test_shell_portability_contract &&
+            dart run melos run analyze &&
+            git diff --check
+          '
 
       - name: Resolve dependencies
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
         run: dart pub get
 
       - name: Check documentation
+        if: runner.environment == 'github-hosted' || needs.classify-changes.outputs.full_ci != 'true'
         run: python3 tools/docs/check_docs.py .
 
       - name: Check CI workflow contracts
+        if: runner.environment == 'github-hosted' || needs.classify-changes.outputs.full_ci != 'true'
         run: >-
           python3 -m unittest
           tools.ci.test_environment_contract
@@ -136,13 +170,15 @@ jobs:
           tools.ci.test_ios_workflow_contract
           tools.ci.test_local_build_commands
           tools.ci.test_ci_execution_mode_contract
+          tools.ci.test_artifact_workflow_contract
           tools.ci.test_shell_portability_contract
 
       - name: Analyze workspace
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
         run: dart run melos run analyze
 
       - name: Check whitespace errors
+        if: runner.environment == 'github-hosted' || needs.classify-changes.outputs.full_ci != 'true'
         run: git diff --check
 
   generated-consistency:
@@ -182,21 +218,27 @@ jobs:
           channel: stable
           cache: false
 
-      - name: Restore Pub cache
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
+      - name: Run managed self-hosted generated consistency
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'self-hosted'
+        shell: bash
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: ci-generated-consistency
+          CI_ARTIFACT_ENVIRONMENT: repository
+          CI_ARTIFACT_BUILD_MODE: verification
+          CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+        run: |
+          # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command quality macos bash tools/ci/verify_generated.sh
 
       - name: Resolve dependencies
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
         run: dart pub get
 
       - name: Verify generated files
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
         run: bash tools/ci/verify_generated.sh
 
       - name: Skip generated consistency
@@ -241,21 +283,29 @@ jobs:
           channel: stable
           cache: false
 
-      - name: Restore Pub cache
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            pub-${{ runner.os }}-${{ steps.versions.outputs.flutter_version }}-
+      - name: Run managed self-hosted Flutter tests
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'self-hosted'
+        shell: bash
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: ci-tests
+          CI_ARTIFACT_ENVIRONMENT: repository
+          CI_ARTIFACT_BUILD_MODE: verification
+          CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+        run: |
+          # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command quality macos bash -lc '
+            dart pub get && dart run melos exec -- flutter test
+          '
 
       - name: Resolve dependencies
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
         run: dart pub get
 
       - name: Run all Flutter tests
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
         run: dart run melos exec -- flutter test
 
       - name: Skip Flutter tests
@@ -263,11 +313,61 @@ jobs:
         run: |
           echo "Flutter tests skipped: ${{ needs.classify-changes.outputs.reason }}"
 
+      - name: Preflight golden test failure evidence
+        if: >-
+          needs.classify-changes.outputs.full_ci == 'true' &&
+          failure() &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          contains(fromJSON('["failure-only","full"]'), inputs.artifact_transport)
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport "${{ inputs.artifact_transport }}"
+          --path packages/design_system/test/failures/
+
+      - name: GitHub storage warning for full golden evidence
+        if: >-
+          failure() &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: echo "GitHub storage warning - full transport is retained for one day."
+
       - name: Upload golden test failure evidence
-        if: needs.classify-changes.outputs.full_ci == 'true' && failure()
+        if: >-
+          needs.classify-changes.outputs.full_ci == 'true' &&
+          failure() &&
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          contains(fromJSON('["failure-only","full"]'), inputs.artifact_transport)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: golden-test-failures-${{ github.sha }}
           path: packages/design_system/test/failures/
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: ${{ inputs.artifact_transport == 'full' && 1 || 7 }}
+
+  artifact-summary:
+    name: Artifact Summary
+    needs: [classify-changes, quality, generated-consistency, tests]
+    if: >-
+      always() &&
+      needs.classify-changes.outputs.full_ci == 'true' &&
+      ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') ||
+       (github.event_name == 'workflow_dispatch' &&
+        (inputs.execution_mode == 'self-hosted' ||
+         (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted'))))
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Aggregate managed CI run
+        shell: bash
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+        run: bash tools/ci/run_local_ci.sh aggregate-managed-run

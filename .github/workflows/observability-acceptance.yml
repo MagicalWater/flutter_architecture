@@ -13,6 +13,12 @@ on:
         default: repository-default
         type: choice
         options: [repository-default, manual-local, self-hosted, github-hosted]
+      artifact_transport:
+        description: GitHub artifact transport for this manual run
+        required: true
+        default: repository-default
+        type: choice
+        options: [repository-default, none, failure-only, full]
       remote_acceptance:
         description: Run secret-backed staging acceptance and symbol uploads
         required: false
@@ -99,7 +105,7 @@ jobs:
           printf '%s' "$SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase/service-account.json"
           chmod 600 "$RUNNER_TEMP/firebase/service-account.json"
       - name: Build Android production symbols
-        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         env:
           API_BASE_URL: https://api.acme.test
           ARTIFACT_DIR: ${{ runner.temp }}/android-production-artifact
@@ -108,13 +114,13 @@ jobs:
         if: env.REMOTE_ACCEPTANCE_READY == 'true'
         run: npm install --global firebase-tools@15.24.0
       - name: Upload Android Flutter symbols
-        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase/service-account.json
           FIREBASE_ANDROID_APP_ID: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
         run: bash tools/ci/upload_android_flutter_symbols.sh "$RUNNER_TEMP/android-production-artifact/flutter-symbols"
       - name: Build controlled Android staging acceptance release
-        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         env:
           API_BASE_URL: https://api.acme.test
           ARTIFACT_DIR: ${{ runner.temp }}/android-staging-acceptance
@@ -124,12 +130,13 @@ jobs:
           bash tools/ci/build_android_environment.sh
           staging release lib/main_staging.dart real
       - name: Upload Android staging Flutter symbols
-        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase/service-account.json
           FIREBASE_ANDROID_APP_ID: ${{ secrets.FIREBASE_ANDROID_STAGING_APP_ID }}
         run: bash tools/ci/upload_android_flutter_symbols.sh "$RUNNER_TEMP/android-staging-acceptance/flutter-symbols"
       - name: Write Android evidence
+        if: runner.environment == 'github-hosted'
         env:
           STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && 'uploaded' || 'not-executed' }}
         run: |
@@ -140,7 +147,72 @@ jobs:
             --release "1.8.0+${GITHUB_RUN_NUMBER}" \
             --remote-event-status not-executed \
             --symbolication-status "$STATUS"
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+
+      - name: Build managed self-hosted Android observability evidence
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'self-hosted'
+        env:
+          API_BASE_URL: https://api.acme.test
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase/service-account.json
+          FIREBASE_ANDROID_APP_ID: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          FIREBASE_ANDROID_STAGING_APP_ID: ${{ secrets.FIREBASE_ANDROID_STAGING_APP_ID }}
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: observability-android
+          CI_RETENTION_CLASS: observability-raw
+          CI_ARTIFACT_ENVIRONMENT: multiple
+          CI_ARTIFACT_BUILD_MODE: release
+          CI_ARTIFACT_KIND: observability-android
+        run: |
+          # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command observability android bash -lc '
+            managed_artifact_dir="$ARTIFACT_DIR" &&
+            ARTIFACT_DIR="$managed_artifact_dir/android-production" \
+              bash tools/ci/build_android_production.sh &&
+            bash tools/ci/upload_android_flutter_symbols.sh \
+              "$managed_artifact_dir/android-production/flutter-symbols" &&
+            FIREBASE_ANDROID_APP_ID="$FIREBASE_ANDROID_STAGING_APP_ID" \
+              ARTIFACT_DIR="$managed_artifact_dir/android-staging" \
+              OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true \
+              OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true \
+              bash tools/ci/build_android_environment.sh staging release lib/main_staging.dart real &&
+            FIREBASE_ANDROID_APP_ID="$FIREBASE_ANDROID_STAGING_APP_ID" \
+              bash tools/ci/upload_android_flutter_symbols.sh \
+              "$managed_artifact_dir/android-staging/flutter-symbols" &&
+            mkdir -p "$managed_artifact_dir/evidence" &&
+            python3 tools/ci/write_observability_acceptance_evidence.py \
+              --output "$managed_artifact_dir/evidence/android.txt" \
+              --platform android \
+              --commit-sha "$GITHUB_SHA" \
+              --release "1.8.0+$GITHUB_RUN_NUMBER" \
+              --remote-event-status not-executed \
+              --symbolication-status uploaded
+          '
+
+      - name: Preflight Android observability full artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport full
+          --path "$RUNNER_TEMP/observability"
+          --path "$RUNNER_TEMP/android-staging-acceptance"
+
+      - name: GitHub storage warning for full Android observability artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: echo "GitHub storage warning - full transport is retained for one day."
+
+      - name: Upload Android observability full artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: observability-android-${{ github.sha }}
           path: |
@@ -195,18 +267,18 @@ jobs:
           printf '%s' "$CONFIG_B64" | base64 --decode > apps/flutter_architecture/ios/Firebase/production/GoogleService-Info.plist
           printf '%s' "$STAGING_CONFIG_B64" | base64 --decode > apps/flutter_architecture/ios/Firebase/staging/GoogleService-Info.plist
       - name: Build iOS production dSYM
-        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         env:
           API_BASE_URL: https://api.acme.test
           ARTIFACT_DIR: ${{ runner.temp }}/ios-production-artifact
         run: bash tools/ci/build_ios_production.sh
       - name: Upload iOS dSYM
-        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         run: >-
           bash tools/ci/upload_ios_dsyms.sh production
           "$RUNNER_TEMP/ios-production-artifact/Flutter Architecture.app.dSYM"
       - name: Build controlled iOS staging acceptance app
-        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         env:
           API_BASE_URL: https://api.acme.test
           ARTIFACT_DIR: ${{ runner.temp }}/ios-staging-acceptance
@@ -217,11 +289,12 @@ jobs:
           bash tools/ci/build_ios_environment.sh
           staging Staging Debug-staging iphonesimulator lib/main_staging.dart real
       - name: Upload iOS staging dSYM
-        if: env.REMOTE_ACCEPTANCE_READY == 'true'
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         run: >-
           bash tools/ci/upload_ios_dsyms.sh staging
           "$RUNNER_TEMP/ios-staging-acceptance/dSYMs"
       - name: Write iOS evidence
+        if: runner.environment == 'github-hosted'
         env:
           STATUS: ${{ env.REMOTE_ACCEPTANCE_READY == 'true' && 'uploaded' || 'not-executed' }}
         run: |
@@ -232,7 +305,68 @@ jobs:
             --release "1.8.0+${GITHUB_RUN_NUMBER}" \
             --remote-event-status not-executed \
             --symbolication-status "$STATUS"
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+
+      - name: Build managed self-hosted iOS observability evidence
+        if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'self-hosted'
+        env:
+          API_BASE_URL: https://api.acme.test
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_JOB_KEY: observability-ios
+          CI_RETENTION_CLASS: observability-raw
+          CI_ARTIFACT_ENVIRONMENT: multiple
+          CI_ARTIFACT_BUILD_MODE: release
+          CI_ARTIFACT_KIND: observability-ios
+        run: |
+          # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
+          bash tools/ci/run_local_ci.sh managed-command observability ios bash -lc '
+            managed_artifact_dir="$ARTIFACT_DIR" &&
+            ARTIFACT_DIR="$managed_artifact_dir/ios-production" \
+              bash tools/ci/build_ios_production.sh &&
+            bash tools/ci/upload_ios_dsyms.sh production \
+              "$managed_artifact_dir/ios-production/dSYMs" &&
+            ARTIFACT_DIR="$managed_artifact_dir/ios-staging" \
+              OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true \
+              OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true \
+              GENERATE_DSYM_FOR_ACCEPTANCE=true \
+              bash tools/ci/build_ios_environment.sh staging Staging Debug-staging iphonesimulator lib/main_staging.dart real &&
+            bash tools/ci/upload_ios_dsyms.sh staging \
+              "$managed_artifact_dir/ios-staging/dSYMs" &&
+            mkdir -p "$managed_artifact_dir/evidence" &&
+            python3 tools/ci/write_observability_acceptance_evidence.py \
+              --output "$managed_artifact_dir/evidence/ios.txt" \
+              --platform ios \
+              --commit-sha "$GITHUB_SHA" \
+              --release "1.8.0+$GITHUB_RUN_NUMBER" \
+              --remote-event-status not-executed \
+              --symbolication-status uploaded
+          '
+
+      - name: Preflight iOS observability full artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: >-
+          python3 tools/ci/artifact_transport.py preflight
+          --transport full
+          --path "$RUNNER_TEMP/observability"
+          --path "$RUNNER_TEMP/ios-staging-acceptance"
+
+      - name: GitHub storage warning for full iOS observability artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        run: echo "GitHub storage warning - full transport is retained for one day."
+
+      - name: Upload iOS observability full artifact
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          runner.environment == 'github-hosted' &&
+          inputs.artifact_transport == 'full'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: observability-ios-${{ github.sha }}
           path: |
@@ -248,3 +382,28 @@ jobs:
         run: |
           bash tools/ci/cleanup_ci_secrets.sh "$GITHUB_WORKSPACE"
           bash tools/ci/cleanup_ci_secrets.sh "$RUNNER_TEMP"
+
+  observability-summary:
+    name: Observability Summary
+    needs: [contract, android-symbols, ios-symbols]
+    if: >-
+      always() &&
+      github.event_name == 'workflow_dispatch' &&
+      inputs.remote_acceptance == true &&
+      (inputs.execution_mode == 'self-hosted' ||
+       (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted'))
+    runs-on: ${{ fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Aggregate managed observability run
+        shell: bash
+        env:
+          CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
+          CI_MANAGED_EXECUTION_MODE: self-hosted
+          CI_RUN_KEY: gh-${{ github.run_id }}-${{ github.run_attempt }}
+          CI_ALLOW_EMPTY_AGGREGATION: 'true'
+        run: bash tools/ci/run_local_ci.sh aggregate-managed-run

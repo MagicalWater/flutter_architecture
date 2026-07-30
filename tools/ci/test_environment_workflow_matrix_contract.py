@@ -63,7 +63,7 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("Skip Flutter tests", tests)
         self.assertIn("needs.classify-changes.outputs.full_ci != 'true'", tests)
 
-    def test_ci_quality_keeps_light_checks_unconditional(self) -> None:
+    def test_ci_quality_keeps_light_checks_for_docs_only_and_manages_full_self_hosted(self) -> None:
         quality = self.quality.split("  quality:", 1)[1].split(
             "  generated-consistency:", 1
         )[0]
@@ -78,7 +78,13 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
                 quality,
             )
             self.assertIsNotNone(match, step_name)
-            self.assertNotIn("if:", match.group("body"))
+            self.assertIn(
+                "runner.environment == 'github-hosted' || needs.classify-changes.outputs.full_ci != 'true'",
+                match.group("body"),
+            )
+
+        self.assertIn("Run managed self-hosted quality", quality)
+        self.assertIn("managed-command quality macos", quality)
 
         analyze = re.search(
             r"      - name: Analyze workspace\n(?P<body>(?:        .*\n)*)",
@@ -205,8 +211,12 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
 
     def test_artifact_uploads_are_bounded_and_sha_scoped(self) -> None:
         combined = f"{self.android}\n{self.ios}"
-        self.assertGreaterEqual(combined.count("retention-days: 14"), 3)
-        self.assertIn("retention-days: 7", self.ios)
+        self.assertNotIn("retention-days: 14", combined)
+        self.assertGreaterEqual(combined.count("retention-days: 1"), 6)
+        self.assertIn("inputs.artifact_transport == 'full' && 1 || 7", self.ios)
+        self.assertIn("github.event_name == 'workflow_dispatch'", combined)
+        self.assertIn("runner.environment == 'github-hosted'", combined)
+        self.assertIn("tools/ci/artifact_transport.py preflight", combined)
         artifact_names = re.findall(r"name:\s+([^\n]*\$\{\{ github\.sha \}\}[^\n]*)", combined)
         self.assertGreaterEqual(len(artifact_names), 4)
 

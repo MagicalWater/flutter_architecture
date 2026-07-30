@@ -35,12 +35,15 @@ class IosWorkflowContractTest(unittest.TestCase):
             "Checkout repository",
             "Load toolchain versions",
             "Set up Flutter",
-            "Restore Pub cache",
             "Capture toolchain diagnostics",
+            "Preflight iOS development toolchain full evidence",
             "Upload iOS development toolchain evidence",
             "Check iOS workflow contract",
             "Build unsigned iOS Simulator app",
+            "Build managed self-hosted iOS Simulator app",
+            "Preflight iOS development full artifact",
             "Upload iOS development verification artifact",
+            "Preflight iOS failure diagnostics",
             "Upload iOS failure diagnostics",
         )
         for step_name in guarded_steps:
@@ -71,9 +74,12 @@ class IosWorkflowContractTest(unittest.TestCase):
             self.assertIsNotNone(match, line)
 
     def test_failure_diagnostics_and_verification_artifacts_are_bounded(self) -> None:
-        self.assertIn("if: failure()", self.text)
-        self.assertIn("retention-days: 7", self.text)
-        self.assertIn("retention-days: 14", self.text)
+        self.assertIn("failure() &&", self.text)
+        self.assertIn("failure-only", self.text)
+        self.assertIn("inputs.artifact_transport == 'full' && 1 || 7", self.text)
+        self.assertIn("retention-days: 1", self.text)
+        self.assertNotIn("retention-days: 14", self.text)
+        self.assertIn("artifact_transport.py preflight", self.text)
         self.assertIn("if-no-files-found: ignore", self.text)
         self.assertIn("distribution=not production-ready", (
             ROOT / "tools" / "ci" / "build_ios_environment.sh"

@@ -400,7 +400,14 @@ class ArtifactStoreTest(unittest.TestCase):
                 ]
             )
         self.assertEqual(exit_code, 0)
-        self.assertIn("Local-only evidence", github_summary.read_text(encoding="utf-8"))
+        summary_text = github_summary.read_text(encoding="utf-8")
+        manifest_sha256 = hashlib.sha256(
+            (published_dir / "manifest.json").read_bytes()
+        ).hexdigest()
+        self.assertIn("Local-only evidence", summary_text)
+        self.assertIn("Manifest SHA-256", summary_text)
+        self.assertIn(manifest_sha256, summary_text)
+        self.assertIn("verification-success", summary_text)
 
     def test_write_summary_does_not_claim_external_parent_permissions(self) -> None:
         context = begin_job(

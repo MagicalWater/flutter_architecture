@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.13.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.13.0
+Template Baseline: 1.14.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,8 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Template Baseline: 1.13.0
-Current gate: Tasks 1–10已完成，停在GitHub irreversible cleanup獨立核准gate
+Template Baseline: 1.14.0
+Current gate: Local release candidate已完成，等待self-hosted post-release validation與formal closure
 ```
 
 完整 active scope、design、gate與 next action：

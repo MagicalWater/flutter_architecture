@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-023-repository-ci-quality-gates-android-verification-artifact
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 id: ADR-023
 title: Repository CI Quality Gates and Platform Verification Artifacts
 supersedes: []
@@ -124,4 +124,4 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 
 ## Last Reviewed Baseline
 
-1.13.0。
+1.14.0。

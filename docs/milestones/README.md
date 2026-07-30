@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Milestone Routing
@@ -32,7 +32,7 @@ Milestone routing 只回答：
 
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Status: Active — Task 10 drift re-review completed / new independent cleanup approval required
+Status: Active — Template Baseline 1.14.0 release candidate / post-release validation required
 ```
 
 - Active state：`docs/roadmap/active.md`
@@ -44,7 +44,8 @@ Status: Active — Task 10 drift re-review completed / new independent cleanup a
 - Task 8 runtime readiness：`docs/audits/milestone_32/32-8_runtime_acceptance.md`
 - Task 9 runtime acceptance：`docs/audits/milestone_32/32-9_runtime_acceptance_review.md`（Windows／Mac manual-local、self-hosted success／offline與GitHub no-growth均已完成）
 - Task 10 reviewed GitHub cleanup manifest：`docs/audits/milestone_32/32-9_github_cleanup_manifest_review.md`
-- Task 11 cleanup execution：`docs/audits/milestone_32/32-10_github_cleanup_execution.md`（第一次核准因fresh inventory drift在0個DELETE時fail closed；replacement manifest等待新核准）
+- Task 11 cleanup execution：`docs/audits/milestone_32/32-10_github_cleanup_execution.md`（final manifest刪除113個exact objects，GitHub storage已歸零）
+- Holistic final review：`docs/audits/milestone_32/32-11_final_review.md`
 - Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
 ## Closed milestone routing

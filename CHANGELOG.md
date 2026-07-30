@@ -18,6 +18,36 @@
 
 ## [Unreleased]
 
+---
+
+## [1.14.0] - 2026-07-31
+
+### Added
+
+- 完成Milestone 32 CI產物本機化與GitHub儲存空間切換，建立repository checkout外的managed local artifact store。
+- 新增job／run manifest、SHA-256、multi-job aggregation、retention class、capacity、bounded pin、dry-run cleanup、trash／restore／purge與exact root安全契約。
+- 新增GitHub Actions storage read-only inventory、exact-ID deletion manifest、review attestation、approval token、fresh inventory drift與partial deletion evidence gate。
+
+### Changed
+
+- `manual-local`與`self-hosted`的CI、Android、iOS、Observability及有界failure evidence改由本機managed store擁有；GitHub Actions保留control plane、checks與summary責任。
+- Self-hosted workflows不再使用`actions/upload-artifact`或`actions/cache`保存日常evidence；`github-hosted`只保留人工明確選擇的有界例外transport。
+- iOS build workspace改為暫存於job-local `.build`，finalize前安全移除；永久evidence只保留`.app`、dSYM、metadata、summary與checksums。
+- GitHub cleanup drift fingerprint只綁定exact deletion scope；`expired`等不影響DELETE的provider metadata變動不再造成假漂移，任何ID、bytes或候選scope變動仍fail closed。
+
+### Verified
+
+- 202個repository CI contract tests、documentation checks、五個package analyze與全部Flutter tests通過；App suite 463 tests passed。
+- Windows與Mac Android development／production代表build、Mac iOS development Simulator／production unsigned device build、symbols、mapping與dSYM均fresh通過。
+- Self-hosted CI、Android與iOS runtime acceptance、offline no-fallback、Observability controlled event disabled、checksums、secret scan與bounded evidence均通過。
+- 依reviewed manifest `7ad138bb845e42cbb133d07c`刪除110個GitHub Actions artifacts與3個caches；113次exact-ID attempt全部成功，fresh inventory與逐IDre-query均確認0個objects／0 bytes。
+
+### Security
+
+- GitHub不可逆刪除需要reviewed manifest、scope-derived manifest ID、out-of-band approval token、顯式execute gate與delete前fresh GET同時成立。
+- Artifact／cache name與key、diagnostics及managed evidence會執行secret leakage scan；provider config、service account、signing material與完整process environment不進入manifest。
+- Local cleanup拒絕repository／worktree／runner temp root、path traversal、symlink escape、active lock與store generation drift；不可使用直接recursive filesystem deletion繞過。
+
 ### Governance Recovery
 
 - Template Baseline 1.13.0發布後發現Milestone 31雙層Task治理證據不足，已完成R0～R11 Governance Recovery。

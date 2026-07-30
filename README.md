@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.13.0
+- Template Baseline Version：1.14.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -27,6 +27,13 @@
 - Milestone 23 Architecture Decision Record Extraction & Normalization：Completed / Archived
 - Milestone 24 CI/CD Foundation：Completed / Archived
 - Milestone 25 iOS Platform Support Foundation：Completed / Archived
+- Milestone 26 Native Flavor & Product Identity Foundation：Completed / Archived
+- Milestone 27 Production Observability Foundation：Completed / Archived
+- Milestone 28 Connectivity and Offline State Foundation：Completed / Archived
+- Milestone 29 Drift Persistence Migration：Completed / Archived
+- Milestone 30 Test Suite Audit, Rationalization & Governance：Completed / Archived
+- Milestone 31 Template Development Workflow Governance：Completed / Archived
+- Milestone 32 CI產物本機化與GitHub儲存空間切換：Release validation in progress
 
 平台能力：
 

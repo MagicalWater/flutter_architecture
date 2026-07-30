@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - repository-ci-cd-operations
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # CI/CD Operations Guide
@@ -65,7 +65,7 @@ full               → 人工明確選擇、1天retention，summary顯示storage
 gh variable set CI_EXECUTION_MODE --body manual-local
 ```
 
-既有GitHub artifacts與caches仍不得提前批量刪除。只有Milestone 32 runtime acceptance完成、exact deletion manifest經focused／whole-cleanup review且取得使用者另一次明確核准後，才能按GitHub object ID執行刪除。
+Milestone 32已於2026-07-31依reviewed manifest `7ad138bb845e42cbb133d07c`完成歷史GitHub Actions storage cleanup：110個artifacts與3個caches均依exact object ID刪除，fresh inventory與逐IDre-query確認0個objects／0 bytes。這是一次性cutover evidence，不是未來批量刪除捷徑；任何新GitHub object仍必須重新fresh inventory、建立新manifest、完成review並取得獨立明確核准，不得沿用舊manifest、名稱、prefix、workflow或時間範圍刪除。
 
 Self-hosted runner：
 

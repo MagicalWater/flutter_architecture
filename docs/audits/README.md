@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Audits and Review Evidence
@@ -81,7 +81,8 @@ Final / Holistic Review
 - [`milestone_32/32-8_runtime_acceptance.md`](milestone_32/32-8_runtime_acceptance.md)：Operator guide、Windows shell LF portability、Task 8 static regression、managed quality evidence與Task 9 runtime acceptance入口；Task 8已完成。
 - [`milestone_32/32-9_runtime_acceptance_review.md`](milestone_32/32-9_runtime_acceptance_review.md)：Task 9 Windows／Mac manual-local、controlled failure、Observability secret-safe、self-hosted offline／success、bounded iOS evidence與GitHub no-growth完整runtime acceptance。
 - [`milestone_32/32-9_github_cleanup_manifest_review.md`](milestone_32/32-9_github_cleanup_manifest_review.md)：Task 10 fresh GitHub inventory、exact-ID deletion manifest、integrity／review／approval／drift gates與不可逆cleanup前停止點。
-- [`milestone_32/32-10_github_cleanup_execution.md`](milestone_32/32-10_github_cleanup_execution.md)：Task 11第一次獨立核准、fresh inventory drift fail-closed、0個DELETE與replacement reviewed manifest的新核准gate。
+- [`milestone_32/32-10_github_cleanup_execution.md`](milestone_32/32-10_github_cleanup_execution.md)：Task 11 drift fail-closed歷史、final exact-ID execution、113個objects刪除、逐ID不存在與GitHub storage歸零證據。
+- [`milestone_32/32-11_final_review.md`](milestone_32/32-11_final_review.md)：跨Tasks 1～11的artifact ownership、schema、secret、multi-job、retention、rollback、不可逆cleanup與1.14.0 release holistic review。
 - [`milestone_32/32-2_artifact_contract_review.md`](milestone_32/32-2_artifact_contract_review.md)：Tasks 1–2 durable authority、root／manifest contract、TDD findings與portability review。
 - [`milestone_32/32-3_artifact_store_review.md`](milestone_32/32-3_artifact_store_review.md)：Task 3 job lock、staging、atomic publish、checksums與multi-job aggregation review。
 - [`milestone_32/32-4_retention_cleanup_review.md`](milestone_32/32-4_retention_cleanup_review.md)：Task 4 retention、capacity、bounded pins、cleanup manifest、trash／restore／purge與concurrency review。

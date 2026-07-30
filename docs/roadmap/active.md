@@ -3,7 +3,7 @@ document_type: active-milestone
 status: accepted
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Active Milestone
@@ -13,19 +13,19 @@ last_reviewed_baseline: 1.13.0
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
-Template Baseline: 1.13.0
-Status: Active — Task 10 drift re-review completed / awaiting new independent cleanup approval
+Template Baseline: 1.14.0
+Status: Active — Local release candidate completed / post-release validation required
 ```
 
 ## Current Problem
 
-Repository目前以`CI_EXECUTION_MODE=self-hosted`執行可信`main`與manual workflow；Task 9已證明CI、Android與iOS self-hosted runs不會增加GitHub artifact或cache。現在的問題是cutover前累積的歷史GitHub storage仍存在，而刪除不可逆，必須先建立fresh inventory、exact-ID deletion manifest、integrity與inventory drift gate。
+Repository目前以`CI_EXECUTION_MODE=self-hosted`執行可信`main`與manual workflow；managed local store與GitHub exact-ID cleanup均已完成。現在只剩release SHA的self-hosted post-release validation、storage no-growth與clean-checkout closure gate。
 
 2026-07-30 Task 9 final inventory確認：
 
 ```txt
-GitHub Actions artifacts: 110 / 7,835,943,504 bytes
-GitHub Actions caches: 3 / 2,411,938,195 bytes
+GitHub Actions artifacts: 0 / 0 bytes
+GitHub Actions caches: 0 / 0 bytes
 Self-hosted runner: water-mac-flutter-architecture / online / idle
 ```
 
@@ -54,21 +54,22 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–10已完成。第一次Task 11核准後，fresh GET發現兩個舊cache已由GitHub移除，工具在任何DELETE前fail closed；舊manifest `48e2233a0cee0f5d9cad29e2`與approval均已失效。後續review又發現GitHub `expired`旗標會改變但不影響DELETE scope，因此以TDD把drift fingerprint收斂為exact deletion scope。GitHub端之後再移除5個舊cache，`b6af1142e872515b7f8252d1`與`9772870197227aed2ff33db6`均已supersede。Current reviewed manifest為`7ad138bb845e42cbb133d07c`，範圍為110個artifacts與3個caches，共10,247,881,699 bytes。現在重新停在Task 11不可逆cleanup前的獨立使用者核准gate：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1～11 local execution與holistic review已完成。Final reviewed manifest `7ad138bb845e42cbb133d07c`依使用者獨立明確核准刪除110個artifacts與3個caches；113次exact-ID attempts全部成功，fresh inventory與逐IDre-query確認GitHub Actions storage為0 objects／0 bytes。Template Baseline已提升為1.14.0；目前只剩post-release gate：
 
 ```txt
-不得修改reviewed manifest或沿用drift後的scope
-不得依名稱、prefix、workflow或時間範圍送出DELETE
-必須取得對manifest ID、object count、bytes與不可逆範圍的再次明確核准
-不得刪除GitHub artifacts或caches
+release commit必須推送至main
+self-hosted CI、Android與iOS必須在release SHA成功
+Observability ordinary push必須保持skipped
+GitHub artifact／cache必須維持0／0
+clean-checkout governance validation必須通過
 ```
 
 ## Current Next Action
 
 ```txt
-報告replacement reviewed manifest ID、SHA、object count、bytes與不可逆影響
-→ 取得使用者新的獨立明確cleanup核准
-→ Task 11先fresh GET並驗證manifest hash與inventory無drift
-→ 只有全部gate一致時依exact IDs刪除
-→ 任一drift回到Task 10重新產生／review／核准
+提交並推送Template Baseline 1.14.0 release commit
+→ 在main release SHA執行self-hosted CI／Android／iOS
+→ 確認Observability ordinary push skipped與GitHub storage維持0／0
+→ clean-checkout validation
+→ 建立post-release evidence並將active milestone設為None
 ```

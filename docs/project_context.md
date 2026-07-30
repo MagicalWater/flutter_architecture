@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Project Context
@@ -27,7 +27,7 @@ last_reviewed_baseline: 1.13.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.13.0
+Template Baseline: 1.14.0
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Latest completed initiative: Milestone 31 Template Development Workflow Governance
@@ -343,13 +343,13 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.13.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.14.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Active Work
 
-Milestone 32已完成fresh Requirement Decision並正式promotion為Level 4 active Milestone。Accepted Design將一般CI、Android／iOS verification、Observability與failure evidence的主要ownership切換至本機managed artifact store，同時保留GitHub Actions作為workflow控制面、status與人工`github-hosted`例外入口。Design與Implementation Plan均已於2026-07-30取得使用者核准；Tasks 1–10已完成。Task 9已通過Windows／Mac manual-local、controlled failure、Observability secret-safe、self-hosted offline no-fallback、self-hosted CI／Android／iOS success與GitHub storage no-growth。第一次Task 11 pre-delete gate因GitHub已移除兩個舊cache而fail closed，0個DELETE；舊manifest與approval已失效。後續TDD將drift gate由非穩定full metadata收斂為exact deletion scope；GitHub端又移除5個舊cache。Current manifest為`7ad138bb845e42cbb133d07c`，涵蓋110個artifacts與3個caches，共10,247,881,699 bytes。正式Mac root為`/Users/water/Developer/ci-artifacts/flutter_architecture`；目前停在新的獨立cleanup核准gate，尚未刪除任何GitHub artifact或cache。
+Milestone 32已完成managed local artifact store、manifest／checksums、multi-job aggregation、retention／capacity／pin、local cleanup、workflow local-first transport、Observability／failure evidence、Windows／Mac runtime acceptance與GitHub exact-ID cleanup。Final reviewed manifest `7ad138bb845e42cbb133d07c`刪除110個artifacts與3個caches，共10,247,881,699 bytes；113次attempt全部成功，fresh inventory與逐IDre-query確認GitHub Actions storage為0 objects／0 bytes。正式Mac root為`/Users/water/Developer/ci-artifacts/flutter_architecture`。Template Baseline已提升為1.14.0；Milestone仍等待release SHA的self-hosted CI／Android／iOS、Observability skipped、storage no-growth與clean-checkout post-release validation，通過前不宣告closure。
 
 Milestone 30已完成implementation、holistic review、Template Baseline 1.12.0 release、push、clean-checkout與remote CI／Android／iOS post-release validation，並正式closure。Milestone 31的Template Baseline 1.13.0已發布；其原執行治理缺口已透過R0～R11 Governance Recovery補正，Design、Plan、逐Task、behavior pressure、holistic review、fresh regression、push、clean-checkout與remote CI／Android／iOS post-release validation均完成，並正式closure。
 

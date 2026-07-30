@@ -119,6 +119,7 @@ Final / Holistic Review
 
 ### Repository-local Skill adoption reviews
 
+- [`agent_assisted_development_quick_start_review.md`](agent_assisted_development_quick_start_review.md)：AI Agent日常Quick Start Guide的場景覆蓋、Skill routing、authority boundary與remote closure review。
 - [`repository_local_skills_traditional_chinese_review.md`](repository_local_skills_traditional_chinese_review.md)：commit `c8a77a5`當時的Level 1歷史審查；其classification與closure authority已被後續Level 3 recovery supersede。
 - [`repository_local_skills_zh_tw_design_review.md`](repository_local_skills_zh_tw_design_review.md)：繁體中文化Level 3 governance recovery Design Task review。
 - [`repository_local_skills_zh_tw_plan_review.md`](repository_local_skills_zh_tw_plan_review.md)：六Task review execution Plan的完整Task review。

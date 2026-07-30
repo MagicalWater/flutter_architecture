@@ -519,6 +519,7 @@ docs/README.md
 主要入口：
 
 - `AGENTS.md`：AI 操作規則與安全邊界。
+- `docs/guides/agent_assisted_development_quick_start.md`：AI Agent日常開發入口、Skill選擇與可直接複製的功能／畫面／除錯／架構Prompt。
 - `VERSION`：目前 Template Baseline Version 的唯一來源。
 - `docs/project_context.md`：目前有效 project snapshot。
 - `docs/roadmap.md`：Active、candidate、deferred 與 closed routing。
@@ -563,3 +564,5 @@ docs/roadmap.md
 閱讀完成後，再依 `docs/README.md` 的 task-based route 載入該任務需要的 Decision、Feature／Package README、spec、plan、review、source 與 tests。
 
 不要依賴舊對話內容作為唯一上下文，也不要把全部歷史文件載入 active context。
+
+新增功能、畫面、Bug、Refactor、Migration或只讀評估時，可直接從 `docs/guides/agent_assisted_development_quick_start.md` 選擇對應場景並複製Prompt；不需要每次重貼完整雙層Task治理流程。

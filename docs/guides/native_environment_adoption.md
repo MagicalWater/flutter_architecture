@@ -24,6 +24,8 @@ Android Gradle、iOS scheme／configuration、Dart entrypoint 與 verification t
 
 將模板跨Android與iOS採用為具體產品時，Agent可使用repository-local [`adopting-template-product-identity`](../../.agents/skills/adopting-template-product-identity/SKILL.md) Skill作為薄型入口。該Skill必須先委派`governing-template-development`；本Guide仍是完整adoption procedure與exact-command authority，ADR-014、ADR-025、`environments.json`、source與tests仍分別擁有產品contract與runtime truth。
 
+需要可直接複製的新對話起頭時，使用[AI Agent協作開發快速使用指南](agent_assisted_development_quick_start.md)中的「正式把模板採用成產品」場景；實際替換順序與驗證命令仍以本Guide為準。
+
 ## Repository Default Mapping
 
 | Environment | Android flavor | iOS scheme | Entrypoint | Display name | Identifier |

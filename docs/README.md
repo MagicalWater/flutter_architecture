@@ -3,7 +3,7 @@ document_type: documentation-hub
 status: active
 authoritative_for:
   - documentation-taxonomy-and-reading-routing
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.13.0
 ---
 
 # Documentation Hub
@@ -31,6 +31,7 @@ last_reviewed_baseline: 1.5.1
 | Milestone routing | Milestone charter、plan、review、release 的索引 | `docs/milestones/` |
 | Historical archive | 已封存且不再代表 current state 的內容 | `docs/archive/` |
 | Governance | 文件類型、metadata、生命週期與增長規則 | `docs/governance/` |
+| Reusable guide | 使用者操作、CI、測試、環境採用等可重複程序 | `docs/guides/` |
 
 完整文件治理規則與 minimal metadata contract 見 `docs/governance/documentation_policy.md`。
 
@@ -80,6 +81,8 @@ docs/roadmap.md
 ```
 
 所有 production App、Package 與 Feature 都已有 local README。修改前先讀對應 README，再依 task route 載入相關 Decision、source 與 tests。
+
+使用者若需要可直接複製的新功能、畫面、Bug、Refactor、Migration或discussion-only對話起頭，先讀`docs/guides/agent_assisted_development_quick_start.md`；該Guide只提供操作入口，不取代Feature README、Decision或中央治理Skill。
 
 ### Active Milestone execution
 
@@ -134,7 +137,7 @@ Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆
 - `docs/archive/README.md`：已明確封存的歷史內容。
 - `docs/governance/documentation_policy.md`：文件治理與 metadata contract。
 - `docs/governance/development_workflow.md`：需求分類、Superpowers、雙層Task、Skill registry與repository-local workflow／feature shortcut的治理總覽。
-- `docs/guides/`：可重複使用的操作指南；CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
+- `docs/guides/`：可重複使用的操作指南；AI Agent日常入口與可複製Prompt請讀`docs/guides/agent_assisted_development_quick_start.md`，CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
 - `docs/mistakes/`：已知反模式與錯誤案例。
 - `docs/evolution/`：架構演進知識入口。
 

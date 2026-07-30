@@ -108,6 +108,8 @@ Figma：[網址，如有]
 
 `karpathy-guidelines`不是使用者入口。中央治理在進入production code implementation／refactor／review後自動載入；純需求討論、Design／Plan核准、Level 0文件修正、roadmap與release closure不觸發。
 
+完整日常使用情境、入口選擇與可直接複製的功能／畫面／除錯／測試失敗／Refactor／Migration Prompt，見[AI Agent協作開發快速使用指南](../guides/agent_assisted_development_quick_start.md)。該Guide只提供使用者操作範例，不複製或取代本文件與中央Skill的治理authority。
+
 ## Change policy
 
 修改工作治理時，必須同時review：

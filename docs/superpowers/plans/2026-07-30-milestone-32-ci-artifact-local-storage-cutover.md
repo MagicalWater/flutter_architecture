@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-32-ci-artifact-local-storage-cutover-implementation-plan
 last_reviewed_baseline: 1.13.0
@@ -620,7 +620,7 @@ Release SHA必須由self-hosted CI、Android與iOS成功驗證，Observability o
 
 ## Plan Completion Gate
 
-本Plan只有在下列條件完成後才能由`proposed`轉為`accepted`：
+本Plan已完成下列條件，並於2026-07-30 14:04（Asia/Taipei）取得使用者明確核准，正式由`proposed`轉為`accepted`：
 
 ```txt
 focused Plan review
@@ -634,12 +634,10 @@ independent commit
 user explicit Plan approval
 ```
 
-Plan取得使用者核准前：
+Plan核准後允許依Tasks 1–10順序開始implementation；但仍保留以下停止條件：
 
 ```txt
-不得更新ADR-023
-不得建立production tooling
-不得修改workflows
+每個Task必須完成focused review、修正、fresh re-review與獨立commit
 不得建立正式CI_ARTIFACT_ROOT
 不得修改CI_EXECUTION_MODE
 不得刪除GitHub artifacts／caches

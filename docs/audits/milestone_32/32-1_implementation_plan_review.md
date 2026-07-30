@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: completed
+status: accepted
 authoritative_for:
   - milestone-32-implementation-plan-review
 last_reviewed_baseline: 1.13.0
@@ -120,10 +120,10 @@ git diff --check
 Internal Plan review: Passed
 Open P0: 0
 Open P1 without disposition: 0
-Plan status: proposed
-User approval: required
-Implementation: forbidden
+Plan status: accepted
+User approval: approved at 2026-07-30 14:04 Asia/Taipei
+Implementation: allowed from Task 1
 GitHub cleanup: forbidden
 ```
 
-下一步只能是使用者review並明確核准本Plan。核准後Plan才轉為`accepted`，才可進入Task 1 implementation；Task 10完成後仍需另一次cleanup approval。
+Plan已取得使用者明確核准並轉為`accepted`。下一步固定為Task 1；Task 10完成後仍需另一次cleanup approval。

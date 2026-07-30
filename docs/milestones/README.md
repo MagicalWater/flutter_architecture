@@ -32,13 +32,13 @@ Milestone routing 只回答：
 
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Status: Active — Implementation Plan approval gate
+Status: Active — Task 1 durable artifact authority
 ```
 
 - Active state：`docs/roadmap/active.md`
 - Accepted Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
 - Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
-- Proposed Plan：`docs/superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`
+- Accepted Plan：`docs/superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`
 - Plan review：`docs/audits/milestone_32/32-1_implementation_plan_review.md`
 - Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 

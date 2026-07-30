@@ -83,6 +83,87 @@ class LocalBuildCommandsTest(unittest.TestCase):
         self.assertIn("sdk=$sdk", ios)
         self.assertIn("plutil -extract CFBundleIdentifier", ios)
 
+    def test_local_ci_uses_managed_job_lifecycle(self) -> None:
+        script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
+
+        for token in (
+            "run_managed_job",
+            "tools/ci/artifact_store.py begin-job",
+            "tools/ci/artifact_store.py finalize-job",
+            "tools/ci/artifact_store.py aggregate-run",
+            "tools/ci/artifact_cleanup.py evaluate",
+            "CI_ARTIFACT_ROOT",
+            "CI_RUN_KEY",
+            "CI_JOB_KEY",
+            "CI_RETENTION_CLASS",
+        ):
+            self.assertIn(token, script)
+        self.assertIn("primary_exit_code", script)
+        self.assertIn("finalize_exit_code", script)
+        self.assertIn('return "$primary_exit_code"', script)
+        self.assertNotIn("$repo_root/artifacts", script)
+
+    def test_local_ci_uses_external_root_resolution_and_unique_manual_run_key(self) -> None:
+        script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
+
+        self.assertIn("resolve_artifact_root", script)
+        self.assertIn("home=Path.home()", script)
+        self.assertIn("runner_work=runner_work", script)
+        self.assertIn("runner_temp=runner_temp", script)
+        self.assertIn("manual-local", script)
+        self.assertIn("local-", script)
+        self.assertIn("secrets.token_hex", script)
+        self.assertNotIn(".tmp-artifact-smoke", script)
+
+    def test_managed_metadata_separates_host_from_target_platform(self) -> None:
+        script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
+
+        self.assertIn("artifact_platform", script)
+        self.assertIn("METADATA_PLATFORM", script)
+        self.assertIn('android) artifact_platform="android"', script)
+        self.assertIn('ios) artifact_platform="ios"', script)
+        self.assertIn('observability) artifact_platform="multiple"', script)
+        self.assertIn('"platform": os.environ["METADATA_PLATFORM"]', script)
+
+    def test_primary_failure_precedes_evidence_preparation_failure(self) -> None:
+        script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
+
+        self.assertIn("evidence_prepare_exit_code", script)
+        primary_gate = script.index('if [[ "$primary_exit_code" -ne 0 ]]')
+        evidence_gate = script.index('if [[ "$evidence_prepare_exit_code" -ne 0 ]]')
+        self.assertLess(primary_gate, evidence_gate)
+
+    def test_platform_builds_require_explicit_external_artifact_dir(self) -> None:
+        for relative_path in (
+            "tools/ci/build_android_environment.sh",
+            "tools/ci/build_ios_environment.sh",
+        ):
+            script = (ROOT / relative_path).read_text(encoding="utf-8")
+            self.assertIn("ARTIFACT_DIR is required", script, relative_path)
+            self.assertNotRegex(
+                script,
+                r"ARTIFACT_DIR:-\$repo_root/artifacts",
+                relative_path,
+            )
+            self.assertIn("run_key=$run_key", script, relative_path)
+            self.assertIn("job_key=$job_key", script, relative_path)
+
+    def test_platform_build_cleanup_is_bounded_to_passed_staging_dir(self) -> None:
+        android = (ROOT / "tools/ci/build_android_environment.sh").read_text(
+            encoding="utf-8"
+        )
+        ios = (ROOT / "tools/ci/build_ios_environment.sh").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn('rm -rf "$flutter_symbols_dir"', android)
+        self.assertIn('rm -f "$artifact_dir"/*.apk', android)
+        self.assertNotIn('rm -rf "$artifact_dir"', android)
+        self.assertIn('rm -rf "$artifact_dir"/*.app', ios)
+        self.assertIn('"$artifact_dir/DerivedData"', ios)
+        self.assertNotIn('rm -rf "$repo_root/artifacts"', android)
+        self.assertNotIn('rm -rf "$repo_root/artifacts"', ios)
+
 
 if __name__ == "__main__":
     unittest.main()

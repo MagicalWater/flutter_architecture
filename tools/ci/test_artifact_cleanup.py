@@ -84,6 +84,9 @@ class ArtifactCleanupTest(unittest.TestCase):
             "host_arch": "AMD64",
             "runner_name": None,
             "suite": suite,
+            "platform": platform,
+            "environment": "development",
+            "build_mode": "debug",
             "classifier_reason": "test-fixture",
             "started_at": _iso(completed_at - timedelta(minutes=5)),
             "completed_at": _iso(completed_at),
@@ -302,7 +305,8 @@ class ArtifactCleanupTest(unittest.TestCase):
         later = NOW + timedelta(minutes=1)
         plan = evaluate_cleanup(self.root, later, max_bytes=10_000, min_free_bytes=0)
         second_manifest_id = write_cleanup_manifest(self.root, plan)
-        second_trash = apply_cleanup(self.root, second_manifest_id)
+        with mock.patch("tools.ci.artifact_cleanup._utc_now", return_value=later):
+            second_trash = apply_cleanup(self.root, second_manifest_id)
         with self.assertRaisesRegex(ValueError, "24 hours"):
             purge_trash(self.root, second_manifest_id, later + timedelta(hours=1))
         purge_trash(self.root, second_manifest_id, later + timedelta(hours=25))

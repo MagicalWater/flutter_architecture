@@ -10,6 +10,9 @@ import sys
 import tempfile
 from typing import Any, Dict, List, Mapping, Optional, Sequence
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 from tools.ci.artifact_contract import (
     SCHEMA_VERSION,
     sanitize_key,
@@ -32,11 +35,11 @@ _ALLOWED_METADATA_FIELDS = frozenset(
         "host_arch",
         "runner_name",
         "suite",
-        "classifier_reason",
-        "started_at",
         "platform",
         "environment",
         "build_mode",
+        "classifier_reason",
+        "started_at",
         "artifact_kind",
         "sensitivity",
         "signing",
@@ -57,6 +60,9 @@ _REQUIRED_METADATA_FIELDS = frozenset(
         "host_arch",
         "runner_name",
         "suite",
+        "platform",
+        "environment",
+        "build_mode",
         "classifier_reason",
         "started_at",
     }
@@ -366,7 +372,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             args.commit_sha,
             args.run_key,
             args.job_key,
-            _read_json(Path(args.metadata_json)),
+            _load_json_input(args.metadata_json, args.metadata_json_value),
         )
         _print_json(
             {
@@ -384,8 +390,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         published = finalize_job(
             context,
             args.result,
-            _read_json(Path(args.validations_json)),
-            _read_json(Path(args.cleanup_json)),
+            _load_json_input(
+                args.validations_json,
+                args.validations_json_value,
+            ),
+            _load_json_input(
+                args.cleanup_json,
+                args.cleanup_json_value,
+            ),
         )
         _print_json({"published_dir": str(published)})
         return 0
@@ -418,7 +430,9 @@ def _build_parser() -> argparse.ArgumentParser:
     begin.add_argument("--commit-sha", required=True)
     begin.add_argument("--run-key", required=True)
     begin.add_argument("--job-key", required=True)
-    begin.add_argument("--metadata-json", required=True)
+    metadata_source = begin.add_mutually_exclusive_group(required=True)
+    metadata_source.add_argument("--metadata-json")
+    metadata_source.add_argument("--metadata-json-value")
 
     finalize = subparsers.add_parser("finalize-job")
     finalize.add_argument("--context-json", required=True)
@@ -427,8 +441,12 @@ def _build_parser() -> argparse.ArgumentParser:
         required=True,
         choices=("success", "failure", "cancelled", "skipped"),
     )
-    finalize.add_argument("--validations-json", required=True)
-    finalize.add_argument("--cleanup-json", required=True)
+    validations_source = finalize.add_mutually_exclusive_group(required=True)
+    validations_source.add_argument("--validations-json")
+    validations_source.add_argument("--validations-json-value")
+    cleanup_source = finalize.add_mutually_exclusive_group(required=True)
+    cleanup_source.add_argument("--cleanup-json")
+    cleanup_source.add_argument("--cleanup-json-value")
 
     aggregate = subparsers.add_parser("aggregate-run")
     aggregate.add_argument("--root", required=True)
@@ -583,6 +601,9 @@ def _build_job_manifest(
         "host_arch": metadata["host_arch"],
         "runner_name": metadata["runner_name"],
         "suite": metadata["suite"],
+        "platform": metadata["platform"],
+        "environment": metadata["environment"],
+        "build_mode": metadata["build_mode"],
         "classifier_reason": metadata["classifier_reason"],
         "started_at": metadata["started_at"],
         "completed_at": _utc_now(),
@@ -761,6 +782,17 @@ def _atomic_write_text(path: Path, content: str) -> None:
 
 def _read_json(path: Path) -> Any:
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _load_json_input(
+    path_value: Optional[str],
+    inline_value: Optional[str],
+) -> Any:
+    if inline_value is not None:
+        return json.loads(inline_value)
+    if path_value is None:
+        raise ValueError("JSON input source is required")
+    return _read_json(Path(path_value))
 
 
 def _sha256_file(path: Path) -> str:

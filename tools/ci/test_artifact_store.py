@@ -3,6 +3,8 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 from typing import Any, Dict
 import unittest
@@ -125,6 +127,26 @@ class ArtifactStoreTest(unittest.TestCase):
             expected, relative_path = line.split("  ", 1)
             payload = (published / relative_path).read_bytes()
             self.assertEqual(hashlib.sha256(payload).hexdigest(), expected)
+
+        manifest = json.loads((published / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["platform"], "macos")
+        self.assertEqual(manifest["environment"], "development")
+        self.assertEqual(manifest["build_mode"], "debug")
+
+    def test_begin_requires_target_platform_projection_metadata(self) -> None:
+        for field in ("platform", "environment", "build_mode"):
+            metadata = _metadata("quality")
+            metadata.pop(field)
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(ValueError, field):
+                    begin_job(
+                        self.root,
+                        self.repo,
+                        self.commit_sha,
+                        self.run_key,
+                        f"missing-{field}",
+                        metadata,
+                    )
 
     def test_refuses_to_begin_when_published_job_or_active_lock_exists(self) -> None:
         context = begin_job(
@@ -400,6 +422,64 @@ class ArtifactStoreTest(unittest.TestCase):
 
         ensure.assert_called_once_with(output.parent, owner_only=False)
         chmod_file.assert_not_called()
+
+    def test_direct_cli_entrypoints_are_importable(self) -> None:
+        for relative_path in (
+            "tools/ci/artifact_store.py",
+            "tools/ci/artifact_cleanup.py",
+        ):
+            completed = subprocess.run(
+                [sys.executable, relative_path, "--help"],
+                cwd=Path(__file__).resolve().parents[2],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+
+    def test_cli_accepts_inline_json_payloads(self) -> None:
+        metadata_json = json.dumps(_metadata("quality"))
+        output = io.StringIO()
+        with redirect_stdout(output):
+            exit_code = main(
+                [
+                    "begin-job",
+                    "--root",
+                    str(self.root),
+                    "--repo-root",
+                    str(self.repo),
+                    "--commit-sha",
+                    self.commit_sha,
+                    "--run-key",
+                    self.run_key,
+                    "--job-key",
+                    "ci-quality",
+                    "--metadata-json-value",
+                    metadata_json,
+                ]
+            )
+        self.assertEqual(exit_code, 0)
+        context_path = Path(json.loads(output.getvalue())["context_path"])
+        context = JobContext.from_file(context_path)
+        (context.artifact_dir / "result.txt").write_text("verified", encoding="utf-8")
+
+        output = io.StringIO()
+        with redirect_stdout(output):
+            exit_code = main(
+                [
+                    "finalize-job",
+                    "--context-json",
+                    str(context_path),
+                    "--result",
+                    "success",
+                    "--validations-json-value",
+                    json.dumps(_validations()),
+                    "--cleanup-json-value",
+                    json.dumps(_cleanup()),
+                ]
+            )
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(Path(json.loads(output.getvalue())["published_dir"]).is_dir())
 
 
 if __name__ == "__main__":

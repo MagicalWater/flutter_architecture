@@ -26,6 +26,25 @@ class ShellPortabilityContractTest(unittest.TestCase):
 
         self.assertNotIn("mapfile", script)
 
+    def test_generated_verifier_resolves_a_working_python_interpreter(self) -> None:
+        script = (REPO_ROOT / "tools/ci/verify_generated.sh").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("resolve_python", script)
+        self.assertIn("PYTHON_BIN", script)
+        self.assertIn('"$python_bin" -m unittest', script)
+        self.assertNotIn("python3 -m unittest", script)
+
+    def test_generated_verifier_uses_content_diff_not_stat_only_status(self) -> None:
+        script = (REPO_ROOT / "tools/ci/verify_generated.sh").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("git diff --quiet --exit-code", script)
+        self.assertIn("git ls-files --others --exclude-standard", script)
+        self.assertNotIn('status="$(git status --porcelain)"', script)
+
     def test_android_artifact_metadata_avoids_pipefail_head_pipeline(self) -> None:
         script = (REPO_ROOT / "tools/ci/build_android_environment.sh").read_text(
             encoding="utf-8"

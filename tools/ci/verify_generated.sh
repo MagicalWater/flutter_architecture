@@ -4,6 +4,24 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 
+resolve_python() {
+  local candidate
+  if [[ -n "${PYTHON_BIN:-}" ]] && "$PYTHON_BIN" -c 'import sys; raise SystemExit(0)' >/dev/null 2>&1; then
+    printf '%s\n' "$PYTHON_BIN"
+    return 0
+  fi
+  for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -c 'import sys; raise SystemExit(0)' >/dev/null 2>&1; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  echo "A working Python 3 interpreter is required for generated verification." >&2
+  return 1
+}
+
+python_bin="$(resolve_python)" || exit 69
+
 if [[ -n "$(git status --porcelain)" ]]; then
   echo "Generated consistency requires a clean Git working tree." >&2
   git status --short >&2
@@ -19,7 +37,7 @@ bash tools/database/export_drift_schemas.sh
   rm -f web/drift_worker.js.deps web/drift_worker.js.map
 )
 
-python3 -m unittest tools.ci.test_drift_schema_governance
+"$python_bin" -m unittest tools.ci.test_drift_schema_governance
 
 if ! git diff --ignore-space-at-eol --quiet --exit-code; then
   echo "Generated tracked files are out of date." >&2
@@ -39,10 +57,16 @@ if (( ${#whitespace_only_files[@]} > 0 )); then
   git restore --worktree -- "${whitespace_only_files[@]}"
 fi
 
-status="$(git status --porcelain)"
-if [[ -n "$status" ]]; then
-  echo "Code generation changed the Git working tree:" >&2
-  printf '%s\n' "$status" >&2
+if ! git diff --quiet --exit-code; then
+  echo "Code generation changed tracked file content:" >&2
+  git diff --stat >&2
+  exit 1
+fi
+
+untracked_files="$(git ls-files --others --exclude-standard)"
+if [[ -n "$untracked_files" ]]; then
+  echo "Code generation created untracked files:" >&2
+  printf '%s\n' "$untracked_files" >&2
   exit 1
 fi
 

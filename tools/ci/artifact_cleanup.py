@@ -11,6 +11,9 @@ import sys
 import tempfile
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 from tools.ci.artifact_contract import RETENTION_CLASSES, validate_job_manifest
 
 

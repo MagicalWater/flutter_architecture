@@ -3,12 +3,16 @@ set -euo pipefail
 environment="$1"; build_mode="$2"; entrypoint="$3"; api_mode="$4"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 app_dir="$repo_root/apps/flutter_architecture"
-artifact_dir="${ARTIFACT_DIR:-$repo_root/artifacts/android/$environment}"
+[[ -n "${ARTIFACT_DIR:-}" ]] || { echo "ARTIFACT_DIR is required for Android verification." >&2; exit 64; }
+artifact_dir="$ARTIFACT_DIR"
 flutter_symbols_dir="$artifact_dir/flutter-symbols"
 api_base_url="${API_BASE_URL:-}"
 commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
+run_key="${CI_RUN_KEY:-unmanaged}"
+job_key="${CI_JOB_KEY:-unmanaged-android-$environment}"
+python_bin="${PYTHON_BIN:-python3}"
 if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is required for $environment Android verification." >&2; exit 1; fi
-python3 "$repo_root/tools/ci/verify_android_firebase_config.py" "$environment"
+"$python_bin" "$repo_root/tools/ci/verify_android_firebase_config.py" "$environment"
 mkdir -p "$artifact_dir"; rm -rf "$flutter_symbols_dir"; rm -f "$artifact_dir"/*.apk "$artifact_dir/artifact-metadata.txt" "$artifact_dir/mapping.txt"
 args=(apk "--$build_mode" --flavor "$environment" -t "$entrypoint" "--dart-define=NATIVE_ENVIRONMENT=$environment" "--dart-define=API_MODE=$api_mode")
 args+=("--dart-define=APP_COMMIT_SHA=$commit_sha")
@@ -48,6 +52,8 @@ expected_id="com.example.flutterarchitecture"; [[ "$environment" == "production"
 [[ "$package_id" == "$expected_id" ]] || { echo "Unexpected package id: $package_id" >&2; exit 1; }
 cat > "$artifact_dir/artifact-metadata.txt" <<EOF
 commit_sha=$commit_sha
+run_key=$run_key
+job_key=$job_key
 environment=$environment
 platform=android
 flavor=$environment

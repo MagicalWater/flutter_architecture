@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -226,7 +227,7 @@ class ChangeClassifierCliContractTest(unittest.TestCase):
 
             completed = subprocess.run(
                 [
-                    "python3",
+                    sys.executable,
                     "tools/ci/change_classifier.py",
                     "--event",
                     "workflow_dispatch",

@@ -42,6 +42,7 @@ Status: Active — Task 9 runtime acceptance
 - Plan review：`docs/audits/milestone_32/32-1_implementation_plan_review.md`
 - Task 2–7 reviews：`docs/audits/milestone_32/32-2_artifact_contract_review.md`至`docs/audits/milestone_32/32-7_observability_failure_evidence_review.md`
 - Task 8 runtime readiness：`docs/audits/milestone_32/32-8_runtime_acceptance.md`
+- Task 9 runtime acceptance：`docs/audits/milestone_32/32-9_runtime_acceptance_review.md`
 - Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
 ## Closed milestone routing

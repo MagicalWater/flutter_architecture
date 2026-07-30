@@ -21,12 +21,12 @@ Status: Active — Task 9 runtime acceptance
 
 Repository目前以`CI_EXECUTION_MODE=self-hosted`執行可信`main`與manual workflow。Self-hosted runner不消耗GitHub-hosted分鐘，但Android、iOS、Observability與failure evidence仍可能透過`actions/upload-artifact`進入GitHub Actions storage。
 
-2026-07-30 fresh inventory確認：
+2026-07-30 Task 9 pre-run與Windows post-run fresh inventory確認：
 
 ```txt
 GitHub Actions artifacts: 110 / 7,835,943,504 bytes
-GitHub Actions caches: 15 / 10,211,585,781 bytes
-Self-hosted runner: water-mac-flutter-architecture / online / idle
+GitHub Actions caches: 12 / 8,558,394,658 bytes
+Self-hosted runner: water-mac-flutter-architecture / offline / idle
 ```
 
 Runtime inventory只由`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`與本Milestone後續runtime evidence保存；Roadmap不承擔可變數字的持續authority。
@@ -54,7 +54,7 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–8已完成durable authority、root／manifest contract、atomic writer、retention／capacity、safe local cleanup、manual-local／platform build integration、四份workflow local-first transport、Observability／failure evidence安全收斂、operator operations guide、Windows shell LF contract與managed quality readiness。現在進入Task 9；Task 9完成前：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–8已完成。Task 9 Windows manual-local quality／Android、controlled failure、GitHub storage no-growth與self-hosted offline／no-fallback acceptance已通過；Windows runtime findings已修正並由fresh pass驗證。Mac connector目前無法連接、runner offline，且repository尚未設定`CI_ARTIFACT_ROOT`，因此Mac manual-local與self-hosted success仍為blocked。Task 9完成前：
 
 ```txt
 正式Mac operator artifact root只能依Task 9 acceptance步驟建立與驗證，不得自行擴大路徑或直接清理
@@ -65,8 +65,9 @@ CI_EXECUTION_MODE只能在Task 9受控self-hosted acceptance中切換，並保�
 ## Current Next Action
 
 ```txt
-執行Windows manual-local quality與Android acceptance
-→ 在Mac正式operator root執行manual-local quality／iOS／Observability acceptance
+恢復bridge-mac connector與self-hosted runner
+→ 只讀確認Mac checkout、toolchain與external root前置條件
+→ 在Mac正式operator root執行manual-local quality／Android／iOS／Observability acceptance
 → 執行至少一個source-changing self-hosted run並核對GitHub summary與local manifests
 → 盤點GitHub artifacts／caches但不刪除
 → focused review與whole-Task review

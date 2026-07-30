@@ -349,7 +349,7 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-Milestone 32已完成fresh Requirement Decision並正式promotion為Level 4 active Milestone。Accepted Design將一般CI、Android／iOS verification、Observability與failure evidence的主要ownership切換至本機managed artifact store，同時保留GitHub Actions作為workflow控制面、status與人工`github-hosted`例外入口。Design與Implementation Plan均已於2026-07-30取得使用者核准；Tasks 1–8已完成durable authority、managed store、retention／safe cleanup、local CI、workflow transport、Observability／failure evidence安全收斂、operator guide與Windows managed quality readiness。下一個gate為Task 9 Windows／Mac／self-hosted runtime acceptance；正式operator Mac root與既有GitHub storage cleanup仍未執行。
+Milestone 32已完成fresh Requirement Decision並正式promotion為Level 4 active Milestone。Accepted Design將一般CI、Android／iOS verification、Observability與failure evidence的主要ownership切換至本機managed artifact store，同時保留GitHub Actions作為workflow控制面、status與人工`github-hosted`例外入口。Design與Implementation Plan均已於2026-07-30取得使用者核准；Tasks 1–8已完成。Task 9的Windows manual-local quality／Android、controlled failure、GitHub storage no-growth與self-hosted offline／no-fallback acceptance已通過；runtime驗收另修復Windows `apkanalyzer.bat`解析與generated normalizer誤入volatile build output兩項缺口。Mac manual-local與self-hosted success仍受bridge-mac account connection、runner offline與`CI_ARTIFACT_ROOT`未設定阻塞，因此Task 9保持open；正式operator Mac root與既有GitHub storage cleanup均未執行。
 
 Milestone 30已完成implementation、holistic review、Template Baseline 1.12.0 release、push、clean-checkout與remote CI／Android／iOS post-release validation，並正式closure。Milestone 31的Template Baseline 1.13.0已發布；其原執行治理缺口已透過R0～R11 Governance Recovery補正，Design、Plan、逐Task、behavior pressure、holistic review、fresh regression、push、clean-checkout與remote CI／Android／iOS post-release validation均完成，並正式closure。
 

@@ -3,7 +3,7 @@ document_type: roadmap-candidates
 status: active
 authoritative_for:
   - concrete-roadmap-candidates
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Roadmap Candidates
@@ -20,18 +20,19 @@ Candidate 不代表 commitment。開始 implementation 前仍需 scope review、
 
 每個平台應獨立評估 scaffold、artifact、runtime smoke、plugin support 與維護成本，不建議一次綁成單一大 milestone。
 
-## Promoted — Milestone 32：CI產物本機化與GitHub儲存空間切換
+## Completed — Milestone 32：CI產物本機化與GitHub儲存空間切換
 
-此候選已於2026-07-30完成fresh GitHub inventory與Requirement Decision，正式提升為Level 4 active Milestone。
+此候選已於2026-07-30完成Requirement Decision並提升為Level 4 Milestone；Design、Implementation Plan、Tasks 1～11、GitHub exact-ID cleanup、Template Baseline 1.14.0 release與post-release validation均已完成，現在不再屬於active candidate。
 
-Current authority：
+Closure routing：
 
-- Active state：`docs/roadmap/active.md`
-- Proposed Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
+- Current state：`docs/roadmap/active.md`
+- Accepted Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
+- Accepted Plan：`docs/superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`
 - Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
+- Holistic final review：`docs/audits/milestone_32/32-11_final_review.md`
+- Post-release validation：`docs/audits/milestone_32/32-12_post_release_validation.md`
 - Candidate handoff與舊快照：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
-
-Design尚未取得使用者核准，Implementation Plan與implementation均未開始。
 
 ## Disposition — Documentation Knowledge Expansion
 

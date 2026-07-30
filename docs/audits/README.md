@@ -75,6 +75,9 @@ Final / Holistic Review
 
 - [`milestone_32/32-0_design_spec_review.md`](milestone_32/32-0_design_spec_review.md)：Milestone 32 promotion、Design focused findings、fixes、fresh re-review、whole-Design與使用者核准closure。
 - [`milestone_32/32-1_implementation_plan_review.md`](milestone_32/32-1_implementation_plan_review.md)：Milestone 32 Implementation Plan的Task順序、TDD interfaces、runtime acceptance、cleanup雙重approval與release closure review。
+- [`milestone_32/32-2_artifact_contract_review.md`](milestone_32/32-2_artifact_contract_review.md)：Tasks 1–2 durable authority、root／manifest contract、TDD findings與portability review。
+- [`milestone_32/32-3_artifact_store_review.md`](milestone_32/32-3_artifact_store_review.md)：Task 3 job lock、staging、atomic publish、checksums與multi-job aggregation review。
+- [`milestone_32/32-4_retention_cleanup_review.md`](milestone_32/32-4_retention_cleanup_review.md)：Task 4 retention、capacity、bounded pins、cleanup manifest、trash／restore／purge與concurrency review。
 - [`ci_artifact_storage_cutover_candidate_handoff.md`](ci_artifact_storage_cutover_candidate_handoff.md)：Proposed Milestone 32的quota盤點、候選scope、Design待決事項、禁止提前cleanup邊界與跨對話handoff。
 - [`change_aware_ci_spec_review.md`](change_aware_ci_spec_review.md)：Design spec scope 與 acceptance review。
 - [`change_aware_ci_plan_review.md`](change_aware_ci_plan_review.md)：Implementation plan review。

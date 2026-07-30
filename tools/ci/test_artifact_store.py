@@ -175,6 +175,21 @@ class ArtifactStoreTest(unittest.TestCase):
 
         self.assertFalse(self.root.exists())
 
+    def test_begin_rejects_active_cleanup_operation(self) -> None:
+        cleanup_lock = self.root / "locks" / "cleanup-operation.lock"
+        cleanup_lock.parent.mkdir(parents=True)
+        cleanup_lock.write_text("cleanup active", encoding="utf-8")
+
+        with self.assertRaisesRegex(RuntimeError, "cleanup operation"):
+            begin_job(
+                self.root,
+                self.repo,
+                self.commit_sha,
+                self.run_key,
+                "ci-quality",
+                _metadata("quality"),
+            )
+
     def test_multi_job_aggregation_keeps_every_finalized_job(self) -> None:
         for job_key, suite in (
             ("ci-quality", "quality"),

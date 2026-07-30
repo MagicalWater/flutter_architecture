@@ -203,6 +203,9 @@ def begin_job(
     _ensure_directory(context.lock_path.parent)
     _create_lock(context.lock_path, context)
     try:
+        cleanup_lock = context.root / "locks" / "cleanup-operation.lock"
+        if cleanup_lock.exists():
+            raise RuntimeError("cleanup operation is active; job cannot begin")
         _ensure_directory(context.artifact_dir)
         _ensure_directory(context.diagnostics_dir)
         _atomic_write_json(context.context_path, context.to_payload())

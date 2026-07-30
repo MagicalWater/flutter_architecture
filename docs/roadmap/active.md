@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.13.0
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Classification: Level 4 — Architecture／Milestone
 Template Baseline: 1.13.0
-Status: Active — Task 10 GitHub storage inventory and exact deletion manifest
+Status: Active — Task 10 completed / awaiting independent cleanup approval
 ```
 
 ## Current Problem
@@ -54,22 +54,21 @@ Post-release validation: Required
 
 ## Current Gate
 
-Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–9已完成。Task 9已通過Windows／Mac manual-local、controlled failure、Observability secret-safe、self-hosted offline no-fallback、self-hosted CI／Android／iOS success與GitHub storage no-growth；正式Mac root為`/Users/water/Developer/ci-artifacts/flutter_architecture`。現在進入Task 10 exact inventory與deletion manifest；Task 10期間：
+Design Spec與Implementation Plan均已取得使用者明確核准。Tasks 1–10已完成。Task 10已建立並review exact-ID GitHub deletion manifest `48e2233a0cee0f5d9cad29e2`，範圍為110個artifacts與10個caches，共16,251,375,511 bytes。現在停在Task 11不可逆cleanup前的獨立使用者核准gate：
 
 ```txt
-只允許只讀盤點、offline fixtures、exact ID分類與manifest integrity gate
-不得依名稱、prefix、workflow或時間範圍直接送出DELETE
-manifest必須完成雙層review並取得使用者再次明確核准後才可進入實際刪除
+不得修改reviewed manifest或沿用drift後的scope
+不得依名稱、prefix、workflow或時間範圍送出DELETE
+必須取得對manifest ID、object count、bytes與不可逆範圍的再次明確核准
 不得刪除GitHub artifacts或caches
 ```
 
 ## Current Next Action
 
 ```txt
-建立GitHub artifact／cache offline API fixtures與RED tests
-→ 實作只讀inventory與exact-ID candidate classification
-→ 實作reviewed manifest、SHA-256、approval token與inventory drift gate
-→ 對fresh GitHub inventory產生deletion manifest但不DELETE
-→ focused review與whole-Task review
-→ 停在不可逆刪除前的使用者明確核准gate
+報告reviewed manifest ID、SHA、object count、bytes與不可逆影響
+→ 取得使用者獨立明確cleanup核准
+→ Task 11先fresh GET並驗證manifest hash與inventory無drift
+→ 只有全部gate一致時依exact IDs刪除
+→ 任一drift回到Task 10重新產生／review／核准
 ```

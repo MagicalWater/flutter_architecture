@@ -28,7 +28,7 @@ Other platforms: Dependency-ready
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
 Template Baseline: 1.13.0
-Current gate: Tasks 1–9已完成，進入Task 10 GitHub storage inventory與exact deletion manifest
+Current gate: Tasks 1–10已完成，停在GitHub irreversible cleanup獨立核准gate
 ```
 
 完整 active scope、design、gate與 next action：

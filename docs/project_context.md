@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.14.0
 ```txt
 Template Baseline: 1.14.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Latest completed initiative: Milestone 31 Template Development Workflow Governance
+Current active milestone: None
+Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -349,7 +349,7 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 
 ## Active Work
 
-Milestone 32已完成managed local artifact store、manifest／checksums、multi-job aggregation、retention／capacity／pin、local cleanup、workflow local-first transport、Observability／failure evidence、Windows／Mac runtime acceptance與GitHub exact-ID cleanup。Final reviewed manifest `7ad138bb845e42cbb133d07c`刪除110個artifacts與3個caches，共10,247,881,699 bytes；113次attempt全部成功，fresh inventory與逐IDre-query確認GitHub Actions storage為0 objects／0 bytes。正式Mac root為`/Users/water/Developer/ci-artifacts/flutter_architecture`。Template Baseline已提升為1.14.0；Milestone仍等待release SHA的self-hosted CI／Android／iOS、Observability skipped、storage no-growth與clean-checkout post-release validation，通過前不宣告closure。
+Milestone 32已完成managed local artifact store、manifest／checksums、multi-job aggregation、retention／capacity／pin、local cleanup、workflow local-first transport、Observability／failure evidence、Windows／Mac runtime acceptance與GitHub exact-ID cleanup。Final reviewed manifest `7ad138bb845e42cbb133d07c`刪除110個artifacts與3個caches，共10,247,881,699 bytes；113次attempt全部成功，fresh inventory與逐IDre-query確認GitHub Actions storage為0 objects／0 bytes。正式Mac root為`/Users/water/Developer/ci-artifacts/flutter_architecture`。Template Baseline 1.14.0 release SHA已通過self-hosted CI／Android／iOS、Observability ordinary push skipped、storage no-growth與clean-checkout validation，Milestone正式closure。
 
 Milestone 30已完成implementation、holistic review、Template Baseline 1.12.0 release、push、clean-checkout與remote CI／Android／iOS post-release validation，並正式closure。Milestone 31的Template Baseline 1.13.0已發布；其原執行治理缺口已透過R0～R11 Governance Recovery補正，Design、Plan、逐Task、behavior pressure、holistic review、fresh regression、push、clean-checkout與remote CI／Android／iOS post-release validation均完成，並正式closure。
 

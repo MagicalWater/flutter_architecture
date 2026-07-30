@@ -33,7 +33,7 @@
 - Milestone 29 Drift Persistence Migration：Completed / Archived
 - Milestone 30 Test Suite Audit, Rationalization & Governance：Completed / Archived
 - Milestone 31 Template Development Workflow Governance：Completed / Archived
-- Milestone 32 CI產物本機化與GitHub儲存空間切換：Release validation in progress
+- Milestone 32 CI產物本機化與GitHub儲存空間切換：Completed / Archived
 
 平台能力：
 

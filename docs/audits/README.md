@@ -83,6 +83,7 @@ Final / Holistic Review
 - [`milestone_32/32-9_github_cleanup_manifest_review.md`](milestone_32/32-9_github_cleanup_manifest_review.md)：Task 10 fresh GitHub inventory、exact-ID deletion manifest、integrity／review／approval／drift gates與不可逆cleanup前停止點。
 - [`milestone_32/32-10_github_cleanup_execution.md`](milestone_32/32-10_github_cleanup_execution.md)：Task 11 drift fail-closed歷史、final exact-ID execution、113個objects刪除、逐ID不存在與GitHub storage歸零證據。
 - [`milestone_32/32-11_final_review.md`](milestone_32/32-11_final_review.md)：跨Tasks 1～11的artifact ownership、schema、secret、multi-job、retention、rollback、不可逆cleanup與1.14.0 release holistic review。
+- [`milestone_32/32-12_post_release_validation.md`](milestone_32/32-12_post_release_validation.md)：1.14.0 release SHA的self-hosted CI／Android／iOS、Observability skipped、storage no-growth、clean-checkout與formal closure evidence。
 - [`milestone_32/32-2_artifact_contract_review.md`](milestone_32/32-2_artifact_contract_review.md)：Tasks 1–2 durable authority、root／manifest contract、TDD findings與portability review。
 - [`milestone_32/32-3_artifact_store_review.md`](milestone_32/32-3_artifact_store_review.md)：Task 3 job lock、staging、atomic publish、checksums與multi-job aggregation review。
 - [`milestone_32/32-4_retention_cleanup_review.md`](milestone_32/32-4_retention_cleanup_review.md)：Task 4 retention、capacity、bounded pins、cleanup manifest、trash／restore／purge與concurrency review。

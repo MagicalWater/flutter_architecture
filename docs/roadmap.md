@@ -26,9 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Milestone 32 — CI產物本機化與GitHub儲存空間切換
+None
 Template Baseline: 1.14.0
-Current gate: Local release candidate已完成，等待self-hosted post-release validation與formal closure
 ```
 
 完整 active scope、design、gate與 next action：
@@ -49,7 +48,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 31 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 32 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

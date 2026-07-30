@@ -32,7 +32,7 @@ Milestone routing 只回答：
 
 ```txt
 Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Status: Active — Template Baseline 1.14.0 release candidate / post-release validation required
+Status: Completed — Template Baseline 1.14.0 released and post-release validated
 ```
 
 - Active state：`docs/roadmap/active.md`
@@ -46,6 +46,7 @@ Status: Active — Template Baseline 1.14.0 release candidate / post-release val
 - Task 10 reviewed GitHub cleanup manifest：`docs/audits/milestone_32/32-9_github_cleanup_manifest_review.md`
 - Task 11 cleanup execution：`docs/audits/milestone_32/32-10_github_cleanup_execution.md`（final manifest刪除113個exact objects，GitHub storage已歸零）
 - Holistic final review：`docs/audits/milestone_32/32-11_final_review.md`
+- Post-release validation：`docs/audits/milestone_32/32-12_post_release_validation.md`
 - Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
 ## Closed milestone routing

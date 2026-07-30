@@ -78,9 +78,9 @@ Tasks 1–11 implementation and local review: ACCEPTED
 Template Baseline: 1.14.0
 Open P0: 0
 Open P1 without disposition: 0
-Release commit: pending
-Post-release self-hosted validation: pending
-Formal remote closure: pending
+Release commit: f4f6a8e76eebe13be2e039db72c6e27a9c1df380
+Post-release self-hosted validation: PASSED
+Formal remote closure: COMPLETED
 ```
 
-Milestone在release SHA完成self-hosted CI／Android／iOS、Observability ordinary push保持skipped、GitHub storage維持0／0與clean-checkout驗證前，仍不得宣告completed。
+Release SHA已完成self-hosted CI／Android／iOS、Observability ordinary push skipped、GitHub storage 0／0與clean-checkout驗證。Post-release authority由`32-12_post_release_validation.md`保存，Milestone可正式closure。

@@ -70,13 +70,27 @@ Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由�
 - Target route：Level 1 operator cleanup或Audit closure後獨立指令。
 - Verification required：`git status`、`git rev-list main...branch`、worktree removal與branch deletion後列表確認。
 
+### F-A2-01 — Dio type穿出`api_client`進入`auth` package
+
+- Severity：P2。
+- Status：Open／Architecture hardening proposed。
+- Evidence：`packages/auth/pubspec.yaml`直接依賴Dio；`AuthRemoteDataSource`與`AuthRefreshRemoteDataSource`捕捉`DioException`並讀取response；`api_client` public barrel exportDio-specific mapper。
+- Current contract：ADR-013要求一般Feature／Repository／DataSource透過API abstraction隔離transport exception，Dio不得穿透`packages/api_client` boundary。
+- Observed state：Endpoint invocation仍透過Retrofit API abstraction，但transport exception type與raw response interpretation進入Auth package。
+- Risk：Auth package與Dio／response shape耦合，替換transport、重用package或演進error envelope時需要跨package同步修改。
+- Recommendation：在`api_client`建立transport-neutral typed endpoint exception／error envelope，或在API implementation boundary先完成Dio mapping；Auth只依賴Auth-owned backend failure metadata與core `AppException`。
+- Baseline blocking：No；154 Auth、55 API client、22 App DI／Router／Navigation focused testsfresh通過，未見runtime failure。
+- Disposition：Bounded architecture hardening candidate，不足以單獨建立Milestone。
+- Target route：後續Level 3 architecture refactor Requirement Decision；若與其他boundary findings合併才重新評估Level 4。
+- Verification required：先新增transport-neutral contract tests，再移除Auth Dio dependency，跑Auth／API client／App DI全量與analyze。
+
 ## Current Summary
 
 ```txt
-Confirmed findings: 4
+Confirmed findings: 5
 P0: 0
 P1: 2, both with bounded remediation disposition
-P2: 1, with bounded remediation disposition
+P2: 2, both with bounded remediation disposition
 P3: 1, with operator hygiene disposition
 Open P1 without disposition: 0
 ```

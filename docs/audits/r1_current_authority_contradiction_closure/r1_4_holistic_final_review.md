@@ -1,6 +1,6 @@
 ---
 document_type: final-review
-status: proposed
+status: accepted
 authoritative_for:
   - r1-current-authority-contradiction-closure-final-review
 last_reviewed_baseline: 1.14.0
@@ -17,11 +17,12 @@ R1-1: ACCEPTED
 R1-2: ACCEPTED
 R1-3: ACCEPTED
 Cross-document review: PASSED
-User R1 Final Review Gate: PENDING
+User R1 Final Review Gate: APPROVED
+R1 closure: ACCEPTED
 Merge／push／cleanup: NOT PERFORMED
 ```
 
-本Review整合R1-1～R1-3 committed evidence，只處理Template Baseline 1.14.0 Audit核准的五個current authority findings。它不擴張為R2～R5，不修改production、tests、workflow、platform、ADR正文、VERSION或CHANGELOG。
+本Review整合R1-1～R1-3 committed evidence，只處理Template Baseline 1.14.0 Audit核准的五個current authority findings。使用者已於2026-08-01明確核准本Final Review；此核准完成R1治理closure，但不擴張為R2～R5，不修改production、tests、workflow、platform、ADR正文、VERSION或CHANGELOG。
 
 ## Exact Baseline
 
@@ -34,6 +35,7 @@ R1 Plan approval commit: bddfec9d0fec4962937096a0209515371cf20f24
 R1-1 commit: 621a1a0f59966f0837e75648707601233e34a8ab
 R1-2 commit: 0d3387a7b650e79d58eb84fbceba230bc24bcc71
 R1-3 commit: a4752c958fd752add492b98e4ac351428a43d0b0
+R1 final proposal commit: b6f6aec06e705da9573f4d28fa218a0bbfebb705
 ```
 
 ## Governance Chain
@@ -147,8 +149,23 @@ Open P2: 3
 Open P3: 1
 Open P1 without disposition: 0
 Maintenance-mode P1 authority entry gate: SATISFIED
-R1 holistic final review: PROPOSED
-User R1 Final Review Gate: PENDING
+R1 holistic final review: ACCEPTED
+User R1 Final Review Gate: APPROVED on 2026-08-01
 ```
 
-使用者核准本Review後，才可將本文件轉為`accepted`並建立獨立approval commit。核准R1不會自動開始R2、merge、push或cleanup。
+## Approval Closure
+
+使用者已明確核准：
+
+```txt
+核准 R1 Final Review
+```
+
+因此：
+
+- 本Final Review轉為`accepted`。
+- 五個R1 findings維持`Resolved by R1`。
+- Maintenance-mode P1 authority entry gate正式滿足。
+- R1 Design、Plan、implementation Tasks與holistic review治理鏈完整閉合。
+
+使用者同時授權後續依既定治理自動推進剩餘remediation tasks；只有scope／architecture決策、external blocker或推翻既有核准的P0／P1才停止。該授權不包含merge、push、remote branch deletion或release。

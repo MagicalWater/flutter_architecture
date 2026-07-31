@@ -47,6 +47,7 @@ Final / Holistic Review
 
 ### Template Baseline 1.14.0 project holistic audit
 
+- [`r2_project_context_current_only_rationalization_plan_review.md`](r2_project_context_current_only_rationalization_plan_review.md)：R2 accepted Plan的matrix-before-rewrite、chronology／claim assertions、single-finding closure guard與standing authorization邊界review。
 - [`r2_project_context_current_only_rationalization_design_review.md`](r2_project_context_current_only_rationalization_design_review.md)：R2 Project Context current-only rationalization的Level 3分類、preservation matrix、current fact re-home、chronology removal與standing authorization邊界review。
 - [`r1_current_authority_contradiction_closure/`](r1_current_authority_contradiction_closure/)：R1-1～R1-3 focused／whole-Task review，以及使用者已核准的R1-4 cross-document holistic final review；五個allowlisted current authority findings均已關閉。
 - [`r1_current_authority_contradiction_closure_plan_review.md`](r1_current_authority_contradiction_closure_plan_review.md)：R1 accepted Implementation Plan的Design coverage、R1-P／R1-1～R1-4 sequencing、semantic assertions、finding allowlist／denylist、commit boundaries與Plan approval closure；R1 Final Review user gate已完成。

@@ -48,6 +48,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
+- [`specs/2026-08-01-r1-current-authority-contradiction-closure-design.md`](specs/2026-08-01-r1-current-authority-contradiction-closure-design.md)：Template 1.14 holistic Audit核准後的R1有界current authority矛盾修復Design；只處理五個accepted findings，排除R2～R5、release、merge與push，Plan核准前不得修改current authority。
 - [`specs/2026-07-31-template-baseline-1.14-project-holistic-audit-design.md`](specs/2026-07-31-template-baseline-1.14-project-holistic-audit-design.md)：Template Baseline 1.14.0 repository-wide整體總審查、能力分級、finding contract、A1～A9 evidence Tasks與A／B／C／D後續方向判定的accepted Design；不預設建立Milestone 33。
 - [`specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`](specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md)：Milestone 32本機artifact ownership、retention、capacity、GitHub transport、cleanup與runtime acceptance的accepted Design；1.14.0 release與post-release closure均已完成。
 - [`specs/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery-design.md`](specs/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery-design.md)：修復原Level 1分類不足，定義逐Skill semantic review、TDD language enforcement與holistic closure的Level 3治理設計。

@@ -31,23 +31,11 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-Milestone 32 — CI產物本機化與GitHub儲存空間切換
-Status: Completed — Template Baseline 1.14.0 released and post-release validated
+None
+Template Baseline: 1.14.0
 ```
 
-- Active state：`docs/roadmap/active.md`
-- Accepted Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
-- Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
-- Accepted Plan：`docs/superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`
-- Plan review：`docs/audits/milestone_32/32-1_implementation_plan_review.md`
-- Task 2–7 reviews：`docs/audits/milestone_32/32-2_artifact_contract_review.md`至`docs/audits/milestone_32/32-7_observability_failure_evidence_review.md`
-- Task 8 runtime readiness：`docs/audits/milestone_32/32-8_runtime_acceptance.md`
-- Task 9 runtime acceptance：`docs/audits/milestone_32/32-9_runtime_acceptance_review.md`（Windows／Mac manual-local、self-hosted success／offline與GitHub no-growth均已完成）
-- Task 10 reviewed GitHub cleanup manifest：`docs/audits/milestone_32/32-9_github_cleanup_manifest_review.md`
-- Task 11 cleanup execution：`docs/audits/milestone_32/32-10_github_cleanup_execution.md`（final manifest刪除113個exact objects，GitHub storage已歸零）
-- Holistic final review：`docs/audits/milestone_32/32-11_final_review.md`
-- Post-release validation：`docs/audits/milestone_32/32-12_post_release_validation.md`
-- Candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
+目前active authority：`docs/roadmap/active.md`。
 
 ## Closed milestone routing
 
@@ -77,6 +65,18 @@ Status: Completed — Template Baseline 1.14.0 released and post-release validat
 | 29 | Completed / Archived | ADR-010、implementation plan、`docs/audits/milestone_29/29-9_platform_runtime_regression.md`、`docs/audits/milestone_29/29-10_final_review.md`、`docs/audits/milestone_29/29-10_post_release_validation.md` |
 | 30 | Completed / Archived | Design Spec、implementation plan、`docs/audits/milestone_30/30-11_final_review.md`、`docs/audits/milestone_30/30-12_post_release_validation.md`、`docs/guides/testing_governance.md` |
 | 31 | Completed / Archived | Workflow Governance Skill、approved Design Spec、approved Recovery Plan、`docs/audits/milestone_31/31-r9_implementation_holistic_review.md`、`docs/audits/milestone_31/31-r10_local_final_review.md`、`docs/audits/milestone_31/31-r11_post_release_validation.md` |
+| 32 | Completed / Archived | accepted Design／Plan、`docs/audits/milestone_32/32-11_final_review.md`、`docs/audits/milestone_32/32-12_post_release_validation.md` |
+
+## Milestone 32 closed routing
+
+- Accepted Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
+- Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
+- Accepted Plan：`docs/superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`
+- Plan review：`docs/audits/milestone_32/32-1_implementation_plan_review.md`
+- Phase reviews：`docs/audits/milestone_32/`
+- Holistic final review：`docs/audits/milestone_32/32-11_final_review.md`
+- Post-release validation：`docs/audits/milestone_32/32-12_post_release_validation.md`
+- Historical candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
 
 完整 disposition 與歷史保存位置記錄於 `docs/migrations/m22_roadmap_manifest.md`。
 

@@ -20,20 +20,6 @@ Candidate 不代表 commitment。開始 implementation 前仍需 scope review、
 
 每個平台應獨立評估 scaffold、artifact、runtime smoke、plugin support 與維護成本，不建議一次綁成單一大 milestone。
 
-## Completed — Milestone 32：CI產物本機化與GitHub儲存空間切換
-
-此候選已於2026-07-30完成Requirement Decision並提升為Level 4 Milestone；Design、Implementation Plan、Tasks 1～11、GitHub exact-ID cleanup、Template Baseline 1.14.0 release與post-release validation均已完成，現在不再屬於active candidate。
-
-Closure routing：
-
-- Current state：`docs/roadmap/active.md`
-- Accepted Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
-- Accepted Plan：`docs/superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`
-- Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
-- Holistic final review：`docs/audits/milestone_32/32-11_final_review.md`
-- Post-release validation：`docs/audits/milestone_32/32-12_post_release_validation.md`
-- Candidate handoff與舊快照：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
-
 ## Disposition — Documentation Knowledge Expansion
 
 此大型文件擴張方向不再列為 candidate。

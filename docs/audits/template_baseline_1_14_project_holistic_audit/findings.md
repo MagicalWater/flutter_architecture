@@ -161,7 +161,7 @@ Required finding fields: complete for all findings
 Baseline-blocking findings: 0
 Primary final disposition: B — bounded hardening before maintenance
 Supplemental disposition: D — candidate／backlog disposition
-User final review gate: pending
+User final review gate: approved on 2026-07-31
 ```
 
-本register在A9 final proposal後凍結。使用者未核准Final Review前，不新增finding、不執行remediation，也不把`Open`改寫為`Resolved`。
+本register在A9 final proposal後凍結，並隨Final Review核准完成closure。核准B＋D disposition不等於核准remediation；未經新的Requirement Decision，不新增finding、不執行R1～R5，也不把`Open`改寫為`Resolved`。

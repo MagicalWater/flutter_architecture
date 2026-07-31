@@ -1,6 +1,6 @@
 ---
 document_type: final-review
-status: proposed
+status: accepted
 authoritative_for:
   - template-baseline-1-14-project-holistic-audit-final-review
 last_reviewed_baseline: 1.14.0
@@ -13,13 +13,14 @@ last_reviewed_baseline: 1.14.0
 ```txt
 Audit execution: COMPLETED
 Internal focused／whole-Audit review: PASSED
-Final disposition: PROPOSED
-User Audit Review Gate: PENDING
+Final disposition: ACCEPTED
+User Audit Review Gate: APPROVED
+Audit closure: ACCEPTED
 Remediation execution: NOT STARTED
 Merge／push／cleanup: NOT PERFORMED
 ```
 
-本文件整合A1～A8 evidence、central findings register與fresh repository regression。它提出最終方向，但在使用者核准前不修改current authority、不建立新Milestone，也不開始任何修復。
+本文件整合A1～A8 evidence、central findings register與fresh repository regression。使用者已於2026-07-31明確核准本Final Review與B＋D disposition；此核准只完成Audit closure，不授權修改current authority、建立新Milestone或執行任何修復。
 
 ## Exact Audit Baseline
 
@@ -29,11 +30,12 @@ Template Baseline: 1.14.0
 Initial main: b3c71b6264227050180ffb5be62b14bbfb8e19aa
 origin/main at final review: b3c71b6264227050180ffb5be62b14bbfb8e19aa
 Audit branch: audit/template-baseline-1.14-project-holistic
-Branch distance before A9 commit: main 0 behind / Audit 11 ahead
+A9 proposal commit: 51ab3fe4623faa8486662d2af0ef05e28a365d61
+Branch distance before approval closure commit: main 0 behind / Audit 12 ahead
 Current active milestone: None
 ```
 
-Audit branch相對main的commits全部是本次Design、Plan、A1～A8 evidence；沒有production、test、workflow、platform、ADR、Roadmap、Backlog、VERSION或CHANGELOG變更。
+Audit branch相對main的commits全部是本次Design、Plan、A1～A9 evidence與approval closure；沒有production、test、workflow、platform、ADR、Roadmap、Backlog、VERSION或CHANGELOG變更。
 
 ## Governance Completion
 
@@ -55,7 +57,7 @@ Audit branch相對main的commits全部是本次Design、Plan、A1～A8 evidence�
 | A6 | Testing and CI sustainability | Accepted | `91ff86b` |
 | A7 | Documentation and current authority | Accepted | `0667a67` |
 | A8 | Future direction disposition | Accepted | `ae9a12b` |
-| A9 | Holistic synthesis and final review | Internally passed／user gate pending | This proposal commit |
+| A9 | Holistic synthesis and final review | Accepted／user-approved | `51ab3fe` proposal + approval closure |
 
 ## Cross-Task Consistency Review
 
@@ -267,6 +269,7 @@ Reject as generic template direction: Payment
 ```txt
 Primary disposition: B
 Supplemental disposition: D
+User approval: APPROVED on 2026-07-31
 New Milestone recommendation: No
 Open P0: 0
 Open P1 without disposition: 0
@@ -275,10 +278,19 @@ Maintenance mode immediately without hardening: No
 Maintenance mode after P1 authority hardening: Yes
 ```
 
-使用者核准本Final Review與B＋D disposition後，才可：
+## Approval Closure
 
-- 將本文件更新為`accepted`。
-- 建立final approval closure commit。
-- 另行決定是否先執行R1有界修復、合併Audit branch或只封存Audit evidence。
+使用者已明確核准：
 
-在該核准前，不得自動開始R1～R5、修改Roadmap／Backlog、建立Milestone、merge、push或cleanup worktree。
+```txt
+核准 Audit Final Review 與 B＋D disposition
+```
+
+因此：
+
+- 本Final Review轉為`accepted`。
+- B為正式primary disposition，D為正式supplemental disposition。
+- Audit execution與review closure完成。
+- Template Baseline 1.14.0維持可用，但正式進入maintenance mode前仍應優先完成R1的P1 authority hardening。
+
+本核准不包含R1～R5 implementation、Roadmap／Backlog修改、Milestone建立、merge、push或worktree cleanup。上述任何後續動作仍需新的Requirement Decision與對應授權。

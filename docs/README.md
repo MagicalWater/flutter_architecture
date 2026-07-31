@@ -143,10 +143,10 @@ Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆
 
 ## Legacy 路徑
 
-- `docs/adr/` 是第一階段 placeholder，不是正式 ADR 集合。
 - `docs/architecture/` 是第一階段 historical／partially superseded guidance。
+- 舊aggregate decision與已標記legacy的相容路徑只供歷史追溯；current Architecture Decision authority仍由`docs/adr/README.md`與canonical ADR records擁有。
 
-這些文件已加上 warning，暫時保留路徑與正文，避免歷史遺失與連結立即失效。不得因目錄名稱而將它們當成 Template Baseline 1.5.0 的 current authority。
+Historical／legacy文件保留路徑與必要warning，避免歷史遺失與連結立即失效；它們不得覆蓋canonical ADR records或其他current authority。
 
 ## 摘要規則
 

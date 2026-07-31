@@ -29,6 +29,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
+- [`plans/2026-08-01-r3-api-client-transport-neutral-error-boundary.md`](plans/2026-08-01-r3-api-client-transport-neutral-error-boundary.md)：accepted R3 TDD Plan；依序建立api_client endpoint boundary、遷移Auth、更新App Composition／generated DI並完成full workspace closure。
 - [`plans/2026-08-01-r2-project-context-current-only-rationalization.md`](plans/2026-08-01-r2-project-context-current-only-rationalization.md)：accepted R2 Plan；以committed preservation matrix先行、current-only rewrite與single-finding closure三階段執行，只處理`F-A7-02`。
 - [`plans/2026-08-01-r1-current-authority-contradiction-closure.md`](plans/2026-08-01-r1-current-authority-contradiction-closure.md)：R1 current authority矛盾修復的accepted Implementation Plan；定義R1-P與R1-1～R1-4 exact file scope、semantic assertions、five-finding closure guard、獨立commit與R1 Final Review使用者核准Gate，目前允許依序執行R1-1～R1-4。
 - [`plans/2026-07-31-template-baseline-1.14-project-holistic-audit.md`](plans/2026-07-31-template-baseline-1.14-project-holistic-audit.md)：accepted Execution Plan；A1～A9、fresh full regression與B＋D Final Review均已完成並取得使用者核准，後續remediation依獨立Requirement Decision執行。

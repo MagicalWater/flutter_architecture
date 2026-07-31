@@ -84,13 +84,27 @@ Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由�
 - Target route：後續Level 3 architecture refactor Requirement Decision；若與其他boundary findings合併才重新評估Level 4。
 - Verification required：先新增transport-neutral contract tests，再移除Auth Dio dependency，跑Auth／API client／App DI全量與analyze。
 
+### F-A6-01 — Test inventory CLI無法輸出至repository外absolute path
+
+- Severity：P2。
+- Status：Open／Tooling hardening proposed。
+- Evidence：`python tools/testing/inventory.py --root . --output <system-temp>/test-inventory.csv`先寫出CSV，之後在`output.relative_to(root)`拋出`ValueError`並exit 1；輸出位於repository內ignored path時成功。
+- Current contract：Testing Governance把inventory視為可重現盤點工具；本Audit accepted Plan明確要求temp output以避免覆寫tracked Milestone 30 baseline。
+- Observed state：CLI實際限制output必須位於root下，但argument help／implementation沒有宣告此限制，且錯誤發生在成功寫檔後。
+- Risk：Audit、CI或維護腳本使用absolute temp path時收到false failure；也可能留下已寫出但被誤認為無效的CSV。
+- Recommendation：不要限制output必須在root下；summary對root內路徑顯示relative path，root外顯示resolved absolute path，並新增outside-root output unit test。
+- Baseline blocking：No；ignored in-repository temp route成功產生144 files／25,732 LOC／887 cases，current tests與CI不依賴external output。
+- Disposition：Bounded Level 2 tooling bugfix candidate，可與documentation authority hardening分開處理。
+- Target route：後續Requirement Decision後以TDD修正`tools/testing/inventory.py`與`test_test_inventory.py`。
+- Verification required：RED outside-root test、existing inventory tests、tracked baseline不變、system-temp command exit 0、docs check。
+
 ## Current Summary
 
 ```txt
-Confirmed findings: 5
+Confirmed findings: 6
 P0: 0
 P1: 2, both with bounded remediation disposition
-P2: 2, both with bounded remediation disposition
+P2: 3, all with bounded remediation disposition
 P3: 1, with operator hygiene disposition
 Open P1 without disposition: 0
 ```

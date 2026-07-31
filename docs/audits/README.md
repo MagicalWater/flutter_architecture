@@ -45,6 +45,10 @@ Final / Holistic Review
 
 ## Evidence routes
 
+### Template Baseline 1.14.0 project holistic audit
+
+- [`template_baseline_1_14_project_holistic_audit_design_review.md`](template_baseline_1_14_project_holistic_audit_design_review.md)：Template Baseline 1.14.0 repository-wide整體總審查Design的Level 4分類、A0～A9 Task boundaries、Plan acceptance hard gate、focused finding修正與使用者核准證據。
+
 ### Persistence feasibility
 
 - [`drift_adoption_feasibility_audit.md`](drift_adoption_feasibility_audit.md)：Template Baseline 1.10.0 的 SQLite capability inventory、sqflite／Drift repository-specific比較、migration go／no-go與重新評估條件。

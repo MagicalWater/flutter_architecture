@@ -48,6 +48,7 @@ Final / Holistic Review
 ### Template Baseline 1.14.0 project holistic audit
 
 - [`template_baseline_1_14_project_holistic_audit_design_review.md`](template_baseline_1_14_project_holistic_audit_design_review.md)：Template Baseline 1.14.0 repository-wide整體總審查Design的Level 4分類、A0～A9 Task boundaries、Plan acceptance hard gate、focused finding修正與使用者核准證據。
+- [`template_baseline_1_14_project_holistic_audit_plan_review.md`](template_baseline_1_14_project_holistic_audit_plan_review.md)：對應Execution Plan的spec coverage、exact file／command、temporary evidence、commit boundaries與A1前使用者核准gate；目前維持proposed。
 
 ### Persistence feasibility
 

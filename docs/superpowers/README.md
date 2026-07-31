@@ -29,6 +29,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
+- [`plans/2026-07-31-template-baseline-1.14-project-holistic-audit.md`](plans/2026-07-31-template-baseline-1.14-project-holistic-audit.md)：Template Baseline 1.14.0 repository-wide整體總審查的proposed Execution Plan；定義A1～A9 exact evidence artifacts、validation、finding authority、commit boundaries與Audit Review Gate，未經使用者核准不得開始A1。
 - [`plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`](plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md)：Milestone 32 managed artifact store、workflow transport、retention／cleanup、runtime acceptance與GitHub storage cutover的accepted Implementation Plan；Tasks 1～11、1.14.0 release與post-release closure均已完成。
 - [`plans/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery.md`](plans/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery.md)：對四個repository-local Skills繁體中文化補做Level 3 full two-layer Task governance、mechanical language gate與holistic remote closure；current execution進度見對應final review。
 - [`plans/2026-07-30-adopting-template-product-identity-skill.md`](plans/2026-07-30-adopting-template-product-identity-skill.md)：薄型模板產品識別Skill的RED／GREEN、中央routing、Guide authority與clean-checkout計畫；Tasks 1–6原以restricted Pilot完成，後續fresh isolated behavioral evidence closure已將current registry狀態升級為`Approved`。

@@ -119,7 +119,8 @@ last_reviewed_baseline: 1.14.0
 ### F-A7-02 — Project Context current-only snapshot重新累積Milestone journal
 
 - Severity：P2。
-- Status：Open／Current snapshot rationalization proposed。
+- Status：Resolved by R2。
+- Resolution evidence：R2-1 preservation matrix commit `d09529835460c213939c16820c404b6d6e6ab268`；R2-2 rewrite commit `7697e529a37134b47769bb6fc60d4fb865d966c0`；`docs/audits/r2_project_context_current_only_rationalization/r2_3_holistic_final_review.md`。
 - Evidence：`docs/project_context.md`宣稱不保存逐Milestone journal，但421行內容含15次Milestone reference及13個以Milestone編號開頭的chronological paragraphs。
 - Current contract：Current snapshot只描述仍有效baseline、architecture、capability、limitations、active work與routing；歷史演進由Milestone／Audit／CHANGELOG擁有。
 - Observed state：Milestone 19～30完成、封存、當時baseline與後續演進被逐段保留在current snapshot。
@@ -150,9 +151,10 @@ last_reviewed_baseline: 1.14.0
 ```txt
 Confirmed findings: 9
 Resolved by R1: 5
+Resolved by R2: 1
 Open P0: 0
 Open P1: 0
-Open P2: 3
+Open P2: 2
 Open P3: 1
 Open P1 without disposition: 0
 ```
@@ -170,4 +172,4 @@ Supplemental disposition: D — candidate／backlog disposition
 User final review gate: approved on 2026-07-31
 ```
 
-本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1已依獨立Requirement Decision，只將allowlisted五項更新為`Resolved by R1`；`F-A1-04`、`F-A2-01`、`F-A6-01`與`F-A7-02`維持Open。R1核准不授權R2～R5、merge、push或cleanup。
+本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1已依獨立Requirement Decision將五項更新為`Resolved by R1`；R2依preservation matrix與current-only rewrite將`F-A7-02`更新為`Resolved by R2`。`F-A1-04`、`F-A2-01`與`F-A6-01`維持Open。Standing authorization不包含merge、push、remote branch deletion或release。

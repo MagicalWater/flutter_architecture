@@ -39,11 +39,11 @@ void main() {
 
     expect(
       ApiImplementationSelector.createAuthApi(config, dio),
-      isNot(isA<MockAuthApi>()),
+      isA<DioAuthEndpoint>(),
     );
     expect(
       ApiImplementationSelector.createAuthRefreshApi(config, dio),
-      isNot(isA<MockAuthRefreshApi>()),
+      isA<DioAuthRefreshEndpoint>(),
     );
     expect(
       ApiImplementationSelector.createProfileApi(config, dio),

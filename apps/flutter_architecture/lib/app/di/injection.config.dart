@@ -143,8 +143,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1037.ConnectivityAdapter>(),
       ),
     );
-    gh.lazySingleton<_i633.AuthRefreshApi>(
-      () => registerModule.authRefreshApi(
+    gh.lazySingleton<_i633.AuthRefreshEndpoint>(
+      () => registerModule.authRefreshEndpoint(
         gh<_i46.ApiConfig>(),
         gh<_i361.Dio>(instanceName: 'refreshDio'),
       ),
@@ -157,16 +157,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i287.LocalAuthGateway>(),
       ),
     );
-    gh.lazySingleton<_i662.AuthRefreshRemoteDataSource>(
-      () => registerModule.authRefreshRemoteDataSource(
-        gh<_i633.AuthRefreshApi>(),
-      ),
-    );
     gh.lazySingleton<_i662.AuthCredentialMigrationCoordinator>(
       () => registerModule.authCredentialMigrationCoordinator(
         gh<_i662.AuthCredentialStore>(),
         gh<_i662.AuthLegacyCredentialStore>(),
         gh<_i662.AuthUserStore>(),
+      ),
+    );
+    gh.lazySingleton<_i662.AuthRefreshRemoteDataSource>(
+      () => registerModule.authRefreshRemoteDataSource(
+        gh<_i633.AuthRefreshEndpoint>(),
       ),
     );
     gh.lazySingleton<_i633.AuthRefresher>(
@@ -198,8 +198,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i662.LocalUnlockPreferenceStore>(),
       ),
     );
-    gh.lazySingleton<_i633.AuthApi>(
-      () => registerModule.authApi(
+    gh.lazySingleton<_i633.AuthEndpoint>(
+      () => registerModule.authEndpoint(
         gh<_i46.ApiConfig>(),
         gh<_i361.Dio>(instanceName: 'mainDio'),
       ),
@@ -216,14 +216,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i361.Dio>(instanceName: 'mainDio'),
       ),
     );
-    gh.lazySingleton<_i662.AuthRemoteDataSource>(
-      () => registerModule.authRemoteDataSource(gh<_i633.AuthApi>()),
-    );
     gh.lazySingleton<_i98.CatalogRemoteDataSource>(
       () => _i98.CatalogRemoteDataSource(gh<_i633.CatalogApi>()),
     );
     gh.lazySingleton<_i725.ProfileRemoteDataSource>(
       () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
+    );
+    gh.lazySingleton<_i662.AuthRemoteDataSource>(
+      () => registerModule.authRemoteDataSource(gh<_i633.AuthEndpoint>()),
     );
     gh.lazySingleton<_i662.AuthRepository>(
       () => registerModule.authRepository(

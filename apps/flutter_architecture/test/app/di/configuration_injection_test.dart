@@ -50,8 +50,10 @@ void main() {
     expect(getIt<AppConfig>(), same(config));
     expect(getIt<ApiConfig>(), same(config.api));
     expect(getIt<ErrorReporter>(), same(reporter));
-    expect(getIt<AuthApi>(), isA<MockAuthApi>());
-    expect(getIt<AuthRefreshApi>(), isA<MockAuthRefreshApi>());
+    expect(getIt<AuthEndpoint>(), isA<MockAuthApi>());
+    expect(getIt<AuthRefreshEndpoint>(), isA<MockAuthRefreshApi>());
+    expect(getIt<AuthRemoteDataSource>(), isNotNull);
+    expect(getIt<AuthRefreshRemoteDataSource>(), isNotNull);
     expect(getIt<AuthRefresher>(), isA<AuthSessionRefresher>());
     expect(getIt<ProfileApi>(), isA<MockProfileApi>());
     expect(getIt<CatalogApi>(), isA<MockCatalogApi>());
@@ -104,9 +106,11 @@ void main() {
       database: AppDatabase.forTesting(NativeDatabase.memory()),
     );
 
-    expect(getIt<AuthApi>(), isNot(isA<MockAuthApi>()));
+    expect(getIt<AuthEndpoint>(), isA<DioAuthEndpoint>());
     expect(getIt<ErrorReporter>(), same(reporter));
-    expect(getIt<AuthRefreshApi>(), isNot(isA<MockAuthRefreshApi>()));
+    expect(getIt<AuthRefreshEndpoint>(), isA<DioAuthRefreshEndpoint>());
+    expect(getIt<AuthRemoteDataSource>(), isNotNull);
+    expect(getIt<AuthRefreshRemoteDataSource>(), isNotNull);
     expect(getIt<ProfileApi>(), isNot(isA<MockProfileApi>()));
     expect(getIt<CatalogApi>(), isNot(isA<MockCatalogApi>()));
     expect(getIt<CatalogLocalDataSource>(), isNotNull);

@@ -76,12 +76,15 @@ abstract class RegisterModule {
       const api_client.AppDioFactory();
 
   @lazySingleton
-  api_client.AuthApi authApi(ApiConfig config, @Named('mainDio') Dio dio) {
+  api_client.AuthEndpoint authEndpoint(
+    ApiConfig config,
+    @Named('mainDio') Dio dio,
+  ) {
     return ApiImplementationSelector.createAuthApi(config, dio);
   }
 
   @lazySingleton
-  api_client.AuthRefreshApi authRefreshApi(
+  api_client.AuthRefreshEndpoint authRefreshEndpoint(
     ApiConfig config,
     @Named('refreshDio') Dio dio,
   ) {
@@ -148,15 +151,17 @@ abstract class RegisterModule {
   }
 
   @lazySingleton
-  auth.AuthRemoteDataSource authRemoteDataSource(api_client.AuthApi authApi) {
-    return auth.AuthRemoteDataSource(authApi);
+  auth.AuthRemoteDataSource authRemoteDataSource(
+    api_client.AuthEndpoint authEndpoint,
+  ) {
+    return auth.AuthRemoteDataSource(authEndpoint);
   }
 
   @lazySingleton
   auth.AuthRefreshRemoteDataSource authRefreshRemoteDataSource(
-    api_client.AuthRefreshApi authRefreshApi,
+    api_client.AuthRefreshEndpoint authRefreshEndpoint,
   ) {
-    return auth.AuthRefreshRemoteDataSource(authRefreshApi);
+    return auth.AuthRefreshRemoteDataSource(authRefreshEndpoint);
   }
 
   @lazySingleton

@@ -122,7 +122,7 @@ void main() {
 }
 
 AuthRepositoryImpl _repository({
-  required AuthApi api,
+  required AuthEndpoint api,
   required AuthCredentialStore credentialStore,
   required AuthLegacyCredentialStore legacyCredentialStore,
   required AuthUserStore userStore,
@@ -144,7 +144,7 @@ AuthRepositoryImpl _repository({
   );
 }
 
-class _SequencedAuthApi implements AuthApi {
+class _SequencedAuthApi implements AuthEndpoint {
   _SequencedAuthApi(this.responses);
 
   final List<LoginResponseDto> responses;

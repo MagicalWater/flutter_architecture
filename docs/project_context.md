@@ -36,27 +36,7 @@ Architecture Decision authority: docs/adr/README.md
 
 版本字串唯一來源為 `VERSION`；正式版本內容由 `CHANGELOG.md` 記錄。
 
-Milestone 19 Secure Credential Storage、Milestone 20 OTP Step-Up Authentication 與 Milestone 21 Biometric-gated Local Session Unlock 均已完成 final review 並封存。
-
-Milestone 22 只處理 Documentation Authority、Navigation、Current Snapshot、README Coverage 與 consistency foundation，不改變 production runtime behavior。
-
-Milestone 23 已將 Decision 001–022擷取為canonical single-file ADR、建立可驗證supersession graph、切換正式authority並保留aggregate與legacy path相容路由。
-
-Milestone 24 已建立GitHub Actions repository quality gates、exact toolchain authority、tracked root lockfile、generated consistency、main Android verification artifact與CI operations guide。此能力以Template Baseline 1.6.0封存，並於1.6.1完成GitHub-hosted CI／Android remote validation、跨平台golden authority與Node 24 Actions相容性修正。Milestone 27後續加入`manual-local`／`self-hosted`／`github-hosted`三種執行模式，以及只接受trusted `main`與manual dispatch的repository-scoped Mac runner；production signing、Store publishing與GitHub repository Branch Protection settings仍未納入。
-
-Milestone 25已建立tracked iOS runner、原始iOS 13 native contract、CocoaPods resolution、Face ID／Keychain設定、Simulator runtime smoke、macOS golden authority與GitHub-hosted unsigned Simulator build gate，並以Template Baseline 1.7.0封存。Milestone 27因Firebase Apple SDK 12.x最低需求，已將current iOS deployment baseline提升為15.0。Physical-device biometric acceptance、production signing、IPA與App Store distribution仍為deferred scope。
-
-Milestone 26已建立development／staging／production的cross-platform mapping manifest、Android product flavors、iOS shared schemes與九組build configurations、native／Dart mismatch fail-fast、environment-aware local artifact commands、GitHub-hosted development／production代表性build matrix與manifest-first adoption guide，並以Template Baseline 1.8.0封存。Repository artifacts仍只屬verification evidence，不包含production signing或Store distribution。
-
-Milestone 27已建立provider-neutral production observability contract、Firebase Crashlytics reference adapter、release identity與severity routing、privacy／collection policy、Android symbols、iOS dSYM、controlled remote acceptance，以及`manual-local`／`self-hosted`／`github-hosted`三種CI execution mode。Android與iOS controlled events均已完成Firebase Console ingestion與symbolication驗證，並以Template Baseline 1.9.0封存。
-
-Milestone 28已建立App-owned typed connectivity authority、provider-neutral adapter contract、`connectivity_plus` reference adapter、startup／resume recheck、offline banner與Catalog opt-in reconnect revalidation。Backend reachability仍由operation result表達，physical-device network toggle與production distribution維持deferred，並以Template Baseline 1.10.0封存。
-
-Milestone 29已完成Drift Persistence Migration，Drift成為唯一production database authority，並保留v1～v6 historical migration與rollback compatibility。
-
-Milestone 30已建立repository-wide test inventory、primary coverage owner、production／historical boundary、controlled deletion manifest與Tier 1～5 execution governance。Auth與Catalog current integration均使用production Drift path；historical sqflite只保留於migration、rollback與fixture oracle。Template Baseline提升為1.12.0。
-
-Repository CI已採change-aware execution：純文件變更只執行輕量治理與穩定check no-op；source、native、dependency、classifier或release變更依contract執行完整CI及相關平台代表build。Unknown path、無效Git range與classification failure會fail-safe到完整矩陣。Manual-local與self-hosted的成功、失敗、platform與Observability raw evidence使用checkout外managed local artifact store，包含run／job manifest、SHA-256、retention、capacity、pin與trash restore contract；self-hosted不使用`actions/upload-artifact`或`actions/cache`。GitHub-hosted artifact transport只保留人工明確例外。詳細操作矩陣與operator procedure由`docs/guides/ci_cd_operations.md`擁有。
+Milestone completion、release chronology與runtime evidence依`docs/milestones/README.md`、`docs/audits/README.md`、`CHANGELOG.md`與Git history按需讀取；本current snapshot不重複保存。
 
 ## Project Purpose
 
@@ -299,6 +279,14 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 - Cursor page storage、chain revision、cycle protection 與 lazy cleanup。
 - Public Catalog Cache 不因 Logout 清除。
 
+### Connectivity and Offline State
+
+- App-owned typed connectivity authority統一表達目前網路狀態。
+- Provider-neutral adapter contract由App Composition Root選擇實作；目前reference adapter使用`connectivity_plus`。
+- Startup與resume會重新檢查connectivity，App-wide offline banner只表達裝置網路狀態。
+- Catalog可選擇在reconnect signal後重新驗證資料，但不把connectivity status當成backend reachability保證。
+- Backend可達性與request failure仍由operation result與typed Failure表達。
+
 ### Design System and Appearance
 
 - Primitive tokens 與 semantic color roles。
@@ -325,6 +313,15 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 - App 是 reporting Composition Root；packages 不直接依賴 Crashlytics 或 App localization。
 - Sensitive credential、OTP code 與 raw payload 不得進 exception、failure、diagnostic、log 或 `toString()`。
 
+### Delivery and Verification
+
+- Repository CI採change-aware execution；documentation-only、workspace與platform gates依changed scope選擇，unknown path、無效Git range或classification failure會fail-safe到完整矩陣。
+- CI execution modes為`manual-local`、`self-hosted`與`github-hosted`。
+- Manual-local與self-hosted raw evidence由checkout外managed local artifact store擁有，包含run／job manifest、SHA-256、retention、capacity、pin與trash restore contract。
+- Self-hosted managed jobs不以`actions/upload-artifact`或`actions/cache`作為主要artifact authority；GitHub-hosted artifact transport只保留人工明確例外。
+- Production signing、Store distribution與GitHub repository Branch Protection settings不屬於目前baseline。
+- 詳細操作矩陣與operator procedure由`docs/guides/ci_cd_operations.md`擁有。
+
 ## Platform Capability
 
 | Platform | Current classification |
@@ -338,6 +335,8 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 
 Android與iOS可以被描述為目前Supported platform。iOS Supported claim不包含physical-device acceptance、production signing、IPA、TestFlight或App Store distribution；這些範圍仍有明確deferred disposition。
 
+Current iOS deployment baseline為15.0。
+
 ## Security and Support Boundaries
 
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
@@ -347,15 +346,16 @@ Android與iOS可以被描述為目前Supported platform。iOS Supported claim不
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
-## Active Work
+## Current Work and Maintenance State
 
-Milestone 32已完成managed local artifact store、manifest／checksums、multi-job aggregation、retention／capacity／pin、local cleanup、workflow local-first transport、Observability／failure evidence、Windows／Mac runtime acceptance與GitHub exact-ID cleanup。Final reviewed manifest `7ad138bb845e42cbb133d07c`刪除110個artifacts與3個caches，共10,247,881,699 bytes；113次attempt全部成功，fresh inventory與逐IDre-query確認GitHub Actions storage為0 objects／0 bytes。正式Mac root為`/Users/water/Developer/ci-artifacts/flutter_architecture`。Template Baseline 1.14.0 release SHA已通過self-hosted CI／Android／iOS、Observability ordinary push skipped、storage no-growth與clean-checkout validation，Milestone正式closure。
+```txt
+Current active milestone: None
+Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
+```
 
-Milestone 30已完成implementation、holistic review、Template Baseline 1.12.0 release、push、clean-checkout與remote CI／Android／iOS post-release validation，並正式closure。Milestone 31的Template Baseline 1.13.0已發布；其原執行治理缺口已透過R0～R11 Governance Recovery補正，Design、Plan、逐Task、behavior pressure、holistic review、fresh regression、push、clean-checkout與remote CI／Android／iOS post-release validation均完成，並正式closure。
+Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 
-Milestone 26已完成final holistic review、Template Baseline 1.8.0 release與封存；change-aware CI已完成classifier、三份workflow wiring、本地regression、documentation-only acceptance、manual full-matrix acceptance與獨立holistic final review。Final review發現的App pubspec、assets與localization config兩平台build漏判已完成修正、57個CI contracts與GitHub-hosted完整矩陣revalidation，initiative已正式closure。
-
-Production signing、physical-device acceptance、App Store distribution與GitHub repository settings仍未納入；Branch Protection目前只有文件化建議。
+新的feature、bug、security／platform變化、產品採用需求或maintenance hardening都必須先進入Requirement Decision，再依Level 0～5分類執行。Audit與remediation進度由`docs/audits/README.md`與對應review擁有，不追加Task、commit、測試數或runtime evidence journal至本文件。
 
 ## Documentation Routing
 
@@ -418,4 +418,4 @@ flutter build bundle
 - Documentation routing。
 - Standard verification contract。
 
-不得把逐 Task progress、commit hash、歷史測試數或完成 Milestone 的詳細 journal 追加回本文件。
+不得把逐Task progress、commit hash、歷史測試數、release chronology、runtime evidence counts或完成Milestone的詳細journal追加回本文件。

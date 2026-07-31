@@ -47,12 +47,13 @@ Final / Holistic Review
 
 ### Template Baseline 1.14.0 project holistic audit
 
+- [`r1_current_authority_contradiction_closure/`](r1_current_authority_contradiction_closure/)：R1-1～R1-3 focused／whole-Task review，以及R1-4 cross-document holistic final review；只關閉五個allowlisted current authority findings。
 - [`r1_current_authority_contradiction_closure_plan_review.md`](r1_current_authority_contradiction_closure_plan_review.md)：R1 accepted Implementation Plan的Design coverage、R1-P／R1-1～R1-4 sequencing、semantic assertions、finding allowlist／denylist、commit boundaries與Plan approval closure；R1 Final Review仍保留獨立使用者Gate。
 - [`r1_current_authority_contradiction_closure_design_review.md`](r1_current_authority_contradiction_closure_design_review.md)：Audit核准後R1 current authority矛盾修復Design的Level 3分類、五Finding allowlist、scope／non-goals、雙層Task與使用者核准closure。
 - [`template_baseline_1_14_project_holistic_audit_design_review.md`](template_baseline_1_14_project_holistic_audit_design_review.md)：Template Baseline 1.14.0 repository-wide整體總審查Design的Level 4分類、A0～A9 Task boundaries、Plan acceptance hard gate、focused finding修正與使用者核准證據。
 - [`template_baseline_1_14_project_holistic_audit_plan_review.md`](template_baseline_1_14_project_holistic_audit_plan_review.md)：對應accepted Execution Plan的spec coverage、exact file／command、temporary evidence、commit boundaries與A1前使用者核准closure。
 - [`template_baseline_1_14_project_holistic_audit/`](template_baseline_1_14_project_holistic_audit/)：A1～A9 repository baseline、architecture、capability、runtime、security／platform、testing／CI、documentation、future direction與holistic disposition evidence；`findings.md`為本Audit finding正文唯一owner。
-- [`template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md`](template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md)：A1～A8 cross-Task consistency、9個frozen findings、fresh full regression與B＋D最終方向proposal；目前停在使用者Audit Review Gate，未開始remediation、merge或push。
+- [`template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md`](template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md)：A1～A8 cross-Task consistency、9個frozen findings、fresh full regression與使用者已核准的B＋D最終方向；R1 remediation依獨立Requirement Decision執行，merge與push仍未進行。
 
 ### Persistence feasibility
 

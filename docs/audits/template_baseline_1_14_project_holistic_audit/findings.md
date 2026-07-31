@@ -10,14 +10,15 @@ last_reviewed_baseline: 1.14.0
 
 本文件是本Audit完整finding正文的唯一authority。各A1～A9 evidence只引用Finding ID，不複製或分叉finding disposition。
 
-Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由後續Requirement Decision處理，不表示缺少disposition。
+本register保留A9原始finding內容，並由後續Requirement Decision更新status。`Open`表示問題仍待處理；`Resolved by R1`表示已由R1獨立Design／Plan、Task review、validation與commit evidence完成修復。
 
 ## Finding Register
 
 ### F-A1-01 — Completed Milestone 32位於Active routing
 
 - Severity：P1。
-- Status：Open／Remediation proposed。
+- Status：Resolved by R1。
+- Resolution evidence：R1-1 commit `621a1a0f59966f0837e75648707601233e34a8ab`；`docs/audits/r1_current_authority_contradiction_closure/r1_1_milestone_candidate_authority_review.md`；R1 holistic final review。
 - Evidence：`docs/milestones/README.md`的Status rule以`docs/roadmap/active.md`為準；active authority為None，但`## Active routing`仍列Completed Milestone 32。
 - Current contract：Milestone index只保存正確名稱、status與artifact route，不成為第二份Roadmap。
 - Observed state：Completed item被放在Active section，closed table只到Milestone 31。
@@ -31,7 +32,8 @@ Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由�
 ### F-A1-02 — Documentation Hub錯誤降級canonical ADR目錄
 
 - Severity：P1。
-- Status：Open／Remediation proposed。
+- Status：Resolved by R1。
+- Resolution evidence：R1-2 commit `0d3387a7b650e79d58eb84fbceba230bc24bcc71`；`docs/audits/r1_current_authority_contradiction_closure/r1_2_documentation_hub_adr_routing_review.md`；R1 holistic final review。
 - Evidence：`docs/README.md`前段定義`docs/adr/README.md`與canonical records為正式Architecture Decision authority；Legacy段落把整個`docs/adr/`稱為placeholder與非正式ADR集合。
 - Current contract：Milestone 23後canonical ADR files與ADR index是stable authority。
 - Observed state：同一current documentation hub提供互斥routing。
@@ -45,7 +47,8 @@ Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由�
 ### F-A1-03 — Completed Milestone 32保留在Candidate authority
 
 - Severity：P2。
-- Status：Open／Remediation proposed。
+- Status：Resolved by R1。
+- Resolution evidence：R1-1 commit `621a1a0f59966f0837e75648707601233e34a8ab`；`docs/audits/r1_current_authority_contradiction_closure/r1_1_milestone_candidate_authority_review.md`；R1 holistic final review。
 - Evidence：`docs/roadmap/candidates.md`自述只保存尚未核准為active的candidate，卻含`Completed — Milestone 32`及完整closure routing。
 - Current contract：Completed／Archived routing由Milestone index、final review、CHANGELOG與VERSION擁有。
 - Observed state：Candidate authority同時保存completed item。
@@ -101,7 +104,8 @@ Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由�
 ### F-A7-01 — Root README保留Milestone 5 future-tense MVP流程
 
 - Severity：P2。
-- Status：Open／Documentation hardening proposed。
+- Status：Resolved by R1。
+- Resolution evidence：R1-3 commit `a4752c958fd752add492b98e4ac351428a43d0b0`；`docs/audits/r1_current_authority_contradiction_closure/r1_3_human_entry_design_plan_index_review.md`；R1 holistic final review。
 - Evidence：Root README頂部宣告Phase 1／MVP Completed與Baseline 1.14.0；後段仍寫「第一階段MVP完成前，Milestone 5會以Release Candidate方式收尾」及5-1～5-3 future flow。
 - Current contract：Root README是human current entry，應提供current positioning與快速開始，不把已完成初期流程寫成現在即將執行的instruction。
 - Observed state：同一文件同時宣告MVP完成與M5尚待收尾。
@@ -129,7 +133,8 @@ Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由�
 ### F-A7-03 — Superpowers index把已完成Milestone 31寫成proposed待recovery
 
 - Severity：P1。
-- Status：Open／Authority routing remediation proposed。
+- Status：Resolved by R1。
+- Resolution evidence：R1-3 commit `a4752c958fd752add492b98e4ac351428a43d0b0`；`docs/audits/r1_current_authority_contradiction_closure/r1_3_human_entry_design_plan_index_review.md`；R1 holistic final review。
 - Evidence：`docs/superpowers/README.md`仍稱M31 Design／Plan降回`proposed`並等待recovery；實際Spec／Plan metadata為accepted，31-r11明確記錄user-approved及Completed／Archived。
 - Current contract：`docs/superpowers/README.md`是Design／Plan routing index，摘要必須與linked artifact lifecycle及closure evidence一致。
 - Observed state：Current index與current artifact metadata／post-release authority互相矛盾。
@@ -144,10 +149,11 @@ Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由�
 
 ```txt
 Confirmed findings: 9
-P0: 0
-P1: 3, all with bounded remediation disposition
-P2: 5, all with bounded remediation disposition
-P3: 1, with operator hygiene disposition
+Resolved by R1: 5
+Open P0: 0
+Open P1: 0
+Open P2: 3
+Open P3: 1
 Open P1 without disposition: 0
 ```
 
@@ -164,4 +170,4 @@ Supplemental disposition: D — candidate／backlog disposition
 User final review gate: approved on 2026-07-31
 ```
 
-本register在A9 final proposal後凍結，並隨Final Review核准完成closure。核准B＋D disposition不等於核准remediation；未經新的Requirement Decision，不新增finding、不執行R1～R5，也不把`Open`改寫為`Resolved`。
+本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1已依獨立Requirement Decision，只將allowlisted五項更新為`Resolved by R1`；`F-A1-04`、`F-A2-01`、`F-A6-01`與`F-A7-02`維持Open。R1核准不授權R2～R5、merge、push或cleanup。

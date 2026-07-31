@@ -98,13 +98,55 @@ Audit-only階段不執行remediation。`Open`表示問題已確認但尚未由�
 - Target route：後續Requirement Decision後以TDD修正`tools/testing/inventory.py`與`test_test_inventory.py`。
 - Verification required：RED outside-root test、existing inventory tests、tracked baseline不變、system-temp command exit 0、docs check。
 
+### F-A7-01 — Root README保留Milestone 5 future-tense MVP流程
+
+- Severity：P2。
+- Status：Open／Documentation hardening proposed。
+- Evidence：Root README頂部宣告Phase 1／MVP Completed與Baseline 1.14.0；後段仍寫「第一階段MVP完成前，Milestone 5會以Release Candidate方式收尾」及5-1～5-3 future flow。
+- Current contract：Root README是human current entry，應提供current positioning與快速開始，不把已完成初期流程寫成現在即將執行的instruction。
+- Observed state：同一文件同時宣告MVP完成與M5尚待收尾。
+- Risk：新採用者誤以為template仍在第一階段release candidate，而非1.14.0 maintenance baseline。
+- Recommendation：移除過期future section，或壓縮為明確historical note並連到archive／CHANGELOG。
+- Baseline blocking：No；頂部version、platform與current capability正確。
+- Disposition：與current authority documentation hardening同批處理。
+- Target route：Level 2／3 documentation remediation。
+- Verification required：README semantic review、docs checker、VERSION／CHANGELOG一致性與quick-start navigation。
+
+### F-A7-02 — Project Context current-only snapshot重新累積Milestone journal
+
+- Severity：P2。
+- Status：Open／Current snapshot rationalization proposed。
+- Evidence：`docs/project_context.md`宣稱不保存逐Milestone journal，但421行內容含15次Milestone reference及13個以Milestone編號開頭的chronological paragraphs。
+- Current contract：Current snapshot只描述仍有效baseline、architecture、capability、limitations、active work與routing；歷史演進由Milestone／Audit／CHANGELOG擁有。
+- Observed state：Milestone 19～30完成、封存、當時baseline與後續演進被逐段保留在current snapshot。
+- Risk：固定最小讀取集持續膨脹、current fact與historical narrative混合、每個新Milestone都需追加journal。
+- Recommendation：保留current capability／limitation，將Milestone chronology移出current snapshot；latest completed initiative只保留一行與authority link。
+- Baseline blocking：No；現有敘述大多仍正確，但責任與增長模式偏離policy。
+- Disposition：Bounded documentation architecture hardening。
+- Target route：Level 3 semantic rewrite，需section-by-section preservation review，不做機械刪除。
+- Verification required：Current capability matrix對照、link review、docs check、固定讀取集可用性review。
+
+### F-A7-03 — Superpowers index把已完成Milestone 31寫成proposed待recovery
+
+- Severity：P1。
+- Status：Open／Authority routing remediation proposed。
+- Evidence：`docs/superpowers/README.md`仍稱M31 Design／Plan降回`proposed`並等待recovery；實際Spec／Plan metadata為accepted，31-r11明確記錄user-approved及Completed／Archived。
+- Current contract：`docs/superpowers/README.md`是Design／Plan routing index，摘要必須與linked artifact lifecycle及closure evidence一致。
+- Observed state：Current index與current artifact metadata／post-release authority互相矛盾。
+- Risk：Agent可能錯誤重做M31 Design／Plan、拒絕使用已核准governance，或把completed recovery當作未核准implementation。
+- Recommendation：將M31 Spec／Plan摘要更新為accepted historical artifact，連到31-r10／r11 closure；移除pending wording。
+- Baseline blocking：No；actual governance artifacts與repository Skills已完成並驗證。
+- Disposition：Priority documentation authority remediation，與F-A1-01／02同批處理。
+- Target route：Level 2或Level 3 documentation authority fix。
+- Verification required：Spec／Plan metadata、R11 closure、Superpowers index semantic consistency與docs check。
+
 ## Current Summary
 
 ```txt
-Confirmed findings: 6
+Confirmed findings: 9
 P0: 0
-P1: 2, both with bounded remediation disposition
-P2: 3, all with bounded remediation disposition
+P1: 3, all with bounded remediation disposition
+P2: 5, all with bounded remediation disposition
 P3: 1, with operator hygiene disposition
 Open P1 without disposition: 0
 ```

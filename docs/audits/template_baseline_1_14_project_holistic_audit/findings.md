@@ -150,3 +150,18 @@ P2: 5, all with bounded remediation disposition
 P3: 1, with operator hygiene disposition
 Open P1 without disposition: 0
 ```
+
+## A9 Frozen Disposition
+
+```txt
+Frozen at: 2026-07-31
+Finding count: 9
+Unique finding IDs: 9
+Required finding fields: complete for all findings
+Baseline-blocking findings: 0
+Primary final disposition: B — bounded hardening before maintenance
+Supplemental disposition: D — candidate／backlog disposition
+User final review gate: pending
+```
+
+本register在A9 final proposal後凍結。使用者未核准Final Review前，不新增finding、不執行remediation，也不把`Open`改寫為`Resolved`。

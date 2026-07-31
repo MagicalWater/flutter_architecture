@@ -50,6 +50,7 @@ Final / Holistic Review
 - [`template_baseline_1_14_project_holistic_audit_design_review.md`](template_baseline_1_14_project_holistic_audit_design_review.md)：Template Baseline 1.14.0 repository-wide整體總審查Design的Level 4分類、A0～A9 Task boundaries、Plan acceptance hard gate、focused finding修正與使用者核准證據。
 - [`template_baseline_1_14_project_holistic_audit_plan_review.md`](template_baseline_1_14_project_holistic_audit_plan_review.md)：對應accepted Execution Plan的spec coverage、exact file／command、temporary evidence、commit boundaries與A1前使用者核准closure。
 - [`template_baseline_1_14_project_holistic_audit/`](template_baseline_1_14_project_holistic_audit/)：A1～A9 repository baseline、architecture、capability、runtime、security／platform、testing／CI、documentation、future direction與holistic disposition evidence；`findings.md`為本Audit finding正文唯一owner。
+- [`template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md`](template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md)：A1～A8 cross-Task consistency、9個frozen findings、fresh full regression與B＋D最終方向proposal；目前停在使用者Audit Review Gate，未開始remediation、merge或push。
 
 ### Persistence feasibility
 

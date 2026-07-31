@@ -428,33 +428,6 @@ cd apps/flutter_architecture
 flutter build bundle
 ```
 
----
-
-## 第一階段收尾流程
-
-第一階段 MVP 完成前，Milestone 5 會以 Release Candidate 的方式收尾。
-
-Milestone 5 不新增業務功能，而是確認專案可以作為 Flutter Enterprise Template 的穩定基線。
-
-```txt
-Milestone 5-1：文件整理
-  ↓
-Milestone 5-2：程式碼整理
-  ↓
-Milestone 5-3：最終驗收
-```
-
-最終驗收至少執行：
-
-```bash
-dart pub get
-dart run melos run build_runner
-dart run melos run analyze
-dart run melos exec -- flutter test
-cd apps/flutter_architecture
-flutter build bundle
-```
-
 目前 Android runtime smoke 已驗證：bootstrap、Mock Login、Login → Profile、Catalog 顯示與搜尋、Protected Route、Theme / Locale 持久化、Secure credential Login、force-stop / restart Restore、real API 401 → Refresh rotation → Replay、predecessor release Legacy migration、Logout destructive cleanup，以及 Android 上實際建立 Secure Storage、SharedPreferences 與 SQLite database。
 
 Auth persistence authority：

@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - template-baseline-1-14-project-holistic-audit-plan
 last_reviewed_baseline: 1.14.0
@@ -713,7 +713,7 @@ A9 holistic final audit
 
 ## Plan Acceptance Gate
 
-本Plan目前狀態為`proposed`。只有在：
+本Plan已於2026-07-31取得使用者明確核准，狀態為`accepted`。核准前要求如下：
 
 1. Plan focused review與whole-Plan review通過。
 2. Documentation checker、`docs_check`與`git diff --check`fresh通過。
@@ -721,4 +721,4 @@ A9 holistic final audit
 4. 使用者明確核准本Plan。
 5. Plan與Plan review更新為`accepted`並建立approval commit。
 
-之後，才可開始Task A1。
+上述條件已全部滿足；完成approval commit後可開始Task A1。

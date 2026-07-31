@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: proposed
+status: accepted
 authoritative_for:
   - template-baseline-1-14-project-holistic-audit-plan-review
 last_reviewed_baseline: 1.14.0
@@ -21,7 +21,7 @@ Template Baseline: 1.14.0
 Design commit: b966030
 Branch: audit/template-baseline-1.14-project-holistic
 Design status: accepted
-Plan status: proposed
+Plan status: accepted
 ```
 
 ## Spec Coverage Checklist
@@ -84,7 +84,7 @@ Checkbox steps: 87
 Design section coverage: complete
 Referenced existing path checks: passed
 Melos／inventory／classifier／GitHub inventory help checks: passed
-Plan status: proposed
+Plan status: accepted
 A1 approval gate: present
 ```
 
@@ -118,7 +118,7 @@ git diff --check → passed
 
 ## User Approval Gate
 
-本Plan與review維持`proposed`。使用者明確核准後才更新為`accepted`；Plan proposal commit本身不允許A1開始。
+使用者已於2026-07-31明確回覆「核准 Execution Plan」。Plan與本review已更新為`accepted`；只有approval commit與fresh validation完成後，A1才可開始。
 
 ## Current Disposition
 
@@ -128,6 +128,6 @@ Whole-Plan review: PASSED
 Documentation validation: PASSED
 Open P0: 0
 Open P1 without disposition: 0
-Plan status: PROPOSED
+Plan status: ACCEPTED
 Audit execution: NOT STARTED
 ```

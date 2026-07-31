@@ -536,7 +536,7 @@ AuthRepositoryImpl _repository(
   );
 }
 
-class _ControlledAuthApi implements AuthApi {
+class _ControlledAuthApi implements AuthEndpoint {
   final Map<String, Completer<LoginResponseDto>> _requests = {};
 
   @override

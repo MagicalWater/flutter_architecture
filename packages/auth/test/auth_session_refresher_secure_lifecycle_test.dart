@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -232,7 +231,7 @@ void main() {
 AuthSessionRefresher _refresher(
   _Store store,
   SessionManager session,
-  AuthRefreshApi api, {
+  AuthRefreshEndpoint api, {
   AuthStateMutationCoordinator? coordinator,
   AuthLifecycleDiagnosticSink? sink,
 }) {
@@ -247,7 +246,7 @@ AuthSessionRefresher _refresher(
   );
 }
 
-final class _Api implements AuthRefreshApi {
+final class _Api implements AuthRefreshEndpoint {
   _Api({this.statusCode});
   final int? statusCode;
   int callCount = 0;
@@ -259,11 +258,7 @@ final class _Api implements AuthRefreshApi {
     callCount += 1;
     final code = statusCode;
     if (code != null) {
-      final options = RequestOptions(path: '/auth/refresh');
-      throw DioException(
-        requestOptions: options,
-        response: Response<void>(requestOptions: options, statusCode: code),
-      );
+      throw _endpointFailure(statusCode: code);
     }
     return const RefreshTokenResponseDto(
       accessToken: 'new-access',
@@ -272,7 +267,7 @@ final class _Api implements AuthRefreshApi {
   }
 }
 
-final class _ControlledApi implements AuthRefreshApi {
+final class _ControlledApi implements AuthRefreshEndpoint {
   final Completer<void> _started = Completer<void>();
   final Completer<RefreshTokenResponseDto> _response =
       Completer<RefreshTokenResponseDto>();
@@ -286,14 +281,21 @@ final class _ControlledApi implements AuthRefreshApi {
   }
 
   void completeUnauthorized() {
-    final options = RequestOptions(path: '/auth/refresh');
-    _response.completeError(
-      DioException(
-        requestOptions: options,
-        response: Response<void>(requestOptions: options, statusCode: 401),
-      ),
-    );
+    _response.completeError(_endpointFailure(statusCode: 401));
   }
+}
+
+ApiEndpointException _endpointFailure({required int statusCode}) {
+  return ApiEndpointException(
+    transportException: AppException(
+      kind: AppExceptionKind.transport,
+      message: 'API request failed',
+      transportKind: TransportExceptionKind.response,
+      httpStatus: statusCode,
+      diagnosticCode: 'test_auth_refresh_endpoint_failure',
+      stackTrace: StackTrace.current,
+    ),
+  );
 }
 
 final class _Store

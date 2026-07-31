@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -205,12 +204,12 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
-  for (final type in <DioExceptionType>[
-    DioExceptionType.connectionTimeout,
-    DioExceptionType.sendTimeout,
-    DioExceptionType.receiveTimeout,
-    DioExceptionType.connectionError,
-    DioExceptionType.badCertificate,
+  for (final type in <TransportExceptionKind>[
+    TransportExceptionKind.connectionTimeout,
+    TransportExceptionKind.sendTimeout,
+    TransportExceptionKind.receiveTimeout,
+    TransportExceptionKind.connection,
+    TransportExceptionKind.badCertificate,
   ]) {
     test('$type 會保留 Session 並回傳 temporarilyUnavailable', () async {
       final sessionManager = _authenticatedSession();
@@ -514,13 +513,7 @@ void main() {
       userId: 'user-002',
     );
     responseCompleter.completeError(
-      DioException(
-        requestOptions: RequestOptions(path: '/auth/refresh'),
-        response: Response<void>(
-          requestOptions: RequestOptions(path: '/auth/refresh'),
-          statusCode: 401,
-        ),
-      ),
+      _endpointFailure(statusCode: 401),
     );
 
     final result = await operation;
@@ -540,7 +533,7 @@ SessionManager _authenticatedSession() {
 }
 
 AuthSessionRefresher _createRefresher(
-  AuthRefreshApi api,
+  AuthRefreshEndpoint api,
   _FakeRefreshLocalStore localStore,
   SessionManager sessionManager, {
   AuthStateMutationCoordinator? coordinator,
@@ -564,7 +557,7 @@ final class _NoopLifecycleDiagnosticSink
   void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {}
 }
 
-class _FakeAuthRefreshApi implements AuthRefreshApi {
+class _FakeAuthRefreshApi implements AuthRefreshEndpoint {
   _FakeAuthRefreshApi({
     this.statusCode,
     this.completer,
@@ -581,7 +574,7 @@ class _FakeAuthRefreshApi implements AuthRefreshApi {
   final int? statusCode;
   final Completer<RefreshTokenResponseDto>? completer;
   final RefreshTokenResponseDto? response;
-  final DioExceptionType? errorType;
+  final TransportExceptionKind? errorType;
   final Object? error;
   int callCount = 0;
 
@@ -596,24 +589,17 @@ class _FakeAuthRefreshApi implements AuthRefreshApi {
     }
     final type = errorType;
     if (type != null) {
-      throw DioException(
-        requestOptions: RequestOptions(path: '/auth/refresh'),
-        type: type,
-      );
+      throw _endpointFailure(transportKind: type);
     }
     final code = statusCode;
     if (code != null) {
-      final options = RequestOptions(path: '/auth/refresh');
-      throw DioException(
-        requestOptions: options,
-        response: Response<void>(requestOptions: options, statusCode: code),
-      );
+      throw _endpointFailure(statusCode: code);
     }
     return completer?.future ?? response ?? successResponse;
   }
 }
 
-class _SequencedAuthRefreshApi implements AuthRefreshApi {
+class _SequencedAuthRefreshApi implements AuthRefreshEndpoint {
   _SequencedAuthRefreshApi(this.responses);
 
   final List<Completer<RefreshTokenResponseDto>> responses;
@@ -625,6 +611,22 @@ class _SequencedAuthRefreshApi implements AuthRefreshApi {
     callCount += 1;
     return response.future;
   }
+}
+
+ApiEndpointException _endpointFailure({
+  int? statusCode,
+  TransportExceptionKind transportKind = TransportExceptionKind.response,
+}) {
+  return ApiEndpointException(
+    transportException: AppException(
+      kind: AppExceptionKind.transport,
+      message: 'API request failed',
+      transportKind: transportKind,
+      httpStatus: statusCode,
+      diagnosticCode: 'test_auth_refresh_endpoint_failure',
+      stackTrace: StackTrace.current,
+    ),
+  );
 }
 
 class _FakeRefreshLocalStore

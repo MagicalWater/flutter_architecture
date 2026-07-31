@@ -2,16 +2,15 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/exceptions/invalid_refresh_credential_exception.dart';
 import 'package:auth/src/data/exceptions/temporary_refresh_exception.dart';
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
 
 class AuthRefreshRemoteDataSource {
-  const AuthRefreshRemoteDataSource(this._api);
+  const AuthRefreshRemoteDataSource(this._endpoint);
 
-  final AuthRefreshApi _api;
+  final AuthRefreshEndpoint _endpoint;
 
   Future<RefreshTokenResponseDto> refresh(String refreshToken) async {
     try {
-      final response = await _api.refresh(
+      final response = await _endpoint.refresh(
         RefreshTokenRequestDto(refreshToken: refreshToken),
       );
       if (response.accessToken.isEmpty || response.refreshToken.isEmpty) {
@@ -30,8 +29,8 @@ class AuthRefreshRemoteDataSource {
         );
       }
       return response;
-    } on DioException catch (error, stackTrace) {
-      final transport = mapDioException(error, stackTrace);
+    } on ApiEndpointException catch (error, stackTrace) {
+      final transport = error.transportException;
       if (transport.httpStatus == 401 || transport.httpStatus == 403) {
         Error.throwWithStackTrace(
           InvalidRefreshCredentialException(

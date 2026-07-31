@@ -305,7 +305,7 @@ final class _NoopSink implements AuthLifecycleDiagnosticSink {
   void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {}
 }
 
-final class _ControlledAuthApi implements AuthApi {
+final class _ControlledAuthApi implements AuthEndpoint {
   final Map<String, Completer<LoginResponseDto>> _requests =
       <String, Completer<LoginResponseDto>>{};
 

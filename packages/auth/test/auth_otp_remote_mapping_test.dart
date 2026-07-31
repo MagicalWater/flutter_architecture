@@ -1,7 +1,6 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -117,21 +116,24 @@ void main() {
   });
 }
 
-final class _FailingAuthApi extends _BaseAuthApi {
+final class _FailingAuthApi extends _BaseAuthEndpoint {
   _FailingAuthApi({required this.code, required this.data});
   final String code;
   final Map<String, dynamic> data;
 
   Never _failure(String path) {
-    final options = RequestOptions(path: path);
-    throw DioException.badResponse(
-      statusCode: 400,
-      requestOptions: options,
-      response: Response<Map<String, dynamic>>(
-        requestOptions: options,
-        statusCode: 400,
-        data: {'code': code, ...data},
+    throw ApiEndpointException(
+      transportException: AppException(
+        kind: AppExceptionKind.transport,
+        message: 'API request failed',
+        transportKind: TransportExceptionKind.response,
+        httpStatus: 400,
+        backendCode: code,
+        diagnosticCode: 'test_auth_endpoint_failure',
+        stackTrace: StackTrace.current,
       ),
+      backendCode: code,
+      backendMetadata: data,
     );
   }
 
@@ -145,7 +147,7 @@ final class _FailingAuthApi extends _BaseAuthApi {
       _failure('/auth/otp/resend');
 }
 
-final class _ThrowingAuthApi extends _BaseAuthApi {
+final class _ThrowingAuthApi extends _BaseAuthEndpoint {
   _ThrowingAuthApi(this.error);
   final Object error;
 
@@ -155,7 +157,7 @@ final class _ThrowingAuthApi extends _BaseAuthApi {
   ) async => throw error;
 }
 
-abstract class _BaseAuthApi implements AuthApi {
+abstract class _BaseAuthEndpoint implements AuthEndpoint {
   @override
   Future<LoginResponseDto> login(LoginRequestDto request) =>
       throw UnimplementedError();

@@ -1,7 +1,6 @@
 import 'package:api_client/api_client.dart';
 import 'package:auth/src/domain/failures/otp_failure_details.dart';
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
 
 /// Auth 遠端資料來源。
 ///
@@ -11,23 +10,25 @@ import 'package:dio/dio.dart';
 ///
 /// ## 責任
 ///
-/// 負責建立 request DTO、呼叫 AuthApi abstraction，
-/// 並將 transport exception 映射為共用 AppException。
+/// 負責建立 request DTO、呼叫transport-neutral AuthEndpoint，
+/// 並將endpoint failure映射為Auth-owned AppException。
 class AuthRemoteDataSource {
-  const AuthRemoteDataSource(this._authApi);
+  const AuthRemoteDataSource(this._authEndpoint);
 
-  final AuthApi _authApi;
+  final AuthEndpoint _authEndpoint;
 
   Future<LoginResponseDto> login({
     required String account,
     required String password,
   }) async {
     try {
-      return await _authApi.login(
+      return await _authEndpoint.login(
         LoginRequestDto(account: account, password: password),
       );
+    } on ApiEndpointException catch (error, stackTrace) {
+      Error.throwWithStackTrace(error.transportException, stackTrace);
     } catch (error, stackTrace) {
-      rethrowMappedTransportException(error, stackTrace);
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 
@@ -36,7 +37,7 @@ class AuthRemoteDataSource {
     required String code,
   }) async {
     try {
-      return await _authApi.verifyOtp(
+      return await _authEndpoint.verifyOtp(
         VerifyOtpRequestDto(challengeId: challengeId, code: code),
       );
     } catch (error, stackTrace) {
@@ -46,7 +47,7 @@ class AuthRemoteDataSource {
 
   Future<OtpChallengeDto> resendOtp({required String challengeId}) async {
     try {
-      return await _authApi.resendOtp(
+      return await _authEndpoint.resendOtp(
         ResendOtpRequestDto(challengeId: challengeId),
       );
     } catch (error, stackTrace) {
@@ -59,10 +60,10 @@ class AuthRemoteDataSource {
     StackTrace stackTrace, {
     required String operation,
   }) {
-    if (error is DioException && error.response?.data is Map) {
-      final data = Map<String, dynamic>.from(error.response!.data! as Map);
-      final backendCode = data['code'];
-      if (backendCode is String) {
+    if (error is ApiEndpointException) {
+      final data = error.backendMetadata;
+      final backendCode = error.backendCode;
+      if (backendCode != null) {
         late final OtpFailureDetails? details;
         try {
           details = _otpFailureDetails(backendCode, data);
@@ -80,7 +81,7 @@ class AuthRemoteDataSource {
           final exception = AppException(
             kind: AppExceptionKind.session,
             message: 'OTP $operation failed',
-            httpStatus: error.response?.statusCode,
+            httpStatus: error.httpStatus,
             backendCode: backendCode,
             diagnosticCode: 'auth_otp_$operation',
             cause: details,
@@ -89,13 +90,14 @@ class AuthRemoteDataSource {
           Error.throwWithStackTrace(exception, stackTrace);
         }
       }
+      Error.throwWithStackTrace(error.transportException, stackTrace);
     }
-    rethrowMappedTransportException(error, stackTrace);
+    Error.throwWithStackTrace(error, stackTrace);
   }
 
   OtpFailureDetails? _otpFailureDetails(
     String backendCode,
-    Map<String, dynamic> data,
+    Map<String, Object?> data,
   ) {
     return switch (backendCode) {
       'otp_invalid_code' => OtpFailureDetails(

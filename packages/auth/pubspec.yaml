@@ -12,7 +12,6 @@ dependencies:
     path: ../api_client
   core:
     path: ../core
-  dio: ^5.9.0
   freezed_annotation: ^3.1.0
   json_annotation: ^4.12.0
   meta: ^1.12.0

@@ -142,7 +142,7 @@ void main() {
 }
 
 AuthRepositoryImpl _repository(
-  AuthApi api,
+  AuthEndpoint api,
   _Stores stores,
   SessionManager session,
 ) => AuthRepositoryImpl(
@@ -156,7 +156,7 @@ AuthRepositoryImpl _repository(
   const _NoopSink(),
 );
 
-class _ImmediateAuthApi implements AuthApi {
+class _ImmediateAuthApi implements AuthEndpoint {
   _ImmediateAuthApi({this.loginResponse});
 
   final LoginResponseDto? loginResponse;

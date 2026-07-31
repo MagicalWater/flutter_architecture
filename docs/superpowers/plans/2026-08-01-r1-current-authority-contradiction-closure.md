@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - r1-current-authority-contradiction-closure-plan
 last_reviewed_baseline: 1.14.0
@@ -348,7 +348,7 @@ implement
 
 ## Plan Acceptance Gate
 
-本Plan目前為`proposed`。開始R1-1前必須全部滿足：
+本Plan已於2026-08-01取得使用者明確核准並轉為`accepted`。開始R1-1前必須全部滿足：
 
 1. Plan focused review與whole-Plan review通過。
 2. Open planning P0=0。
@@ -357,4 +357,14 @@ implement
 5. 使用者明確核准本Plan。
 6. Plan與Plan Review轉為`accepted`並建立獨立approval commit。
 
-任何一項未完成時，R1 implementation仍為禁止狀態。
+上述條件均已完成；R1-1 implementation現已允許開始。此核准不包含R1 Final Review、R2～R5、merge、push或cleanup。
+
+## Approval Closure
+
+```txt
+User approval: 核准 R1 Implementation Plan
+Approval date: 2026-08-01
+Plan proposal commit: 9d64b4ed6542c4ead5854593b46295af75624507
+Plan status: accepted
+Implementation allowed: Yes — R1-1～R1-4 only
+```

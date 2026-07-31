@@ -47,7 +47,7 @@ Final / Holistic Review
 
 ### Template Baseline 1.14.0 project holistic audit
 
-- [`r1_current_authority_contradiction_closure_plan_review.md`](r1_current_authority_contradiction_closure_plan_review.md)：R1 proposed Implementation Plan的Design coverage、R1-P／R1-1～R1-4 sequencing、semantic assertions、finding allowlist／denylist、commit boundaries與雙使用者approval gates review。
+- [`r1_current_authority_contradiction_closure_plan_review.md`](r1_current_authority_contradiction_closure_plan_review.md)：R1 accepted Implementation Plan的Design coverage、R1-P／R1-1～R1-4 sequencing、semantic assertions、finding allowlist／denylist、commit boundaries與Plan approval closure；R1 Final Review仍保留獨立使用者Gate。
 - [`r1_current_authority_contradiction_closure_design_review.md`](r1_current_authority_contradiction_closure_design_review.md)：Audit核准後R1 current authority矛盾修復Design的Level 3分類、五Finding allowlist、scope／non-goals、雙層Task與使用者核准closure。
 - [`template_baseline_1_14_project_holistic_audit_design_review.md`](template_baseline_1_14_project_holistic_audit_design_review.md)：Template Baseline 1.14.0 repository-wide整體總審查Design的Level 4分類、A0～A9 Task boundaries、Plan acceptance hard gate、focused finding修正與使用者核准證據。
 - [`template_baseline_1_14_project_holistic_audit_plan_review.md`](template_baseline_1_14_project_holistic_audit_plan_review.md)：對應accepted Execution Plan的spec coverage、exact file／command、temporary evidence、commit boundaries與A1前使用者核准closure。

@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: proposed
+status: accepted
 authoritative_for:
   - r1-current-authority-contradiction-closure-plan-review
 last_reviewed_baseline: 1.14.0
@@ -21,7 +21,7 @@ Template Baseline: 1.14.0
 Branch: audit/template-baseline-1.14-project-holistic
 Design status: accepted
 Design commit: 9187dd4654ac91b8d31e98edb1d05eef4e047fa7
-Plan status: proposed
+Plan status: accepted
 Implementation status: not started
 ```
 
@@ -132,6 +132,17 @@ Plan focused review: PASSED after F-R1-P01～P04 fixes
 Whole-Plan review: PASSED
 Open P0: 0
 Open P1 without disposition: 0
-Plan status: PROPOSED
-Implementation allowed: NO — user Plan approval and accepted closure pending
+Plan status: ACCEPTED
+User Plan approval: APPROVED on 2026-08-01
+Implementation allowed: YES — limited to R1-1～R1-4
 ```
+
+## Approval Closure
+
+使用者已明確核准：
+
+```txt
+核准 R1 Implementation Plan
+```
+
+本核准完成Task R1-P，不授權R1 Final Review、R2～R5、merge、push或worktree cleanup。Plan proposal commit為`9d64b4ed6542c4ead5854593b46295af75624507`；accepted closure由獨立approval commit保存。

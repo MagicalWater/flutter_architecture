@@ -1,5 +1,4 @@
 import 'package:api_client/api_client.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -95,9 +94,8 @@ void main() {
       await expectLater(
         api.resendOtp(ResendOtpRequestDto(challengeId: original.challengeId)),
         throwsA(
-          isA<DioException>().having(
-            (error) =>
-                (error.response?.data as Map<String, dynamic>)['retryAt'],
+          isA<ApiEndpointException>().having(
+            (error) => error.backendMetadata['retryAt'],
             'retryAt',
             original.resendAvailableAt.toIso8601String(),
           ),
@@ -146,15 +144,14 @@ Future<OtpChallengeDto> _loginForChallenge(MockAuthApi api) async {
 }
 
 Matcher _throwsBackendCode(String code, {int? attemptsRemaining}) {
-  var matcher = isA<DioException>().having(
-    (error) => (error.response?.data as Map<String, dynamic>)['code'],
+  var matcher = isA<ApiEndpointException>().having(
+    (error) => error.backendCode,
     'backend code',
     code,
   );
   if (attemptsRemaining != null) {
     matcher = matcher.having(
-      (error) =>
-          (error.response?.data as Map<String, dynamic>)['attemptsRemaining'],
+      (error) => error.backendMetadata['attemptsRemaining'],
       'attempts remaining',
       attemptsRemaining,
     );

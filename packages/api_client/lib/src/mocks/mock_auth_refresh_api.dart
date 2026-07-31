@@ -1,8 +1,8 @@
-import 'package:api_client/src/api/auth_refresh_retrofit_api.dart';
+import 'package:api_client/src/endpoints/auth_refresh_endpoint.dart';
 import 'package:api_client/src/models/refresh_token_request_dto.dart';
 import 'package:api_client/src/models/refresh_token_response_dto.dart';
 
-class MockAuthRefreshApi implements AuthRefreshApi {
+class MockAuthRefreshApi implements AuthRefreshEndpoint {
   const MockAuthRefreshApi();
 
   @override

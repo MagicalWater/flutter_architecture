@@ -149,16 +149,14 @@ void main() {
             .having((value) => value.httpStatus, 'HTTP status', 503)
             .having((value) => value.stackTrace, 'stack trace', isNotNull)
             .having(
-              (value) => value.cause,
+              (value) => value.cause.toString(),
               'safe cause',
-              isA<TransportFailureDetails>()
-                  .having((details) => details.method, 'method', 'POST')
-                  .having((details) => details.path, 'path', '/auth/login')
-                  .having(
-                    (details) => details.type,
-                    'type',
-                    TransportExceptionKind.response,
-                  ),
+              allOf(
+                contains('method: POST'),
+                contains('path: /auth/login'),
+                contains('type: TransportExceptionKind.response'),
+                isNot(contains('secret')),
+              ),
             ),
       ),
     );

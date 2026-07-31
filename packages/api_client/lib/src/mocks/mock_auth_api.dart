@@ -1,16 +1,17 @@
-import 'package:api_client/src/api/auth_retrofit_api.dart';
+import 'package:api_client/src/endpoints/auth_endpoint.dart';
+import 'package:api_client/src/errors/api_endpoint_exception.dart';
 import 'package:api_client/src/models/authenticated_response_dto.dart';
 import 'package:api_client/src/models/login_request_dto.dart';
 import 'package:api_client/src/models/login_response_dto.dart';
 import 'package:api_client/src/models/otp_challenge_dto.dart';
 import 'package:api_client/src/models/resend_otp_request_dto.dart';
 import 'package:api_client/src/models/verify_otp_request_dto.dart';
-import 'package:dio/dio.dart';
+import 'package:core/core.dart';
 
 typedef MockAuthClock = DateTime Function();
 
 /// Auth-specific deterministic Mock with an in-memory OTP challenge registry.
-class MockAuthApi implements AuthApi {
+class MockAuthApi implements AuthEndpoint {
   MockAuthApi({
     MockAuthClock? clock,
     this.responseDelay = const Duration(milliseconds: 600),
@@ -61,7 +62,6 @@ class MockAuthApi implements AuthApi {
     if (!now.isBefore(challenge.expiresAt)) {
       challenge.isActive = false;
       throw _backendFailure(
-        path: '/auth/otp/verify',
         statusCode: 410,
         code: 'otp_challenge_expired',
       );
@@ -72,14 +72,12 @@ class MockAuthApi implements AuthApi {
       if (challenge.attemptsRemaining <= 0) {
         challenge.isActive = false;
         throw _backendFailure(
-          path: '/auth/otp/verify',
           statusCode: 429,
           code: 'otp_too_many_attempts',
           data: const <String, dynamic>{'attemptsRemaining': 0},
         );
       }
       throw _backendFailure(
-        path: '/auth/otp/verify',
         statusCode: 401,
         code: 'otp_invalid_code',
         data: <String, dynamic>{
@@ -101,14 +99,12 @@ class MockAuthApi implements AuthApi {
     if (!now.isBefore(challenge.expiresAt)) {
       challenge.isActive = false;
       throw _backendFailure(
-        path: '/auth/otp/resend',
         statusCode: 410,
         code: 'otp_challenge_expired',
       );
     }
     if (now.isBefore(challenge.resendAvailableAt)) {
       throw _backendFailure(
-        path: '/auth/otp/resend',
         statusCode: 429,
         code: 'otp_resend_cooldown',
         data: <String, dynamic>{
@@ -138,7 +134,6 @@ class MockAuthApi implements AuthApi {
     final challenge = _challenges[id];
     if (challenge == null || !challenge.isActive) {
       throw _backendFailure(
-        path: '/auth/otp',
         statusCode: 409,
         code: 'otp_challenge_invalidated',
       );
@@ -158,21 +153,24 @@ class MockAuthApi implements AuthApi {
         userName: account == otpAccount ? 'OTP User' : 'Water Magical',
       );
 
-  DioException _backendFailure({
-    required String path,
+  ApiEndpointException _backendFailure({
     required int statusCode,
     required String code,
     Map<String, dynamic> data = const <String, dynamic>{},
   }) {
-    final request = RequestOptions(path: path);
-    return DioException.badResponse(
-      statusCode: statusCode,
-      requestOptions: request,
-      response: Response<Map<String, dynamic>>(
-        requestOptions: request,
-        statusCode: statusCode,
-        data: <String, dynamic>{'code': code, ...data},
+    final stackTrace = StackTrace.current;
+    return ApiEndpointException(
+      transportException: AppException(
+        kind: AppExceptionKind.transport,
+        message: 'API request failed',
+        transportKind: TransportExceptionKind.response,
+        httpStatus: statusCode,
+        backendCode: code,
+        diagnosticCode: 'mock_auth_backend_failure',
+        stackTrace: stackTrace,
       ),
+      backendCode: code,
+      backendMetadata: data,
     );
   }
 

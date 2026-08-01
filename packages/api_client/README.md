@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - api-client-package-local-contract
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # API Client Package
@@ -14,10 +14,11 @@ last_reviewed_baseline: 1.8.0
 
 - Main Dio 與 Refresh Dio factory contract。
 - Retrofit Auth、Refresh、Profile、Catalog APIs。
+- Consumer-facing Auth／Refresh endpoint interfaces與Dio-owned adapters。
 - Mock API implementations。
 - Authorization header injection。
 - Concurrent 401 refresh integration 與 safe request replay。
-- Transport exception mapping 與 safe failure details。
+- Transport exception mapping、safe internal details與transport-neutral endpoint failure envelope。
 - Login、Refresh、Profile、Catalog 與 OTP wire DTO。
 
 ## Non-responsibilities
@@ -61,7 +62,7 @@ OTP code、password、Authorization 與 token 不得出現在 diagnostic `toStri
 
 ## Error Contract
 
-Transport failures 由 `TransportExceptionMapper` 轉為 typed `AppException`／safe details。HTTP response body、Authorization header 與 credential-bearing payload 不得直接進 diagnostic message。
+Transport failures在package內轉為typed `AppException`。Auth／Refresh consumer透過`ApiEndpointException`取得safe backend code與immutable metadata；Dio `Response`、`RequestOptions`、headers與raw payload不得穿出package boundary，也不得進diagnostic message。
 
 ## Public API
 
@@ -69,11 +70,11 @@ Transport failures 由 `TransportExceptionMapper` 轉為 typed `AppException`／
 import 'package:api_client/api_client.dart';
 ```
 
-Public barrel export APIs、DTOs、Dio factory、interceptors、request extras、mock APIs 與 transport mapping contracts。Consumer 不應 deep import `lib/src/`。
+Public barrel exportconsumer endpoint interfaces、DTOs、Dio adapters、factory、interceptors、request extras、mock APIs與neutral exception contracts。Dio-specific mapper與safe transport details是internal implementation，不是consumer API。Consumer不應deep import `lib/src/`。
 
 ## Dependency and Composition
 
-Package 不使用 DI annotation。App Composition Root 建立 Dio、選擇 Mock／Real API、注入 token provider 與 refresher。
+Package不使用DI annotation。App Composition Root建立Dio，將Retrofit declarations包裝為Dio endpoint adapters，選擇Mock／Real endpoint，並注入token provider與refresher。
 
 ## Adding an Endpoint
 
@@ -83,7 +84,8 @@ Package 不使用 DI annotation。App Composition Root 建立 Dio、選擇 Mock�
 API abstraction / Retrofit declaration
 → wire DTO and serialization
 → generated Retrofit / Freezed / JSON source
-→ Mock / Real contract parity
+→ consumer endpoint interface / Dio adapter
+→ Mock / Real endpoint contract parity
 → public barrel export
 → authentication metadata and transport policy
 → transport exception mapping

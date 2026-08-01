@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - auth-package-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.14.0
 ---
 
 # Auth Package
@@ -26,6 +26,7 @@ last_reviewed_baseline: 1.5.1
 - 不實作 Flutter Secure Storage、SharedPreferences、SQLite 或 `local_auth` plugin adapter。
 - 不操作 AuthBloc、Widget、Router 或 navigation destination。
 - 不標註 GetIt／Injectable annotations。
+- 不依賴Dio／Retrofit或解讀transport response；DataSource只使用`AuthEndpoint`／`AuthRefreshEndpoint`與neutral `ApiEndpointException`。
 - 不提供 Device Binding、Passkey 或 biometric data storage。
 
 ## Package Layers

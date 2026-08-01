@@ -76,7 +76,8 @@ last_reviewed_baseline: 1.14.0
 ### F-A2-01 — Dio type穿出`api_client`進入`auth` package
 
 - Severity：P2。
-- Status：Open／Architecture hardening proposed。
+- Status：Resolved by R3。
+- Resolution evidence：R3-1 endpoint boundary commit `27aab0ad71f7a67f8cab97a82918422f7db98c8d`；R3-2 Auth migration commit `11815edf941289df5731506c2e973fce3c45070b`；R3-3 App composition commit `b25c6b67e30edecba170120a48257fa59258b160`；`docs/audits/r3_api_client_transport_neutral_error_boundary/r3_4_holistic_final_review.md`。
 - Evidence：`packages/auth/pubspec.yaml`直接依賴Dio；`AuthRemoteDataSource`與`AuthRefreshRemoteDataSource`捕捉`DioException`並讀取response；`api_client` public barrel exportDio-specific mapper。
 - Current contract：ADR-013要求一般Feature／Repository／DataSource透過API abstraction隔離transport exception，Dio不得穿透`packages/api_client` boundary。
 - Observed state：Endpoint invocation仍透過Retrofit API abstraction，但transport exception type與raw response interpretation進入Auth package。
@@ -152,9 +153,10 @@ last_reviewed_baseline: 1.14.0
 Confirmed findings: 9
 Resolved by R1: 5
 Resolved by R2: 1
+Resolved by R3: 1
 Open P0: 0
 Open P1: 0
-Open P2: 2
+Open P2: 1
 Open P3: 1
 Open P1 without disposition: 0
 ```
@@ -172,4 +174,4 @@ Supplemental disposition: D — candidate／backlog disposition
 User final review gate: approved on 2026-07-31
 ```
 
-本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1已依獨立Requirement Decision將五項更新為`Resolved by R1`；R2依preservation matrix與current-only rewrite將`F-A7-02`更新為`Resolved by R2`。`F-A1-04`、`F-A2-01`與`F-A6-01`維持Open。Standing authorization不包含merge、push、remote branch deletion或release。
+本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1已將五項更新為`Resolved by R1`；R2將`F-A7-02`更新為`Resolved by R2`；R3依ADR-013恢復transport-neutral package boundary，將`F-A2-01`更新為`Resolved by R3`。`F-A1-04`與`F-A6-01`維持Open。Standing authorization不包含merge、push、remote branch deletion或release。

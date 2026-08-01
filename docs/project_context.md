@@ -96,13 +96,15 @@ root/
 
 `packages/api_client`：
 
-- Dio／Retrofit network boundary。
+- Dio／Retrofit network boundary；Dio只存在package transport implementation內。
+- Auth／Refresh consumer endpoint interfaces、Dio adapters與transport-neutral endpoint failure envelope。
 - Auth header、refresh、safe replay 與 request metadata。
 - Login、OTP Verify／Resend 等 wire contract。
 
 `packages/auth`：
 
 - Auth Domain、Data、UseCase、Repository 與 Session contract。
+- 只依賴transport-neutral Auth／Refresh endpoints，不依賴Dio／Retrofit。
 - Credential store abstractions、migration policy、refresh coordination。
 - OTP domain state machine。
 - Local user presence 與 local unlock policy abstractions。

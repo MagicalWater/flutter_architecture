@@ -47,6 +47,7 @@ Final / Holistic Review
 
 ### Template Baseline 1.14.0 project holistic audit
 
+- [`template_baseline_1_14_project_holistic_audit/a10_remediation_holistic_closure.md`](template_baseline_1_14_project_holistic_audit/a10_remediation_holistic_closure.md)：accepted R1～R5 finding closure、cross-remediation consistency、maintenance-mode decision與integration boundary；9個Audit findings已全部關閉。
 - [`r5_milestone_32_local_worktree_branch_cleanup_review.md`](r5_milestone_32_local_worktree_branch_cleanup_review.md)：R5 fresh clean／ancestry proof、Windows long-path recovery與local worktree／branch cleanup review；remote branch明確保留。
 - [`r4_test_inventory_external_output_bugfix/`](r4_test_inventory_external_output_bugfix/)：R4 TDD review與accepted holistic final review；external absolute output已支援，tracked M30 inventory baseline未變，`F-A6-01`已關閉。
 - [`r4_test_inventory_external_output_bugfix_plan_review.md`](r4_test_inventory_external_output_bugfix_plan_review.md)：R4 accepted Plan的pure helper、subprocess RED、tracked baseline protection與single-finding closure review。

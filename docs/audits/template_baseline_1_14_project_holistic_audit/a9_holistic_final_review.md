@@ -16,11 +16,13 @@ Internal focused／whole-Audit review: PASSED
 Final disposition: ACCEPTED
 User Audit Review Gate: APPROVED
 Audit closure: ACCEPTED
-Remediation execution: NOT STARTED
-Merge／push／cleanup: NOT PERFORMED
+Remediation execution: COMPLETED — R1～R5
+M32 local worktree／branch cleanup: COMPLETED
+Audit branch merge／push／release: NOT PERFORMED
+Remote M32 branch deletion: NOT PERFORMED
 ```
 
-本文件整合A1～A8 evidence、central findings register與fresh repository regression。使用者已於2026-07-31明確核准本Final Review與B＋D disposition；此核准只完成Audit closure，不授權修改current authority、建立新Milestone或執行任何修復。
+本文件整合A1～A8 evidence、central findings register與fresh repository regression。使用者已於2026-07-31明確核准本Final Review與B＋D disposition；後續於2026-08-01另行授權在無新decision時自動完成R1～R5。Exact remediation closure由[`a10_remediation_holistic_closure.md`](a10_remediation_holistic_closure.md)擁有。
 
 ## Exact Audit Baseline
 
@@ -58,6 +60,7 @@ Audit branch相對main的commits全部是本次Design、Plan、A1～A9 evidence�
 | A7 | Documentation and current authority | Accepted | `0667a67` |
 | A8 | Future direction disposition | Accepted | `ae9a12b` |
 | A9 | Holistic synthesis and final review | Accepted／user-approved | `51ab3fe` proposal + approval closure |
+| A10 | R1～R5 remediation holistic closure | Accepted | `a10_remediation_holistic_closure.md` + closure commit |
 
 ## Cross-Task Consistency Review
 
@@ -118,6 +121,22 @@ Baseline-blocking findings: 0
 | F-A1-04 | P3 | 已合併M32 branch／worktree殘留 | Non-blocking | Explicit operator cleanup |
 
 所有finding均具備severity、status、evidence、current contract、observed state、risk、recommendation、baseline blocking、disposition、target route與verification required。
+
+## Post-review Remediation Closure
+
+A9上方Frozen Finding Set保留原始Audit發現數與proposal route，不回寫為當時已修復。後續R1～R5已依獨立Requirement Decision與對應治理模式完成：
+
+```txt
+Resolved by R1: 5
+Resolved by R2: 1
+Resolved by R3: 1
+Resolved by R4: 1
+Resolved by R5: 1
+Resolved findings: 9 / 9
+Open P0／P1／P2／P3: 0
+```
+
+Current finding status唯一owner仍為[`findings.md`](findings.md)；cross-remediation validation、maintenance-mode entry與integration boundary見[`a10_remediation_holistic_closure.md`](a10_remediation_holistic_closure.md)。
 
 ## Fresh Repository Validation
 
@@ -294,3 +313,7 @@ Maintenance mode after P1 authority hardening: Yes
 - Template Baseline 1.14.0維持可用，但正式進入maintenance mode前仍應優先完成R1的P1 authority hardening。
 
 本核准不包含R1～R5 implementation、Roadmap／Backlog修改、Milestone建立、merge、push或worktree cleanup。上述任何後續動作仍需新的Requirement Decision與對應授權。
+
+## Subsequent Remediation Authorization
+
+使用者於2026-08-01核准R1 Final Review時，另行約定：除非中間出現需要使用者處理的決策，否則直接完成remaining remediation tasks。R1～R5已依該standing authorization完成；merge、push、remote branch deletion與release始終排除，未被執行。

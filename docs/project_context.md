@@ -353,6 +353,8 @@ Current iOS deployment baseline為15.0。
 ```txt
 Current active milestone: None
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
+Maintenance mode: Ready
+Open Audit remediation findings: None
 ```
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。

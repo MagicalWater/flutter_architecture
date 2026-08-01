@@ -51,6 +51,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
+- [`specs/2026-08-01-r4-test-inventory-external-output-bugfix-design.md`](specs/2026-08-01-r4-test-inventory-external-output-bugfix-design.md)：accepted R4 Design；以pure output display helper修正repository外absolute output false failure，只處理`F-A6-01`。
 - [`specs/2026-08-01-r3-api-client-transport-neutral-error-boundary-design.md`](specs/2026-08-01-r3-api-client-transport-neutral-error-boundary-design.md)：accepted R3 Design；以Auth endpoint interface、api_client-owned Dio adapter與neutral exception envelope修復`F-A2-01`，不改OTP business ownership或Profile／Catalog scope。
 - [`specs/2026-08-01-r2-project-context-current-only-rationalization-design.md`](specs/2026-08-01-r2-project-context-current-only-rationalization-design.md)：accepted R2 Design；以preservation matrix把Project Context中的current facts歸位並移除Milestone chronology，只處理`F-A7-02`，不包含R3～R5、integration或release。
 - [`specs/2026-08-01-r1-current-authority-contradiction-closure-design.md`](specs/2026-08-01-r1-current-authority-contradiction-closure-design.md)：Template 1.14 holistic Audit核准後的R1有界current authority矛盾修復Design；只處理五個accepted findings，排除R2～R5、release、merge與push，Plan核准前不得修改current authority。

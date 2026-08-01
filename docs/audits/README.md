@@ -47,6 +47,7 @@ Final / Holistic Review
 
 ### Template Baseline 1.14.0 project holistic audit
 
+- [`r4_test_inventory_external_output_bugfix_design_review.md`](r4_test_inventory_external_output_bugfix_design_review.md)：R4 external output failure reproduction、pure path display helper、TDD與tracked baseline preservation Design review。
 - [`r3_api_client_transport_neutral_error_boundary/`](r3_api_client_transport_neutral_error_boundary/)：R3 endpoint boundary、Auth migration、App composition與accepted holistic final review；`F-A2-01`已關閉，Auth不再依賴Dio。
 - [`r3_api_client_transport_neutral_error_boundary_plan_review.md`](r3_api_client_transport_neutral_error_boundary_plan_review.md)：R3 accepted TDD Plan的endpoint-first sequencing、Mock parity、Auth coverage、generated DI與full workspace regression review。
 - [`r3_api_client_transport_neutral_error_boundary_design_review.md`](r3_api_client_transport_neutral_error_boundary_design_review.md)：R3 endpoint interface、Dio adapter、neutral envelope、Auth ownership、public API cleanup與ADR-013 implementation recovery Design review。

@@ -47,6 +47,7 @@ Final / Holistic Review
 
 ### Template Baseline 1.14.0 project holistic audit
 
+- [`template_baseline_1_14_project_holistic_audit/a13_remote_main_publication_closure.md`](template_baseline_1_14_project_holistic_audit/a13_remote_main_publication_closure.md)：使用者核准的`main`一般push、remote equality與最終publication closure；總審查及R1～R5已完整發布，沒有mandatory next milestone。
 - [`template_baseline_1_14_project_holistic_audit/a12_local_main_integration_closure.md`](template_baseline_1_14_project_holistic_audit/a12_local_main_integration_closure.md)：使用者核准的local fast-forward integration、合併後generated／Python／docs／五package analyze／725項Flutter tests、App bundle與Audit worktree／local branch cleanup evidence；push與release均未執行。
 - [`template_baseline_1_14_project_holistic_audit/a11_local_branch_completion_verification.md`](template_baseline_1_14_project_holistic_audit/a11_local_branch_completion_verification.md)：R1～R5與A10提交後的branch completion evidence；其integration decision前狀態已由A12接續。
 - [`template_baseline_1_14_project_holistic_audit/a10_remediation_holistic_closure.md`](template_baseline_1_14_project_holistic_audit/a10_remediation_holistic_closure.md)：accepted R1～R5 finding closure、cross-remediation consistency、maintenance-mode decision與integration boundary；9個Audit findings已全部關閉。

@@ -10,6 +10,8 @@ last_reviewed_baseline: 1.14.0
 
 ## Requirement Decision
 
+> Remote publication follow-up（2026-08-01）：使用者後續明確授權push；`main`的remote publication與最終remote equality evidence由[`a13_remote_main_publication_closure.md`](a13_remote_main_publication_closure.md)接續擁有。A12內`Push: Not performed`保存本機整合完成當下的歷史狀態。
+
 ```txt
 Request: 將accepted Audit／R1～R5 remediation branch本機合併回main
 Classification: Level 1 — explicit local integration operation
@@ -123,4 +125,4 @@ Audit worktree／local branch cleanup: Complete
 Push／remote publication: Pending explicit authorization
 ```
 
-本大階段的local implementation、雙層Task治理、holistic review、finding closure與local main integration均已完成。Repository遠端仍未更新；`origin/main`保持在merge前SHA，直到使用者另行授權push。
+本大階段的local implementation、雙層Task治理、holistic review、finding closure與local main integration均已完成。A12接受當下Repository遠端尚未更新；後續push狀態與final remote closure見A13。

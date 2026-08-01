@@ -47,7 +47,8 @@ Final / Holistic Review
 
 ### Template Baseline 1.14.0 project holistic audit
 
-- [`template_baseline_1_14_project_holistic_audit/a11_local_branch_completion_verification.md`](template_baseline_1_14_project_holistic_audit/a11_local_branch_completion_verification.md)：R1～R5與A10提交後的current HEAD Python、docs、五package analyze與725項Flutter tests completion evidence；branch停在integration decision gate。
+- [`template_baseline_1_14_project_holistic_audit/a12_local_main_integration_closure.md`](template_baseline_1_14_project_holistic_audit/a12_local_main_integration_closure.md)：使用者核准的local fast-forward integration、合併後generated／Python／docs／五package analyze／725項Flutter tests與App bundle evidence；push與release均未執行。
+- [`template_baseline_1_14_project_holistic_audit/a11_local_branch_completion_verification.md`](template_baseline_1_14_project_holistic_audit/a11_local_branch_completion_verification.md)：R1～R5與A10提交後的branch completion evidence；其integration decision前狀態已由A12接續。
 - [`template_baseline_1_14_project_holistic_audit/a10_remediation_holistic_closure.md`](template_baseline_1_14_project_holistic_audit/a10_remediation_holistic_closure.md)：accepted R1～R5 finding closure、cross-remediation consistency、maintenance-mode decision與integration boundary；9個Audit findings已全部關閉。
 - [`r5_milestone_32_local_worktree_branch_cleanup_review.md`](r5_milestone_32_local_worktree_branch_cleanup_review.md)：R5 fresh clean／ancestry proof、Windows long-path recovery與local worktree／branch cleanup review；remote branch明確保留。
 - [`r4_test_inventory_external_output_bugfix/`](r4_test_inventory_external_output_bugfix/)：R4 TDD review與accepted holistic final review；external absolute output已支援，tracked M30 inventory baseline未變，`F-A6-01`已關閉。

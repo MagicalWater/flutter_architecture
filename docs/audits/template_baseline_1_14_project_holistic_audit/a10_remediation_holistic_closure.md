@@ -10,6 +10,8 @@ last_reviewed_baseline: 1.14.0
 
 ## Review Status
 
+> Post-closure integration note（2026-08-01）：使用者後續選擇本機整合，`main`已fast-forward至本Audit完成HEAD。A10內「尚未merge」敘述保存本文件接受當下的歷史狀態；目前integration authority由[`a12_local_main_integration_closure.md`](a12_local_main_integration_closure.md)擁有。
+
 ```txt
 Original Audit Final Review: ACCEPTED
 R1 Current Authority Contradiction Closure: ACCEPTED
@@ -179,4 +181,4 @@ Maintenance mode: READY
 Audit remediation portfolio: CLOSED LOCALLY
 ```
 
-Local closure不等於integration closure；Audit branch仍需使用者另行授權才可merge或push。
+Local closure在A10接受當下不等於integration closure；後續本機merge已依使用者授權完成，最新狀態見A12。Push仍未執行。

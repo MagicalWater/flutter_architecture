@@ -12,6 +12,8 @@ last_reviewed_baseline: 1.14.0
 
 本文件保存R1～R5及A10全部提交後，對local Audit branch current HEAD執行的branch completion verification。它不授權merge、push、remote branch deletion或release。
 
+> Integration follow-up（2026-08-01）：使用者已在本文件完成後選擇本機merge；`main`的fast-forward、合併結果fresh verification與cleanup由[`a12_local_main_integration_closure.md`](a12_local_main_integration_closure.md)接續擁有。本文件的`Merge performed: NO`是integration decision前的歷史evidence。
+
 ## Verified Baseline
 
 ```txt

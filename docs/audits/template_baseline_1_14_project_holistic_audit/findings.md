@@ -91,7 +91,8 @@ last_reviewed_baseline: 1.14.0
 ### F-A6-01 — Test inventory CLI無法輸出至repository外absolute path
 
 - Severity：P2。
-- Status：Open／Tooling hardening proposed。
+- Status：Resolved by R4。
+- Resolution evidence：R4-1 TDD commit `36941eea0f189a3136f3db790001dde974e152e6`；`docs/audits/r4_test_inventory_external_output_bugfix/r4_2_holistic_final_review.md`。
 - Evidence：`python tools/testing/inventory.py --root . --output <system-temp>/test-inventory.csv`先寫出CSV，之後在`output.relative_to(root)`拋出`ValueError`並exit 1；輸出位於repository內ignored path時成功。
 - Current contract：Testing Governance把inventory視為可重現盤點工具；本Audit accepted Plan明確要求temp output以避免覆寫tracked Milestone 30 baseline。
 - Observed state：CLI實際限制output必須位於root下，但argument help／implementation沒有宣告此限制，且錯誤發生在成功寫檔後。
@@ -154,9 +155,10 @@ Confirmed findings: 9
 Resolved by R1: 5
 Resolved by R2: 1
 Resolved by R3: 1
+Resolved by R4: 1
 Open P0: 0
 Open P1: 0
-Open P2: 1
+Open P2: 0
 Open P3: 1
 Open P1 without disposition: 0
 ```
@@ -174,4 +176,4 @@ Supplemental disposition: D — candidate／backlog disposition
 User final review gate: approved on 2026-07-31
 ```
 
-本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1已將五項更新為`Resolved by R1`；R2將`F-A7-02`更新為`Resolved by R2`；R3依ADR-013恢復transport-neutral package boundary，將`F-A2-01`更新為`Resolved by R3`。`F-A1-04`與`F-A6-01`維持Open。Standing authorization不包含merge、push、remote branch deletion或release。
+本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1已將五項更新為`Resolved by R1`；R2將`F-A7-02`更新為`Resolved by R2`；R3將`F-A2-01`更新為`Resolved by R3`；R4以TDD修復external output false failure，將`F-A6-01`更新為`Resolved by R4`。目前只剩`F-A1-04`維持Open。Standing authorization不包含merge、push、remote branch deletion或release。

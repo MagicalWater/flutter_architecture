@@ -62,7 +62,8 @@ last_reviewed_baseline: 1.14.0
 ### F-A1-04 — 已合併Milestone 32 branch與worktree殘留
 
 - Severity：P3。
-- Status：Open／Operator hygiene proposed。
+- Status：Resolved by R5。
+- Resolution evidence：`docs/audits/r5_milestone_32_local_worktree_branch_cleanup_review.md`；local worktree path與local branch均已移除，remote branch明確保留。
 - Evidence：`milestone-32-ci-artifact-storage-cutover` local branch HEAD `bc5bc17`完全為main ancestor；managed worktree仍存在且先前確認clean。
 - Current contract：Completed worktree沒有必須永久保留的runtime authority；cleanup必須由明確operator action執行。
 - Observed state：沒有遺失commit或dirty content，但branch／worktree仍出現在日常列表。
@@ -156,11 +157,13 @@ Resolved by R1: 5
 Resolved by R2: 1
 Resolved by R3: 1
 Resolved by R4: 1
+Resolved by R5: 1
 Open P0: 0
 Open P1: 0
 Open P2: 0
-Open P3: 1
+Open P3: 0
 Open P1 without disposition: 0
+Resolved findings: 9 / 9
 ```
 
 ## A9 Frozen Disposition
@@ -176,4 +179,4 @@ Supplemental disposition: D — candidate／backlog disposition
 User final review gate: approved on 2026-07-31
 ```
 
-本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1已將五項更新為`Resolved by R1`；R2將`F-A7-02`更新為`Resolved by R2`；R3將`F-A2-01`更新為`Resolved by R3`；R4以TDD修復external output false failure，將`F-A6-01`更新為`Resolved by R4`。目前只剩`F-A1-04`維持Open。Standing authorization不包含merge、push、remote branch deletion或release。
+本register的Finding ID、Severity、原始Evidence與A9 disposition在A9 closure後凍結。R1～R4完成authority、current snapshot、transport boundary與tooling hardening；R5在fresh clean／ancestry proof後移除Milestone 32 local worktree與local branch。9個findings目前全部Resolved。Standing authorization不包含Audit branch merge、push、remote branch deletion或release。

@@ -203,6 +203,15 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
         writer.writerows(rows)
 
 
+def display_output_path(output: Path, root: Path) -> str:
+    resolved_output = output.resolve()
+    resolved_root = root.resolve()
+    try:
+        return resolved_output.relative_to(resolved_root).as_posix()
+    except ValueError:
+        return str(resolved_output)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])
@@ -218,7 +227,8 @@ def main() -> int:
     write_csv(output, rows)
     print(
         f"files={len(rows)} loc={sum(int(row['loc']) for row in rows)} "
-        f"cases={sum(int(row['static_cases']) for row in rows)} output={output.relative_to(root)}"
+        f"cases={sum(int(row['static_cases']) for row in rows)} "
+        f"output={display_output_path(output, root)}"
     )
     return 0
 

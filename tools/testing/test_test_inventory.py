@@ -1,3 +1,5 @@
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -5,6 +7,7 @@ from pathlib import Path
 from tools.testing.inventory import (
     count_dart_cases,
     count_python_cases,
+    display_output_path,
     discover_test_files,
     inventory_rows,
 )
@@ -62,6 +65,51 @@ class Example:
             self.assertEqual(rows[0]["type"], "dart")
             self.assertEqual(rows[0]["loc"], 1)
             self.assertEqual(rows[0]["static_cases"], 1)
+
+    def test_display_output_path_uses_posix_relative_path_inside_root(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            output = root / "tmp" / "inventory.csv"
+
+            self.assertEqual(
+                display_output_path(output, root),
+                "tmp/inventory.csv",
+            )
+
+    def test_display_output_path_uses_resolved_absolute_path_outside_root(self) -> None:
+        with tempfile.TemporaryDirectory() as root_directory:
+            with tempfile.TemporaryDirectory() as output_directory:
+                root = Path(root_directory).resolve()
+                output = Path(output_directory) / "inventory.csv"
+
+                self.assertEqual(
+                    display_output_path(output, root),
+                    str(output.resolve()),
+                )
+
+    def test_cli_supports_repository_external_output(self) -> None:
+        repository_root = Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "inventory.csv"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(repository_root / "tools/testing/inventory.py"),
+                    "--root",
+                    str(repository_root),
+                    "--output",
+                    str(output),
+                ],
+                cwd=repository_root,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertTrue(output.is_file())
+            self.assertIn(f"output={output.resolve()}", result.stdout)
 
 
 if __name__ == "__main__":

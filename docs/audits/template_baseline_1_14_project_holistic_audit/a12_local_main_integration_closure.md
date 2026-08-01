@@ -88,6 +88,27 @@ Dependency resolution另回報41個constraint外較新版本，但沒有resolver
 - `docs/project_context.md`的current facts維持正確：active milestone為None、maintenance mode ready、open Audit remediation findings為None。
 - VERSION與CHANGELOG不修改，因本次是local integration，不是release或baseline identity change。
 
+## Post-integration Cleanup
+
+合併結果完整驗證通過後，依finishing branch流程fresh確認：
+
+```txt
+Audit worktree working tree: clean
+Audit branch is ancestor of main: true
+Audit worktree HEAD: 8f0c0d0d9e85cfd08e990314a031c87c1faa69ef
+Main contains integration closure commit: true
+```
+
+之後以Windows long-path support移除managed Audit worktree，執行`git worktree prune`，並以安全刪除移除已合併local branch：
+
+```txt
+Audit managed worktree: Removed
+Local audit/template-baseline-1.14-project-holistic branch: Removed
+Remote audit branch: Never pushed／not present
+Remote Milestone 32 branch: Preserved
+Main working tree after cleanup: clean
+```
+
 ## Governance Completion
 
 ```txt
@@ -98,6 +119,7 @@ A11 local branch completion verification: Complete
 Local main integration: Complete
 Merged-result regression: Green
 Documentation synchronization: Complete
+Audit worktree／local branch cleanup: Complete
 Push／remote publication: Pending explicit authorization
 ```
 

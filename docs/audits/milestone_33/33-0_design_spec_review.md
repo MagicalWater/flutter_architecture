@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-33-design-spec-review
 last_reviewed_baseline: 1.14.0
@@ -137,31 +137,33 @@ Repository docs_check: passed
 git diff --check: passed
 ```
 
-首次validation正確發現既有ADR coverage checker硬編碼至ADR-027。由於修正checker是implementation，Design Task沒有提前修改production code，而是將ADR-028保存為完整stable decision draft，並把checker TDD＋canonicalization設為Plan第一個hard gate。調整後fresh rerun的19個checker tests、repository `docs_check`與`git diff --check`全部通過。使用者書面核准前，Design／ADR draft／本review維持`proposed`。
+首次validation正確發現既有ADR coverage checker硬編碼至ADR-027。由於修正checker是implementation，Design Task沒有提前修改production code，而是將ADR-028保存為完整stable decision draft，並把checker TDD＋canonicalization設為Plan第一個hard gate。調整後fresh rerun的19個checker tests、repository `docs_check`與`git diff --check`全部通過。
 
 ## User Approval Gate
 
-使用者已於2026-08-04核准：
+使用者已於2026-08-04分兩個gate核准：
 
 - 將工作提升為 Milestone 33。
 - Workflow Foundation與單頁 compatibility proof同屬本大階段。
 - 修正第三方 Skill 語言治理邊界。
 - 開始建立正式 Design與ADR草案。
+- 書面 `Milestone 33 Design`。
+- 書面 `ADR-028 stable decision draft`。
 
-該核准不是對本次書面 Design／ADR內容的最終 acceptance，也不是 Implementation Plan核准。
+Design與ADR draft因此轉為`accepted`。該核准不包含尚未建立的Implementation Plan，也不允許提前建立managed worktree或開始implementation。
 
 ## Current Disposition
 
 ```txt
-Focused findings: resolved in proposed artifacts
+Focused findings: resolved
 Whole-Design internal review: PASSED
 Documentation validation: PASSED after ADR coverage recovery
 Open P0: 0
 Open P1 without disposition: 0
-Design status: PROPOSED
-ADR-028 stable decision draft status: PROPOSED
+Design status: ACCEPTED
+ADR-028 stable decision draft status: ACCEPTED
 Implementation Plan: NOT CREATED
 Managed worktree: NOT CREATED
 Implementation: NOT STARTED
-Next gate: Design Task commit, then user written approval
+Next gate: create and fully review Implementation Plan
 ```

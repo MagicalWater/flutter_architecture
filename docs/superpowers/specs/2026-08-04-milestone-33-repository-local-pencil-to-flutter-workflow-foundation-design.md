@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design
 last_reviewed_baseline: 1.14.0
@@ -392,4 +392,4 @@ Milestone 33 完成時才決定是否將 Template Baseline 從 `1.14.0` 提升�
 
 ## Approval Gate
 
-本文件與 ADR-028 stable decision draft 目前維持 `proposed`。只有完成 Design focused review、findings修正、fresh re-review、whole-Design review、documentation validation並取得使用者對書面 artifacts 的明確核准後，兩者才能轉為 `accepted`，之後才可使用 `writing-plans` 建立 Implementation Plan。Canonical ADR-028與checker修正屬核准Plan的第一個implementation governance Task，不得在Plan前提前實作。
+本文件與 ADR-028 stable decision draft 已完成 Design focused review、findings修正、fresh re-review、whole-Design review與documentation validation，並於2026-08-04取得使用者對書面 artifacts 的明確核准，狀態為 `accepted`。Implementation Plan必須另行完成完整雙層治理並取得使用者核准；Canonical ADR-028與checker修正仍屬核准Plan的第一個implementation governance Task，不得在Plan前提前實作。

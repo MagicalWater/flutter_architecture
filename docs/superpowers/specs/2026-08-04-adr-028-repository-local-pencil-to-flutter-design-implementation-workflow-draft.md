@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft
 last_reviewed_baseline: 1.14.0
@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.14.0
 
 ## Draft Status
 
-Proposed；等待 Milestone 33 Design 書面核准。
+Accepted；使用者已於2026-08-04核准本 stable decision draft。Canonical ADR仍須依核准Implementation Plan的第一個TDD governance Task建立。
 
 本文件保存即將建立的 ADR-028 完整 stable decision draft。因目前 ADR coverage checker 仍硬編碼至 ADR-027，canonical `docs/adr/adr-028-*.md`、ADR index row與 checker generalization 必須在 Implementation Plan 核准後，以第一個 TDD governance Task 一起建立；不得在 Plan 前修改 checker production code。
 

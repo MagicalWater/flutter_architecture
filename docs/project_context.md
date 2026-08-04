@@ -352,13 +352,13 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Current phase: Design proposed; Implementation Plan and implementation not started
+Current phase: Design／ADR accepted; Implementation Plan drafting; implementation not started
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Maintenance mode: Active governed milestone
 Open Audit remediation findings: None
 ```
 
-Milestone 33目前只建立proposed Design、ADR與Design review。書面Design／ADR取得使用者核准前，不得建立Implementation Plan；Plan核准前不得建立managed worktree、copy外部visual source、安裝third-party Skills、操作Pencil canvas或修改Flutter source。Active routing由`docs/roadmap/active.md`與`docs/milestones/README.md`擁有。
+Milestone 33 Design、ADR-028 stable decision draft與Design review已取得使用者核准。Implementation Plan正在建立；Plan完成完整雙層治理並取得使用者核准前，不得建立managed worktree、copy外部visual source、安裝third-party Skills、操作Pencil canvas或修改Flutter source。Active routing由`docs/roadmap/active.md`與`docs/milestones/README.md`擁有。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

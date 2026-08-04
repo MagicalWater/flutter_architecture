@@ -31,11 +31,20 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-None
+Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.14.0
+Phase: Design proposed; waiting for written Design／ADR approval
 ```
 
 目前active authority：`docs/roadmap/active.md`。
+
+### Milestone 33 active routing
+
+- Proposed Design：`docs/superpowers/specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`
+- Proposed ADR stable decision draft：`docs/superpowers/specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`
+- Design review：`docs/audits/milestone_33/33-0_design_spec_review.md`
+- Implementation Plan：尚未建立。
+- Implementation／worktree：尚未開始；Plan核准前禁止建立。
 
 ## Closed milestone routing
 

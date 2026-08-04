@@ -45,6 +45,10 @@ Final / Holistic Review
 
 ## Evidence routes
 
+### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+
+- [`milestone_33/33-0_design_spec_review.md`](milestone_33/33-0_design_spec_review.md)：proposed Design與ADR-028的Level 4分類、第三方Skill語言／integrity治理、visual authority、Pencil MCP、Flutter mapping、visual acceptance及書面核准gate review；Implementation尚未開始。
+
 ### Template Baseline 1.14.0 project holistic audit
 
 - [`template_baseline_1_14_project_holistic_audit/a13_remote_main_publication_closure.md`](template_baseline_1_14_project_holistic_audit/a13_remote_main_publication_closure.md)：使用者核准的`main`一般push、remote equality與最終publication closure；總審查及R1～R5已完整發布，沒有mandatory next milestone。

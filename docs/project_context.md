@@ -29,7 +29,7 @@ last_reviewed_baseline: 1.14.0
 ```txt
 Template Baseline: 1.14.0
 Phase 1 / MVP: Completed
-Current active milestone: None
+Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -351,11 +351,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: None
+Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+Current phase: Design proposed; Implementation Plan and implementation not started
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
-Maintenance mode: Ready
+Maintenance mode: Active governed milestone
 Open Audit remediation findings: None
 ```
+
+Milestone 33目前只建立proposed Design、ADR與Design review。書面Design／ADR取得使用者核准前，不得建立Implementation Plan；Plan核准前不得建立managed worktree、copy外部visual source、安裝third-party Skills、操作Pencil canvas或修改Flutter source。Active routing由`docs/roadmap/active.md`與`docs/milestones/README.md`擁有。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

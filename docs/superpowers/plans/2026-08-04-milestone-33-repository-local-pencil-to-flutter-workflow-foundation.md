@@ -309,6 +309,7 @@ git commit -m "feat(governance): 區分第三方Skill語言與完整性"
 ### Task 33-3: Pin and Admit the Three Taste Skills
 
 **Files:**
+- Modify: `.gitattributes`
 - Create: `skills-lock.json`
 - Create: `.agents/skills/brandkit/SKILL.md`
 - Create: `.agents/skills/high-end-visual-design/SKILL.md`
@@ -339,24 +340,33 @@ LICENSE or repository license source
 
 If no immutable commit contains bytes matching the admitted local files, stop Task 33-3 as blocked; do not fabricate a commit identity.
 
-- [ ] **Step 2: Verify admitted raw hashes**
+- [ ] **Step 2: Verify external admission bytes and immutable Git blob bytes**
 
 ```txt
-brandkit/SKILL.md
+External Windows working-tree candidate — brandkit/SKILL.md
 a250c7b41aecacc412260de2fb429d36ada5f668388aad1770289fa3e5c4f740
+Canonical Git blob／vendored LF bytes
+b0c4837e1bd140ca816ae54948754ddd2ac1e2a4d3619363777a80caf00b2ede
 
-high-end-visual-design/SKILL.md
+External Windows working-tree candidate — high-end-visual-design/SKILL.md
 2d11cdcefc8bf319429ee17d94d69a390802e2acf7163662d1eacbcf5be3ff79
+Canonical Git blob／vendored LF bytes
+e1e32f5e2d420872c6c7332b53d5ff7721946766b78c4822b424c2d512c8fdbc
 
-imagegen-frontend-mobile/SKILL.md
+External Windows working-tree candidate — imagegen-frontend-mobile/SKILL.md
 3cadf1bfbe836d377832d090e5db8479f98903453a4d1342be9636178755f9dd
+Canonical Git blob／vendored LF bytes
+8a33389979f3074fa0926678e266ad2eb9234624472254469fc1ad916b9caa24
+
+Canonical Git blob／vendored LF license bytes
+4575a543ab88dad12ccea7d97e563d0bce5b448b06072e65d3264497dad326df
 ```
 
-The upstream exact commit must reproduce those raw SHA-256 values. Previous installer `computedHash` values remain historical evidence only。
+External candidates are Windows checkouts with CRLF transformation under`core.autocrlf=true`; line-by-line content must equal the immutable commit after standard Git text normalization. Root lock and repository vendored files use exact immutable Git blob LF bytes and the canonical blob hashes above. Previous installer`computedHash`values remain historical evidence only。
 
 - [ ] **Step 3: Add exact source bytes and lock**
 
-Use `apply_patch` to add exact upstream Skill text and exact upstream license bytes with original language and LF content. Build `skills-lock.json` from resolved commit, observed license identity, exact source paths, repository-local license path, install paths and raw SHA-256 values.
+Use `apply_patch` to add exact upstream Skill text and exact upstream license bytes with original language and LF content. Add path-specific`.gitattributes`entries with`text eol=lf`for the three Skill files and vendored license so Windows clean checkout preserves the locked blob bytes. Build`skills-lock.json`from resolved commit, observed license identity, exact source paths, repository-local license path, install paths and canonical raw SHA-256 values.
 
 - [ ] **Step 4: Run machine validation**
 

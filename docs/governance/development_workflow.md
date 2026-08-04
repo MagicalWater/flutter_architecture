@@ -72,6 +72,22 @@ Unmodified third-party Skill保留上游原始語言、結構與raw bytes。只�
 | `starting-feature-work` | Approved | 新功能、新畫面、user flow或Figma-driven implementation | 接收短feature brief並強制委派中央治理 | Level、approval、branch、Task、validation、release與closure policy | `governing-template-development` | 移除Skill與本registry row；中央治理入口不受影響 |
 | `karpathy-guidelines` | Pilot／Approved with restrictions | 已完成分類與必要核准後的production code implementation、refactor與code review | simplicity、surgical changes、explicit assumptions與verifiable goals | Level、scope approval、branch、Task acceptance、release／closure；不得移除安全、migration、accessibility或validation evidence | `governing-template-development`＋routed Superpowers | 移除中央routing與`.agents/skills/karpathy-guidelines/`；中央治理不受影響 |
 | `adopting-template-product-identity` | Approved | 已接受的跨Android／iOS模板產品identity或三環境display-name mapping採用 | 接收短input、authority routing、pre-inventory、manifest-first與evidence boundary | Level、approval、environment contract、signing、Store、release與closure | `governing-template-development`；只有實際進入production code／script implementation時才搭配`karpathy-guidelines` | 移除Skill、中央route、registry row與Guide entry；既有authority不受影響 |
+| `brandkit` | Pilot／Loaded, non-triggered for accepted `.pen` proof | 只有明確要求建立或重新探索brand identity／brand-kit image時 | Brand strategy、logo metaphor與identity-board image direction companion | 已核准`.pen`的visual authority、Flutter architecture、Task approval、Pencil structure、implementation或release | `implementing-pencil-flutter-design`僅在未核准brand direction時按需路由 | 移除`.agents/skills/brandkit/`、lock row與registry row；不影響既有`.pen`或Flutter source |
+| `high-end-visual-design` | Pilot／Approved with restrictions | 已核准visual authority進入高階visual critique，且中央workflow明確路由時 | Spacing、hierarchy、texture、surface與anti-generic critique companion | 其Web／React／Tailwind execution rules、font／icon bans不得覆蓋`.pen`、Flutter、Material、Accessibility、Localization、Design System或repository authority | `implementing-pencil-flutter-design`＋accepted visual authority | 移除Skill、lock row與registry row；保留accepted `.pen`與review evidence |
+| `imagegen-frontend-mobile` | Pilot／Loaded, non-triggered for accepted `.pen` proof | 只有缺少visual authority並明確要求生成mobile screen images時 | Mobile image concept、multi-screen consistency與phone-mockup direction companion | Code generation、image-to-code、Pencil structure、Flutter architecture、Task approval或既有accepted `.pen`重設計 | `implementing-pencil-flutter-design`只在visual authority尚未核准時按需路由 | 移除Skill、lock row與registry row；不影響既有`.pen`或Flutter source |
+
+#### Taste Skill immutable source admission
+
+- Source repository：`https://github.com/Leonxlnx/taste-skill.git`。
+- Immutable commit：`e988add20dab0fa97d7a76781c48961c8184288e`。
+- License：MIT；exact repository-local bytes位於`third_party/skills/taste-skill/LICENSE`並由root`skills-lock.json`鎖定。
+- Ownership：三份均為`third-party-unmodified`；repository不翻譯、不重寫trigger、不增加wrapper authority。
+- Permissions：Skills本身不取得credential、filesystem mutation、network或MCP permission；實際image generation／Pencil／code tool仍由中央workflow與各自approved integration gate決定。
+- Discovery：2026-08-04在managed worktree完成same-name collision RED control、fixture cleanup與fresh worktree-local GREEN；三份loaded path均位於worktree，collision count為0。
+- `brandkit`與`imagegen-frontend-mobile`在本次accepted `.pen` proof不觸發；`high-end-visual-design`只可作restricted critique，不可把Web-specific absolute rules套用到Flutter。
+- Upgrade trigger：commit、source path、license、任何managed byte、frontmatter trigger或runtime precedence改變時，重跑lock validation、collision pressure與focused adoption review。
+- Last review：2026-08-04。
+- Full evidence：`docs/audits/milestone_33/33-3_taste_skill_source_admission.md`與`33-3_taste_skill_discovery_pressure_evidence.md`。
 
 #### 2026-07-30 repository-local Skill language revalidation
 

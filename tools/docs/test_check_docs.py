@@ -238,6 +238,27 @@ class DocumentationCheckerTest(unittest.TestCase):
                 )
             )
 
+    def test_allows_contiguous_adr_after_027_cutover(self) -> None:
+        with _fixture() as root:
+            _write_complete_adr_series(root, highest=28)
+
+            self.assertNotIn("incomplete-adr-coverage", _codes(root))
+
+    def test_reports_gap_before_highest_extracted_adr(self) -> None:
+        with _fixture() as root:
+            _write_complete_adr_series(root, highest=28, omitted={27})
+
+            issues = check_repository(root)
+
+            self.assertTrue(
+                any(
+                    issue.code == "incomplete-adr-coverage"
+                    and "ADR-027" in issue.message
+                    and "expected ADR-001..ADR-028" in issue.message
+                    for issue in issues
+                )
+            )
+
     def test_reports_invalid_managed_legacy_adr_route(self) -> None:
         with _fixture() as root:
             _write(root, "docs/adr/000-template-positioning.md", "# Legacy\n")
@@ -276,6 +297,39 @@ def _adr_index(identifier: str, file_name: str, state: str) -> str:
 
 def _adr_index_row(identifier: str, file_name: str, state: str) -> str:
     return f"| {identifier} | {file_name} | {state} |\n"
+
+
+def _write_complete_adr_series(
+    root: Path,
+    *,
+    highest: int,
+    omitted: set[int] | None = None,
+) -> None:
+    omitted = omitted or set()
+    rows: list[str] = []
+    for number in range(1, highest + 1):
+        if number in omitted:
+            continue
+        identifier = f"ADR-{number:03d}"
+        file_name = f"adr-{number:03d}-example.md"
+        rows.append(_adr_index_row(identifier, file_name, "extracted"))
+        _write(root, f"docs/adr/{file_name}", _adr(identifier))
+    first_identifier = next(
+        f"ADR-{number:03d}"
+        for number in range(1, highest + 1)
+        if number not in omitted
+    )
+    first_file_name = f"adr-{int(first_identifier.removeprefix('ADR-')):03d}-example.md"
+    index = _adr_index(first_identifier, first_file_name, "extracted")
+    index += "".join(rows[1:])
+    _write(root, "docs/adr/README.md", index)
+    _write(
+        root,
+        "docs/architecture_decisions.md",
+        "---\ndocument_type: architecture-decision-index\nstatus: legacy\n"
+        "authoritative_for:\n  - architecture-decision-legacy-routing\n"
+        "last_reviewed_baseline: 1.5.1\n---\n",
+    )
 
 
 def _adr(

@@ -3,12 +3,12 @@ document_type: architecture-decision-index
 status: active
 authoritative_for:
   - architecture-decision-routing
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Architecture Decision Records
 
-本文件是 Architecture Decision 的 canonical index，也是ADR-001至ADR-027的正式routing authority。
+本文件是 Architecture Decision 的 canonical index，也是ADR-001至ADR-028的正式routing authority。
 
 ## Migration State
 
@@ -47,6 +47,7 @@ Authority cutover後所有正式 Decision必須維持 `extracted`，checker強�
 | ADR-025 | adr-025-native-environment-mapping-product-identity-contract.md | extracted |
 | ADR-026 | adr-026-production-observability-provider-release-symbol-contract.md | extracted |
 | ADR-027 | adr-027-connectivity-offline-state-foundation.md | extracted |
+| ADR-028 | adr-028-repository-local-pencil-to-flutter-design-implementation-workflow.md | extracted |
 
 ## Canonical ADR Contract
 

@@ -1,18 +1,20 @@
 ---
 document_type: design-spec
-status: accepted
+status: superseded
 authoritative_for:
-  - adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft
+  - adr-028-stable-decision-draft-history
 last_reviewed_baseline: 1.14.0
 ---
 
 # ADR-028 Draft — Repository-local Pencil-to-Flutter Design Implementation Workflow
 
+> Canonical authority：[ADR-028 — Repository-local Pencil-to-Flutter Design Implementation Workflow](../../adr/adr-028-repository-local-pencil-to-flutter-design-implementation-workflow.md)。本文件只保存書面核准與canonicalization前的stable decision歷史。
+
 ## Draft Status
 
-Accepted；使用者已於2026-08-04核准本 stable decision draft。Canonical ADR仍須依核准Implementation Plan的第一個TDD governance Task建立。
+Superseded；使用者於2026-08-04核准本stable decision draft後，內容已由Task 33-1建立為canonical ADR-028。
 
-本文件保存即將建立的 ADR-028 完整 stable decision draft。因目前 ADR coverage checker 仍硬編碼至 ADR-027，canonical `docs/adr/adr-028-*.md`、ADR index row與 checker generalization 必須在 Implementation Plan 核准後，以第一個 TDD governance Task 一起建立；不得在 Plan 前修改 checker production code。
+本文件保存canonicalization前的ADR-028 stable decision draft與approval history。Current stable authority由canonical `docs/adr/adr-028-repository-local-pencil-to-flutter-design-implementation-workflow.md`擁有。
 
 ## Authoritative Scope
 
@@ -128,7 +130,7 @@ Pencil design 不建立平行 Flutter architecture：
 
 ## Canonicalization Gate
 
-Implementation Plan 的第一個 governance Task 必須先以 TDD 將 ADR completeness check 從固定 `ADR-001..ADR-027` 改為不阻擋合法後續 ADR、同時仍可偵測 gap／orphan／index mismatch 的 contract，然後建立 canonical ADR-028與 index row。該 Task 通過前，不得開始 Skill、visual source或 Flutter implementation。
+Task 33-1已以TDD將ADR completeness check改為contiguous highest-ID coverage，並建立canonical ADR-028與index row。Skill、visual source與Flutter implementation仍只能依後續Task gate進行。
 
 ## Last Reviewed Baseline
 

@@ -417,16 +417,17 @@ def _check_adrs(root: Path, metadata_by_path: dict[Path, dict[str, object]]) -> 
     aggregate_path = root / "docs" / "architecture_decisions.md"
     aggregate_metadata = metadata_by_path.get(aggregate_path, {})
     if aggregate_metadata.get("status") == "legacy":
-        expected = {f"ADR-{number:03d}" for number in range(1, 28)}
         extracted = {identifier for identifier, _, state in index_rows if state == "extracted"}
+        expected = _expected_adr_coverage(extracted)
         if extracted != expected:
             missing = sorted(expected - extracted)
             extra = sorted(extracted - expected)
+            highest = max(int(identifier.removeprefix("ADR-")) for identifier in expected)
             issues.append(
                 CheckIssue(
                     "incomplete-adr-coverage",
                     index_path,
-                    f"expected ADR-001..ADR-027; missing={missing}, extra={extra}",
+                    f"expected ADR-001..ADR-{highest:03d}; missing={missing}, extra={extra}",
                 )
             )
 
@@ -452,6 +453,12 @@ def _check_adrs(root: Path, metadata_by_path: dict[Path, dict[str, object]]) -> 
                 )
             )
     return issues
+
+
+def _expected_adr_coverage(extracted: set[str]) -> set[str]:
+    numbers = [int(identifier.removeprefix("ADR-")) for identifier in extracted]
+    highest = max([27, *numbers])
+    return {f"ADR-{number:03d}" for number in range(1, highest + 1)}
 
 
 def _parse_adr_index(path: Path) -> list[tuple[str, str, str]]:

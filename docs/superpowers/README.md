@@ -29,7 +29,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
-- [`plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`](plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)：proposed Milestone 33 Implementation Plan；依序治理ADR／third-party Skills／visual authority、Pencil MCP extraction、Flutter proof、visual acceptance、Guide、Final Review與1.15.0 post-release closure，等待書面Plan核准。
+- [`plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`](plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)：accepted Milestone 33 Implementation Plan；依序治理ADR／third-party Skills／visual authority、Pencil MCP extraction、Flutter proof、visual acceptance、Guide、Final Review與1.15.0 post-release closure。
 - [`plans/2026-08-01-r4-test-inventory-external-output-bugfix.md`](plans/2026-08-01-r4-test-inventory-external-output-bugfix.md)：accepted R4 TDD Plan；以unit＋subprocess regression修復external output false failure，並保護tracked M30 inventory baseline。
 - [`plans/2026-08-01-r3-api-client-transport-neutral-error-boundary.md`](plans/2026-08-01-r3-api-client-transport-neutral-error-boundary.md)：accepted R3 TDD Plan；依序建立api_client endpoint boundary、遷移Auth、更新App Composition／generated DI並完成full workspace closure。
 - [`plans/2026-08-01-r2-project-context-current-only-rationalization.md`](plans/2026-08-01-r2-project-context-current-only-rationalization.md)：accepted R2 Plan；以committed preservation matrix先行、current-only rewrite與single-finding closure三階段執行，只處理`F-A7-02`。

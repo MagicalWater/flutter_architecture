@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-33-implementation-plan-review
 last_reviewed_baseline: 1.14.0
@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.14.0
 
 - [Accepted Design](../../superpowers/specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md)。
 - [Accepted ADR-028 stable decision draft](../../superpowers/specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md)。
-- [Proposed Implementation Plan](../../superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)。
+- [Accepted Implementation Plan](../../superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)。
 - Execution Admission Gate與managed worktree boundary。
 - Tasks 33-1至33-13的exact files、interfaces、TDD、validation、review與commit boundaries。
 - Third-party Skill immutable source admission、visual authority、Pencil MCP、Flutter proof、visual diff、Guide、Final Review、release與post-release closure。
@@ -190,7 +190,7 @@ Managed worktree branch: not created
 
 ## User Approval Gate
 
-Design與ADR stable decision draft已accepted。Implementation Plan目前仍為`proposed`；本review完成internal double-layer governance不等於使用者Plan approval。使用者明確核准書面Plan後，才可建立managed worktree並執行Task 33-1。
+Design、ADR stable decision draft與Implementation Plan均已accepted。使用者於2026-08-04明確核准書面Plan；現在可依Execution Admission Gate建立managed worktree並執行Task 33-1。
 
 ## Current Disposition
 
@@ -199,9 +199,9 @@ Plan focused review: PASSED after eight P1 dispositions
 Whole-Plan review: PASSED
 Open P0: 0
 Open P1 without disposition: 0
-Plan status: PROPOSED
-Plan user approval: PENDING
+Plan status: ACCEPTED
+Plan user approval: APPROVED — 2026-08-04
 Managed worktree: NOT CREATED
 Implementation: NOT STARTED
-Next gate: mechanical validation, independent Plan commit, user written approval
+Next gate: Plan approval closure commit, managed worktree creation, Task 33-1 execution admission
 ```

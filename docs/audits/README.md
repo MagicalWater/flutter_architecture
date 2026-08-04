@@ -48,7 +48,7 @@ Final / Holistic Review
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 
 - [`milestone_33/33-0_design_spec_review.md`](milestone_33/33-0_design_spec_review.md)：accepted Design與ADR-028的Level 4分類、第三方Skill語言／integrity治理、visual authority、Pencil MCP、Flutter mapping、visual acceptance及使用者核准closure；Implementation尚未開始。
-- [`milestone_33/33-p_implementation_plan_review.md`](milestone_33/33-p_implementation_plan_review.md)：proposed Plan的Design coverage、Tasks 33-1至33-13、TDD interfaces、visual threshold、release separation與使用者Plan approval gate review。
+- [`milestone_33/33-p_implementation_plan_review.md`](milestone_33/33-p_implementation_plan_review.md)：accepted Plan的Design coverage、Tasks 33-1至33-13、TDD interfaces、visual threshold、release separation與使用者Plan approval closure review。
 
 ### Template Baseline 1.14.0 project holistic audit
 

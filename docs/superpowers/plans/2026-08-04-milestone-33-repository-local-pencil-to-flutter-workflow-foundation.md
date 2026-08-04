@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-33-repository-local-pencil-to-flutter-workflow-foundation-plan
 last_reviewed_baseline: 1.14.0
@@ -1264,4 +1264,4 @@ git push origin main
 
 ## Plan Acceptance Gate
 
-本Plan目前為`proposed`。只有完成focused review、findings修正、fresh re-review、whole-Plan review、Design coverage／type consistency／placeholder scan、documentation validation、independent Plan commit與使用者明確核准後，才可進入Execution Admission Gate。使用者核准Plan不等於預先核准Task 33-12之後的merge、release、push或worktree cleanup；這些仍依各自明確gate執行。
+本Plan已於2026-08-04取得使用者書面核准並轉為`accepted`，可進入Execution Admission Gate。此核准只允許依Plan建立managed worktree並執行Tasks 33-1至33-12；不等於預先核准Task 33-12之後的merge、release、push或worktree cleanup，這些仍依各自明確gate執行。

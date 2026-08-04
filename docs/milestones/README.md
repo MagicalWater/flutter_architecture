@@ -33,7 +33,7 @@ Milestone routing 只回答：
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.14.0
-Phase: Implementation Plan proposed; waiting for written Plan approval
+Phase: Implementation Plan accepted; execution admission pending
 ```
 
 目前active authority：`docs/roadmap/active.md`。
@@ -43,7 +43,7 @@ Phase: Implementation Plan proposed; waiting for written Plan approval
 - Accepted Design：`docs/superpowers/specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`
 - Accepted ADR stable decision draft：`docs/superpowers/specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`
 - Design review：`docs/audits/milestone_33/33-0_design_spec_review.md`
-- Proposed Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
+- Accepted Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
 - Plan review：`docs/audits/milestone_33/33-p_implementation_plan_review.md`
 - Implementation／worktree：尚未開始；Plan核准前禁止建立。
 

@@ -11,6 +11,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.docs.skill_lock import inspect_skill_lock
+from tools.visual.verify_visual_authority import verify_visual_authority
 
 
 DOCUMENT_TYPES = {
@@ -98,6 +99,7 @@ def check_repository(root: Path) -> list[CheckIssue]:
             skill_lock.exempt_markdown_paths,
         )
     )
+    issues.extend(_check_visual_authority_manifests(root))
     issues.extend(_check_baseline(root))
     metadata_by_path, metadata_issues = _check_metadata(root, markdown_files)
     issues.extend(metadata_issues)
@@ -107,6 +109,19 @@ def check_repository(root: Path) -> list[CheckIssue]:
     issues.extend(_check_readme_coverage(root))
     issues.extend(_check_milestone_routing(root))
     return sorted(issues, key=lambda issue: (issue.code, str(issue.path), issue.message))
+
+
+def _check_visual_authority_manifests(root: Path) -> list[CheckIssue]:
+    authority_root = root / "docs" / "visual_authority"
+    if not authority_root.is_dir():
+        return []
+    issues: list[CheckIssue] = []
+    for manifest in sorted(authority_root.glob("**/manifest.md")):
+        issues.extend(
+            CheckIssue(issue.code, issue.path, issue.message)
+            for issue in verify_visual_authority(root, manifest)
+        )
+    return issues
 
 
 def _iter_markdown_files(root: Path) -> Iterable[Path]:

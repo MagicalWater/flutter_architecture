@@ -54,6 +54,7 @@ Final / Holistic Review
 - [`milestone_33/33-2_skill_lock_governance_review.md`](milestone_33/33-2_skill_lock_governance_review.md)：ownership-aware third-party Skill lock、raw hash／license／path fail-closed與語言豁免review。
 - [`milestone_33/33-3_taste_skill_source_admission.md`](milestone_33/33-3_taste_skill_source_admission.md)：Taste Skill immutable commit、Git blob／Windows EOL disposition、lock、license與restricted adoption review。
 - [`milestone_33/33-3_taste_skill_discovery_pressure_evidence.md`](milestone_33/33-3_taste_skill_discovery_pressure_evidence.md)：same-name collision RED、temporary fixture cleanup與managed-worktree local discovery GREEN evidence。
+- [`milestone_33/33-4_visual_authority_review.md`](milestone_33/33-4_visual_authority_review.md)：visual manifest TDD、repository-local `.pen`／references admission、source ranking、canonical viewport與Task 33-6 preview export gate review。
 
 ### Template Baseline 1.14.0 project holistic audit
 

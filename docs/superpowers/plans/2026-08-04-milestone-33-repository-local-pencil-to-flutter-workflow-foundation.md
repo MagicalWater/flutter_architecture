@@ -480,7 +480,7 @@ D:\Developer\ui-agent\flutter_preview\flutter-preview.png
 69edbc35da44288e80b448231de50f9a51d95ba84c9042ea16797267b607731d
 ```
 
-Calculate destination hashes independently. Any mismatch blocks the Task. After manifest acceptance, external paths cease to be active authority.
+Calculate destination hashes independently. Any mismatch blocks the Task. The admitted `pencil-preview.png` is a `226 × 400` Pencil renderer thumbnail and is accepted only as derived admission evidence at this stage; it is not the canonical pixel-diff master. Task 33-6 must use Pencil MCP to replace it with a fresh `941 × 1672` canonical export and update the manifest hash before Flutter implementation can begin. After manifest acceptance, external paths cease to be active authority.
 
 - [ ] **Step 4: Run GREEN and docs checks**
 
@@ -585,6 +585,8 @@ git commit -m "feat(skills): 新增Pencil-to-Flutter工作流程"
 - Create: `docs/audits/milestone_33/33-6_pencil_admission_and_extraction.md`
 - Create: `docs/audits/milestone_33/33-6_flutter_mapping_matrix.md`
 - Create: `docs/audits/milestone_33/33-6_pencil_extraction_review.md`
+- Modify binary: `docs/design_sources/pencil-compatibility-write-precheck/pencil-preview.png`
+- Modify: `docs/visual_authority/pencil-compatibility-write-precheck/manifest.md`
 
 **Interfaces:**
 - Consumes: repository-local `source.pen`、accepted manifest、loaded orchestration Skill、`executor-local-mcp` and `pencil-local-mcp`。
@@ -627,7 +629,11 @@ component reuse opportunities
 unsupported constructs or renderer ambiguities
 ```
 
-- [ ] **Step 5: Produce Flutter mapping matrix**
+- [ ] **Step 5: Export the canonical Pencil comparison preview**
+
+Through Pencil MCP, export a fresh render of the accepted root frame at exactly `941 × 1672`, DPR `1.0`, with no resize of an existing thumbnail. Replace the Task 33-4 admission thumbnail at `pencil-preview.png`, calculate the new raw SHA-256 independently and update the visual authority manifest. Verify the manifest and dimensions before continuing. Inability to produce an exact canonical export blocks Flutter implementation.
+
+- [ ] **Step 6: Produce Flutter mapping matrix**
 
 Each extracted item maps to exactly one owner：
 
@@ -643,14 +649,15 @@ decorative-only Flutter primitive
 
 No item may map to a new global Design System token without second-consumer evidence.
 
-- [ ] **Step 6: Review and commit Task 33-6**
+- [ ] **Step 7: Review and commit Task 33-6**
 
 Review checks source identity、no native parsing、complete component inventory、unsupported construct disposition and architecture mapping consistency。
 
 ```bash
+python -m unittest tools.visual.test_verify_visual_authority
 dart run melos run docs_check
 git diff --check
-git add docs/audits/milestone_33/33-6_*.md
+git add docs/audits/milestone_33/33-6_*.md docs/design_sources/pencil-compatibility-write-precheck/pencil-preview.png docs/visual_authority/pencil-compatibility-write-precheck/manifest.md
 git commit -m "docs(pencil): 記錄寫前檢查設計結構"
 ```
 

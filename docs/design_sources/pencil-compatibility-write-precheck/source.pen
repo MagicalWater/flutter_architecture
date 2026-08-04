@@ -1,0 +1,2079 @@
+{
+  "version": "2.15",
+  "children": [
+    {
+      "type": "frame",
+      "id": "gY9yA",
+      "x": 0,
+      "y": 0,
+      "name": "Component / Data Row",
+      "reusable": true,
+      "width": 820,
+      "height": 44,
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "e5ycOQ",
+          "x": 0,
+          "y": 43,
+          "name": "Row Divider",
+          "fill": "$nfc-border-soft",
+          "width": 820,
+          "height": 1
+        },
+        {
+          "type": "icon",
+          "id": "GTcIs",
+          "x": 18,
+          "y": 9,
+          "name": "Row Icon",
+          "width": 26,
+          "height": 26,
+          "icon": "crosshair",
+          "library": "phosphor",
+          "weight": 300,
+          "fill": "$nfc-muted"
+        },
+        {
+          "type": "text",
+          "id": "WUcNV",
+          "x": 58,
+          "y": 8,
+          "name": "Row Label",
+          "fill": "$nfc-muted",
+          "content": "欄位名稱",
+          "fontFamily": "$nfc-font",
+          "fontSize": 19,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "kVL3F",
+          "x": 385,
+          "y": 8,
+          "name": "Row Value",
+          "fill": "$nfc-text",
+          "textGrowth": "fixed-width",
+          "width": 415,
+          "content": "欄位內容",
+          "textAlign": "right",
+          "fontFamily": "$nfc-font",
+          "fontSize": 18
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "H3co21",
+      "x": 0,
+      "y": 90,
+      "name": "Component / Step Item",
+      "reusable": true,
+      "width": 205,
+      "height": 88,
+      "layout": "none",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "Eeqhc",
+          "x": 75,
+          "y": 0,
+          "name": "Step Glow",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#3DAEFF55",
+                "position": 0
+              },
+              {
+                "color": "#3DAEFF00",
+                "position": 1
+              }
+            ]
+          },
+          "width": 56,
+          "height": 56
+        },
+        {
+          "type": "ellipse",
+          "id": "twFPc",
+          "x": 81,
+          "y": 6,
+          "name": "Step Circle",
+          "fill": "$nfc-bg",
+          "width": 44,
+          "height": 44,
+          "stroke": "$nfc-cyan",
+          "strokeWidth": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#3DAEFF77",
+            "blur": 12,
+            "spread": 1
+          }
+        },
+        {
+          "type": "text",
+          "id": "SvVMb",
+          "x": 96,
+          "y": 11,
+          "name": "Step Number",
+          "fill": "$nfc-text",
+          "content": "1",
+          "fontFamily": "$nfc-font",
+          "fontSize": 24,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "Ozzy2",
+          "x": 0,
+          "y": 60,
+          "name": "Step Label",
+          "fill": "$nfc-muted",
+          "textGrowth": "fixed-width",
+          "width": 205,
+          "content": "步驟名稱",
+          "textAlign": "center",
+          "fontFamily": "$nfc-font",
+          "fontSize": 17,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "aZMKq",
+      "x": 0,
+      "y": -310,
+      "name": "Component / Record Tile",
+      "reusable": true,
+      "width": 820,
+      "height": 66,
+      "fill": "$nfc-surface",
+      "cornerRadius": 14,
+      "stroke": "$nfc-border-soft",
+      "strokeWidth": 1,
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "SVC8v",
+          "x": 10,
+          "y": 7,
+          "name": "Record Icon Box",
+          "width": 62,
+          "height": 52,
+          "fill": "#0A2440",
+          "cornerRadius": 10,
+          "stroke": "$nfc-cyan-deep",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon",
+              "id": "aIOvT",
+              "x": 16,
+              "y": 11,
+              "name": "Record Icon",
+              "width": 30,
+              "height": 30,
+              "icon": "text-t",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-cyan"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "uQSWr",
+          "x": 92,
+          "y": 8,
+          "name": "Record Title",
+          "fill": "$nfc-text",
+          "content": "記錄標題",
+          "fontFamily": "$nfc-font",
+          "fontSize": 20,
+          "fontWeight": "500"
+        },
+        {
+          "type": "text",
+          "id": "pI15g",
+          "x": 92,
+          "y": 35,
+          "name": "Record Subtitle",
+          "fill": "$nfc-muted",
+          "content": "記錄內容",
+          "fontFamily": "$nfc-font",
+          "fontSize": 17
+        },
+        {
+          "type": "frame",
+          "id": "x0Nvb",
+          "x": 665,
+          "y": 16,
+          "name": "Record Badge",
+          "width": 108,
+          "height": 34,
+          "fill": "#0C1A2A",
+          "cornerRadius": 17,
+          "stroke": "$nfc-border-soft",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "text",
+              "id": "FZ0JT",
+              "x": 16,
+              "y": 5,
+              "name": "Record Badge Label",
+              "fill": "$nfc-muted",
+              "textGrowth": "fixed-width",
+              "width": 76,
+              "content": "記錄 1",
+              "textAlign": "center",
+              "fontFamily": "$nfc-font",
+              "fontSize": 16,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "icon",
+          "id": "BLH51",
+          "x": 785,
+          "y": 21,
+          "name": "Record Caret",
+          "width": 22,
+          "height": 22,
+          "icon": "caret-right",
+          "library": "phosphor",
+          "weight": 300,
+          "fill": "$nfc-muted"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "h6mPw5",
+      "x": 0,
+      "y": -200,
+      "name": "Component / Secondary Button",
+      "reusable": true,
+      "width": 408,
+      "height": 58,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#08233A",
+            "position": 0
+          },
+          {
+            "color": "#020A12",
+            "position": 1
+          }
+        ]
+      },
+      "cornerRadius": 16,
+      "stroke": "$nfc-cyan",
+      "strokeWidth": 2,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#3DAEFF44",
+        "blur": 10
+      },
+      "layout": "none",
+      "children": [
+        {
+          "type": "icon",
+          "id": "grhos",
+          "x": 96,
+          "y": 14,
+          "name": "Secondary Button Icon",
+          "width": 30,
+          "height": 30,
+          "icon": "list",
+          "library": "phosphor",
+          "weight": 300,
+          "fill": "$nfc-cyan"
+        },
+        {
+          "type": "text",
+          "id": "fFONI",
+          "x": 140,
+          "y": 10,
+          "name": "Secondary Button Label",
+          "fill": "$nfc-cyan",
+          "content": "次要操作",
+          "fontFamily": "$nfc-font",
+          "fontSize": 24,
+          "fontWeight": "500"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "lAOay",
+      "x": 0,
+      "y": 298,
+      "name": "Screen / Write Pre-check Reconstruction",
+      "clip": true,
+      "width": 941,
+      "height": 1672,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#06111D",
+            "position": 0
+          },
+          {
+            "color": "#020A12",
+            "position": 0.46
+          },
+          {
+            "color": "#01060B",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "none",
+      "children": [
+        {
+          "type": "ellipse",
+          "id": "jxVoD",
+          "x": 470,
+          "y": -180,
+          "name": "Top Cyan Ambient Glow",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#1D91D940",
+                "position": 0
+              },
+              {
+                "color": "#1D91D900",
+                "position": 1
+              }
+            ]
+          },
+          "width": 560,
+          "height": 430
+        },
+        {
+          "type": "ellipse",
+          "id": "TygqG",
+          "x": -240,
+          "y": 100,
+          "name": "Left Ambient Glow",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#0649742C",
+                "position": 0
+              },
+              {
+                "color": "#06497400",
+                "position": 1
+              }
+            ]
+          },
+          "width": 520,
+          "height": 520
+        },
+        {
+          "type": "text",
+          "id": "I94eUn",
+          "x": 38,
+          "y": 15,
+          "name": "Status Time",
+          "fill": "$nfc-text",
+          "content": "10:42",
+          "fontFamily": "$nfc-font",
+          "fontSize": 23,
+          "fontWeight": "600"
+        },
+        {
+          "type": "icon",
+          "id": "htc9B",
+          "x": 758,
+          "y": 16,
+          "name": "Status Wi-Fi",
+          "width": 25,
+          "height": 25,
+          "icon": "wifi-high",
+          "library": "phosphor",
+          "weight": 300,
+          "fill": "$nfc-text"
+        },
+        {
+          "type": "icon",
+          "id": "AA1c7",
+          "x": 799,
+          "y": 16,
+          "name": "Status Signal",
+          "width": 24,
+          "height": 24,
+          "icon": "cell-signal-high",
+          "library": "phosphor",
+          "weight": 300,
+          "fill": "$nfc-text"
+        },
+        {
+          "type": "icon",
+          "id": "hghqZ",
+          "x": 844,
+          "y": 16,
+          "name": "Status Battery",
+          "width": 28,
+          "height": 24,
+          "icon": "battery-full",
+          "library": "phosphor",
+          "weight": 300,
+          "fill": "$nfc-text"
+        },
+        {
+          "type": "text",
+          "id": "zjzSC",
+          "x": 878,
+          "y": 14,
+          "name": "Status Battery Percent",
+          "fill": "$nfc-text",
+          "content": "100",
+          "fontFamily": "$nfc-font",
+          "fontSize": 20,
+          "fontWeight": "500"
+        },
+        {
+          "type": "rectangle",
+          "id": "c9mgC",
+          "x": 0,
+          "y": 48,
+          "name": "Header Divider",
+          "fill": "#163147",
+          "width": 941,
+          "height": 1
+        },
+        {
+          "type": "frame",
+          "id": "LqcSb",
+          "x": 29,
+          "y": 64,
+          "name": "Back Button",
+          "width": 50,
+          "height": 50,
+          "fill": "#071725",
+          "cornerRadius": 16,
+          "stroke": "#284A62",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon",
+              "id": "Y37FY",
+              "x": 11,
+              "y": 11,
+              "name": "Back Arrow",
+              "width": 28,
+              "height": 28,
+              "icon": "arrow-left",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-text"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "cYuYh",
+          "x": 96,
+          "y": 61,
+          "name": "Screen Title",
+          "fill": "$nfc-text",
+          "content": "寫前檢查",
+          "fontFamily": "$nfc-font",
+          "fontSize": 34,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "Ditpa",
+          "x": 97,
+          "y": 105,
+          "name": "Screen Subtitle",
+          "fill": "$nfc-muted",
+          "content": "安全寫入流程 · 步驟 3/4",
+          "fontFamily": "$nfc-font",
+          "fontSize": 20
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 2,
+          "id": "p8Jo5s",
+          "x": 116,
+          "y": 157,
+          "name": "Progress Track",
+          "fill": "#29475D",
+          "width": 708,
+          "height": 3
+        },
+        {
+          "type": "rectangle",
+          "cornerRadius": 2,
+          "id": "Nw2IJ",
+          "x": 116,
+          "y": 157,
+          "name": "Progress Completed Segment",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#3DAEFF",
+                "position": 0
+              },
+              {
+                "color": "#F5B941",
+                "position": 1
+              }
+            ]
+          },
+          "width": 474,
+          "height": 3,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#3DAEFF66",
+            "blur": 8
+          }
+        },
+        {
+          "id": "Apot8",
+          "type": "ref",
+          "ref": "H3co21",
+          "name": "Step 1 / Prepared",
+          "x": 15,
+          "y": 131,
+          "descendants": {
+            "Eeqhc": {
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#3DAEFF44",
+                    "position": 0
+                  },
+                  {
+                    "color": "#3DAEFF00",
+                    "position": 1
+                  }
+                ]
+              }
+            },
+            "twFPc": {
+              "fill": "#082A46",
+              "stroke": "$nfc-cyan"
+            },
+            "SvVMb": {
+              "content": "✓",
+              "x": 94,
+              "y": 10,
+              "fontSize": 25,
+              "fill": "$nfc-cyan-bright"
+            },
+            "Ozzy2": {
+              "content": "已準備內容",
+              "fill": "$nfc-muted"
+            }
+          }
+        },
+        {
+          "id": "Uz2x0",
+          "type": "ref",
+          "ref": "H3co21",
+          "name": "Step 2 / Detected",
+          "x": 248,
+          "y": 131,
+          "descendants": {
+            "Eeqhc": {
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#3DAEFF44",
+                    "position": 0
+                  },
+                  {
+                    "color": "#3DAEFF00",
+                    "position": 1
+                  }
+                ]
+              }
+            },
+            "twFPc": {
+              "fill": "#082A46",
+              "stroke": "$nfc-cyan"
+            },
+            "SvVMb": {
+              "content": "✓",
+              "x": 94,
+              "y": 10,
+              "fontSize": 25,
+              "fill": "$nfc-cyan-bright"
+            },
+            "Ozzy2": {
+              "content": "已偵測標籤",
+              "fill": "$nfc-muted"
+            }
+          }
+        },
+        {
+          "id": "V3U9N",
+          "type": "ref",
+          "ref": "H3co21",
+          "name": "Step 3 / Active",
+          "x": 487,
+          "y": 131,
+          "descendants": {
+            "Eeqhc": {
+              "x": 65,
+              "y": -10,
+              "width": 76,
+              "height": 76,
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F5B94166",
+                    "position": 0
+                  },
+                  {
+                    "color": "#3DAEFF22",
+                    "position": 0.55
+                  },
+                  {
+                    "color": "#3DAEFF00",
+                    "position": 1
+                  }
+                ]
+              }
+            },
+            "twFPc": {
+              "fill": "#0A2033",
+              "stroke": "$nfc-gold",
+              "strokeWidth": 3,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#F5B94166",
+                "blur": 14,
+                "spread": 2
+              }
+            },
+            "SvVMb": {
+              "content": "3",
+              "x": 96,
+              "y": 10,
+              "fill": "$nfc-gold",
+              "fontWeight": "700"
+            },
+            "Ozzy2": {
+              "content": "寫前檢查",
+              "fill": "$nfc-gold",
+              "fontWeight": "700"
+            }
+          }
+        },
+        {
+          "id": "dF4r7",
+          "type": "ref",
+          "ref": "H3co21",
+          "name": "Step 4 / Verification",
+          "x": 720,
+          "y": 131,
+          "descendants": {
+            "Eeqhc": {
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#536B7E18",
+                    "position": 0
+                  },
+                  {
+                    "color": "#536B7E00",
+                    "position": 1
+                  }
+                ]
+              }
+            },
+            "twFPc": {
+              "fill": "#05111C",
+              "stroke": "#4B6173",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#00000000",
+                "blur": 3
+              }
+            },
+            "SvVMb": {
+              "content": "4",
+              "fill": "$nfc-dim"
+            },
+            "Ozzy2": {
+              "content": "寫入與驗證",
+              "fill": "$nfc-dim"
+            }
+          }
+        },
+        {
+          "type": "frame",
+          "id": "YD7qO",
+          "x": 37,
+          "y": 232,
+          "name": "Hero / Pre-check Passed",
+          "clip": true,
+          "width": 853,
+          "height": 254,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#0A2032",
+                "position": 0
+              },
+              {
+                "color": "#071726",
+                "position": 0.62
+              },
+              {
+                "color": "#0D1A25",
+                "position": 1
+              }
+            ]
+          },
+          "cornerRadius": 24,
+          "stroke": "$nfc-gold",
+          "strokeWidth": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000066",
+            "offset": {
+              "x": 0,
+              "y": 8
+            },
+            "blur": 20
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "zXvTS",
+              "x": 620,
+              "y": -90,
+              "name": "Hero Gold Ambient Glow",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F5B94130",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F5B94100",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 340,
+              "height": 330
+            },
+            {
+              "type": "ellipse",
+              "id": "b3gOKN",
+              "x": 690,
+              "y": 18,
+              "name": "Hero Orbit 1",
+              "fill": "#00000000",
+              "width": 220,
+              "height": 220,
+              "stroke": "#F5B94166",
+              "strokeWidth": 2
+            },
+            {
+              "type": "ellipse",
+              "id": "s3rKm",
+              "x": 745,
+              "y": 73,
+              "name": "Hero Orbit 2",
+              "fill": "#00000000",
+              "width": 110,
+              "height": 110,
+              "stroke": "#F5B94140",
+              "strokeWidth": 1
+            },
+            {
+              "type": "ellipse",
+              "id": "gOnKL",
+              "x": 760,
+              "y": 42,
+              "name": "Hero Orbit Dot 1",
+              "fill": "$nfc-gold",
+              "width": 9,
+              "height": 9
+            },
+            {
+              "type": "ellipse",
+              "id": "u5tjc",
+              "x": 820,
+              "y": 186,
+              "name": "Hero Orbit Dot 2",
+              "fill": "$nfc-gold",
+              "width": 7,
+              "height": 7
+            },
+            {
+              "type": "ellipse",
+              "id": "HMSfo",
+              "x": 30,
+              "y": 33,
+              "name": "Shield Halo",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#3DAEFF50",
+                    "position": 0
+                  },
+                  {
+                    "color": "#3DAEFF18",
+                    "position": 0.52
+                  },
+                  {
+                    "color": "#3DAEFF00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 176,
+              "height": 176
+            },
+            {
+              "type": "ellipse",
+              "id": "jy25A",
+              "x": 49,
+              "y": 52,
+              "name": "Shield Ring",
+              "fill": "#061726",
+              "width": 138,
+              "height": 138,
+              "stroke": "#2676A7",
+              "strokeWidth": 2,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#3DAEFF55",
+                "blur": 18,
+                "spread": 2
+              }
+            },
+            {
+              "type": "icon",
+              "id": "uxj2d",
+              "x": 75,
+              "y": 77,
+              "name": "Shield Check Icon",
+              "width": 86,
+              "height": 86,
+              "icon": "shield-check",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-cyan-bright"
+            },
+            {
+              "type": "text",
+              "id": "mhNYq",
+              "x": 228,
+              "y": 39,
+              "name": "Hero Title",
+              "fill": "$nfc-text",
+              "content": "已通過寫前檢查",
+              "fontFamily": "$nfc-font",
+              "fontSize": 34,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "i8vIpx",
+              "x": 228,
+              "y": 88,
+              "name": "Hero Description",
+              "fill": "$nfc-muted",
+              "textGrowth": "fixed-width",
+              "width": 570,
+              "content": "系統已確認目標標籤可讀取、可寫入且容量足夠，並已完成本次交易的安全檢查。請在下一步開始前保持標籤穩定靠近裝置。",
+              "lineHeight": 1.42,
+              "fontFamily": "$nfc-font",
+              "fontSize": 20
+            },
+            {
+              "type": "frame",
+              "id": "X5Mq9",
+              "x": 228,
+              "y": 192,
+              "name": "Hero Status Pill",
+              "width": 186,
+              "height": 42,
+              "fill": "#102B22",
+              "cornerRadius": 21,
+              "stroke": "#5E8E55",
+              "strokeWidth": 1,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "VigFp",
+                  "x": 15,
+                  "y": 9,
+                  "name": "Hero Pill Check",
+                  "width": 24,
+                  "height": 24,
+                  "icon": "check-circle",
+                  "library": "phosphor",
+                  "weight": 300,
+                  "fill": "$nfc-gold"
+                },
+                {
+                  "type": "text",
+                  "id": "Z9M3PP",
+                  "x": 49,
+                  "y": 7,
+                  "name": "Hero Pill Label",
+                  "fill": "$nfc-gold",
+                  "content": "可開始寫入",
+                  "fontFamily": "$nfc-font",
+                  "fontSize": 19,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Z2azyl",
+          "x": 37,
+          "y": 495,
+          "name": "Card / Transaction Summary",
+          "width": 853,
+          "height": 258,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#0A1927",
+                "position": 0
+              },
+              {
+                "color": "#06121E",
+                "position": 1
+              }
+            ]
+          },
+          "cornerRadius": 24,
+          "stroke": "$nfc-border",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon",
+              "id": "K9PRUz",
+              "x": 25,
+              "y": 19,
+              "name": "Summary Header Icon",
+              "width": 27,
+              "height": 27,
+              "icon": "clipboard-text",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-cyan"
+            },
+            {
+              "type": "text",
+              "id": "ZUX9G",
+              "x": 64,
+              "y": 15,
+              "name": "Summary Header Title",
+              "fill": "$nfc-text",
+              "content": "本次交易摘要",
+              "fontFamily": "$nfc-font",
+              "fontSize": 27,
+              "fontWeight": "700"
+            },
+            {
+              "id": "C0zeZ",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Summary Row / Target",
+              "x": 16,
+              "y": 49,
+              "descendants": {
+                "e5ycOQ": {
+                  "fill": "$nfc-border-soft"
+                },
+                "GTcIs": {
+                  "icon": "tag",
+                  "fill": "$nfc-muted"
+                },
+                "WUcNV": {
+                  "content": "目標標籤"
+                },
+                "kVL3F": {
+                  "content": "Type 2 Tag / MIFARE Ultralight",
+                  "fill": "$nfc-text"
+                }
+              }
+            },
+            {
+              "id": "TjRuZ",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Summary Row / Records",
+              "x": 16,
+              "y": 90,
+              "descendants": {
+                "e5ycOQ": {
+                  "fill": "$nfc-border-soft"
+                },
+                "GTcIs": {
+                  "icon": "files",
+                  "fill": "$nfc-muted"
+                },
+                "WUcNV": {
+                  "content": "寫入內容"
+                },
+                "kVL3F": {
+                  "content": "2 筆記錄",
+                  "fill": "$nfc-text"
+                }
+              }
+            },
+            {
+              "id": "gbPkF",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Summary Row / Size",
+              "x": 16,
+              "y": 131,
+              "descendants": {
+                "e5ycOQ": {
+                  "fill": "$nfc-border-soft"
+                },
+                "GTcIs": {
+                  "icon": "database",
+                  "fill": "$nfc-muted"
+                },
+                "WUcNV": {
+                  "content": "預估大小"
+                },
+                "kVL3F": {
+                  "content": "186 bytes",
+                  "fill": "$nfc-text"
+                }
+              }
+            },
+            {
+              "id": "o6epPm",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Summary Row / Mode",
+              "x": 16,
+              "y": 172,
+              "descendants": {
+                "e5ycOQ": {
+                  "fill": "$nfc-border-soft"
+                },
+                "GTcIs": {
+                  "icon": "arrows-clockwise",
+                  "fill": "$nfc-gold"
+                },
+                "WUcNV": {
+                  "content": "寫入模式"
+                },
+                "kVL3F": {
+                  "content": "覆寫既有 NDEF",
+                  "fill": "$nfc-gold"
+                }
+              }
+            },
+            {
+              "id": "hhPEu",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Summary Row / Backup",
+              "x": 16,
+              "y": 213,
+              "descendants": {
+                "e5ycOQ": {
+                  "fill": "#00000000"
+                },
+                "GTcIs": {
+                  "icon": "lock-key",
+                  "fill": "$nfc-muted"
+                },
+                "WUcNV": {
+                  "content": "備份狀態"
+                },
+                "kVL3F": {
+                  "content": "將建立加密備份",
+                  "fill": "$nfc-text"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kixAF",
+          "x": 37,
+          "y": 760,
+          "name": "Card / Pre-check Results",
+          "width": 853,
+          "height": 284,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#0A1927",
+                "position": 0
+              },
+              {
+                "color": "#06121E",
+                "position": 1
+              }
+            ]
+          },
+          "cornerRadius": 24,
+          "stroke": "$nfc-border",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon",
+              "id": "N4UMCf",
+              "x": 25,
+              "y": 18,
+              "name": "Check Results Header Icon",
+              "width": 28,
+              "height": 28,
+              "icon": "checks",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-cyan"
+            },
+            {
+              "type": "text",
+              "id": "lEkXh",
+              "x": 64,
+              "y": 14,
+              "name": "Check Results Header Title",
+              "fill": "$nfc-text",
+              "content": "寫前檢查結果",
+              "fontFamily": "$nfc-font",
+              "fontSize": 27,
+              "fontWeight": "700"
+            },
+            {
+              "id": "x2TL3",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Check Row / Compatibility",
+              "x": 16,
+              "y": 49,
+              "height": 38,
+              "descendants": {
+                "e5ycOQ": {
+                  "y": 37,
+                  "fill": "$nfc-border-soft"
+                },
+                "GTcIs": {
+                  "icon": "seal-check",
+                  "x": 18,
+                  "y": 6,
+                  "width": 24,
+                  "height": 24,
+                  "fill": "$nfc-muted"
+                },
+                "WUcNV": {
+                  "content": "標籤相容性",
+                  "y": 5,
+                  "fontSize": 17
+                },
+                "kVL3F": {
+                  "content": "符合本次寫入格式",
+                  "y": 5,
+                  "fontSize": 17,
+                  "fill": "$nfc-text"
+                }
+              }
+            },
+            {
+              "id": "gTHDo",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Check Row / Capacity",
+              "x": 16,
+              "y": 87,
+              "height": 38,
+              "descendants": {
+                "e5ycOQ": {
+                  "y": 37,
+                  "fill": "$nfc-border-soft"
+                },
+                "GTcIs": {
+                  "icon": "hard-drives",
+                  "x": 18,
+                  "y": 6,
+                  "width": 24,
+                  "height": 24,
+                  "fill": "$nfc-muted"
+                },
+                "WUcNV": {
+                  "content": "可用容量",
+                  "y": 5,
+                  "fontSize": 17
+                },
+                "kVL3F": {
+                  "content": "仍有足夠空間",
+                  "y": 5,
+                  "fontSize": 17,
+                  "fill": "$nfc-text"
+                }
+              }
+            },
+            {
+              "id": "nRxrp",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Check Row / Permission",
+              "x": 16,
+              "y": 125,
+              "height": 38,
+              "descendants": {
+                "e5ycOQ": {
+                  "y": 37,
+                  "fill": "$nfc-border-soft"
+                },
+                "GTcIs": {
+                  "icon": "lock-open",
+                  "x": 18,
+                  "y": 6,
+                  "width": 24,
+                  "height": 24,
+                  "fill": "$nfc-muted"
+                },
+                "WUcNV": {
+                  "content": "寫入權限",
+                  "y": 5,
+                  "fontSize": 17
+                },
+                "kVL3F": {
+                  "content": "可寫入，未偵測鎖定",
+                  "y": 5,
+                  "fontSize": 17,
+                  "fill": "$nfc-text"
+                }
+              }
+            },
+            {
+              "id": "BiISz",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Check Row / Stability",
+              "x": 16,
+              "y": 163,
+              "height": 38,
+              "descendants": {
+                "e5ycOQ": {
+                  "y": 37,
+                  "fill": "$nfc-border-soft"
+                },
+                "GTcIs": {
+                  "icon": "broadcast",
+                  "x": 18,
+                  "y": 6,
+                  "width": 24,
+                  "height": 24,
+                  "fill": "$nfc-muted"
+                },
+                "WUcNV": {
+                  "content": "連線穩定性",
+                  "y": 5,
+                  "fontSize": 17
+                },
+                "kVL3F": {
+                  "content": "已穩定偵測",
+                  "y": 5,
+                  "fontSize": 17,
+                  "fill": "$nfc-text"
+                }
+              }
+            },
+            {
+              "id": "vtUm6",
+              "type": "ref",
+              "ref": "gY9yA",
+              "name": "Check Row / Decision",
+              "x": 16,
+              "y": 201,
+              "height": 38,
+              "descendants": {
+                "e5ycOQ": {
+                  "y": 37,
+                  "fill": "#00000000"
+                },
+                "GTcIs": {
+                  "icon": "shield-check",
+                  "x": 18,
+                  "y": 6,
+                  "width": 24,
+                  "height": 24,
+                  "fill": "$nfc-gold"
+                },
+                "WUcNV": {
+                  "content": "目前判定",
+                  "y": 5,
+                  "fontSize": 17
+                },
+                "kVL3F": {
+                  "content": "可以安全開始寫入",
+                  "y": 5,
+                  "fontSize": 17,
+                  "fill": "$nfc-gold"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "Hfd7w",
+              "x": 21,
+              "y": 244,
+              "name": "Technical Details Bar",
+              "width": 811,
+              "height": 30,
+              "fill": "#081F31",
+              "cornerRadius": 10,
+              "stroke": "#1A5277",
+              "strokeWidth": 1,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "MsxyC",
+                  "x": 12,
+                  "y": 5,
+                  "name": "Technical Details Info Icon",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "info",
+                  "library": "phosphor",
+                  "weight": 300,
+                  "fill": "$nfc-cyan"
+                },
+                {
+                  "type": "text",
+                  "id": "xK2cG",
+                  "x": 42,
+                  "y": 3,
+                  "name": "Technical Details Text",
+                  "fill": "$nfc-muted",
+                  "content": "技術細節：UID 已確認、NDEF 會話已就緒",
+                  "fontFamily": "$nfc-font",
+                  "fontSize": 16
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "hpT2R",
+          "x": 37,
+          "y": 1051,
+          "name": "Card / Expected Records",
+          "width": 853,
+          "height": 217,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 180,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#0A1927",
+                "position": 0
+              },
+              {
+                "color": "#06121E",
+                "position": 1
+              }
+            ]
+          },
+          "cornerRadius": 24,
+          "stroke": "$nfc-border",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "icon",
+              "id": "DnFPo",
+              "x": 25,
+              "y": 17,
+              "name": "Expected Records Header Icon",
+              "width": 28,
+              "height": 28,
+              "icon": "files",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-cyan"
+            },
+            {
+              "type": "text",
+              "id": "NP8Ny",
+              "x": 64,
+              "y": 13,
+              "name": "Expected Records Header Title",
+              "fill": "$nfc-text",
+              "content": "預期寫入內容",
+              "fontFamily": "$nfc-font",
+              "fontSize": 27,
+              "fontWeight": "700"
+            },
+            {
+              "id": "U1b0Y7",
+              "type": "ref",
+              "ref": "aZMKq",
+              "name": "Record / Traditional Chinese Text",
+              "x": 16,
+              "y": 52,
+              "descendants": {
+                "aIOvT": {
+                  "icon": "text-t"
+                },
+                "uQSWr": {
+                  "content": "文字記錄（zh-TW）"
+                },
+                "pI15g": {
+                  "content": "NFC Lab 測試內容"
+                },
+                "FZ0JT": {
+                  "content": "記錄 1"
+                }
+              }
+            },
+            {
+              "id": "pCOEH",
+              "type": "ref",
+              "ref": "aZMKq",
+              "name": "Record / URL Link",
+              "x": 16,
+              "y": 121,
+              "descendants": {
+                "aIOvT": {
+                  "icon": "link"
+                },
+                "uQSWr": {
+                  "content": "網址連結"
+                },
+                "pI15g": {
+                  "content": "https://example.com/demo"
+                },
+                "FZ0JT": {
+                  "content": "記錄 2"
+                }
+              }
+            },
+            {
+              "type": "icon",
+              "id": "n51ipB",
+              "x": 29,
+              "y": 193,
+              "name": "Expected Records Info Icon",
+              "width": 17,
+              "height": 17,
+              "icon": "info",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-dim"
+            },
+            {
+              "type": "text",
+              "id": "NnJX0",
+              "x": 56,
+              "y": 190,
+              "name": "Expected Records Info Text",
+              "fill": "$nfc-dim",
+              "content": "以上為預期寫入內容，將於下一步正式寫入標籤",
+              "fontFamily": "$nfc-font",
+              "fontSize": 15
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Xy92X",
+          "x": 37,
+          "y": 1278,
+          "name": "Card / Recommended Next Step",
+          "clip": true,
+          "width": 853,
+          "height": 169,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#1A1710",
+                "position": 0
+              },
+              {
+                "color": "#0B1720",
+                "position": 0.55
+              },
+              {
+                "color": "#07131E",
+                "position": 1
+              }
+            ]
+          },
+          "cornerRadius": 24,
+          "stroke": "$nfc-gold-soft",
+          "strokeWidth": 1,
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "UJMzw",
+              "x": -90,
+              "y": -130,
+              "name": "Guidance Gold Glow",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "radial",
+                "enabled": true,
+                "rotation": 0,
+                "size": {
+                  "width": 1,
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#F5B94126",
+                    "position": 0
+                  },
+                  {
+                    "color": "#F5B94100",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 340,
+              "height": 340
+            },
+            {
+              "type": "icon",
+              "id": "WDNHQ",
+              "x": 25,
+              "y": 17,
+              "name": "Guidance Header Icon",
+              "width": 27,
+              "height": 27,
+              "icon": "lightbulb",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-gold"
+            },
+            {
+              "type": "text",
+              "id": "NEWBS",
+              "x": 64,
+              "y": 13,
+              "name": "Guidance Header Title",
+              "fill": "$nfc-text",
+              "content": "建議下一步",
+              "fontFamily": "$nfc-font",
+              "fontSize": 27,
+              "fontWeight": "700"
+            },
+            {
+              "type": "icon",
+              "id": "nehdv",
+              "x": 29,
+              "y": 51,
+              "name": "Guidance / Keep Tag Near Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "check-circle",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-gold"
+            },
+            {
+              "type": "text",
+              "id": "W9TcB",
+              "x": 60,
+              "y": 49,
+              "name": "Guidance / Keep Tag Near Text",
+              "fill": "$nfc-muted",
+              "content": "請在寫入完成前保持同一張標籤靠近裝置",
+              "fontFamily": "$nfc-font",
+              "fontSize": 17
+            },
+            {
+              "type": "icon",
+              "id": "uUicG",
+              "x": 29,
+              "y": 80,
+              "name": "Guidance / Do Not Move Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "check-circle",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-gold"
+            },
+            {
+              "type": "text",
+              "id": "G7bugU",
+              "x": 60,
+              "y": 78,
+              "name": "Guidance / Do Not Move Text",
+              "fill": "$nfc-muted",
+              "content": "寫入期間請勿移動標籤或離開此畫面",
+              "fontFamily": "$nfc-font",
+              "fontSize": 17
+            },
+            {
+              "type": "icon",
+              "id": "QRpG4",
+              "x": 29,
+              "y": 109,
+              "name": "Guidance / Backup Recovery Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "check-circle",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "$nfc-gold"
+            },
+            {
+              "type": "text",
+              "id": "XnTzK",
+              "x": 60,
+              "y": 107,
+              "name": "Guidance / Backup Recovery Text",
+              "fill": "$nfc-muted",
+              "content": "若寫入失敗，可使用此次建立的加密備份進行還原",
+              "fontFamily": "$nfc-font",
+              "fontSize": 17
+            },
+            {
+              "type": "frame",
+              "id": "iqewd",
+              "x": 20,
+              "y": 135,
+              "name": "Guidance Commitment Banner",
+              "width": 813,
+              "height": 26,
+              "fill": "#30250F",
+              "cornerRadius": 9,
+              "stroke": "#7D5C20",
+              "strokeWidth": 1,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "dHbXX",
+                  "x": 11,
+                  "y": 4,
+                  "name": "Guidance Banner Icon",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "warning",
+                  "library": "phosphor",
+                  "weight": 300,
+                  "fill": "$nfc-gold"
+                },
+                {
+                  "type": "text",
+                  "id": "A4EdLb",
+                  "x": 38,
+                  "y": 2,
+                  "name": "Guidance Banner Text",
+                  "fill": "$nfc-gold",
+                  "content": "寫入開始後，系統將立即執行寫入與驗證流程，並於完成後回報最終結果。",
+                  "fontFamily": "$nfc-font",
+                  "fontSize": 15,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "l47q6",
+          "x": 37,
+          "y": 1456,
+          "name": "Primary Button / Confirm and Write",
+          "width": 853,
+          "height": 70,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#1467A4",
+                "position": 0
+              },
+              {
+                "color": "#1C9BE8",
+                "position": 0.5
+              },
+              {
+                "color": "#20B6F5",
+                "position": 1
+              }
+            ]
+          },
+          "cornerRadius": 18,
+          "stroke": "#75D9FF",
+          "strokeWidth": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#3DAEFF77",
+            "blur": 22,
+            "spread": 2
+          },
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": 1,
+              "id": "uS9PR",
+              "x": 20,
+              "y": 5,
+              "name": "Primary Button Top Highlight",
+              "fill": "#B9EEFF88",
+              "width": 813,
+              "height": 1
+            },
+            {
+              "type": "icon",
+              "id": "l3D7wV",
+              "x": 281,
+              "y": 18,
+              "name": "Primary Button Shield Icon",
+              "width": 34,
+              "height": 34,
+              "icon": "shield-check",
+              "library": "phosphor",
+              "weight": 300,
+              "fill": "#FFFFFF"
+            },
+            {
+              "type": "text",
+              "id": "XrvUv",
+              "x": 331,
+              "y": 14,
+              "name": "Primary Button Label",
+              "fill": "#FFFFFF",
+              "content": "確認並開始寫入",
+              "fontFamily": "$nfc-font",
+              "fontSize": 29,
+              "fontWeight": "700"
+            }
+          ]
+        },
+        {
+          "id": "JXEdA",
+          "type": "ref",
+          "ref": "h6mPw5",
+          "name": "Secondary Action / Technical Details",
+          "x": 37,
+          "y": 1537,
+          "descendants": {
+            "grhos": {
+              "icon": "list-magnifying-glass",
+              "x": 78
+            },
+            "fFONI": {
+              "content": "查看技術詳情",
+              "x": 122
+            }
+          }
+        },
+        {
+          "id": "BE8o6",
+          "type": "ref",
+          "ref": "h6mPw5",
+          "name": "Secondary Action / Edit Content",
+          "x": 474,
+          "y": 1537,
+          "width": 416,
+          "descendants": {
+            "grhos": {
+              "icon": "pencil-simple",
+              "x": 82
+            },
+            "fFONI": {
+              "content": "返回修改內容",
+              "x": 126
+            }
+          }
+        },
+        {
+          "type": "rectangle",
+          "id": "V5YQ5",
+          "x": 37,
+          "y": 1606,
+          "name": "Footer Divider",
+          "fill": "#244056",
+          "width": 853,
+          "height": 1
+        },
+        {
+          "type": "icon",
+          "id": "AKpYb",
+          "x": 351,
+          "y": 1624,
+          "name": "End Flow Icon",
+          "width": 22,
+          "height": 22,
+          "icon": "x-circle",
+          "library": "phosphor",
+          "weight": 300,
+          "fill": "$nfc-dim"
+        },
+        {
+          "type": "text",
+          "id": "VPDi3",
+          "x": 384,
+          "y": 1618,
+          "name": "End Flow Link",
+          "fill": "$nfc-muted",
+          "content": "結束此次流程",
+          "fontFamily": "$nfc-font",
+          "fontSize": 20,
+          "fontWeight": "500"
+        },
+        {
+          "type": "icon",
+          "id": "b69YT",
+          "x": 538,
+          "y": 1624,
+          "name": "End Flow Caret",
+          "width": 22,
+          "height": 22,
+          "icon": "caret-right",
+          "library": "phosphor",
+          "weight": 300,
+          "fill": "$nfc-dim"
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "nfc-bg": {
+      "type": "color",
+      "value": "#020B14"
+    },
+    "nfc-bg-deep": {
+      "type": "color",
+      "value": "#01070D"
+    },
+    "nfc-surface": {
+      "type": "color",
+      "value": "#071522"
+    },
+    "nfc-surface-2": {
+      "type": "color",
+      "value": "#0B1B2B"
+    },
+    "nfc-border": {
+      "type": "color",
+      "value": "#536B7E"
+    },
+    "nfc-border-soft": {
+      "type": "color",
+      "value": "#244056"
+    },
+    "nfc-text": {
+      "type": "color",
+      "value": "#EAF2F8"
+    },
+    "nfc-muted": {
+      "type": "color",
+      "value": "#B8C4CF"
+    },
+    "nfc-dim": {
+      "type": "color",
+      "value": "#7F94A7"
+    },
+    "nfc-cyan": {
+      "type": "color",
+      "value": "#3DAEFF"
+    },
+    "nfc-cyan-bright": {
+      "type": "color",
+      "value": "#74D8FF"
+    },
+    "nfc-cyan-deep": {
+      "type": "color",
+      "value": "#0A4A82"
+    },
+    "nfc-gold": {
+      "type": "color",
+      "value": "#F5B941"
+    },
+    "nfc-gold-soft": {
+      "type": "color",
+      "value": "#9A6A25"
+    },
+    "nfc-font": {
+      "type": "string",
+      "value": "Noto Sans TC"
+    },
+    "nfc-radius-card": {
+      "type": "number",
+      "value": 24
+    },
+    "nfc-radius-row": {
+      "type": "number",
+      "value": 12
+    }
+  },
+  "fileToken": "21b4e534-52b8-482a-8be5-cfb4b67aaf5e"
+}

@@ -13,7 +13,7 @@ last_reviewed_baseline: 1.14.0
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.14.0
-Current phase: Implementation in progress; Tasks 33-1 through 33-3 accepted
+Current phase: Implementation in progress; Tasks 33-1 through 33-4 accepted
 ```
 
 ## Active Scope
@@ -26,7 +26,7 @@ Milestone 33 建立 repository-local `.pen` visual authority、third-party Skill
 - Accepted Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
 - Plan review：`docs/audits/milestone_33/33-p_implementation_plan_review.md`
 
-Implementation Plan已完成雙層review並於2026-08-04取得使用者書面核准。Managed worktree與Execution Admission已通過；Task 33-1 canonical ADR、Task 33-2 ownership-aware Skill lock與Task 33-3 Taste Skill immutable source／discovery governance均已完成。Visual source尚未匯入、Pencil canvas尚未操作、Flutter source尚未修改。
+Implementation Plan已完成雙層review並於2026-08-04取得使用者書面核准。Tasks 33-1至33-4已建立canonical ADR、ownership-aware Skill lock、Taste Skill provenance／discovery與repository-local visual authority。Pencil canvas尚未操作、canonical Pencil preview仍等待Task 33-6 fresh export、Flutter source尚未修改。
 
 ## Latest Completed Milestone
 
@@ -39,8 +39,8 @@ Milestone 32 — CI產物本機化與GitHub儲存空間切換已完成Design、P
 ## Current Next Action
 
 ```txt
-執行Task 33-4 Visual Source and Authority Contracts
-→ 先以TDD建立manifest verifier
-→ 再匯入repository-local `.pen`與reference evidence
-→ 完成Task review後才可進入Pencil admission
+執行Task 33-5 Repository Pencil-to-Flutter Orchestration Skill
+→ 建立thin routing Skill與pressure scenarios
+→ 完成repository-local discovery／collision-free validation
+→ 才可進入Task 33-6 Pencil MCP admission
 ```

@@ -23,6 +23,43 @@ class DocumentationCheckerTest(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_visual_authority_manifest_is_checked_by_repository_docs_check(self) -> None:
+        with _fixture() as root:
+            _write(root, "docs/design_sources/example/source.pen", "source\n")
+            _write(root, "docs/design_sources/example/pencil-preview.png", "preview\n")
+            _write(root, "docs/design_sources/example/original-reference.png", "reference\n")
+            _write(
+                root,
+                "docs/design_sources/example/historical-flutter-benchmark.png",
+                "benchmark\n",
+            )
+            _write(
+                root,
+                "docs/visual_authority/example/manifest.md",
+                "---\n"
+                "document_type: runtime-evidence\n"
+                "status: accepted\n"
+                "authoritative_for:\n"
+                "  - example-visual-authority\n"
+                "last_reviewed_baseline: 1.14.0\n"
+                "initiative: example\n"
+                "authority_file: ../../design_sources/example/source.pen\n"
+                f"authority_sha256: {'0' * 64}\n"
+                "canonical_width: 941\n"
+                "canonical_height: 1672\n"
+                "canonical_dpr: 1.0\n"
+                "---\n\n"
+                "# Example Visual Authority\n\n"
+                "| Role | Path | SHA-256 | Authority status |\n"
+                "|---|---|---|---|\n"
+                f"| primary-source | ../../design_sources/example/source.pen | {'0' * 64} | primary |\n"
+                f"| derived-preview | ../../design_sources/example/pencil-preview.png | {'0' * 64} | derived |\n"
+                f"| supplementary-reference | ../../design_sources/example/original-reference.png | {'0' * 64} | supplementary |\n"
+                f"| historical-benchmark | ../../design_sources/example/historical-flutter-benchmark.png | {'0' * 64} | benchmark |\n",
+            )
+
+            self.assertIn("visual-authority-hash-drift", _codes(root))
+
     def test_generated_cocoapods_tree_is_ignored(self) -> None:
         with _fixture() as root:
             _write(

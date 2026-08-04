@@ -3,7 +3,7 @@ document_type: documentation-hub
 status: active
 authoritative_for:
   - documentation-taxonomy-and-reading-routing
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Documentation Hub
@@ -32,6 +32,8 @@ last_reviewed_baseline: 1.13.0
 | Historical archive | 已封存且不再代表 current state 的內容 | `docs/archive/` |
 | Governance | 文件類型、metadata、生命週期與增長規則 | `docs/governance/` |
 | Reusable guide | 使用者操作、CI、測試、環境採用等可重複程序 | `docs/guides/` |
+| Design source | Repository-local `.pen`與直接衍生／參考檔案 | `docs/design_sources/` |
+| Visual authority | Source ranking、raw hash、canonical viewport與supersession contract | `docs/visual_authority/` |
 
 完整文件治理規則與 minimal metadata contract 見 `docs/governance/documentation_policy.md`。
 
@@ -109,6 +111,20 @@ Plan 只描述「怎麼做」，不代表工作已完成。完成狀態以 curre
 
 Audit 文件保存當時的 review 與 evidence，不取代 current snapshot 或 Architecture Decision。
 
+### Pencil-to-Flutter design implementation
+
+```txt
+最小讀取集
+→ Accepted Requirement／Design／Plan
+→ docs/visual_authority/<initiative>/manifest.md
+→ docs/design_sources/<initiative>/ primary source
+→ ADR-028
+→ loaded repository-local Skill provenance
+→ Pencil MCP admission／Flutter mapping／visual validation evidence
+```
+
+`.pen`只透過Pencil MCP讀取或修改；external absolute path、PNG或historical Flutter screenshot不得取代repository-local source authority。
+
 ### Release task
 
 ```txt
@@ -137,6 +153,8 @@ Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆
 - `docs/archive/README.md`：已明確封存的歷史內容。
 - `docs/governance/documentation_policy.md`：文件治理與 metadata contract。
 - `docs/governance/development_workflow.md`：需求分類、Superpowers、雙層Task、Skill registry與repository-local workflow／feature shortcut的治理總覽。
+- `docs/design_sources/README.md`：Repository-local design source與external admission boundary。
+- `docs/visual_authority/README.md`：Visual manifest contract、source ranking、hash與canonical viewport routing。
 - `docs/guides/`：可重複使用的操作指南；AI Agent日常入口與可複製Prompt請讀`docs/guides/agent_assisted_development_quick_start.md`，CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
 - `docs/mistakes/`：已知反模式與錯誤案例。
 - `docs/evolution/`：架構演進知識入口。

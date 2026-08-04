@@ -87,6 +87,14 @@ description: 當此 Flutter 模板 repository 中的工作需要評估、規劃�
 
 API-only change、visual-only rebranding、有界的單一平台 repair、environment contract change、signing 或 Store distribution，不得在沒有獨立中央分類的情況下交由此 Skill。Domain Skill 不得自行分類或核准需求，也不取代此治理 Skill。
 
+## Pencil-to-Flutter domain route
+
+當已接受的Requirement Decision明確辨識repository-local `.pen`到Flutter implementation，且Design、Implementation Plan、managed worktree與visual authority gate均已通過時，使用`implementing-pencil-flutter-design`作為從屬domain Skill。
+
+此route只編排Pencil MCP admission、structure extraction、Flutter authority mapping、TDD與visual acceptance。它不得自行分類、接受Design／Plan、解析`.pen`、自由重設計或宣稱release／closure。
+
+Figma-only、image-only concept、ordinary Flutter feature、already-coded UI bugfix、external-only `.pen`與Plan仍為`proposed`的工作不觸發此route。Accepted `.pen`存在時，`imagegen-frontend-mobile`不因「找靈感」自動觸發。
+
 ## 停止與繼續
 
 Task 通過後自動繼續下一個 Task。只有下列情況才停止：

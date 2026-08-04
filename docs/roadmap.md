@@ -28,7 +28,7 @@ Other platforms: Dependency-ready
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.14.0
-Phase: Design／ADR accepted; Implementation Plan drafting
+Phase: Implementation Plan proposed; implementation not started
 ```
 
 完整 active scope、design、gate與 next action：

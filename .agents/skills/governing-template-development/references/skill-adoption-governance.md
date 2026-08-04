@@ -30,10 +30,14 @@ Skill 永遠不取代 repository authority、source、tests、CI、security poli
 
 ## 語言規則
 
-- Repository-local Skill 的 `SKILL.md`、references、範例與壓力測試文件預設使用繁體中文。
+- Repository-authored Skill 的 `SKILL.md`、references、範例與壓力測試文件預設使用繁體中文。
 - Skill `name`、檔名、路徑、class／method／package 名稱、status values 與其他必要技術識別保留英文。
-- 引用外部 Skill 時保留原始名稱、來源路徑、commit 與 license identity，但說明文字仍使用繁體中文。
-- 翻譯 trigger、gate 或 safety wording 時，必須重新執行 focused adoption review 與相關 pressure validation，避免語意漂移。
+- Unmodified third-party Skill 必須保留上游原始語言、目錄結構與raw bytes，不得為了符合repository語言政策翻譯trigger、gate、safety wording或examples。
+- Unmodified third-party Skill只有在root `skills-lock.json`以immutable commit、exact install path、逐檔SHA-256、repository-local exact license bytes與license SHA-256完整鎖定，且整份lock零issues時，才可豁免Skill中文檢查。
+- Path-only、name-only、目錄命名或人工宣告`third-party`都不能取得語言豁免。
+- 修改任何受管理third-party bytes後即成為`repository-maintained-fork`，必須使用明確fork identity、記錄upstream base並重新遵守repository-authored語言與focused adoption governance。
+- Root lock只擁有provenance、integrity與machine-readable exemption，不擁有trigger、workflow ordering、approval、Task、release或closure authority。
+- 引用外部 Skill 時仍須記錄原始名稱、source repository、immutable commit、source path、license identity、upgrade與rollback method。
 
 ## 升級規則
 
@@ -42,6 +46,8 @@ Trigger、artifacts、permissions、managed files、workflow order 或 supported
 ## Registry contract
 
 每個已採用或已評估的 Skill，都要記錄 name、source、pinned version 或 commit、status、trigger、responsibility、forbidden responsibility、overlaps、companion Skills、repository mutations、required permissions、validation evidence、last review 與 rollback／upgrade policy。
+
+`skills-lock.json`與registry不得互相取代：lock驗證exact source／license bytes與install inventory；registry保存status、trigger、responsibility、permissions、behavioral evidence與rollback。兩者衝突時Task fail closed，回到admission review處理。
 
 ## 重新驗證觸發條件
 

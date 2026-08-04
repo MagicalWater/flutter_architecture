@@ -2,12 +2,27 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+import subprocess
+import sys
 from pathlib import Path
 
 from tools.docs.check_docs import check_repository
 
 
 class DocumentationCheckerTest(unittest.TestCase):
+    def test_check_docs_script_supports_direct_execution(self) -> None:
+        with _fixture() as root:
+            script = Path(__file__).with_name("check_docs.py")
+
+            result = subprocess.run(
+                [sys.executable, str(script), str(root)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_generated_cocoapods_tree_is_ignored(self) -> None:
         with _fixture() as root:
             _write(

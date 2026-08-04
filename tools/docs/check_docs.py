@@ -7,6 +7,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from tools.docs.skill_lock import inspect_skill_lock
+
 
 DOCUMENT_TYPES = {
     "agent-policy",
@@ -80,8 +85,19 @@ def check_repository(root: Path) -> list[CheckIssue]:
     root = root.resolve()
     markdown_files = sorted(_iter_markdown_files(root))
     issues: list[CheckIssue] = []
+    skill_lock = inspect_skill_lock(root)
+    issues.extend(
+        CheckIssue(issue.code, issue.path, issue.message)
+        for issue in skill_lock.issues
+    )
     issues.extend(_check_links(root, markdown_files))
-    issues.extend(_check_agent_skill_language(root, markdown_files))
+    issues.extend(
+        _check_agent_skill_language(
+            root,
+            markdown_files,
+            skill_lock.exempt_markdown_paths,
+        )
+    )
     issues.extend(_check_baseline(root))
     metadata_by_path, metadata_issues = _check_metadata(root, markdown_files)
     issues.extend(metadata_issues)
@@ -117,10 +133,16 @@ def _is_agent_skill_markdown(path: Path, root: Path) -> bool:
     return len(relative.parts) >= 4 and relative.parts[0:2] == (".agents", "skills")
 
 
-def _check_agent_skill_language(root: Path, files: list[Path]) -> list[CheckIssue]:
+def _check_agent_skill_language(
+    root: Path,
+    files: list[Path],
+    exempt_markdown_paths: frozenset[Path],
+) -> list[CheckIssue]:
     issues: list[CheckIssue] = []
     for path in files:
         if not _is_agent_skill_markdown(path, root):
+            continue
+        if path.resolve() in exempt_markdown_paths:
             continue
         text = path.read_text(encoding="utf-8")
         if path.name == "SKILL.md":

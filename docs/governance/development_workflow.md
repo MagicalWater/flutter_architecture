@@ -3,7 +3,7 @@ document_type: governance-policy
 status: accepted
 authoritative_for:
   - template-development-workflow-governance-overview
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # Template Development Workflow Governance
@@ -58,9 +58,11 @@ Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不�
 
 新增Skill必須先做confirmed gap、overlap、authority、permission、version、rollback與pressure-scenario審查。Approved、Approved with restrictions、Pilot、Deprecated與Rejected disposition由Workflow Governance Skill reference定義。
 
-Repository-local Skill 的`SKILL.md`、references、範例與pressure scenarios預設使用繁體中文；Skill名稱、檔名、路徑、status values與必要技術識別保留英文。翻譯trigger或gate wording後必須重新執行focused adoption review，不能把語言修正當成不需驗證的純排版變更。
+Repository-authored Skill的`SKILL.md`、references、範例與pressure scenarios預設使用繁體中文；Skill名稱、檔名、路徑、status values與必要技術識別保留英文。翻譯trigger或gate wording後必須重新執行focused adoption review，不能把語言修正當成不需驗證的純排版變更。
 
-`docs_check`會對`.agents/skills/**/*.md`執行最小語言contract：每個`SKILL.md`的frontmatter description與每份Skill Markdown正文都必須包含中文文字。Checker只防止英文-only回歸；繁體用字、trigger語意、gate與safety wording仍必須由focused adoption review與pressure validation審查。
+Unmodified third-party Skill保留上游原始語言、結構與raw bytes。只有root `skills-lock.json`以immutable commit、exact install path、逐檔raw SHA-256、repository-local exact license bytes與license SHA-256完整驗證，且整份lock零issues時，對應Markdown才能豁免中文檢查。Path-only或name-only標示無效；任何managed bytes修改後即視為repository-maintained fork，重新適用repository-authored語言、identity與focused adoption governance。
+
+`docs_check`會先執行ownership-aware Skill lock檢查，再把零issue的`third-party-unmodified` Markdown exact paths傳給語言checker。Missing file、unknown file、hash drift、path escape、duplicate install path、non-immutable commit、missing license或license hash drift都會fail closed並撤銷整份lock的所有豁免。Lock只擁有provenance／integrity，不擁有trigger、workflow、approval、Task、release或closure authority；這些仍由中央治理Skill、registry與accepted artifacts擁有。
 
 ### Adopted Skill registry
 

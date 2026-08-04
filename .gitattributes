@@ -3,3 +3,4 @@
 .agents/skills/high-end-visual-design/SKILL.md text eol=lf
 .agents/skills/imagegen-frontend-mobile/SKILL.md text eol=lf
 third_party/skills/taste-skill/LICENSE text eol=lf
+docs/design_sources/**/*.pen binary

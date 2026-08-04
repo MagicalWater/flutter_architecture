@@ -412,6 +412,7 @@ git commit -m "feat(skills): 鎖定Taste設計Skill來源"
 ### Task 33-4: Establish Visual Source and Authority Contracts
 
 **Files:**
+- Modify: `.gitattributes`
 - Create: `tools/visual/verify_visual_authority.py`
 - Create: `tools/visual/test_verify_visual_authority.py`
 - Create: `docs/design_sources/README.md`
@@ -480,7 +481,7 @@ D:\Developer\ui-agent\flutter_preview\flutter-preview.png
 69edbc35da44288e80b448231de50f9a51d95ba84c9042ea16797267b607731d
 ```
 
-Calculate destination hashes independently. Any mismatch blocks the Task. The admitted `pencil-preview.png` is a `226 × 400` Pencil renderer thumbnail and is accepted only as derived admission evidence at this stage; it is not the canonical pixel-diff master. Task 33-6 must use Pencil MCP to replace it with a fresh `941 × 1672` canonical export and update the manifest hash before Flutter implementation can begin. After manifest acceptance, external paths cease to be active authority.
+Calculate destination hashes independently. Any mismatch blocks the Task. Mark repository-local `docs/design_sources/**/*.pen` as Git `binary` so `core.autocrlf` cannot alter opaque authority bytes in a clean checkout. The admitted `pencil-preview.png` is a `226 × 400` Pencil renderer thumbnail and is accepted only as derived admission evidence at this stage; it is not the canonical pixel-diff master. Task 33-6 must use Pencil MCP to replace it with a fresh `941 × 1672` canonical export and update the manifest hash before Flutter implementation can begin. After manifest acceptance, external paths cease to be active authority.
 
 - [ ] **Step 4: Run GREEN and docs checks**
 

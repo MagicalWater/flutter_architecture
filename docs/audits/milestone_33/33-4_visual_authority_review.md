@@ -102,6 +102,15 @@ Destination hashes通過後，external absolute paths不再是active authority�
 - Fix：Verifier以resolved path建立`path_roles`，任何第二role重用同一file回報`visual-authority-duplicate-file`。
 - Fresh GREEN：targeted test通過；combined visual／docs tests共32項通過。
 
+### F-33-4-03 — `.pen`未宣告Git binary，Windows clean checkout可能改變authority bytes
+
+- Severity：P1。
+- Status：Resolved。
+- Finding：Task commit時Git警告`source.pen`的LF將在下次touch轉為CRLF。Current working tree與commit blob雖都維持accepted SHA，但repository`core.autocrlf=true`且path沒有attribute，clean checkout可能改變opaque `.pen`bytes並使manifest drift。
+- Root cause：Task 33-3只固定third-party text files的LF；Task 33-4沒有為新design-source extension建立Git byte-preservation contract。
+- Fix：`.gitattributes`新增`docs/design_sources/**/*.pen binary`，使Git對`.pen`套用`-text -diff -merge`並禁止EOL normalization。
+- Fresh evidence：`git check-attr`回報`binary: set, text: unset, diff: unset, merge: unset`；以`core.autocrlf=true`建立fresh checkout後，`source.pen`SHA-256仍為accepted`bd892671...`且manifest verifier零issues。
+
 ## Manifest Review
 
 ### Primary authority
@@ -200,7 +209,7 @@ PNG IHDR dimensions
 ```txt
 TDD RED: VERIFIED
 Initial GREEN: PASSED
-Focused review: PASSED after F-33-4-01 and F-33-4-02 disposition
+Focused review: PASSED after F-33-4-01, F-33-4-02 and F-33-4-03 disposition
 Fresh focused re-review: PASSED
 Whole-Task review: PASSED
 Visual source ranking: ACCEPTED

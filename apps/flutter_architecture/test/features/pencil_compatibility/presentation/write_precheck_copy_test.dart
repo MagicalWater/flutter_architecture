@@ -53,7 +53,24 @@ void main() {
     expect(PencilCompatibilityVisualSpec.canonicalSize, const Size(941, 1672));
     expect(PencilCompatibilityVisualSpec.canonicalDevicePixelRatio, 1);
     expect(PencilCompatibilityVisualSpec.background, const Color(0xFF020B14));
+    expect(
+      PencilCompatibilityVisualSpec.backgroundDeep,
+      const Color(0xFF01070D),
+    );
+    expect(PencilCompatibilityVisualSpec.surface, const Color(0xFF071522));
+    expect(
+      PencilCompatibilityVisualSpec.surfaceRaised,
+      const Color(0xFF0B1B2B),
+    );
+    expect(PencilCompatibilityVisualSpec.border, const Color(0xFF536B7E));
+    expect(PencilCompatibilityVisualSpec.borderSoft, const Color(0xFF244056));
+    expect(PencilCompatibilityVisualSpec.text, const Color(0xFFEAF2F8));
+    expect(PencilCompatibilityVisualSpec.muted, const Color(0xFFB8C4CF));
+    expect(PencilCompatibilityVisualSpec.dim, const Color(0xFF7F94A7));
     expect(PencilCompatibilityVisualSpec.cyan, const Color(0xFF3DAEFF));
+    expect(PencilCompatibilityVisualSpec.cyanBright, const Color(0xFF74D8FF));
     expect(PencilCompatibilityVisualSpec.gold, const Color(0xFFF5B941));
+    expect(PencilCompatibilityVisualSpec.goldSoft, const Color(0xFF9A6A25));
+    expect(PencilCompatibilityVisualSpec.cardRadius, 24);
   });
 }

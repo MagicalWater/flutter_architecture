@@ -383,4 +383,162 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get catalogRateLimitedMessage =>
       'Too many catalog requests. Please try again later.';
+
+  @override
+  String get pencilPrecheckTitle => 'Write pre-check';
+
+  @override
+  String get pencilPrecheckFlowStep => 'Safe write flow · Step 3 of 4';
+
+  @override
+  String get pencilPrecheckStepPrepared => 'Prepared content';
+
+  @override
+  String get pencilPrecheckStepDetected => 'Tag detected';
+
+  @override
+  String get pencilPrecheckStepActive => 'Write pre-check';
+
+  @override
+  String get pencilPrecheckStepVerification => 'Write and verify';
+
+  @override
+  String get pencilPrecheckHeroTitle => 'Write pre-check passed';
+
+  @override
+  String get pencilPrecheckHeroDescription =>
+      'The system confirmed the target tag is readable, writable, and has enough capacity. All safety checks for this transaction are complete. Keep the tag close to the device until the next step begins.';
+
+  @override
+  String get pencilPrecheckHeroStatus => 'Ready to write';
+
+  @override
+  String get pencilPrecheckSummaryTitle => 'Transaction summary';
+
+  @override
+  String get pencilPrecheckSummaryTargetLabel => 'Target tag';
+
+  @override
+  String get pencilPrecheckSummaryTargetValue =>
+      'Type 2 Tag / MIFARE Ultralight';
+
+  @override
+  String get pencilPrecheckSummaryRecordsLabel => 'Write content';
+
+  @override
+  String get pencilPrecheckSummaryRecordsValue => '2 records';
+
+  @override
+  String get pencilPrecheckSummarySizeLabel => 'Estimated size';
+
+  @override
+  String get pencilPrecheckSummarySizeValue => '186 bytes';
+
+  @override
+  String get pencilPrecheckSummaryModeLabel => 'Write mode';
+
+  @override
+  String get pencilPrecheckSummaryModeValue => 'Overwrite existing NDEF';
+
+  @override
+  String get pencilPrecheckSummaryBackupLabel => 'Backup status';
+
+  @override
+  String get pencilPrecheckSummaryBackupValue =>
+      'An encrypted backup will be created';
+
+  @override
+  String get pencilPrecheckResultsTitle => 'Write pre-check results';
+
+  @override
+  String get pencilPrecheckResultCompatibilityLabel => 'Tag compatibility';
+
+  @override
+  String get pencilPrecheckResultCompatibilityValue =>
+      'Compatible with this write format';
+
+  @override
+  String get pencilPrecheckResultCapacityLabel => 'Available capacity';
+
+  @override
+  String get pencilPrecheckResultCapacityValue => 'Enough space remains';
+
+  @override
+  String get pencilPrecheckResultPermissionLabel => 'Write permission';
+
+  @override
+  String get pencilPrecheckResultPermissionValue =>
+      'Writable; no lock detected';
+
+  @override
+  String get pencilPrecheckResultStabilityLabel => 'Connection stability';
+
+  @override
+  String get pencilPrecheckResultStabilityValue => 'Tag detection is stable';
+
+  @override
+  String get pencilPrecheckResultDecisionLabel => 'Current decision';
+
+  @override
+  String get pencilPrecheckResultDecisionValue => 'Safe to begin writing';
+
+  @override
+  String get pencilPrecheckTechnicalDetail =>
+      'Technical details: UID confirmed; NDEF session ready';
+
+  @override
+  String get pencilPrecheckRecordsTitle => 'Expected write content';
+
+  @override
+  String get pencilPrecheckRecordTextTitle => 'Text record (zh-TW)';
+
+  @override
+  String get pencilPrecheckRecordTextValue => 'NFC Lab test content';
+
+  @override
+  String get pencilPrecheckRecordTextBadge => 'Record 1';
+
+  @override
+  String get pencilPrecheckRecordUrlTitle => 'Website link';
+
+  @override
+  String get pencilPrecheckRecordUrlValue => 'https://example.com/demo';
+
+  @override
+  String get pencilPrecheckRecordUrlBadge => 'Record 2';
+
+  @override
+  String get pencilPrecheckRecordsNotice =>
+      'The content above will be written to the tag in the next step.';
+
+  @override
+  String get pencilPrecheckGuidanceTitle => 'Recommended next step';
+
+  @override
+  String get pencilPrecheckGuidanceKeepNear =>
+      'Keep the same tag close to the device until writing finishes.';
+
+  @override
+  String get pencilPrecheckGuidanceDoNotMove =>
+      'Do not move the tag or leave this screen while writing.';
+
+  @override
+  String get pencilPrecheckGuidanceBackup =>
+      'If writing fails, use the encrypted backup from this transaction to restore the tag.';
+
+  @override
+  String get pencilPrecheckCommitmentNotice =>
+      'After writing begins, the system immediately runs the write-and-verify flow and reports the final result when complete.';
+
+  @override
+  String get pencilPrecheckPrimaryAction => 'Confirm and start writing';
+
+  @override
+  String get pencilPrecheckTechnicalAction => 'View technical details';
+
+  @override
+  String get pencilPrecheckEditAction => 'Return to edit content';
+
+  @override
+  String get pencilPrecheckEndFlowAction => 'End this flow';
 }

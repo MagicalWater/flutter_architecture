@@ -5,6 +5,7 @@ import 'package:flutter_architecture/features/auth/presentation/pages/local_unlo
 import 'package:flutter_architecture/features/auth/presentation/pages/otp_page.dart';
 import 'package:flutter_architecture/features/catalog/presentation/pages/catalog_page.dart';
 import 'package:flutter_architecture/features/profile/presentation/pages/profile_page.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/pages/write_precheck_page.dart';
 import 'package:flutter_architecture/features/protected/presentation/pages/protected_page.dart';
 import 'package:flutter_architecture/features/shell/presentation/pages/shell_page.dart';
 import 'package:injectable/injectable.dart';
@@ -46,6 +47,7 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(page: OtpRoute.page),
     AutoRoute(page: LocalUnlockRoute.page),
+    AutoRoute(page: WritePrecheckRoute.page),
     AutoRoute(page: ProtectedRoute.page, guards: <AutoRouteGuard>[_authGuard]),
   ];
 }

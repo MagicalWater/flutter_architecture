@@ -121,3 +121,19 @@ class ShellRoute extends PageRouteInfo<void> {
     },
   );
 }
+
+/// generated route for
+/// [WritePrecheckPage]
+class WritePrecheckRoute extends PageRouteInfo<void> {
+  const WritePrecheckRoute({List<PageRouteInfo>? children})
+    : super(WritePrecheckRoute.name, initialChildren: children);
+
+  static const String name = 'WritePrecheckRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const WritePrecheckPage();
+    },
+  );
+}

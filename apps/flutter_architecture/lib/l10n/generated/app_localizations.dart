@@ -770,6 +770,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Too many catalog requests. Please try again later.'**
   String get catalogRateLimitedMessage;
+
+  /// No description provided for @pencilPrecheckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write pre-check'**
+  String get pencilPrecheckTitle;
+
+  /// No description provided for @pencilPrecheckFlowStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe write flow · Step 3 of 4'**
+  String get pencilPrecheckFlowStep;
+
+  /// No description provided for @pencilPrecheckStepPrepared.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepared content'**
+  String get pencilPrecheckStepPrepared;
+
+  /// No description provided for @pencilPrecheckStepDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag detected'**
+  String get pencilPrecheckStepDetected;
+
+  /// No description provided for @pencilPrecheckStepActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Write pre-check'**
+  String get pencilPrecheckStepActive;
+
+  /// No description provided for @pencilPrecheckStepVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Write and verify'**
+  String get pencilPrecheckStepVerification;
+
+  /// No description provided for @pencilPrecheckHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write pre-check passed'**
+  String get pencilPrecheckHeroTitle;
+
+  /// No description provided for @pencilPrecheckHeroDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The system confirmed the target tag is readable, writable, and has enough capacity. All safety checks for this transaction are complete. Keep the tag close to the device until the next step begins.'**
+  String get pencilPrecheckHeroDescription;
+
+  /// No description provided for @pencilPrecheckHeroStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to write'**
+  String get pencilPrecheckHeroStatus;
+
+  /// No description provided for @pencilPrecheckSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction summary'**
+  String get pencilPrecheckSummaryTitle;
+
+  /// No description provided for @pencilPrecheckSummaryTargetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target tag'**
+  String get pencilPrecheckSummaryTargetLabel;
+
+  /// No description provided for @pencilPrecheckSummaryTargetValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Type 2 Tag / MIFARE Ultralight'**
+  String get pencilPrecheckSummaryTargetValue;
+
+  /// No description provided for @pencilPrecheckSummaryRecordsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Write content'**
+  String get pencilPrecheckSummaryRecordsLabel;
+
+  /// No description provided for @pencilPrecheckSummaryRecordsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'2 records'**
+  String get pencilPrecheckSummaryRecordsValue;
+
+  /// No description provided for @pencilPrecheckSummarySizeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated size'**
+  String get pencilPrecheckSummarySizeLabel;
+
+  /// No description provided for @pencilPrecheckSummarySizeValue.
+  ///
+  /// In en, this message translates to:
+  /// **'186 bytes'**
+  String get pencilPrecheckSummarySizeValue;
+
+  /// No description provided for @pencilPrecheckSummaryModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Write mode'**
+  String get pencilPrecheckSummaryModeLabel;
+
+  /// No description provided for @pencilPrecheckSummaryModeValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite existing NDEF'**
+  String get pencilPrecheckSummaryModeValue;
+
+  /// No description provided for @pencilPrecheckSummaryBackupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup status'**
+  String get pencilPrecheckSummaryBackupLabel;
+
+  /// No description provided for @pencilPrecheckSummaryBackupValue.
+  ///
+  /// In en, this message translates to:
+  /// **'An encrypted backup will be created'**
+  String get pencilPrecheckSummaryBackupValue;
+
+  /// No description provided for @pencilPrecheckResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write pre-check results'**
+  String get pencilPrecheckResultsTitle;
+
+  /// No description provided for @pencilPrecheckResultCompatibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag compatibility'**
+  String get pencilPrecheckResultCompatibilityLabel;
+
+  /// No description provided for @pencilPrecheckResultCompatibilityValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Compatible with this write format'**
+  String get pencilPrecheckResultCompatibilityValue;
+
+  /// No description provided for @pencilPrecheckResultCapacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Available capacity'**
+  String get pencilPrecheckResultCapacityLabel;
+
+  /// No description provided for @pencilPrecheckResultCapacityValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Enough space remains'**
+  String get pencilPrecheckResultCapacityValue;
+
+  /// No description provided for @pencilPrecheckResultPermissionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Write permission'**
+  String get pencilPrecheckResultPermissionLabel;
+
+  /// No description provided for @pencilPrecheckResultPermissionValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Writable; no lock detected'**
+  String get pencilPrecheckResultPermissionValue;
+
+  /// No description provided for @pencilPrecheckResultStabilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection stability'**
+  String get pencilPrecheckResultStabilityLabel;
+
+  /// No description provided for @pencilPrecheckResultStabilityValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag detection is stable'**
+  String get pencilPrecheckResultStabilityValue;
+
+  /// No description provided for @pencilPrecheckResultDecisionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current decision'**
+  String get pencilPrecheckResultDecisionLabel;
+
+  /// No description provided for @pencilPrecheckResultDecisionValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe to begin writing'**
+  String get pencilPrecheckResultDecisionValue;
+
+  /// No description provided for @pencilPrecheckTechnicalDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical details: UID confirmed; NDEF session ready'**
+  String get pencilPrecheckTechnicalDetail;
+
+  /// No description provided for @pencilPrecheckRecordsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected write content'**
+  String get pencilPrecheckRecordsTitle;
+
+  /// No description provided for @pencilPrecheckRecordTextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Text record (zh-TW)'**
+  String get pencilPrecheckRecordTextTitle;
+
+  /// No description provided for @pencilPrecheckRecordTextValue.
+  ///
+  /// In en, this message translates to:
+  /// **'NFC Lab test content'**
+  String get pencilPrecheckRecordTextValue;
+
+  /// No description provided for @pencilPrecheckRecordTextBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Record 1'**
+  String get pencilPrecheckRecordTextBadge;
+
+  /// No description provided for @pencilPrecheckRecordUrlTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Website link'**
+  String get pencilPrecheckRecordUrlTitle;
+
+  /// No description provided for @pencilPrecheckRecordUrlValue.
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com/demo'**
+  String get pencilPrecheckRecordUrlValue;
+
+  /// No description provided for @pencilPrecheckRecordUrlBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Record 2'**
+  String get pencilPrecheckRecordUrlBadge;
+
+  /// No description provided for @pencilPrecheckRecordsNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'The content above will be written to the tag in the next step.'**
+  String get pencilPrecheckRecordsNotice;
+
+  /// No description provided for @pencilPrecheckGuidanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended next step'**
+  String get pencilPrecheckGuidanceTitle;
+
+  /// No description provided for @pencilPrecheckGuidanceKeepNear.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the same tag close to the device until writing finishes.'**
+  String get pencilPrecheckGuidanceKeepNear;
+
+  /// No description provided for @pencilPrecheckGuidanceDoNotMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not move the tag or leave this screen while writing.'**
+  String get pencilPrecheckGuidanceDoNotMove;
+
+  /// No description provided for @pencilPrecheckGuidanceBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'If writing fails, use the encrypted backup from this transaction to restore the tag.'**
+  String get pencilPrecheckGuidanceBackup;
+
+  /// No description provided for @pencilPrecheckCommitmentNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'After writing begins, the system immediately runs the write-and-verify flow and reports the final result when complete.'**
+  String get pencilPrecheckCommitmentNotice;
+
+  /// No description provided for @pencilPrecheckPrimaryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm and start writing'**
+  String get pencilPrecheckPrimaryAction;
+
+  /// No description provided for @pencilPrecheckTechnicalAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View technical details'**
+  String get pencilPrecheckTechnicalAction;
+
+  /// No description provided for @pencilPrecheckEditAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to edit content'**
+  String get pencilPrecheckEditAction;
+
+  /// No description provided for @pencilPrecheckEndFlowAction.
+  ///
+  /// In en, this message translates to:
+  /// **'End this flow'**
+  String get pencilPrecheckEndFlowAction;
 }
 
 class _AppLocalizationsDelegate

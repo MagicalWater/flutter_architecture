@@ -44,5 +44,19 @@ void main() {
 
       expect(protectedRoute.guards, contains(authGuard));
     });
+
+    test('WritePrecheckRoute 是獨立、無 guard 且非 initial 的 top-level route', () {
+      final sessionManager = SessionManager();
+      final router = AppRouter(AuthGuard(sessionManager));
+      addTearDown(sessionManager.dispose);
+
+      final route = router.routes.singleWhere(
+        (candidate) => candidate.page.name == WritePrecheckRoute.name,
+      );
+
+      expect(route.initial, isFalse);
+      expect(route.guards, isEmpty);
+      expect(router.routes.first.page.name, ShellRoute.name);
+    });
   });
 }

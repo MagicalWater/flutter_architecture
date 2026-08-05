@@ -37,6 +37,17 @@ void main() {
       expect(find.byType(FittedBox), findsNothing);
       expect(tester.takeException(), isNull);
 
+      if (size == const Size(941, 1672)) {
+        final endFlowRect = tester.getRect(
+          find.byKey(const ValueKey<String>('precheckEndFlowAction')),
+        );
+        expect(
+          endFlowRect.bottom,
+          lessThanOrEqualTo(size.height),
+          reason: 'The accepted canonical screen shows the complete flow.',
+        );
+      }
+
       if (size.width < 400) {
         await tester.scrollUntilVisible(
           find.byKey(const ValueKey<String>('precheckEndFlowAction')),

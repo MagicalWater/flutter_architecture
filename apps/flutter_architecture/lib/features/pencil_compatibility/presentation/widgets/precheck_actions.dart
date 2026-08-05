@@ -8,12 +8,14 @@ class PrecheckActions extends StatelessWidget {
     required this.primaryLabel,
     required this.secondaryLabels,
     required this.endFlowLabel,
+    this.dense = false,
     super.key,
   });
 
   final String primaryLabel;
   final List<String> secondaryLabels;
   final String endFlowLabel;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -23,10 +25,12 @@ class PrecheckActions extends StatelessWidget {
         PrecheckSecondaryAction(
           label: secondaryLabels[0],
           icon: PhosphorIcons.listMagnifyingGlass,
+          dense: dense,
         ),
         PrecheckSecondaryAction(
           label: secondaryLabels[1],
           icon: PhosphorIcons.pencilSimple,
+          dense: dense,
         ),
       ];
 
@@ -37,16 +41,18 @@ class PrecheckActions extends StatelessWidget {
             child: FilledButton.icon(
               key: const ValueKey<String>('precheckPrimaryAction'),
               onPressed: () {},
-              icon: const Icon(PhosphorIcons.shieldCheck, size: 24),
+              icon: Icon(PhosphorIcons.shieldCheck, size: dense ? 20 : 24),
               label: Padding(
-                padding: const EdgeInsets.symmetric(vertical: DsSpace.md),
+                padding: EdgeInsets.symmetric(
+                  vertical: dense ? DsSpace.xs : DsSpace.md,
+                ),
                 child: Text(primaryLabel),
               ),
               style: FilledButton.styleFrom(
                 foregroundColor: PencilCompatibilityVisualSpec.backgroundDeep,
                 backgroundColor: PencilCompatibilityVisualSpec.gold,
                 textStyle: PencilCompatibilityVisualSpec.textStyle(
-                  size: 20,
+                  size: dense ? 16 : 20,
                   color: PencilCompatibilityVisualSpec.backgroundDeep,
                   weight: FontWeight.w700,
                 ),
@@ -59,14 +65,14 @@ class PrecheckActions extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: DsSpace.md),
+          SizedBox(height: dense ? DsSpace.xs : DsSpace.md),
           if (stacks)
             Column(
               children: <Widget>[
                 for (var index = 0; index < secondary.length; index++) ...[
                   SizedBox(width: double.infinity, child: secondary[index]),
                   if (index != secondary.length - 1)
-                    const SizedBox(height: DsSpace.sm),
+                    SizedBox(height: dense ? DsSpace.xs : DsSpace.sm),
                 ],
               ],
             )
@@ -74,20 +80,20 @@ class PrecheckActions extends StatelessWidget {
             Row(
               children: <Widget>[
                 Expanded(child: secondary[0]),
-                const SizedBox(width: DsSpace.md),
+                SizedBox(width: dense ? DsSpace.sm : DsSpace.md),
                 Expanded(child: secondary[1]),
               ],
             ),
-          const SizedBox(height: DsSpace.md),
+          SizedBox(height: dense ? DsSpace.xxs : DsSpace.md),
           TextButton.icon(
             key: const ValueKey<String>('precheckEndFlowAction'),
             onPressed: () {},
-            icon: const Icon(PhosphorIcons.xCircle, size: 20),
+            icon: Icon(PhosphorIcons.xCircle, size: dense ? 17 : 20),
             label: Text(endFlowLabel),
             style: TextButton.styleFrom(
               foregroundColor: PencilCompatibilityVisualSpec.dim,
               textStyle: PencilCompatibilityVisualSpec.textStyle(
-                size: 15,
+                size: dense ? 13 : 15,
                 color: PencilCompatibilityVisualSpec.dim,
                 weight: FontWeight.w600,
               ),
@@ -103,25 +109,27 @@ class PrecheckSecondaryAction extends StatelessWidget {
   const PrecheckSecondaryAction({
     required this.label,
     required this.icon,
+    this.dense = false,
     super.key,
   });
 
   final String label;
   final IconData icon;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => OutlinedButton.icon(
     onPressed: () {},
-    icon: Icon(icon, size: 21),
+    icon: Icon(icon, size: dense ? 17 : 21),
     label: Padding(
-      padding: const EdgeInsets.symmetric(vertical: DsSpace.sm),
+      padding: EdgeInsets.symmetric(vertical: dense ? 6 : DsSpace.sm),
       child: Text(label, textAlign: TextAlign.center),
     ),
     style: OutlinedButton.styleFrom(
       foregroundColor: PencilCompatibilityVisualSpec.text,
       side: const BorderSide(color: PencilCompatibilityVisualSpec.border),
       textStyle: PencilCompatibilityVisualSpec.textStyle(
-        size: 15,
+        size: dense ? 13 : 15,
         weight: FontWeight.w600,
       ),
       shape: RoundedRectangleBorder(

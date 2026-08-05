@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_architecture/app/localization/app_locale_resolution.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
@@ -22,6 +25,29 @@ void main() {
         appEnglishLocale,
         appTraditionalChineseLocale,
       ]);
+    });
+
+    test('every ARB contains the complete pencilPrecheck key set', () {
+      final files = <File>[
+        File('lib/l10n/app_en.arb'),
+        File('lib/l10n/app_zh.arb'),
+        File('lib/l10n/app_zh_TW.arb'),
+      ];
+      final keySets = <Set<String>>[
+        for (final file in files)
+          (jsonDecode(file.readAsStringSync()) as Map<String, Object?>).keys
+              .where((key) => key.startsWith('pencilPrecheck'))
+              .toSet(),
+      ];
+
+      expect(keySets.first, isNotEmpty);
+      for (var index = 1; index < keySets.length; index++) {
+        expect(
+          keySets[index],
+          unorderedEquals(keySets.first),
+          reason: '${files[index].path} has incomplete pencilPrecheck keys',
+        );
+      }
     });
   });
 

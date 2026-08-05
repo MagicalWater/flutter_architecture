@@ -8,6 +8,7 @@ class PrecheckSectionCard extends StatelessWidget {
     required this.icon,
     required this.child,
     this.accent = PencilCompatibilityVisualSpec.cyan,
+    this.dense = false,
     super.key,
   });
 
@@ -15,6 +16,7 @@ class PrecheckSectionCard extends StatelessWidget {
   final IconData icon;
   final Widget child;
   final Color accent;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -23,7 +25,7 @@ class PrecheckSectionCard extends StatelessWidget {
     label: title,
     child: Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(DsSpace.lg),
+      padding: EdgeInsets.all(dense ? 14 : DsSpace.lg),
       decoration: BoxDecoration(
         gradient: PencilCompatibilityVisualSpec.surfaceGradient,
         borderRadius: BorderRadius.circular(
@@ -44,29 +46,29 @@ class PrecheckSectionCard extends StatelessWidget {
           Row(
             children: <Widget>[
               Container(
-                width: 38,
-                height: 38,
+                width: dense ? 30 : 38,
+                height: dense ? 30 : 38,
                 decoration: BoxDecoration(
                   color: accent.withAlpha(24),
                   borderRadius: BorderRadius.circular(DsRadius.lg),
                   border: Border.all(color: accent.withAlpha(100)),
                 ),
                 alignment: Alignment.center,
-                child: Icon(icon, size: 21, color: accent),
+                child: Icon(icon, size: dense ? 17 : 21, color: accent),
               ),
-              const SizedBox(width: DsSpace.sm),
+              SizedBox(width: dense ? DsSpace.xs : DsSpace.sm),
               Expanded(
                 child: Text(
                   title,
                   style: PencilCompatibilityVisualSpec.textStyle(
-                    size: 22,
+                    size: dense ? 18 : 22,
                     weight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: DsSpace.md),
+          SizedBox(height: dense ? DsSpace.xs : DsSpace.md),
           child,
         ],
       ),

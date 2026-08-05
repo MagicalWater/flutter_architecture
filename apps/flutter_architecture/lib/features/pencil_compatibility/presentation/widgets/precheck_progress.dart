@@ -9,11 +9,13 @@ class PrecheckProgress extends StatelessWidget {
   const PrecheckProgress({
     required this.labels,
     this.activeIndex = 2,
+    this.dense = false,
     super.key,
   });
 
   final List<String> labels;
   final int activeIndex;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Row(
@@ -32,6 +34,7 @@ class PrecheckProgress extends StatelessWidget {
                 : PrecheckStepState.pending,
             isFirst: index == 0,
             isLast: index == labels.length - 1,
+            dense: dense,
           ),
         ),
     ],
@@ -45,6 +48,7 @@ class PrecheckStepItem extends StatelessWidget {
     required this.state,
     required this.isFirst,
     required this.isLast,
+    this.dense = false,
     super.key,
   });
 
@@ -53,6 +57,7 @@ class PrecheckStepItem extends StatelessWidget {
   final PrecheckStepState state;
   final bool isFirst;
   final bool isLast;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
@@ -73,82 +78,83 @@ class PrecheckStepItem extends StatelessWidget {
     return Semantics(
       container: true,
       label: '$number. $label',
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: isFirst ? Colors.transparent : lineColor,
-                ),
-              ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: circleColor,
-                  border: Border.all(
-                    color: isActive
-                        ? PencilCompatibilityVisualSpec.gold
-                        : lineColor,
-                    width: isActive ? 2 : 1,
+      child: ExcludeSemantics(
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: isFirst ? Colors.transparent : lineColor,
                   ),
-                  boxShadow: isActive
-                      ? <BoxShadow>[
-                          BoxShadow(
-                            color: PencilCompatibilityVisualSpec.gold.withAlpha(
-                              90,
+                ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: dense ? 26 : 32,
+                  height: dense ? 26 : 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: circleColor,
+                    border: Border.all(
+                      color: isActive
+                          ? PencilCompatibilityVisualSpec.gold
+                          : lineColor,
+                      width: isActive ? 2 : 1,
+                    ),
+                    boxShadow: isActive
+                        ? <BoxShadow>[
+                            BoxShadow(
+                              color: PencilCompatibilityVisualSpec.gold
+                                  .withAlpha(90),
+                              blurRadius: 18,
+                              spreadRadius: 1,
                             ),
-                            blurRadius: 18,
-                            spreadRadius: 1,
+                          ]
+                        : const <BoxShadow>[],
+                  ),
+                  alignment: Alignment.center,
+                  child: isCompleted
+                      ? Icon(
+                          PhosphorIcons.checks,
+                          size: dense ? 14 : 17,
+                          color: PencilCompatibilityVisualSpec.backgroundDeep,
+                        )
+                      : Text(
+                          '$number',
+                          style: PencilCompatibilityVisualSpec.textStyle(
+                            size: dense ? 12 : 14,
+                            color: isActive
+                                ? PencilCompatibilityVisualSpec.backgroundDeep
+                                : contentColor,
+                            weight: FontWeight.w700,
                           ),
-                        ]
-                      : const <BoxShadow>[],
-                ),
-                alignment: Alignment.center,
-                child: isCompleted
-                    ? const Icon(
-                        PhosphorIcons.checks,
-                        size: 17,
-                        color: PencilCompatibilityVisualSpec.backgroundDeep,
-                      )
-                    : Text(
-                        '$number',
-                        style: PencilCompatibilityVisualSpec.textStyle(
-                          size: 14,
-                          color: isActive
-                              ? PencilCompatibilityVisualSpec.backgroundDeep
-                              : contentColor,
-                          weight: FontWeight.w700,
                         ),
-                      ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: isLast ? Colors.transparent : lineColor,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: DsSpace.xs),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: DsSpace.xxs),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: PencilCompatibilityVisualSpec.textStyle(
-                size: 12,
-                color: contentColor,
-                weight: isActive ? FontWeight.w700 : FontWeight.w500,
-                height: 1.25,
+                Expanded(
+                  child: Container(
+                    height: 1,
+                    color: isLast ? Colors.transparent : lineColor,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: dense ? DsSpace.xxs : DsSpace.xs),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: DsSpace.xxs),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: PencilCompatibilityVisualSpec.textStyle(
+                  size: dense ? 11 : 12,
+                  color: contentColor,
+                  weight: isActive ? FontWeight.w700 : FontWeight.w500,
+                  height: 1.25,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

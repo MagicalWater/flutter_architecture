@@ -10,6 +10,7 @@ class PrecheckDataRow extends StatelessWidget {
     this.compact = false,
     this.showDivider = true,
     this.accent = PencilCompatibilityVisualSpec.cyan,
+    this.dense = false,
     super.key,
   });
 
@@ -19,6 +20,7 @@ class PrecheckDataRow extends StatelessWidget {
   final bool compact;
   final bool showDivider;
   final Color accent;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -28,14 +30,18 @@ class PrecheckDataRow extends StatelessWidget {
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _Label(icon: icon, label: label, accent: accent),
-                const SizedBox(height: DsSpace.xs),
+                _Label(icon: icon, label: label, accent: accent, dense: dense),
+                SizedBox(height: dense ? DsSpace.xxs : DsSpace.xs),
                 Padding(
-                  padding: const EdgeInsets.only(left: 38),
+                  padding: EdgeInsets.only(left: dense ? 28 : 38),
                   child: Text(
                     value,
                     style: PencilCompatibilityVisualSpec.textStyle(
-                      size: compact ? 14 : 15,
+                      size: dense
+                          ? 13
+                          : compact
+                          ? 14
+                          : 15,
                       weight: FontWeight.w600,
                     ),
                   ),
@@ -46,7 +52,12 @@ class PrecheckDataRow extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   flex: 4,
-                  child: _Label(icon: icon, label: label, accent: accent),
+                  child: _Label(
+                    icon: icon,
+                    label: label,
+                    accent: accent,
+                    dense: dense,
+                  ),
                 ),
                 const SizedBox(width: DsSpace.md),
                 Expanded(
@@ -55,7 +66,11 @@ class PrecheckDataRow extends StatelessWidget {
                     value,
                     textAlign: TextAlign.right,
                     style: PencilCompatibilityVisualSpec.textStyle(
-                      size: compact ? 14 : 15,
+                      size: dense
+                          ? 13
+                          : compact
+                          ? 14
+                          : 15,
                       weight: FontWeight.w600,
                     ),
                   ),
@@ -66,7 +81,11 @@ class PrecheckDataRow extends StatelessWidget {
       return Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(
-          vertical: compact ? DsSpace.sm : DsSpace.md,
+          vertical: dense
+              ? 6
+              : compact
+              ? DsSpace.sm
+              : DsSpace.md,
         ),
         decoration: BoxDecoration(
           border: showDivider
@@ -84,31 +103,37 @@ class PrecheckDataRow extends StatelessWidget {
 }
 
 class _Label extends StatelessWidget {
-  const _Label({required this.icon, required this.label, required this.accent});
+  const _Label({
+    required this.icon,
+    required this.label,
+    required this.accent,
+    required this.dense,
+  });
 
   final IconData icon;
   final String label;
   final Color accent;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Row(
     children: <Widget>[
       Container(
-        width: 30,
-        height: 30,
+        width: dense ? 24 : 30,
+        height: dense ? 24 : 30,
         decoration: BoxDecoration(
           color: accent.withAlpha(20),
           borderRadius: BorderRadius.circular(DsRadius.lg),
         ),
         alignment: Alignment.center,
-        child: Icon(icon, size: 18, color: accent),
+        child: Icon(icon, size: dense ? 15 : 18, color: accent),
       ),
-      const SizedBox(width: DsSpace.xs),
+      SizedBox(width: dense ? DsSpace.xxs : DsSpace.xs),
       Expanded(
         child: Text(
           label,
           style: PencilCompatibilityVisualSpec.textStyle(
-            size: 14,
+            size: dense ? 12.5 : 14,
             color: PencilCompatibilityVisualSpec.muted,
             weight: FontWeight.w500,
           ),

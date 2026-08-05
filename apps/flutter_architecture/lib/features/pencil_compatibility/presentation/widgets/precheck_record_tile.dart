@@ -8,6 +8,7 @@ class PrecheckRecordTile extends StatelessWidget {
     required this.title,
     required this.value,
     required this.badge,
+    this.dense = false,
     super.key,
   });
 
@@ -15,15 +16,16 @@ class PrecheckRecordTile extends StatelessWidget {
   final String title;
   final String value;
   final String badge;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final stacks = constraints.maxWidth < 360;
       final badgeWidget = Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: DsSpace.sm,
-          vertical: DsSpace.xxs,
+        padding: EdgeInsets.symmetric(
+          horizontal: dense ? DsSpace.xs : DsSpace.sm,
+          vertical: dense ? 2 : DsSpace.xxs,
         ),
         decoration: BoxDecoration(
           color: PencilCompatibilityVisualSpec.cyan.withAlpha(24),
@@ -37,7 +39,7 @@ class PrecheckRecordTile extends StatelessWidget {
         child: Text(
           badge,
           style: PencilCompatibilityVisualSpec.textStyle(
-            size: 12,
+            size: dense ? 10.5 : 12,
             color: PencilCompatibilityVisualSpec.cyanBright,
             weight: FontWeight.w700,
           ),
@@ -46,7 +48,7 @@ class PrecheckRecordTile extends StatelessWidget {
 
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(DsSpace.md),
+        padding: EdgeInsets.all(dense ? 10 : DsSpace.md),
         decoration: BoxDecoration(
           color: PencilCompatibilityVisualSpec.surfaceRaised,
           borderRadius: BorderRadius.circular(
@@ -58,8 +60,13 @@ class PrecheckRecordTile extends StatelessWidget {
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  _RecordContent(icon: icon, title: title, value: value),
-                  const SizedBox(height: DsSpace.sm),
+                  _RecordContent(
+                    icon: icon,
+                    title: title,
+                    value: value,
+                    dense: dense,
+                  ),
+                  SizedBox(height: dense ? DsSpace.xs : DsSpace.sm),
                   badgeWidget,
                 ],
               )
@@ -70,9 +77,10 @@ class PrecheckRecordTile extends StatelessWidget {
                       icon: icon,
                       title: title,
                       value: value,
+                      dense: dense,
                     ),
                   ),
-                  const SizedBox(width: DsSpace.md),
+                  SizedBox(width: dense ? DsSpace.sm : DsSpace.md),
                   badgeWidget,
                 ],
               ),
@@ -86,19 +94,21 @@ class _RecordContent extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.value,
+    required this.dense,
   });
 
   final IconData icon;
   final String title;
   final String value;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
       Container(
-        width: 38,
-        height: 38,
+        width: dense ? 30 : 38,
+        height: dense ? 30 : 38,
         decoration: BoxDecoration(
           color: PencilCompatibilityVisualSpec.cyan.withAlpha(20),
           borderRadius: BorderRadius.circular(DsRadius.lg),
@@ -106,11 +116,11 @@ class _RecordContent extends StatelessWidget {
         alignment: Alignment.center,
         child: Icon(
           icon,
-          size: 21,
+          size: dense ? 17 : 21,
           color: PencilCompatibilityVisualSpec.cyanBright,
         ),
       ),
-      const SizedBox(width: DsSpace.sm),
+      SizedBox(width: dense ? DsSpace.xs : DsSpace.sm),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,15 +128,15 @@ class _RecordContent extends StatelessWidget {
             Text(
               title,
               style: PencilCompatibilityVisualSpec.textStyle(
-                size: 15,
+                size: dense ? 13 : 15,
                 weight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: DsSpace.xxs),
+            SizedBox(height: dense ? 2 : DsSpace.xxs),
             Text(
               value,
               style: PencilCompatibilityVisualSpec.textStyle(
-                size: 14,
+                size: dense ? 12 : 14,
                 color: PencilCompatibilityVisualSpec.muted,
               ),
             ),

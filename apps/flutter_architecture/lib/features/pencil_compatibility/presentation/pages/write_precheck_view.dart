@@ -34,6 +34,8 @@ class WritePrecheckView extends StatelessWidget {
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
+                final dense = constraints.maxWidth >= 800;
+                final sectionGap = dense ? 12.0 : DsSpace.lg;
                 final horizontalPadding = constraints.maxWidth >= 900
                     ? 44.0
                     : constraints.maxWidth >= 600
@@ -48,7 +50,7 @@ class WritePrecheckView extends StatelessWidget {
                     horizontalPadding,
                     DsSpace.sm,
                     horizontalPadding,
-                    DsSpace.xl,
+                    dense ? DsSpace.xs : DsSpace.xl,
                   ),
                   child: Center(
                     child: ConstrainedBox(
@@ -59,22 +61,27 @@ class WritePrecheckView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
                           const _StatusBar(),
-                          const SizedBox(height: DsSpace.sm),
-                          _Header(copy: copy),
-                          const SizedBox(height: DsSpace.lg),
+                          SizedBox(height: dense ? DsSpace.xxs : DsSpace.sm),
+                          _Header(copy: copy, dense: dense),
+                          SizedBox(height: sectionGap),
                           Semantics(
                             key: const ValueKey<String>('precheckProgress'),
                             container: true,
+                            explicitChildNodes: true,
                             label: copy.flowStep,
-                            child: PrecheckProgress(labels: copy.steps),
+                            child: PrecheckProgress(
+                              labels: copy.steps,
+                              dense: dense,
+                            ),
                           ),
-                          const SizedBox(height: DsSpace.lg),
-                          _Hero(copy: copy),
-                          const SizedBox(height: DsSpace.lg),
+                          SizedBox(height: sectionGap),
+                          _Hero(copy: copy, dense: dense),
+                          SizedBox(height: sectionGap),
                           PrecheckSectionCard(
                             key: const ValueKey<String>('precheckSummary'),
                             title: copy.summaryTitle,
                             icon: PhosphorIcons.clipboardText,
+                            dense: dense,
                             child: Column(
                               children: <Widget>[
                                 for (
@@ -88,15 +95,17 @@ class WritePrecheckView extends StatelessWidget {
                                     value: copy.summaryRows[index].value,
                                     showDivider:
                                         index != copy.summaryRows.length - 1,
+                                    dense: dense,
                                   ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: DsSpace.lg),
+                          SizedBox(height: sectionGap),
                           PrecheckSectionCard(
                             key: const ValueKey<String>('precheckResults'),
                             title: copy.resultsTitle,
                             icon: PhosphorIcons.checks,
+                            dense: dense,
                             child: Column(
                               children: <Widget>[
                                 for (
@@ -111,16 +120,21 @@ class WritePrecheckView extends StatelessWidget {
                                     compact: true,
                                     showDivider: true,
                                     accent: PencilCompatibilityVisualSpec.gold,
+                                    dense: dense,
                                   ),
-                                _TechnicalBar(label: copy.technicalDetail),
+                                _TechnicalBar(
+                                  label: copy.technicalDetail,
+                                  dense: dense,
+                                ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: DsSpace.lg),
+                          SizedBox(height: sectionGap),
                           PrecheckSectionCard(
                             key: const ValueKey<String>('precheckRecords'),
                             title: copy.recordsTitle,
                             icon: PhosphorIcons.files,
+                            dense: dense,
                             child: Column(
                               children: <Widget>[
                                 for (
@@ -135,25 +149,32 @@ class WritePrecheckView extends StatelessWidget {
                                     title: copy.records[index].title,
                                     value: copy.records[index].value,
                                     badge: copy.records[index].badge,
+                                    dense: dense,
                                   ),
                                   if (index != copy.records.length - 1)
-                                    const SizedBox(height: DsSpace.sm),
+                                    SizedBox(
+                                      height: dense ? DsSpace.xs : DsSpace.sm,
+                                    ),
                                 ],
-                                const SizedBox(height: DsSpace.md),
+                                SizedBox(
+                                  height: dense ? DsSpace.xs : DsSpace.md,
+                                ),
                                 _Notice(
                                   label: copy.recordsNotice,
                                   color: PencilCompatibilityVisualSpec.cyan,
                                   icon: PhosphorIcons.info,
+                                  dense: dense,
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: DsSpace.lg),
+                          SizedBox(height: sectionGap),
                           PrecheckSectionCard(
                             key: const ValueKey<String>('precheckGuidance'),
                             title: copy.guidanceTitle,
                             icon: PhosphorIcons.lightbulb,
                             accent: PencilCompatibilityVisualSpec.gold,
+                            dense: dense,
                             child: Column(
                               children: <Widget>[
                                 for (
@@ -164,24 +185,31 @@ class WritePrecheckView extends StatelessWidget {
                                   _GuidanceLine(
                                     icon: _guidanceIcons[index],
                                     label: copy.guidanceLines[index],
+                                    dense: dense,
                                   ),
                                   if (index != copy.guidanceLines.length - 1)
-                                    const SizedBox(height: DsSpace.sm),
+                                    SizedBox(
+                                      height: dense ? DsSpace.xs : DsSpace.sm,
+                                    ),
                                 ],
-                                const SizedBox(height: DsSpace.md),
+                                SizedBox(
+                                  height: dense ? DsSpace.xs : DsSpace.md,
+                                ),
                                 _Notice(
                                   label: copy.commitmentNotice,
                                   color: PencilCompatibilityVisualSpec.gold,
                                   icon: PhosphorIcons.warning,
+                                  dense: dense,
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: DsSpace.lg),
+                          SizedBox(height: sectionGap),
                           PrecheckActions(
                             primaryLabel: copy.primaryAction,
                             secondaryLabels: copy.secondaryActions,
                             endFlowLabel: copy.endFlowAction,
+                            dense: dense,
                           ),
                         ],
                       ),
@@ -259,9 +287,10 @@ class _StatusBar extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.copy});
+  const _Header({required this.copy, required this.dense});
 
   final WritePrecheckCopy copy;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -270,7 +299,7 @@ class _Header extends StatelessWidget {
     explicitChildNodes: true,
     label: copy.title,
     child: Container(
-      padding: const EdgeInsets.symmetric(vertical: DsSpace.sm),
+      padding: EdgeInsets.symmetric(vertical: dense ? 2 : DsSpace.sm),
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(color: PencilCompatibilityVisualSpec.borderSoft),
@@ -287,7 +316,7 @@ class _Header extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: DsSpace.xs),
+          SizedBox(width: dense ? DsSpace.xxs : DsSpace.xs),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,16 +324,16 @@ class _Header extends StatelessWidget {
                 Text(
                   copy.title,
                   style: PencilCompatibilityVisualSpec.textStyle(
-                    size: 28,
+                    size: dense ? 24 : 28,
                     weight: FontWeight.w700,
                     height: 1.15,
                   ),
                 ),
-                const SizedBox(height: DsSpace.xxs),
+                SizedBox(height: dense ? 2 : DsSpace.xxs),
                 Text(
                   copy.flowStep,
                   style: PencilCompatibilityVisualSpec.textStyle(
-                    size: 14,
+                    size: dense ? 12 : 14,
                     color: PencilCompatibilityVisualSpec.muted,
                     weight: FontWeight.w500,
                   ),
@@ -319,9 +348,10 @@ class _Header extends StatelessWidget {
 }
 
 class _Hero extends StatelessWidget {
-  const _Hero({required this.copy});
+  const _Hero({required this.copy, required this.dense});
 
   final WritePrecheckCopy copy;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -332,7 +362,7 @@ class _Hero extends StatelessWidget {
     child: LayoutBuilder(
       builder: (context, constraints) {
         final stacks = constraints.maxWidth < 560;
-        final shield = const _ShieldHalo();
+        final shield = _ShieldHalo(dense: dense);
         final content = Column(
           crossAxisAlignment: stacks
               ? CrossAxisAlignment.center
@@ -342,26 +372,26 @@ class _Hero extends StatelessWidget {
               copy.heroTitle,
               textAlign: stacks ? TextAlign.center : TextAlign.left,
               style: PencilCompatibilityVisualSpec.textStyle(
-                size: 30,
+                size: dense ? 24 : 30,
                 weight: FontWeight.w700,
                 height: 1.15,
               ),
             ),
-            const SizedBox(height: DsSpace.sm),
+            SizedBox(height: dense ? DsSpace.xs : DsSpace.sm),
             Text(
               copy.heroDescription,
               textAlign: stacks ? TextAlign.center : TextAlign.left,
               style: PencilCompatibilityVisualSpec.textStyle(
-                size: 15,
+                size: dense ? 13 : 15,
                 color: PencilCompatibilityVisualSpec.muted,
-                height: 1.55,
+                height: dense ? 1.35 : 1.55,
               ),
             ),
-            const SizedBox(height: DsSpace.md),
+            SizedBox(height: dense ? DsSpace.xs : DsSpace.md),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: DsSpace.md,
-                vertical: DsSpace.xs,
+              padding: EdgeInsets.symmetric(
+                horizontal: dense ? DsSpace.sm : DsSpace.md,
+                vertical: dense ? DsSpace.xxs : DsSpace.xs,
               ),
               decoration: BoxDecoration(
                 color: PencilCompatibilityVisualSpec.gold.withAlpha(28),
@@ -375,7 +405,7 @@ class _Hero extends StatelessWidget {
               child: Text(
                 copy.heroStatus,
                 style: PencilCompatibilityVisualSpec.textStyle(
-                  size: 14,
+                  size: dense ? 12 : 14,
                   color: PencilCompatibilityVisualSpec.gold,
                   weight: FontWeight.w700,
                 ),
@@ -386,7 +416,7 @@ class _Hero extends StatelessWidget {
 
         return Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(DsSpace.lg),
+          padding: EdgeInsets.all(dense ? DsSpace.md : DsSpace.lg),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
@@ -416,14 +446,14 @@ class _Hero extends StatelessWidget {
               ? Column(
                   children: <Widget>[
                     shield,
-                    const SizedBox(height: DsSpace.lg),
+                    SizedBox(height: dense ? DsSpace.sm : DsSpace.lg),
                     content,
                   ],
                 )
               : Row(
                   children: <Widget>[
                     shield,
-                    const SizedBox(width: DsSpace.xl),
+                    SizedBox(width: dense ? DsSpace.md : DsSpace.xl),
                     Expanded(child: content),
                   ],
                 ),
@@ -434,13 +464,15 @@ class _Hero extends StatelessWidget {
 }
 
 class _ShieldHalo extends StatelessWidget {
-  const _ShieldHalo();
+  const _ShieldHalo({this.dense = false});
+
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => ExcludeSemantics(
     child: Container(
-      width: 112,
-      height: 112,
+      width: dense ? 88 : 112,
+      height: dense ? 88 : 112,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: RadialGradient(
@@ -461,17 +493,17 @@ class _ShieldHalo extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: Container(
-        width: 74,
-        height: 74,
+        width: dense ? 58 : 74,
+        height: dense ? 58 : 74,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: PencilCompatibilityVisualSpec.backgroundDeep.withAlpha(190),
           border: Border.all(color: PencilCompatibilityVisualSpec.gold),
         ),
         alignment: Alignment.center,
-        child: const Icon(
+        child: Icon(
           PhosphorIcons.shieldCheck,
-          size: 42,
+          size: dense ? 32 : 42,
           color: PencilCompatibilityVisualSpec.gold,
         ),
       ),
@@ -480,15 +512,16 @@ class _ShieldHalo extends StatelessWidget {
 }
 
 class _TechnicalBar extends StatelessWidget {
-  const _TechnicalBar({required this.label});
+  const _TechnicalBar({required this.label, required this.dense});
 
   final String label;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Container(
     width: double.infinity,
-    margin: const EdgeInsets.only(top: DsSpace.md),
-    padding: const EdgeInsets.all(DsSpace.sm),
+    margin: EdgeInsets.only(top: dense ? DsSpace.xs : DsSpace.md),
+    padding: EdgeInsets.all(dense ? DsSpace.xs : DsSpace.sm),
     decoration: BoxDecoration(
       color: PencilCompatibilityVisualSpec.cyan.withAlpha(16),
       borderRadius: BorderRadius.circular(DsRadius.lg),
@@ -499,17 +532,17 @@ class _TechnicalBar extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Icon(
+        Icon(
           PhosphorIcons.listMagnifyingGlass,
-          size: 19,
+          size: dense ? 16 : 19,
           color: PencilCompatibilityVisualSpec.cyanBright,
         ),
-        const SizedBox(width: DsSpace.xs),
+        SizedBox(width: dense ? DsSpace.xxs : DsSpace.xs),
         Expanded(
           child: Text(
             label,
             style: PencilCompatibilityVisualSpec.textStyle(
-              size: 13,
+              size: dense ? 11.5 : 13,
               color: PencilCompatibilityVisualSpec.muted,
             ),
           ),
@@ -520,15 +553,20 @@ class _TechnicalBar extends StatelessWidget {
 }
 
 class _GuidanceLine extends StatelessWidget {
-  const _GuidanceLine({required this.icon, required this.label});
+  const _GuidanceLine({
+    required this.icon,
+    required this.label,
+    required this.dense,
+  });
 
   final IconData icon;
   final String label;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Container(
     width: double.infinity,
-    padding: const EdgeInsets.all(DsSpace.sm),
+    padding: EdgeInsets.all(dense ? DsSpace.xs : DsSpace.sm),
     decoration: BoxDecoration(
       color: PencilCompatibilityVisualSpec.background.withAlpha(120),
       borderRadius: BorderRadius.circular(
@@ -539,13 +577,17 @@ class _GuidanceLine extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Icon(icon, size: 20, color: PencilCompatibilityVisualSpec.gold),
-        const SizedBox(width: DsSpace.sm),
+        Icon(
+          icon,
+          size: dense ? 16 : 20,
+          color: PencilCompatibilityVisualSpec.gold,
+        ),
+        SizedBox(width: dense ? DsSpace.xs : DsSpace.sm),
         Expanded(
           child: Text(
             label,
             style: PencilCompatibilityVisualSpec.textStyle(
-              size: 14,
+              size: dense ? 12 : 14,
               color: PencilCompatibilityVisualSpec.muted,
             ),
           ),
@@ -556,16 +598,22 @@ class _GuidanceLine extends StatelessWidget {
 }
 
 class _Notice extends StatelessWidget {
-  const _Notice({required this.label, required this.color, required this.icon});
+  const _Notice({
+    required this.label,
+    required this.color,
+    required this.icon,
+    required this.dense,
+  });
 
   final String label;
   final Color color;
   final IconData icon;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) => Container(
     width: double.infinity,
-    padding: const EdgeInsets.all(DsSpace.sm),
+    padding: EdgeInsets.all(dense ? DsSpace.xs : DsSpace.sm),
     decoration: BoxDecoration(
       color: color.withAlpha(20),
       borderRadius: BorderRadius.circular(DsRadius.lg),
@@ -574,13 +622,13 @@ class _Notice extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Icon(icon, size: 19, color: color),
-        const SizedBox(width: DsSpace.xs),
+        Icon(icon, size: dense ? 16 : 19, color: color),
+        SizedBox(width: dense ? DsSpace.xxs : DsSpace.xs),
         Expanded(
           child: Text(
             label,
             style: PencilCompatibilityVisualSpec.textStyle(
-              size: 13,
+              size: dense ? 11.5 : 13,
               color: PencilCompatibilityVisualSpec.muted,
             ),
           ),

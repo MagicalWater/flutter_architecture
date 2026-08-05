@@ -17,14 +17,14 @@ canonical_dpr: 1.0
 ## Source Ranking
 
 1. `source.pen`是唯一primary structural／visual authority。
-2. `pencil-preview.png`目前是Task 33-4匯入的Pencil renderer admission thumbnail，只證明既有`.pen`曾可由Pencil renderer呈現；它不是canonical pixel-diff master。
+2. `pencil-preview.png`是Task 33-6直接由accepted root frame透過Pencil MCP、`scale: 1`匯出的canonical renderer preview，作後續canonical pixel comparison master。
 3. `original-reference.png`是產生／審查`.pen`時的supplementary original PNG，不可覆蓋`.pen`結構。
 4. `historical-flutter-benchmark.png`只代表先前blank Flutter proof的historical comparison，不是current implementation authority。
 
 | Role | Path | SHA-256 | Authority status |
 |---|---|---|---|
 | primary-source | ../../design_sources/pencil-compatibility-write-precheck/source.pen | bd8926711ea28e7f9ae5a83128ed8fbc8d506cb5342c76eb35360c4c13544fdc | primary |
-| derived-preview | ../../design_sources/pencil-compatibility-write-precheck/pencil-preview.png | 6d1a6553a1b066d0d07ce565aee7f895cddcdc0344e9f9797bab4ca1cfac5be5 | derived |
+| derived-preview | ../../design_sources/pencil-compatibility-write-precheck/pencil-preview.png | f453452316f0e390dbbf435a3f4c2433306fb3aa607287873e9905f00973eee8 | derived |
 | supplementary-reference | ../../design_sources/pencil-compatibility-write-precheck/original-reference.png | c7469bcdd8842ad7a0e2f57715756615e07990d0fec33d6016105c5e45e398fc | supplementary |
 | historical-benchmark | ../../design_sources/pencil-compatibility-write-precheck/historical-flutter-benchmark.png | 69edbc35da44288e80b448231de50f9a51d95ba84c9042ea16797267b607731d | benchmark |
 
@@ -38,16 +38,20 @@ Device pixel ratio: 1.0
 
 此viewport定義後續canonical Flutter golden／runtime screenshot／diff尺寸，不代表App只支援此尺寸。
 
-## Derived Preview Admission State
+## Canonical Preview Export Evidence
 
 ```txt
-Current imported Pencil preview: 226 × 400
-Current role: derived admission evidence
-Canonical comparison readiness: BLOCKED until Task 33-6
-Required Task 33-6 action: export fresh 941 × 1672 preview through Pencil MCP, replace file, update SHA-256, fresh verify manifest
+Pencil tool: pencil.user.desktop.export_nodes
+Accepted root frame: lAOay (Screen / Write Pre-check Reconstruction)
+Requested format: PNG
+Requested scale: 1
+Exported dimensions: 941 × 1672
+Exported raw SHA-256: f453452316f0e390dbbf435a3f4c2433306fb3aa607287873e9905f00973eee8
+Exported bytes: 676527
+Canonical comparison readiness: READY
 ```
 
-在上述action通過前，`pencil-preview.png`不得作Task 33-10 canonical pixel reference；不得upscale現有thumbnail或放寬dimension contract。
+此檔案不是Task 33-4 admission thumbnail的upscale。它是Pencil MCP直接對accepted `941 × 1672` root frame執行fresh renderer export後的原始PNG bytes。Task 33-10可依本manifest使用它作canonical Pencil reference；任何後續重新匯出仍須更新hash並fresh通過verifier。
 
 ## Allowed Interpretation
 

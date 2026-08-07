@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-33-single-renderer-corrective-design-review
 last_reviewed_baseline: 1.15.0
@@ -131,7 +131,7 @@ Corrective Design files: exactly 3 untracked artifacts before staging
 Existing Task 33-13 closure dirty files: detected and explicitly excluded from Corrective Design scope
 ```
 
-本review仍維持`proposed`直到使用者核准書面Corrective Design與ADR amendment draft。
+使用者已於2026-08-07書面核准Corrective Design與ADR amendment draft；本review轉為`accepted`。該核准只開啟Implementation Plan gate，不等於Plan approval或implementation admission。
 
 ## Current Disposition
 
@@ -140,10 +140,10 @@ Focused findings: RESOLVED IN PROPOSED DESIGN
 Whole-Design internal review: PASSED
 Documentation validation: PASSED
 User runtime visual acceptance: FAIL (corrective trigger)
-Design status: PROPOSED
-ADR amendment draft: PROPOSED
+Design status: ACCEPTED
+ADR amendment draft: ACCEPTED
 Implementation Plan: NOT CREATED
 Managed corrective worktree: NOT CREATED
 Production implementation: NOT STARTED
-Next gate: user written Design approval
+Next gate: create and fully review Corrective Implementation Plan
 ```

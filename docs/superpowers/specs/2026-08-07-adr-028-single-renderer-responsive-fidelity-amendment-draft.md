@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - adr-028-single-renderer-responsive-fidelity-amendment-draft
 last_reviewed_baseline: 1.15.0
@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.15.0
 
 ## Status
 
-Proposed design companion。Canonical ADR-028只有在Corrective Design與Plan均accepted後才修改。
+Accepted design companion。使用者已於2026-08-07核准本amendment draft；canonical ADR-028仍只有在Corrective Implementation Plan完成獨立雙層治理並取得書面核准後才修改。
 
 ## Context
 

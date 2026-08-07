@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-33-corrective-single-renderer-responsive-fidelity-recovery-design
 last_reviewed_baseline: 1.15.0
@@ -30,6 +30,10 @@ last_reviewed_baseline: 1.15.0
 - Post-release validation（發布後驗證）：是；release SHA重新驗證Skill routing、single-renderer guard、Flutter regression、Android artifact、canonical與runtime visual evidence。
 - Required Superpowers skills（必要 Superpowers Skills）：`brainstorming`、`writing-plans`、`using-git-worktrees`、`test-driven-development`、`systematic-debugging`、review／verification／finishing Skills；production code階段搭配`karpathy-guidelines`。
 - Required artifacts（必要 artifacts）：Corrective Design、ADR-028 amendment、Implementation Plan、逐Task review、superseding visual finding、single-renderer architecture tests、canonical／runtime goldens與diff、Android runtime screenshot／review、Corrective Holistic Final Review、release／post-release evidence。
+
+## Approval Gate
+
+本Corrective Design與ADR-028 amendment draft已完成focused review、findings disposition、fresh documentation validation與Whole-Design review，並於2026-08-07取得使用者書面核准。Design因此轉為`accepted`。此核准授權建立Corrective Implementation Plan；Plan仍須完成獨立雙層治理與書面核准後，才能修改canonical ADR、Skill、Guide、tests或Flutter production source。
 
 ## Corrective Finding and Supersession
 

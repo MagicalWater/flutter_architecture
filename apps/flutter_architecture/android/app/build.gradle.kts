@@ -163,14 +163,18 @@ tasks.withType<FlutterTask>().configureEach {
     if (environment != requestedEnvironment) return@configureEach
     val explicitTarget = project.findProperty("target")?.toString()
     val isFlutterDefaultTarget = explicitTarget == null || explicitTarget == "lib/main.dart"
-    if (!isFlutterDefaultTarget && explicitTarget != environment.dartEntrypoint) {
+    val isIntegrationTestTarget = explicitTarget?.startsWith("integration_test/") == true
+    if (!isFlutterDefaultTarget && !isIntegrationTestTarget &&
+        explicitTarget != environment.dartEntrypoint) {
         throw GradleException(
             "Android flavor ${environment.name} requires target " +
                 "${environment.dartEntrypoint}, but received $explicitTarget",
         )
     }
 
-    targetPath = environment.dartEntrypoint
+    if (!isIntegrationTestTarget) {
+        targetPath = environment.dartEntrypoint
+    }
     dartDefines = appendDartDefine(
         dartDefines,
         "NATIVE_ENVIRONMENT=${environment.name}",

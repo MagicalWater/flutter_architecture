@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/visual_spec/pencil_compatibility_visual_spec.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/pages/write_precheck_canonical_canvas.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/precheck_actions.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/precheck_data_row.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/precheck_progress.dart';
@@ -34,6 +35,14 @@ class WritePrecheckView extends StatelessWidget {
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
+                if (constraints.maxWidth >= 900) {
+                  return SingleChildScrollView(
+                    key: const ValueKey<String>('writePrecheckScrollView'),
+                    child: Center(
+                      child: WritePrecheckCanonicalCanvas(copy: copy),
+                    ),
+                  );
+                }
                 final dense = constraints.maxWidth >= 800;
                 final sectionGap = dense ? 12.0 : DsSpace.lg;
                 final horizontalPadding = constraints.maxWidth >= 900

@@ -84,6 +84,29 @@ class EnvironmentContractTest(unittest.TestCase):
     def test_android_projection_validates(self) -> None:
         self.assertEqual(validate_android_projection(ROOT, self.contract), [])
 
+    def test_android_flavor_guard_preserves_integration_test_target(self) -> None:
+        gradle_text = (
+            ROOT
+            / "apps"
+            / "flutter_architecture"
+            / "android"
+            / "app"
+            / "build.gradle.kts"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(
+            'val isIntegrationTestTarget = explicitTarget?.startsWith("integration_test/") == true',
+            gradle_text,
+        )
+        self.assertIn(
+            "!isFlutterDefaultTarget && !isIntegrationTestTarget &&",
+            gradle_text,
+        )
+        self.assertIn(
+            "if (!isIntegrationTestTarget) {\n        targetPath = environment.dartEntrypoint\n    }",
+            gradle_text,
+        )
+
     def test_ios_projection_validates(self) -> None:
         self.assertEqual(validate_ios_projection(ROOT, self.contract), [])
 

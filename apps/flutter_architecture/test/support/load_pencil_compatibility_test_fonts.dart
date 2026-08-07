@@ -80,7 +80,10 @@ Future<void> loadPencilCompatibilityTestFonts() async {
           'Required phosphoricons_flutter font is missing: ${fontFile.path}',
         );
       }
-      await _loadFont(family: entry.key, file: fontFile);
+      await _loadFont(
+        family: 'packages/phosphoricons_flutter/${entry.key}',
+        file: fontFile,
+      );
     }
   }
 }

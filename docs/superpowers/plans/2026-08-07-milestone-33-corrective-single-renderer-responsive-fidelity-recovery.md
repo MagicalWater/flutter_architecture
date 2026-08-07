@@ -561,4 +561,4 @@ Placeholder scan結果為零；所有code steps、test commands、targets、thre
 
 ## Approval Gate
 
-本Plan目前為`proposed`。只有完成Plan focused review、fresh re-review、whole-Plan review、documentation validation並取得使用者書面核准後，才能建立managed corrective worktree並開始C1 implementation。
+本Plan已完成focused review、fresh re-review、whole-Plan review與documentation validation，並於2026-08-07取得使用者書面核准；狀態為`accepted`。Managed corrective worktree已可建立並依C1 → C5執行；C4使用者runtime visual acceptance仍是C5 release closure前不可繞過的hard gate。

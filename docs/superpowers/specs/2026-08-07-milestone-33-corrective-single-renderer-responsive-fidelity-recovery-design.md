@@ -284,4 +284,4 @@ Canonical ADR修改在Corrective Plan accepted後執行，避免Design階段直�
 
 ## Approval Gate
 
-本Corrective Design目前為`proposed`。只有完成Design focused review、fresh re-review、whole-Design review、documentation validation並取得使用者對本書面artifact的明確核准後，才能轉為`accepted`並建立Corrective Implementation Plan。
+本Corrective Design已完成Design focused review、fresh re-review、whole-Design review與documentation validation，並於2026-08-07取得使用者對書面Corrective Design與ADR-028 amendment draft的明確核准，狀態為`accepted`。Corrective Implementation Plan仍須獨立完成雙層治理與使用者核准後，才能開始implementation。

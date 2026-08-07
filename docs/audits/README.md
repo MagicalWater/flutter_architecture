@@ -60,6 +60,7 @@ Final / Holistic Review
 - [`milestone_33/33-6_pencil_admission_and_extraction.md`](milestone_33/33-6_pencil_admission_and_extraction.md)：Executor／Pencil admission、accepted document identity、structure inventory與canonical Pencil export evidence。
 - [`milestone_33/33-6_flutter_mapping_matrix.md`](milestone_33/33-6_flutter_mapping_matrix.md)：Pencil extracted items到Design System／feature-local visual spec／localization／icons／widgets的single-owner mapping。
 - [`milestone_33/33-6_pencil_extraction_review.md`](milestone_33/33-6_pencil_extraction_review.md)：Pencil boundary、canonical export與mapping whole-Task review。
+- [`milestone_33/33-6r_design_source_index_transition_review.md`](milestone_33/33-6r_design_source_index_transition_review.md)：Task 33-12發現的design-source index stale transition recovery；只修current preview row，不修改任何visual bytes／manifest／threshold。
 - [`milestone_33/33-7_flutter_proof_foundation_review.md`](milestone_33/33-7_flutter_proof_foundation_review.md)：presentation-only feature、router／localization／visual spec foundation與TDD review。
 - [`milestone_33/33-8_write_precheck_ui_review.md`](milestone_33/33-8_write_precheck_ui_review.md)：Write Pre-check responsive widget implementation與visual hierarchy review。
 - [`milestone_33/33-9_flutter_validation_review.md`](milestone_33/33-9_flutter_validation_review.md)：architecture／semantics／localization／responsive與Windows canonical golden validation review。

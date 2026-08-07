@@ -27,7 +27,7 @@ last_reviewed_baseline: 1.14.0
 | File | Role | Current state |
 |---|---|---|
 | `source.pen` | Primary structural／visual source | Accepted repository-local authority |
-| `pencil-preview.png` | Pencil renderer derived evidence | Task 33-4 admission thumbnail `226 × 400`; Task 33-6 must replace with fresh canonical `941 × 1672` export |
+| `pencil-preview.png` | Pencil renderer derived evidence | Task 33-6 fresh canonical `941 × 1672` export；current pixel-comparison master，exact hash由manifest擁有 |
 | `original-reference.png` | Supplementary original visual reference | `941 × 1672`; not structural authority |
 | `historical-flutter-benchmark.png` | Historical blank-project Flutter benchmark | `226 × 400`; comparison baseline only |
 

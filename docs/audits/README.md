@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.15.0
 ---
 
 # Audits and Review Evidence
@@ -68,6 +68,7 @@ Final / Holistic Review
 - [`milestone_33/33-10r_fontweight_api_compatibility_review.md`](milestone_33/33-10r_fontweight_api_compatibility_review.md)：Task 33-11 full analyze發現的`FontWeight.index`deprecation corrective recovery；visual gate不變且workspace analyze恢復GREEN。
 - [`milestone_33/visual_validation/review.md`](milestone_33/visual_validation/review.md)：Task 33-10 canonical／Android runtime semantic visual review與evidence hashes。
 - [`milestone_33/33-11_workflow_documentation_review.md`](milestone_33/33-11_workflow_documentation_review.md)：Reusable Guide、narrow routing、Skill registry／language ownership、current sync與Guide pressure disposition review。
+- [`milestone_33/33-12_holistic_final_review.md`](milestone_33/33-12_holistic_final_review.md)：Tasks 33-1至33-11 cross-Task consistency、fresh full local regression、visual acceptance與disposition A release authorization boundary的Holistic Final Review。
 
 ### Template Baseline 1.14.0 project holistic audit
 

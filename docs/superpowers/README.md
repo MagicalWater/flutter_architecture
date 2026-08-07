@@ -3,7 +3,7 @@ document_type: design-plan-index
 status: active
 authoritative_for:
   - design-spec-and-implementation-plan-routing
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.15.0
 ---
 
 # Design Specifications and Implementation Plans
@@ -29,7 +29,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
-- [`plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`](plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)：accepted Milestone 33 Implementation Plan；依序治理ADR／third-party Skills／visual authority、Pencil MCP extraction、Flutter proof、visual acceptance、Guide、Final Review與1.15.0 post-release closure。
+- [`plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`](plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)：accepted Milestone 33 Implementation Plan；Tasks 33-1至33-12與disposition A已完成，目前依Task 33-13執行1.15.0 integration／post-release closure。
 
 Milestone 33 current reusable human workflow：[`../guides/pencil_to_flutter_workflow.md`](../guides/pencil_to_flutter_workflow.md)。Spec／Plan仍只擁有accepted design與execution sequence，不取代該Guide或current roadmap state。
 - [`plans/2026-08-01-r4-test-inventory-external-output-bugfix.md`](plans/2026-08-01-r4-test-inventory-external-output-bugfix.md)：accepted R4 TDD Plan；以unit＋subprocess regression修復external output false failure，並保護tracked M30 inventory baseline。

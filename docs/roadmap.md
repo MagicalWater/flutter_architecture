@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.15.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.14.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.14.0
+Template Baseline: 1.15.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,8 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Template Baseline: 1.14.0
-Phase: Task 33-12 holistic final review; Tasks 33-1 through 33-11 accepted
+Template Baseline: 1.15.0
+Phase: Task 33-13 release／integration／post-release validation; Task 33-12 disposition A accepted
 ```
 
 完整 active scope、design、gate與 next action：

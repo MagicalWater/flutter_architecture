@@ -20,6 +20,37 @@
 
 ---
 
+## [1.15.0] - 2026-08-07
+
+### Added
+
+- 完成Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation，建立repository-local `.pen` visual authority、manifest／SHA-256鎖定、Pencil MCP admission與structure extraction流程。
+- 新增`implementing-pencil-flutter-design` orchestration Skill與Taste companion Skill provenance／integrity registry，將Pencil-to-Flutter工作納入既有Requirement Decision與雙層Task治理。
+- 新增presentation-only `pencil_compatibility` proof、generated Localization、Phosphor icon mapping、responsive layout、Windows canonical golden與Android runtime screenshot evidence。
+- 新增deterministic PNG visual diff utility、固定8% canonical acceptance gate與historical same-era relative comparison，不允許silent resize、raster authority embedding或`FittedBox` fixed-canvas scaling。
+- 新增可重複的人類操作入口`docs/guides/pencil_to_flutter_workflow.md`，涵蓋source／manifest、Skill provenance、Pencil extraction、Flutter mapping、visual acceptance、rollback與stop conditions。
+
+### Changed
+
+- Design implementation workflow明確區分既有Design System／theme ownership與feature-local exact visual spec；只有具有第二個真實consumer證據的值才可提升為global token。
+- Canonical `941 × 1672` proof改為依Pencil exact bounds／typography實作的Flutter renderer；窄螢幕維持正常responsive scroll，不使用整頁縮放。
+- Android native environment target guard只對`integration_test/`保留受控例外，一般錯誤entrypoint仍維持fail-closed。
+- Current documentation routing、Skill registry、visual authority index與Milestone routing同步到Pencil-to-Flutter reusable workflow。
+
+### Verified
+
+- Holistic Final Review完成full local regression：Skill／docs／visual authority tests、docs check、五個package analyze、全workspace Flutter tests、development bundle與Android development artifact build均通過；App package達`+484 All tests passed`。
+- Fresh Windows canonical golden在不更新accepted golden的情況下通過；Pencil reference deterministic diff為`7.7818568%`，低於固定`8%`門檻，mean absolute channel delta為`2.9956`，低於`8.0`門檻。
+- Android runtime proof在BlueStacks `emulator-5554`通過，runtime為`360 × 640 logical / DPR 1.5 / textScale 1.0`，tracked screenshot SHA-256為`358d7cbeea737ff8fefeb2629cfffca6ccf214c828c127c587149c2928b96919`。
+- Cross-Task Final Review disposition為`A — Complete workflow capability; approve 1.15.0 release candidate`，Open P0為0、undispositioned P1為0。
+
+### Governance
+
+- Milestone 33 Design、Implementation Plan、逐Task focused／whole-Task review、corrective recovery與Holistic Final Review均依雙層Task治理完成；release identity、merge、push與post-release closure仍分離治理。
+- Third-party Skill bytes、source commit、license、loaded path與rollback／upgrade gate均受ownership-aware lock治理；external design source不得取代repository-local accepted authority。
+
+---
+
 ## [1.14.0] - 2026-07-31
 
 ### Added

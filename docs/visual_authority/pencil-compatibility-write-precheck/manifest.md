@@ -3,7 +3,7 @@ document_type: runtime-evidence
 status: accepted
 authoritative_for:
   - pencil-compatibility-write-precheck-visual-authority
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.15.0
 initiative: pencil-compatibility-write-precheck
 authority_file: ../../design_sources/pencil-compatibility-write-precheck/source.pen
 authority_sha256: bd8926711ea28e7f9ae5a83128ed8fbc8d506cb5342c76eb35360c4c13544fdc
@@ -52,6 +52,38 @@ Canonical comparison readiness: READY
 ```
 
 此檔案不是Task 33-4 admission thumbnail的upscale。它是Pencil MCP直接對accepted `941 × 1672` root frame執行fresh renderer export後的原始PNG bytes。Task 33-10可依本manifest使用它作canonical Pencil reference；任何後續重新匯出仍須更新hash並fresh通過verifier。
+
+## Derived Runtime Reference Contract
+
+Accepted `.pen`只有一個手機frame；不建立第二份mobile `.pen`。Primary supported runtime comparison使用canonical Pencil preview的事前固定projection：
+
+```txt
+Source: ../../design_sources/pencil-compatibility-write-precheck/pencil-preview.png
+Source dimensions: 941 × 1672
+Source SHA-256: f453452316f0e390dbbf435a3f4c2433306fb3aa607287873e9905f00973eee8
+
+Derived path: ../../design_sources/pencil-compatibility-write-precheck/pencil-runtime-360x640.png
+Target dimensions: 360 × 640
+Comparison DPR: 1.0
+Projection implementation: Flutter dart:ui instantiateImageCodec
+Projection targetWidth: 360
+Projection targetHeight: 640
+PNG encoding: ui.ImageByteFormat.png
+Crop: none
+Ignore regions: none
+Scroll/capture contract: complete accepted mobile frame projected into the 360 × 640 comparison viewport
+
+Derived bytes: 131042
+Derived SHA-256: 8386e4fa6ad49d108b9887796eb3c02643aaae9ba0161afa10d0662ab4b2c275
+
+Per-channel tolerance: 8
+Different-pixel ratio threshold: <= 0.08
+Mean absolute channel delta threshold: <= 8.0
+```
+
+Projection由`apps/flutter_architecture/test/support/visual_diff.dart`的`projectPng`產生；tracked reference只有在顯式`UPDATE_PENCIL_RUNTIME_REFERENCE=true` gate下可重建。Default test會fresh投影到temporary file並要求與tracked bytes完全一致。Candidate失敗後不得更換target、projection、crop、threshold或ignore regions。
+
+此derived runtime reference只作comparison evidence，不取得`.pen` structure／visual authority，也不改變canonical source ranking。
 
 ## Allowed Interpretation
 

@@ -14,6 +14,45 @@ final class VisualDiffResult {
   final int maxChannelDelta;
 }
 
+Future<void> projectPng({
+  required File source,
+  required File output,
+  required int width,
+  required int height,
+}) async {
+  if (width <= 0) {
+    throw ArgumentError.value(width, 'width', 'must be greater than zero');
+  }
+  if (height <= 0) {
+    throw ArgumentError.value(height, 'height', 'must be greater than zero');
+  }
+
+  final sourceBytes = await source.readAsBytes();
+  final codec = await ui.instantiateImageCodec(
+    sourceBytes,
+    targetWidth: width,
+    targetHeight: height,
+    allowUpscaling: true,
+  );
+  try {
+    final frame = await codec.getNextFrame();
+    try {
+      final byteData = await frame.image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+      if (byteData == null) {
+        throw StateError('Unable to encode projected PNG: ${output.path}');
+      }
+      await output.parent.create(recursive: true);
+      await output.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+    } finally {
+      frame.image.dispose();
+    }
+  } finally {
+    codec.dispose();
+  }
+}
+
 Future<VisualDiffResult> comparePngs({
   required File reference,
   required File actual,
@@ -150,10 +189,7 @@ Future<void> _writePng({
           if (byteData == null) {
             throw StateError('Unable to encode diff PNG: ${file.path}');
           }
-          await file.writeAsBytes(
-            byteData.buffer.asUint8List(),
-            flush: true,
-          );
+          await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
         } finally {
           frame.image.dispose();
         }

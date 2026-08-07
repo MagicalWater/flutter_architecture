@@ -49,6 +49,8 @@ void main() {
       }
 
       if (size.width < 400) {
+        // Layout-health gate only. Runtime visual fidelity at 360x640 is owned
+        // by write_precheck_runtime_visual_diff_test.dart.
         await tester.scrollUntilVisible(
           find.byKey(const ValueKey<String>('precheckEndFlowAction')),
           300,

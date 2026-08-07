@@ -1733,13 +1733,13 @@ TextStyle _style({
 );
 
 FontWeight _pencilRasterWeight(FontWeight weight) {
-  if (weight.index <= FontWeight.w200.index) {
+  if (weight.value <= FontWeight.w200.value) {
     return weight;
   }
-  if (weight.index >= FontWeight.w700.index) {
+  if (weight.value >= FontWeight.w700.value) {
     return FontWeight.w600;
   }
-  if (weight.index >= FontWeight.w500.index) {
+  if (weight.value >= FontWeight.w500.value) {
     return FontWeight.w400;
   }
   return FontWeight.w300;

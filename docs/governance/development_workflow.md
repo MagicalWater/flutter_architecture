@@ -90,6 +90,19 @@ Unmodified third-party Skill保留上游原始語言、結構與raw bytes。只�
 - Last review：2026-08-04。
 - Full evidence：`docs/audits/milestone_33/33-3_taste_skill_source_admission.md`與`33-3_taste_skill_discovery_pressure_evidence.md`。
 
+#### Pencil workflow registry provenance／permission／upgrade extension
+
+上方registry擁有status、trigger、responsibility、forbidden responsibility與rollback。下表補足Pencil workflow四個Skills的source、tool permission與upgrade gate；兩表合併才是完整adoption registry，不建立第二套trigger authority。
+
+| Skill | Source | Permissions | Upgrade gate |
+|---|---|---|---|
+| `implementing-pencil-flutter-design` | Repository-authored；`.agents/skills/implementing-pencil-flutter-design/`，版本identity由Git＋review evidence保存 | Skill本身不取得credential、network或filesystem bypass；Pencil讀寫／export只能經中央workflow核准的`executor-local-mcp`→`pencil-local-mcp`，Flutter mutation仍受managed worktree／Task gate | Trigger wording、Pencil boundary、managed paths、permissions、workflow ordering、supported runtime、automatic routing或visual acceptance contract改變時，重跑focused Skill／pressure review |
+| `brandkit` | Taste `e988add20dab0fa97d7a76781c48961c8184288e`，upstream `skills/brandkit`，install `.agents/skills/brandkit` | 無自動image generation、network、credential、Pencil或code mutation permission；只有中央workflow明確路由的brand exploration可使用對應tool | Upstream commit／path、license、managed byte、frontmatter trigger、install path或runtime precedence改變時，重跑lock、collision／discovery與focused adoption review |
+| `high-end-visual-design` | Taste `e988add20dab0fa97d7a76781c48961c8184288e`，upstream `skills/soft-skill`，install `.agents/skills/high-end-visual-design` | 只有restricted visual critique；不得自行取得Pencil mutation、Flutter architecture、network、credential或image generation authority | Upstream commit／path、license、managed byte、frontmatter trigger、install path、runtime precedence或restricted boundary改變時，重跑lock、collision／discovery與focused adoption review |
+| `imagegen-frontend-mobile` | Taste `e988add20dab0fa97d7a76781c48961c8184288e`，upstream `skills/imagegen-frontend-mobile`，install `.agents/skills/imagegen-frontend-mobile` | 只有visual authority尚未形成且Design明確要求candidate generation時，中央workflow才可授權image generation；無Pencil／Flutter code mutation或credential permission | Upstream commit／path、license、managed byte、frontmatter trigger、install path、runtime precedence或image-generation trigger改變時，重跑lock、collision／discovery與focused adoption review |
+
+Exact逐檔hash與license hash只由root`skills-lock.json`擁有，不在本registry複製。可重複的Pencil-to-Flutter人類操作流程見[`docs/guides/pencil_to_flutter_workflow.md`](../guides/pencil_to_flutter_workflow.md)。
+
 #### 2026-07-30 repository-local Skill language revalidation
 
 - `governing-template-development`：Level 0～5、artifact routing、Design／Plan gate、雙層Task、stop／continue、Skill adoption與pressure protocol完成逐檔semantic review。
@@ -128,6 +141,8 @@ Figma：[網址，如有]
 `karpathy-guidelines`不是使用者入口。中央治理在進入production code implementation／refactor／review後自動載入；純需求討論、Design／Plan核准、Level 0文件修正、roadmap與release closure不觸發。
 
 Repository-local `.pen`到Flutter implementation可由中央治理在所有approval gates通過後自動路由`implementing-pencil-flutter-design`。使用者不需要同時指定Taste Skills；accepted `.pen`存在時imagegen不是normal route。Pencil MCP unavailable、runtime Skill collision、manifest drift或Design conflict都必須fail closed。
+
+完整source／manifest layout、Skill pin與worktree-local discovery、Pencil admission、Flutter mapping、visual acceptance與copyable short prompt由[Pencil-to-Flutter Workflow Guide](../guides/pencil_to_flutter_workflow.md)提供；本治理總覽不複製其操作步驟。
 
 完整日常使用情境、入口選擇與可直接複製的功能／畫面／除錯／測試失敗／Refactor／Migration Prompt，見[AI Agent協作開發快速使用指南](../guides/agent_assisted_development_quick_start.md)。該Guide只提供使用者操作範例，不複製或取代本文件與中央Skill的治理authority。
 

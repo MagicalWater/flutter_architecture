@@ -65,6 +65,14 @@ Historical 文件只能用來理解過去，不能覆蓋 current authority。
 
 Repository policy與current artifacts高於Skill；完整人類治理總覽見`docs/governance/development_workflow.md`。
 
+已分類且已核准的repository-local `.pen` → Flutter工作，由中央治理在所有approval／worktree／visual authority gates通過後路由：
+
+```txt
+.agents/skills/implementing-pencil-flutter-design/SKILL.md
+```
+
+人類操作入口見`docs/guides/pencil_to_flutter_workflow.md`。本文件不複製Pencil MCP procedure；Design／Plan未核准、source仍在external path或manifest未通過時，不得提前操作Pencil或開始Flutter implementation。
+
 ---
 
 ## 架構守則

@@ -28,7 +28,7 @@ Other platforms: Dependency-ready
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.14.0
-Phase: Implementation in progress; Tasks 33-1 through 33-5 accepted
+Phase: Task 33-12 holistic final review; Tasks 33-1 through 33-11 accepted
 ```
 
 完整 active scope、design、gate與 next action：

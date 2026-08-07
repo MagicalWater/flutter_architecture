@@ -1,0 +1,302 @@
+---
+document_type: guide
+status: active
+authoritative_for:
+  - pencil-to-flutter-human-workflow-guide
+last_reviewed_baseline: 1.14.0
+---
+
+# Repository-local Pencil-to-Flutter Workflow Guide
+
+## Purpose and authority
+
+本Guide是「已核准 `.pen` 如何進入此Flutter模板實作流程」的人類操作入口。它不擁有Requirement分類、Design／Plan核准、`.pen`結構語意、Flutter架構或release policy。
+
+Authority順序：
+
+```txt
+AGENTS.md
+→ governing-template-development
+→ accepted Requirement／Design／Plan
+→ ADR-028 + visual authority manifest
+→ implementing-pencil-flutter-design
+→ source／tests／runtime evidence
+→ 本Guide的人類操作說明
+```
+
+詳細可執行Pencil admission、mapping與stop conditions由：
+
+- [ADR-028](../adr/adr-028-repository-local-pencil-to-flutter-design-implementation-workflow.md)
+- [`.agents/skills/implementing-pencil-flutter-design/SKILL.md`](../../.agents/skills/implementing-pencil-flutter-design/SKILL.md)
+
+擁有。本Guide只把這些authority串成可重複的日常流程。
+
+## When to use
+
+使用本流程的必要前提是：
+
+- 工作已被Requirement Decision分類為repository-local Pencil-to-Flutter implementation。
+- Design與Implementation Plan依Level要求完成review並已核准。
+- 使用managed worktree執行。
+- active `.pen`已進repository並由manifest鎖定。
+- 需要從Pencil structure／visual authority映射成Flutter，而不是只把PNG目測抄成畫面。
+
+典型輸入：
+
+```txt
+docs/design_sources/<initiative>/source.pen
+docs/visual_authority/<initiative>/manifest.md
+```
+
+### Non-triggers
+
+以下情況不直接使用本流程：
+
+- 一般Flutter feature沒有accepted `.pen`。
+- Figma或image-only概念稿仍在需求／設計探索階段。
+- 已完成UI只做bounded bug fix。
+- 只要求產生概念圖或brand direction。
+- `.pen`仍在external path、沒有repository manifest或hash admission。
+- Design／Plan尚未取得必要核准。
+
+這些工作先回到`governing-template-development`；新功能可由`starting-feature-work`快捷入口委派中央治理。
+
+## Required accepted inputs
+
+開始Pencil操作前至少確認：
+
+```txt
+accepted Requirement Decision
+accepted Design（如分類要求）
+accepted Implementation Plan（如分類要求）
+managed worktree + expected branch／HEAD
+repository-local source.pen
+accepted visual authority manifest
+skills-lock.json（如使用third-party Skills）
+Pencil／Executor integration可用
+```
+
+聊天中的「這份已核准」或external absolute path不能替代repository evidence。找不到accepted artifact時保持blocked，不推定approval。
+
+## Repository source and manifest layout
+
+每個initiative使用：
+
+```txt
+docs/design_sources/<initiative>/
+  source.pen
+  pencil-preview.png
+  original-reference.png        # optional supplementary evidence
+  historical-flutter-benchmark.png  # optional benchmark
+
+docs/visual_authority/<initiative>/
+  manifest.md
+```
+
+Authority ranking固定為：
+
+```txt
+accepted repository-local .pen
+→ Pencil MCP fresh derived preview
+→ supplementary reference
+→ historical Flutter benchmark
+```
+
+`.pen`是opaque design authority。即使檔案內容看起來像JSON，也不得用Python、PowerShell、Dart、text editor、regex或native parser讀取／修改其結構。
+
+### Blank document／seed rule
+
+Pencil MCP可建立／修改已存在有效document中的內容，但目前integration不把「任意filesystem路徑建立全新合法`.pen`」視為通用document API。若initiative需要從空白開始，使用repository-governed且已驗證的blank seed，再透過native Pencil與Pencil MCP操作。
+
+已有有效`source.pen`或governed seed時，不應反覆要求使用者手動建立空白`.pen`。`.runtime`中的舊驗證`.pen`或temporary payload不能成為新的design authority。
+
+## Third-party Skill pin, update and removal
+
+目前Taste companions以`third-party-unmodified`方式鎖定在root`skills-lock.json`。Current pin：
+
+```txt
+repository: https://github.com/Leonxlnx/taste-skill.git
+commit: e988add20dab0fa97d7a76781c48961c8184288e
+license: MIT
+
+brandkit
+  upstream: skills/brandkit
+  install: .agents/skills/brandkit
+
+high-end-visual-design
+  upstream: skills/soft-skill
+  install: .agents/skills/high-end-visual-design
+
+imagegen-frontend-mobile
+  upstream: skills/imagegen-frontend-mobile
+  install: .agents/skills/imagegen-frontend-mobile
+```
+
+Pin／update流程：
+
+1. Requirement Decision確認confirmed gap與stage-specific用途。
+2. 固定immutable upstream commit與exact upstream path。
+3. copy exact upstream bytes；不翻譯、不順手改trigger。
+4. 鎖定逐檔SHA-256與exact license bytes／hash。
+5. 執行Skill lock、same-name collision、loaded absolute path與focused adoption review。
+6. 任一managed byte或trigger改動後，若不再是exact upstream bytes，改按repository-maintained fork治理。
+
+Removal流程：移除install path、lock row、registry row與route dependency，fresh執行docs／lock／discovery驗證；不得因此刪除已accepted `.pen`、Flutter source或historical evidence。
+
+Taste Skills不自動取得network、filesystem mutation、credential、Pencil或image generation permission；實際tool permission仍由中央workflow與對應integration gate擁有。
+
+## Worktree-local discovery proof
+
+在Pencil admission前，證明實際runtime載入的是managed worktree版本，而不是user-global或其他workspace的same-name Skill：
+
+```txt
+expected worktree root
+expected orchestration Skill absolute path
+expected Taste Skill absolute paths（只限本stage需要的companions）
+same-name collisions = 0
+loaded paths outside worktree = 0
+skills-lock validation = 0 issues
+```
+
+Path collision、global Skill先載入或hash drift都要先修復；不得以「檔案內容看起來相同」接受錯誤loaded identity。
+
+## Pencil MCP admission
+
+實際procedure以domain Skill的[Pencil admission reference](../../.agents/skills/implementing-pencil-flutter-design/references/pencil-admission.md)為準。人類流程只要求下列順序：
+
+```txt
+verify Executor scope／version
+→ verify pencil-local-mcp discovery
+→ native Pencil開啟worktree-local source.pen
+→ fresh app state確認active document identity
+→ load必要guidelines
+→ Pencil MCP inventory／extraction
+→ 如需export或mutation，只透過Pencil MCP
+→ fresh hash／dimensions／manifest verification
+```
+
+Pencil MCP unavailable、document identity錯誤、source hash drift或unsupported construct沒有accepted disposition時，保持blocked。不得切換成PNG猜測、OCR、native parser或直接Flutter implementation。
+
+## Extraction and Flutter mapping
+
+Extraction至少盤點：
+
+- root／frame dimensions與hierarchy。
+- reusable components。
+- variables／colors／gradients／typography。
+- spacing／radii／borders／shadows。
+- text與visible content。
+- icons與states。
+- unsupported／ambiguous constructs。
+
+每個extracted item只指定一個Flutter owner。Owner候選：
+
+```txt
+existing ColorScheme / DsSemanticColors
+existing DsSpace / DsRadius
+feature-local visual spec
+generated localization key
+approved icon package identity
+feature-local widget
+decorative Flutter primitive
+```
+
+只有真正存在第二個consumer時才提升為global Design System token。Pencil-specific exact cyan、gold、glow、gradient或單頁尺寸不因「看起來可共用」就提升。
+
+## Feature First and localization rules
+
+Pencil只擁有visual／structural authority，不建立第二套App architecture。
+
+- 新UI仍放入`apps/flutter_architecture/lib/features/<feature>/presentation/`。
+- 只有實際business behavior才引入Domain／Data；presentation-only proof不得建立假的Repository／UseCase／Bloc。
+- App仍是Composition Root。
+- Visible copy進generated ARB localization；不要把accepted中文直接散落在widgets。
+- icons沿accepted mapping使用既有package；不因第三方Web design Skill的icon規則改寫Flutter authority。
+- responsive implementation使用正常Flutter layout；不得以整張raster、`FittedBox`全屏縮放或hidden overlay假裝還原。
+
+## Golden, diff and runtime acceptance
+
+Visual acceptance至少需要：
+
+```txt
+Pencil MCP fresh canonical preview
+Flutter deterministic canonical golden
+deterministic PNG diff
+supported runtime screenshot
+human semantic visual review
+```
+
+Manifest先固定canonical viewport、DPR、tolerance、ignore／crop policy與threshold，之後才比較。失敗時修implementation或取得新Design decision；不得在同一Task臨時放寬threshold。
+
+Dimension mismatch必須fail closed，不得自動resize。若historical benchmark與current canonical authority來自不同時期／尺寸，使用其immutable contemporaneous native-size reference計算normalized historical metrics，再與current metrics比較；不得upscale historical raster冒充current master。
+
+Runtime screenshot必須保留exact driver bytes與SHA-256，記錄device id、platform version、physical／logical size、DPR、font scale與exact command。System chrome／debug marker不得動態mask；只有Design事前固定的rectangular crop才可使用。
+
+Pixel threshold通過也不能覆蓋semantic P1。人工review至少檢查hierarchy、typography、spacing、icons、states、content completeness、contrast、touch target、narrow layout與platform renderer differences。
+
+## Double-layer Task review
+
+本流程仍服從中央雙層Task治理：
+
+```txt
+Task implementation／evidence
+→ focused review
+→ finding修正
+→ fresh focused re-review
+→ Task whole review
+→ Task commit
+→ 下一Task
+
+全部Tasks完成
+→ cross-Task holistic final review
+→ fresh full regression
+→ release／merge／push authorization gate（依分類）
+```
+
+一般implementation failure、stale doc或test failure直接修正並fresh re-review；只有scope／architecture決策、external manual dependency、accepted Design／Plan被P0／P1推翻，或正式release gate才需要停下來等使用者。
+
+## Failure, rollback and stop conditions
+
+立即fail closed：
+
+- accepted Requirement／Design／Plan缺失或互相衝突。
+- worktree／branch／HEAD admission不符。
+- `.pen`不在repository或manifest hash drift。
+- Skill lock／loaded path／collision失敗。
+- Pencil MCP不可用或active document identity錯誤。
+- 需要native `.pen` parse、OCR或PNG猜測才能繼續。
+- unsupported construct沒有accepted mapping／defer decision。
+- visual threshold或semantic P1未通過。
+
+Rollback以Task commit／accepted source與manifest為單位；不要用external `.pen`、舊runtime file或historical screenshot覆蓋current authority。
+
+## Copyable short prompt
+
+已經有accepted repository-local `.pen`時，日常Prompt只需要：
+
+```txt
+@bridge-win 請開啟：
+
+`D:\Developer\flutter_architecture`
+
+請使用repository-local `governing-template-development`。
+
+我要依目前repository中已接受的`.pen`實作／繼續實作對應Flutter畫面。
+
+請先依repository authority確認Requirement Decision、Design、Plan、managed worktree、visual manifest與Skill provenance；只有全部admission通過後才路由`implementing-pencil-flutter-design`。
+
+`.pen`只能透過Pencil MCP讀取／操作，不得使用native parser、PNG／OCR fallback或external path作implementation authority。
+
+請依雙層Task治理持續執行，直到需要真正的使用者決策、external manual action或正式release／merge授權才停止。
+```
+
+若工作尚未完成Requirement／Design／Plan，不要宣稱「已接受`.pen`」；改用一般feature／governance入口先完成分類與核准。
+
+## Related authority
+
+- [Template Development Workflow Governance](../governance/development_workflow.md)
+- [Documentation Governance Policy](../governance/documentation_policy.md)
+- [ADR-028](../adr/adr-028-repository-local-pencil-to-flutter-design-implementation-workflow.md)
+- [Design Source Hub](../design_sources/README.md)
+- [Visual Authority Hub](../visual_authority/README.md)
+- [AI Agent協作開發快速使用指南](agent_assisted_development_quick_start.md)

@@ -57,6 +57,16 @@ Final / Holistic Review
 - [`milestone_33/33-4_visual_authority_review.md`](milestone_33/33-4_visual_authority_review.md)：visual manifest TDD、repository-local `.pen`／references admission、source ranking、canonical viewport與Task 33-6 preview export gate review。
 - [`milestone_33/33-5_orchestration_pressure_evidence.md`](milestone_33/33-5_orchestration_pressure_evidence.md)：Pencil-to-Flutter RED／DISCOVERY／EXPLICIT／REFACTOR behavioral pressure evidence。
 - [`milestone_33/33-5_orchestration_skill_review.md`](milestone_33/33-5_orchestration_skill_review.md)：thin orchestration Skill、中央route、Taste boundary、permissions、rollback與whole-Task review。
+- [`milestone_33/33-6_pencil_admission_and_extraction.md`](milestone_33/33-6_pencil_admission_and_extraction.md)：Executor／Pencil admission、accepted document identity、structure inventory與canonical Pencil export evidence。
+- [`milestone_33/33-6_flutter_mapping_matrix.md`](milestone_33/33-6_flutter_mapping_matrix.md)：Pencil extracted items到Design System／feature-local visual spec／localization／icons／widgets的single-owner mapping。
+- [`milestone_33/33-6_pencil_extraction_review.md`](milestone_33/33-6_pencil_extraction_review.md)：Pencil boundary、canonical export與mapping whole-Task review。
+- [`milestone_33/33-7_flutter_proof_foundation_review.md`](milestone_33/33-7_flutter_proof_foundation_review.md)：presentation-only feature、router／localization／visual spec foundation與TDD review。
+- [`milestone_33/33-8_write_precheck_ui_review.md`](milestone_33/33-8_write_precheck_ui_review.md)：Write Pre-check responsive widget implementation與visual hierarchy review。
+- [`milestone_33/33-9_flutter_validation_review.md`](milestone_33/33-9_flutter_validation_review.md)：architecture／semantics／localization／responsive與Windows canonical golden validation review。
+- [`milestone_33/33-10_visual_acceptance_review.md`](milestone_33/33-10_visual_acceptance_review.md)：固定8% deterministic diff、historical relative gate、Android runtime screenshot與semantic visual acceptance review。
+- [`milestone_33/33-10r_fontweight_api_compatibility_review.md`](milestone_33/33-10r_fontweight_api_compatibility_review.md)：Task 33-11 full analyze發現的`FontWeight.index`deprecation corrective recovery；visual gate不變且workspace analyze恢復GREEN。
+- [`milestone_33/visual_validation/review.md`](milestone_33/visual_validation/review.md)：Task 33-10 canonical／Android runtime semantic visual review與evidence hashes。
+- [`milestone_33/33-11_workflow_documentation_review.md`](milestone_33/33-11_workflow_documentation_review.md)：Reusable Guide、narrow routing、Skill registry／language ownership、current sync與Guide pressure disposition review。
 
 ### Template Baseline 1.14.0 project holistic audit
 

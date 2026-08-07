@@ -30,6 +30,7 @@ last_reviewed_baseline: 1.14.0
 Template Baseline: 1.14.0
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+Current phase: Holistic final review; workflow capability implemented and documented, release disposition not yet frozen
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -352,13 +353,13 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Current phase: Implementation in progress; workflow foundation Tasks 33-1 through 33-5 accepted
+Current phase: Holistic final review; release disposition pending
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Maintenance mode: Active governed milestone
 Open Audit remediation findings: None
 ```
 
-Milestone 33已完成Plan approval closure、managed worktree admission、canonical ADR-028、ownership-aware third-party Skill lock、Taste Skill immutable source／collision pressure、repository-local visual authority與`implementing-pencil-flutter-design`thin orchestration Skill。Current `.pen` authority位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；`D:\Developer\ui-agent`只保留external admission evidence角色。Pencil canvas與Flutter implementation尚未開始，下一步為Task 33-6 Pencil MCP admission／extraction；canonical 941×1672 Pencil preview也由該Task輸出。Active routing由`docs/roadmap/active.md`與`docs/milestones/README.md`擁有。
+Milestone 33目前已具備canonical ADR-028、ownership-aware third-party Skill lock、Taste Skill immutable provenance、repository-local visual authority、Pencil MCP extraction／mapping、presentation-only Flutter proof、deterministic visual diff與Android runtime screenshot evidence。Current `.pen` authority位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；`D:\Developer\ui-agent`只保留external admission evidence角色。Current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`；active execution／closure routing由`docs/roadmap/active.md`與`docs/milestones/README.md`擁有。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

@@ -3,7 +3,7 @@ document_type: governance-policy
 status: accepted
 authoritative_for:
   - documentation-governance-and-metadata
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.14.0
 ---
 
 # Documentation Governance Policy
@@ -267,3 +267,22 @@ tools/docs/test_check_docs.py
 Checker 是 governance safety net，不取代 semantic review。它不得推斷 prose 是否正確，也不得因歷史 artifact 沒有採用 managed metadata 就直接失敗。
 
 新增 checker rule 必須先建立 fixture test，確認 RED，再加入最小 implementation 並確認 repository current state 可通過。
+
+## 13. Repository Skill Ownership and Language
+
+`.agents/skills/`中的Markdown依ownership區分責任：
+
+```txt
+repository-authored
+→ repository自己擁有內容；適用繁體中文、identity、review與pressure governance
+
+repository-maintained fork
+→ 曾修改third-party managed bytes；視同repository-authored重新治理
+
+third-party-unmodified
+→ 保留upstream raw bytes／語言／結構；只有完整lock驗證通過才可取得語言checker豁免
+```
+
+`third-party-unmodified`豁免必須由root`skills-lock.json`證明immutable commit、exact source／install path、逐檔SHA-256、exact license bytes與license hash。缺檔、unknown file、hash drift、path escape、duplicate install path、mutable revision或license drift任一發生時，整份lock fail closed，不能只豁免「看起來沒改」的檔案。
+
+文件政策只擁有ownership／language classification；Skill的trigger、permissions、workflow、approval、rollback與upgrade disposition仍由`docs/governance/development_workflow.md`、中央治理Skill與accepted adoption evidence擁有。

@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - agent-assisted-development-user-entry
-last_reviewed_baseline: 1.13.0
+last_reviewed_baseline: 1.14.0
 ---
 
 # AI Agent 協作開發快速使用指南
@@ -63,6 +63,7 @@ Agent 進入 repository 後，必須先依 `AGENTS.md` 讀取固定最小文件�
 | 只討論或可行性評估 | 依工作類型選入口，並明確限制 discussion-only |
 | 跨 Android／iOS 正式採用產品 identity | `adopting-template-product-identity` |
 | Implementation 的簡化與防止過度設計 | 不手動指定；中央治理會在適用階段載入 `karpathy-guidelines` |
+| 已核准repository-local `.pen` → Flutter implementation | `governing-template-development`；admission通過後自動路由`implementing-pencil-flutter-design` |
 
 使用 `starting-feature-work` 時，不需要再同時指定 `governing-template-development`；前者必須自動委派中央治理。
 
@@ -150,6 +151,23 @@ Figma：
 ```
 
 Figma 只提供視覺與部分互動線索，不自動擁有 business rules、failure behavior、accessibility或data contract。
+
+## 場景三-A：依已核准 repository-local Pencil 設計稿實作
+
+只有`.pen`已進repository、Requirement／Design／Plan與visual manifest均完成必要核准時才使用此場景。完整流程見[Pencil-to-Flutter Workflow Guide](pencil_to_flutter_workflow.md)。
+
+```txt
+請使用 repository-local `governing-template-development` Skill。
+
+我要依目前repository中已接受的`.pen`實作對應Flutter畫面。
+
+請先確認Requirement Decision、Design、Plan、managed worktree、visual manifest與Skill provenance；全部通過後再路由`implementing-pencil-flutter-design`。
+
+不得使用external `.pen`、native parser、PNG／OCR fallback或直接image-to-code。
+依雙層Task治理持續執行到真正的決策／manual blocker／正式release gate。
+```
+
+使用者不需要手動指定三份Taste Skills。已有accepted `.pen`時，`imagegen-frontend-mobile`不是normal route；Pencil MCP unavailable則保持blocked，不改走目測還原。
 
 ## 場景四：Bug 與除錯
 
@@ -432,6 +450,7 @@ Plan accepted後，Task通過就應自動進入下一個Task，不需要反覆�
 - 不要同時指定 `starting-feature-work` 與 `governing-template-development`。
 - 不要手動把 `karpathy-guidelines` 當成工作入口。
 - 不要用 `adopting-template-product-identity` 處理 API-only、visual-only、單平台repair、signing或Store工作。
+- 不要把external `.pen`、PNG或historical Flutter screenshot直接當Pencil-to-Flutter implementation authority；先完成repository source／manifest admission。
 - 不要把聊天摘要當成repository current authority。
 - 不要為了要求「完整流程」而在Prompt中複製整份治理文件；只需清楚描述需求、預期與限制。
 
@@ -439,5 +458,6 @@ Plan accepted後，Task通過就應自動進入下一個Task，不需要反覆�
 
 - [Template Development Workflow Governance](../governance/development_workflow.md)
 - [Native Environment and Product Identity Adoption Guide](native_environment_adoption.md)
+- [Repository-local Pencil-to-Flutter Workflow Guide](pencil_to_flutter_workflow.md)
 - [Documentation Hub](../README.md)
 - [`AGENTS.md`](../../AGENTS.md)

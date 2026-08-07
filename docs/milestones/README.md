@@ -33,7 +33,7 @@ Milestone routing 只回答：
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.14.0
-Phase: Implementation in progress; Tasks 33-1 through 33-5 accepted
+Phase: Task 33-12 holistic final review; Tasks 33-1 through 33-11 accepted
 ```
 
 目前active authority：`docs/roadmap/active.md`。
@@ -46,7 +46,8 @@ Phase: Implementation in progress; Tasks 33-1 through 33-5 accepted
 - Accepted Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
 - Plan review：`docs/audits/milestone_33/33-p_implementation_plan_review.md`
 - Execution admission：`docs/audits/milestone_33/33-execution-admission.md`
-- Latest accepted Task：Task 33-5 Pencil-to-Flutter orchestration Skill；下一步Task 33-6 Pencil MCP admission／extraction。
+- Latest accepted Task：Task 33-11 reusable workflow documentation與pressure disposition；目前執行Task 33-12 holistic final review。
+- Reusable workflow Guide：`docs/guides/pencil_to_flutter_workflow.md`
 
 ## Closed milestone routing
 

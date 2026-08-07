@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-33-corrective-single-renderer-responsive-fidelity-recovery-plan
 last_reviewed_baseline: 1.15.0
@@ -15,6 +15,8 @@ last_reviewed_baseline: 1.15.0
 **Architecture:** `941 × 1672`只作design/comparison space。`WritePrecheckView`在所有正常portrait widths都建立同一個projected screen tree；visible geometry由`visualScale = availableWidth / 941`投影到真Flutter widgets，不使用top-level `FittedBox`、`Transform.scale`或parallel whole-screen renderer。Canonical與runtime reference／golden／diff都比較同一renderer，narrow tests只擁有layout-health責任。
 
 **Tech Stack:** Flutter 3.44.8、Dart、AutoRoute、generated Localization、Phosphor Icons、Flutter golden/widget/integration tests、repository Python docs/visual checks、Pencil MCP既有authority、BlueStacks Android runtime。
+
+**Approval:** User written approval received on 2026-08-07. Execute C1 → C5 under full two-layer governance; C4 user visual acceptance remains a hard gate before C5 release closure.
 
 ## Global Constraints
 

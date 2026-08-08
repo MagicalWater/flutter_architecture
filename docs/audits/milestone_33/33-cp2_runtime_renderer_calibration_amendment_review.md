@@ -39,3 +39,26 @@ PASS — 接受renderer-calibrated四層模型：
 ## Governance
 
 此finding會supersede原Corrective Plan中「direct Pencil 360×640 diff <= 0.08為runtime硬PASS」的單一criterion，但不改寫C2歷史failure evidence。2026-08-08使用者在finding與calibrated direction呈現後明確回覆「已批准」，因此Design／Plan amendment可標記為accepted並繼續C3。
+
+## CP2-1 Execution Evidence
+
+2026-08-08 fresh execution：
+
+```txt
+canonical golden: PASS
+canonical Pencil Gate A: PASS
+runtime golden after explicit candidate refresh: PASS
+single-renderer architecture contract: PASS
+
+Gate C Pencil/runtime diagnostic:
+differentPixelRatio = 0.1297222222222222
+meanAbsoluteChannelDelta = 3.8159364149305555
+maxChannelDelta = 233
+
+Gate B same-renderer calibration:
+differentPixelRatio = 0.09769965277777778
+meanAbsoluteChannelDelta = 2.4959819878472222
+maxChannelDelta = 215
+```
+
+Gate B由同一次test fresh建立temporary projected canonical reference；其固定門檻維持`ratio <= 0.10`、`mean <= 4.0`，沒有crop／ignore region／reference mutation。原C2 `pencil-runtime-360x640.png`未重建。

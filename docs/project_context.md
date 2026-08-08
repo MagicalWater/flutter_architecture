@@ -353,13 +353,13 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Current phase: Task 33-13 integration, 1.15.0 release and post-release validation
+Current phase: Corrective C3 single-renderer implementation candidate / review pending
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Maintenance mode: Active governed milestone
-Open Audit remediation findings: None
+Open Audit remediation findings: Milestone 33 runtime single-renderer corrective active
 ```
 
-Milestone 33目前已具備canonical ADR-028、ownership-aware third-party Skill lock、Taste Skill immutable provenance、repository-local visual authority、Pencil MCP extraction／mapping、presentation-only Flutter proof、deterministic visual diff與Android runtime screenshot evidence。Current `.pen` authority位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；`D:\Developer\ui-agent`只保留external admission evidence角色。Current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`；active execution／closure routing由`docs/roadmap/active.md`與`docs/milestones/README.md`擁有。
+Milestone 33已發布Template Baseline 1.15.0，但後續使用者runtime人工驗收揭露parallel whole-screen renderer P1，原Milestone 33 visual closure已被Corrective supersede。Corrective C1／C2與Runtime Renderer Calibration Amendment已accepted；C3目前為single-renderer implementation candidate且尚待正式Task review。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current cross-conversation checkpoint為`docs/audits/milestone_33/33-c3_cross_conversation_checkpoint.md`。Current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`；active execution／closure routing由`docs/roadmap/active.md`與`docs/milestones/README.md`擁有。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

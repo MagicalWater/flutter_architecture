@@ -33,7 +33,7 @@ Milestone routing 只回答：
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.15.0
-Phase: Task 33-13 release／integration／post-release validation; Task 33-12 disposition A accepted
+Phase: Corrective C3 single-renderer implementation candidate / review pending
 ```
 
 目前active authority：`docs/roadmap/active.md`。
@@ -46,9 +46,16 @@ Phase: Task 33-13 release／integration／post-release validation; Task 33-12 di
 - Accepted Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
 - Plan review：`docs/audits/milestone_33/33-p_implementation_plan_review.md`
 - Execution admission：`docs/audits/milestone_33/33-execution-admission.md`
-- Latest accepted Task：Task 33-12 holistic final review與disposition A；目前執行Task 33-13 release／integration／post-release validation。
+- Corrective Design：`docs/superpowers/specs/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery-design.md`
+- Corrective Plan：`docs/superpowers/plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md`
+- Corrective C1 review：`docs/audits/milestone_33/33-c1_governance_contract_review.md`
+- Corrective C2 review：`docs/audits/milestone_33/33-c2_runtime_visual_contract_review.md`
+- Runtime Renderer Calibration Amendment：`docs/superpowers/specs/2026-08-08-milestone-33-corrective-runtime-renderer-calibration-amendment-design.md`
+- Calibration amendment review：`docs/audits/milestone_33/33-cp2_runtime_renderer_calibration_amendment_review.md`
+- Current C3 checkpoint：`docs/audits/milestone_33/33-c3_cross_conversation_checkpoint.md`
+- Latest accepted corrective work：C1、C2與Runtime Renderer Calibration Amendment；C3 implementation candidate尚待focused／Whole-Task review與completion commit，C4／C5未開始。
 - Reusable workflow Guide：`docs/guides/pencil_to_flutter_workflow.md`
-- Holistic final review：`docs/audits/milestone_33/33-12_holistic_final_review.md`
+- Historical pre-corrective holistic final review：`docs/audits/milestone_33/33-12_holistic_final_review.md`；不得覆蓋current Corrective authority。
 
 ## Closed milestone routing
 

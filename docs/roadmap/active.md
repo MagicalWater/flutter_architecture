@@ -13,7 +13,7 @@ last_reviewed_baseline: 1.15.0
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.15.0
-Current phase: Task 33-13 integration, release and post-release validation; Task 33-12 disposition A accepted
+Current phase: Corrective C3 single-renderer implementation candidate / review pending
 ```
 
 ## Active Scope
@@ -26,7 +26,7 @@ Milestone 33 建立 repository-local `.pen` visual authority、third-party Skill
 - Accepted Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
 - Plan review：`docs/audits/milestone_33/33-p_implementation_plan_review.md`
 
-Implementation Plan已完成雙層review並於2026-08-04取得使用者書面核准。Tasks 33-1至33-12已建立canonical ADR、ownership-aware Skill lock、Taste Skill provenance／discovery、repository-local visual authority、Pencil MCP admission／structural extraction、Flutter mapping／implementation、responsive／semantics／architecture validation、deterministic visual diff、Android runtime evidence、可重複Pencil-to-Flutter Guide與Holistic Final Review。Canonical `941 × 1672` visual gate以固定8%門檻通過；Task 33-12已freeze disposition A，目前進入Task 33-13 release／integration／post-release validation。
+原Milestone 33 Tasks 33-1至33-12曾完成canonical ADR、Skill／visual authority、Pencil MCP extraction、Flutter proof、deterministic diff與Holistic Final Review，並發布Template Baseline 1.15.0；但使用者後續人工runtime驗收揭露parallel whole-screen renderer P1，因此原closure結論已被Corrective supersede。Corrective Design／Plan、C1治理契約、C2 runtime contract與2026-08-08 Runtime Renderer Calibration Amendment均已完成雙層治理。Current C3 single-renderer production candidate已達current automated Gate A／Gate B、architecture與responsive health，但尚未完成C3 focused／Whole-Task review與completion commit；C4 Android人工驗收與C5 release closure均未開始。Current checkpoint：`docs/audits/milestone_33/33-c3_cross_conversation_checkpoint.md`。
 
 ## Latest Completed Milestone
 
@@ -39,11 +39,11 @@ Milestone 32 — CI產物本機化與GitHub儲存空間切換已完成Design、P
 ## Current Next Action
 
 ```txt
-執行Task 33-13 release closure
-→ 發布Template Baseline 1.15.0並fast-forward整合main
-→ 一般push origin/main並驗證remote equality
-→ release SHA fresh clean-checkout full regression
-→ repository Skill clean-checkout path／collision proof與fresh visual diff
-→ 建立post-release validation evidence
-→ milestone closure、push closure與managed worktree cleanup
+讀取33-c3 cross-conversation checkpoint與accepted calibration amendment
+→ review目前C3 dirty implementation candidate，移除沒有current authority支持的Gate C overfitting
+→ fresh Gate A／Gate B／single-renderer architecture／responsive／affected regression
+→ C3 focused review + Whole-Task review + completion commit
+→ C4 fresh Android build/install、runtime screenshot與side-by-side
+→ 使用者實際BlueStacks視覺驗收
+→ 通過後才進C5 Corrective Holistic Final Review／1.15.1 disposition／post-release closure
 ```

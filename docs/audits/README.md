@@ -45,6 +45,12 @@ Final / Holistic Review
 
 ## Evidence routes
 
+### Validation Planner — Skill Governance Path Classification Corrective
+
+- [`validation_planner_skill_governance_classification_requirement_decision.md`](validation_planner_skill_governance_classification_requirement_decision.md)：fresh path probes確認repository-authored Skills被降為普通`docs_content`、Skill lock／vendored provenance被升為`unknown`的雙向classification gap；接受為Level 4 standalone governance corrective，不另建Milestone。
+- [`validation_planner_skill_governance_classification_design_review.md`](validation_planner_skill_governance_classification_design_review.md)：accepted Corrective Design的known-root boundary、Skill lock authority、machine／behavioral responsibility split、unknown negative control與whole-Design review；2026-08-10已取得使用者核准。
+- [`validation_planner_skill_governance_classification_plan_review.md`](validation_planner_skill_governance_classification_plan_review.md)：proposed Implementation Plan review；SG-1 RED→SG-2 minimal classifier GREEN→SG-3 lock／consumer verification→SG-4 holistic closure完整覆蓋accepted Design，等待使用者Plan核准。
+
 ### Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
 
 - [`milestone_34/34-0_asset_typography_mapping_design_review.md`](milestone_34/34-0_asset_typography_mapping_design_review.md)：accepted Level 3 Design的classification、scope、authority、over-design guards、focused findings disposition與使用者書面核准closure。

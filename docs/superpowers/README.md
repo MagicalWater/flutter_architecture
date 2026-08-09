@@ -31,6 +31,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
+- [`plans/2026-08-10-validation-planner-skill-governance-classification-corrective.md`](plans/2026-08-10-validation-planner-skill-governance-classification-corrective.md)：proposed standalone Level 4 governance corrective Plan；以SG-1 RED、SG-2 classifier GREEN、SG-3 Skill lock／consumer verification與SG-4 holistic review補齊repository-managed Skill path classification；使用者Plan核准前不得implementation。
 - [`plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`](plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md)：accepted Milestone 35 Implementation Plan；Tasks 35-1～35-9、Template Baseline 1.16.0 publication與published-main post-release closure均已完成。
 - [`plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`](plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)：accepted Milestone 33 Implementation Plan；Tasks 33-1至33-13、Template Baseline 1.15.0 release、main publication與fresh clean-checkout post-release closure均已完成。
 - [`plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md`](plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md)：accepted Corrective C1～C5 Plan；single-renderer recovery、Android人工visual acceptance、C5 Holistic Final Review、Template Baseline 1.15.1與post-release closure均已完成。
@@ -59,6 +60,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
+- [`specs/2026-08-10-validation-planner-skill-governance-classification-corrective-design.md`](specs/2026-08-10-validation-planner-skill-governance-classification-corrective-design.md)：proposed standalone governance corrective；補齊`.agents/skills/**`、`skills-lock.json`與`third_party/skills/**`對既有`governance` class的routing，保留Skill lock integrity、semantic pressure review與unknown full fail-safe；等待使用者Design核准。
 - [`specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`](specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md)：accepted Milestone 35 Corrective Design；以single deterministic validation planner、change classes、affected dependency scope、evidence reuse與fail-safe full escalation建立Minimum Sufficient Validation；Plan已accepted，implementation進入managed worktree admission。
 - [`specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`](specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md)：accepted Milestone 34 Design；補強Pencil extraction到Flutter mapping之間的asset／vector／typography representation classification與provenance gate；Implementation仍須等待Plan完成雙層治理與書面核准。
 - [`specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`](specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md)：superseded ADR-028 stable decision draft history；current stable authority已移交canonical ADR-028。

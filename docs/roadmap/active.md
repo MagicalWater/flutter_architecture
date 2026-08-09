@@ -3,7 +3,7 @@ document_type: active-milestone
 status: accepted
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.15.0
+last_reviewed_baseline: 1.15.1
 ---
 
 # Active Milestone
@@ -12,8 +12,8 @@ last_reviewed_baseline: 1.15.0
 
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Template Baseline: 1.15.0
-Current phase: Corrective C5 holistic final review passed / 1.15.1 release closure pending
+Template Baseline: 1.15.1
+Current phase: Corrective 1.15.1 release / post-release validation pending
 ```
 
 ## Active Scope

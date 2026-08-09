@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.15.0
+last_reviewed_baseline: 1.15.1
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.15.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.15.0
+Template Baseline: 1.15.1
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Current phase: Corrective C5 holistic final review passed / 1.15.1 release closure pending
+Current phase: Corrective 1.15.1 release / post-release validation pending
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -353,7 +353,7 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Current phase: Corrective C5 holistic final review passed / 1.15.1 release closure pending
+Current phase: Corrective 1.15.1 release / post-release validation pending
 Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Maintenance mode: Active governed milestone
 Open Audit remediation findings: Milestone 33 runtime single-renderer corrective active

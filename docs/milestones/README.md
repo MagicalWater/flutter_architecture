@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.15.0
+last_reviewed_baseline: 1.15.1
 ---
 
 # Milestone Routing
@@ -32,8 +32,8 @@ Milestone routing 只回答：
 
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Template Baseline: 1.15.0
-Phase: Corrective C5 holistic final review passed / 1.15.1 release closure pending
+Template Baseline: 1.15.1
+Phase: Corrective 1.15.1 release / post-release validation pending
 ```
 
 目前active authority：`docs/roadmap/active.md`。

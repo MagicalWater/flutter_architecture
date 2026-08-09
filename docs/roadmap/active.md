@@ -3,7 +3,7 @@ document_type: active-milestone
 status: accepted
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.15.2
+last_reviewed_baseline: 1.16.0
 ---
 
 # Active Milestone
@@ -12,8 +12,8 @@ last_reviewed_baseline: 1.15.2
 
 ```txt
 Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-State: Design accepted / Implementation Plan accepted / Tasks 35-1～35-7 accepted / Task 35-8 active
-Template Baseline: 1.15.2
+State: Tasks 35-1～35-8 accepted / local release 1.16.0 / publication and Task 35-9 pending
+Template Baseline: 1.16.0
 ```
 
 ## Current Scope
@@ -25,7 +25,7 @@ Template Baseline: 1.15.2
 - Design：Accepted — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
 - Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`
 - Worktree：Created — `C:\Users\crazy\.devspace\worktrees\flutter_architecture-65b293eb` / `milestone-35-validation-governance`
-- Production / CI mutation：Tasks 35-1～35-7 accepted / Task 35-8 holistic release active
+- Production / CI mutation：Tasks 35-1～35-8 accepted / local release 1.16.0 / publication pending
 
 ## Latest Completed Milestone
 
@@ -56,5 +56,6 @@ Milestone 35 read-only admission：CONFIRMED
 → Task 35-5 ADR-023 and Human/Agent Authority Synchronization：ACCEPTED
 → Task 35-6 Evidence Reuse and Duplicate Full-Run Guard：ACCEPTED
 → Task 35-7 Before/After Routing and Execution-Cost Acceptance：ACCEPTED
-→ 下一步：Task 35-8 Holistic Final Review and Template Baseline Release
+→ Task 35-8 Holistic Final Review and Template Baseline Release：ACCEPTED / LOCAL 1.16.0
+→ 下一步：publication authorization → Task 35-9 Published-Main Post-release Validation and Closure
 ```

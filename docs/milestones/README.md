@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.15.2
+last_reviewed_baseline: 1.16.0
 ---
 
 # Milestone Routing
@@ -32,18 +32,19 @@ Milestone routing 只回答：
 
 ```txt
 Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-Template Baseline: 1.15.2
+Template Baseline: 1.16.0
 ```
 
-目前active authority：`docs/roadmap/active.md`；Milestone 35只完成read-only admission，Requirement Decision／Design／Plan尚未開始。
+目前active authority：`docs/roadmap/active.md`；Milestone 35已完成Tasks 35-1～35-8與local 1.16.0 release，publication與Task 35-9 post-release validation尚未完成。
 
 ### Milestone 35 active routing
 
 - Admission audit：`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`
-- Requirement Decision：Pending
-- Design：Not started
-- Implementation Plan：Not started
-- Worktree／implementation：Not started
+- Requirement Decision：Accepted — `docs/audits/milestone_35/35-r_requirement_decision.md`
+- Design：Accepted — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`
+- Holistic Final Review：Accepted — `docs/audits/milestone_35/35-8_holistic_final_review.md`
+- Release：Local Template Baseline `1.16.0`; publication／post-release pending
 
 ### Milestone 34 release routing
 

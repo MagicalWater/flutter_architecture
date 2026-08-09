@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.15.2
+- Template Baseline Version：1.16.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -36,6 +36,7 @@
 - Milestone 32 CI產物本機化與GitHub儲存空間切換：Completed / Archived
 - Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation：Completed / Archived（Corrective Release 1.15.1）
 - Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance：Completed / Archived（Release 1.15.2）
+- Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective：Local Release 1.16.0 / Publication & Post-release Validation Pending
 
 平台能力：
 

@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.15.2
+last_reviewed_baseline: 1.16.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.15.2
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.15.2
+Template Baseline: 1.16.0
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-Current phase: Execution admitted / Tasks 35-1～35-7 accepted / Task 35-8 holistic release active
+Current phase: Tasks 35-1～35-8 accepted / local 1.16.0 release / publication and Task 35-9 pending
 Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -345,7 +345,7 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.15.2。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.16.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
@@ -353,7 +353,7 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-Current phase: Execution admitted / Tasks 35-1～35-7 accepted / Task 35-8 holistic release active
+Current phase: Tasks 35-1～35-8 accepted / local 1.16.0 release / publication and Task 35-9 pending
 Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
 Maintenance mode: Suspended while Milestone 35 governance corrective is active
 Open Audit remediation findings: Milestone 35 admission P1/P2 findings recorded; remediation not started before Design

@@ -20,6 +20,44 @@
 
 ---
 
+## [1.16.0] - 2026-08-09
+
+### Added
+
+- 完成Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective，新增single deterministic Minimum Sufficient Validation planner。
+- 新增canonical change classes與focused／affected／workspace／full／release validation levels，並由workspace metadata推導package reverse dependents。
+- 新增plan-driven validation runner、routing benchmark、phase-specific evidence identity與same-Task evidence reuse contract。
+
+### Changed
+
+- GitHub CI、Android／iOS build routing與manual-local入口改為消費同一validation plan，不再各自維護binary full-CI path logic。
+- Testing inventory execution tier重新對齊current governance；current inventory為Tier 1=22、Tier 2=124、Tier 3=11、Tier 4=7、Unclassified=0。
+- ADR-023、Testing Governance、AGENTS與Feature／Agent／CI Guides統一為planner-selected Minimum Sufficient Validation；full workspace regression保留作holistic、manual fail-safe與release gate。
+- 同一Task在plan identity與selected inputs未改變時可重用phase-specific evidence；selected source／test／dependency metadata、failure recovery、validation-engine、holistic、release與post-release仍強制fresh。
+
+### Fixed
+
+- 修正ordinary feature／package／tooling／test-only變更被binary classifier過度提升為full workspace regression的治理漂移。
+- 修正ordinary App／package Dart change無條件要求Android＋iOS build的false platform escalation。
+- 修正known mixed changes因docs path不屬於舊`full_ci` path而被誤判unknown的問題。
+- 修正CI direct-script planner import與affected multi-workspace sequential execution成本問題。
+
+### Verified
+
+- `tools/ci` fresh contracts：238/238 PASS；test inventory contracts：11/11 PASS。
+- `dart run melos run docs_check`、五個workspace `flutter analyze`與完整Melos Flutter tests均fresh PASS；App full suite完成493 cases。
+- Generated source、Drift v1～v6/current schemas、Drift Web worker與schema governance fresh rebuild／verification PASS，semantic generated diff為0。
+- Windows production Android release APK fresh build PASS（56.8MB）。iOS fresh runner evidence保留為published-main Task 35-9 gate。
+- Task 35-7同輪wall-clock：single feature 15.835s、single test 5.836s、full workspace 44.887s；常見small change path明顯下降且未刪除tests。
+
+### Governance
+
+- Requirement Decision、Corrective Design、Implementation Plan、Tasks 35-1～35-7與35-8 Holistic Final Review皆依full double-layer Task governance完成；Open P0=0、Open P1 without disposition=0。
+- Unknown／invalid range／dependency parse／planner failure仍fail-safe full；release與post-release仍fresh full，不把full regression降級為nightly-only。
+- 1.16.0 local release identity完成後仍需publication與Task 35-9 published-main fresh validation，才可正式封存Milestone 35。
+
+---
+
 ## [1.15.2] - 2026-08-09
 
 ### Added

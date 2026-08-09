@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.2
 
 ```txt
 Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-State: Design accepted / Implementation Plan accepted / execution admitted / Task 35-7 active
+State: Design accepted / Implementation Plan accepted / Tasks 35-1～35-7 accepted / Task 35-8 active
 Template Baseline: 1.15.2
 ```
 
@@ -25,7 +25,7 @@ Template Baseline: 1.15.2
 - Design：Accepted — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
 - Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`
 - Worktree：Created — `C:\Users\crazy\.devspace\worktrees\flutter_architecture-65b293eb` / `milestone-35-validation-governance`
-- Production / CI mutation：Tasks 35-1～35-6 accepted / Task 35-7 cost acceptance active
+- Production / CI mutation：Tasks 35-1～35-7 accepted / Task 35-8 holistic release active
 
 ## Latest Completed Milestone
 
@@ -55,5 +55,6 @@ Milestone 35 read-only admission：CONFIRMED
 → Task 35-4 CI and Local Consumer Cutover：ACCEPTED
 → Task 35-5 ADR-023 and Human/Agent Authority Synchronization：ACCEPTED
 → Task 35-6 Evidence Reuse and Duplicate Full-Run Guard：ACCEPTED
-→ 下一步：Task 35-7 Before/After Routing and Execution-Cost Acceptance
+→ Task 35-7 Before/After Routing and Execution-Cost Acceptance：ACCEPTED
+→ 下一步：Task 35-8 Holistic Final Review and Template Baseline Release
 ```

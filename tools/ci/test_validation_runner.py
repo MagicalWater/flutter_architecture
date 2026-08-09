@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import unittest
+from pathlib import Path
 
 from tools.ci.validation_planner import encode_plan, plan_validation
 from tools.ci.validation_runner import commands_for_phase
@@ -114,6 +115,38 @@ class ValidationRunnerContractTest(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("tools/docs/check_docs.py", completed.stdout)
         self.assertIn("git diff --check", completed.stdout)
+
+    def test_multiple_whole_workspace_scopes_use_one_filtered_melos_command(self) -> None:
+        payload = {
+            "docs_check": False,
+            "python_test_scopes": [],
+            "analyze_scopes": [],
+            "generated_check": False,
+            "flutter_test_scopes": [
+                "apps/flutter_architecture/test",
+                "packages/design_system/test",
+            ],
+        }
+
+        commands = commands_for_phase(payload, "tests")
+
+        self.assertEqual(
+            commands,
+            ((
+                Path("."),
+                [
+                    "dart",
+                    "run",
+                    "melos",
+                    "exec",
+                    "--scope=flutter_architecture",
+                    "--scope=design_system",
+                    "--",
+                    "flutter",
+                    "test",
+                ],
+            ),),
+        )
 
 
 if __name__ == "__main__":

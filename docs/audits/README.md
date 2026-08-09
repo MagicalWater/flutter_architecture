@@ -69,6 +69,7 @@ Final / Holistic Review
 - [`milestone_35/35-4_ci_validation_plan_cutover_review.md`](milestone_35/35-4_ci_validation_plan_cutover_review.md)：Task 35-4 single planner CI/local consumer cutover、direct-script runtime P1修正、Windows Git Bash plan-range parity與fresh 227-test CI contract review。
 - [`milestone_35/35-5_validation_governance_authority_review.md`](milestone_35/35-5_validation_governance_authority_review.md)：Task 35-5 ADR-023 stable amendment、Testing Governance 1.15.2 alignment、AGENTS／Feature Guide over-validation wording closure與52-test docs policy review。
 - [`milestone_35/35-6_validation_evidence_reuse_review.md`](milestone_35/35-6_validation_evidence_reuse_review.md)：Task 35-6 phase-specific evidence identity、dependency-metadata invalidation、review-only audit reuse與holistic／release fresh guard review。
+- [`milestone_35/35-7_execution_cost_acceptance.md`](milestone_35/35-7_execution_cost_acceptance.md)：Task 35-7 fixed scenario routing matrix與fresh wall-clock acceptance；small feature／single-test實際降本，package route保留真實reverse-dependent coverage與高風險fail-safe。
 - [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation

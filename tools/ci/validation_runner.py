@@ -44,6 +44,14 @@ def _python_command(scope: str) -> tuple[Path, list[str]]:
     raise ValueError(f"unsupported Python scope: {scope}")
 
 
+def _whole_workspace_test_name(scope: str) -> str | None:
+    normalized = PurePosixPath(scope.replace("\\", "/"))
+    parts = normalized.parts
+    if len(parts) == 3 and parts[0] in {"apps", "packages"} and parts[2] == "test":
+        return parts[1]
+    return None
+
+
 def commands_for_phase(plan: dict[str, object], phase: str) -> tuple[tuple[Path, list[str]], ...]:
     commands: list[tuple[Path, list[str]]] = []
     if phase == "quality":
@@ -55,8 +63,24 @@ def commands_for_phase(plan: dict[str, object], phase: str) -> tuple[tuple[Path,
             commands.append(_workspace_command(str(scope), "analyze"))
         commands.append((Path("."), ["git", "diff", "--check"]))
     elif phase == "tests":
-        for scope in plan["flutter_test_scopes"]:
-            commands.append(_workspace_command(str(scope), "test"))
+        scopes = [str(scope) for scope in plan["flutter_test_scopes"]]
+        whole_workspace_names = [
+            name for name in (_whole_workspace_test_name(scope) for scope in scopes) if name
+        ]
+        grouped_scopes = {
+            scope for scope in scopes if _whole_workspace_test_name(scope) is not None
+        }
+        if len(whole_workspace_names) > 1:
+            command = ["dart", "run", "melos", "exec"]
+            for name in whole_workspace_names:
+                command.append(f"--scope={name}")
+            command.extend(["--", "flutter", "test"])
+            commands.append((Path("."), command))
+        else:
+            grouped_scopes.clear()
+        for scope in scopes:
+            if scope not in grouped_scopes:
+                commands.append(_workspace_command(scope, "test"))
     elif phase == "generated":
         if bool(plan["generated_check"]):
             commands.append((Path("."), ["bash", "tools/ci/verify_generated.sh"]))

@@ -1,0 +1,42 @@
+[
+  {
+    "case": "single-feature",
+    "seconds": 15.835,
+    "exit_code": 0,
+    "flutter_process_count": 1,
+    "commands": [
+      "apps/flutter_architecture :: flutter test test/features/profile"
+    ],
+    "output_tail": "st.dart: ProfileView maps unauthenticated loading error and content states\n00:02 +14: C:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/profile/presentation/pages/profile_view_test.dart: ProfileView maps unauthenticated loading error and content states\n00:03 +15: C:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/profile/presentation/pages/profile_view_test.dart: ProfileView keeps content for logout progress and failure\n00:03 +16: C:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/profile/presentation/pages/profile_view_test.dart: ProfileView wires retry and logout callbacks\n00:03 +17: C:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/profile/presentation/pages/profile_view_test.dart: ProfileView supports narrow viewport and 2.0 text scaling\n00:03 +18: All tests passed!\n\n"
+  },
+  {
+    "case": "single-test",
+    "seconds": 5.836,
+    "exit_code": 0,
+    "flutter_process_count": 1,
+    "commands": [
+      "apps/flutter_architecture :: flutter test test/features/profile/presentation/pages/profile_view_test.dart"
+    ],
+    "output_tail": "te_common_ffi 2.4.0+3 (2.4.2 available)\n  sqflite_darwin 2.4.2 (2.4.3+1 available)\n  sqflite_platform_interface 2.4.0 (2.4.1 available)\n  sqlite3 3.5.0 (3.5.1 available)\n  synchronized 3.4.0+1 (3.4.1+1 available)\n  test_api 0.7.11 (0.7.13 available)\n  vector_math 2.2.0 (2.4.2 available)\n  win32 6.3.0 (6.4.0 available)\nGot dependencies in `C:\\Users\\crazy\\.devspace\\worktrees\\flutter_architecture-65b293eb`!\n56 packages have newer versions incompatible with dependency constraints.\nTry `flutter pub outdated` for more information.\n00:00 +0: loading C:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/profile/presentation/pages/profile_view_test.dart\n00:00 +0: ProfileView maps unauthenticated loading error and content states\n00:00 +1: ProfileView keeps content for logout progress and failure\n00:00 +2: ProfileView wires retry and logout callbacks\n00:00 +3: ProfileView supports narrow viewport and 2.0 text scaling\n00:01 +4: All tests passed!\n\n"
+  },
+  {
+    "case": "leaf-package",
+    "seconds": 55.726,
+    "exit_code": 0,
+    "flutter_process_count": 1,
+    "commands": [
+      ". :: dart run melos exec --scope=flutter_architecture --scope=design_system -- flutter test"
+    ],
+    "output_tail": "/features/shell/presentation/pages/shell_scaffold_test.dart: ShellScaffold renders under Default Dark\n[flutter_architecture]: 00:38 +490: c:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/shell/presentation/pages/shell_scaffold_test.dart: ShellScaffold renders under Ocean Light\n[flutter_architecture]: 00:38 +491: c:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/shell/presentation/pages/shell_scaffold_test.dart: ShellScaffold renders under Ocean Dark\n[flutter_architecture]: 00:38 +492: c:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/shell/presentation/pages/shell_scaffold_test.dart: ShellScaffold rebuilds English and zh_TW chrome at runtime\n[flutter_architecture]: 00:39 +493: All tests passed!\n--------------------------------------------------------------------------------\n\n$ melos exec\n  └> flutter test\n     └> SUCCESS\n\n"
+  },
+  {
+    "case": "full-regression",
+    "seconds": 44.887,
+    "exit_code": 0,
+    "flutter_process_count": 1,
+    "commands": [
+      ". :: dart run melos exec -- flutter test"
+    ],
+    "output_tail": "/features/shell/presentation/pages/shell_scaffold_test.dart: ShellScaffold renders under Default Dark\n[flutter_architecture]: 00:30 +490: c:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/shell/presentation/pages/shell_scaffold_test.dart: ShellScaffold renders under Ocean Light\n[flutter_architecture]: 00:30 +491: c:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/shell/presentation/pages/shell_scaffold_test.dart: ShellScaffold renders under Ocean Dark\n[flutter_architecture]: 00:30 +492: c:/Users/crazy/.devspace/worktrees/flutter_architecture-65b293eb/apps/flutter_architecture/test/features/shell/presentation/pages/shell_scaffold_test.dart: ShellScaffold rebuilds English and zh_TW chrome at runtime\n[flutter_architecture]: 00:30 +493: All tests passed!\n--------------------------------------------------------------------------------\n\n$ melos exec\n  └> flutter test\n     └> SUCCESS\n\n"
+  }
+]

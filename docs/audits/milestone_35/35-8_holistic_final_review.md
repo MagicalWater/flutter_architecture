@@ -160,6 +160,32 @@ Open P1 without disposition：0。
 
 本Final Review允許建立**local 1.16.0 release commit**。正式publication、`main == origin/main`與post-release closure仍未成立。
 
+### Local release SHA fresh verification
+
+Local release commit建立後，以exact SHA重新執行release planner與fresh release gate：
+
+```txt
+Local release SHA: 3c33d7e39a45b069cd276dbfa0f8beb8559f636e
+Planner: validation_level=release / full_regression=true / generated_check=true
+         android_build=true / ios_build=true / release_full=true / fail_safe=false
+CI Python contracts: 238/238 PASS
+Inventory contracts: 11/11 PASS
+Docs check: PASS
+Analyze: PASS (5 workspaces)
+Full Melos Flutter regression: PASS (App 493 cases; all package suites PASS)
+Build runner: PASS
+Drift v1-v6/current fresh schema dumps: PASS
+Drift Web worker fresh compile: PASS
+Drift schema governance: 2/2 PASS
+Generated/schema/Web-worker semantic diff: 0
+Android production release APK: PASS / 56.8MB
+iOS fresh build: PENDING Task 35-9 published-main macOS/self-hosted gate
+```
+
+Fresh generated verification在Windows產生的tracked差異只包含EOL normalization；`git diff --ignore-space-at-eol`為0，並依既有generated verification contract還原後保持clean。一次錯誤的`cmd.exe for`驗證命令曾因working-directory drift導致v2之後找不到fixture；該command-harness錯誤已終止並以固定`apps/flutter_architecture` working directory逐一重跑v1～v6，最終全部PASS，不作為product/schema finding。
+
+此補記只改變review evidence；依Task 35-6 phase-specific evidence reuse contract，不使上述fresh release Flutter／generated／Android evidence失效。
+
 下一步：
 
 ```txt

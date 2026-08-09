@@ -60,6 +60,7 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
         self.assertTrue(result.full_ci)
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
+        self.assertEqual(result.reason, "classified source or tooling change")
 
     def test_android_native_change_runs_android_only_platform_build(self) -> None:
         result = classify_paths(
@@ -85,6 +86,7 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
         self.assertTrue(result.full_ci)
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
+        self.assertEqual(result.reason, "classified source or tooling change")
 
     def test_dependency_change_runs_full_matrix(self) -> None:
         result = classify_paths(["pubspec.lock"])

@@ -31,14 +31,13 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+None
 Template Baseline: 1.15.1
-Phase: Corrective 1.15.1 release / post-release validation pending
 ```
 
-目前active authority：`docs/roadmap/active.md`。
+目前active authority：`docs/roadmap/active.md`；目前無active milestone。
 
-### Milestone 33 active routing
+### Milestone 33 closed routing
 
 - Accepted Design：`docs/superpowers/specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`
 - Accepted ADR stable decision draft：`docs/superpowers/specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`
@@ -55,7 +54,8 @@ Phase: Corrective 1.15.1 release / post-release validation pending
 - C3 implementation review：`docs/audits/milestone_33/33-c3_single_renderer_implementation_review.md`
 - C4 Android runtime acceptance：`docs/audits/milestone_33/33-c4_android_runtime_acceptance.md`
 - C5 Corrective Holistic Final Review：`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md`
-- Latest accepted corrective work：C1／CP2／C2／C3／C4／C5均已PASS；1.15.1 release closure pending。
+- Corrective post-release validation：`docs/audits/milestone_33/33-c6_post_release_validation.md`
+- Latest accepted corrective work：C1／CP2／C2／C3／C4／C5、1.15.1 release與post-release closure均已PASS。
 - Reusable workflow Guide：`docs/guides/pencil_to_flutter_workflow.md`
 - Historical pre-corrective holistic final review：`docs/audits/milestone_33/33-12_holistic_final_review.md`；不得覆蓋current Corrective authority。
 - Historical 1.15.0 post-release validation：`docs/audits/milestone_33/33-13_post_release_validation.md`；只證明被Corrective supersede前的1.15.0 release closure。
@@ -89,7 +89,7 @@ Phase: Corrective 1.15.1 release / post-release validation pending
 | 30 | Completed / Archived | Design Spec、implementation plan、`docs/audits/milestone_30/30-11_final_review.md`、`docs/audits/milestone_30/30-12_post_release_validation.md`、`docs/guides/testing_governance.md` |
 | 31 | Completed / Archived | Workflow Governance Skill、approved Design Spec、approved Recovery Plan、`docs/audits/milestone_31/31-r9_implementation_holistic_review.md`、`docs/audits/milestone_31/31-r10_local_final_review.md`、`docs/audits/milestone_31/31-r11_post_release_validation.md` |
 | 32 | Completed / Archived | accepted Design／Plan、`docs/audits/milestone_32/32-11_final_review.md`、`docs/audits/milestone_32/32-12_post_release_validation.md` |
-| 33 | Completed / Archived | ADR-028、accepted Design／Plan、`docs/audits/milestone_33/33-12_holistic_final_review.md`、`docs/audits/milestone_33/33-13_post_release_validation.md`、`docs/guides/pencil_to_flutter_workflow.md` |
+| 33 | Completed / Archived | ADR-028、accepted Design／Plan、Corrective C1～C6、`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md`、`docs/audits/milestone_33/33-c6_post_release_validation.md`、`docs/guides/pencil_to_flutter_workflow.md` |
 
 ## Milestone 32 closed routing
 

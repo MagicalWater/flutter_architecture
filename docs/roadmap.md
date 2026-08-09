@@ -26,9 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+None
 Template Baseline: 1.15.1
-Phase: Corrective 1.15.1 release / post-release validation pending
 ```
 
 完整 active scope、design、gate與 next action：
@@ -49,7 +48,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 32 已完成或已有明確 disposition。Milestone 33仍在Corrective 1.15.1 post-release closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 33 已完成或已有明確 disposition。目前沒有active milestone。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

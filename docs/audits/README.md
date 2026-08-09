@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.15.0
+last_reviewed_baseline: 1.15.1
 ---
 
 # Audits and Review Evidence
@@ -79,6 +79,7 @@ Final / Holistic Review
 - [`milestone_33/33-c3_single_renderer_implementation_review.md`](milestone_33/33-c3_single_renderer_implementation_review.md)：C3 single production renderer focused／whole-Task review與fresh Gate A/B/C驗證。
 - [`milestone_33/33-c4_android_runtime_acceptance.md`](milestone_33/33-c4_android_runtime_acceptance.md)：fresh Android runtime evidence與使用者人工visual acceptance。
 - [`milestone_33/33-c5_corrective_holistic_final_review.md`](milestone_33/33-c5_corrective_holistic_final_review.md)：Corrective responsibility boundary、Clean Architecture、code/test architecture、anti-cheat與documentation reconciliation Holistic Final Review。
+- [`milestone_33/33-c6_post_release_validation.md`](milestone_33/33-c6_post_release_validation.md)：Template Baseline 1.15.1 main publication、fresh full regression、Gate B continuity與Corrective final closure evidence。
 
 ### Template Baseline 1.14.0 project holistic audit
 

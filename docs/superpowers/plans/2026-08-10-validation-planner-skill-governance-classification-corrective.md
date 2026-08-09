@@ -164,6 +164,6 @@ Exact commit只在對應Task完整gate通過後建立；不得把failed Task回�
 
 ## Status
 
-**PROPOSED — 等待Plan Task完整review與使用者明確核准。**
+**ACCEPTED — 2026-08-10使用者已明確核准。**
 
-Plan accepted前不得建立managed implementation worktree或修改classifier production code。
+Implementation只允許在通過execution admission的managed worktree內依SG-1～SG-4執行。

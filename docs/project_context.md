@@ -29,9 +29,9 @@ last_reviewed_baseline: 1.15.0
 ```txt
 Template Baseline: 1.15.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Current phase: Task 33-13 integration, 1.15.0 release and post-release validation
-Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
+Current active milestone: None
+Current phase: None — maintenance mode after Milestone 33 closure
+Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -352,14 +352,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-Current phase: Task 33-13 integration, 1.15.0 release and post-release validation
-Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
-Maintenance mode: Active governed milestone
+Current active milestone: None
+Current phase: Maintenance mode after Milestone 33 closure
+Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation
+Maintenance mode: Active template maintenance; no active milestone
 Open Audit remediation findings: None
 ```
 
-Milestone 33目前已具備canonical ADR-028、ownership-aware third-party Skill lock、Taste Skill immutable provenance、repository-local visual authority、Pencil MCP extraction／mapping、presentation-only Flutter proof、deterministic visual diff與Android runtime screenshot evidence。Current `.pen` authority位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；`D:\Developer\ui-agent`只保留external admission evidence角色。Current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`；active execution／closure routing由`docs/roadmap/active.md`與`docs/milestones/README.md`擁有。
+Milestone 33已完成並隨Template Baseline 1.15.0封存。Current reusable capability包含canonical ADR-028、ownership-aware third-party Skill lock、Taste Skill immutable provenance、repository-local visual authority、Pencil MCP extraction／mapping、presentation-only Flutter proof、deterministic visual diff與Android runtime screenshot evidence。Current `.pen` authority位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；`D:\Developer\ui-agent`只保留external admission evidence角色。Current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`；歷史execution／closure evidence由`docs/milestones/README.md`與`docs/audits/milestone_33/`路由。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

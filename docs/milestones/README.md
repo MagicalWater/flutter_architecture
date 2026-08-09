@@ -31,14 +31,13 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+None
 Template Baseline: 1.15.0
-Phase: Task 33-13 release／integration／post-release validation; Task 33-12 disposition A accepted
 ```
 
-目前active authority：`docs/roadmap/active.md`。
+目前active authority：`docs/roadmap/active.md`；目前無active milestone。
 
-### Milestone 33 active routing
+### Milestone 33 closed routing
 
 - Accepted Design：`docs/superpowers/specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`
 - Accepted ADR stable decision draft：`docs/superpowers/specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`
@@ -46,9 +45,10 @@ Phase: Task 33-13 release／integration／post-release validation; Task 33-12 di
 - Accepted Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
 - Plan review：`docs/audits/milestone_33/33-p_implementation_plan_review.md`
 - Execution admission：`docs/audits/milestone_33/33-execution-admission.md`
-- Latest accepted Task：Task 33-12 holistic final review與disposition A；目前執行Task 33-13 release／integration／post-release validation。
 - Reusable workflow Guide：`docs/guides/pencil_to_flutter_workflow.md`
 - Holistic final review：`docs/audits/milestone_33/33-12_holistic_final_review.md`
+- Post-release validation：`docs/audits/milestone_33/33-13_post_release_validation.md`
+- Release：Template Baseline 1.15.0，release SHA `ced0c072db1c9ee5b15a6f2e0af9cb89a54ebe9f`
 
 ## Closed milestone routing
 
@@ -79,6 +79,7 @@ Phase: Task 33-13 release／integration／post-release validation; Task 33-12 di
 | 30 | Completed / Archived | Design Spec、implementation plan、`docs/audits/milestone_30/30-11_final_review.md`、`docs/audits/milestone_30/30-12_post_release_validation.md`、`docs/guides/testing_governance.md` |
 | 31 | Completed / Archived | Workflow Governance Skill、approved Design Spec、approved Recovery Plan、`docs/audits/milestone_31/31-r9_implementation_holistic_review.md`、`docs/audits/milestone_31/31-r10_local_final_review.md`、`docs/audits/milestone_31/31-r11_post_release_validation.md` |
 | 32 | Completed / Archived | accepted Design／Plan、`docs/audits/milestone_32/32-11_final_review.md`、`docs/audits/milestone_32/32-12_post_release_validation.md` |
+| 33 | Completed / Archived | ADR-028、accepted Design／Plan、`docs/audits/milestone_33/33-12_holistic_final_review.md`、`docs/audits/milestone_33/33-13_post_release_validation.md`、`docs/guides/pencil_to_flutter_workflow.md` |
 
 ## Milestone 32 closed routing
 

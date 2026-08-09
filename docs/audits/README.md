@@ -69,6 +69,7 @@ Final / Holistic Review
 - [`milestone_33/visual_validation/review.md`](milestone_33/visual_validation/review.md)：Task 33-10 canonical／Android runtime semantic visual review與evidence hashes。
 - [`milestone_33/33-11_workflow_documentation_review.md`](milestone_33/33-11_workflow_documentation_review.md)：Reusable Guide、narrow routing、Skill registry／language ownership、current sync與Guide pressure disposition review。
 - [`milestone_33/33-12_holistic_final_review.md`](milestone_33/33-12_holistic_final_review.md)：Tasks 33-1至33-11 cross-Task consistency、fresh full local regression、visual acceptance與disposition A release authorization boundary的Holistic Final Review。
+- [`milestone_33/33-13_post_release_validation.md`](milestone_33/33-13_post_release_validation.md)：Template Baseline 1.15.0 release SHA的main publication、fresh clean-checkout full regression、Skill path／collision、Android artifact與fresh canonical visual acceptance closure evidence。
 
 ### Template Baseline 1.14.0 project holistic audit
 

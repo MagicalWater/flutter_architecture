@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - pencil-to-flutter-human-workflow-guide
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.15.1
 ---
 
 # Repository-local Pencil-to-Flutter Workflow Guide
@@ -177,7 +177,7 @@ verify Executor scope／version
 
 Pencil MCP unavailable、document identity錯誤、source hash drift或unsupported construct沒有accepted disposition時，保持blocked。不得切換成PNG猜測、OCR、native parser或直接Flutter implementation。
 
-## Extraction and Flutter mapping
+## Extraction, representation classification and Flutter mapping
 
 Extraction至少盤點：
 
@@ -188,6 +188,28 @@ Extraction至少盤點：
 - text與visible content。
 - icons與states。
 - unsupported／ambiguous constructs。
+
+Extraction完成後，**不得直接跳到Flutter owner mapping**。先依domain Skill的[`asset-and-typography-mapping.md`](../../.agents/skills/implementing-pencil-flutter-design/references/asset-and-typography-mapping.md)完成representation classification與provenance resolution：
+
+```txt
+extraction inventory
+→ representation classification
+→ source / availability verification
+→ provenance resolution
+→ unresolved gap check
+→ resolved Flutter owner mapping
+```
+
+Human-facing六類摘要：
+
+- Layout primitive：一般fill、radius、border、shadow與可維護layout geometry。
+- Typography：family、face／weight、fallback contract都必須resolved。
+- Approved package icon：只有visual identity exact-enough才可直接使用。
+- Vector asset：static geometry且有verified vector authority時使用。
+- Raster asset：固定複雜artwork／texture或只有raster authority時使用。
+- Dynamic drawing：只有runtime state／value真正驅動geometry時才使用。
+
+以下任一成立時fail closed，不進production UI：字型authority unresolved、approximate icon未有accepted disposition、derived asset缺source／transformation／hash provenance、raster-everything mapping、static `CustomPainter` overbuild。完整decision matrix只由domain reference擁有，本Guide不複製其細節。
 
 每個extracted item只指定一個Flutter owner。Owner候選：
 

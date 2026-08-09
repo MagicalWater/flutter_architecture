@@ -52,6 +52,7 @@ Final / Holistic Review
 - [`milestone_34/34-1_representation_contract_red.md`](milestone_34/34-1_representation_contract_red.md)：Task 34-1 mechanical RED；七個representation／provenance缺口已可重現，既有single-renderer contract保持GREEN。
 - [`milestone_34/34-2_asset_typography_mapping_review.md`](milestone_34/34-2_asset_typography_mapping_review.md)：Task 34-2 mapping GREEN；六類representation、font／icon fail-closed、derived provenance與anti-overbuild contract review。
 - [`milestone_34/34-3_asset_typography_pressure_evidence.md`](milestone_34/34-3_asset_typography_pressure_evidence.md)：Task 34-3 behavioral validation已完成；external RED六題皆為already-safe baseline，DISCOVERY與EXPLICIT GREEN均6/6 PASS，無P0/P1 loophole；Guide baseline metadata P2轉交34-4。
+- [`milestone_34/34-4_workflow_documentation_review.md`](milestone_34/34-4_workflow_documentation_review.md)：Task 34-4 human workflow／Skill registry同步、Guide baseline metadata closure與authority duplication review。
 - [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation

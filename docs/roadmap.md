@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Task 34-3 completed — Task 34-4 active
+State: Task 34-4 completed — Task 34-5 holistic final review active
 Template Baseline: 1.15.1
 ```
 

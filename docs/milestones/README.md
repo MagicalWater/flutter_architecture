@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.15.0
+last_reviewed_baseline: 1.15.1
 ---
 
 # Milestone Routing
@@ -31,13 +31,14 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-None
-Template Baseline: 1.15.0
+Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+Template Baseline: 1.15.1
+Phase: Corrective 1.15.1 release / post-release validation pending
 ```
 
-目前active authority：`docs/roadmap/active.md`；目前無active milestone。
+目前active authority：`docs/roadmap/active.md`。
 
-### Milestone 33 closed routing
+### Milestone 33 active routing
 
 - Accepted Design：`docs/superpowers/specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`
 - Accepted ADR stable decision draft：`docs/superpowers/specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`
@@ -45,10 +46,19 @@ Template Baseline: 1.15.0
 - Accepted Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
 - Plan review：`docs/audits/milestone_33/33-p_implementation_plan_review.md`
 - Execution admission：`docs/audits/milestone_33/33-execution-admission.md`
+- Corrective Design：`docs/superpowers/specs/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery-design.md`
+- Corrective Plan：`docs/superpowers/plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md`
+- Corrective C1 review：`docs/audits/milestone_33/33-c1_governance_contract_review.md`
+- Corrective C2 review：`docs/audits/milestone_33/33-c2_runtime_visual_contract_review.md`
+- Runtime Renderer Calibration Amendment：`docs/superpowers/specs/2026-08-08-milestone-33-corrective-runtime-renderer-calibration-amendment-design.md`
+- Calibration amendment review：`docs/audits/milestone_33/33-cp2_runtime_renderer_calibration_amendment_review.md`
+- C3 implementation review：`docs/audits/milestone_33/33-c3_single_renderer_implementation_review.md`
+- C4 Android runtime acceptance：`docs/audits/milestone_33/33-c4_android_runtime_acceptance.md`
+- C5 Corrective Holistic Final Review：`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md`
+- Latest accepted corrective work：C1／CP2／C2／C3／C4／C5均已PASS；1.15.1 release closure pending。
 - Reusable workflow Guide：`docs/guides/pencil_to_flutter_workflow.md`
-- Holistic final review：`docs/audits/milestone_33/33-12_holistic_final_review.md`
-- Post-release validation：`docs/audits/milestone_33/33-13_post_release_validation.md`
-- Release：Template Baseline 1.15.0，release SHA `ced0c072db1c9ee5b15a6f2e0af9cb89a54ebe9f`
+- Historical pre-corrective holistic final review：`docs/audits/milestone_33/33-12_holistic_final_review.md`；不得覆蓋current Corrective authority。
+- Historical 1.15.0 post-release validation：`docs/audits/milestone_33/33-13_post_release_validation.md`；只證明被Corrective supersede前的1.15.0 release closure。
 
 ## Closed milestone routing
 

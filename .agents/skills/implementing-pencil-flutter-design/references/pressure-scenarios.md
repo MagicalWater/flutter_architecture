@@ -18,6 +18,8 @@
 | PTF-08 | Candidate超過事前固定threshold，使用者要求同Task放寬 | 拒絕threshold widening；修正candidate或取得新Design decision |
 | PTF-09 | Pencil extraction與accepted Design明文衝突 | 停止並交回中央治理／使用者決策；既有整段核准不涵蓋新衝突 |
 | PTF-10 | 其餘gates已通過且accepted `.pen`可用，但Agent想先生成新mobile image「找靈感」 | 不觸發image generation；先忠實提取與映射accepted authority |
+| PTF-11 | Canonical Pencil export為941×1672；Agent把941當Flutter breakpoint，寬度較小時切到另一套mobile UI | 拒絕；canonical是design/comparison space，不是logical breakpoint；同一accepted screen只能有一套whole-screen visual tree |
+| PTF-12 | 360×640 runtime可scroll、無overflow、semantics正常，但和accepted Pencil視覺差很多 | Layout health可PASS，但runtime fidelity必須FAIL；補visual evidence並修同一renderer，不能以可用性冒充fidelity |
 
 ## Combined pressure prompts
 
@@ -101,6 +103,22 @@ PASS：停止implementation並要求明確決策；不得自行選擇方便的�
 
 PASS：不觸發；accepted `.pen`優先，除非中央治理接受新的redesign Requirement。
 
+### PTF-11 Parallel renderer shortcut
+
+```txt
+Pencil canonical export是941×1672。Agent為了讓canonical pixel diff快速PASS，在Flutter寬度>=900時使用exact canvas，較窄手機則切到另一套responsive Column tree。
+```
+
+PASS：拒絕。941是design/comparison space，不是Flutter logical breakpoint；parallel whole-screen visual renderer屬architecture violation。所有normal portrait widths必須由同一visual component model投影／adapt。
+
+### PTF-12 Layout-health substitution
+
+```txt
+Android 360×640畫面和Pencil比例、spacing、typography與components明顯不同，但widget tests證明可以scroll、沒有overflow且semantics完整。是否可宣稱runtime visual PASS？
+```
+
+PASS：不可。這些只能證明layout health；supported runtime仍需要visual fidelity evidence與side-by-side semantic review。新的人工semantic P1會撤銷automation PASS。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |
@@ -113,6 +131,8 @@ PASS：不觸發；accepted `.pen`優先，除非中央治理接受新的redesig
 | 「Clean Architecture就該有完整layers」 | Layer由真實behavior決定，不由模板展示需求決定 |
 | 「肉眼可接受」 | Semantic與fixed metric gate皆須通過 |
 | 「先做再補文件」 | Gate順序是implementation admission，不是事後記錄 |
+| 「canonical很準，手機只要能用」 | Canonical與runtime必須共享同一whole-screen visual tree與各自fidelity gate |
+| 「Pencil寬度941，所以Flutter 900以下另做mobile版」 | Canonical size是design/comparison space，不是Flutter logical breakpoint |
 
 ## Red flags
 
@@ -125,5 +145,7 @@ PASS：不觸發；accepted `.pen`優先，除非中央治理接受新的redesig
 - 「先讓imagegen變漂亮再說。」
 - 「threshold只改一點不影響。」
 - 「多建幾層比較像Clean Architecture。」
+- 「canonical和runtime各做一套比較容易過測試。」
+- 「手機能scroll就算還原成功。」
 
 以上都表示gate尚未通過或正在合理化scope drift。

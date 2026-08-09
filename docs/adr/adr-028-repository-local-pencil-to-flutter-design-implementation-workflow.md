@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-028-repository-local-pencil-to-flutter-design-implementation-workflow
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.15.0
 id: ADR-028
 title: Repository-local Pencil-to-Flutter Design Implementation Workflow
 supersedes:
@@ -85,9 +85,23 @@ Pencil design不得建立平行Flutter architecture：
 - 只有準確且具穩定共用價值的token／component才提升到Design System；單一畫面特有數值保留feature-local visual specification。
 - Presentation-only visual fixture不得建立虛假的Domain、Data、Repository、Use Case、Bloc或DI。
 
+### Single-renderer responsive fidelity
+
+一個accepted `.pen` screen只能映射到一套Flutter whole-screen visual component model。**One accepted screen → one whole-screen visual tree**；canonical、phone與narrow viewport可以在同一組components內使用不同layout policy，但不得依whole-screen breakpoint替換成另一套renderer。
+
+Manifest的canonical viewport是**design/comparison space**，不是**Flutter logical breakpoint**。例如Pencil export寬度`941`不能被解讀成`constraints.maxWidth >= 900`才啟用精準renderer；runtime geometry必須由accepted design-space與明確responsive contract導出。
+
+Visible geometry可以由shared design scale計算真Flutter widget的width、height、offset、padding、gap、radius、icon size與feature-local typography。這是widget geometry projection，不是把整張UI當海報縮放；**top-level `FittedBox`或`Transform.scale`仍禁止**，full-screen raster embedding同樣禁止。
+
+極窄width、localization、orientation或accessibility text scale真的需要調整時，只能在同一component tree內做content-aware adaptation，例如Row→Column、文字換行或扩大interactive hit region，不得建立parallel whole-screen visual renderer。
+
 ### Visual acceptance
 
 每個initiative以manifest固定canonical viewport與comparison contract，至少產生Pencil derived preview、Flutter canonical golden、supported runtime screenshot、deterministic diff與人工語意visual review。
+
+Canonical fidelity與supported runtime fidelity必須驗證**同一production whole-screen tree**。Scrollability、no-overflow、semantics與touch target只證明**layout health**，不能代表**runtime fidelity**。Supported runtime必須有可重現的**visual fidelity evidence**，並接受side-by-side semantic review。
+
+Accepted `.pen`只有單一手機frame時，可以在candidate implementation前由canonical Pencil preview依manifest固定的target、projection algorithm、crop／scroll contract產生derived runtime reference。Derived reference只作comparison evidence，不取得`.pen` authority；不得在candidate失敗後更換projection、resize策略、threshold或ignore regions。
 
 不得以full-screen raster embedding、全畫面fixed-canvas scaling、事後擴大threshold或任意ignore region取得通過。Pixel evidence與semantic review缺一不可。
 
@@ -98,6 +112,7 @@ Pencil design不得建立平行Flutter architecture：
 - Agent必須證明實際載入worktree-local source，降低user-global collision與版本漂移風險。
 - UI implementation必須同時滿足visual authority與既有Flutter architecture。
 - Visual validation增加artifact與測試成本，但提供可重現的fidelity evidence與regression protection。
+- Single-renderer contract讓canonical與runtime visual gates互相約束，不能再由test-only canonical renderer替runtime重設計分支取得PASS。
 
 ## Supersession
 
@@ -118,4 +133,4 @@ Pencil design不得建立平行Flutter architecture：
 
 ## Last Reviewed Baseline
 
-1.14.0。
+1.15.0；Milestone 33 corrective single-renderer amendment。

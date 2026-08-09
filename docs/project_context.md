@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.15.0
+last_reviewed_baseline: 1.15.1
 ---
 
 # Project Context
@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.15.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.15.0
+Template Baseline: 1.15.1
 Phase 1 / MVP: Completed
-Current active milestone: None
-Current phase: None — maintenance mode after Milestone 33 closure
-Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation
+Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+Current phase: Corrective 1.15.1 release / post-release validation pending
+Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -352,14 +352,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: None
-Current phase: Maintenance mode after Milestone 33 closure
-Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation
-Maintenance mode: Active template maintenance; no active milestone
-Open Audit remediation findings: None
+Current active milestone: Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
+Current phase: Corrective 1.15.1 release / post-release validation pending
+Latest completed initiative: Milestone 32 CI產物本機化與GitHub儲存空間切換
+Maintenance mode: Active governed milestone
+Open Audit remediation findings: Milestone 33 runtime single-renderer corrective active
 ```
 
-Milestone 33已完成並隨Template Baseline 1.15.0封存。Current reusable capability包含canonical ADR-028、ownership-aware third-party Skill lock、Taste Skill immutable provenance、repository-local visual authority、Pencil MCP extraction／mapping、presentation-only Flutter proof、deterministic visual diff與Android runtime screenshot evidence。Current `.pen` authority位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；`D:\Developer\ui-agent`只保留external admission evidence角色。Current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`；歷史execution／closure evidence由`docs/milestones/README.md`與`docs/audits/milestone_33/`路由。
+Milestone 33已發布Template Baseline 1.15.0，但後續使用者runtime人工驗收揭露parallel whole-screen renderer P1，原visual closure因此被Corrective supersede。Corrective C1／CP2／C2／C3均已accepted並完成；C4 fresh Android runtime與使用者人工visual acceptance已PASS，C5 holistic final review亦已PASS，目前只剩1.15.1 patch release與post-release closure。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

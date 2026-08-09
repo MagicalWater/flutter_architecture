@@ -42,4 +42,10 @@ Mapping matrix只決定owner，不等於production implementation admission。�
 
 ## Fidelity與responsiveness
 
-Canonical viewport可使用feature-local exact values，但implementation必須是可scroll／可layout的Flutter UI。禁止full-screen raster、整頁`FittedBox`固定畫布縮放、隱藏內容或只為golden成立的layout。Narrow viewport與text scaling必須維持可達、無overflow與合理touch targets。
+Canonical viewport是**design/comparison space**，不是**Flutter logical breakpoint**。一個accepted screen只能有一套whole-screen visual component tree；canonical、runtime與narrow mode都必須由同一組screen components建立。禁止以breakpoint切換到**parallel whole-screen visual renderer**。
+
+正常portrait runtime先由accepted design width導出shared `visualScale`，把visible width、height、offset、padding、gap、radius、stroke、shadow、icon與feature-local typography投影到真Flutter widgets。Owner mapping仍遵守Design System／feature-local boundary；projection不授權另造顏色、container hierarchy或runtime-only visual identity。
+
+這不是blind canvas scaling。禁止full-screen raster、**top-level `FittedBox`、`Transform.scale`**、隱藏內容或只為golden成立的layout。Interactive hit region與accessibility content可以大於visible projected geometry；text scale、localization、orientation或極窄width真的需要時，只能在同一component內做content-aware adaptation。
+
+Narrow viewport與text scaling仍必須維持可達、無overflow與合理touch targets，但這些只屬**layout health**。Supported runtime的**runtime fidelity**必須由visual evidence另外驗證，不能用no-overflow冒充設計還原。

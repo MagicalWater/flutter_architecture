@@ -48,6 +48,16 @@ void main() {
       if (pageSource.contains('FittedBox(')) {
         violations.add('WritePrecheckView uses fixed-canvas FittedBox scaling');
       }
+      if (pageSource.contains('Transform.scale(')) {
+        violations.add('WritePrecheckView uses top-level Transform.scale');
+      }
+      if (pageSource.contains('constraints.maxWidth >= 900') ||
+          (pageSource.contains('WritePrecheckCanonicalCanvas') &&
+              pageSource.contains('PrecheckSectionCard'))) {
+        violations.add(
+          'WritePrecheckView selects parallel whole-screen renderers by width',
+        );
+      }
 
       expect(violations, isEmpty, reason: violations.join('\n'));
     },

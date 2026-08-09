@@ -20,6 +20,28 @@
 
 ---
 
+## [1.15.1] - 2026-08-09
+
+### Fixed
+
+- 完成Milestone 33 Corrective Single-Renderer Responsive Fidelity Recovery，移除parallel whole-screen renderer與stale production widgets，統一由`WritePrecheckProjectedCanvas`提供唯一production visual tree。
+- 修正mobile runtime不再依breakpoint切換第二套hierarchy；同一accepted `.pen` design geometry以design-space projection、component-local renderer calibration與scrollable presentation適配不同portrait viewport。
+- 修正visual authority文件仍沿用pre-calibration runtime `0.08 / 8.0` hard gate的authority drift；current Gate B固定為`ratio <= 0.10`、`mean <= 4.0`，Gate C只保留cross-renderer diagnostic。
+
+### Verified
+
+- C3 fresh canonical Gate A：`0.07707811093766684 / 2.9247655642221195` PASS。
+- C3/C5 fresh runtime Gate B：`0.09769965277777778 / 2.495971137152778` PASS；Gate C `0.1297222222222222 / 3.8164214409722224`僅記錄diagnostic。
+- C4 fresh Android development APK安裝至`emulator-5554`成功，runtime為`360 × 640 logical / DPR 1.5 / textScale 1.0`；tracked runtime screenshot SHA-256為`344099a6fe1d21d9a00cd54322a4c6bc78cb4ddbe928acc61ae7832917882976`。
+- 使用者完成Android人工visual acceptance並明確判定UI還原通過；C5 responsibility boundary、Clean Architecture、single-renderer anti-cheat、test architecture與documentation reconciliation review全部PASS。
+
+### Governance
+
+- Corrective C1／CP2／C2／C3／C4／C5均依既有雙層Task治理完成；C3 completion commit為`de4178c`，C4/C5 completion commit為`b46ea58`。
+- `pencil_compatibility`維持presentation-only boundary，沒有為視覺還原引入Domain、Data、Repository、UseCase、Bloc、service或DI例外，也未污染共用Design System。
+
+---
+
 ## [1.15.0] - 2026-08-07
 
 ### Added

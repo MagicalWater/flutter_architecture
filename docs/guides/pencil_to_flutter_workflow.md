@@ -213,6 +213,10 @@ Pencil只擁有visual／structural authority，不建立第二套App architectur
 - Visible copy進generated ARB localization；不要把accepted中文直接散落在widgets。
 - icons沿accepted mapping使用既有package；不因第三方Web design Skill的icon規則改寫Flutter authority。
 - responsive implementation使用正常Flutter layout；不得以整張raster、`FittedBox`全屏縮放或hidden overlay假裝還原。
+- 一個accepted screen只允許一套whole-screen visual component tree。Canonical與runtime不能用breakpoint切換到parallel whole-screen visual renderer。
+- Canonical Pencil viewport是**design/comparison space**，不是**Flutter logical breakpoint**。例如`.pen`寬度941不代表Flutter寬度低於900就能改走另一套mobile UI。
+- 正常portrait尺寸以同一design-space scale投影真Flutter widget geometry；必要的Row→Column、文字換行或touch-target放大只能發生在同一component tree內。
+- Design System／Theme／asset owner保持相同：canonical與runtime不能因「比較適合手機」而各自使用不同顏色、card hierarchy、icons或feature-local token。
 
 ## Golden, diff and runtime acceptance
 
@@ -226,6 +230,10 @@ supported runtime screenshot
 human semantic visual review
 ```
 
+Canonical與supported runtime必須由同一production whole-screen tree產生。`scrollable`、`no overflow`、semantics與touch target只屬**layout health**，不是**runtime fidelity**。
+
+Supported runtime需要獨立的**visual fidelity evidence**。當accepted `.pen`只有單一手機frame時，可以在candidate前由canonical Pencil preview依manifest固定的target、projection algorithm與crop／scroll contract建立runtime-sized derived reference；它不是第二份`.pen`，也不能在candidate失敗後改resize方式。
+
 Manifest先固定canonical viewport、DPR、tolerance、ignore／crop policy與threshold，之後才比較。失敗時修implementation或取得新Design decision；不得在同一Task臨時放寬threshold。
 
 Dimension mismatch必須fail closed，不得自動resize。若historical benchmark與current canonical authority來自不同時期／尺寸，使用其immutable contemporaneous native-size reference計算normalized historical metrics，再與current metrics比較；不得upscale historical raster冒充current master。
@@ -233,6 +241,8 @@ Dimension mismatch必須fail closed，不得自動resize。若historical benchma
 Runtime screenshot必須保留exact driver bytes與SHA-256，記錄device id、platform version、physical／logical size、DPR、font scale與exact command。System chrome／debug marker不得動態mask；只有Design事前固定的rectangular crop才可使用。
 
 Pixel threshold通過也不能覆蓋semantic P1。人工review至少檢查hierarchy、typography、spacing、icons、states、content completeness、contrast、touch target、narrow layout與platform renderer differences。
+
+使用者或reviewer若對實際supported runtime提出semantic P1，對應runtime PASS立即撤銷並回implementation修正；canonical pixel PASS不能作為例外。
 
 ## Double-layer Task review
 

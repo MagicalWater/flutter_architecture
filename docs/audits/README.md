@@ -70,6 +70,15 @@ Final / Holistic Review
 - [`milestone_33/33-11_workflow_documentation_review.md`](milestone_33/33-11_workflow_documentation_review.md)：Reusable Guide、narrow routing、Skill registry／language ownership、current sync與Guide pressure disposition review。
 - [`milestone_33/33-12_holistic_final_review.md`](milestone_33/33-12_holistic_final_review.md)：Tasks 33-1至33-11 cross-Task consistency、fresh full local regression、visual acceptance與disposition A release authorization boundary的Holistic Final Review。
 - [`milestone_33/33-13_post_release_validation.md`](milestone_33/33-13_post_release_validation.md)：Template Baseline 1.15.0 release SHA的main publication、fresh clean-checkout full regression、Skill path／collision、Android artifact與fresh canonical visual acceptance closure evidence。
+- [`milestone_33/33-c0_single_renderer_corrective_design_review.md`](milestone_33/33-c0_single_renderer_corrective_design_review.md)：使用者runtime P1後的single-renderer Corrective Design／ADR amendment與原visual closure supersession review。
+- [`milestone_33/33-cp_corrective_implementation_plan_review.md`](milestone_33/33-cp_corrective_implementation_plan_review.md)：Corrective C1～C5雙層Task plan、runtime/user hard gate與release boundary review。
+- [`milestone_33/33-c1_governance_contract_review.md`](milestone_33/33-c1_governance_contract_review.md)：single whole-screen tree、design-space與runtime fidelity治理契約review。
+- [`milestone_33/33-c2_runtime_visual_contract_review.md`](milestone_33/33-c2_runtime_visual_contract_review.md)：360×640 reference、1.15.0 intentional RED reproduction與C3前locked contract review。
+- [`milestone_33/33-cp2_runtime_renderer_calibration_amendment_review.md`](milestone_33/33-cp2_runtime_renderer_calibration_amendment_review.md)：修正direct Pencil runtime hard gate的cross-renderer calibration P1，建立Gate A/B/C/D current acceptance model。
+- [`milestone_33/33-c3_cross_conversation_checkpoint.md`](milestone_33/33-c3_cross_conversation_checkpoint.md)：C3跨對話implementation checkpoint；只作歷史承接證據。
+- [`milestone_33/33-c3_single_renderer_implementation_review.md`](milestone_33/33-c3_single_renderer_implementation_review.md)：C3 single production renderer focused／whole-Task review與fresh Gate A/B/C驗證。
+- [`milestone_33/33-c4_android_runtime_acceptance.md`](milestone_33/33-c4_android_runtime_acceptance.md)：fresh Android runtime evidence與使用者人工visual acceptance。
+- [`milestone_33/33-c5_corrective_holistic_final_review.md`](milestone_33/33-c5_corrective_holistic_final_review.md)：Corrective responsibility boundary、Clean Architecture、code/test architecture、anti-cheat與documentation reconciliation Holistic Final Review。
 
 ### Template Baseline 1.14.0 project holistic audit
 

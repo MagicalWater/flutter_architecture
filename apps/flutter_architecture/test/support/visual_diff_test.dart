@@ -8,6 +8,10 @@ import 'visual_diff.dart';
 
 void main() {
   late Directory temporaryDirectory;
+  final pencilPreview = File(
+    '../../docs/design_sources/pencil-compatibility-write-precheck/'
+    'pencil-preview.png',
+  );
 
   setUp(() async {
     temporaryDirectory = await Directory.systemTemp.createTemp(
@@ -63,16 +67,7 @@ void main() {
     final decoded = await _decodePng(diff);
     expect(decoded.width, 2);
     expect(decoded.height, 1);
-    expect(decoded.rgba, <int>[
-      18,
-      18,
-      18,
-      255,
-      124,
-      124,
-      124,
-      255,
-    ]);
+    expect(decoded.rgba, <int>[18, 18, 18, 255, 124, 124, 124, 255]);
   });
 
   test('single-pixel delta reports ratio, mean, max and opaque red', () async {
@@ -81,32 +76,14 @@ void main() {
       name: 'reference.png',
       width: 2,
       height: 1,
-      rgba: Uint8List.fromList(<int>[
-        0,
-        0,
-        0,
-        255,
-        10,
-        20,
-        30,
-        255,
-      ]),
+      rgba: Uint8List.fromList(<int>[0, 0, 0, 255, 10, 20, 30, 255]),
     );
     final actual = await _writePng(
       directory: temporaryDirectory,
       name: 'actual.png',
       width: 2,
       height: 1,
-      rgba: Uint8List.fromList(<int>[
-        0,
-        0,
-        0,
-        255,
-        20,
-        40,
-        60,
-        255,
-      ]),
+      rgba: Uint8List.fromList(<int>[0, 0, 0, 255, 20, 40, 60, 255]),
     );
     final diff = File('${temporaryDirectory.path}/diff.png');
 
@@ -120,16 +97,7 @@ void main() {
     expect(result.differentPixelRatio, 0.5);
     expect(result.meanAbsoluteChannelDelta, 7.5);
     expect(result.maxChannelDelta, 30);
-    expect((await _decodePng(diff)).rgba, <int>[
-      0,
-      0,
-      0,
-      255,
-      255,
-      0,
-      0,
-      255,
-    ]);
+    expect((await _decodePng(diff)).rgba, <int>[0, 0, 0, 255, 255, 0, 0, 255]);
   });
 
   test('dimension mismatch throws StateError and writes no diff', () async {
@@ -200,6 +168,75 @@ void main() {
       throwsArgumentError,
     );
   });
+
+  test(
+    'projects canonical Pencil preview to exact runtime dimensions',
+    () async {
+      final sourceBytesBefore = await pencilPreview.readAsBytes();
+      final output = File('${temporaryDirectory.path}/runtime.png');
+
+      await projectPng(
+        source: pencilPreview,
+        output: output,
+        width: 360,
+        height: 640,
+      );
+
+      final decoded = await _decodePng(output);
+      expect(decoded.width, 360);
+      expect(decoded.height, 640);
+      expect(await pencilPreview.readAsBytes(), sourceBytesBefore);
+    },
+  );
+
+  test(
+    'projection is byte deterministic for the same input and target',
+    () async {
+      final first = File('${temporaryDirectory.path}/first.png');
+      final second = File('${temporaryDirectory.path}/second.png');
+
+      await projectPng(
+        source: pencilPreview,
+        output: first,
+        width: 360,
+        height: 640,
+      );
+      await projectPng(
+        source: pencilPreview,
+        output: second,
+        width: 360,
+        height: 640,
+      );
+
+      expect(await first.readAsBytes(), await second.readAsBytes());
+    },
+  );
+
+  for (final dimensions in <(int, int)>[(0, 640), (360, 0), (-1, 640)]) {
+    test('projection rejects invalid dimensions $dimensions', () async {
+      await expectLater(
+        projectPng(
+          source: pencilPreview,
+          output: File('${temporaryDirectory.path}/invalid.png'),
+          width: dimensions.$1,
+          height: dimensions.$2,
+        ),
+        throwsArgumentError,
+      );
+    });
+  }
+
+  test('projection propagates missing-source FileSystemException', () async {
+    await expectLater(
+      projectPng(
+        source: File('${temporaryDirectory.path}/missing.png'),
+        output: File('${temporaryDirectory.path}/runtime.png'),
+        width: 360,
+        height: 640,
+      ),
+      throwsA(isA<FileSystemException>()),
+    );
+  });
 }
 
 Future<File> _writePng({
@@ -222,7 +259,9 @@ Future<File> _writePng({
       try {
         final frame = await codec.getNextFrame();
         try {
-          final png = await frame.image.toByteData(format: ui.ImageByteFormat.png);
+          final png = await frame.image.toByteData(
+            format: ui.ImageByteFormat.png,
+          );
           if (png == null) {
             throw StateError('Unable to encode test PNG.');
           }

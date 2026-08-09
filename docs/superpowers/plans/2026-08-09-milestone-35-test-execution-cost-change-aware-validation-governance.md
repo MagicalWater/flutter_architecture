@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-35-test-execution-cost-change-aware-validation-governance-implementation-plan
 last_reviewed_baseline: 1.15.2
@@ -496,11 +496,12 @@ last_reviewed_baseline: 1.15.2
 
 ## Plan Acceptance Gate
 
-本Plan目前為`proposed`。
+本Plan已於2026-08-09取得使用者書面核准並轉為`accepted`。
 
-在完成Plan focused review、findings修正、fresh re-review、whole-Plan review、documentation authority check與required validation，並取得使用者書面核准前：
+核准後仍必須遵守：
 
-- 不建立managed worktree；
-- 不開始Task 35-1；
-- 不修改production source、tests、CI、ADR或governance implementation artifacts。
+- 第一個execution action建立managed worktree／branch並完成execution admission；
+- admission通過後才開始Task 35-1；
+- implementation不得直接在`main`進行；
+- 每個Task仍須完成完整雙層治理與required validation。
 

@@ -112,14 +112,14 @@ git diff --check → PASS
 ## Review disposition
 
 ```txt
-Plan status: PROPOSED
+Plan status: ACCEPTED
 Focused review: PASS after findings disposition
 Fresh focused re-review: PASS
 Whole-Plan review: PASS
 Documentation authority: PASS
 Open P0: 0
 Open P1 without disposition: 0
-Implementation allowed: NO
-Next gate: USER IMPLEMENTATION PLAN APPROVAL
+Implementation allowed: YES, AFTER managed worktree / execution admission
+Next gate: MANAGED WORKTREE / EXECUTION ADMISSION
 ```
 

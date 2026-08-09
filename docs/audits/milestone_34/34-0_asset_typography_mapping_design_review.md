@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-34-design-review-evidence
 last_reviewed_baseline: 1.15.1
@@ -88,5 +88,5 @@ git diff --check                                      → PASS
 
 Fresh re-review：PASS。Design scope、authority ownership、non-goals與pressure requirements沒有在validation後出現新矛盾；Open P0 = 0，Open P1 without disposition = 0。
 
-本Design現在可commit為`proposed` Design evidence。依中央治理，使用者對書面Design明確核准前不得建立Implementation Plan或修改Skill production artifacts。
+本Design已於2026-08-09取得使用者書面核准，Design Task的focused review、whole-Task review與documentation validation均維持PASS。Artifact正式轉為`accepted`；現在允許建立Implementation Plan，但Plan完成獨立雙層治理並取得使用者書面核准前，仍不得修改Skill production artifacts。
 

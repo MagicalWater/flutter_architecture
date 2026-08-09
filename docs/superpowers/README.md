@@ -56,7 +56,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
-- [`specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`](specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md)：proposed Milestone 34 Design；補強Pencil extraction到Flutter mapping之間的asset／vector／typography representation classification與provenance gate，書面Design核准前不得建立Plan或修改Skill contract。
+- [`specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`](specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md)：accepted Milestone 34 Design；補強Pencil extraction到Flutter mapping之間的asset／vector／typography representation classification與provenance gate；Implementation仍須等待Plan完成雙層治理與書面核准。
 - [`specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`](specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md)：superseded ADR-028 stable decision draft history；current stable authority已移交canonical ADR-028。
 - [`specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`](specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md)：accepted Milestone 33 Design；建立repository-local `.pen` authority、third-party Skill provenance／integrity、Pencil MCP orchestration、Flutter architecture mapping與單頁visual acceptance proof。
 - [`specs/2026-08-01-r4-test-inventory-external-output-bugfix-design.md`](specs/2026-08-01-r4-test-inventory-external-output-bugfix-design.md)：accepted R4 Design；以pure output display helper修正repository外absolute output false failure，只處理`F-A6-01`。

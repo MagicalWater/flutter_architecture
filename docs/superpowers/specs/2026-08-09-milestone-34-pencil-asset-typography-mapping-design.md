@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-34-pencil-asset-typography-mapping-design
 last_reviewed_baseline: 1.15.1
@@ -33,7 +33,7 @@ last_reviewed_baseline: 1.15.1
 
 ## Approval Gate
 
-使用者已於2026-08-09核准「不要新增獨立Skill，而是在既有`implementing-pencil-flutter-design`內補一個Asset / Vector / Typography Mapping & Provenance必經層」的方向。本書面Design仍依repository治理維持`proposed`，直到完成本Design Task的focused／whole-Task review、validation後，再由使用者對這份書面artifact明確核准，才可轉為`accepted`並建立Implementation Plan。
+使用者已於2026-08-09明確核准本書面Design。Design Task的focused review、whole-Task review、documentation validation與Open P0／P1 gate均已通過，因此本artifact正式轉為`accepted`，允許建立Milestone 34 Implementation Plan；Plan仍須完成獨立雙層治理與書面核准後，才可修改Skill contract或開始implementation。
 
 ## Design Alternatives
 

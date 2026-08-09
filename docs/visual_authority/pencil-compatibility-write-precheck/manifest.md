@@ -77,11 +77,14 @@ Derived bytes: 131042
 Derived SHA-256: 8386e4fa6ad49d108b9887796eb3c02643aaae9ba0161afa10d0662ab4b2c275
 
 Per-channel tolerance: 8
-Different-pixel ratio threshold: <= 0.08
-Mean absolute channel delta threshold: <= 8.0
+Gate A canonical Pencil/Flutter threshold: different-pixel ratio <= 0.08; mean absolute channel delta <= 8.0
+Gate B runtime/projected-canonical threshold: different-pixel ratio <= 0.10; mean absolute channel delta <= 4.0
+Gate C direct Pencil/runtime comparison: diagnostic only; no standalone PASS threshold
 ```
 
 Projection由`apps/flutter_architecture/test/support/visual_diff.dart`的`projectPng`產生；tracked reference只有在顯式`UPDATE_PENCIL_RUNTIME_REFERENCE=true` gate下可重建。Default test會fresh投影到temporary file並要求與tracked bytes完全一致。Candidate失敗後不得更換target、projection、crop、threshold或ignore regions。
+
+Runtime acceptance authority已由2026-08-08 accepted Runtime Renderer Calibration Amendment校正：Gate B使用同一Flutter renderer family的projected canonical reference作hard gate；Gate C保留cross-renderer diagnostic，避免把Pencil/Flutter rasterizer與downsample差異誤判為production failure。Android runtime最終仍需人工visual acceptance。
 
 此derived runtime reference只作comparison evidence，不取得`.pen` structure／visual authority，也不改變canonical source ranking。
 

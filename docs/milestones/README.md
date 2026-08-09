@@ -33,7 +33,7 @@ Milestone routing 只回答：
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.15.0
-Phase: Corrective C3 single-renderer implementation candidate / review pending
+Phase: Corrective C5 holistic final review passed / 1.15.1 release closure pending
 ```
 
 目前active authority：`docs/roadmap/active.md`。
@@ -52,8 +52,10 @@ Phase: Corrective C3 single-renderer implementation candidate / review pending
 - Corrective C2 review：`docs/audits/milestone_33/33-c2_runtime_visual_contract_review.md`
 - Runtime Renderer Calibration Amendment：`docs/superpowers/specs/2026-08-08-milestone-33-corrective-runtime-renderer-calibration-amendment-design.md`
 - Calibration amendment review：`docs/audits/milestone_33/33-cp2_runtime_renderer_calibration_amendment_review.md`
-- Current C3 checkpoint：`docs/audits/milestone_33/33-c3_cross_conversation_checkpoint.md`
-- Latest accepted corrective work：C1、C2與Runtime Renderer Calibration Amendment；C3 implementation candidate尚待focused／Whole-Task review與completion commit，C4／C5未開始。
+- C3 implementation review：`docs/audits/milestone_33/33-c3_single_renderer_implementation_review.md`
+- C4 Android runtime acceptance：`docs/audits/milestone_33/33-c4_android_runtime_acceptance.md`
+- C5 Corrective Holistic Final Review：`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md`
+- Latest accepted corrective work：C1／CP2／C2／C3／C4／C5均已PASS；1.15.1 release closure pending。
 - Reusable workflow Guide：`docs/guides/pencil_to_flutter_workflow.md`
 - Historical pre-corrective holistic final review：`docs/audits/milestone_33/33-12_holistic_final_review.md`；不得覆蓋current Corrective authority。
 

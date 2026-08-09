@@ -28,7 +28,7 @@ Other platforms: Dependency-ready
 ```txt
 Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 Template Baseline: 1.15.0
-Phase: Corrective C3 single-renderer implementation candidate / review pending
+Phase: Corrective C5 holistic final review passed / 1.15.1 release closure pending
 ```
 
 完整 active scope、design、gate與 next action：

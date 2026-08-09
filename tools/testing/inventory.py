@@ -113,16 +113,37 @@ def classify_metadata(relative: str, suite: str) -> dict[str, str]:
             "primary_category": "Historical-only",
             "coverage_owner": "Historical compatibility harness",
             "implementation_classification": "historical",
-            "execution_tier": "Tier 4",
+            "execution_tier": "Tier 3",
             "disposition": "Keep/Audit",
             "replacement_or_notes": "Migration, rollback or fixture oracle; do not delete by name.",
         }
     if relative.startswith("tools/ci/"):
+        execution_tier = "Tier 1"
+        if any(
+            token in path
+            for token in (
+                "drift_schema",
+                "migration",
+                "generated",
+                "web_asset",
+            )
+        ):
+            execution_tier = "Tier 3"
+        elif any(
+            token in path
+            for token in (
+                "android_",
+                "ios_",
+                "platform",
+                "environment_workflow",
+            )
+        ):
+            execution_tier = "Tier 4"
         return {
             "primary_category": "CI",
             "coverage_owner": "CI tooling",
             "implementation_classification": "current",
-            "execution_tier": "Tier 1",
+            "execution_tier": execution_tier,
             "disposition": "Audit",
             "replacement_or_notes": "Review duplicate workflow and classifier assertions.",
         }
@@ -147,6 +168,27 @@ def classify_metadata(relative: str, suite: str) -> dict[str, str]:
         category = "Implementation contract"
     else:
         category = "Business invariant"
+
+    if suite == "Platform":
+        execution_tier = "Tier 4"
+    elif category == "Migration compatibility" or any(
+        token in path
+        for token in (
+            "drift_schema",
+            "schema_governance",
+            "migration",
+            "rollback",
+            "web_worker",
+            "wasm",
+        )
+    ):
+        execution_tier = "Tier 3"
+    elif relative.startswith("tools/") and relative.endswith(".py"):
+        execution_tier = "Tier 1"
+    elif relative.endswith(".dart"):
+        execution_tier = "Tier 2"
+    else:
+        execution_tier = "Unclassified"
     notes = "Focused ownership review required."
     classification = "current"
     disposition = "Keep/Audit"
@@ -162,7 +204,7 @@ def classify_metadata(relative: str, suite: str) -> dict[str, str]:
         "primary_category": category,
         "coverage_owner": suite,
         "implementation_classification": classification,
-        "execution_tier": "Tier 1",
+        "execution_tier": execution_tier,
         "disposition": disposition,
         "replacement_or_notes": notes,
     }

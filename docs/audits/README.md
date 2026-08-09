@@ -65,6 +65,7 @@ Final / Holistic Review
 - [`milestone_35/35-execution-admission.md`](milestone_35/35-execution-admission.md)：accepted Design／Plan之後的managed worktree、branch、base SHA與implementation boundary admission；通過後才允許Task 35-1開始。
 - [`milestone_35/35-1_validation_planner_contract_red.md`](milestone_35/35-1_validation_planner_contract_red.md)：Task 35-1 deterministic planner missing-contract RED、current feature／package over-escalation evidence、existing classifier fail-safe GREEN與focused／whole-Task review。
 - [`milestone_35/35-2_validation_planner_review.md`](milestone_35/35-2_validation_planner_review.md)：Task 35-2 canonical change classes、pure Minimum Sufficient Validation planner、workspace reverse dependency propagation、mixed-path P1修正與fresh 40-test GREEN review。
+- [`milestone_35/35-3_testing_inventory_tier_review.md`](milestone_35/35-3_testing_inventory_tier_review.md)：Task 35-3 execution tier realignment；current inventory為Tier 1=22、Tier 2=124、Tier 3=11、Tier 4=7、Unclassified=0，且Milestone 30 historical inventory未改寫。
 - [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation

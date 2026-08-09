@@ -65,6 +65,59 @@ class Example:
             self.assertEqual(rows[0]["type"], "dart")
             self.assertEqual(rows[0]["loc"], 1)
             self.assertEqual(rows[0]["static_cases"], 1)
+            self.assertEqual(rows[0]["execution_tier"], "Tier 2")
+
+    def test_python_ci_contract_defaults_to_tier_1(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "tools/ci/test_change_classifier.py"
+            path.parent.mkdir(parents=True)
+            path.write_text("def test_contract(): pass\n")
+
+            row = inventory_rows(root, [path])[0]
+
+            self.assertEqual(row["execution_tier"], "Tier 1")
+
+    def test_non_ci_python_tooling_defaults_to_tier_1(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "tools/testing/test_inventory_contract.py"
+            path.parent.mkdir(parents=True)
+            path.write_text("def test_inventory(): pass\n")
+
+            row = inventory_rows(root, [path])[0]
+
+            self.assertEqual(row["execution_tier"], "Tier 1")
+
+    def test_migration_and_schema_tests_are_tier_3(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            migration = root / "apps/example/test/database/migration_test.dart"
+            schema = root / "tools/ci/test_drift_schema_governance.py"
+            migration.parent.mkdir(parents=True)
+            schema.parent.mkdir(parents=True)
+            migration.write_text("test('migration', () {});\n")
+            schema.write_text("def test_schema(): pass\n")
+
+            rows = inventory_rows(root, [migration, schema])
+
+            self.assertEqual(rows[0]["execution_tier"], "Tier 3")
+            self.assertEqual(rows[1]["execution_tier"], "Tier 3")
+
+    def test_native_platform_tests_are_tier_4(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            dart_path = root / "apps/example/test/platform/android_bridge_test.dart"
+            python_path = root / "tools/ci/test_ios_workflow_contract.py"
+            dart_path.parent.mkdir(parents=True)
+            python_path.parent.mkdir(parents=True)
+            dart_path.write_text("test('platform', () {});\n")
+            python_path.write_text("def test_ios(): pass\n")
+
+            rows = inventory_rows(root, [dart_path, python_path])
+
+            self.assertEqual(rows[0]["execution_tier"], "Tier 4")
+            self.assertEqual(rows[1]["execution_tier"], "Tier 4")
 
     def test_display_output_path_uses_posix_relative_path_inside_root(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

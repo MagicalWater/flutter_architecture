@@ -58,6 +58,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
+- [`specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`](specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md)：proposed Milestone 35 Corrective Design；以single deterministic validation planner、change classes、affected dependency scope、evidence reuse與fail-safe full escalation建立Minimum Sufficient Validation，目前等待使用者Design approval。
 - [`specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`](specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md)：accepted Milestone 34 Design；補強Pencil extraction到Flutter mapping之間的asset／vector／typography representation classification與provenance gate；Implementation仍須等待Plan完成雙層治理與書面核准。
 - [`specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`](specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md)：superseded ADR-028 stable decision draft history；current stable authority已移交canonical ADR-028。
 - [`specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`](specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md)：accepted Milestone 33 Design；建立repository-local `.pen` authority、third-party Skill provenance／integrity、Pencil MCP orchestration、Flutter architecture mapping與單頁visual acceptance proof。

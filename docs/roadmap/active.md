@@ -22,7 +22,7 @@ Template Baseline: 1.15.2
 
 - Admission audit：`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`
 - Requirement Decision：Accepted — `docs/audits/milestone_35/35-r_requirement_decision.md`
-- Design：Not started
+- Design：Proposed / review passed / awaiting user approval — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
 - Implementation Plan：Not started
 - Worktree：Not created
 - Production / CI mutation：Not started
@@ -44,7 +44,8 @@ Milestone 35 read-only admission：CONFIRMED
 → Two-layer Task governance：cost multiplier，不是主要root cause
 → Fresh baseline reconciliation：CONFIRMED
 → Requirement Decision：ACCEPT / Level 4
-→ 下一步：Design Spec + Design雙層Task review
+→ Design Spec + Design雙層Task review：PASS / PROPOSED
+→ 下一步：等待使用者Design approval
 → 使用者核准後才可建立Implementation Plan
-→ Design／Plan／worktree／implementation目前均未開始
+→ Design已建立但尚未accepted；Plan／worktree／implementation目前均未開始
 ```

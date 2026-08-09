@@ -19,7 +19,8 @@ delegate governing-template-development
 → verify loaded Skill provenance and collision-free paths
 → perform Pencil MCP admission
 → extract structure and variables
-→ map to Flutter authority
+→ classify visual representation and resolve provenance
+→ map resolved representation to Flutter authority
 → route TDD and visual acceptance
 → stop on authority conflict or drift
 ```
@@ -41,10 +42,11 @@ delegate governing-template-development
 
 1. 依[Visual authority contract](references/visual-authority-contract.md)驗證source ranking與hash。
 2. 依[Pencil admission](references/pencil-admission.md)操作Pencil；MCP不可用時保持blocked。
-3. 依[Flutter mapping](references/flutter-mapping.md)建立最小且真實的presentation boundary。
-4. 先建立並執行failing widget／route／localization tests，確認RED後才可寫Flutter production source。
-5. 依[Visual validation](references/visual-validation.md)執行TDD、golden、runtime與semantic review。
-6. 使用[Pressure scenarios](references/pressure-scenarios.md)檢查shortcut rationalization。
+3. 依[Asset / Vector / Typography mapping](references/asset-and-typography-mapping.md)完成representation classification與provenance resolution；任何required font／icon／asset／static-vs-dynamic representation unresolved時保持blocked。
+4. 只把已resolved representation交給[Flutter mapping](references/flutter-mapping.md)，建立最小且真實的presentation boundary。
+5. 先建立並執行failing widget／route／localization tests，確認RED後才可寫Flutter production source。
+6. 依[Visual validation](references/visual-validation.md)執行TDD、golden、runtime與semantic review。
+7. 使用[Pressure scenarios](references/pressure-scenarios.md)檢查shortcut rationalization。
 
 ## Taste Skill邊界
 
@@ -62,8 +64,9 @@ delegate governing-template-development
 - 為presentation-only畫面虛構Domain、Data、Repository、Use Case、Bloc或DI。
 - 尚未觀察到正確RED就開始Flutter production source。
 - 看過candidate後擴大threshold、resize thumbnail或加入任意ignore region。
+- 在representation classification前直接選font fallback、approximate icon、raster／vector或static CustomPainter shortcut。
 - 在Design、`.pen`或repository architecture衝突時自行選邊。
 
 ## 停止條件
 
-遇到authority conflict、source/hash drift、Skill collision、錯誤document、Pencil MCP blocker、unsupported construct無accepted disposition或需要推翻Design／Plan時，保持Task open／blocked並依中央治理停止。一般implementation或test failure則修正、fresh re-review並繼續。
+遇到authority conflict、source/hash drift、Skill collision、錯誤document、Pencil MCP blocker、unsupported construct無accepted disposition、representation／provenance unresolved或需要推翻Design／Plan時，保持Task open／blocked並依中央治理停止。一般implementation或test failure則修正、fresh re-review並繼續。

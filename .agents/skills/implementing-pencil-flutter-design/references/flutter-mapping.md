@@ -1,5 +1,11 @@
 # Flutter Mapping
 
+## Admission
+
+本reference只接收已由[Asset / Vector / Typography Mapping & Provenance](asset-and-typography-mapping.md)完成representation classification與provenance resolution的items。
+
+這裡不重新決定font fallback、approximate icon visual equivalence、vector vs raster、static vs dynamic drawing或derived asset provenance。任何required representation仍unresolved時，不得進入Flutter owner mapping。
+
 ## Mapping order
 
 每個Pencil item只能映射到一個明確owner：

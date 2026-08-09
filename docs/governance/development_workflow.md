@@ -47,6 +47,8 @@ Idea／Bug／Request
 
 Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不必要的Spec、Plan或Milestone。Level 2～5依風險逐步要求Behavioral Requirements、Design、Plan、ADR、完整regression與release closure。
 
+Task治理中的`required validation`不等於固定full workspace regression。Current machine selection由`tools/ci/validation_planner.py`依Minimum Sufficient Validation決定focused／affected／workspace／full／release；雙層Task治理負責何時需要validation與fresh evidence，不自行擴大selected scope。
+
 ## Authority boundaries
 
 - Skill不能取代`AGENTS.md`、ADR、Guides、source、tests、CI、VERSION或CHANGELOG。

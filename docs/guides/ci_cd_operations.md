@@ -14,6 +14,24 @@ last_reviewed_baseline: 1.14.0
 
 Durable architecture contract 由 `docs/adr/adr-023-repository-ci-quality-gates-android-verification-artifact.md` 保存；本指南不取代 ADR，也不宣稱 GitHub repository settings 已被修改。
 
+## Minimum Sufficient Validation routing
+
+Repository的change-aware validation由單一machine authority `tools/ci/validation_planner.py`決定；`.github/workflows/ci.yml`、Android／iOS workflows與local operator不得維護平行path matrix。
+
+本機查看任一Git range的plan：
+
+```bash
+python3 tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
+```
+
+Windows Git Bash也可使用：
+
+```powershell
+& 'C:\Program Files\Git\bin\bash.exe' tools/ci/run_local_ci.sh plan-range <base-sha> <head-sha>
+```
+
+Plan採 **Minimum Sufficient Validation** levels：focused → affected → workspace → full → release。Ordinary feature／leaf package不自動要求雙平台build；native、database、dependency、validation-engine、release與fail-safe情境依plan升級。Unknown path、invalid range、dependency graph或planner failure一律fail-safe full matrix。
+
 ## Workflow Inventory
 
 ### Execution Mode Switch

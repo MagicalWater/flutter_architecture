@@ -3,7 +3,7 @@ document_type: guide
 status: accepted
 authoritative_for:
   - repository-testing-governance
-last_reviewed_baseline: 1.12.0
+last_reviewed_baseline: 1.15.2
 ---
 
 # Testing Governance
@@ -66,19 +66,39 @@ Historical executable tests預設保持可執行，不以文件取代。只有�
 - Tier 4：native scaffold、Android／iOS build contracts。
 - Tier 5：physical device、remote hosted與post-release acceptance。
 
-Change-aware routing必須fail-safe；unknown path、invalid range與classifier failure不得靜默跳過重要gate。
+Execution tier描述test／artifact自身的執行特性；**validation level**描述「本次change需要驗證到哪個boundary」。兩者不得混為同一欄位。
+
+## Minimum Sufficient Validation
+
+Repository以`tools/ci/validation_planner.py`作為validation selection唯一machine authority：
+
+```txt
+focused
+→ affected
+→ workspace
+→ full
+→ release
+```
+
+- Focused：直接owner或changed test／tool contract。
+- Affected：owner加真實reverse dependents。
+- Workspace：shared App／cross-owner boundary的受影響workspace regression。
+- Full：validation engine、dependency ambiguity、unknown／invalid range、holistic等完整驗證。
+- Release：fresh full加required platform／artifact／post-release evidence。
+
+同一Task內只有plan identity與selected inputs未變時才能reuse既有GREEN evidence；selected boundary有mutation、failure後fix、planner contract改變、Milestone holistic、release與post-release都必須fresh rerun。
+
+Change-aware routing必須fail-safe；unknown path、invalid range、dependency graph parse failure與planner／classifier failure不得靜默跳過重要gate。
 
 ## Commands
 
 ```bash
 python3 -m unittest tools.testing.test_test_inventory
-python3 tools/testing/inventory.py
+python3 tools/testing/inventory.py --output docs/audits/milestone_35/35-3_current_test_inventory.csv
+python3 tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
 python3 -m unittest discover -s tools/ci -p 'test_*.py'
 python3 -m unittest tools.docs.test_check_docs
 dart run melos run docs_check
-dart run melos run analyze
-dart run melos exec -- flutter test
-bash tools/ci/verify_generated.sh
 ```
 
-Inventory輸出位於`docs/audits/milestone_30/30-2_test_inventory.csv`。受控刪除／搬移證據保存於對應Milestone deletion manifest。
+Current inventory evidence位於`docs/audits/milestone_35/35-3_current_test_inventory.csv`。`docs/audits/milestone_30/30-2_test_inventory.csv`是Template Baseline 1.12.0 historical evidence，不得覆寫。受控刪除／搬移證據保存於對應Milestone deletion manifest。

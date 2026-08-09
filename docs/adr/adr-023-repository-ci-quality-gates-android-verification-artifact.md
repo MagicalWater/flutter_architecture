@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-023-repository-ci-quality-gates-android-verification-artifact
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.15.2
 id: ADR-023
 title: Repository CI Quality Gates and Platform Verification Artifacts
 supersedes: []
@@ -63,6 +63,14 @@ Artifact retention必須同時受到age、per-class count、global capacity與mi
 既有GitHub Actions artifacts與caches只有在replacement local runtime evidence成立後，才能依exact GitHub object IDs產生deletion manifest。GitHub deletion屬不可逆操作，必須完成focused review、whole-cleanup review並再次取得使用者明確核准；Milestone或Implementation Plan核准本身不構成delete approval。
 
 在`github-hosted`模式下，Pull Request到`main`與Push到`main`都必須先建立穩定、可審查的change classification。Repository-owned classifier依changed paths輸出`full_ci`、`android_build`與`ios_build`；unknown path、無效Git range與classifier execution failure一律fail-safe到完整矩陣。
+
+Milestone 35將上述binary routing收斂為 **Minimum Sufficient Validation**。`tools/ci/change_classifier.py`只擁有canonical change-class classification；`tools/ci/validation_planner.py`是validation selection唯一machine authority，依changed paths與workspace dependency metadata輸出focused、affected、workspace、full或release plan，以及exact Flutter／Python／analyze scopes、generated與platform flags。Workflow YAML、local shell與Agent prompt不得建立平行path-selection engine。
+
+Package affected scope必須由tracked workspace dependency graph推導reverse dependents，不得以所有package一律full或手寫global dependency table取代。Ordinary App feature／leaf package change預設不自動要求Android＋iOS build；native、database artifact contract、dependency ambiguity、validation-engine self-change、release與fail-safe情境依planner升級。
+
+Unknown path、invalid／missing Git range、dependency graph parse failure、planner／classifier exception或plan schema無法安全解析時，必須fail-safe到full matrix。Minimum Sufficient Validation不得把full regression改成nightly-only；Milestone holistic、manual full、release與post-release仍要求fresh full regression。
+
+同一formal Task只有在validation plan identity相同且selected inputs自GREEN後沒有相關mutation時，才能重用該evidence；review階段切換本身不要求重跑同一full suite。Selected source／test／dependency mutation、failure後fix、validation engine變更、holistic、release與post-release都會使reuse失效。
 
 在`self-hosted`模式下，只有`main` push與`workflow_dispatch`可以建立execution jobs；Pull Request checks可以顯示為skipped，但`skipped`不得被解讀為已完成驗證。Branch Protection required checks必須依實際mode治理，不得要求一個在該mode永久不執行的job成功。
 

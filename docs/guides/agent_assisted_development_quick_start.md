@@ -28,6 +28,8 @@ AGENTS.md
 → 日常入口與可複製Prompt
 ```
 
+所有implementation／fix的validation selection採 **Minimum Sufficient Validation**；repository-owned `tools/ci/validation_planner.py`決定focused／affected／workspace／full／release及exact scopes。Agent不得因「保守」自行把每個Task升級成full workspace test；unknown／ambiguous inputs由planner fail-safe升級。
+
 ## 每次新對話的共同開頭
 
 先提供 repository 路徑，再選擇本指南後續場景中的一個 Skill 入口。
@@ -222,6 +224,13 @@ dart run melos exec -- flutter test
 ```
 
 若問題涉及 GitHub-hosted quota、runner或外部服務，必須區分 repository failure 與 environment blocker。
+
+若要在Prompt中要求Agent遵守current validation route，可直接寫：
+
+```txt
+請依 tools/ci/validation_planner.py 產生本次Task的 Minimum Sufficient Validation plan，
+執行returned focused／affected scopes；只有planner、holistic或release gate要求時才跑full regression。
+```
 
 ## 場景六：Refactor 或技術債
 

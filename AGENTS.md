@@ -267,14 +267,22 @@ python3 -m unittest tools.testing.test_test_inventory
 python3 tools/testing/inventory.py
 ```
 
+日常Task採 **Minimum Sufficient Validation**。不得由Agent自行猜測要跑哪些tests；先以repository-owned planner依changed range產生validation plan：
+
+```bash
+python3 tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
+```
+
+依plan執行focused／affected／workspace validation；unknown path、invalid range、planner failure會fail-safe到full。`dart run melos exec -- flutter test`保留給planner要求full、Milestone holistic、manual full與release／post-release gate，不是每個Task／commit的固定minimum。
+
 ## Commit 前檢查
 
 Commit 前至少確認：
 
-- `dart pub get` 通過。
-- `dart run melos run docs_check` 通過。
-- `dart run melos run analyze` 通過。
-- `dart run melos exec -- flutter test` 通過。
+- 已依`tools/ci/validation_planner.py`取得本次Task／range的Minimum Sufficient Validation plan。
+- planner要求的focused／affected／workspace validations全部通過。
+- planner要求dependency resolution、analyze、generated、Android或iOS gate時，對應驗證已通過。
+- 若為Milestone holistic、manual full、release或post-release gate，fresh full regression已通過。
 - 若修改 generated source，已執行 build_runner。
 - 若修改 app runtime flow，已執行 `flutter build bundle`。
 - 文件與實作一致。

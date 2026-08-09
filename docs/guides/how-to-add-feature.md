@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - feature-addition-operational-procedure
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.15.2
 ---
 
 # How to Add a Feature
@@ -318,15 +318,15 @@ README coverage 由 repository documentation checker 驗證。
 
 ## 11. Generate and Verify
 
-從 workspace root 執行：
+Feature完成mutation後，先由repository-owned **Minimum Sufficient Validation** planner依Task／commit range產生validation plan；不要自行把Feature工作提升成full workspace regression：
 
 ```bash
-dart pub get
-dart run melos run build_runner
-dart run melos run docs_check
-dart run melos run analyze
-dart run melos exec -- flutter test
+python3 tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
 ```
+
+一般single Feature change預期從focused／affected開始，並依實際App shared boundary、package dependency、generated、database或native影響升級。Planner回傳的test／analyze／generated／platform scopes是執行authority；Agent不得自行猜測或補成full。
+
+只有planner要求full、Milestone holistic、manual full、release或post-release gate才執行fresh full workspace regression。
 
 若修改 App runtime flow，再執行：
 
@@ -344,7 +344,7 @@ Commit 前確認：
 - 沒有新增跨 Feature Bloc dependency。
 - 沒有讓 reusable package 依賴 App／DI framework／plugin implementation。
 - 沒有將 historical plan 或 audit 當成 current authority。
-- 文件與 checker、analyze、tests、必要 build 全部通過。
+- Minimum Sufficient Validation plan要求的docs／analyze／tests／generated／必要build全部通過。
 
 ## Completion Checklist
 

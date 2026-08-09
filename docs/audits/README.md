@@ -68,6 +68,7 @@ Final / Holistic Review
 - [`milestone_35/35-3_testing_inventory_tier_review.md`](milestone_35/35-3_testing_inventory_tier_review.md)：Task 35-3 execution tier realignment；current inventory為Tier 1=22、Tier 2=124、Tier 3=11、Tier 4=7、Unclassified=0，且Milestone 30 historical inventory未改寫。
 - [`milestone_35/35-4_ci_validation_plan_cutover_review.md`](milestone_35/35-4_ci_validation_plan_cutover_review.md)：Task 35-4 single planner CI/local consumer cutover、direct-script runtime P1修正、Windows Git Bash plan-range parity與fresh 227-test CI contract review。
 - [`milestone_35/35-5_validation_governance_authority_review.md`](milestone_35/35-5_validation_governance_authority_review.md)：Task 35-5 ADR-023 stable amendment、Testing Governance 1.15.2 alignment、AGENTS／Feature Guide over-validation wording closure與52-test docs policy review。
+- [`milestone_35/35-6_validation_evidence_reuse_review.md`](milestone_35/35-6_validation_evidence_reuse_review.md)：Task 35-6 phase-specific evidence identity、dependency-metadata invalidation、review-only audit reuse與holistic／release fresh guard review。
 - [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation

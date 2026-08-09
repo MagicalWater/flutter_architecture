@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import subprocess
 import sys
@@ -13,6 +14,10 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.ci.change_classifier import classify_paths
+from tools.ci.change_classifier import classify_change_classes
+
+
+PLANNER_CONTRACT_VERSION = "1"
 
 
 @dataclass(frozen=True)
@@ -358,6 +363,103 @@ def decode_plan(encoded: str) -> dict[str, object]:
             plan_validation([], invalid_range=True)
         )
     return json.loads(base64.urlsafe_b64decode(encoded.encode("ascii")).decode("utf-8"))
+
+
+def _workspace_dependency_payload(repository: Path | str) -> list[dict[str, object]]:
+    return [
+        {
+            "name": package.name,
+            "path": package.path,
+            "local_dependencies": list(package.local_dependencies),
+        }
+        for package in load_workspace_packages(repository)
+    ]
+
+
+def _phase_relevant_paths(paths: Sequence[str], phase: str) -> tuple[str, ...]:
+    normalized = tuple(
+        sorted({str(PurePosixPath(path.replace("\\", "/"))).removeprefix("./") for path in paths if path.strip()})
+    )
+    if phase == "quality":
+        return normalized
+    if phase == "generated":
+        relevant = {"generated", "database", "dependency", "validation_engine", "release", "unknown"}
+    elif phase == "tests":
+        relevant = {
+            "test_only",
+            "app_feature",
+            "app_shared",
+            "package",
+            "generated",
+            "database",
+            "dependency",
+            "validation_engine",
+            "release",
+            "unknown",
+        }
+    else:
+        raise ValueError(f"unsupported evidence phase: {phase}")
+    return tuple(
+        path
+        for path in normalized
+        if any(change_class in relevant for change_class in classify_change_classes([path]))
+    )
+
+
+def validation_evidence_identity(
+    plan: ValidationPlan,
+    paths: Sequence[str],
+    *,
+    phase: str,
+    repository: Path | str = ".",
+) -> str:
+    relevant_paths = _phase_relevant_paths(paths, phase)
+    relevant_classes = classify_change_classes(relevant_paths) if relevant_paths else ()
+    if phase == "tests":
+        phase_plan = {
+            "change_classes": list(relevant_classes),
+            "validation_level": plan.validation_level,
+            "flutter_test_scopes": list(plan.flutter_test_scopes),
+            "full_regression": plan.full_regression,
+            "release_full": plan.release_full,
+            "fail_safe": plan.fail_safe,
+        }
+    elif phase == "generated":
+        phase_plan = {
+            "change_classes": list(relevant_classes),
+            "generated_check": plan.generated_check,
+            "fail_safe": plan.fail_safe,
+        }
+    else:
+        phase_plan = plan_payload(plan)
+    payload = {
+        "planner_contract_version": PLANNER_CONTRACT_VERSION,
+        "phase": phase,
+        "paths": list(relevant_paths),
+        "plan": phase_plan,
+        "workspace_dependencies": _workspace_dependency_payload(repository),
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def can_reuse_validation_evidence(
+    *,
+    previous_identity: str,
+    current_identity: str,
+    same_task: bool,
+    previous_passed: bool,
+    failure_recovery: bool = False,
+    validation_engine_changed: bool = False,
+    gate: str = "task",
+) -> bool:
+    if gate in {"holistic", "release", "post_release"}:
+        return False
+    if not same_task or not previous_passed:
+        return False
+    if failure_recovery or validation_engine_changed:
+        return False
+    return bool(previous_identity) and previous_identity == current_identity
 
 
 def plan_range(

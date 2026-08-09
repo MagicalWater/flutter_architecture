@@ -9,9 +9,11 @@ from pathlib import Path
 
 from tools.ci.change_classifier import classify_paths
 from tools.ci.validation_planner import (
+    can_reuse_validation_evidence,
     load_workspace_packages,
     plan_validation,
     reverse_dependency_closure,
+    validation_evidence_identity,
 )
 
 
@@ -237,6 +239,128 @@ class ValidationPlannerRoutingTest(unittest.TestCase):
             self.assertEqual(values["requires_flutter"], "true")
             self.assertEqual(values["has_flutter_tests"], "true")
             self.assertTrue(values["plan_b64"])
+
+
+class ValidationEvidenceReuseTest(unittest.TestCase):
+    def test_review_audit_text_does_not_invalidate_flutter_test_identity(self) -> None:
+        source = "apps/flutter_architecture/lib/features/profile/presentation/profile_page.dart"
+        before_paths = [source]
+        after_paths = [source, "docs/audits/milestone_35/review.md"]
+        before_plan = plan_validation(before_paths)
+        after_plan = plan_validation(after_paths)
+
+        before = validation_evidence_identity(before_plan, before_paths, phase="tests")
+        after = validation_evidence_identity(after_plan, after_paths, phase="tests")
+
+        self.assertEqual(before, after)
+        self.assertTrue(
+            can_reuse_validation_evidence(
+                previous_identity=before,
+                current_identity=after,
+                same_task=True,
+                previous_passed=True,
+            )
+        )
+
+    def test_selected_source_mutation_changes_flutter_test_identity(self) -> None:
+        first_paths = [
+            "apps/flutter_architecture/lib/features/profile/presentation/profile_page.dart"
+        ]
+        second_paths = [
+            *first_paths,
+            "apps/flutter_architecture/lib/features/profile/presentation/profile_bloc.dart",
+        ]
+        first = validation_evidence_identity(
+            plan_validation(first_paths), first_paths, phase="tests"
+        )
+        second = validation_evidence_identity(
+            plan_validation(second_paths), second_paths, phase="tests"
+        )
+
+        self.assertNotEqual(first, second)
+
+    def test_path_order_does_not_change_evidence_identity(self) -> None:
+        paths = [
+            "apps/flutter_architecture/lib/features/profile/presentation/profile_page.dart",
+            "apps/flutter_architecture/lib/features/profile/presentation/profile_bloc.dart",
+        ]
+        plan = plan_validation(paths)
+
+        first = validation_evidence_identity(plan, paths, phase="tests")
+        second = validation_evidence_identity(plan, list(reversed(paths)), phase="tests")
+
+        self.assertEqual(first, second)
+
+    def test_workspace_dependency_metadata_changes_evidence_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "apps/app").mkdir(parents=True)
+            (root / "packages/core").mkdir(parents=True)
+            (root / "pubspec.yaml").write_text(
+                "name: root\nworkspace:\n  - apps/app\n  - packages/core\n",
+                encoding="utf-8",
+            )
+            (root / "packages/core/pubspec.yaml").write_text(
+                "name: core\nenvironment:\n  sdk: ^3.0.0\n",
+                encoding="utf-8",
+            )
+            app_pubspec = root / "apps/app/pubspec.yaml"
+            app_pubspec.write_text(
+                "name: app\nenvironment:\n  sdk: ^3.0.0\n",
+                encoding="utf-8",
+            )
+            paths = ["apps/flutter_architecture/lib/features/profile/profile.dart"]
+            plan = plan_validation(paths)
+            before = validation_evidence_identity(
+                plan, paths, phase="tests", repository=root
+            )
+
+            app_pubspec.write_text(
+                "name: app\nenvironment:\n  sdk: ^3.0.0\ndependencies:\n  core:\n    path: ../../packages/core\n",
+                encoding="utf-8",
+            )
+            after = validation_evidence_identity(
+                plan, paths, phase="tests", repository=root
+            )
+
+        self.assertNotEqual(before, after)
+
+    def test_failure_recovery_and_engine_change_require_fresh_validation(self) -> None:
+        identity = "same"
+        for kwargs in (
+            {"failure_recovery": True},
+            {"validation_engine_changed": True},
+        ):
+            self.assertFalse(
+                can_reuse_validation_evidence(
+                    previous_identity=identity,
+                    current_identity=identity,
+                    same_task=True,
+                    previous_passed=True,
+                    **kwargs,
+                )
+            )
+
+    def test_cross_task_holistic_release_and_post_release_never_reuse(self) -> None:
+        identity = "same"
+        self.assertFalse(
+            can_reuse_validation_evidence(
+                previous_identity=identity,
+                current_identity=identity,
+                same_task=False,
+                previous_passed=True,
+            )
+        )
+        for gate in ("holistic", "release", "post_release"):
+            self.assertFalse(
+                can_reuse_validation_evidence(
+                    previous_identity=identity,
+                    current_identity=identity,
+                    same_task=True,
+                    previous_passed=True,
+                    gate=gate,
+                )
+            )
 
 
 if __name__ == "__main__":

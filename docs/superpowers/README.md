@@ -17,6 +17,8 @@ last_reviewed_baseline: 1.15.1
 
 Spec 與 Plan 都不代表 implementation 已完成，也不取代 current snapshot、Architecture Decision、review evidence 或 release history。
 
+目前active Milestone 34的proposed Implementation Plan：[`plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`](plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md)。Plan完成雙層review後仍需使用者書面核准，才可修改Pencil-to-Flutter Skill contract。
+
 ## 目錄
 
 ```txt

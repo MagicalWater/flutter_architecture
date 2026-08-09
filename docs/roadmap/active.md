@@ -22,6 +22,8 @@ Template Baseline: 1.15.1
 
 - Accepted Design：`docs/superpowers/specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`
 - Design review：`docs/audits/milestone_34/34-0_asset_typography_mapping_design_review.md`
+- Proposed Plan：`docs/superpowers/plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`
+- Plan review：`docs/audits/milestone_34/34-p_implementation_plan_review.md`
 
 ## Latest Completed Milestone
 

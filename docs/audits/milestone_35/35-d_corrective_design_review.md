@@ -118,13 +118,14 @@ Review期間另發現`docs/roadmap/active.md`同時出現「Design proposed」�
 
 ```txt
 Classification: Level 4 / Full two-layer Task governance
-Design status: PROPOSED
+Design status: ACCEPTED
 Focused review: PASS after findings disposition
 Whole-Design review: PASS
 Documentation authority: PASS
 Open P0: 0
 Open P1 without disposition: 0
 Implementation allowed: NO
-Next gate: USER DESIGN APPROVAL
+User Design approval: APPROVED 2026-08-09
+Next gate: IMPLEMENTATION PLAN REVIEW + USER PLAN APPROVAL
 ```
 

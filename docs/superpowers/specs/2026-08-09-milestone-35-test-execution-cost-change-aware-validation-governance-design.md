@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-35-corrective-design
 last_reviewed_baseline: 1.15.2
@@ -431,11 +431,10 @@ Design implementation完成後必須同時滿足：
 
 ## 22. Implementation boundary
 
-目前只接受Design artifact與review。
+本Design已於2026-08-09取得使用者明確書面核准，status由`proposed`轉為`accepted`。
 
-在使用者書面核准本Design前：
+Implementation Plan仍必須完成完整雙層Task review並取得使用者書面核准；在Plan accepted前：
 
-- 不建立Implementation Plan；
 - 不建立managed worktree；
 - 不修改production source、tests、classifier、inventory、workflow、ADR或current governance rules；
 - 不開始TDD implementation。

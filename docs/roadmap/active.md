@@ -8,15 +8,15 @@ last_reviewed_baseline: 1.16.0
 
 # Active Milestone
 
-目前active milestone：
+目前沒有active milestone：
 
 ```txt
-Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-State: Tasks 35-1～35-8 accepted / local release 1.16.0 / publication and Task 35-9 pending
+Active Milestone: None
+State: Template Baseline 1.16.0 published / Milestone 35 completed and archived
 Template Baseline: 1.16.0
 ```
 
-## Current Scope
+## Latest Completed Scope
 
 審查並修正repository test execution cost與change-aware validation routing drift。Admission已確認目前問題不是單純tests過多，而是classifier／tier machine model／Guide wording造成over-validation，並由雙層Task的多個verification points放大成本。
 
@@ -25,14 +25,14 @@ Template Baseline: 1.16.0
 - Design：Accepted — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
 - Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`
 - Worktree：Created — `C:\Users\crazy\.devspace\worktrees\flutter_architecture-65b293eb` / `milestone-35-validation-governance`
-- Production / CI mutation：Tasks 35-1～35-8 accepted / local release 1.16.0 / publication pending
+- Production / CI mutation：Tasks 35-1～35-9 accepted / Template Baseline 1.16.0 published and closed
 
 ## Latest Completed Milestone
 
-Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance已發布Template Baseline 1.15.2並完成post-release validation。
+Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective已發布Template Baseline 1.16.0並完成published-main post-release validation。
 
-- Final review：`docs/audits/milestone_34/34-5_holistic_final_review.md`
-- Post-release validation：`docs/audits/milestone_34/34-6_post_release_validation.md`
+- Final review：`docs/audits/milestone_35/35-8_holistic_final_review.md`
+- Post-release validation：`docs/audits/milestone_35/35-9_post_release_validation.md`
 
 ## Current Next Action
 
@@ -57,5 +57,8 @@ Milestone 35 read-only admission：CONFIRMED
 → Task 35-6 Evidence Reuse and Duplicate Full-Run Guard：ACCEPTED
 → Task 35-7 Before/After Routing and Execution-Cost Acceptance：ACCEPTED
 → Task 35-8 Holistic Final Review and Template Baseline Release：ACCEPTED / LOCAL 1.16.0
-→ 下一步：publication authorization → Task 35-9 Published-Main Post-release Validation and Closure
+→ Publication：APPROVED / main == origin/main == 016f33c
+→ Task 35-9 Published-Main Post-release Validation and Closure：ACCEPTED
+→ Milestone 35：COMPLETED / ARCHIVED
+→ 下一步：Roadmap／Requirement Decision入口；沒有自動建立新Milestone
 ```

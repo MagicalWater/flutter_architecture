@@ -54,7 +54,7 @@
 
 - Requirement Decision、Corrective Design、Implementation Plan、Tasks 35-1～35-7與35-8 Holistic Final Review皆依full double-layer Task governance完成；Open P0=0、Open P1 without disposition=0。
 - Unknown／invalid range／dependency parse／planner failure仍fail-safe full；release與post-release仍fresh full，不把full regression降級為nightly-only。
-- 1.16.0 local release identity完成後仍需publication與Task 35-9 published-main fresh validation，才可正式封存Milestone 35。
+- 1.16.0已完成main publication與Task 35-9 published-main fresh validation；Windows full regression與macOS/iOS production verification build均PASS，Milestone 35正式封存。
 
 ---
 

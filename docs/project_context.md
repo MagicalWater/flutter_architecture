@@ -29,9 +29,9 @@ last_reviewed_baseline: 1.16.0
 ```txt
 Template Baseline: 1.16.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-Current phase: Tasks 35-1～35-8 accepted / local 1.16.0 release / publication and Task 35-9 pending
-Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
+Current active milestone: None
+Current phase: Baseline 1.16.0 published / awaiting next Requirement Decision
+Latest completed initiative: Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective — 1.16.0
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -352,16 +352,16 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-Current phase: Tasks 35-1～35-8 accepted / local 1.16.0 release / publication and Task 35-9 pending
-Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
-Maintenance mode: Suspended while Milestone 35 governance corrective is active
-Open Audit remediation findings: Milestone 35 admission P1/P2 findings recorded; remediation not started before Design
+Current active milestone: None
+Current phase: Baseline 1.16.0 published / awaiting next Requirement Decision
+Latest completed initiative: Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective — 1.16.0
+Maintenance mode: Available
+Open Audit remediation findings: none from Milestone 35; final closure P0=0 / undisposed P1=0
 ```
 
 Milestone 34已在既有Pencil-to-Flutter route加入representation classification／asset-font provenance gate，Template Baseline 1.15.2 publication與post-release validation均PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`，Skill behavioral validation入口為`docs/guides/skill_behavioral_validation.md`。Final closure evidence由`docs/audits/milestone_34/34-6_post_release_validation.md`路由。
 
-Milestone 35 pre-Design admission已確認test execution over-validation風險：current test inventory為163 files／27,781 LOC／961 static cases；Windows fresh full Flutter regression約34.42秒，單一6-case Widget test約14.02秒。Primary corrective findings為change classifier粒度過粗、testing tier machine model與governance taxonomy不一致、AGENTS／Feature Guide存在unconditional full-test wording；雙層Task治理只放大錯誤validation selection，並非其root cause。完整evidence與Design guardrails見`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`。
+Milestone 35已把test execution over-validation修正為canonical change classifier + deterministic Minimum Sufficient Validation planner + plan-driven CI/local execution，並保留unknown／invalid／release的full fail-safe。Template Baseline 1.16.0 publication、Windows published-main fresh full regression與macOS/iOS production verification build均PASS；formal closure evidence見`docs/audits/milestone_35/35-9_post_release_validation.md`。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

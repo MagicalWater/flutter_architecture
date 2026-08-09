@@ -36,7 +36,7 @@
 - Milestone 32 CI產物本機化與GitHub儲存空間切換：Completed / Archived
 - Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation：Completed / Archived（Corrective Release 1.15.1）
 - Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance：Completed / Archived（Release 1.15.2）
-- Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective：Local Release 1.16.0 / Publication & Post-release Validation Pending
+- Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective：Completed / Archived（Release 1.16.0）
 
 平台能力：
 

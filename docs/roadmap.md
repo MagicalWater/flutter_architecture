@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-State: Local release 1.16.0 accepted / publication and Task 35-9 pending
+Active Milestone: None
+State: Milestone 35 completed / Template Baseline 1.16.0 published
 Template Baseline: 1.16.0
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 34 已完成或已有明確 disposition。Milestone 35已完成Tasks 35-1～35-8與local 1.16.0 release disposition；正式封存仍等待publication與Task 35-9 published-main validation。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 35 已完成或已有明確 disposition。Milestone 35已完成Template Baseline 1.16.0 publication與published-main post-release validation並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

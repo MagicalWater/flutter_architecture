@@ -28,14 +28,14 @@ Milestone routing 只回答：
 - Completed / Archived：以 final review、`CHANGELOG.md` 與 `VERSION` 為準。
 - Candidate：以 `docs/roadmap/candidates.md` 或 `docs/backlog.md` 為準。
 
-## Active routing
+## Current routing
 
 ```txt
-Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
+Active Milestone: None
 Template Baseline: 1.16.0
 ```
 
-目前active authority：`docs/roadmap/active.md`；Milestone 35已完成Tasks 35-1～35-8與local 1.16.0 release，publication與Task 35-9 post-release validation尚未完成。
+目前active authority：`docs/roadmap/active.md`；Milestone 35已完成Template Baseline 1.16.0 publication與Task 35-9 post-release validation，current work回到Roadmap／Requirement Decision入口。
 
 ### Milestone 35 active routing
 
@@ -44,7 +44,8 @@ Template Baseline: 1.16.0
 - Design：Accepted — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
 - Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`
 - Holistic Final Review：Accepted — `docs/audits/milestone_35/35-8_holistic_final_review.md`
-- Release：Local Template Baseline `1.16.0`; publication／post-release pending
+- Post-release Validation：Completed — `docs/audits/milestone_35/35-9_post_release_validation.md`
+- Release：Template Baseline `1.16.0`已發布並完成formal closure
 
 ### Milestone 34 release routing
 

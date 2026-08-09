@@ -31,7 +31,7 @@ docs/superpowers/plans/
 
 目前最新計畫 routing：
 
-- [`plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`](plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md)：accepted Milestone 35 Implementation Plan；Tasks 35-1～35-8與local Template Baseline 1.16.0已完成，published-main Task 35-9仍等待publication後執行。
+- [`plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`](plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md)：accepted Milestone 35 Implementation Plan；Tasks 35-1～35-9、Template Baseline 1.16.0 publication與published-main post-release closure均已完成。
 - [`plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`](plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)：accepted Milestone 33 Implementation Plan；Tasks 33-1至33-13、Template Baseline 1.15.0 release、main publication與fresh clean-checkout post-release closure均已完成。
 - [`plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md`](plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md)：accepted Corrective C1～C5 Plan；single-renderer recovery、Android人工visual acceptance、C5 Holistic Final Review、Template Baseline 1.15.1與post-release closure均已完成。
 

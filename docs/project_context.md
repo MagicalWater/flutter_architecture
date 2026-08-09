@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.15.2
 Template Baseline: 1.15.2
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-Current phase: Corrective Design accepted / Implementation Plan in progress
+Current phase: Corrective Design accepted / Implementation Plan proposed / awaiting user approval
 Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -353,7 +353,7 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-Current phase: Corrective Design accepted / Implementation Plan in progress
+Current phase: Corrective Design accepted / Implementation Plan proposed / awaiting user approval
 Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
 Maintenance mode: Suspended while Milestone 35 governance corrective is active
 Open Audit remediation findings: Milestone 35 admission P1/P2 findings recorded; remediation not started before Design

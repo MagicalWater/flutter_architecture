@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.2
 
 ```txt
 Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-State: Design accepted / Implementation Plan in progress
+State: Design accepted / Implementation Plan proposed / awaiting user approval
 Template Baseline: 1.15.2
 ```
 
@@ -23,7 +23,7 @@ Template Baseline: 1.15.2
 - Admission audit：`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`
 - Requirement Decision：Accepted — `docs/audits/milestone_35/35-r_requirement_decision.md`
 - Design：Accepted — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
-- Implementation Plan：Not started
+- Implementation Plan：Proposed / review passed / awaiting user approval — `docs/superpowers/plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`
 - Worktree：Not created
 - Production / CI mutation：Not started
 
@@ -46,6 +46,7 @@ Milestone 35 read-only admission：CONFIRMED
 → Requirement Decision：ACCEPT / Level 4
 → Design Spec + Design雙層Task review：PASS / ACCEPTED
 → 使用者Design approval：APPROVED
-→ 下一步：Implementation Plan + Plan雙層Task review
-→ Plan／worktree／implementation目前均未開始
+→ Implementation Plan + Plan雙層Task review：PASS / PROPOSED
+→ 下一步：等待使用者Implementation Plan approval
+→ Worktree／implementation目前均未開始
 ```

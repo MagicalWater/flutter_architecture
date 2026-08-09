@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.15.1
 Template Baseline: 1.15.1
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-Current phase: Implementation Plan accepted / Task 34-1 active
+Current phase: Task 34-3 blocked — independent agent runtime authentication
 Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation — Corrective 1.15.1
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -353,7 +353,7 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-Current phase: Implementation Plan accepted / Task 34-1 active
+Current phase: Task 34-3 blocked — independent agent runtime authentication
 Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation — Corrective 1.15.1
 Maintenance mode: Suspended while Milestone 34 implementation is active
 Open Audit remediation findings: None

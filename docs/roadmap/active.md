@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.1
 
 ```txt
 Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Implementation Plan accepted / Task 34-1 active
+State: Task 34-3 blocked — independent agent runtime authentication
 Template Baseline: 1.15.1
 ```
 
@@ -22,7 +22,7 @@ Template Baseline: 1.15.1
 
 - Accepted Design：`docs/superpowers/specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`
 - Design review：`docs/audits/milestone_34/34-0_asset_typography_mapping_design_review.md`
-- Proposed Plan：`docs/superpowers/plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`
+- Accepted Plan：`docs/superpowers/plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`
 - Plan review：`docs/audits/milestone_34/34-p_implementation_plan_review.md`
 
 ## Latest Completed Milestone
@@ -39,7 +39,9 @@ Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation已完成
 Design Task validation PASS
 → 使用者已明確核准書面Design
 → Implementation Plan已於2026-08-09取得使用者明確核准
-→ 執行Task 34-1 Representation Contract RED
-→ 使用者明確核准書面Plan
-→ 才可開始Skill contract implementation
+→ Task 34-1 Representation Contract RED：completed
+→ Task 34-2 Asset / Typography Mapping GREEN：completed
+→ Task 34-3 Behavioral Pressure Scenarios：BLOCKED（fresh independent agent provider 401 Unauthorized）
+→ 恢復independent runtime authentication後fresh執行PTF-13～PTF-18 behavioral validation
+→ Task 34-3通過前不得開始34-4／34-5
 ```

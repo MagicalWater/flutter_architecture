@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Implementation Plan accepted / Task 34-1 active
+State: Task 34-3 blocked — independent agent runtime authentication
 Template Baseline: 1.15.1
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 33 已完成或已有明確 disposition。Milestone 34 Design與Implementation Plan皆已accepted，目前依Plan執行Task 34-1 Representation Contract RED。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 33 已完成或已有明確 disposition。Milestone 34的Task 34-1 RED與34-2 mapping GREEN已完成；34-3 behavioral pressure validation因fresh independent agent provider `401 Unauthorized`保持blocked，34-4／34-5尚未開始。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

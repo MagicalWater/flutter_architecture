@@ -49,6 +49,9 @@ Final / Holistic Review
 
 - [`milestone_34/34-0_asset_typography_mapping_design_review.md`](milestone_34/34-0_asset_typography_mapping_design_review.md)：accepted Level 3 Design的classification、scope、authority、over-design guards、focused findings disposition與使用者書面核准closure。
 - [`milestone_34/34-p_implementation_plan_review.md`](milestone_34/34-p_implementation_plan_review.md)：accepted Implementation Plan的Design coverage、RED→GREEN ordering、behavioral runtime blocker、affected regression與whole-Plan review；2026-08-09已取得使用者書面核准。
+- [`milestone_34/34-1_representation_contract_red.md`](milestone_34/34-1_representation_contract_red.md)：Task 34-1 mechanical RED；七個representation／provenance缺口已可重現，既有single-renderer contract保持GREEN。
+- [`milestone_34/34-2_asset_typography_mapping_review.md`](milestone_34/34-2_asset_typography_mapping_review.md)：Task 34-2 mapping GREEN；六類representation、font／icon fail-closed、derived provenance與anti-overbuild contract review。
+- [`milestone_34/34-3_asset_typography_pressure_evidence.md`](milestone_34/34-3_asset_typography_pressure_evidence.md)：Task 34-3目前BLOCKED；Codex fresh read-only harness因provider `401 Unauthorized`無法產生independent behavioral response，PTF-13～PTF-18僅完成static contract。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 

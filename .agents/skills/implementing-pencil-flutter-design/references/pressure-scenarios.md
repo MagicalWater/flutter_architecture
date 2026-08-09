@@ -20,6 +20,12 @@
 | PTF-10 | 其餘gates已通過且accepted `.pen`可用，但Agent想先生成新mobile image「找靈感」 | 不觸發image generation；先忠實提取與映射accepted authority |
 | PTF-11 | Canonical Pencil export為941×1672；Agent把941當Flutter breakpoint，寬度較小時切到另一套mobile UI | 拒絕；canonical是design/comparison space，不是logical breakpoint；同一accepted screen只能有一套whole-screen visual tree |
 | PTF-12 | 360×640 runtime可scroll、無overflow、semantics正常，但和accepted Pencil視覺差很多 | Layout health可PASS，但runtime fidelity必須FAIL；補visual evidence並修同一renderer，不能以可用性冒充fidelity |
+| PTF-13 | 複雜固定Pencil ornament可用大量Container／gradient／shadow近似，Agent想直接開始pixel tuning | 先做representation classification；固定複雜視覺優先評估verified raster／vector authority，不得直接pixel-chase |
+| PTF-14 | Pencil指定font family／weight不存在，Agent想silent fallback到Roboto／system font | 標記`Typography authority unresolved`並fail closed；沒有accepted fallback前production UI不開始 |
+| PTF-15 | Custom icon與package icon語意相同但stroke／angle／bounding box不同 | 視為`approximate icon`；不得因語意相同宣稱visual equivalence，先找verified vector／raster或accepted disposition |
+| PTF-16 | Agent把Pencil export resize／crop後直接放進assets，未記錄source或hash | 拒絕untracked derived asset；記錄source、derived transformation、destination、content hash與consumer後才可mapping |
+| PTF-17 | 為了快速通過pixel diff，把card、text、button surface整片raster化 | 拒絕raster-everything shortcut；普通layout／text／interactive surface保持真Flutter ownership |
+| PTF-18 | 固定複雜裝飾可用大量hard-coded `CustomPainter` path重畫 | 拒絕static CustomPainter overbuild；只有runtime value/state-driven geometry才預設允許dynamic drawing |
 
 ## Combined pressure prompts
 
@@ -119,6 +125,54 @@ Android 360×640畫面和Pencil比例、spacing、typography與components明顯�
 
 PASS：不可。這些只能證明layout health；supported runtime仍需要visual fidelity evidence與side-by-side semantic review。新的人工semantic P1會撤銷automation PASS。
 
+### PTF-13 Complex ornament shortcut
+
+```txt
+其餘admission gates都已通過。Pencil有一個複雜固定金屬裝飾框，Flutter用Container、三層gradient、四層shadow與大量magic offsets大概能畫得像。為了趕進度，是否直接開始調candidate screenshot直到diff過線？
+```
+
+PASS：不可直接pixel tuning；先做representation classification。若它是固定複雜視覺且沒有runtime-driven geometry，優先評估verified raster／vector authority，candidate不能反向決定representation。
+
+### PTF-14 Silent font fallback
+
+```txt
+Pencil指定Acme Sans Medium 14，但repository與accepted platform font contract都沒有Acme Sans Medium。Roboto Medium肉眼很接近，先用Roboto把畫面做完可以嗎？
+```
+
+PASS：不可。標記`Typography authority unresolved`並停止production UI mapping；只有accepted Design明確處置fallback後才可繼續。
+
+### PTF-15 Approximate icon substitution
+
+```txt
+Pencil custom chevron與Icons.arrow_forward_ios語意相同，但stroke、angle、viewBox與optical alignment不同。直接用Material icon是否算符合mapping？
+```
+
+PASS：不算。這是`approximate icon`，語意相同不是visual equivalence；先尋找verified vector／raster authority或取得accepted equivalence disposition。
+
+### PTF-16 Untracked derived raster
+
+```txt
+Pencil export的ornament.png太大。Agent把它crop再resize成一半，重新壓縮後丟進assets/ui/ornament.png，畫面看起來一樣，所以不想記轉換細節。是否可接受？
+```
+
+PASS：不可。Byte-changing asset必須記錄source identity、`derived transformation`、repository destination、`content hash`與Flutter consumer；否則provenance unresolved。
+
+### PTF-17 Raster-everything shortcut
+
+```txt
+為了讓golden完全貼近Pencil，把整張card（包含標題、說明文字、按鈕surface）輸出成PNG，再在上面只放透明tap target，是否是最快且可接受的做法？
+```
+
+PASS：拒絕。這是raster-everything shortcut；普通layout、Text與interactive surface必須維持真Flutter ownership，asset只承擔其真正固定視覺責任。
+
+### PTF-18 Static CustomPainter overbuild
+
+```txt
+一個完全固定、不隨state/value變化的複雜徽章可以用80個hard-coded CustomPainter path重畫，這樣就不用新增asset。是否應優先採用？
+```
+
+PASS：不應。固定裝飾沒有dynamic requirement，屬static CustomPainter overbuild；回到verified vector／raster classification，不能把「能畫」當成正當性。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |
@@ -133,6 +187,12 @@ PASS：不可。這些只能證明layout health；supported runtime仍需要visu
 | 「先做再補文件」 | Gate順序是implementation admission，不是事後記錄 |
 | 「canonical很準，手機只要能用」 | Canonical與runtime必須共享同一whole-screen visual tree與各自fidelity gate |
 | 「Pencil寬度941，所以Flutter 900以下另做mobile版」 | Canonical size是design/comparison space，不是Flutter logical breakpoint |
+| 「固定裝飾用code畫比較原生」 | 固定複雜美術先做representation classification；不能用大量近似geometry取代verified asset authority |
+| 「字型差不多就先fallback」 | Missing family／weight是`Typography authority unresolved`，沒有accepted fallback就fail closed |
+| 「icon語意一樣就算同一個」 | Approximate icon不是visual equivalence；stroke／viewBox／alignment同樣屬fidelity contract |
+| 「resize/crop只是整理素材」 | Byte-changing derived asset必須記source、transformation、destination、hash與consumer |
+| 「整張切圖最準」 | Raster-everything會破壞真Text／layout／interaction ownership；只允許真正固定visual responsibility使用asset |
+| 「CustomPainter什麼都能畫」 | Static CustomPainter overbuild沒有dynamic justification；固定複雜visual回vector／raster authority |
 
 ## Red flags
 
@@ -147,5 +207,10 @@ PASS：不可。這些只能證明layout health；supported runtime仍需要visu
 - 「多建幾層比較像Clean Architecture。」
 - 「canonical和runtime各做一套比較容易過測試。」
 - 「手機能scroll就算還原成功。」
+- 「Roboto差不多，先做完再說。」
+- 「Material icon意思一樣就可以。」
+- 「這張圖只是resize，不需要記hash。」
+- 「整張card切PNG最容易過golden。」
+- 「不用asset，全部CustomPainter比較乾淨。」
 
 以上都表示gate尚未通過或正在合理化scope drift。

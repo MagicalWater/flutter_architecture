@@ -9,20 +9,24 @@ from typing import Sequence
 
 @dataclass(frozen=True)
 class Classification:
+    change_classes: tuple[str, ...]
     docs_only: bool
     full_ci: bool
     android_build: bool
     ios_build: bool
     release_full: bool
+    fail_safe: bool
     reason: str
 
 
 _FULL_MATRIX = Classification(
+    change_classes=("unknown",),
     docs_only=False,
     full_ci=True,
     android_build=True,
     ios_build=True,
     release_full=False,
+    fail_safe=True,
     reason="fail-safe full matrix",
 )
 
@@ -53,6 +57,101 @@ def _is_docs_path(path: str) -> bool:
         or path.startswith("docs/")
         or path in {"README.md", "CHANGELOG.md"}
     )
+
+
+def _is_governance_path(path: str) -> bool:
+    return (
+        path == "AGENTS.md"
+        or path.startswith(".agents/skills/governing-template-development/")
+        or path in {
+            "docs/governance/development_workflow.md",
+            "docs/guides/testing_governance.md",
+            "docs/guides/how-to-add-feature.md",
+            "docs/guides/agent_assisted_development_quick_start.md",
+            "docs/guides/ci_cd_operations.md",
+        }
+    )
+
+
+def _is_test_path(path: str) -> bool:
+    return (
+        "/test/" in f"/{path}"
+        or "/integration_test/" in f"/{path}"
+        or path.startswith("tools/")
+        and PurePosixPath(path).name.startswith("test_")
+    )
+
+
+def _is_generated_path(path: str) -> bool:
+    return path.endswith((".g.dart", ".freezed.dart", ".gr.dart")) or path.endswith(
+        "injection.config.dart"
+    )
+
+
+def _is_dependency_path(path: str) -> bool:
+    return (
+        path in {"pubspec.yaml", "pubspec.lock", "melos.yaml", ".github/versions.env"}
+        or path.endswith("/pubspec.yaml")
+    )
+
+
+def _classify_path(path: str) -> str | None:
+    if path == "VERSION":
+        return "release"
+    if _is_classifier_path(path) or path == "tools/ci/validation_planner.py" or path == "tools/ci/test_validation_planner.py":
+        return "validation_engine"
+    if _is_governance_path(path):
+        return "governance"
+    if _is_android_path(path) and path.startswith("apps/flutter_architecture/android/"):
+        return "android_native"
+    if _is_ios_path(path) and path.startswith("apps/flutter_architecture/ios/"):
+        return "ios_native"
+    if _is_database_critical_path(path):
+        return "database"
+    if _is_dependency_path(path):
+        return "dependency"
+    if _is_generated_path(path):
+        return "generated"
+    if _is_test_path(path):
+        return "test_only"
+    if path.startswith("apps/flutter_architecture/lib/features/"):
+        return "app_feature"
+    if path.startswith("apps/flutter_architecture/lib/"):
+        return "app_shared"
+    if path.startswith("packages/"):
+        return "package"
+    if path.startswith("tools/"):
+        return "tooling"
+    if _is_docs_path(path):
+        return "docs_content"
+    if path.startswith("apps/flutter_architecture/assets/") or path == "apps/flutter_architecture/l10n.yaml":
+        return "app_shared"
+    return None
+
+
+_CHANGE_CLASS_ORDER = (
+    "docs_content",
+    "governance",
+    "tooling",
+    "test_only",
+    "app_feature",
+    "app_shared",
+    "package",
+    "generated",
+    "database",
+    "android_native",
+    "ios_native",
+    "dependency",
+    "validation_engine",
+    "release",
+    "unknown",
+)
+
+
+def classify_change_classes(paths: Sequence[str]) -> tuple[str, ...]:
+    normalized = tuple(dict.fromkeys(_normalize(path) for path in paths if path.strip()))
+    classes = {_classify_path(path) or "unknown" for path in normalized}
+    return tuple(change_class for change_class in _CHANGE_CLASS_ORDER if change_class in classes)
 
 
 def _is_full_ci_path(path: str) -> bool:
@@ -136,27 +235,51 @@ def classify_paths(
     normalized = tuple(dict.fromkeys(_normalize(path) for path in paths if path.strip()))
 
     if manual:
-        return Classification(False, True, True, True, True, "manual full matrix")
+        return Classification(
+            ("release",), False, True, True, True, True, False, "manual full matrix"
+        )
 
     if invalid_range or not normalized:
         return _FULL_MATRIX
 
     if "VERSION" in normalized:
-        return Classification(False, True, True, True, True, "VERSION changed")
+        return Classification(
+            classify_change_classes(normalized),
+            False,
+            True,
+            True,
+            True,
+            True,
+            False,
+            "VERSION changed",
+        )
 
     if all(_is_docs_path(path) for path in normalized):
-        return Classification(True, False, False, False, False, "documentation only")
+        change_classes = classify_change_classes(normalized)
+        if "governance" not in change_classes:
+            return Classification(
+                change_classes,
+                True,
+                False,
+                False,
+                False,
+                False,
+                False,
+                "documentation only",
+            )
 
-    known_paths = tuple(path for path in normalized if _is_full_ci_path(path))
-    if len(known_paths) != len(normalized):
+    change_classes = classify_change_classes(normalized)
+    if "unknown" in change_classes:
         return _FULL_MATRIX
 
     return Classification(
+        change_classes=change_classes,
         docs_only=False,
         full_ci=True,
         android_build=any(_is_android_path(path) for path in normalized),
         ios_build=any(_is_ios_path(path) for path in normalized),
         release_full=False,
+        fail_safe=False,
         reason="classified source or tooling change",
     )
 

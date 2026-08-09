@@ -13,6 +13,7 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
     def test_docs_only_change_skips_heavy_work(self) -> None:
         result = classify_paths(["docs/audits/example.md", "README.md"])
 
+        self.assertEqual(result.change_classes, ("docs_content",))
         self.assertTrue(result.docs_only)
         self.assertFalse(result.full_ci)
         self.assertFalse(result.android_build)
@@ -48,6 +49,8 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
     def test_unknown_path_fails_safe_to_full_matrix(self) -> None:
         result = classify_paths(["unexpected/config.bin"])
 
+        self.assertEqual(result.change_classes, ("unknown",))
+        self.assertTrue(result.fail_safe)
         self.assertTrue(result.full_ci)
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
@@ -57,6 +60,7 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
             ["apps/flutter_architecture/lib/features/example/example.dart"]
         )
 
+        self.assertEqual(result.change_classes, ("app_feature",))
         self.assertTrue(result.full_ci)
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
@@ -67,6 +71,7 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
             ["apps/flutter_architecture/android/app/build.gradle.kts"]
         )
 
+        self.assertEqual(result.change_classes, ("android_native",))
         self.assertTrue(result.full_ci)
         self.assertTrue(result.android_build)
         self.assertFalse(result.ios_build)
@@ -76,6 +81,7 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
             ["apps/flutter_architecture/ios/Runner/Info.plist"]
         )
 
+        self.assertEqual(result.change_classes, ("ios_native",))
         self.assertTrue(result.full_ci)
         self.assertFalse(result.android_build)
         self.assertTrue(result.ios_build)
@@ -83,6 +89,7 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
     def test_package_change_runs_full_matrix(self) -> None:
         result = classify_paths(["packages/core/lib/src/example.dart"])
 
+        self.assertEqual(result.change_classes, ("package",))
         self.assertTrue(result.full_ci)
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
@@ -121,6 +128,7 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
     def test_classifier_change_runs_full_matrix(self) -> None:
         result = classify_paths(["tools/ci/change_classifier.py"])
 
+        self.assertEqual(result.change_classes, ("validation_engine",))
         self.assertTrue(result.full_ci)
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
@@ -128,9 +136,19 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
     def test_unrelated_tool_change_runs_full_ci_without_platform_builds(self) -> None:
         result = classify_paths(["tools/docs/check_docs.py"])
 
+        self.assertEqual(result.change_classes, ("tooling",))
         self.assertTrue(result.full_ci)
         self.assertFalse(result.android_build)
         self.assertFalse(result.ios_build)
+
+    def test_mixed_known_paths_keep_canonical_classes_instead_of_unknown(self) -> None:
+        result = classify_paths(
+            ["docs/guides/example.md", "packages/core/lib/src/example.dart"]
+        )
+
+        self.assertEqual(result.change_classes, ("docs_content", "package"))
+        self.assertFalse(result.fail_safe)
+        self.assertTrue(result.full_ci)
 
     def test_drift_schema_change_runs_database_critical_matrix(self) -> None:
         result = classify_paths(

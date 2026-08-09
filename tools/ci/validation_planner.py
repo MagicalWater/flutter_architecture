@@ -1,0 +1,321 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
+from typing import Iterable, Sequence
+
+from tools.ci.change_classifier import classify_paths
+
+
+@dataclass(frozen=True)
+class WorkspacePackage:
+    name: str
+    path: str
+    local_dependencies: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ValidationPlan:
+    change_classes: tuple[str, ...]
+    validation_level: str
+    flutter_test_scopes: tuple[str, ...]
+    python_test_scopes: tuple[str, ...]
+    analyze_scopes: tuple[str, ...]
+    docs_check: bool
+    generated_check: bool
+    android_build: bool
+    ios_build: bool
+    full_regression: bool
+    release_full: bool
+    reason: str
+    fail_safe: bool
+
+
+_LEVEL_RANK = {
+    "focused": 0,
+    "affected": 1,
+    "workspace": 2,
+    "full": 3,
+    "release": 4,
+}
+
+
+def _ordered_unique(values: Iterable[str]) -> tuple[str, ...]:
+    return tuple(dict.fromkeys(value for value in values if value))
+
+
+def _read_workspace_paths(root: Path) -> tuple[str, ...]:
+    source = (root / "pubspec.yaml").read_text(encoding="utf-8")
+    paths: list[str] = []
+    in_workspace = False
+    for raw_line in source.splitlines():
+        line = raw_line.rstrip()
+        if line == "workspace:":
+            in_workspace = True
+            continue
+        if in_workspace:
+            if line and not line.startswith(" "):
+                break
+            stripped = line.strip()
+            if stripped.startswith("- "):
+                paths.append(stripped[2:].strip())
+    if not paths:
+        raise ValueError("workspace paths are missing from root pubspec.yaml")
+    return tuple(paths)
+
+
+def _read_package_metadata(root: Path, relative_path: str) -> WorkspacePackage:
+    source = (root / relative_path / "pubspec.yaml").read_text(encoding="utf-8")
+    name = ""
+    dependency_names: list[str] = []
+    section = ""
+    for raw_line in source.splitlines():
+        line = raw_line.rstrip()
+        if line.startswith("name:") and not name:
+            name = line.split(":", 1)[1].strip()
+            continue
+        if line in {"dependencies:", "dev_dependencies:"}:
+            section = line[:-1]
+            continue
+        if line and not line.startswith(" "):
+            section = ""
+            continue
+        if section in {"dependencies", "dev_dependencies"}:
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#") or stripped.startswith("sdk:") or stripped.startswith("path:"):
+                continue
+            if ":" in stripped and not stripped.startswith(("sdk:", "path:")):
+                key = stripped.split(":", 1)[0].strip()
+                if key and not key.startswith("-"):
+                    dependency_names.append(key)
+    if not name:
+        raise ValueError(f"workspace package name missing: {relative_path}")
+    return WorkspacePackage(name, relative_path, _ordered_unique(dependency_names))
+
+
+def load_workspace_packages(repository: Path | str = ".") -> tuple[WorkspacePackage, ...]:
+    root = Path(repository).resolve()
+    packages = tuple(_read_package_metadata(root, path) for path in _read_workspace_paths(root))
+    local_names = {package.name for package in packages}
+    return tuple(
+        WorkspacePackage(
+            package.name,
+            package.path,
+            tuple(dep for dep in package.local_dependencies if dep in local_names),
+        )
+        for package in packages
+    )
+
+
+def reverse_dependency_closure(
+    package_name: str,
+    *,
+    repository: Path | str = ".",
+) -> tuple[WorkspacePackage, ...]:
+    packages = load_workspace_packages(repository)
+    by_name = {package.name: package for package in packages}
+    if package_name not in by_name:
+        raise ValueError(f"unknown workspace package: {package_name}")
+    selected = {package_name}
+    changed = True
+    while changed:
+        changed = False
+        for package in packages:
+            if package.name in selected:
+                continue
+            if any(dependency in selected for dependency in package.local_dependencies):
+                selected.add(package.name)
+                changed = True
+    return tuple(package for package in packages if package.name in selected)
+
+
+def _package_from_path(path: str) -> str | None:
+    parts = PurePosixPath(path.replace("\\", "/")).parts
+    if len(parts) >= 2 and parts[0] == "packages":
+        return parts[1]
+    return None
+
+
+def _feature_from_path(path: str) -> str | None:
+    parts = PurePosixPath(path.replace("\\", "/")).parts
+    prefix = ("apps", "flutter_architecture", "lib", "features")
+    if len(parts) > len(prefix) and parts[: len(prefix)] == prefix:
+        return parts[len(prefix)]
+    return None
+
+
+def _test_scope_for_changed_test(path: str) -> str | None:
+    normalized = path.replace("\\", "/")
+    if normalized.endswith(("_test.dart", ".py")):
+        return normalized
+    return None
+
+
+def _max_level(current: str, candidate: str) -> str:
+    return candidate if _LEVEL_RANK[candidate] > _LEVEL_RANK[current] else current
+
+
+def plan_validation(
+    paths: Sequence[str],
+    *,
+    repository: Path | str = ".",
+    manual: bool = False,
+    invalid_range: bool = False,
+) -> ValidationPlan:
+    classification = classify_paths(paths, manual=manual, invalid_range=invalid_range)
+    classes = classification.change_classes
+
+    if classification.fail_safe or "unknown" in classes:
+        return ValidationPlan(
+            classes,
+            "full",
+            (".",),
+            ("tools",),
+            (".",),
+            True,
+            True,
+            True,
+            True,
+            True,
+            False,
+            classification.reason,
+            True,
+        )
+
+    level = "focused"
+    flutter_scopes: list[str] = []
+    python_scopes: list[str] = []
+    analyze_scopes: list[str] = []
+    docs_check = False
+    generated_check = False
+    android_build = False
+    ios_build = False
+    full_regression = False
+    release_full = False
+    reasons: list[str] = []
+
+    normalized_paths = tuple(path.replace("\\", "/") for path in paths if path.strip())
+
+    for change_class in classes:
+        reasons.append(change_class)
+        if change_class == "docs_content":
+            docs_check = True
+        elif change_class == "governance":
+            docs_check = True
+            python_scopes.append("tools/docs")
+        elif change_class == "tooling":
+            python_scopes.append("tools")
+        elif change_class == "test_only":
+            for path in normalized_paths:
+                scope = _test_scope_for_changed_test(path)
+                if scope:
+                    if scope.endswith(".py"):
+                        python_scopes.append(scope)
+                    else:
+                        flutter_scopes.append(scope)
+        elif change_class == "app_feature":
+            level = _max_level(level, "affected")
+            for feature in filter(None, (_feature_from_path(path) for path in normalized_paths)):
+                flutter_scopes.append(f"apps/flutter_architecture/test/features/{feature}")
+            analyze_scopes.append("apps/flutter_architecture")
+        elif change_class == "app_shared":
+            level = _max_level(level, "workspace")
+            flutter_scopes.append("apps/flutter_architecture/test")
+            analyze_scopes.append("apps/flutter_architecture")
+        elif change_class == "package":
+            level = _max_level(level, "affected")
+            try:
+                package_names = _ordered_unique(
+                    package
+                    for package in (_package_from_path(path) for path in normalized_paths)
+                    if package
+                )
+                for package_name in package_names:
+                    affected = reverse_dependency_closure(package_name, repository=repository)
+                    for package in affected:
+                        flutter_scopes.append(f"{package.path}/test")
+                        analyze_scopes.append(package.path)
+            except (OSError, ValueError):
+                return ValidationPlan(
+                    classes,
+                    "full",
+                    (".",),
+                    ("tools",),
+                    (".",),
+                    True,
+                    True,
+                    True,
+                    True,
+                    True,
+                    False,
+                    "workspace dependency graph parse failed; fail-safe full matrix",
+                    True,
+                )
+        elif change_class == "generated":
+            level = _max_level(level, "workspace")
+            generated_check = True
+            flutter_scopes.append("apps/flutter_architecture/test")
+            analyze_scopes.append("apps/flutter_architecture")
+        elif change_class == "database":
+            level = _max_level(level, "workspace")
+            generated_check = True
+            flutter_scopes.append("apps/flutter_architecture/test")
+            analyze_scopes.append("apps/flutter_architecture")
+            android_build = True
+            ios_build = True
+        elif change_class == "android_native":
+            level = _max_level(level, "workspace")
+            android_build = True
+        elif change_class == "ios_native":
+            level = _max_level(level, "workspace")
+            ios_build = True
+        elif change_class in {"dependency", "validation_engine"}:
+            level = _max_level(level, "full")
+            flutter_scopes[:] = ["."]
+            python_scopes[:] = ["tools"]
+            analyze_scopes[:] = ["."]
+            docs_check = True
+            generated_check = True
+            android_build = True
+            ios_build = True
+            full_regression = True
+        elif change_class == "release":
+            level = "release"
+            flutter_scopes[:] = ["."]
+            python_scopes[:] = ["tools"]
+            analyze_scopes[:] = ["."]
+            docs_check = True
+            generated_check = True
+            android_build = True
+            ios_build = True
+            full_regression = True
+            release_full = True
+
+    if manual:
+        level = "release"
+        flutter_scopes[:] = ["."]
+        python_scopes[:] = ["tools"]
+        analyze_scopes[:] = ["."]
+        docs_check = True
+        generated_check = True
+        android_build = True
+        ios_build = True
+        full_regression = True
+        release_full = True
+        reasons.append("manual full request")
+
+    return ValidationPlan(
+        classes,
+        level,
+        _ordered_unique(flutter_scopes),
+        _ordered_unique(python_scopes),
+        _ordered_unique(analyze_scopes),
+        docs_check,
+        generated_check,
+        android_build,
+        ios_build,
+        full_regression,
+        release_full,
+        ", ".join(reasons) or classification.reason,
+        False,
+    )

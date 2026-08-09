@@ -1,9 +1,14 @@
 from __future__ import annotations
 
-import importlib
 import unittest
+from pathlib import Path
 
 from tools.ci.change_classifier import classify_paths
+from tools.ci.validation_planner import (
+    load_workspace_packages,
+    plan_validation,
+    reverse_dependency_closure,
+)
 
 
 CANONICAL_SCENARIOS = {
@@ -51,28 +56,10 @@ EXPECTED_PLAN_FIELDS = {
 
 
 class ValidationPlannerContractRedTest(unittest.TestCase):
-    def test_validation_planner_contract_is_not_implemented_yet(self) -> None:
-        try:
-            module = importlib.import_module("tools.ci.validation_planner")
-        except ModuleNotFoundError as error:
-            if error.name != "tools.ci.validation_planner":
-                raise
-            self.fail(
-                "Milestone 35 expected RED: tools.ci.validation_planner is missing; "
-                "the deterministic Minimum Sufficient Validation planner has not "
-                "been implemented yet."
-            )
-
-        self.assertTrue(
-            hasattr(module, "plan_validation"),
-            "Milestone 35 expected RED: validation_planner.plan_validation is missing.",
-        )
-        result = module.plan_validation(CANONICAL_SCENARIOS["docs_content"])
+    def test_validation_planner_schema_is_complete(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["docs_content"])
         missing = EXPECTED_PLAN_FIELDS - set(vars(result))
-        self.assertFalse(
-            missing,
-            f"Milestone 35 expected RED: planner schema fields missing: {sorted(missing)}",
-        )
+        self.assertFalse(missing, f"planner schema fields missing: {sorted(missing)}")
 
     def test_current_feature_change_still_over_escalates(self) -> None:
         result = classify_paths(CANONICAL_SCENARIOS["app_feature"])
@@ -87,6 +74,120 @@ class ValidationPlannerContractRedTest(unittest.TestCase):
         self.assertTrue(result.full_ci)
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
+
+
+class ValidationPlannerRoutingTest(unittest.TestCase):
+    def test_docs_content_is_focused_docs_only(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["docs_content"])
+
+        self.assertEqual(result.change_classes, ("docs_content",))
+        self.assertEqual(result.validation_level, "focused")
+        self.assertTrue(result.docs_check)
+        self.assertFalse(result.full_regression)
+        self.assertFalse(result.android_build)
+        self.assertFalse(result.ios_build)
+
+    def test_feature_source_is_affected_without_platform_builds(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["app_feature"])
+
+        self.assertEqual(result.change_classes, ("app_feature",))
+        self.assertEqual(result.validation_level, "affected")
+        self.assertIn(
+            "apps/flutter_architecture/test/features/profile",
+            result.flutter_test_scopes,
+        )
+        self.assertFalse(result.full_regression)
+        self.assertFalse(result.android_build)
+        self.assertFalse(result.ios_build)
+
+    def test_leaf_test_change_runs_only_changed_test(self) -> None:
+        path = CANONICAL_SCENARIOS["test_only"][0]
+        result = plan_validation([path])
+
+        self.assertEqual(result.validation_level, "focused")
+        self.assertEqual(result.flutter_test_scopes, (path,))
+        self.assertFalse(result.full_regression)
+
+    def test_android_native_only_escalates_android(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["android_native"])
+
+        self.assertEqual(result.change_classes, ("android_native",))
+        self.assertTrue(result.android_build)
+        self.assertFalse(result.ios_build)
+        self.assertFalse(result.full_regression)
+
+    def test_ios_native_only_escalates_ios(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["ios_native"])
+
+        self.assertEqual(result.change_classes, ("ios_native",))
+        self.assertFalse(result.android_build)
+        self.assertTrue(result.ios_build)
+        self.assertFalse(result.full_regression)
+
+    def test_unknown_path_fails_safe_to_full(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["unknown"])
+
+        self.assertEqual(result.validation_level, "full")
+        self.assertTrue(result.full_regression)
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+        self.assertTrue(result.fail_safe)
+
+    def test_release_requires_full_and_both_platforms(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["release"])
+
+        self.assertEqual(result.validation_level, "release")
+        self.assertTrue(result.full_regression)
+        self.assertTrue(result.release_full)
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
+    def test_workspace_metadata_loads_all_members(self) -> None:
+        packages = load_workspace_packages(Path("."))
+
+        self.assertEqual(
+            {package.name for package in packages},
+            {"flutter_architecture", "api_client", "auth", "core", "design_system"},
+        )
+
+    def test_design_system_reverse_dependency_reaches_app_only(self) -> None:
+        affected = reverse_dependency_closure("design_system", repository=Path("."))
+
+        self.assertEqual(
+            {package.name for package in affected},
+            {"design_system", "flutter_architecture"},
+        )
+
+    def test_leaf_package_plan_uses_real_reverse_dependents(self) -> None:
+        result = plan_validation(
+            ["packages/design_system/lib/src/theme/app_theme.dart"],
+            repository=Path("."),
+        )
+
+        self.assertEqual(result.validation_level, "affected")
+        self.assertEqual(
+            set(result.flutter_test_scopes),
+            {"packages/design_system/test", "apps/flutter_architecture/test"},
+        )
+        self.assertFalse(result.android_build)
+        self.assertFalse(result.ios_build)
+
+    def test_validation_engine_change_is_full_fail_safe_verification(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["validation_engine"])
+
+        self.assertEqual(result.validation_level, "full")
+        self.assertTrue(result.full_regression)
+        self.assertTrue(result.generated_check)
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
+    def test_mixed_docs_and_package_change_uses_higher_risk_scope(self) -> None:
+        result = plan_validation(CANONICAL_SCENARIOS["mixed"])
+
+        self.assertEqual(result.change_classes, ("docs_content", "package"))
+        self.assertEqual(result.validation_level, "affected")
+        self.assertTrue(result.docs_check)
+        self.assertFalse(result.full_regression)
 
 
 if __name__ == "__main__":

@@ -93,6 +93,22 @@ class ValidationPlannerRoutingTest(unittest.TestCase):
         self.assertFalse(result.android_build)
         self.assertFalse(result.ios_build)
 
+    def test_repository_skill_change_runs_focused_governance_contracts(self) -> None:
+        result = plan_validation(
+            [".agents/skills/implementing-pencil-flutter-design/SKILL.md"]
+        )
+
+        self.assertEqual(result.change_classes, ("governance",))
+        self.assertEqual(result.validation_level, "focused")
+        self.assertTrue(result.docs_check)
+        self.assertEqual(result.python_test_scopes, ("tools/docs",))
+        self.assertEqual(result.flutter_test_scopes, ())
+        self.assertFalse(result.generated_check)
+        self.assertFalse(result.android_build)
+        self.assertFalse(result.ios_build)
+        self.assertFalse(result.full_regression)
+        self.assertFalse(result.fail_safe)
+
     def test_feature_source_is_affected_without_platform_builds(self) -> None:
         result = plan_validation(CANONICAL_SCENARIOS["app_feature"])
 

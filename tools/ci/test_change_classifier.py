@@ -55,6 +55,63 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
         self.assertTrue(result.android_build)
         self.assertTrue(result.ios_build)
 
+    def test_repository_authored_skill_is_governance(self) -> None:
+        result = classify_paths(
+            [".agents/skills/implementing-pencil-flutter-design/SKILL.md"]
+        )
+
+        self.assertEqual(result.change_classes, ("governance",))
+        self.assertFalse(result.fail_safe)
+
+    def test_repository_authored_skill_reference_is_governance(self) -> None:
+        result = classify_paths(
+            [
+                ".agents/skills/implementing-pencil-flutter-design/"
+                "references/visual-validation.md"
+            ]
+        )
+
+        self.assertEqual(result.change_classes, ("governance",))
+        self.assertFalse(result.fail_safe)
+
+    def test_third_party_locked_skill_is_governance(self) -> None:
+        result = classify_paths([".agents/skills/brandkit/SKILL.md"])
+
+        self.assertEqual(result.change_classes, ("governance",))
+        self.assertFalse(result.fail_safe)
+
+    def test_skill_lock_is_governance_without_fail_safe(self) -> None:
+        result = classify_paths(["skills-lock.json"])
+
+        self.assertEqual(result.change_classes, ("governance",))
+        self.assertFalse(result.fail_safe)
+
+    def test_vendored_skill_provenance_is_governance_without_fail_safe(self) -> None:
+        result = classify_paths(["third_party/skills/taste-skill/LICENSE"])
+
+        self.assertEqual(result.change_classes, ("governance",))
+        self.assertFalse(result.fail_safe)
+
+    def test_skill_and_ordinary_docs_keep_deterministic_union(self) -> None:
+        result = classify_paths(
+            [
+                ".agents/skills/implementing-pencil-flutter-design/SKILL.md",
+                "docs/guides/pencil_to_flutter_workflow.md",
+            ]
+        )
+
+        self.assertEqual(result.change_classes, ("docs_content", "governance"))
+        self.assertFalse(result.fail_safe)
+
+    def test_unmanaged_agent_runtime_path_remains_unknown(self) -> None:
+        result = classify_paths([".agent-runtime/new-policy.bin"])
+
+        self.assertEqual(result.change_classes, ("unknown",))
+        self.assertTrue(result.fail_safe)
+        self.assertTrue(result.full_ci)
+        self.assertTrue(result.android_build)
+        self.assertTrue(result.ios_build)
+
     def test_dart_source_runs_full_ci_and_both_platform_builds(self) -> None:
         result = classify_paths(
             ["apps/flutter_architecture/lib/features/example/example.dart"]

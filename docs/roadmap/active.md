@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.1
 
 ```txt
 Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Task 34-3 waiting — external fresh-chat behavioral validation
+State: Task 34-3 completed — Task 34-4 active
 Template Baseline: 1.15.1
 ```
 
@@ -41,8 +41,11 @@ Design Task validation PASS
 → Implementation Plan已於2026-08-09取得使用者明確核准
 → Task 34-1 Representation Contract RED：completed
 → Task 34-2 Asset / Typography Mapping GREEN：completed
-→ Task 34-3 Behavioral Pressure Scenarios：WAITING（external fresh-chat behavioral validation）
+→ Task 34-3 Behavioral Pressure Scenarios：COMPLETED
 → Codex automated harness 401只視為optional harness failure
-→ 使用者開啟非本Flutter Project的新ChatGPT對話，貼fixed validation prompt並回傳actual response
-→ Task 34-3通過前不得開始34-4／34-5
+→ External fresh-chat RED已完成：PTF-13～PTF-18全數屬already-safe baseline，未捏造RED failure
+→ External fresh-chat DISCOVERY已完成：6/6 PASS，自行發現governing-template-development → implementing-pencil-flutter-design → asset-and-typography-mapping.md
+→ 發現P2：pencil_to_flutter_workflow.md last_reviewed_baseline仍為1.14.0，defer至34-4同步
+→ External fresh-chat EXPLICIT GREEN已完成：6/6 PASS，無P0/P1 loophole
+→ Task 34-4 Human Workflow and Skill Registry Synchronization：ACTIVE
 ```

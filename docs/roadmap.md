@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-None
-State: No active milestone
+Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
+State: Read-only admission confirmed / Requirement Decision pending
 Template Baseline: 1.15.2
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 34 已完成或已有明確 disposition。Milestone 34已發布Template Baseline 1.15.2並完成published-main post-release validation。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 34 已完成或已有明確 disposition。Milestone 35已完成read-only admission，Design／Plan／implementation尚未開始；current admission evidence由`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`擁有。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

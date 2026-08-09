@@ -11,46 +11,40 @@ last_reviewed_baseline: 1.15.2
 目前active milestone：
 
 ```txt
-None
-State: No active milestone
+Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
+State: Read-only admission confirmed / Requirement Decision pending
 Template Baseline: 1.15.2
 ```
 
 ## Current Scope
 
-補強既有`implementing-pencil-flutter-design` route，在Pencil extraction與Flutter authority mapping之間加入asset／vector／typography representation classification與provenance gate。此階段不新增獨立Skill、不修改Flutter production UI、不改ADR-028 stable authority。
+審查並修正repository test execution cost與change-aware validation routing drift。Admission已確認目前問題不是單純tests過多，而是classifier／tier machine model／Guide wording造成over-validation，並由雙層Task的多個verification points放大成本。
 
-- Accepted Design：`docs/superpowers/specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`
-- Design review：`docs/audits/milestone_34/34-0_asset_typography_mapping_design_review.md`
-- Accepted Plan：`docs/superpowers/plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`
-- Plan review：`docs/audits/milestone_34/34-p_implementation_plan_review.md`
+- Admission audit：`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`
+- Requirement Decision：Pending
+- Design：Not started
+- Implementation Plan：Not started
+- Worktree：Not created
+- Production / CI mutation：Not started
 
 ## Latest Completed Milestone
 
-Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation已完成原始workflow foundation與Corrective Single-Renderer Responsive Fidelity Recovery，Template Baseline 1.15.1已發布並完成post-release validation。
+Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance已發布Template Baseline 1.15.2並完成post-release validation。
 
-- Corrective final review：`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md`
-- Corrective post-release validation：`docs/audits/milestone_33/33-c6_post_release_validation.md`
-- Historical pre-corrective 1.15.0 post-release validation：`docs/audits/milestone_33/33-13_post_release_validation.md`
+- Final review：`docs/audits/milestone_34/34-5_holistic_final_review.md`
+- Post-release validation：`docs/audits/milestone_34/34-6_post_release_validation.md`
 
 ## Current Next Action
 
 ```txt
-Design Task validation PASS
-→ 使用者已明確核准書面Design
-→ Implementation Plan已於2026-08-09取得使用者明確核准
-→ Task 34-1 Representation Contract RED：completed
-→ Task 34-2 Asset / Typography Mapping GREEN：completed
-→ Task 34-3 Behavioral Pressure Scenarios：COMPLETED
-→ Codex automated harness 401只視為optional harness failure
-→ External fresh-chat RED已完成：PTF-13～PTF-18全數屬already-safe baseline，未捏造RED failure
-→ External fresh-chat DISCOVERY已完成：6/6 PASS，自行發現governing-template-development → implementing-pencil-flutter-design → asset-and-typography-mapping.md
-→ 發現P2：pencil_to_flutter_workflow.md last_reviewed_baseline仍為1.14.0，defer至34-4同步
-→ External fresh-chat EXPLICIT GREEN已完成：6/6 PASS，無P0/P1 loophole
-→ Task 34-4 Human Workflow and Skill Registry Synchronization：COMPLETED
-→ Task 34-5 Holistic Final Review：PASS
-→ Template Baseline 1.15.2：published to origin/main
-→ Published-main focused regression：PASS
-→ Milestone 34 post-release validation：PASS
-→ Milestone 34：Completed / Archived
+Milestone 35 read-only admission：CONFIRMED
+→ Problem：over-validation / test execution cost drift
+→ Primary findings：classifier granularity、tier model drift、Guide wording drift
+→ Clean Architecture：test-surface contributor，不是主要root cause
+→ Two-layer Task governance：cost multiplier，不是主要root cause
+→ 下一步：fresh conversation重新確認repository baseline
+→ governing-template-development Requirement Decision
+→ Design Spec + Design雙層Task review
+→ 使用者核准後才可建立Implementation Plan
+→ Design／Plan／worktree／implementation目前均未開始
 ```

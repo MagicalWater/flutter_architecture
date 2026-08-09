@@ -55,6 +55,10 @@ Final / Holistic Review
 - [`milestone_34/34-4_workflow_documentation_review.md`](milestone_34/34-4_workflow_documentation_review.md)：Task 34-4 human workflow／Skill registry同步、Guide baseline metadata closure與authority duplication review。
 - [`milestone_34/34-5_holistic_final_review.md`](milestone_34/34-5_holistic_final_review.md)：Tasks 34-1～34-4 cross-Task final review、Design acceptance coverage、fresh behavioral evidence、affected regression與1.15.2 release disposition；正式release仍待使用者授權。
 - [`milestone_34/34-6_post_release_validation.md`](milestone_34/34-6_post_release_validation.md)：Template Baseline 1.15.2 published-main focused regression、main/origin identity reconciliation與Milestone 34 formal closure。
+
+### Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
+
+- [`milestone_35/35-0_test_execution_cost_admission_audit.md`](milestone_35/35-0_test_execution_cost_admission_audit.md)：Template Baseline 1.15.2 read-only test-cost admission；量測current inventory/runtime，確認change-classifier粒度、testing-tier machine model、Guide wording與雙層Task validation amplification問題；Design／Plan尚未開始。
 - [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation

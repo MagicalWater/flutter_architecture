@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.15.2
 ```txt
 Template Baseline: 1.15.2
 Phase 1 / MVP: Completed
-Current active milestone: None
-Current phase: Maintenance / awaiting next Requirement Decision
+Current active milestone: Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
+Current phase: Read-only admission confirmed / Requirement Decision pending
 Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -352,14 +352,16 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: None
-Current phase: Maintenance / awaiting next Requirement Decision
+Current active milestone: Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
+Current phase: Read-only admission confirmed / Requirement Decision pending
 Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
-Maintenance mode: Active
-Open Audit remediation findings: None
+Maintenance mode: Suspended while Milestone 35 governance corrective is active
+Open Audit remediation findings: Milestone 35 admission P1/P2 findings recorded; remediation not started before Design
 ```
 
 Milestone 34已在既有Pencil-to-Flutter route加入representation classification／asset-font provenance gate，Template Baseline 1.15.2 publication與post-release validation均PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`，Skill behavioral validation入口為`docs/guides/skill_behavioral_validation.md`。Final closure evidence由`docs/audits/milestone_34/34-6_post_release_validation.md`路由。
+
+Milestone 35 pre-Design admission已確認test execution over-validation風險：current test inventory為163 files／27,781 LOC／961 static cases；Windows fresh full Flutter regression約34.42秒，單一6-case Widget test約14.02秒。Primary corrective findings為change classifier粒度過粗、testing tier machine model與governance taxonomy不一致、AGENTS／Feature Guide存在unconditional full-test wording；雙層Task治理只放大錯誤validation selection，並非其root cause。完整evidence與Design guardrails見`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

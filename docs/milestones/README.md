@@ -31,11 +31,19 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-None
+Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
 Template Baseline: 1.15.2
 ```
 
-目前active authority：`docs/roadmap/active.md`；目前無active milestone。
+目前active authority：`docs/roadmap/active.md`；Milestone 35只完成read-only admission，Requirement Decision／Design／Plan尚未開始。
+
+### Milestone 35 active routing
+
+- Admission audit：`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`
+- Requirement Decision：Pending
+- Design：Not started
+- Implementation Plan：Not started
+- Worktree／implementation：Not started
 
 ### Milestone 34 release routing
 

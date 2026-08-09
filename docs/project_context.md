@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.15.1
+last_reviewed_baseline: 1.15.2
 ---
 
 # Project Context
@@ -29,9 +29,9 @@ last_reviewed_baseline: 1.15.1
 ```txt
 Template Baseline: 1.15.2
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-Current phase: 1.15.2 release authorized — integration/publication pending
-Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation — Corrective 1.15.1
+Current active milestone: None
+Current phase: Maintenance / awaiting next Requirement Decision
+Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -345,21 +345,21 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.15.1。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.15.2。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-Current phase: 1.15.2 release authorized — integration/publication pending
-Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation — Corrective 1.15.1
-Maintenance mode: Suspended while Milestone 34 implementation is active
+Current active milestone: None
+Current phase: Maintenance / awaiting next Requirement Decision
+Latest completed initiative: Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance — 1.15.2
+Maintenance mode: Active
 Open Audit remediation findings: None
 ```
 
-Milestone 33原1.15.0 visual closure曾因parallel whole-screen renderer P1被Corrective supersede；Corrective C1／CP2／C2／C3／C4／C5、Template Baseline 1.15.1 publication與post-release validation現已全部PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`。Corrective final evidence由`docs/audits/milestone_33/33-c6_post_release_validation.md`路由。
+Milestone 34已在既有Pencil-to-Flutter route加入representation classification／asset-font provenance gate，Template Baseline 1.15.2 publication與post-release validation均PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`，Skill behavioral validation入口為`docs/guides/skill_behavioral_validation.md`。Final closure evidence由`docs/audits/milestone_34/34-6_post_release_validation.md`路由。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 

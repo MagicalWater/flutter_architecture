@@ -3,7 +3,7 @@ document_type: active-milestone
 status: accepted
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.15.1
+last_reviewed_baseline: 1.15.2
 ---
 
 # Active Milestone
@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.1
 
 ```txt
 None
-State: Milestone 34 release metadata committed / integration-publication pending
+State: No active milestone
 Template Baseline: 1.15.2
 ```
 
@@ -49,8 +49,8 @@ Design Task validation PASS
 → External fresh-chat EXPLICIT GREEN已完成：6/6 PASS，無P0/P1 loophole
 → Task 34-4 Human Workflow and Skill Registry Synchronization：COMPLETED
 → Task 34-5 Holistic Final Review：PASS
-→ 使用者已核准Template Baseline 1.15.2 release、merge與push
-→ VERSION / CHANGELOG已切換1.15.2
-→ 下一步：merge main、push、published-main post-release validation
-→ Post-release evidence通過後才formal closure
+→ Template Baseline 1.15.2：published to origin/main
+→ Published-main focused regression：PASS
+→ Milestone 34 post-release validation：PASS
+→ Milestone 34：Completed / Archived
 ```

@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.15.1
+last_reviewed_baseline: 1.15.2
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.15.1
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.15.1
+Template Baseline: 1.15.2
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Release 1.15.2 authorized / integration-publication pending
+None
+State: No active milestone
 Template Baseline: 1.15.2
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 33 已完成或已有明確 disposition。Milestone 34 implementation與Holistic Final Review已PASS，Template Baseline 1.15.2 release已取得使用者授權；published-main post-release validation完成後轉closed routing。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 34 已完成或已有明確 disposition。Milestone 34已發布Template Baseline 1.15.2並完成published-main post-release validation。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

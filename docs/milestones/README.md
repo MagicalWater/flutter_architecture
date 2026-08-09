@@ -31,11 +31,11 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-Milestone 34 — release 1.15.2 authorized / publication pending
+None
 Template Baseline: 1.15.2
 ```
 
-目前active authority：`docs/roadmap/active.md`；Milestone 34 implementation已PASS，正進行1.15.2 integration／publication與post-release closure。
+目前active authority：`docs/roadmap/active.md`；目前無active milestone。
 
 ### Milestone 34 release routing
 
@@ -44,7 +44,8 @@ Template Baseline: 1.15.2
 - Behavioral pressure evidence：`docs/audits/milestone_34/34-3_asset_typography_pressure_evidence.md`
 - Workflow documentation review：`docs/audits/milestone_34/34-4_workflow_documentation_review.md`
 - Holistic Final Review：`docs/audits/milestone_34/34-5_holistic_final_review.md`
-- Release：Template Baseline `1.15.2`，2026-08-09使用者已授權；published-main post-release validation pending。
+- Post-release validation：`docs/audits/milestone_34/34-6_post_release_validation.md`
+- Release：Template Baseline `1.15.2`已發布並完成post-release closure。
 
 ### Milestone 33 closed routing
 
@@ -99,6 +100,7 @@ Template Baseline: 1.15.2
 | 31 | Completed / Archived | Workflow Governance Skill、approved Design Spec、approved Recovery Plan、`docs/audits/milestone_31/31-r9_implementation_holistic_review.md`、`docs/audits/milestone_31/31-r10_local_final_review.md`、`docs/audits/milestone_31/31-r11_post_release_validation.md` |
 | 32 | Completed / Archived | accepted Design／Plan、`docs/audits/milestone_32/32-11_final_review.md`、`docs/audits/milestone_32/32-12_post_release_validation.md` |
 | 33 | Completed / Archived | ADR-028、accepted Design／Plan、Corrective C1～C6、`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md`、`docs/audits/milestone_33/33-c6_post_release_validation.md`、`docs/guides/pencil_to_flutter_workflow.md` |
+| 34 | Completed / Archived | accepted Design／Plan、Tasks 34-1～34-4、`docs/audits/milestone_34/34-5_holistic_final_review.md`、`docs/audits/milestone_34/34-6_post_release_validation.md`、representation/provenance Skill contract |
 
 ## Milestone 32 closed routing
 

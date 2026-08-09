@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.15.1
+last_reviewed_baseline: 1.15.2
 ---
 
 # Audits and Review Evidence
@@ -54,6 +54,7 @@ Final / Holistic Review
 - [`milestone_34/34-3_asset_typography_pressure_evidence.md`](milestone_34/34-3_asset_typography_pressure_evidence.md)：Task 34-3 behavioral validation已完成；external RED六題皆為already-safe baseline，DISCOVERY與EXPLICIT GREEN均6/6 PASS，無P0/P1 loophole；Guide baseline metadata P2轉交34-4。
 - [`milestone_34/34-4_workflow_documentation_review.md`](milestone_34/34-4_workflow_documentation_review.md)：Task 34-4 human workflow／Skill registry同步、Guide baseline metadata closure與authority duplication review。
 - [`milestone_34/34-5_holistic_final_review.md`](milestone_34/34-5_holistic_final_review.md)：Tasks 34-1～34-4 cross-Task final review、Design acceptance coverage、fresh behavioral evidence、affected regression與1.15.2 release disposition；正式release仍待使用者授權。
+- [`milestone_34/34-6_post_release_validation.md`](milestone_34/34-6_post_release_validation.md)：Template Baseline 1.15.2 published-main focused regression、main/origin identity reconciliation與Milestone 34 formal closure。
 - [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation

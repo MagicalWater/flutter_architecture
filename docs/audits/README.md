@@ -61,7 +61,8 @@ Final / Holistic Review
 - [`milestone_35/35-0_test_execution_cost_admission_audit.md`](milestone_35/35-0_test_execution_cost_admission_audit.md)：Template Baseline 1.15.2 read-only test-cost admission；量測current inventory/runtime，確認change-classifier粒度、testing-tier machine model、Guide wording與雙層Task validation amplification問題；Design／Plan尚未開始。
 - [`milestone_35/35-r_requirement_decision.md`](milestone_35/35-r_requirement_decision.md)：fresh baseline reconciliation後的formal Requirement Decision；分類為Level 4 repository-wide governance corrective，Design／Plan／ADR／managed implementation worktree／release／post-release均required，且明確禁止把Level 4誤解為每個中間Task無條件full regression。
 - [`milestone_35/35-d_corrective_design_review.md`](milestone_35/35-d_corrective_design_review.md)：accepted Corrective Design的focused findings、fresh re-review、whole-Design coverage、authority check與使用者Design approval closure evidence。
-- [`milestone_35/35-p_implementation_plan_review.md`](milestone_35/35-p_implementation_plan_review.md)：proposed Implementation Plan的Task ordering、RED／GREEN boundary、inventory history preservation、evidence reuse anti-overdesign、release/post-release separation與whole-Plan review。
+- [`milestone_35/35-p_implementation_plan_review.md`](milestone_35/35-p_implementation_plan_review.md)：accepted Implementation Plan的Task ordering、RED／GREEN boundary、inventory history preservation、evidence reuse anti-overdesign、release/post-release separation與whole-Plan review。
+- [`milestone_35/35-execution-admission.md`](milestone_35/35-execution-admission.md)：accepted Design／Plan之後的managed worktree、branch、base SHA與implementation boundary admission；通過後才允許Task 35-1開始。
 - [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation

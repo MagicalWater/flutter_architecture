@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.2
 
 ```txt
 Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-State: Design accepted / Implementation Plan accepted / execution admission pending
+State: Design accepted / Implementation Plan accepted / execution admitted / Task 35-1 active
 Template Baseline: 1.15.2
 ```
 
@@ -24,8 +24,8 @@ Template Baseline: 1.15.2
 - Requirement Decision：Accepted — `docs/audits/milestone_35/35-r_requirement_decision.md`
 - Design：Accepted — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
 - Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`
-- Worktree：Not created
-- Production / CI mutation：Not started
+- Worktree：Created — `C:\Users\crazy\.devspace\worktrees\flutter_architecture-65b293eb` / `milestone-35-validation-governance`
+- Production / CI mutation：Task 35-1 RED starting
 
 ## Latest Completed Milestone
 
@@ -48,6 +48,6 @@ Milestone 35 read-only admission：CONFIRMED
 → 使用者Design approval：APPROVED
 → Implementation Plan + Plan雙層Task review：PASS / ACCEPTED
 → 使用者Implementation Plan approval：APPROVED
-→ 下一步：建立managed worktree並完成execution admission
-→ Worktree／implementation目前均未開始
+→ Managed worktree / execution admission：PASS
+→ 下一步：Task 35-1 Validation Planner Contract RED
 ```

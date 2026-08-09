@@ -62,7 +62,9 @@ def _is_docs_path(path: str) -> bool:
 def _is_governance_path(path: str) -> bool:
     return (
         path == "AGENTS.md"
-        or path.startswith(".agents/skills/governing-template-development/")
+        or path.startswith(".agents/skills/")
+        or path == "skills-lock.json"
+        or path.startswith("third_party/skills/")
         or path in {
             "docs/governance/development_workflow.md",
             "docs/guides/testing_governance.md",

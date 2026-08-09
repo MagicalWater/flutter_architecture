@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Task 34-3 blocked — independent agent runtime authentication
+State: Task 34-3 waiting — external fresh-chat behavioral validation
 Template Baseline: 1.15.1
 ```
 

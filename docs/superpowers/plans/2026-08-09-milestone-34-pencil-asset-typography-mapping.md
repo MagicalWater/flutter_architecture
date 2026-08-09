@@ -205,7 +205,19 @@ last_reviewed_baseline: 1.15.1
 
 - [ ] **Step 2: 執行fresh behavioral validation**
 
-  優先沿用Milestone 33相同的independent agent runtime protocol：
+  Behavioral validation要求的是**獨立且未承接目前工作對話上下文的fresh agent context**，不綁定單一產品或CLI。Codex CLI只作optional automated harness；若不可用，可使用獨立ChatGPT新對話、Claude Code fresh session或其他能讀repository authority且能保存actual response的approved isolated-agent harness。
+
+  Fresh context必須符合：
+
+  ```txt
+  不屬於目前Flutter專案Project／工作對話
+  不帶入本對話中的Milestone 34口頭上下文
+  可讀managed worktree中的AGENTS.md與repository-local Skills
+  actual prompt與actual response可完整保存
+  runtime／model identity可取得時必須記錄
+  ```
+
+  Protocol維持：
 
   ```txt
   RED: repository外、忽略user config，不載入本repo Skills
@@ -216,9 +228,9 @@ last_reviewed_baseline: 1.15.1
 
   每個case記錄actual response與PASS/FAIL，不得以static text存在代替behavioral evidence。
 
-- [ ] **Step 3: Runtime不可提供真正獨立context時fail closed**
+- [ ] **Step 3: 無任何approved isolated-agent harness時fail closed**
 
-  若目前agent runtime無法建立獨立fresh context，`34-3_asset_typography_pressure_evidence.md`必須明確標記blocked，Task 34-3不得completion commit，也不得將Skill registry升級為fully validated。這屬external/runtime blocker，依中央治理停止。
+  若所有可用harness都無法建立真正獨立fresh context，`34-3_asset_typography_pressure_evidence.md`必須明確標記blocked，Task 34-3不得completion commit，也不得將Skill registry升級為fully validated。單一Codex CLI authentication failure只代表該automated harness不可用；若使用者可提供符合protocol的獨立fresh ChatGPT對話，Task可轉為`WAITING FOR EXTERNAL FRESH-CHAT VALIDATION`並以該回覆繼續。
 
 - [ ] **Step 4: Fresh policy validation**
 

@@ -12,16 +12,37 @@ last_reviewed_baseline: 1.15.1
 
 ```txt
 Task 34-3: BLOCKED
-Reason: fresh independent agent provider authentication unavailable
+Reason: automated Codex harness authentication unavailable; external fresh-chat validation pending
 Completion commit: FORBIDDEN while blocked
 Task 34-4 / 34-5: NOT STARTED
 ```
 
 Static PTF-13～PTF-18 contract已加入domain Skill reference，但依`writing-skills`與accepted Implementation Plan，static text存在**不等於behavioral GREEN**。
 
-## Required Runtime Protocol
+## Required Isolated-Agent Protocol
 
-沿用Milestone 33 protocol：
+2026-08-09使用者核准將harness改為provider-neutral。真正的requirement是「fresh independent agent context」，不是Codex CLI本身。
+
+Accepted harness例如：
+
+```txt
+Codex CLI ephemeral session
+Claude Code fresh session
+獨立、非目前Flutter Project的ChatGPT新對話
+其他可讀repository authority且能保存actual prompt/response的isolated agent runtime
+```
+
+每個harness都必須符合：
+
+```txt
+no current-task conversational memory
+repository-readable
+actual prompt retained
+actual response retained
+runtime/model identity recorded when available
+```
+
+Behavioral protocol維持：
 
 ```txt
 RED: repository外，ignore user config，不載入本repository Skills
@@ -30,7 +51,7 @@ EXPLICIT GREEN: managed worktree root，明確指定implementing-pencil-flutter-
 REFACTOR: 若GREEN仍出現shortcut rationalization，修Skill wording後fresh rerun affected cases
 ```
 
-每個stage都必須是fresh／ephemeral／read-only context，且必須取得actual model response。
+每個stage都必須是fresh context，且必須取得actual model response。對ChatGPT manual fresh-chat route，使用者需開啟不屬於目前Flutter專案Project的新對話，貼上固定Prompt，不附加本對話背景，再把完整回覆帶回本對話審查。
 
 ## Harness Admission
 
@@ -87,14 +108,22 @@ Expected behavior與Milestone 34 accepted Design一致，但目前只屬static b
 
 ## Finding
 
-### F-34-3-01 — Independent agent runtime authentication unavailable
+### F-34-3-01 — Automated Codex harness authentication unavailable
 
-- Severity：P1 / external runtime blocker。
-- Status：Blocked。
+- Severity：P2 harness failure；若沒有其他isolated-agent harness才升級為P1 external blocker。
+- Status：Superseded as sole blocker by approved fresh-chat route。
 - Finding：Codex CLI可啟動ephemeral read-only harness，但OpenAI provider未提供有效authentication，因此fresh context無法產生模型response。
-- Impact：不能誠實完成RED／DISCOVERY／EXPLICIT GREEN／REFACTOR。Task 34-3不得completion commit，Skill registry不得宣稱Milestone 34 behavioral validation完成。
-- Required recovery：恢復任一符合Plan要求的fresh independent agent runtime authentication後，重新從probe開始，再依序執行PTF-13～PTF-18 RED／DISCOVERY／EXPLICIT GREEN；若出現shortcut finding，修正後執行REFACTOR rerun。
+- Impact：Codex automated path不可用，但這不等於behavioral validation本身不可執行。
+- Required recovery：優先使用已核准的external fresh-chat route；若使用者無法提供fresh chat，再恢復任一其他isolated-agent runtime。
 - Scope guard：不以目前ChatGPT對話的自我審查、static text assertion或mechanical policy tests替代independent behavioral evidence。
+
+### F-34-3-02 — External fresh-chat behavioral evidence pending
+
+- Severity：P1 execution dependency。
+- Status：Waiting for external validation。
+- Finding：PTF-13～PTF-18仍缺actual fresh-agent response。
+- Recovery：由使用者開啟**不屬於目前Flutter專案Project**的新ChatGPT對話，貼上repository提供的fixed validation prompt；回覆帶回後由本Task逐case判定PASS／FAIL。
+- Completion gate：actual fresh-chat evidence未回收前，Task 34-3仍不得completion commit。
 
 ## Mechanical Validation While Blocked
 
@@ -113,5 +142,5 @@ git diff --check
 
 Open P0：0。
 
-Open P1 without disposition：1（F-34-3-01，blocked by external runtime authentication）。
+Open P1 without disposition：1（F-34-3-02，waiting for external fresh-chat validation）。
 

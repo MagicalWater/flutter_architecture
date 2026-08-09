@@ -125,7 +125,7 @@ Audit 文件保存當時的 review 與 evidence，不取代 current snapshot 或
 
 `.pen`只透過Pencil MCP讀取或修改；external absolute path、PNG或historical Flutter screenshot不得取代repository-local source authority。
 
-可直接重用的人類操作順序、third-party Skill pin／discovery、Pencil admission、Flutter mapping、visual acceptance與copyable prompt見[`docs/guides/pencil_to_flutter_workflow.md`](guides/pencil_to_flutter_workflow.md)。該Guide不取代ADR-028或domain Skill。
+可直接重用的人類操作順序、third-party Skill pin／discovery、Pencil admission、Flutter mapping、visual acceptance與copyable prompt見[`docs/guides/pencil_to_flutter_workflow.md`](guides/pencil_to_flutter_workflow.md)。Skill需要fresh behavioral pressure evidence而automated harness不可用時，使用[`docs/guides/skill_behavioral_validation.md`](guides/skill_behavioral_validation.md)的provider-neutral fresh-chat protocol。這些Guide都不取代ADR、accepted artifacts或domain Skill。
 
 ### Release task
 
@@ -157,7 +157,7 @@ Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆
 - `docs/governance/development_workflow.md`：需求分類、Superpowers、雙層Task、Skill registry與repository-local workflow／feature shortcut的治理總覽。
 - `docs/design_sources/README.md`：Repository-local design source與external admission boundary。
 - `docs/visual_authority/README.md`：Visual manifest contract、source ranking、hash與canonical viewport routing。
-- `docs/guides/`：可重複使用的操作指南；AI Agent日常入口與可複製Prompt請讀`docs/guides/agent_assisted_development_quick_start.md`，accepted `.pen`到Flutter請讀`docs/guides/pencil_to_flutter_workflow.md`，CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
+- `docs/guides/`：可重複使用的操作指南；AI Agent日常入口與可複製Prompt請讀`docs/guides/agent_assisted_development_quick_start.md`，accepted `.pen`到Flutter請讀`docs/guides/pencil_to_flutter_workflow.md`，fresh isolated-agent Skill behavioral validation請讀`docs/guides/skill_behavioral_validation.md`，CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
 - `docs/mistakes/`：已知反模式與錯誤案例。
 - `docs/evolution/`：架構演進知識入口。
 

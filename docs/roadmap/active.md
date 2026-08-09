@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.1
 
 ```txt
 Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Task 34-3 blocked — independent agent runtime authentication
+State: Task 34-3 waiting — external fresh-chat behavioral validation
 Template Baseline: 1.15.1
 ```
 
@@ -41,7 +41,8 @@ Design Task validation PASS
 → Implementation Plan已於2026-08-09取得使用者明確核准
 → Task 34-1 Representation Contract RED：completed
 → Task 34-2 Asset / Typography Mapping GREEN：completed
-→ Task 34-3 Behavioral Pressure Scenarios：BLOCKED（fresh independent agent provider 401 Unauthorized）
-→ 恢復independent runtime authentication後fresh執行PTF-13～PTF-18 behavioral validation
+→ Task 34-3 Behavioral Pressure Scenarios：WAITING（external fresh-chat behavioral validation）
+→ Codex automated harness 401只視為optional harness failure
+→ 使用者開啟非本Flutter Project的新ChatGPT對話，貼fixed validation prompt並回傳actual response
 → Task 34-3通過前不得開始34-4／34-5
 ```

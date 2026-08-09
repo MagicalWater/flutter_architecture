@@ -54,8 +54,14 @@ Result：PASS。
 
 - Severity：P1 if omitted。
 - Finding：writing-skills要求真正的RED／GREEN behavioral pressure evidence，但目前ChatGPT session不等於fresh independent context，不能只靠本對話自我宣稱通過。
-- Resolution：Task 34-3明確要求沿用Milestone 33 independent runtime protocol；若runtime無法提供真正獨立context，必須blocked並停止，不能completion commit或升級validation status。
+- Resolution：2026-08-09使用者核准Plan amendment：Task 34-3要求的是provider-neutral isolated-agent protocol，不再把Codex CLI視為mandatory harness。Codex CLI可作optional automated harness；若其authentication失敗，可由使用者開啟不屬於目前Flutter Project的新ChatGPT對話，讓fresh agent只依repository authority回答固定pressure prompt，再把actual response帶回作external behavioral evidence。只有所有approved isolated-agent harness都不可用時才保持blocked。
 - Fresh re-review：PASS。
+
+### Plan Amendment — Provider-neutral Fresh-Chat Behavioral Validation
+
+2026-08-09使用者明確核准以獨立新對話取代Codex CLI硬依賴。此amendment不改變PTF-13～PTF-18 success criteria、不降低fresh-context isolation，也不允許目前工作對話自我驗證；只把harness由implementation detail改為provider-neutral contract。
+
+Result：PASS。Plan維持`accepted`，不需重開Design或Plan approval gate。
 
 ### F-34-P-02 — 不應因Skill-only變更跑無關Flutter test地獄
 

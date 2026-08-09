@@ -87,9 +87,11 @@ class IosWorkflowContractTest(unittest.TestCase):
 
     def test_contract_is_enforced_by_repository_quality_gate(self) -> None:
         quality_text = QUALITY_WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("python3 -m unittest", quality_text)
-        self.assertIn("tools.ci.test_ios_workflow_contract", quality_text)
-        self.assertIn("tools.ci.test_shell_portability_contract", quality_text)
+        self.assertIn("tools/ci/validation_planner.py", quality_text)
+        self.assertIn("tools/ci/validation_runner.py --phase quality", quality_text)
+        self.assertIn("python", (
+            ROOT / "tools" / "ci" / "validation_runner.py"
+        ).read_text(encoding="utf-8"))
         self.assertIn("tools.ci.test_ios_workflow_contract", self.text)
         self.assertIn(
             "tools.ci.test_environment_workflow_matrix_contract",

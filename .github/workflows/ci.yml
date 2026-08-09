@@ -50,11 +50,16 @@ jobs:
       }}
     runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     outputs:
-      docs_only: ${{ steps.classify.outputs.docs_only }}
-      full_ci: ${{ steps.classify.outputs.full_ci }}
+      plan_b64: ${{ steps.classify.outputs.plan_b64 }}
+      validation_level: ${{ steps.classify.outputs.validation_level }}
+      requires_flutter: ${{ steps.classify.outputs.requires_flutter }}
+      has_flutter_tests: ${{ steps.classify.outputs.has_flutter_tests }}
+      docs_check: ${{ steps.classify.outputs.docs_check }}
+      generated_check: ${{ steps.classify.outputs.generated_check }}
       android_build: ${{ steps.classify.outputs.android_build }}
       ios_build: ${{ steps.classify.outputs.ios_build }}
       release_full: ${{ steps.classify.outputs.release_full }}
+      fail_safe: ${{ steps.classify.outputs.fail_safe }}
       reason: ${{ steps.classify.outputs.reason }}
     steps:
       - name: Checkout repository history
@@ -70,17 +75,22 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          if ! python3 tools/ci/change_classifier.py \
+          if ! python3 tools/ci/validation_planner.py \
             --event "$EVENT_NAME" \
             --base "$BASE_SHA" \
             --head "$HEAD_SHA" \
             --output "$GITHUB_OUTPUT"; then
-            echo "docs_only=false" >> "$GITHUB_OUTPUT"
-            echo "full_ci=true" >> "$GITHUB_OUTPUT"
+            echo "plan_b64=" >> "$GITHUB_OUTPUT"
+            echo "validation_level=full" >> "$GITHUB_OUTPUT"
+            echo "requires_flutter=true" >> "$GITHUB_OUTPUT"
+            echo "has_flutter_tests=true" >> "$GITHUB_OUTPUT"
+            echo "docs_check=true" >> "$GITHUB_OUTPUT"
+            echo "generated_check=true" >> "$GITHUB_OUTPUT"
             echo "android_build=true" >> "$GITHUB_OUTPUT"
             echo "ios_build=true" >> "$GITHUB_OUTPUT"
             echo "release_full=false" >> "$GITHUB_OUTPUT"
-            echo "reason=classifier execution failed; fail-safe full matrix" >> "$GITHUB_OUTPUT"
+            echo "fail_safe=true" >> "$GITHUB_OUTPUT"
+            echo "reason=validation planner execution failed; fail-safe full matrix" >> "$GITHUB_OUTPUT"
           fi
 
   quality:
@@ -96,7 +106,7 @@ jobs:
 
       - name: Load toolchain versions
         id: versions
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.requires_flutter == 'true'
         shell: bash
         run: |
           source .github/versions.env
@@ -105,14 +115,14 @@ jobs:
           echo "java_distribution=$JAVA_DISTRIBUTION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Java
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.requires_flutter == 'true'
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: ${{ steps.versions.outputs.java_distribution }}
           java-version: ${{ steps.versions.outputs.java_version }}
 
       - name: Set up Flutter
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.requires_flutter == 'true'
         uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
@@ -120,7 +130,7 @@ jobs:
           cache: false
 
       - name: Run managed self-hosted quality
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'self-hosted'
+        if: runner.environment == 'self-hosted'
         shell: bash
         env:
           CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
@@ -130,68 +140,23 @@ jobs:
           CI_ARTIFACT_ENVIRONMENT: repository
           CI_ARTIFACT_BUILD_MODE: verification
           CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+          PLAN_B64: ${{ needs.classify-changes.outputs.plan_b64 }}
         run: |
           # The managed wrapper appends Local-only evidence; not downloadable from GitHub. to $GITHUB_STEP_SUMMARY.
           bash tools/ci/run_local_ci.sh managed-command quality macos bash -lc '
-            dart pub get &&
-            python3 tools/docs/check_docs.py . &&
-            python3 -m unittest \
-              tools.ci.test_environment_contract \
-              tools.ci.test_environment_workflow_matrix_contract \
-              tools.ci.test_change_classifier \
-              tools.ci.test_drift_schema_governance \
-              tools.ci.test_no_sqflite_authority \
-              tools.ci.test_ios_workflow_contract \
-              tools.ci.test_local_build_commands \
-              tools.ci.test_ci_execution_mode_contract \
-              tools.ci.test_artifact_workflow_contract \
-              tools.ci.test_artifact_store \
-              tools.ci.test_secret_leakage \
-              tools.ci.test_observability_acceptance_workflow \
-              tools.ci.test_android_observability_contract \
-              tools.ci.test_ios_observability_contract \
-              tools.ci.test_ci_secret_cleanup_contract \
-              tools.ci.test_shell_portability_contract &&
-            dart run melos run analyze &&
-            git diff --check
+            if [[ "${{ needs.classify-changes.outputs.requires_flutter }}" == "true" ]]; then dart pub get; fi &&
+            python3 tools/ci/validation_runner.py --phase quality --plan-b64 "$PLAN_B64"
           '
 
       - name: Resolve dependencies
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
+        if: needs.classify-changes.outputs.requires_flutter == 'true' && runner.environment == 'github-hosted'
         run: dart pub get
 
-      - name: Check documentation
-        if: runner.environment == 'github-hosted' || needs.classify-changes.outputs.full_ci != 'true'
-        run: python3 tools/docs/check_docs.py .
-
-      - name: Check CI workflow contracts
-        if: runner.environment == 'github-hosted' || needs.classify-changes.outputs.full_ci != 'true'
-        run: >-
-          python3 -m unittest
-          tools.ci.test_environment_contract
-          tools.ci.test_environment_workflow_matrix_contract
-          tools.ci.test_change_classifier
-          tools.ci.test_drift_schema_governance
-          tools.ci.test_no_sqflite_authority
-          tools.ci.test_ios_workflow_contract
-          tools.ci.test_local_build_commands
-          tools.ci.test_ci_execution_mode_contract
-          tools.ci.test_artifact_workflow_contract
-          tools.ci.test_artifact_store
-          tools.ci.test_secret_leakage
-          tools.ci.test_observability_acceptance_workflow
-          tools.ci.test_android_observability_contract
-          tools.ci.test_ios_observability_contract
-          tools.ci.test_ci_secret_cleanup_contract
-          tools.ci.test_shell_portability_contract
-
-      - name: Analyze workspace
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
-        run: dart run melos run analyze
-
-      - name: Check whitespace errors
-        if: runner.environment == 'github-hosted' || needs.classify-changes.outputs.full_ci != 'true'
-        run: git diff --check
+      - name: Run planned quality validation
+        if: runner.environment == 'github-hosted'
+        env:
+          PLAN_B64: ${{ needs.classify-changes.outputs.plan_b64 }}
+        run: python3 tools/ci/validation_runner.py --phase quality --plan-b64 "$PLAN_B64"
 
   generated-consistency:
     name: Generated Consistency
@@ -200,14 +165,14 @@ jobs:
     runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.generated_check == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Load toolchain versions
         id: versions
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.generated_check == 'true'
         shell: bash
         run: |
           source .github/versions.env
@@ -216,14 +181,14 @@ jobs:
           echo "java_distribution=$JAVA_DISTRIBUTION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Java
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.generated_check == 'true'
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: ${{ steps.versions.outputs.java_distribution }}
           java-version: ${{ steps.versions.outputs.java_version }}
 
       - name: Set up Flutter
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.generated_check == 'true'
         uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
@@ -231,7 +196,7 @@ jobs:
           cache: false
 
       - name: Run managed self-hosted generated consistency
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'self-hosted'
+        if: needs.classify-changes.outputs.generated_check == 'true' && runner.environment == 'self-hosted'
         shell: bash
         env:
           CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
@@ -241,20 +206,25 @@ jobs:
           CI_ARTIFACT_ENVIRONMENT: repository
           CI_ARTIFACT_BUILD_MODE: verification
           CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+          PLAN_B64: ${{ needs.classify-changes.outputs.plan_b64 }}
         run: |
           # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
-          bash tools/ci/run_local_ci.sh managed-command quality macos bash tools/ci/verify_generated.sh
+          bash tools/ci/run_local_ci.sh managed-command quality macos bash -lc '
+            dart pub get && python3 tools/ci/validation_runner.py --phase generated --plan-b64 "$PLAN_B64"
+          '
 
       - name: Resolve dependencies
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
+        if: needs.classify-changes.outputs.generated_check == 'true' && runner.environment == 'github-hosted'
         run: dart pub get
 
       - name: Verify generated files
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
-        run: bash tools/ci/verify_generated.sh
+        if: needs.classify-changes.outputs.generated_check == 'true' && runner.environment == 'github-hosted'
+        env:
+          PLAN_B64: ${{ needs.classify-changes.outputs.plan_b64 }}
+        run: python3 tools/ci/validation_runner.py --phase generated --plan-b64 "$PLAN_B64"
 
       - name: Skip generated consistency
-        if: needs.classify-changes.outputs.full_ci != 'true'
+        if: needs.classify-changes.outputs.generated_check != 'true'
         run: |
           echo "Generated consistency skipped: ${{ needs.classify-changes.outputs.reason }}"
 
@@ -265,14 +235,14 @@ jobs:
     runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.has_flutter_tests == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Load toolchain versions
         id: versions
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.has_flutter_tests == 'true'
         shell: bash
         run: |
           source .github/versions.env
@@ -281,14 +251,14 @@ jobs:
           echo "java_distribution=$JAVA_DISTRIBUTION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Java
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.has_flutter_tests == 'true'
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: ${{ steps.versions.outputs.java_distribution }}
           java-version: ${{ steps.versions.outputs.java_version }}
 
       - name: Set up Flutter
-        if: needs.classify-changes.outputs.full_ci == 'true'
+        if: needs.classify-changes.outputs.has_flutter_tests == 'true'
         uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version }}
@@ -296,7 +266,7 @@ jobs:
           cache: false
 
       - name: Run managed self-hosted Flutter tests
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'self-hosted'
+        if: needs.classify-changes.outputs.has_flutter_tests == 'true' && runner.environment == 'self-hosted'
         shell: bash
         env:
           CI_ARTIFACT_ROOT: ${{ vars.CI_ARTIFACT_ROOT }}
@@ -306,28 +276,31 @@ jobs:
           CI_ARTIFACT_ENVIRONMENT: repository
           CI_ARTIFACT_BUILD_MODE: verification
           CI_CLASSIFIER_REASON: ${{ needs.classify-changes.outputs.reason }}
+          PLAN_B64: ${{ needs.classify-changes.outputs.plan_b64 }}
         run: |
           # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
           bash tools/ci/run_local_ci.sh managed-command quality macos bash -lc '
-            dart pub get && dart run melos exec -- flutter test
+            dart pub get && python3 tools/ci/validation_runner.py --phase tests --plan-b64 "$PLAN_B64"
           '
 
       - name: Resolve dependencies
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
+        if: needs.classify-changes.outputs.has_flutter_tests == 'true' && runner.environment == 'github-hosted'
         run: dart pub get
 
-      - name: Run all Flutter tests
-        if: needs.classify-changes.outputs.full_ci == 'true' && runner.environment == 'github-hosted'
-        run: dart run melos exec -- flutter test
+      - name: Run planned Flutter tests
+        if: needs.classify-changes.outputs.has_flutter_tests == 'true' && runner.environment == 'github-hosted'
+        env:
+          PLAN_B64: ${{ needs.classify-changes.outputs.plan_b64 }}
+        run: python3 tools/ci/validation_runner.py --phase tests --plan-b64 "$PLAN_B64"
 
       - name: Skip Flutter tests
-        if: needs.classify-changes.outputs.full_ci != 'true'
+        if: needs.classify-changes.outputs.has_flutter_tests != 'true'
         run: |
           echo "Flutter tests skipped: ${{ needs.classify-changes.outputs.reason }}"
 
       - name: Preflight golden test failure evidence
         if: >-
-          needs.classify-changes.outputs.full_ci == 'true' &&
+          needs.classify-changes.outputs.has_flutter_tests == 'true' &&
           failure() &&
           github.event_name == 'workflow_dispatch' &&
           runner.environment == 'github-hosted' &&
@@ -347,7 +320,7 @@ jobs:
 
       - name: Upload golden test failure evidence
         if: >-
-          needs.classify-changes.outputs.full_ci == 'true' &&
+          needs.classify-changes.outputs.has_flutter_tests == 'true' &&
           failure() &&
           github.event_name == 'workflow_dispatch' &&
           runner.environment == 'github-hosted' &&
@@ -364,7 +337,7 @@ jobs:
     needs: [classify-changes, quality, generated-consistency, tests]
     if: >-
       always() &&
-      needs.classify-changes.outputs.full_ci == 'true' &&
+      needs.classify-changes.result == 'success' &&
       ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') ||
        (github.event_name == 'workflow_dispatch' &&
         (inputs.execution_mode == 'self-hosted' ||

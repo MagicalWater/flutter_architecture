@@ -24,8 +24,13 @@ class ObservabilityAcceptanceWorkflowTest(unittest.TestCase):
             "tools.ci.test_artifact_store",
             "tools.ci.test_ci_secret_cleanup_contract",
         )
+        self.assertIn("tools/ci/validation_planner.py", ci)
+        self.assertIn("tools/ci/validation_runner.py --phase quality", ci)
+        runner = (ROOT / "tools/ci/validation_runner.py").read_text(encoding="utf-8")
+        self.assertIn('"discover", "-s", "tools", "-p", "test_*.py"', runner)
         for module in required_modules:
-            self.assertIn(module, ci, module)
+            module_path = ROOT / Path(*module.split("."))
+            self.assertTrue(module_path.with_suffix(".py").is_file(), module)
 
         self.assertIn("tools.ci.test_secret_leakage", ios)
         self.assertIn("tools.ci.test_ios_observability_contract", ios)

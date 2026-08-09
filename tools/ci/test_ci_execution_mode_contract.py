@@ -95,8 +95,9 @@ class CiExecutionModeContractTest(unittest.TestCase):
 
     def test_local_entrypoint_exposes_all_supported_suites(self) -> None:
         script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
-        for suite in ("quality", "android", "ios", "observability", "all"):
+        for suite in ("quality", "android", "ios", "observability", "all", "plan-range"):
             self.assertIn(f"{suite})", script)
+        self.assertIn("tools/ci/validation_planner.py", script)
         self.assertIn("build_android_development.sh", script)
         self.assertIn("build_ios_development.sh", script)
         self.assertIn("upload_ios_dsyms.sh", script)

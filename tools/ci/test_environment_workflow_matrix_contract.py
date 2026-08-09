@@ -16,34 +16,36 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.quality = QUALITY.read_text(encoding="utf-8")
 
     def test_quality_gate_enforces_environment_and_workflow_contracts(self) -> None:
-        self.assertIn("tools.ci.test_environment_contract", self.quality)
-        self.assertIn("tools.ci.test_environment_workflow_matrix_contract", self.quality)
-        self.assertIn("tools.ci.test_local_build_commands", self.quality)
+        self.assertIn("tools/ci/validation_planner.py", self.quality)
+        self.assertIn("tools/ci/validation_runner.py --phase quality", self.quality)
+        self.assertIn("tools/ci/validation_runner.py --phase tests", self.quality)
+        self.assertIn("tools/ci/validation_runner.py --phase generated", self.quality)
 
-    def test_ci_uses_change_classifier_and_preserves_required_job_names(self) -> None:
+    def test_ci_uses_validation_planner_and_preserves_required_job_names(self) -> None:
         self.assertIn("name: Classify Changes", self.quality)
-        self.assertIn("tools/ci/change_classifier.py", self.quality)
+        self.assertIn("tools/ci/validation_planner.py", self.quality)
+        self.assertIn("plan_b64:", self.quality)
         self.assertIn("fetch-depth: 0", self.quality)
-        self.assertIn("needs.classify-changes.outputs.full_ci == 'true'", self.quality)
+        self.assertIn("needs.classify-changes.outputs.requires_flutter == 'true'", self.quality)
         self.assertIn("name: Quality", self.quality)
         self.assertIn("name: Generated Consistency", self.quality)
         self.assertIn("name: Tests", self.quality)
         self.assertNotIn("Generated Consistency Gate", self.quality)
         self.assertNotIn("Tests Gate", self.quality)
 
-    def test_ci_classifier_execution_failure_falls_back_to_full_matrix(self) -> None:
+    def test_ci_planner_execution_failure_falls_back_to_full_matrix(self) -> None:
         classify = self.quality.split("  classify-changes:", 1)[1].split(
             "  quality:", 1
         )[0]
 
-        self.assertIn("if ! python3 tools/ci/change_classifier.py", classify)
-        self.assertIn('echo "docs_only=false" >> "$GITHUB_OUTPUT"', classify)
-        self.assertIn('echo "full_ci=true" >> "$GITHUB_OUTPUT"', classify)
+        self.assertIn("if ! python3 tools/ci/validation_planner.py", classify)
+        self.assertIn('echo "requires_flutter=true" >> "$GITHUB_OUTPUT"', classify)
+        self.assertIn('echo "has_flutter_tests=true" >> "$GITHUB_OUTPUT"', classify)
+        self.assertIn('echo "generated_check=true" >> "$GITHUB_OUTPUT"', classify)
         self.assertIn('echo "android_build=true" >> "$GITHUB_OUTPUT"', classify)
         self.assertIn('echo "ios_build=true" >> "$GITHUB_OUTPUT"', classify)
-        self.assertIn('echo "release_full=false" >> "$GITHUB_OUTPUT"', classify)
         self.assertIn(
-            'echo "reason=classifier execution failed; fail-safe full matrix"',
+            'echo "reason=validation planner execution failed; fail-safe full matrix"',
             classify,
         )
 
@@ -56,45 +58,27 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("needs: classify-changes", generated)
         self.assertIn("CI_EXECUTION_MODE", generated)
         self.assertIn("Skip generated consistency", generated)
-        self.assertIn("needs.classify-changes.outputs.full_ci != 'true'", generated)
+        self.assertIn("needs.classify-changes.outputs.generated_check != 'true'", generated)
 
         self.assertIn("needs: classify-changes", tests)
         self.assertIn("CI_EXECUTION_MODE", tests)
         self.assertIn("Skip Flutter tests", tests)
-        self.assertIn("needs.classify-changes.outputs.full_ci != 'true'", tests)
+        self.assertIn("needs.classify-changes.outputs.has_flutter_tests != 'true'", tests)
 
-    def test_ci_quality_keeps_light_checks_for_docs_only_and_manages_full_self_hosted(self) -> None:
+    def test_ci_quality_uses_planned_validation_for_hosted_and_self_hosted(self) -> None:
         quality = self.quality.split("  quality:", 1)[1].split(
             "  generated-consistency:", 1
         )[0]
 
-        for step_name in (
-            "Check documentation",
-            "Check CI workflow contracts",
-            "Check whitespace errors",
-        ):
-            match = re.search(
-                rf"      - name: {re.escape(step_name)}\n(?P<body>(?:        .*\n)*)",
-                quality,
-            )
-            self.assertIsNotNone(match, step_name)
-            self.assertIn(
-                "runner.environment == 'github-hosted' || needs.classify-changes.outputs.full_ci != 'true'",
-                match.group("body"),
-            )
-
         self.assertIn("Run managed self-hosted quality", quality)
         self.assertIn("managed-command quality macos", quality)
-
-        analyze = re.search(
-            r"      - name: Analyze workspace\n(?P<body>(?:        .*\n)*)",
-            quality,
+        self.assertIn("Run planned quality validation", quality)
+        self.assertGreaterEqual(
+            quality.count("tools/ci/validation_runner.py --phase quality"), 2
         )
-        self.assertIsNotNone(analyze)
-        self.assertIn(
-            "needs.classify-changes.outputs.full_ci == 'true'",
-            analyze.group("body"),
-        )
+        self.assertIn("needs.classify-changes.outputs.requires_flutter", quality)
+        self.assertNotIn("tools.ci.test_environment_contract", quality)
+        self.assertNotIn("dart run melos run analyze", quality)
 
     def test_android_keeps_release_check_and_adds_development_debug(self) -> None:
         self.assertIn("name: Release APK", self.android)
@@ -105,9 +89,9 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("android-development-debug-${{ github.sha }}", self.android)
         self.assertIn("android-production-release-${{ github.sha }}", self.android)
 
-    def test_android_uses_change_classifier_and_skips_build_jobs_for_docs_only(self) -> None:
+    def test_android_uses_validation_planner_and_skips_unneeded_builds(self) -> None:
         self.assertIn("name: Classify Changes", self.android)
-        self.assertIn("tools/ci/change_classifier.py", self.android)
+        self.assertIn("tools/ci/validation_planner.py", self.android)
         self.assertIn("fetch-depth: 0", self.android)
         self.assertIn("needs.classify-changes.outputs.android_build == 'true'", self.android)
         self.assertIn("name: Android Summary", self.android)
@@ -125,14 +109,14 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("needs.classify-changes.outputs.android_build == 'true'", release)
         self.assertIn("CI_EXECUTION_MODE", release)
 
-    def test_android_classifier_failure_falls_back_to_full_matrix(self) -> None:
+    def test_android_planner_failure_falls_back_to_full_matrix(self) -> None:
         classify = self.android.split("  classify-changes:", 1)[1].split(
             "  android-development-debug-apk:", 1
         )[0]
-        self.assertIn("if ! python3 tools/ci/change_classifier.py", classify)
+        self.assertIn("if ! python3 tools/ci/validation_planner.py", classify)
         self.assertIn("android_build=true", classify)
         self.assertIn("ios_build=true", classify)
-        self.assertIn("reason=classifier execution failure", classify)
+        self.assertIn("reason=validation planner execution failure", classify)
 
     def test_android_summary_propagates_requested_build_failures(self) -> None:
         summary = self.android.split("  android-summary:", 1)[1]
@@ -153,9 +137,9 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("API_BASE_URL: https://api.acme.test", self.ios)
         self.assertIn("ios-production-release-${{ github.sha }}", self.ios)
 
-    def test_ios_uses_classifier_and_keeps_simulator_job_stable(self) -> None:
+    def test_ios_uses_validation_planner_and_keeps_simulator_job_stable(self) -> None:
         self.assertIn("name: Classify Changes", self.ios)
-        self.assertIn("tools/ci/change_classifier.py", self.ios)
+        self.assertIn("tools/ci/validation_planner.py", self.ios)
         self.assertIn("fetch-depth: 0", self.ios)
 
         simulator = self.ios.split("  simulator-build:", 1)[1].split(
@@ -181,15 +165,15 @@ class EnvironmentWorkflowMatrixContractTest(unittest.TestCase):
         self.assertIn("needs.classify-changes.outputs.ios_build == 'true'", production)
         self.assertIn("CI_EXECUTION_MODE", production)
 
-    def test_ios_classifier_failure_falls_back_to_full_matrix(self) -> None:
+    def test_ios_planner_failure_falls_back_to_full_matrix(self) -> None:
         classify = self.ios.split("  classify-changes:", 1)[1].split(
             "  simulator-build:", 1
         )[0]
-        self.assertIn("if ! python3 tools/ci/change_classifier.py", classify)
-        self.assertIn("full_ci=true", classify)
+        self.assertIn("if ! python3 tools/ci/validation_planner.py", classify)
+        self.assertIn("requires_flutter=true", classify)
         self.assertIn("android_build=true", classify)
         self.assertIn("ios_build=true", classify)
-        self.assertIn("reason=classifier execution failure", classify)
+        self.assertIn("reason=validation planner execution failure", classify)
 
     def test_workflows_do_not_read_store_or_signing_secrets(self) -> None:
         combined = f"{self.android}\n{self.ios}"

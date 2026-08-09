@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import json
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -188,6 +192,51 @@ class ValidationPlannerRoutingTest(unittest.TestCase):
         self.assertEqual(result.validation_level, "affected")
         self.assertTrue(result.docs_check)
         self.assertFalse(result.full_regression)
+
+    def test_direct_script_cli_runs_from_repository_root(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "tools/ci/validation_planner.py",
+                "--event",
+                "workflow_dispatch",
+                "--stdout-json",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        payload = json.loads(completed.stdout)
+        self.assertEqual(payload["validation_level"], "release")
+        self.assertTrue(payload["full_regression"])
+
+    def test_direct_script_cli_writes_ci_output(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "output.txt"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "tools/ci/validation_planner.py",
+                    "--event",
+                    "workflow_dispatch",
+                    "--output",
+                    str(output),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            values = dict(
+                line.split("=", 1)
+                for line in output.read_text(encoding="utf-8").splitlines()
+            )
+            self.assertEqual(values["requires_flutter"], "true")
+            self.assertEqual(values["has_flutter_tests"], "true")
+            self.assertTrue(values["plan_b64"])
 
 
 if __name__ == "__main__":

@@ -176,7 +176,8 @@ class ArtifactWorkflowContractTest(unittest.TestCase):
             workflow_dir / "observability-acceptance.yml"
         ).read_text(encoding="utf-8")
 
-        self.assertIn("python3 -m unittest " + "\\", ci)
+        self.assertIn("tools/ci/validation_runner.py --phase quality", ci)
+        self.assertIn("tools/ci/validation_planner.py", ci)
         self.assertGreaterEqual(
             observability.count('managed_artifact_dir="$ARTIFACT_DIR"'),
             2,

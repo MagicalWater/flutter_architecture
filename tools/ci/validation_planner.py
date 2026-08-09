@@ -1,8 +1,16 @@
 from __future__ import annotations
 
+import argparse
+import base64
+import json
+import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Iterable, Sequence
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.ci.change_classifier import classify_paths
 
@@ -319,3 +327,117 @@ def plan_validation(
         ", ".join(reasons) or classification.reason,
         False,
     )
+
+
+def plan_payload(plan: ValidationPlan) -> dict[str, object]:
+    return {
+        "change_classes": list(plan.change_classes),
+        "validation_level": plan.validation_level,
+        "flutter_test_scopes": list(plan.flutter_test_scopes),
+        "python_test_scopes": list(plan.python_test_scopes),
+        "analyze_scopes": list(plan.analyze_scopes),
+        "docs_check": plan.docs_check,
+        "generated_check": plan.generated_check,
+        "android_build": plan.android_build,
+        "ios_build": plan.ios_build,
+        "full_regression": plan.full_regression,
+        "release_full": plan.release_full,
+        "reason": plan.reason,
+        "fail_safe": plan.fail_safe,
+    }
+
+
+def encode_plan(plan: ValidationPlan) -> str:
+    payload = json.dumps(plan_payload(plan), sort_keys=True, separators=(",", ":"))
+    return base64.urlsafe_b64encode(payload.encode("utf-8")).decode("ascii")
+
+
+def decode_plan(encoded: str) -> dict[str, object]:
+    if not encoded:
+        return plan_payload(
+            plan_validation([], invalid_range=True)
+        )
+    return json.loads(base64.urlsafe_b64decode(encoded.encode("ascii")).decode("utf-8"))
+
+
+def plan_range(
+    base: str,
+    head: str,
+    *,
+    repository: Path | str = ".",
+) -> ValidationPlan:
+    if not base or not head or set(base) == {"0"}:
+        return plan_validation([], repository=repository, invalid_range=True)
+    try:
+        completed = subprocess.run(
+            ["git", "diff", "--name-only", base, head],
+            cwd=repository,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return plan_validation([], repository=repository, invalid_range=True)
+    return plan_validation(completed.stdout.splitlines(), repository=repository)
+
+
+def _write_output(path: Path, plan: ValidationPlan) -> None:
+    payload = plan_payload(plan)
+    requires_flutter = bool(
+        payload["flutter_test_scopes"]
+        or payload["analyze_scopes"]
+        or payload["generated_check"]
+        or payload["android_build"]
+        or payload["ios_build"]
+    )
+    values = {
+        "plan_b64": encode_plan(plan),
+        "validation_level": plan.validation_level,
+        "requires_flutter": requires_flutter,
+        "has_flutter_tests": bool(plan.flutter_test_scopes),
+        "docs_check": plan.docs_check,
+        "generated_check": plan.generated_check,
+        "android_build": plan.android_build,
+        "ios_build": plan.ios_build,
+        "full_ci": plan.full_regression,
+        "release_full": plan.release_full,
+        "fail_safe": plan.fail_safe,
+        "reason": plan.reason,
+    }
+    lines = [
+        f"{key}={str(value).lower() if isinstance(value, bool) else value}"
+        for key, value in values.items()
+    ]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Plan minimum sufficient repository validation")
+    parser.add_argument(
+        "--event",
+        required=True,
+        choices=("push", "pull_request", "workflow_dispatch"),
+    )
+    parser.add_argument("--base", default="")
+    parser.add_argument("--head", default="")
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--repository", default=Path("."), type=Path)
+    parser.add_argument("--stdout-json", action="store_true")
+    args = parser.parse_args()
+
+    if args.event == "workflow_dispatch":
+        plan = plan_validation([], repository=args.repository, manual=True)
+    else:
+        plan = plan_range(args.base, args.head, repository=args.repository)
+
+    if args.output is not None:
+        _write_output(args.output, plan)
+    if args.stdout_json:
+        print(json.dumps(plan_payload(plan), sort_keys=True, separators=(",", ":")))
+    if args.output is None and not args.stdout_json:
+        print(encode_plan(plan))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

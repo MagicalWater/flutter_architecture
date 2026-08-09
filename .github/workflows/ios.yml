@@ -63,17 +63,17 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
-          if ! python3 tools/ci/change_classifier.py \
+          if ! python3 tools/ci/validation_planner.py \
             --event "$EVENT_NAME" \
             --base "$BASE_SHA" \
             --head "$HEAD_SHA" \
             --output "$GITHUB_OUTPUT"; then
-            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            echo "requires_flutter=true" >> "$GITHUB_OUTPUT"
             echo "full_ci=true" >> "$GITHUB_OUTPUT"
             echo "android_build=true" >> "$GITHUB_OUTPUT"
             echo "ios_build=true" >> "$GITHUB_OUTPUT"
             echo "release_full=false" >> "$GITHUB_OUTPUT"
-            echo "reason=classifier execution failure; fail-safe full matrix" >> "$GITHUB_OUTPUT"
+            echo "reason=validation planner execution failure; fail-safe full matrix" >> "$GITHUB_OUTPUT"
           fi
 
   simulator-build:

@@ -28,6 +28,22 @@ export PYTHON_BIN="$python_bin"
 managed_execution_mode="${CI_MANAGED_EXECUTION_MODE:-manual-local}"
 export CI_MANAGED_EXECUTION_MODE="$managed_execution_mode"
 
+case "$requested_suite" in
+  plan-range)
+    [[ $# -eq 3 ]] || {
+      echo "Usage: $0 plan-range <base> <head>" >&2
+      exit 64
+    }
+    "$python_bin" tools/ci/validation_planner.py \
+      --event push \
+      --base "$2" \
+      --head "$3" \
+      --repository "$repo_root" \
+      --stdout-json
+    exit $?
+    ;;
+esac
+
 python_repo_root="$repo_root"
 if command -v cygpath >/dev/null 2>&1; then
   python_repo_root="$(cygpath -w "$repo_root")"

@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.2
 
 ```txt
 Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-State: Read-only admission confirmed / Requirement Decision pending
+State: Requirement Decision accepted / Design in progress
 Template Baseline: 1.15.2
 ```
 
@@ -21,7 +21,7 @@ Template Baseline: 1.15.2
 審查並修正repository test execution cost與change-aware validation routing drift。Admission已確認目前問題不是單純tests過多，而是classifier／tier machine model／Guide wording造成over-validation，並由雙層Task的多個verification points放大成本。
 
 - Admission audit：`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`
-- Requirement Decision：Pending
+- Requirement Decision：Accepted — `docs/audits/milestone_35/35-r_requirement_decision.md`
 - Design：Not started
 - Implementation Plan：Not started
 - Worktree：Not created
@@ -42,9 +42,9 @@ Milestone 35 read-only admission：CONFIRMED
 → Primary findings：classifier granularity、tier model drift、Guide wording drift
 → Clean Architecture：test-surface contributor，不是主要root cause
 → Two-layer Task governance：cost multiplier，不是主要root cause
-→ 下一步：fresh conversation重新確認repository baseline
-→ governing-template-development Requirement Decision
-→ Design Spec + Design雙層Task review
+→ Fresh baseline reconciliation：CONFIRMED
+→ Requirement Decision：ACCEPT / Level 4
+→ 下一步：Design Spec + Design雙層Task review
 → 使用者核准後才可建立Implementation Plan
 → Design／Plan／worktree／implementation目前均未開始
 ```

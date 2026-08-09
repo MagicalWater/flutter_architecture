@@ -59,6 +59,7 @@ Final / Holistic Review
 ### Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
 
 - [`milestone_35/35-0_test_execution_cost_admission_audit.md`](milestone_35/35-0_test_execution_cost_admission_audit.md)：Template Baseline 1.15.2 read-only test-cost admission；量測current inventory/runtime，確認change-classifier粒度、testing-tier machine model、Guide wording與雙層Task validation amplification問題；Design／Plan尚未開始。
+- [`milestone_35/35-r_requirement_decision.md`](milestone_35/35-r_requirement_decision.md)：fresh baseline reconciliation後的formal Requirement Decision；分類為Level 4 repository-wide governance corrective，Design／Plan／ADR／managed implementation worktree／release／post-release均required，且明確禁止把Level 4誤解為每個中間Task無條件full regression。
 - [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation

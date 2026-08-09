@@ -48,7 +48,7 @@ Final / Holistic Review
 ### Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
 
 - [`milestone_34/34-0_asset_typography_mapping_design_review.md`](milestone_34/34-0_asset_typography_mapping_design_review.md)：accepted Level 3 Design的classification、scope、authority、over-design guards、focused findings disposition與使用者書面核准closure。
-- [`milestone_34/34-p_implementation_plan_review.md`](milestone_34/34-p_implementation_plan_review.md)：proposed Implementation Plan的Design coverage、RED→GREEN ordering、behavioral runtime blocker、affected regression與whole-Plan review；書面Plan仍等待使用者核准。
+- [`milestone_34/34-p_implementation_plan_review.md`](milestone_34/34-p_implementation_plan_review.md)：accepted Implementation Plan的Design coverage、RED→GREEN ordering、behavioral runtime blocker、affected regression與whole-Plan review；2026-08-09已取得使用者書面核准。
 
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 

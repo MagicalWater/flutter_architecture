@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-34-pencil-asset-typography-mapping-plan-review
 last_reviewed_baseline: 1.15.1
@@ -86,5 +86,5 @@ Result：全部PASS。另執行Plan placeholder scan，`TBD`／`TODO`／`impleme
 
 ## Approval Gate
 
-本Plan完成focused review與whole-Plan review後仍維持`proposed`。使用者明確核准書面Implementation Plan前，不得開始Task 34-1或修改Skill production artifacts。
+使用者已於2026-08-09明確核准本書面Implementation Plan。Plan Task的focused review、whole-Plan review、documentation validation與Open P0／P1 gate均已通過，因此Plan正式轉為`accepted`，允許開始Task 34-1；後續implementation仍須依Task順序與雙層治理完成。
 

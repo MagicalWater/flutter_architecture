@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.1
 
 ```txt
 Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Design accepted / Implementation Plan governance
+State: Implementation Plan accepted / Task 34-1 active
 Template Baseline: 1.15.1
 ```
 
@@ -38,7 +38,8 @@ Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation已完成
 ```txt
 Design Task validation PASS
 → 使用者已明確核准書面Design
-→ 建立並review Implementation Plan
+→ Implementation Plan已於2026-08-09取得使用者明確核准
+→ 執行Task 34-1 Representation Contract RED
 → 使用者明確核准書面Plan
 → 才可開始Skill contract implementation
 ```

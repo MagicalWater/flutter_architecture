@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-34-pencil-asset-typography-mapping-implementation-plan
 last_reviewed_baseline: 1.15.1
@@ -26,7 +26,7 @@ last_reviewed_baseline: 1.15.1
 - Font family／weight unresolved、approximate icon unresolved或asset provenance unresolved時，Flutter production UI必須fail closed。
 - 不允許full-raster interactive UI、不允許static CustomPainter overbuild、不允許candidate-driven representation decision。
 - 每個Task完成focused review→findings修正→fresh re-review→whole-Task review→authority check→validation→獨立commit。
-- Plan在使用者書面核准前維持`proposed`，不得執行Task 34-1以後的production Skill contract mutation。
+- Plan已於2026-08-09取得使用者書面核准；Task 34-1開始後仍須依序完成各Task雙層review與required validation，才可進入下一Task。
 
 ---
 

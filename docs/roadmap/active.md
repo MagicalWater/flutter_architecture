@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.15.1
 
 ```txt
 Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Task 34-4 completed — Task 34-5 holistic final review active
+State: Implementation complete / Holistic Final Review PASS / 1.15.2 release authorization pending
 Template Baseline: 1.15.1
 ```
 
@@ -48,5 +48,8 @@ Design Task validation PASS
 → 發現P2：pencil_to_flutter_workflow.md last_reviewed_baseline仍為1.14.0，defer至34-4同步
 → External fresh-chat EXPLICIT GREEN已完成：6/6 PASS，無P0/P1 loophole
 → Task 34-4 Human Workflow and Skill Registry Synchronization：COMPLETED
-→ Task 34-5 Holistic Final Review and 1.15.2 Release Disposition：ACTIVE
+→ Task 34-5 Holistic Final Review：PASS
+→ Release disposition：patch baseline 1.15.2 recommended
+→ VERSION / CHANGELOG / merge / push：等待使用者正式release授權
+→ 發布後必須在published main做post-release validation後才formal closure
 ```

@@ -17,7 +17,7 @@ last_reviewed_baseline: 1.15.1
 
 Spec 與 Plan 都不代表 implementation 已完成，也不取代 current snapshot、Architecture Decision、review evidence 或 release history。
 
-目前active Milestone 34的accepted Implementation Plan：[`plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`](plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md)。2026-08-09已取得使用者書面核准；Tasks 34-1～34-3已完成，34-4同步human workflow／Skill registry，之後進34-5 holistic final review。
+目前active Milestone 34的accepted Implementation Plan：[`plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`](plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md)。Tasks 34-1～34-4與34-5 Holistic Final Review均已PASS；Final Review接受patch baseline `1.15.2`，目前等待使用者正式release／merge／push授權。
 
 ## 目錄
 

@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.15.1
+last_reviewed_baseline: 1.15.2
 ---
 
 # Milestone Routing
@@ -31,11 +31,20 @@ Milestone routing 只回答：
 ## Active routing
 
 ```txt
-None
-Template Baseline: 1.15.1
+Milestone 34 — release 1.15.2 authorized / publication pending
+Template Baseline: 1.15.2
 ```
 
-目前active authority：`docs/roadmap/active.md`；目前無active milestone。
+目前active authority：`docs/roadmap/active.md`；Milestone 34 implementation已PASS，正進行1.15.2 integration／publication與post-release closure。
+
+### Milestone 34 release routing
+
+- Accepted Design：`docs/superpowers/specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`
+- Accepted Implementation Plan：`docs/superpowers/plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`
+- Behavioral pressure evidence：`docs/audits/milestone_34/34-3_asset_typography_pressure_evidence.md`
+- Workflow documentation review：`docs/audits/milestone_34/34-4_workflow_documentation_review.md`
+- Holistic Final Review：`docs/audits/milestone_34/34-5_holistic_final_review.md`
+- Release：Template Baseline `1.15.2`，2026-08-09使用者已授權；published-main post-release validation pending。
 
 ### Milestone 33 closed routing
 

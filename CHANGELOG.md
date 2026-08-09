@@ -20,6 +20,39 @@
 
 ---
 
+## [1.15.2] - 2026-08-09
+
+### Added
+
+- 完成Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance，在Pencil extraction與Flutter mapping之間加入representation classification與provenance gate。
+- 新增`asset-and-typography-mapping.md`，正式區分Layout primitive、Typography、Approved package icon、Vector asset、Raster asset與Dynamic drawing六類representation。
+- 新增provider-neutral Skill behavioral validation Guide；fresh independent context可由Codex CLI、獨立ChatGPT對話或其他approved isolated-agent harness提供，不把任何單一CLI變成模板runtime dependency。
+
+### Changed
+
+- `implementing-pencil-flutter-design`現在要求先完成representation／provenance resolution，才可進Flutter owner mapping與production UI TDD。
+- Human Pencil-to-Flutter Guide與Skill registry同步asset／font provenance責任、revalidation trigger與fresh behavioral validation route。
+
+### Fixed
+
+- 禁止複雜固定ornament以大量Container／gradient／magic numbers進行candidate-driven pixel chasing。
+- 禁止指定font缺失時silent fallback至Roboto／system font、近似package icon未取得accepted disposition時直接替換、derived raster/vector缺少source／transformation／hash provenance時進production implementation。
+- 禁止為pixel diff採用raster-everything shortcut，以及以數百hard-coded points的static `CustomPainter`重畫固定美術。
+
+### Verified
+
+- `tools/docs/test_pencil_representation_mapping_policy.py`：7/7 PASS。
+- `tools/docs/test_pencil_single_renderer_policy.py`：5/5 PASS。
+- External fresh-chat behavioral validation：PTF-13～PTF-18 RED為6/6 already-safe baseline；DISCOVERY 6/6 PASS；EXPLICIT GREEN 6/6 PASS；無P0/P1 Skill wording loophole。
+- `dart run melos run docs_check`與`git diff --check`均PASS。
+
+### Governance
+
+- Milestone 34 Design、Implementation Plan、Tasks 34-1～34-4與34-5 Holistic Final Review均依雙層Task治理完成；Open P0為0，Open P1 without disposition為0。
+- 此release只改變可重用Pencil-to-Flutter workflow contract與治理文件，沒有修改Flutter production source、runtime architecture、`.pen`或ADR-028 stable authority。
+
+---
+
 ## [1.15.1] - 2026-08-09
 
 ### Fixed

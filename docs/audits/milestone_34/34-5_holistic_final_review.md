@@ -3,7 +3,7 @@ document_type: final-review
 status: accepted
 authoritative_for:
   - milestone-34-holistic-final-review
-last_reviewed_baseline: 1.15.1
+last_reviewed_baseline: 1.15.2
 ---
 
 # Milestone 34 — Holistic Final Review
@@ -113,17 +113,17 @@ Result：PASS。
 Accepted Design明確要求release，且本Milestone修改模板repository的**可重用開發workflow contract**，不是單純歷史文件。因此Holistic Review接受patch release：
 
 ```txt
-Recommended Template Baseline: 1.15.2
+Template Baseline: 1.15.2
 Release required: YES
-VERSION / CHANGELOG mutation: PENDING USER RELEASE AUTHORIZATION
-Merge / push: PENDING USER RELEASE AUTHORIZATION
+VERSION / CHANGELOG mutation: AUTHORIZED AND APPLIED
+Merge / push: AUTHORIZED / PENDING EXECUTION
 Post-release validation: REQUIRED after published main
 ```
 
-在使用者正式核准release前，`VERSION`仍必須保持`1.15.1`，不得提前宣稱`1.15.2`已發布。
+使用者已於2026-08-09正式核准release、merge與push；`VERSION`／`CHANGELOG`已切換至1.15.2。正式closure仍必須等待published-main post-release validation。
 
 ## Final Disposition
 
 Milestone 34 implementation與cross-Task review：**PASS**。
 
-下一個且唯一剩餘的正式gate是：使用者授權`1.15.2` release metadata mutation、integration／publication與published-main post-release validation。
+下一步：執行main integration／push，再於published main完成post-release validation與formal closure。

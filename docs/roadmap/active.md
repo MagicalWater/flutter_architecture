@@ -11,9 +11,9 @@ last_reviewed_baseline: 1.15.1
 目前active milestone：
 
 ```txt
-Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-State: Implementation complete / Holistic Final Review PASS / 1.15.2 release authorization pending
-Template Baseline: 1.15.1
+None
+State: Milestone 34 release metadata committed / integration-publication pending
+Template Baseline: 1.15.2
 ```
 
 ## Current Scope
@@ -49,7 +49,8 @@ Design Task validation PASS
 → External fresh-chat EXPLICIT GREEN已完成：6/6 PASS，無P0/P1 loophole
 → Task 34-4 Human Workflow and Skill Registry Synchronization：COMPLETED
 → Task 34-5 Holistic Final Review：PASS
-→ Release disposition：patch baseline 1.15.2 recommended
-→ VERSION / CHANGELOG / merge / push：等待使用者正式release授權
-→ 發布後必須在published main做post-release validation後才formal closure
+→ 使用者已核准Template Baseline 1.15.2 release、merge與push
+→ VERSION / CHANGELOG已切換1.15.2
+→ 下一步：merge main、push、published-main post-release validation
+→ Post-release evidence通過後才formal closure
 ```

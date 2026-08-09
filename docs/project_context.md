@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.15.1
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.15.1
+Template Baseline: 1.15.2
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-Current phase: Holistic Final Review PASS — 1.15.2 release authorization pending
+Current phase: 1.15.2 release authorized — integration/publication pending
 Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation — Corrective 1.15.1
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -353,7 +353,7 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-Current phase: Holistic Final Review PASS — 1.15.2 release authorization pending
+Current phase: 1.15.2 release authorized — integration/publication pending
 Latest completed initiative: Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation — Corrective 1.15.1
 Maintenance mode: Suspended while Milestone 34 implementation is active
 Open Audit remediation findings: None

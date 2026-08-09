@@ -11,9 +11,17 @@ last_reviewed_baseline: 1.15.1
 目前active milestone：
 
 ```txt
-None
+Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
+State: Design proposed / awaiting written approval
 Template Baseline: 1.15.1
 ```
+
+## Current Scope
+
+補強既有`implementing-pencil-flutter-design` route，在Pencil extraction與Flutter authority mapping之間加入asset／vector／typography representation classification與provenance gate。此階段不新增獨立Skill、不修改Flutter production UI、不改ADR-028 stable authority。
+
+- Proposed Design：`docs/superpowers/specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`
+- Design review：`docs/audits/milestone_34/34-0_asset_typography_mapping_design_review.md`
 
 ## Latest Completed Milestone
 
@@ -26,6 +34,7 @@ Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation已完成
 ## Current Next Action
 
 ```txt
-從candidate／backlog或新需求進入Requirement Decision
-→ 由governing-template-development Skill分類與路由
+完成Milestone 34 Design Task validation
+→ 使用者明確核准書面Design
+→ 才可建立Implementation Plan
 ```

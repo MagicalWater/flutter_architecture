@@ -45,6 +45,10 @@ Final / Holistic Review
 
 ## Evidence routes
 
+### Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
+
+- [`milestone_34/34-0_asset_typography_mapping_design_review.md`](milestone_34/34-0_asset_typography_mapping_design_review.md)：proposed Level 3 Design的classification、scope、authority、over-design guards與focused findings disposition；書面Design仍等待使用者核准。
+
 ### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
 
 - [`milestone_33/33-0_design_spec_review.md`](milestone_33/33-0_design_spec_review.md)：accepted Design與ADR-028的Level 4分類、第三方Skill語言／integrity治理、visual authority、Pencil MCP、Flutter mapping、visual acceptance及使用者核准closure；Implementation尚未開始。

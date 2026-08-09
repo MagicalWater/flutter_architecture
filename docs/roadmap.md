@@ -26,7 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-None
+Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
+State: Design proposed / awaiting written approval
 Template Baseline: 1.15.1
 ```
 
@@ -48,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 33 已完成或已有明確 disposition。目前沒有active milestone。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 33 已完成或已有明確 disposition。Milestone 34目前只進入Design governance，尚未允許Implementation。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

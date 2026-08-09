@@ -36,6 +36,8 @@ delegate governing-template-development
 - 工作位於approved managed worktree。
 - `docs/visual_authority/<initiative>/manifest.md`與primary `.pen`存在。
 
+`<initiative>`是visual authority scope，不等於Flutter feature boundary。對模板中的單頁proof／compatibility initiative，可以使用獨立`.pen`；模板被採用為實際產品後，預設應以product-level canonical master `.pen`涵蓋整個App畫面與流程，各feature只引用其中對應screen／frame／flow。只有經中央Requirement Decision確認檔案規模、效能、設計ownership或其他明確理由時，才拆分多份product `.pen`。Feature First只治理Flutter code ownership，不治理Pencil document切分。
+
 不適用於Figma-only、image-only concept、普通Flutter feature、已寫好的UI bugfix、external-only `.pen`或Plan仍為`proposed`的工作。
 
 ## 執行入口

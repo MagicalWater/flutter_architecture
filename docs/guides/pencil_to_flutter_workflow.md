@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - pencil-to-flutter-human-workflow-guide
-last_reviewed_baseline: 1.15.1
+last_reviewed_baseline: 1.16.0
 ---
 
 # Repository-local Pencil-to-Flutter Workflow Guide
@@ -41,12 +41,23 @@ AGENTS.md
 - active `.pen`已進repository並由manifest鎖定。
 - 需要從Pencil structure／visual authority映射成Flutter，而不是只把PNG目測抄成畫面。
 
-典型輸入：
+典型輸入依工作型態分成兩種。
+
+模板中的isolated proof／compatibility initiative可以使用：
 
 ```txt
 docs/design_sources/<initiative>/source.pen
 docs/visual_authority/<initiative>/manifest.md
 ```
+
+模板採用為實際產品後，預設使用product-level canonical master：
+
+```txt
+docs/design_sources/app/app-master.pen
+docs/visual_authority/app/manifest.md
+```
+
+此時Flutter feature只引用`app-master.pen`中的對應screen／frame／flow，不因Feature First code ownership自動拆成`auth.pen`、`profile.pen`、`settings.pen`。只有經Requirement Decision確認檔案規模、效能、多人設計ownership或其他明確理由時，才允許把product authority拆成多份`.pen`。這個拆分決策屬design authority governance，不由Flutter目錄結構自動決定。
 
 ### Non-triggers
 
@@ -80,7 +91,11 @@ Pencil／Executor integration可用
 
 ## Repository source and manifest layout
 
-每個initiative使用：
+Repository支援兩種合法layout；兩者共享同一套visual authority、hash、Pencil MCP與validation規則。
+
+### Template isolated proof / compatibility initiative
+
+模板本身為單頁驗證、Skill acceptance或有界compatibility proof時，可以使用：
 
 ```txt
 docs/design_sources/<initiative>/
@@ -93,7 +108,28 @@ docs/visual_authority/<initiative>/
   manifest.md
 ```
 
-Authority ranking固定為：
+目前`pencil-compatibility-write-precheck`即屬此類；既有accepted authority不因product-level規則而搬移或改寫。
+
+### Adopted product / App master
+
+模板正式採用為實際App後，預設以一份canonical master `.pen`涵蓋完整產品畫面、states與flows：
+
+```txt
+docs/design_sources/app/
+  app-master.pen
+  pencil-preview.png              # derived evidence，若需要
+  original-reference/             # optional supplementary sources
+  assets/                         # optional governed source assets
+
+docs/visual_authority/app/
+  manifest.md
+```
+
+Feature／flow是master document內的logical selection boundary，例如Login、OTP、Profile或Checkout frames；它不是新的`.pen` file boundary。當該工作依中央分類需要Implementation Plan時，Plan應指出本次工作對應master中的哪些screens／frames／flows；Level 0／1等不需要Plan的工作不得為此虛構Plan。
+
+只有經中央Requirement Decision確認下列任一真實理由時才拆分product `.pen`：文件規模或Pencil效能已成為問題、設計團隊需要明確ownership隔離、不同產品surface具有獨立生命周期，或其他已記錄的架構理由。不得因Flutter `features/`目錄存在就自動一feature一pen。
+
+不論採isolated proof或App master，authority ranking固定為：
 
 ```txt
 accepted repository-local .pen
@@ -228,6 +264,8 @@ decorative Flutter primitive
 ## Feature First and localization rules
 
 Pencil只擁有visual／structural authority，不建立第二套App architecture。
+
+**Flutter Feature First是code ownership；Pencil document boundary是design authority ownership，兩者不得互相推導。** 真實產品通常由一份App master `.pen`同時涵蓋多個Flutter features。
 
 - 新UI仍放入`apps/flutter_architecture/lib/features/<feature>/presentation/`。
 - 只有實際business behavior才引入Domain／Data；presentation-only proof不得建立假的Repository／UseCase／Bloc。

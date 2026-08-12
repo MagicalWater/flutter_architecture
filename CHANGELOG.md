@@ -48,11 +48,13 @@
 - Milestone 35 planner對本Milestone implementation range輸出`affected`，只選Auth／Catalog／Profile tests與App analyze；affected Flutter regression 245 cases PASS。
 - CI Python contracts 246/246、test inventory 11/11、5 workspaces analyze與完整Melos Flutter regression fresh PASS；App full suite 493 cases PASS。
 - Existing Auth／Catalog／Profile tests刪除數：0；本Milestone不以test count下降作成功KPI。
+- Published-main canonical planner維持`release` level；Windows fresh CI contracts 246/246、inventory 11/11、authoring contracts 5/5、5-workspace analyze與完整Flutter regression均PASS，App suite 493 cases PASS。
+- macOS published-main iOS Development Simulator與Production iphoneos unsigned verification builds均`BUILD SUCCEEDED`，bundle identity與dSYM contract PASS。
 
 ### Governance
 
-- Requirement Decision、Design、Implementation Plan與Tasks 36-1～36-8依Level 4雙層Task governance完成；Open P0=0、Open P1 without disposition=0。
-- Local release identity為1.17.0；正式publication與Task 36-9 published-main post-release validation仍需獨立完成。
+- Requirement Decision、Design、Implementation Plan與Tasks 36-1～36-9依Level 4雙層Task governance完成；Open P0=0、Open P1 without disposition=0。
+- 1.17.0已發布至`origin/main`並完成Task 36-9 published-main post-release validation；Milestone 36正式Completed / Archived。
 
 ---
 

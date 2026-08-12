@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.17.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.17.0 local release identity / publication pending
+Template Baseline: 1.17.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-Current phase: Task 36-8 holistic accepted / local 1.17.0 release ready / publication pending
-Latest completed initiative: Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective — 1.16.0
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -352,14 +352,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-Current phase: Task 36-8 holistic accepted / local 1.17.0 release ready / publication pending
-Latest completed initiative: Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective — 1.16.0
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
 Maintenance mode: Available
 Open Audit remediation findings: none from Milestone 36 Task 36-8; P0=0 / undisposed P1=0
 ```
 
-Milestone 36已完成Risk-Based Test Authoring corrective implementation與Task 36-8 holistic review。Current governance把Test Authoring Decision與Milestone 35 Validation Execution Decision分離，新增`Required`／`Recommended`／`no-new-test justified`／`Should-not-add`，並明確禁止Task-for-test、class-for-test與layer-for-layer imitation。Fresh ChatGPT behavioral pressure與完整workspace regression均PASS；local Template Baseline identity為1.17.0，正式publication與Task 36-9 post-release closure尚待完成。
+Milestone 36已完成Risk-Based Test Authoring corrective、Template Baseline 1.17.0 publication與Task 36-9 post-release closure。Current governance把Test Authoring Decision與Milestone 35 Validation Execution Decision分離，新增`Required`／`Recommended`／`no-new-test justified`／`Should-not-add`，並明確禁止Task-for-test、class-for-test與layer-for-layer imitation。Fresh ChatGPT behavioral pressure、published-main authoring contracts、完整workspace regression與macOS/iOS verification均PASS；formal closure evidence見`docs/audits/milestone_36/36-9_post_release_validation.md`。
 
 Milestone 34已在既有Pencil-to-Flutter route加入representation classification／asset-font provenance gate，Template Baseline 1.15.2 publication與post-release validation均PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`，Skill behavioral validation入口為`docs/guides/skill_behavioral_validation.md`。Final closure evidence由`docs/audits/milestone_34/34-6_post_release_validation.md`路由。
 

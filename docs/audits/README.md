@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.16.0
+last_reviewed_baseline: 1.17.0
 ---
 
 # Audits and Review Evidence
@@ -44,6 +44,17 @@ Final / Holistic Review
 開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
 
 ## Evidence routes
+
+### Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
+
+- [`milestone_36/36-r_requirement_decision.md`](milestone_36/36-r_requirement_decision.md)：Test Authoring／Maintenance Hell read-only admission後的Level 4 Requirement Decision；確認缺口在authoring threshold，而非重做Milestone 35 execution planner。
+- [`milestone_36/36-0_design_spec_review.md`](milestone_36/36-0_design_spec_review.md)：Risk-Based Test Authoring Design的focused review、whole-Design review與使用者approval evidence。
+- [`milestone_36/36-p_implementation_plan_review.md`](milestone_36/36-p_implementation_plan_review.md)：Implementation Plan ordering、RED→GREEN、behavioral/reference/holistic gates與使用者approval evidence。
+- [`milestone_36/36-5_tdd_two_layer_governance_review.md`](milestone_36/36-5_tdd_two_layer_governance_review.md)：provider-neutral fresh ChatGPT behavioral evidence；五個implementation Tasks不會機械產生五組tests，`no-new-test justified`仍需validation。
+- [`milestone_36/36-6_reference_feature_test_density_review.md`](milestone_36/36-6_reference_feature_test_density_review.md)：Auth／Catalog／Profile test-density audit；既有高密度coverage保留為risk/owner evidence，不作Product Feature quota。
+- [`milestone_36/36-7_risk_based_authoring_acceptance_corpus.md`](milestone_36/36-7_risk_based_authoring_acceptance_corpus.md)：Risk-Based Authoring固定scenario corpus與expected disposition／primary owner contracts。
+- [`milestone_36/36-8_holistic_final_review.md`](milestone_36/36-8_holistic_final_review.md)：Tasks 36-1～36-7 cross-Task holistic review、fresh full regression與Template Baseline 1.17.0 local release disposition。
+- [`milestone_36/36-9_post_release_validation.md`](milestone_36/36-9_post_release_validation.md)：Template Baseline 1.17.0 published-main release routing、fresh authoring contracts、Windows full regression、macOS/iOS development+production verification與formal closure。
 
 ### Validation Planner — Skill Governance Path Classification Corrective
 

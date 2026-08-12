@@ -31,13 +31,13 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-Template Baseline: 1.17.0 local release identity / publication pending
+Active Milestone: None
+Template Baseline: 1.17.0
 ```
 
-目前active authority：`docs/roadmap/active.md`；Milestone 36 Tasks 36-1～36-8已完成，local Template Baseline 1.17.0 release identity已建立；publication與Task 36-9 published-main post-release validation仍待完成。
+目前active authority：`docs/roadmap/active.md`；Milestone 36已完成Template Baseline 1.17.0 publication與Task 36-9 published-main post-release validation，current work回到Requirement Decision入口。
 
-### Milestone 36 active routing
+### Milestone 36 closed routing
 
 - Requirement Decision：Accepted — `docs/audits/milestone_36/36-r_requirement_decision.md`
 - Design：Accepted — `docs/superpowers/specs/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance-design.md`
@@ -49,7 +49,8 @@ Template Baseline: 1.17.0 local release identity / publication pending
 - Task 36-6 Reference Density Review：Accepted — `docs/audits/milestone_36/36-6_reference_feature_test_density_review.md`
 - Task 36-7 Acceptance Corpus：Accepted — `docs/audits/milestone_36/36-7_risk_based_authoring_acceptance_corpus.md`
 - Task 36-8 Holistic Final Review：Accepted — `docs/audits/milestone_36/36-8_holistic_final_review.md`
-- Local Release：Template Baseline `1.17.0` / publication pending
+- Task 36-9 Post-release Validation：Completed — `docs/audits/milestone_36/36-9_post_release_validation.md`
+- Release：Template Baseline `1.17.0`已發布並完成formal closure
 
 ### Milestone 35 active routing
 

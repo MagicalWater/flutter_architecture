@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.17.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.17.0 local release identity / publication pending
+Template Baseline: 1.17.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -26,9 +26,9 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-State: Task 36-8 holistic accepted / local 1.17.0 release ready / publication pending
-Template Baseline: 1.17.0 local release identity
+Active Milestone: None
+State: Maintenance / Requirement Decision entry
+Template Baseline: 1.17.0
 ```
 
 完整 active scope、design、gate與 next action：
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 35 已完成或已有明確 disposition。Milestone 36目前已完成local 1.17.0 holistic release gate，但在publication與Task 36-9 post-release validation完成前仍保持active。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 36 已完成或已有明確 disposition。Milestone 36已完成Template Baseline 1.17.0 publication與published-main post-release validation並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

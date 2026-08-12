@@ -65,6 +65,7 @@ Milestone 36 read-only admission：CONFIRMED
 → Task 36-3 Testing Governance Human Authority Alignment：ACCEPTED
 → Task 36-4 Feature Guide and Reference-Role Corrective：ACCEPTED
 → Task 36-5 Double-Layer Task Governance and TDD Behavioral Review：BLOCKED
-→ Blocker：Codex CLI fresh isolated session在產生model response前401 Unauthorized；不可冒充behavioral evidence
-→ 下一步：恢復approved isolated-agent harness後fresh重跑36-5；通過前不得進入36-6
+→ Historical failed harness：Codex CLI fresh isolated session在產生model response前401 Unauthorized；不可冒充behavioral evidence
+→ Operator constraint：後續不得使用Codex；36-5只走provider-neutral fresh ChatGPT route
+→ 下一步：取得不屬於目前Flutter Project的fresh ChatGPT完整response並回收審查；通過前不得進入36-6
 ```

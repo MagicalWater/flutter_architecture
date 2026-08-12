@@ -76,23 +76,31 @@ git diff --check
 
 這些只證明repository bytes／static contract一致，不取代36-5 isolated-agent behavioral requirement。
 
+## Operator constraint update — 2026-08-12
+
+使用者已明確要求後續不得使用Codex。自此起：
+
+- 不再重試Codex CLI、Codex automated harness或其authentication path。
+- Task 36-5只接受`skill_behavioral_validation.md`已定義的provider-neutral fresh ChatGPT route。
+- Fresh ChatGPT對話不得屬於目前Flutter Project，也不得帶入本對話的Milestone 36結論或預期答案。
+- 只有實際fresh response才可計為behavioral evidence；目前對話自我回答、static contract test或docs checker PASS都不能替代。
+- 這項operator constraint不推翻Task 36-1～36-4既有machine／static evidence，也不降低36-5的fresh-context requirement。
+
 ## Required recovery
 
-可接受的recovery二選一：
-
-1. 恢復Codex CLI authentication後，以新的`--ephemeral` read-only session重跑；或
-2. 依`skill_behavioral_validation.md`使用不屬於本Flutter Project的fresh ChatGPT對話，只提供固定pressure prompt與worktree path，再把完整actual response帶回審查。
+依`skill_behavioral_validation.md`使用不屬於本Flutter Project的fresh ChatGPT對話，只提供固定pressure prompt與worktree path，再把完整actual response帶回審查。
 
 同一failed session不得在補充正解後重用為GREEN。
 
 ## Disposition
 
 ```txt
-Task 36-5: BLOCKED — external isolated-agent authentication
+Task 36-5: BLOCKED — fresh ChatGPT behavioral response required
 Behavioral response produced: NO
 Mechanical contract: GREEN
 Open P0: 0
 Open P1 without disposition: 0
 Next Task allowed: NO
-Required next action: restore an approved isolated-agent harness and rerun fresh
+Codex permitted: NO — explicitly disallowed by operator
+Required next action: run provider-neutral fresh ChatGPT validation and return the complete response
 ```

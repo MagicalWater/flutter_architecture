@@ -70,5 +70,7 @@ Milestone 36 read-only admission：CONFIRMED
 → Operator constraint：後續不得使用Codex／Codex CLI
 → Task 36-6 Reference Feature Test Density Audit：ACCEPTED / existing tests deleted 0
 → Auth／Catalog／Profile：architecture／behavior references retained；test-density quota explicitly rejected
-→ 下一步：Task 36-7 Risk-Based Authoring Acceptance Corpus
+→ Task 36-7 Risk-Based Authoring Acceptance Corpus：ACCEPTED
+→ Low-risk 0-new-test controls：PASS / High-risk direct-owner controls：PASS
+→ 下一步：Task 36-8 Holistic Final Review and Release Disposition
 ```

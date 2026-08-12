@@ -61,5 +61,6 @@ Milestone 36 read-only admission：CONFIRMED
 → 使用者Implementation Plan approval：APPROVED
 → Managed worktree / execution admission：PASS
 → Task 36-1 Test Authoring Decision Contract RED：ACCEPTED / expected 5 failures captured
-→ 下一步：Task 36-2 Central Test Authoring Governance GREEN
+→ Task 36-2 Central Test Authoring Governance GREEN：ACCEPTED
+→ 下一步：Task 36-3 Testing Governance Human Authority Alignment
 ```

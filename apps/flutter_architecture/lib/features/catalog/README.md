@@ -65,6 +65,8 @@ Composition 由 App 完成；feature 不使用 DI annotation。
 
 測試位於 `test/features/catalog/`，應覆蓋 query debounce、cursor pagination、SWR、reconnect ordering、revision CAS、cycle guard、logout persistence與localized presentation。
 
+Catalog現有test density主要來自pagination、cache、revision CAS、cycle、reconnect與concurrency failure modes；它是architecture／behavior reference，**不是一般Product Feature的test-density quota**。新Feature只為自身新增的risk／invariant／failure mode建立最小充分owner。
+
 ## Related Decisions
 
 Offline Cache以 `docs/adr/README.md` 中的 ADR-016至ADR-020為authority；Connectivity與Reconnect boundary以ADR-027為authority。

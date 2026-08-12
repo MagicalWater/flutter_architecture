@@ -64,8 +64,11 @@ Milestone 36 read-only admission：CONFIRMED
 → Task 36-2 Central Test Authoring Governance GREEN：ACCEPTED
 → Task 36-3 Testing Governance Human Authority Alignment：ACCEPTED
 → Task 36-4 Feature Guide and Reference-Role Corrective：ACCEPTED
-→ Task 36-5 Double-Layer Task Governance and TDD Behavioral Review：BLOCKED
-→ Historical failed harness：Codex CLI fresh isolated session在產生model response前401 Unauthorized；不可冒充behavioral evidence
-→ Operator constraint：後續不得使用Codex；36-5只走provider-neutral fresh ChatGPT route
-→ 下一步：取得不屬於目前Flutter Project的fresh ChatGPT完整response並回收審查；通過前不得進入36-6
+→ Task 36-5 Double-Layer Task Governance and TDD Behavioral Review：ACCEPTED
+→ Fresh ChatGPT behavioral pressure：PASS；Scenario A的5個Tasks只需要2類new regression owners
+→ Historical failed harness：Codex CLI 401只保留為execution failure，不計behavioral evidence
+→ Operator constraint：後續不得使用Codex／Codex CLI
+→ Task 36-6 Reference Feature Test Density Audit：ACCEPTED / existing tests deleted 0
+→ Auth／Catalog／Profile：architecture／behavior references retained；test-density quota explicitly rejected
+→ 下一步：Task 36-7 Risk-Based Authoring Acceptance Corpus
 ```

@@ -88,19 +88,52 @@ git diff --check
 
 ## Required recovery
 
-依`skill_behavioral_validation.md`使用不屬於本Flutter Project的fresh ChatGPT對話，只提供固定pressure prompt與worktree path，再把完整actual response帶回審查。
+2026-08-12使用者已依`skill_behavioral_validation.md`提供不屬於目前Flutter Project的fresh ChatGPT完整回覆。Fresh agent只收到固定read-only pressure prompt與managed worktree path，未被告知Milestone 36預期答案或Skill名稱。
 
-同一failed session不得在補充正解後重用為GREEN。
+Fresh agent自行發現並採用：
+
+```txt
+AGENTS.md
+→ governing-template-development
+→ references/test-authoring.md
+→ docs/guides/testing_governance.md
+→ validation_planner.py 作Validation Execution authority
+```
+
+逐案review：
+
+| Scenario | Expected | Observed | Verdict |
+|---|---|---|---|
+| A1 generated DTO 1:1 field | `no-new-test justified` | `no-new-test justified`；沿用generated serializer owner | PASS |
+| A2 trivial forwarding UseCase | `Should-not-add` | `Should-not-add`；拒絕called-once interaction test | PASS |
+| A3 Bloc debounce／stale response | `Required` | `Required`；Bloc／state owner | PASS |
+| A4 styling／copy only | `no-new-test justified` | `no-new-test justified`；planner validation仍required | PASS |
+| A5 cursor duplicate-page guard | `Required` | `Required`；Repository policy owner | PASS |
+| B styling-only | zero new tests allowed | `no-new-test justified`；仍需validation | PASS |
+| C deterministic stale async bug | `Required` | `Required`；closest stale-completion owner，典型為Bloc | PASS |
+| D pure passthrough UseCase | `Should-not-add` | `Should-not-add`；明確拒絕verify-called-once | PASS |
+| E irreversible migration＋Auth security branch | `Required` | 兩個direct Required owners；不得用no-new-test逃避 | PASS |
+
+Fresh agent最終明確判定：
+
+```txt
+5 implementation Tasks != 5 new tests
+Scenario A只需要2類新的regression owners
+0 new tests可以是正確結果
+0 required validation不因此成立
+```
+
+這份external fresh response證明中央authoring contract可以在不承接本對話記憶的context下阻止Task-for-test、class-for-test與layer-for-layer imitation。完整actual response由本Task conversation中的使用者原文保存，本review只保存provenance、逐案verdict與disposition。
 
 ## Disposition
 
 ```txt
-Task 36-5: BLOCKED — fresh ChatGPT behavioral response required
-Behavioral response produced: NO
-Mechanical contract: GREEN
+Task 36-5: ACCEPTED
+Behavioral response produced: YES — provider-neutral fresh ChatGPT
+Mechanical contract: GREEN (5/5)
+Behavioral pressure: GREEN
 Open P0: 0
 Open P1 without disposition: 0
-Next Task allowed: NO
+Next Task allowed: YES — proceed to Task 36-6
 Codex permitted: NO — explicitly disallowed by operator
-Required next action: run provider-neutral fresh ChatGPT validation and return the complete response
 ```

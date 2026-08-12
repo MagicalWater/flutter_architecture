@@ -34,7 +34,8 @@ Classification
 → writing-plans
 → Plan Task governance 與使用者核准
 → 依路由建立 worktree
-→ TDD／systematic debugging
+→ Test Authoring Decision（Required／Recommended／no-new-test justified／Should-not-add）
+→ 依authoring disposition使用TDD／systematic debugging；TDD不代表每Task新增test
 → implementation／refactor／production code review 搭配 karpathy-guidelines
 → executing-plans 或 subagent-driven-development
 → requesting／receiving code review

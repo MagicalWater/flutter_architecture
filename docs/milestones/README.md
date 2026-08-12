@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.16.0
+last_reviewed_baseline: 1.17.0
 ---
 
 # Milestone Routing
@@ -32,19 +32,24 @@ Milestone routing 只回答：
 
 ```txt
 Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-Template Baseline: 1.16.0
+Template Baseline: 1.17.0 local release identity / publication pending
 ```
 
-目前active authority：`docs/roadmap/active.md`；Milestone 36 Design已取得使用者明確核准，Implementation Plan已完成Task review，目前等待使用者明確核准Plan，尚未建立managed worktree。
+目前active authority：`docs/roadmap/active.md`；Milestone 36 Tasks 36-1～36-8已完成，local Template Baseline 1.17.0 release identity已建立；publication與Task 36-9 published-main post-release validation仍待完成。
 
 ### Milestone 36 active routing
 
 - Requirement Decision：Accepted — `docs/audits/milestone_36/36-r_requirement_decision.md`
 - Design：Accepted — `docs/superpowers/specs/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance-design.md`
 - Design Review：PASS / user approved — `docs/audits/milestone_36/36-0_design_spec_review.md`
-- Implementation Plan：Proposed — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
-- Plan Review：PASS / awaiting user approval — `docs/audits/milestone_36/36-p_implementation_plan_review.md`
-- Managed worktree：Not created
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
+- Plan Review：PASS / user approved — `docs/audits/milestone_36/36-p_implementation_plan_review.md`
+- Managed worktree：`C:\Users\crazy\.devspace\worktrees\flutter_architecture-98449518` / `milestone-36-test-authoring-governance`
+- Task 36-5 Behavioral Review：Accepted — `docs/audits/milestone_36/36-5_tdd_two_layer_governance_review.md`
+- Task 36-6 Reference Density Review：Accepted — `docs/audits/milestone_36/36-6_reference_feature_test_density_review.md`
+- Task 36-7 Acceptance Corpus：Accepted — `docs/audits/milestone_36/36-7_risk_based_authoring_acceptance_corpus.md`
+- Task 36-8 Holistic Final Review：Accepted — `docs/audits/milestone_36/36-8_holistic_final_review.md`
+- Local Release：Template Baseline `1.17.0` / publication pending
 
 ### Milestone 35 active routing
 

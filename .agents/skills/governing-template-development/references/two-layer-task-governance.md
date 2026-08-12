@@ -19,6 +19,8 @@ reproduce／confirm → 使用 TDD 或 focused fix 實作 → focused review
 
 Design、Plan 與每個 implementation unit 都使用完整 formal Task cycle。Feature regression 必須執行；full workspace regression 是否需要，依受影響 boundary 決定。
 
+Test Authoring與Task數量沒有一對一關係。**TDD不等於每個Task新增test**；一個Task可以是`0 new tests + planner-selected validation PASS`，前提是已記錄`no-new-test justified`或`Should-not-add` rationale，且沒有缺失的Required regression owner。
+
 ### Full — Level 3～4
 
 每個 Design Spec、Implementation Plan 與 implementation unit 都是 formal Task：
@@ -74,6 +76,8 @@ Design 與 Plan 在完成完整 Task cycle 並取得使用者明確核准前，�
 ## Evidence chain
 
 每個 formal Task 都要記錄 Task ID、artifact scope、focused findings、fixes、fresh re-review、whole-Task coverage、authority check、exact validation 與 independent commit。只標記 `Resolved`，但沒有 fix 與 re-review evidence，不足以通過。
+
+若Task修改observable behavior，evidence chain還要記錄Test Authoring Disposition與primary owner／justification。`0 new tests`不等於`0 validation`；exact validation仍由repository planner決定。
 
 ## Critical additions — Level 5
 

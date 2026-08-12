@@ -16,7 +16,7 @@ description: 當此 Flutter 模板 repository 中的工作需要評估、規劃�
 3. 產生下方 Requirement Decision。
 4. 閱讀[artifact routing](references/artifact-routing.md)，選擇必要、可選與禁止的 artifacts、Skills 與 validation。
 5. 依選定模式套用[雙層 Task 治理](references/two-layer-task-governance.md)。
-6. 依序使用已路由的 Superpowers Skills。
+6. 若工作會修改observable behavior，先依[Test Authoring Decision](references/test-authoring.md)判定是否需要新增regression test與primary owner，再依序使用已路由的 Superpowers Skills。
 7. 保持 current authority、review evidence 與 release state 同步。
 8. 任一必要 validation 失敗時，維持目前 Task 開啟；修正並 fresh re-verify 後，才可接受或建立 completion commit。
 
@@ -68,12 +68,21 @@ description: 當此 Flutter 模板 repository 中的工作需要評估、規劃�
 
 - 已接受的 Level 2～5 Design 工作使用 `brainstorming`。
 - 只有 Design Spec 完成 repository Task governance 並取得使用者核准後，才使用 `writing-plans`。
-- Feature 與 bug implementation 使用 `test-driven-development`。
+- Feature 與 bug implementation使用`test-driven-development`時，目標是為新增／改變的observable behavior建立最小充分regression evidence；**TDD不等於每個Task新增test**、每個class建立test file或逐architecture layer建立重複tests。先完成Test Authoring Decision，再決定RED是否需要新增test；existing owner已充分覆蓋且沒有新failure mode時可使用`no-new-test justified`。
 - Failure 或 unexpected behavior 在修正前使用 `systematic-debugging`。
 - Routing matrix 要求隔離時使用 `using-git-worktrees`。
 - 已核准的 Plan 使用 `subagent-driven-development` 或 `executing-plans`。
 - 在 repository review gate 內使用 review Skills 與 `verification-before-completion` 作為方法。
 - Release 與 post-release gate 尚未通過前，`finishing-a-development-branch` 不得宣稱 repository 或 Milestone 已完成。
+
+## Test Authoring 與 Validation Execution
+
+兩個決策必須分開：
+
+- **Test Authoring Decision**：回答「這次change是否值得新增test、由哪個primary owner負責」。Canonical disposition為`Required`、`Recommended`、`no-new-test justified`或`Should-not-add`；完整條件由[references/test-authoring.md](references/test-authoring.md)擁有。
+- **Validation Execution Decision**：回答「本次Task要執行哪些既有validation」。唯一machine authority仍是`tools/ci/validation_planner.py`。
+
+`no-new-test justified`只代表新增tests可以為0，**不等於不執行validation**。任何Task仍必須執行planner-selected validation；security、persistence、migration、concurrency等新增高風險failure mode不得用`no-new-test justified`逃避direct regression owner。
 
 ## Coding companion
 

@@ -48,6 +48,8 @@ ProfilePage
 
 測試位於 `test/features/profile/`，應涵蓋 success、expected／unexpected failure、Session expiration、localized UI與 route composition regression。
 
+Profile雖然是較小的read Feature，現有tests仍包含session expiration、stale async/account switch、error mapping與presentation contracts；這些case是其實際failure owners，**不是要求所有簡單read Feature複製相同test數量或layer分布**。
+
 ## Related Decisions
 
 以 `docs/adr/README.md` 中的 ADR-006、013、018、019與020為 authority。

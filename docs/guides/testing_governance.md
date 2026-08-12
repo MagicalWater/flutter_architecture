@@ -3,14 +3,63 @@ document_type: guide
 status: accepted
 authoritative_for:
   - repository-testing-governance
-last_reviewed_baseline: 1.15.2
+last_reviewed_baseline: 1.16.0
 ---
 
 # Testing Governance
 
 ## Purpose
 
-本指南是repository test ownership、production／historical boundary、cleanup disposition與execution tier的current authority。測試數量與LOC不是單獨品質指標；優先確保每個failure mode有清楚primary owner且沒有coverage hole。
+本指南是repository test ownership、Test Authoring human policy、production／historical boundary、cleanup disposition與execution tier的current authority。測試數量、LOC、case count與coverage percentage都不是單獨品質指標；優先確保真正的risk／failure mode有清楚primary owner且沒有coverage hole，同時避免沒有regression value的測試膨脹。
+
+Central executable authoring policy由`.agents/skills/governing-template-development/references/test-authoring.md`擁有；本Guide提供人類可讀語意，不建立第二套machine routing engine。
+
+## Foundation tests and Product Feature tests
+
+Template foundation tests與一般產品Feature tests的目的不同：
+
+- Foundation tests：保護template shared contracts，例如security、migration、CI fail-safe、platform、architecture、shared persistence與Design System infrastructure，因此可以合理具有較高test density。
+- Product Feature tests：只依該Feature自己的business risk、state complexity、integration failure mode與regression value決定，不繼承Foundation的test數量或layer密度。
+
+Auth／Catalog／Profile等reference feature可用來理解architecture、boundary與owner placement，**不是test-density reference**。不得把既有Feature的test files／cases數當成新Feature的最低門檻。
+
+## Test Authoring Decision
+
+Authoring順序固定為：
+
+```txt
+changed behavior / risk / failure mode
+→ existing owner是否已充分覆蓋
+→ authoring disposition
+→ 若新增test，選最接近failure source的primary owner
+→ 再由Milestone 35 validation planner決定執行哪些validation
+```
+
+### Required
+
+新增或改變business invariant、security／authorization、credential lifecycle、persistence write／migration、destructive operation、concurrency／race／stale completion、retry／idempotency、pagination／ordering、狀態機、非平凡validation／failure classification，或可穩定重現的bug regression時，必須建立或明確指出direct regression owner。
+
+### Recommended
+
+有實質observable branch且test能明顯降低維護風險時建議新增，例如多分支state transition、feature-specific interaction／navigation、非平凡mapper、cache policy、cross-feature coordination。若fixture／mock／maintenance成本高於regression detection value，不應機械新增。
+
+### no-new-test justified
+
+允許本Task新增0個test，但必須記錄reason與existing owner／risk rationale，例如沒有新failure mode、既有owner已直接覆蓋、presentation-only copy／style或trivial forwarding。
+
+`no-new-test justified` **不等於不執行validation**。Milestone 35 `tools/ci/validation_planner.py`仍決定本Task必須執行的focused／affected／workspace validation；Required高風險mutation若沒有direct owner，不得使用此disposition逃避新增regression evidence。
+
+### Should-not-add
+
+以下情況預設反而不應新增test：
+
+- getter／setter、語言本身或framework已保證的behavior；
+- 沒有policy／mapping／branch的passthrough UseCase只驗證repository method called once；
+- 為了Domain／Data／Bloc／Widget每層都有test而重複同一invariant；
+- 只因新增class就建立同名test file；
+- 每個畫面機械式新增golden；
+- mock implementation detail而不是observable contract；
+- 為了coverage percentage、test case count或file count quota而新增test。
 
 ## Test taxonomy and primary owner
 
@@ -33,10 +82,11 @@ last_reviewed_baseline: 1.15.2
 
 ### Add
 
-1. 指定primary owner與taxonomy。
-2. 優先放在最接近failure source的suite。
-3. 只在需要真實boundary時使用integration fixture。
-4. 更新inventory並執行focused tests。
+1. 先完成Test Authoring Decision；只有`Required`或經成本判斷後的`Recommended`才新增test。
+2. 指定primary owner與taxonomy。
+3. 優先放在最接近failure source的suite。
+4. 只在需要真實boundary時使用integration fixture。
+5. 更新inventory並執行focused tests。
 
 ### Move／Merge
 
@@ -69,6 +119,8 @@ Historical executable tests預設保持可執行，不以文件取代。只有�
 Execution tier描述test／artifact自身的執行特性；**validation level**描述「本次change需要驗證到哪個boundary」。兩者不得混為同一欄位。
 
 ## Minimum Sufficient Validation
+
+Test Authoring與Validation Execution是兩個不同決策。前者回答「是否新增test」，後者回答「本次change必須執行哪些validation」。即使authoring disposition為`no-new-test justified`或`Should-not-add`，後者仍然必須執行。
 
 Repository以`tools/ci/validation_planner.py`作為validation selection唯一machine authority：
 

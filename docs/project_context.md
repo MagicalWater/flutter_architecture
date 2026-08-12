@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.16.0
+last_reviewed_baseline: 1.17.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.16.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.16.0
+Template Baseline: 1.17.0 local release identity / publication pending
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-Current phase: Requirement Decision accepted / Design proposed and reviewed / awaiting user Design approval
+Current phase: Task 36-8 holistic accepted / local 1.17.0 release ready / publication pending
 Latest completed initiative: Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective — 1.16.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -345,7 +345,7 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.16.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.17.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
@@ -353,13 +353,13 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-Current phase: Requirement Decision accepted / Design proposed and reviewed / awaiting user Design approval
+Current phase: Task 36-8 holistic accepted / local 1.17.0 release ready / publication pending
 Latest completed initiative: Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective — 1.16.0
 Maintenance mode: Available
-Open Audit remediation findings: none from Milestone 35; final closure P0=0 / undisposed P1=0
+Open Audit remediation findings: none from Milestone 36 Task 36-8; P0=0 / undisposed P1=0
 ```
 
-Milestone 36已完成read-only Test Authoring Cost admission與Level 4 Requirement Decision，確認current governance存在TDD route過廣、Feature reference test-density imitation、layer-for-layer／trivial testing與缺少`no-new-test justified` disposition的制度性風險。Proposed Design已完成雙層Design review並等待使用者明確核准；在核准前不得建立Plan、worktree或開始implementation。
+Milestone 36已完成Risk-Based Test Authoring corrective implementation與Task 36-8 holistic review。Current governance把Test Authoring Decision與Milestone 35 Validation Execution Decision分離，新增`Required`／`Recommended`／`no-new-test justified`／`Should-not-add`，並明確禁止Task-for-test、class-for-test與layer-for-layer imitation。Fresh ChatGPT behavioral pressure與完整workspace regression均PASS；local Template Baseline identity為1.17.0，正式publication與Task 36-9 post-release closure尚待完成。
 
 Milestone 34已在既有Pencil-to-Flutter route加入representation classification／asset-font provenance gate，Template Baseline 1.15.2 publication與post-release validation均PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`，Skill behavioral validation入口為`docs/guides/skill_behavioral_validation.md`。Final closure evidence由`docs/audits/milestone_34/34-6_post_release_validation.md`路由。
 

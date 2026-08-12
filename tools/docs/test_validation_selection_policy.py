@@ -52,7 +52,7 @@ class ValidationSelectionPolicyTest(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("last_reviewed_baseline: 1.15.2", guide)
+        self.assertIn("last_reviewed_baseline: 1.16.0", guide)
         self.assertIn("35-3_current_test_inventory.csv", guide)
         self.assertIn("validation level", guide.lower())
         self.assertIn("execution tier", guide.lower())

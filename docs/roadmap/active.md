@@ -3,7 +3,7 @@ document_type: active-milestone
 status: accepted
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.16.0
+last_reviewed_baseline: 1.17.0
 ---
 
 # Active Milestone
@@ -12,8 +12,8 @@ last_reviewed_baseline: 1.16.0
 
 ```txt
 Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-State: Design accepted / Implementation Plan proposed and reviewed / awaiting user Plan approval
-Template Baseline: 1.16.0
+State: Task 36-8 holistic accepted / local 1.17.0 release ready / publication pending
+Template Baseline: 1.17.0 local release identity
 ```
 
 ## Active Scope
@@ -23,9 +23,9 @@ Milestone 36處理Test Authoring／Maintenance Hell的制度性風險，不重�
 - Requirement Decision：Accepted — `docs/audits/milestone_36/36-r_requirement_decision.md`
 - Design：Accepted — `docs/superpowers/specs/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance-design.md`
 - Design review：PASS — `docs/audits/milestone_36/36-0_design_spec_review.md`
-- Implementation Plan：Proposed — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
 - Plan review：PASS — `docs/audits/milestone_36/36-p_implementation_plan_review.md`
-- Managed worktree：Not created；必須等待Design＋Plan accepted。
+- Managed worktree：`C:\Users\crazy\.devspace\worktrees\flutter_architecture-98449518` / `milestone-36-test-authoring-governance`
 
 ## Latest Completed Scope
 
@@ -56,8 +56,24 @@ Milestone 36 read-only admission：CONFIRMED
 → Design Spec：ACCEPTED
 → Design雙層Task review：PASS
 → 使用者Design approval：APPROVED
-→ Implementation Plan：PROPOSED
+→ Implementation Plan：ACCEPTED
 → Plan雙層Task review：PASS
-→ 下一步：等待使用者明確核准Implementation Plan
-→ Plan accepted後才建立managed worktree／implementation
+→ 使用者Implementation Plan approval：APPROVED
+→ Managed worktree / execution admission：PASS
+→ Task 36-1 Test Authoring Decision Contract RED：ACCEPTED / expected 5 failures captured
+→ Task 36-2 Central Test Authoring Governance GREEN：ACCEPTED
+→ Task 36-3 Testing Governance Human Authority Alignment：ACCEPTED
+→ Task 36-4 Feature Guide and Reference-Role Corrective：ACCEPTED
+→ Task 36-5 Double-Layer Task Governance and TDD Behavioral Review：ACCEPTED
+→ Fresh ChatGPT behavioral pressure：PASS；Scenario A的5個Tasks只需要2類new regression owners
+→ Historical failed harness：Codex CLI 401只保留為execution failure，不計behavioral evidence
+→ Operator constraint：後續不得使用Codex／Codex CLI
+→ Task 36-6 Reference Feature Test Density Audit：ACCEPTED / existing tests deleted 0
+→ Auth／Catalog／Profile：architecture／behavior references retained；test-density quota explicitly rejected
+→ Task 36-7 Risk-Based Authoring Acceptance Corpus：ACCEPTED
+→ Low-risk 0-new-test controls：PASS / High-risk direct-owner controls：PASS
+→ Task 36-8 Holistic Final Review and Release Disposition：ACCEPTED
+→ Local Template Baseline：1.17.0 / MINOR
+→ Fresh holistic validation：docs 57/57、CI Python 246/246、inventory 11/11、5-workspace analyze、full Flutter regression PASS（App 493 cases）
+→ 下一步：等待publication authorization；之後integrate/push main並執行Task 36-9 published-main post-release validation
 ```

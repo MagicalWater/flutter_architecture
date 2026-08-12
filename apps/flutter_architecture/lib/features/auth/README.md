@@ -104,6 +104,8 @@ Legacy SharedPreferences credential
 
 應涵蓋 Login、OTP、Restore、Logout、Session expiration、navigation、local unlock lifecycle與 sensitive output。
 
+Auth包含credential、session、refresh、OTP、security與lifecycle等高風險foundation contracts，因此現有test density反映這些failure owners；它是architecture／behavior reference，**不是一般Product Feature的test-density quota**。新增Feature不得因模仿Auth檔案數或layer分布而機械新增tests。
+
 ## Related Decisions
 
 以 `docs/adr/README.md` 中的 ADR-005、006、015、021與022為正式 authority。

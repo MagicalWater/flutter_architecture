@@ -20,6 +20,42 @@
 
 ---
 
+## [1.17.0] - 2026-08-12
+
+### Added
+
+- 完成Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective，新增Risk-Based Test Authoring治理能力與ADR-029。
+- 新增`Required`、`Recommended`、`no-new-test justified`與`Should-not-add`四種authoring disposition，允許低風險mutation正當產生0個new tests。
+- 新增固定Risk-Based Authoring acceptance corpus與provider-neutral fresh ChatGPT behavioral pressure evidence，驗證Task數量不會機械轉換成test數量。
+
+### Changed
+
+- `governing-template-development`明確分離Test Authoring Decision與Milestone 35 Validation Execution Decision；TDD不再被解讀為每Task／class／layer都必須新增test。
+- Testing Governance與Feature／Agent Guides改由risk／invariant／failure mode決定新增tests，不再以Domain／Data／Presentation／Integration逐層coverage作最低配額。
+- Auth／Catalog／Profile繼續作architecture／behavior reference，但明確不是一般Product Feature的test-density quota。
+- Foundation tests與Product Feature tests分開描述；security、migration、persistence、concurrency等高風險仍要求direct regression owner。
+
+### Fixed
+
+- 修正普通Feature在TDD、雙層Task與reference imitation下可能形成Task-for-test、class-for-test、layer-for-layer與trivial called-once testing的制度性風險。
+- 修正`no-new-test justified`缺席導致Agent為滿足流程而捏造低價值RED test的治理缺口。
+- 修正`testing_governance.md` baseline更新後既有docs contract仍硬編碼1.15.2的stale assertion。
+
+### Verified
+
+- Test Authoring governance contracts fresh PASS：5/5；docs contracts fresh PASS：57/57。
+- Provider-neutral fresh ChatGPT behavioral pressure全情境PASS；5個implementation Tasks scenario只產生2類Required regression owners。
+- Milestone 35 planner對本Milestone implementation range輸出`affected`，只選Auth／Catalog／Profile tests與App analyze；affected Flutter regression 245 cases PASS。
+- CI Python contracts 246/246、test inventory 11/11、5 workspaces analyze與完整Melos Flutter regression fresh PASS；App full suite 493 cases PASS。
+- Existing Auth／Catalog／Profile tests刪除數：0；本Milestone不以test count下降作成功KPI。
+
+### Governance
+
+- Requirement Decision、Design、Implementation Plan與Tasks 36-1～36-8依Level 4雙層Task governance完成；Open P0=0、Open P1 without disposition=0。
+- Local release identity為1.17.0；正式publication與Task 36-9 published-main post-release validation仍需獨立完成。
+
+---
+
 ## [1.16.0] - 2026-08-09
 
 ### Added

@@ -31,11 +31,20 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: None
+Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
 Template Baseline: 1.16.0
 ```
 
-目前active authority：`docs/roadmap/active.md`；Milestone 35已完成Template Baseline 1.16.0 publication與Task 35-9 post-release validation，current work回到Roadmap／Requirement Decision入口。
+目前active authority：`docs/roadmap/active.md`；Milestone 36 Design已取得使用者明確核准，Implementation Plan已完成Task review，目前等待使用者明確核准Plan，尚未建立managed worktree。
+
+### Milestone 36 active routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_36/36-r_requirement_decision.md`
+- Design：Accepted — `docs/superpowers/specs/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance-design.md`
+- Design Review：PASS / user approved — `docs/audits/milestone_36/36-0_design_spec_review.md`
+- Implementation Plan：Proposed — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
+- Plan Review：PASS / awaiting user approval — `docs/audits/milestone_36/36-p_implementation_plan_review.md`
+- Managed worktree：Not created
 
 ### Milestone 35 active routing
 

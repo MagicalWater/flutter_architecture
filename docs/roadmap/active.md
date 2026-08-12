@@ -8,13 +8,24 @@ last_reviewed_baseline: 1.16.0
 
 # Active Milestone
 
-目前沒有active milestone：
+目前active milestone：
 
 ```txt
-Active Milestone: None
-State: Template Baseline 1.16.0 published / Milestone 35 completed and archived
+Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
+State: Design accepted / Implementation Plan proposed and reviewed / awaiting user Plan approval
 Template Baseline: 1.16.0
 ```
+
+## Active Scope
+
+Milestone 36處理Test Authoring／Maintenance Hell的制度性風險，不重做Milestone 35的test execution routing。核心目標是讓新增tests由risk／invariant／failure mode驅動，而不是由Task／class／architecture layer數量驅動。
+
+- Requirement Decision：Accepted — `docs/audits/milestone_36/36-r_requirement_decision.md`
+- Design：Accepted — `docs/superpowers/specs/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance-design.md`
+- Design review：PASS — `docs/audits/milestone_36/36-0_design_spec_review.md`
+- Implementation Plan：Proposed — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
+- Plan review：PASS — `docs/audits/milestone_36/36-p_implementation_plan_review.md`
+- Managed worktree：Not created；必須等待Design＋Plan accepted。
 
 ## Latest Completed Scope
 
@@ -37,28 +48,16 @@ Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Correc
 ## Current Next Action
 
 ```txt
-Milestone 35 read-only admission：CONFIRMED
-→ Problem：over-validation / test execution cost drift
-→ Primary findings：classifier granularity、tier model drift、Guide wording drift
-→ Clean Architecture：test-surface contributor，不是主要root cause
-→ Two-layer Task governance：cost multiplier，不是主要root cause
-→ Fresh baseline reconciliation：CONFIRMED
+Milestone 36 read-only admission：CONFIRMED
+→ Problem：test authoring / maintenance overgrowth risk
+→ Milestone 30：existing test ownership／rationalization保留
+→ Milestone 35：validation execution planner保留
 → Requirement Decision：ACCEPT / Level 4
-→ Design Spec + Design雙層Task review：PASS / ACCEPTED
+→ Design Spec：ACCEPTED
+→ Design雙層Task review：PASS
 → 使用者Design approval：APPROVED
-→ Implementation Plan + Plan雙層Task review：PASS / ACCEPTED
-→ 使用者Implementation Plan approval：APPROVED
-→ Managed worktree / execution admission：PASS
-→ Task 35-1 Validation Planner Contract RED：ACCEPTED
-→ Task 35-2 Change Classification + Validation Planner GREEN：ACCEPTED
-→ Task 35-3 Testing Inventory Tier Realignment：ACCEPTED
-→ Task 35-4 CI and Local Consumer Cutover：ACCEPTED
-→ Task 35-5 ADR-023 and Human/Agent Authority Synchronization：ACCEPTED
-→ Task 35-6 Evidence Reuse and Duplicate Full-Run Guard：ACCEPTED
-→ Task 35-7 Before/After Routing and Execution-Cost Acceptance：ACCEPTED
-→ Task 35-8 Holistic Final Review and Template Baseline Release：ACCEPTED / LOCAL 1.16.0
-→ Publication：APPROVED / main == origin/main == 016f33c
-→ Task 35-9 Published-Main Post-release Validation and Closure：ACCEPTED
-→ Milestone 35：COMPLETED / ARCHIVED
-→ 下一步：Roadmap／Requirement Decision入口；沒有自動建立新Milestone
+→ Implementation Plan：PROPOSED
+→ Plan雙層Task review：PASS
+→ 下一步：等待使用者明確核准Implementation Plan
+→ Plan accepted後才建立managed worktree／implementation
 ```

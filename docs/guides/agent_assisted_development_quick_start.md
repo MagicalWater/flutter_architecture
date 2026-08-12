@@ -30,6 +30,8 @@ AGENTS.md
 
 所有implementation／fix的validation selection採 **Minimum Sufficient Validation**；repository-owned `tools/ci/validation_planner.py`決定focused／affected／workspace／full／release及exact scopes。Agent不得因「保守」自行把每個Task升級成full workspace test；unknown／ambiguous inputs由planner fail-safe升級。
 
+是否**新增**test是另一個Test Authoring Decision：由中央治理依risk／invariant／failure mode判定`Required`、`Recommended`、`no-new-test justified`或`Should-not-add`。TDD不代表每個Task、class或layer都要新增test；`0 new tests`可以是合法結果，但永遠不等於`0 validation`。
+
 ## 每次新對話的共同開頭
 
 先提供 repository 路徑，再選擇本指南後續場景中的一個 Skill 入口。
@@ -91,7 +93,7 @@ Session 自動過期與登出。
 [限制]
 - 不改目前登入API。
 - 不加入新套件，除非Requirement Decision證明必要。
-- 必須補測試與文件。
+- 必須完成Test Authoring Decision與文件同步；只有risk／failure owner需要時才新增test。
 ```
 
 這類需求仍是產品功能。是否需要 Design／Plan，由中央治理依風險分類，不以「沒有畫面」直接判定為小工作。
@@ -194,7 +196,7 @@ Bug 不使用 `starting-feature-work`，直接交給中央治理。
 - 未知錯誤不能被吞掉。
 
 請先重現並確認root cause。
-必須使用systematic debugging與TDD。
+必須使用systematic debugging；TDD依direct regression owner建立最小充分evidence，不為了流程形式新增trivial test。
 不要順便重構無關Auth程式碼。
 修正後執行focused review、affected regression與總審查。
 ```
@@ -387,7 +389,7 @@ Acme Shop
 預期行為：
 [預期]
 
-請先重現與找root cause，再依TDD修正。
+請先重現與找root cause，再依Test Authoring Decision判定regression owner並依TDD修正；若沒有新test價值，記錄`no-new-test justified`並仍執行planner-selected validation。
 ```
 
 ### 架構或技術工作

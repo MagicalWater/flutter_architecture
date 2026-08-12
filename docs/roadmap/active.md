@@ -63,5 +63,6 @@ Milestone 36 read-only admission：CONFIRMED
 → Task 36-1 Test Authoring Decision Contract RED：ACCEPTED / expected 5 failures captured
 → Task 36-2 Central Test Authoring Governance GREEN：ACCEPTED
 → Task 36-3 Testing Governance Human Authority Alignment：ACCEPTED
-→ 下一步：Task 36-4 Feature Guide and Reference-Role Corrective
+→ Task 36-4 Feature Guide and Reference-Role Corrective：ACCEPTED
+→ 下一步：Task 36-5 Double-Layer Task Governance and TDD Behavioral Review
 ```

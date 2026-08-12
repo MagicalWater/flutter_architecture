@@ -46,6 +46,8 @@ apps/flutter_architecture/README.md
 - [Protected Feature](../../apps/flutter_architecture/lib/features/protected/README.md)：Guarded route fixture。
 - [Shell Feature](../../apps/flutter_architecture/lib/features/shell/README.md)：App shell 與 navigation composition。
 
+這些Feature是architecture、behavior與owner boundary reference，**不是test-density reference**。不得因Auth／Catalog／Profile已有較多test files或cases，就把相同layer／case密度複製到普通產品Feature。
+
 ## 1. Decide Feature Responsibility
 
 先確認需求應留在 App Feature，還是提升為 reusable package。
@@ -249,23 +251,25 @@ Localization authority：
 - [ADR-019 — Localization, Locale and Failure Mapping](../adr/adr-019-localization-locale-failure-mapping.md)
 - [Design System Package README](../../packages/design_system/README.md)
 
-## 8. Add Tests by Boundary
+## 8. Decide Tests by Risk and Failure Owner
 
-至少依實際變更覆蓋：
+先依[Testing Governance](testing_governance.md)完成 **Test Authoring Disposition**，不要從architecture layer反推「每層至少一組tests」。
 
 ```txt
-Domain
-  UseCase、policy、Repository contract behavior
-
-Data
-  DTO mapping、DataSource、Repository implementation、persistence behavior
-
-Presentation
-  Bloc ordering、loading／content／failure states、localized UI
-
-App integration
-  DI registration、route、guard、navigation、database migration
+new / changed observable behavior
+→ risk / invariant / failure mode
+→ existing owner是否已充分覆蓋
+→ Required | Recommended | no-new-test justified | Should-not-add
+→ 若新增test，放到最接近failure source的primary owner
 ```
+
+典型owner仍可能位於Domain、Data、Presentation或App integration，但layer存在本身不是新增test的理由。例如：
+
+- 有business policy／non-trivial validation的UseCase可以是Required owner。
+- pure passthrough UseCase若只會產生「repository called once」test，通常是Should-not-add。
+- persistence transaction／migration新增failure mode時通常Required。
+- Bloc有ordering／cancellation／state-machine風險時由Bloc owner測；單純把既有result映射到UI不要求複製相同invariant。
+- styling／copy-only變更可`no-new-test justified`，但仍需執行planner-selected affected validation。
 
 常見位置：
 
@@ -345,6 +349,7 @@ Commit 前確認：
 - 沒有讓 reusable package 依賴 App／DI framework／plugin implementation。
 - 沒有將 historical plan 或 audit 當成 current authority。
 - Minimum Sufficient Validation plan要求的docs／analyze／tests／generated／必要build全部通過。
+- Test Authoring Disposition已記錄；若為`no-new-test justified`，reason與existing owner／risk rationale清楚，且沒有缺失的Required owner。
 
 ## Completion Checklist
 
@@ -356,7 +361,7 @@ Commit 前確認：
 [ ] App Composition Root 已完成 DI registration
 [ ] Route／Guard／Coordinator boundary正確
 [ ] User-facing copy已 localization
-[ ] Tests覆蓋受影響 boundary
+[ ] 已完成Test Authoring Disposition；新增tests由risk／failure owner驅動，不由layer／class數驅動
 [ ] Feature README已建立或更新
 [ ] 已完成 ADR decision gate
 [ ] Generated source已更新且review

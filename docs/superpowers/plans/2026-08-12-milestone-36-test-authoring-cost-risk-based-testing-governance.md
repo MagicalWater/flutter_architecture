@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-36-implementation-plan
 last_reviewed_baseline: 1.16.0
@@ -202,4 +202,6 @@ implement
 
 ## 9. Current status
 
-本Plan目前為`proposed`。完成Plan Task review並取得使用者明確核准前，不建立managed worktree、不開始Task 36-1、不修改implementation authority。
+本Plan已於2026-08-12取得使用者明確核准，status為`accepted`。
+
+Implementation已獲准進入managed worktree；每個Task仍必須依本Plan與中央雙層Task governance完成review、validation與commit gate。

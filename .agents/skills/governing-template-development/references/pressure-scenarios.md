@@ -16,6 +16,10 @@
 12. **Pencil parser fallback**：Pencil MCP unavailable，Agent想用Python唯讀解析`.pen`。正確結果：blocked；native read也是禁止的boundary bypass。
 13. **Accepted authority redesign**：Accepted repository-local `.pen`存在，Agent想觸發imagegen或Taste free redesign。正確結果：不觸發imagegen；restricted critique不得改寫authority。
 14. **Pencil normal route**：Requirement／Design／Plan／worktree／manifest／Skill provenance全部通過。正確結果：路由`implementing-pencil-flutter-design`並先做Pencil admission／extraction，不直接跳到Flutter code。
+15. **Trivial passthrough TDD**：新增一個只把參數轉交Repository、沒有branch／mapping／policy的UseCase。正確結果：不得只因TDD或class存在就新增called-once test；應得到`Should-not-add`或有充分existing-owner理由的`no-new-test justified`。
+16. **Existing owner coverage**：低風險mutation沒有新增failure mode，且existing owner已直接覆蓋observable behavior。正確結果：允許`no-new-test justified`，但仍執行Milestone 35 planner-selected validation。
+17. **High-risk no-test escape**：security、persistence、migration或concurrency新增可回歸failure mode，Agent想用`no-new-test justified`節省成本。正確結果：拒絕；必須建立或指出direct regression owner。
+18. **Reference density imitation**：普通read-only feature因Auth／Catalog有大量tests而準備逐層複製Domain／Data／Bloc／Widget tests。正確結果：拒絕test-density quota；只依新risk／invariant／failure mode選最接近的primary owner。
 
 只有這些案例能在不依賴 conversation memory 的情況下，產生預期 classification、routing 與 stop／continue behavior，治理變更才算通過。
 

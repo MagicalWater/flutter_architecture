@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.16.0
 
 ```txt
 Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-State: Design accepted / Implementation Plan proposed and reviewed / awaiting user Plan approval
+State: Design accepted / Implementation Plan accepted / managed worktree execution active
 Template Baseline: 1.16.0
 ```
 
@@ -23,9 +23,9 @@ Milestone 36處理Test Authoring／Maintenance Hell的制度性風險，不重�
 - Requirement Decision：Accepted — `docs/audits/milestone_36/36-r_requirement_decision.md`
 - Design：Accepted — `docs/superpowers/specs/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance-design.md`
 - Design review：PASS — `docs/audits/milestone_36/36-0_design_spec_review.md`
-- Implementation Plan：Proposed — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
 - Plan review：PASS — `docs/audits/milestone_36/36-p_implementation_plan_review.md`
-- Managed worktree：Not created；必須等待Design＋Plan accepted。
+- Managed worktree：`C:\Users\crazy\.devspace\worktrees\flutter_architecture-98449518` / `milestone-36-test-authoring-governance`
 
 ## Latest Completed Scope
 
@@ -56,8 +56,10 @@ Milestone 36 read-only admission：CONFIRMED
 → Design Spec：ACCEPTED
 → Design雙層Task review：PASS
 → 使用者Design approval：APPROVED
-→ Implementation Plan：PROPOSED
+→ Implementation Plan：ACCEPTED
 → Plan雙層Task review：PASS
-→ 下一步：等待使用者明確核准Implementation Plan
-→ Plan accepted後才建立managed worktree／implementation
+→ 使用者Implementation Plan approval：APPROVED
+→ Managed worktree / execution admission：PASS
+→ Task 36-1 Test Authoring Decision Contract RED：ACCEPTED / expected 5 failures captured
+→ 下一步：Task 36-2 Central Test Authoring Governance GREEN
 ```

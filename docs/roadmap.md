@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: None
-State: Milestone 35 completed / Template Baseline 1.16.0 published
+Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
+State: Requirement Decision accepted / Design proposed and reviewed / awaiting user Design approval
 Template Baseline: 1.16.0
 ```
 

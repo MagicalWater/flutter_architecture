@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.16.0
 ```txt
 Template Baseline: 1.16.0
 Phase 1 / MVP: Completed
-Current active milestone: None
-Current phase: Baseline 1.16.0 published / awaiting next Requirement Decision
+Current active milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
+Current phase: Requirement Decision accepted / Design proposed and reviewed / awaiting user Design approval
 Latest completed initiative: Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective — 1.16.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -352,12 +352,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: None
-Current phase: Baseline 1.16.0 published / awaiting next Requirement Decision
+Current active milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
+Current phase: Requirement Decision accepted / Design proposed and reviewed / awaiting user Design approval
 Latest completed initiative: Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective — 1.16.0
 Maintenance mode: Available
 Open Audit remediation findings: none from Milestone 35; final closure P0=0 / undisposed P1=0
 ```
+
+Milestone 36已完成read-only Test Authoring Cost admission與Level 4 Requirement Decision，確認current governance存在TDD route過廣、Feature reference test-density imitation、layer-for-layer／trivial testing與缺少`no-new-test justified` disposition的制度性風險。Proposed Design已完成雙層Design review並等待使用者明確核准；在核准前不得建立Plan、worktree或開始implementation。
 
 Milestone 34已在既有Pencil-to-Flutter route加入representation classification／asset-font provenance gate，Template Baseline 1.15.2 publication與post-release validation均PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`，Skill behavioral validation入口為`docs/guides/skill_behavioral_validation.md`。Final closure evidence由`docs/audits/milestone_34/34-6_post_release_validation.md`路由。
 

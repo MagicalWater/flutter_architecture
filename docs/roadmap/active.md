@@ -3,7 +3,7 @@ document_type: active-milestone
 status: accepted
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.16.0
+last_reviewed_baseline: 1.17.0
 ---
 
 # Active Milestone
@@ -12,8 +12,8 @@ last_reviewed_baseline: 1.16.0
 
 ```txt
 Active Milestone: Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-State: Design accepted / Implementation Plan accepted / managed worktree execution active
-Template Baseline: 1.16.0
+State: Task 36-8 holistic accepted / local 1.17.0 release ready / publication pending
+Template Baseline: 1.17.0 local release identity
 ```
 
 ## Active Scope
@@ -72,5 +72,8 @@ Milestone 36 read-only admission：CONFIRMED
 → Auth／Catalog／Profile：architecture／behavior references retained；test-density quota explicitly rejected
 → Task 36-7 Risk-Based Authoring Acceptance Corpus：ACCEPTED
 → Low-risk 0-new-test controls：PASS / High-risk direct-owner controls：PASS
-→ 下一步：Task 36-8 Holistic Final Review and Release Disposition
+→ Task 36-8 Holistic Final Review and Release Disposition：ACCEPTED
+→ Local Template Baseline：1.17.0 / MINOR
+→ Fresh holistic validation：docs 57/57、CI Python 246/246、inventory 11/11、5-workspace analyze、full Flutter regression PASS（App 493 cases）
+→ 下一步：等待publication authorization；之後integrate/push main並執行Task 36-9 published-main post-release validation
 ```

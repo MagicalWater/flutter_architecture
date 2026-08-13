@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: None
-State: Maintenance / Requirement Decision entry
+Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
+State: Planning — Design accepted / Implementation Plan proposed
 Template Baseline: 1.17.0
 ```
 

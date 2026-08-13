@@ -8,26 +8,34 @@ last_reviewed_baseline: 1.17.0
 
 # Active Milestone
 
-目前沒有active milestone：
+目前 active milestone：
 
 ```txt
-Active Milestone: None
-State: Maintenance / Requirement Decision entry
+Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
+State: Planning — Design accepted / Implementation Plan proposed
 Template Baseline: 1.17.0
 ```
 
-## Latest Completed Scope
+## Scope
 
-Milestone 36處理Test Authoring／Maintenance Hell的制度性風險，不重做Milestone 35的test execution routing。新增tests現在由risk／invariant／failure mode驅動，而不是由Task／class／architecture layer數量驅動。
+Milestone 37只處理「Flutter Template repository 如何正式出生為新的 Product repository」：
 
-- Requirement Decision：Accepted — `docs/audits/milestone_36/36-r_requirement_decision.md`
-- Design：Accepted — `docs/superpowers/specs/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance-design.md`
-- Design review：PASS — `docs/audits/milestone_36/36-0_design_spec_review.md`
-- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
-- Plan review：PASS — `docs/audits/milestone_36/36-p_implementation_plan_review.md`
-- Final review：`docs/audits/milestone_36/36-8_holistic_final_review.md`
-- Post-release validation：`docs/audits/milestone_36/36-9_post_release_validation.md`
-- Release：Template Baseline 1.17.0 published / formal closure complete
+- GitHub Template Repository／`Use this template` newcomer contract；
+- machine-readable repository lifecycle與template provenance；
+- first-Agent admission與fail-closed routing；
+- repository identity transition；
+- delegation至既有native product identity adoption；
+- fresh no-handoff product admission acceptance。
+
+明確不處理產品需求、MVP、Feature、UI／UX、Backend、產品roadmap、Store distribution、signing或automatic upstream template sync。
+
+## Current Planning Authority
+
+- Requirement Decision：Accepted — `docs/audits/milestone_37/37-r_requirement_decision.md`
+- Design：Accepted — `docs/superpowers/specs/2026-08-14-milestone-37-template-to-product-repository-bootstrap-design.md`
+- Design review：PASS — `docs/audits/milestone_37/37-0_design_spec_review.md`
+- Implementation Plan：Proposed — `docs/superpowers/plans/2026-08-14-milestone-37-template-to-product-repository-bootstrap.md`
+- Plan review：PASS — `docs/audits/milestone_37/37-p_implementation_plan_review.md`
 
 ## Latest Completed Milestone
 
@@ -39,16 +47,9 @@ Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective�
 ## Current Next Action
 
 ```txt
-Milestone 36：COMPLETED / ARCHIVED
-→ Template Baseline 1.17.0：PUBLISHED
-→ Published main：b04a845a1f9dd65a8c1e0438d43a6e3e7001747e
-→ Published-main planner：release / full regression / Android+iOS gates
-→ Test Authoring contracts：5/5 PASS
-→ CI contracts：246/246 PASS
-→ Inventory contracts：11/11 PASS
-→ 5-workspace analyze：PASS
-→ Flutter workspace regression：PASS / App 493 cases
-→ macOS iOS development + production verification：BUILD SUCCEEDED
-→ Task 36-9 post-release validation：COMPLETED
-→ Current next action：new work must re-enter Requirement Decision
+Milestone 37 Requirement Decision：ACCEPTED
+→ Design：ACCEPTED / review PASS
+→ Implementation Plan：PROPOSED / review PASS
+→ Current next action：obtain explicit user approval for Implementation Plan
+→ Implementation must not begin before Plan approval
 ```

@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-37-implementation-plan
 last_reviewed_baseline: 1.17.0
@@ -352,4 +352,4 @@ implement
 
 ## 10. Current Status
 
-本 Plan 為 `proposed`，等待完整 Plan Task review與使用者明確核准；在此之前不得開始 implementation。
+本 Plan 已於 2026-08-14 取得使用者明確核准，status 為 `accepted`。Implementation 可依 Execution Gate 建立 managed worktree，並按本 Plan 的 Task 順序執行。

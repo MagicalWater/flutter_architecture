@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.17.0
 
 ```txt
 Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-State: Planning — Design accepted / Implementation Plan proposed
+State: Execution — Design accepted / Implementation Plan accepted
 Template Baseline: 1.17.0
 ```
 
@@ -34,7 +34,7 @@ Milestone 37只處理「Flutter Template repository 如何正式出生為新的 
 - Requirement Decision：Accepted — `docs/audits/milestone_37/37-r_requirement_decision.md`
 - Design：Accepted — `docs/superpowers/specs/2026-08-14-milestone-37-template-to-product-repository-bootstrap-design.md`
 - Design review：PASS — `docs/audits/milestone_37/37-0_design_spec_review.md`
-- Implementation Plan：Proposed — `docs/superpowers/plans/2026-08-14-milestone-37-template-to-product-repository-bootstrap.md`
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-14-milestone-37-template-to-product-repository-bootstrap.md`
 - Plan review：PASS — `docs/audits/milestone_37/37-p_implementation_plan_review.md`
 
 ## Latest Completed Milestone
@@ -49,7 +49,7 @@ Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective�
 ```txt
 Milestone 37 Requirement Decision：ACCEPTED
 → Design：ACCEPTED / review PASS
-→ Implementation Plan：PROPOSED / review PASS
-→ Current next action：obtain explicit user approval for Implementation Plan
-→ Implementation must not begin before Plan approval
+→ Implementation Plan：ACCEPTED / review PASS
+→ Current next action：managed worktree fresh admission and Task 37-1 execution
+→ Implementation authorized by explicit user approval
 ```

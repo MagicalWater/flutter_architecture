@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.17.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # Milestone Routing
@@ -32,10 +32,23 @@ Milestone routing 只回答：
 
 ```txt
 Active Milestone: None
-Template Baseline: 1.17.0
+Template Baseline: 1.18.0
 ```
 
-目前active authority：`docs/roadmap/active.md`；Milestone 36已完成Template Baseline 1.17.0 publication與Task 36-9 published-main post-release validation，current work回到Requirement Decision入口。
+目前沒有active milestone；current work回到`docs/roadmap/active.md`與Requirement Decision入口。Milestone 37已發布Template Baseline `1.18.0`並完成Task 37-9 published-main post-release closure。
+
+### Milestone 37 closed routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_37/37-r_requirement_decision.md`
+- Design：Accepted — `docs/superpowers/specs/2026-08-14-milestone-37-template-to-product-repository-bootstrap-design.md`
+- Design Review：PASS / user approved — `docs/audits/milestone_37/37-0_design_spec_review.md`
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-14-milestone-37-template-to-product-repository-bootstrap.md`
+- Plan Review：PASS / user approved — `docs/audits/milestone_37/37-p_implementation_plan_review.md`
+- Task 37-6 Isolated Bootstrap Acceptance：Accepted — `docs/audits/milestone_37/37-6_isolated_bootstrap_acceptance.md`
+- Task 37-7 Fresh Agent Behavioral Acceptance：Accepted — `docs/audits/milestone_37/37-7_fresh_agent_behavioral_acceptance.md`
+- Task 37-8 Holistic Final Review：PASS — `docs/audits/milestone_37/37-8_holistic_final_review.md`
+- Task 37-9 Post-release Validation：Completed — `docs/audits/milestone_37/37-9_post_release_validation.md`
+- Release：Template Baseline `1.18.0`已發布並完成formal closure
 
 ### Milestone 36 closed routing
 

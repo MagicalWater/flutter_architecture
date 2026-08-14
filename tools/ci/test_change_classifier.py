@@ -63,6 +63,15 @@ class ChangeClassifierPathContractTest(unittest.TestCase):
         self.assertEqual(result.change_classes, ("governance",))
         self.assertFalse(result.fail_safe)
 
+    def test_repository_identity_manifest_is_governance_without_platform_builds(self) -> None:
+        result = classify_paths(["repository_identity.json"])
+
+        self.assertEqual(result.change_classes, ("governance",))
+        self.assertFalse(result.fail_safe)
+        self.assertTrue(result.full_ci)
+        self.assertFalse(result.android_build)
+        self.assertFalse(result.ios_build)
+
     def test_repository_authored_skill_reference_is_governance(self) -> None:
         result = classify_paths(
             [

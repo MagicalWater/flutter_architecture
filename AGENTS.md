@@ -12,6 +12,7 @@
 
 ```txt
 AGENTS.md
+repository_identity.json
 VERSION
 docs/README.md
 docs/project_context.md

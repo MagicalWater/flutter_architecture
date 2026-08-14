@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.17.0
+- Template Baseline Version：1.18.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -38,6 +38,7 @@
 - Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance：Completed / Archived（Release 1.15.2）
 - Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective：Completed / Archived（Release 1.16.0）
 - Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective：Completed / Archived（Release 1.17.0）
+- Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance：Completed / Archived（Release 1.18.0）
 
 平台能力：
 
@@ -53,6 +54,31 @@
 Android與iOS目前皆為Supported平台。iOS已包含tracked runner、unsigned Simulator build、runtime／storage／security smoke、macOS golden authority與GitHub-hosted build evidence；physical-device biometric acceptance、IPA signing與App Store distribution仍有明確deferred disposition。
 
 版本變更請參考 `CHANGELOG.md`。
+
+---
+
+## 從此 Template 開始一個新產品
+
+本 repository 的正式 newcomer path 是 GitHub Template Repository 的 `Use this template`。新產品應建立自己的獨立 repository，再在新 repo 內完成一次性的 Template → Product bootstrap；一般產品起點不使用 Fork 來保存 template parent history。
+
+新 repository 第一次交給 Agent 時，不需要重貼本模板的治理流程，也不需要知道內部 Skill 名稱。最少只要提供：
+
+```txt
+新 repository 路徑
+這是剛從 flutter_architecture template 建立的新產品 repository
+產品名稱
+Base identifier
+```
+
+Fresh Agent 會先讀 root `repository_identity.json` 判斷目前仍是 `template` 或已完成 `product` adoption。完整 repository birth、template provenance、VERSION transition、native identity delegation與fresh-conversation completion contract請讀：
+
+- `docs/guides/template_repository_adoption.md`
+
+Android／iOS application／bundle identity 與三環境 display-name 的 exact procedure仍由：
+
+- `docs/guides/native_environment_adoption.md`
+
+Bootstrap 只處理「新產品 repository 怎麼出生」；不替產品規劃 MVP、Feature、UI／UX或產品 roadmap。
 
 ---
 

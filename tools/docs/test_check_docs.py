@@ -10,6 +10,12 @@ from tools.docs.check_docs import check_repository
 
 
 class DocumentationCheckerTest(unittest.TestCase):
+    def test_repository_identity_is_checked_by_repository_docs_check(self) -> None:
+        with _fixture() as root:
+            (root / "repository_identity.json").unlink()
+
+            self.assertIn("missing-repository-identity", _codes(root))
+
     def test_check_docs_script_supports_direct_execution(self) -> None:
         with _fixture() as root:
             script = Path(__file__).with_name("check_docs.py")
@@ -93,6 +99,49 @@ class DocumentationCheckerTest(unittest.TestCase):
             _write(root, "CHANGELOG.md", "## [1.5.0] - 2026-07-20\n")
 
             self.assertIn("baseline-mismatch", _codes(root))
+
+    def test_product_repository_uses_product_version_marker(self) -> None:
+        with _fixture() as root:
+            _write(root, "VERSION", "0.1.0\n")
+            _write(
+                root,
+                "repository_identity.json",
+                '{"schema_version":1,"repository_kind":"product",'
+                '"product_name":"Pickup Basketball Acceptance",'
+                '"template_origin":{"repository":"MagicalWater/flutter_architecture",'
+                '"baseline":"1.17.0"}}\n',
+            )
+            _write(root, "README.md", "Product Repository Version：0.1.0\n")
+            _write(root, "CHANGELOG.md", "## [0.1.0] - 2026-08-14\n")
+
+            self.assertNotIn("baseline-mismatch", _codes(root))
+
+    def test_prospective_product_manifest_validates_product_docs_before_canonical_transition(self) -> None:
+        with _fixture() as root:
+            _write(root, "VERSION", "0.1.0\n")
+            candidate = root / "candidate-product.json"
+            _write(
+                root,
+                "candidate-product.json",
+                '{"schema_version":1,"repository_kind":"product",'
+                '"product_name":"Pickup Basketball Acceptance",'
+                '"template_origin":{"repository":"MagicalWater/flutter_architecture",'
+                '"baseline":"1.17.0"}}\n',
+            )
+            _write(root, "README.md", "Product Repository Version：0.1.0\n")
+            _write(root, "CHANGELOG.md", "## [0.1.0] - 2026-08-14\n")
+
+            issues = check_repository(root, candidate)
+
+            self.assertNotIn("baseline-mismatch", [issue.code for issue in issues])
+            self.assertNotIn(
+                "template-origin-baseline-mismatch",
+                [issue.code for issue in issues],
+            )
+            self.assertIn(
+                '"repository_kind":"template"',
+                (root / "repository_identity.json").read_text(encoding="utf-8"),
+            )
 
     def test_reports_missing_app_package_and_feature_readmes(self) -> None:
         with _fixture() as root:
@@ -325,7 +374,16 @@ def _codes(root: Path) -> list[str]:
 class _fixture:
     def __enter__(self) -> Path:
         self._temp = tempfile.TemporaryDirectory()
-        return Path(self._temp.name)
+        root = Path(self._temp.name)
+        _write(root, "VERSION", "1.17.0\n")
+        _write(
+            root,
+            "repository_identity.json",
+            '{"schema_version":1,"repository_kind":"template","product_name":null,'
+            '"template_origin":{"repository":"MagicalWater/flutter_architecture",'
+            '"baseline":"1.17.0"}}\n',
+        )
+        return root
 
     def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
         self._temp.cleanup()

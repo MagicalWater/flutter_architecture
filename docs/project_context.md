@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.17.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # Project Context
@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.17.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.17.0
+Template Baseline: 1.18.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-Current phase: Planning — Design accepted / Implementation Plan proposed
-Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance — 1.18.0
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -42,6 +42,8 @@ Milestone completion、release chronology與runtime evidence依`docs/milestones/
 ## Project Purpose
 
 本 repository 是可直接作為中大型 Flutter 專案起點的 Enterprise Architecture Template。
+
+Repository lifecycle machine authority 是 root `repository_identity.json`。目前 template 本體必須維持 `repository_kind = template`；透過 GitHub `Use this template` 建立的新產品 repository才在自己的受治理 bootstrap中完成 `template → product` transition。人類操作入口為 `docs/guides/template_repository_adoption.md`。
 
 核心目標：
 
@@ -68,6 +70,7 @@ root/
   docs/
   tools/
   AGENTS.md
+  repository_identity.json
   README.md
   CHANGELOG.md
   VERSION
@@ -345,7 +348,7 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.17.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.18.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
@@ -354,10 +357,12 @@ Current iOS deployment baseline為15.0。
 ```txt
 Current active milestone: None
 Current phase: Maintenance / Requirement Decision entry
-Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
-Maintenance mode: Available
-Open Audit remediation findings: none from Milestone 36 Task 36-8; P0=0 / undisposed P1=0
+Latest completed initiative: Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance — 1.18.0
+Maintenance mode: No active milestone
+Open Milestone 37 review findings: P0=0 / undisposed P1=0; formally closed by Task 37-9
 ```
+
+Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 
 Milestone 36已完成Risk-Based Test Authoring corrective、Template Baseline 1.17.0 publication與Task 36-9 post-release closure。Current governance把Test Authoring Decision與Milestone 35 Validation Execution Decision分離，新增`Required`／`Recommended`／`no-new-test justified`／`Should-not-add`，並明確禁止Task-for-test、class-for-test與layer-for-layer imitation。Fresh ChatGPT behavioral pressure、published-main authoring contracts、完整workspace regression與macOS/iOS verification均PASS；formal closure evidence見`docs/audits/milestone_36/36-9_post_release_validation.md`。
 
@@ -375,6 +380,7 @@ Latest completed initiative的Design、Plan、final review與post-release eviden
 
 ```txt
 AGENTS.md
+repository_identity.json
 VERSION
 docs/README.md
 docs/project_context.md

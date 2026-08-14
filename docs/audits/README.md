@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.17.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # Audits and Review Evidence
@@ -44,6 +44,21 @@ Final / Holistic Review
 開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
 
 ## Evidence routes
+
+### Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
+
+- [`milestone_37/37-r_requirement_decision.md`](milestone_37/37-r_requirement_decision.md)：GitHub Template Repository → Product Repository birth、fresh admission、repository identity／native identity boundary的Level 4 Requirement Decision。
+- [`milestone_37/37-0_design_spec_review.md`](milestone_37/37-0_design_spec_review.md)：Design focused／whole-Task review與atomic completion P1修正；使用者已核准。
+- [`milestone_37/37-p_implementation_plan_review.md`](milestone_37/37-p_implementation_plan_review.md)：Implementation Plan ordering、prospective product validation、fresh-agent acceptance與release/post-release gates review；使用者已核准。
+- [`milestone_37/37-1_repository_identity_contract_red.md`](milestone_37/37-1_repository_identity_contract_red.md)：repository lifecycle／provenance verifier RED owner。
+- [`milestone_37/37-2_repository_identity_green_review.md`](milestone_37/37-2_repository_identity_green_review.md)：canonical manifest、verifier、docs checker integration與validation planner classification GREEN。
+- [`milestone_37/37-3_bootstrap_routing_skill_review.md`](milestone_37/37-3_bootstrap_routing_skill_review.md)：fresh admission、`adopting-template-repository`、central route與machine Skill discovery review。
+- [`milestone_37/37-4_adr_guide_review.md`](milestone_37/37-4_adr_guide_review.md)：ADR-030與Template Repository Adoption Guide ownership review。
+- [`milestone_37/37-5_current_authority_integration_review.md`](milestone_37/37-5_current_authority_integration_review.md)：template current authority與newcomer routing同步review。
+- [`milestone_37/37-6_isolated_bootstrap_acceptance.md`](milestone_37/37-6_isolated_bootstrap_acceptance.md)：isolated Template → Product atomic transition、prospective docs／identity與product portability acceptance。
+- [`milestone_37/37-7_fresh_agent_behavioral_acceptance.md`](milestone_37/37-7_fresh_agent_behavioral_acceptance.md)：三個無handoff fresh ChatGPT contexts的template／product／invalid lifecycle behavioral acceptance。
+- [`milestone_37/37-8_holistic_final_review.md`](milestone_37/37-8_holistic_final_review.md)：Tasks 37-1～37-7 cross-Task authority review、full matrix validation與Template Baseline 1.18.0 local release disposition。
+- [`milestone_37/37-9_post_release_validation.md`](milestone_37/37-9_post_release_validation.md)：Template Baseline 1.18.0 published-main fresh identity/docs/full regression、generated、Android、macOS/iOS、GitHub Template Repository external setting、published Template → Product isolated acceptance與formal closure。
 
 ### Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
 

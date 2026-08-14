@@ -3,7 +3,7 @@ document_type: final-review
 status: accepted
 authoritative_for:
   - public-repository-readiness-integration-handoff
-last_reviewed_baseline: 1.17.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # Public Repository Readiness — Final Review & Visibility Handoff
@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.17.0
 
 **READY FOR INTEGRATION; visibility change remains explicitly gated.**
 
-依 Requirement、accepted Design、accepted Implementation Plan、Tasks 1～5 與 cross-platform validation，目前沒有發現阻止 repository 公開化的 credential、signing、fork-PR trusted-runner 或 privileged-secret blocker。
+依 Requirement、accepted Design、accepted Implementation Plan、Tasks 1～6 與Template Baseline 1.18.0 fresh cross-platform validation，目前沒有發現阻止 repository 公開化的 credential、signing、fork-PR trusted-runner 或 privileged-secret blocker。
 
 ## Completed scope
 
@@ -21,6 +21,7 @@ last_reviewed_baseline: 1.17.0
 - Public PR / trusted self-hosted / privileged secret direct regression owner。
 - Current tree + full Git history secret readiness scan。
 - Full planner-selected workspace / generated / Android / iOS validation。
+- Milestone 37 published-main authority sync與1.18.0 fresh revalidation。
 
 ## Deliberately preserved
 
@@ -31,15 +32,17 @@ last_reviewed_baseline: 1.17.0
 ## Not performed
 
 - 未修改 GitHub repository visibility。
-- 未 merge / fast-forward `main`。
+- 尚未把Public-readiness completion整合回`main`。
 - 未修改 Milestone 37 implementation scope。
 - 未新增、旋轉或讀取任何 Firebase / signing / GitHub credential value。
 
 ## Integration state
 
 - Working branch：`public-repository-readiness`。
-- Implementation security HEAD：`b10071c699d7cb6126269e1a5808fd11b500190d`。
-- Branch已先推送至 `origin/public-repository-readiness` 以支援 macOS exact-commit validation；final review completion commit需再次推送後才是 branch最新 closure evidence。
+- Synced security authority：`6e9e24f297aa2f9dd5c2740949156e99dd4794db`，已包含`origin/main@26b7fda9845b1ec42e298e0135fa64ee157cc609`的Milestone 37 post-release authority。
+- `VERSION = 1.18.0`；`repository_identity.json`仍為canonical source template lifecycle authority，`repository_kind = template`、origin baseline `1.18.0`。
+- 1.18.0 fresh planner full matrix、secret/history scan、Windows Android與macOS iOS exact-commit validation均PASS。
+- Fresh sync/revalidation evidence：`docs/audits/public_repository_readiness/task_6_main_authority_sync_review.md`。
 
 ## Visibility gate
 
@@ -56,5 +59,5 @@ Repository visibility 只能在以下條件成立後切換：
 - Open P0：0。
 - Undisposed P1：0。
 - Remaining security blocker：0。
-- Remaining user-owned gate：main integration + final GitHub visibility authorization。
+- Remaining user-owned visibility gate：fresh GitHub settings audit + final GitHub visibility authorization。
 

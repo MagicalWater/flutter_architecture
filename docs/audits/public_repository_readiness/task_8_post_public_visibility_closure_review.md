@@ -60,7 +60,7 @@ Selected policy：
 - GitHub-owned Actions：allowed。
 - Verified Marketplace creators blanket allowance：disabled。
 - Explicit third-party pattern：`subosito/flutter-action@*`。
-- Full-length commit SHA enforcement：仍為`true`。
+- Repository-level full-length commit SHA enforcement在Task 8當下設為`true`；後續fresh push CI揭露其會遞迴阻擋`subosito/flutter-action`內部的`actions/cache@v4`，已由Task 9 corrective調整為`false`。Repository-owned workflow仍由machine regression強制所有直接`uses:`固定完整commit SHA。
 
 Current repository workflows使用的外部Actions只有GitHub-owned `actions/*`與`subosito/flutter-action`，且所有`uses:`目前都固定完整commit SHA，因此此設定不破壞current workflow dependency contract。
 
@@ -117,7 +117,7 @@ Fresh GitHub read-back已確認：
 - default branch=`main`。
 - fork PR approval=`all_external_contributors`。
 - Actions=`selected`。
-- SHA pin enforcement=`true`。
+- SHA pin enforcement最終值=`false`；原因與replacement control見Task 9。
 - default `GITHUB_TOKEN`=`read`。
 - main force push=`false`。
 - main deletion=`false`。
@@ -141,5 +141,5 @@ Cross-platform full matrix已於exact Public PR corrective commit `c7ce70c316a9a
 - Visibility blocker：0。
 - Remaining mandatory post-Public blocker：0。
 
-Task 8：**ACCEPTED / CLOSED**。
+Task 8：**ACCEPTED**；post-Public SHA compatibility finding由Task 9 corrective closure補充。
 

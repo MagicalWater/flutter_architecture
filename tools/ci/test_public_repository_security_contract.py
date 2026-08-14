@@ -79,6 +79,21 @@ class PublicRepositorySecurityContractTest(unittest.TestCase):
         for name, workflow in self.workflows.items():
             self.assertNotIn("pull_request_target:", workflow, name)
 
+    def test_repository_owned_workflow_actions_are_pinned_to_full_sha(self) -> None:
+        full_sha = re.compile(r"^[0-9a-f]{40}$")
+        for name, workflow in self.workflows.items():
+            for line in workflow.splitlines():
+                stripped = line.strip()
+                if not stripped.startswith("uses:"):
+                    continue
+                action = stripped.removeprefix("uses:").strip()
+                if action.startswith("./"):
+                    continue
+                self.assertIn("@", action, f"{name}: {action}")
+                _, ref = action.rsplit("@", 1)
+                ref = ref.split("#", 1)[0].strip()
+                self.assertRegex(ref, full_sha, f"{name}: {action}")
+
     def test_secret_material_is_ignored_by_git(self) -> None:
         paths = (
             ".env",

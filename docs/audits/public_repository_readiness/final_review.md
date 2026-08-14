@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.18.0
 
 ## Final disposition
 
-**PUBLIC / CLOSED.**
+**PUBLIC / POST-PUBLIC CORRECTIVE IN PROGRESS.**
 
 依 Requirement、accepted Design、accepted Implementation Plan、Tasks 1～8 與Template Baseline 1.18.0 fresh cross-platform validation，repository已完成Public transition與post-Public GitHub settings closure；目前沒有未處置的credential、signing、fork-PR trusted-runner或privileged-secret blocker。
 
@@ -22,10 +22,10 @@ last_reviewed_baseline: 1.18.0
 - Current tree + full Git history secret readiness scan。
 - Full planner-selected workspace / generated / Android / iOS validation。
 - Milestone 37 published-main authority sync與1.18.0 fresh revalidation。
-- Live GitHub Actions / runner / Environment audit、Public PR GitHub-hosted corrective與repository-level SHA pinning enforcement。
+- Live GitHub Actions / runner / Environment audit、Public PR GitHub-hosted corrective與selected-actions hardening。
 - GitHub repository visibility已依使用者明確授權切換為Public。
 - Fork PR approval已收緊為`all_external_contributors`。
-- Actions已收緊為selected allowlist並維持full-SHA enforcement。
+- Actions已收緊為selected allowlist；repository-level recursive SHA enforcement因Task 9 compatibility finding取消，repository-owned direct `uses:`改由machine regression強制full SHA。
 - `main`已啟用禁止force-push與deletion的最低branch protection。
 
 ## Deliberately preserved
@@ -49,12 +49,13 @@ last_reviewed_baseline: 1.18.0
 - 1.18.0 fresh planner full matrix、secret/history scan、Windows Android與macOS iOS exact-commit validation均PASS。
 - Fresh sync/revalidation evidence：`docs/audits/public_repository_readiness/task_6_main_authority_sync_review.md`。
 - Public PR CI corrective authority：`c7ce70c316a9a8a4682b75d01d7d2af3bfd410cb`；PR不再受`CI_EXECUTION_MODE=self-hosted`關閉，且仍無法選到trusted self-hosted runner。
-- GitHub Actions live setting已啟用`sha_pinning_required = true`；default `GITHUB_TOKEN`保持read-only。
+- GitHub Actions live setting最終為`sha_pinning_required = false`；selected allowlist保留，且repository-owned workflow direct `uses:`由machine regression強制full SHA；default `GITHUB_TOKEN`保持read-only。
 - Live CI/settings evidence：`docs/audits/public_repository_readiness/task_7_public_ci_settings_hardening_review.md`。
 - Public visibility與post-Public settings closure evidence：`docs/audits/public_repository_readiness/task_8_post_public_visibility_closure_review.md`。
+- SHA pinning compatibility corrective evidence：`docs/audits/public_repository_readiness/task_9_sha_pinning_compatibility_corrective_review.md`。
 - GitHub live state：visibility=`PUBLIC`、`isTemplate=true`、default branch=`main`。
 - Fork PR approval=`all_external_contributors`。
-- Actions=`selected`，GitHub-owned Actions + `subosito/flutter-action@*`；full-SHA pinning required。
+- Actions=`selected`，GitHub-owned Actions + `subosito/flutter-action@*`；repository-level recursive SHA pinning disabled，repository-owned direct workflow references仍強制full SHA。
 - `main` branch protection禁止force-push與deletion，不強迫PR-only。
 
 ## Visibility gate disposition
@@ -72,7 +73,7 @@ last_reviewed_baseline: 1.18.0
 - Open P0：0。
 - Undisposed P1：0。
 - Remaining security blocker：0。
-- Remaining mandatory visibility / post-Public gate：0。
+- Remaining mandatory visibility / post-Public gate：fresh GitHub Actions GREEN verification after Task 9 corrective。
 
-Public Repository Readiness：**COMPLETED / CLOSED**。
+Public Repository Readiness：**POST-PUBLIC CORRECTIVE IN PROGRESS**，待fresh GitHub Actions GREEN後重新CLOSED。
 

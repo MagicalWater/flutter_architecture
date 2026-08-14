@@ -82,7 +82,10 @@ class CiExecutionModeContractTest(unittest.TestCase):
         ios = WORKFLOWS[2].read_text(encoding="utf-8")
         for text in (ci, ios):
             self.assertIn("github.event_name == 'pull_request'", text)
-            self.assertIn("vars.CI_EXECUTION_MODE == 'github-hosted'", text)
+            self.assertIn(
+                "contains(fromJSON('[\"self-hosted\",\"github-hosted\"]'), vars.CI_EXECUTION_MODE)",
+                text,
+            )
             self.assertNotIn(
                 "github.event_name == 'pull_request' && vars.CI_EXECUTION_MODE == 'self-hosted'",
                 text,
@@ -92,6 +95,18 @@ class CiExecutionModeContractTest(unittest.TestCase):
         self.assertIn("github.event_name == 'workflow_dispatch'", observability)
         self.assertIn("inputs.remote_acceptance == true", observability)
         self.assertNotIn("github.event_name == 'push' || inputs.remote_acceptance", observability)
+
+    def test_self_hosted_selection_has_no_runner_offline_fallback(self) -> None:
+        for workflow in WORKFLOWS:
+            text = workflow.read_text(encoding="utf-8")
+            self.assertNotIn("runner.status", text, workflow.name)
+            self.assertNotIn("fallback_to_github_hosted", text, workflow.name)
+            self.assertNotIn("fallback-to-github-hosted", text, workflow.name)
+
+    def test_github_hosted_verification_does_not_require_signing_secrets(self) -> None:
+        for workflow in WORKFLOWS[:3]:
+            text = workflow.read_text(encoding="utf-8")
+            self.assertNotIn("${{ secrets.", text, workflow.name)
 
     def test_local_entrypoint_exposes_all_supported_suites(self) -> None:
         script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")

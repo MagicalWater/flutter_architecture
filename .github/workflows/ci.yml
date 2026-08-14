@@ -42,7 +42,7 @@ jobs:
     name: Classify Changes
     if: >-
       ${{
-        (github.event_name == 'pull_request' && vars.CI_EXECUTION_MODE == 'github-hosted') ||
+        github.event_name == 'pull_request' ||
         (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
         (github.event_name == 'workflow_dispatch' &&
          ((inputs.execution_mode == 'repository-default' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||

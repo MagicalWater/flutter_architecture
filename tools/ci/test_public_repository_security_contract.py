@@ -47,6 +47,21 @@ class PublicRepositorySecurityContractTest(unittest.TestCase):
                         name,
                     )
 
+    def test_pull_request_ci_is_not_disabled_by_repository_execution_mode(self) -> None:
+        ci = self.workflows["ci.yml"]
+        classify = next(
+            block
+            for block in self._job_blocks(ci)
+            if block.startswith("classify-changes:\n")
+            or block.startswith("classify-changes:\r\n")
+        )
+        condition = classify.split("    runs-on:", 1)[0]
+        self.assertIn("github.event_name == 'pull_request'", condition)
+        self.assertNotIn(
+            "github.event_name == 'pull_request' && vars.CI_EXECUTION_MODE",
+            condition,
+        )
+
     def test_provider_secrets_are_not_available_to_pull_request_jobs(self) -> None:
         observability = self.workflows["observability-acceptance.yml"]
         secret_jobs = [

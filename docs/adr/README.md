@@ -50,6 +50,7 @@ Authority cutover後所有正式 Decision必須維持 `extracted`，checker強�
 | ADR-028 | adr-028-repository-local-pencil-to-flutter-design-implementation-workflow.md | extracted |
 | ADR-029 | adr-029-risk-based-test-authoring-governance.md | extracted |
 | ADR-030 | adr-030-template-to-product-repository-identity-bootstrap-contract.md | extracted |
+| ADR-031 | adr-031-template-to-product-repository-infrastructure-adoption-contract.md | extracted |
 
 ## Canonical ADR Contract
 

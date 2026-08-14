@@ -112,6 +112,8 @@ fresh request
 → adopting-template-product-identity（只有 native product identity portion）
 ```
 
+首次產品adoption還必須由`adopting-template-repository`讀取`repository_infrastructure.json`，明確選定CI profile，完成tracked infrastructure validation與required live disposition／selected-profile acceptance後，才允許prospective product validation與final lifecycle transition。CI live state不得從workflow bytes推測；missing／invalid infrastructure manifest同樣fail closed。
+
 若 manifest 為 `product`，再次要求首次 bootstrap 時不得重跑；應回到中央治理重新分類為 bounded repository／product identity change。Missing／invalid manifest 必須 fail closed。API-only、visual-only、單一平台 repair、discussion-only request 也不得誤觸首次 bootstrap Skill。
 
 ## Pencil-to-Flutter domain route

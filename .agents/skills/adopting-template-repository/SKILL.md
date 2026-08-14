@@ -28,11 +28,14 @@ Missing、malformed 或 unknown repository identity 必須 fail closed，不得�
 本 Skill 只編排：
 
 - 讀取 `repository_identity.json` 與 root `VERSION`；
+- 讀取並驗證 `repository_infrastructure.json`，收集／確認產品CI profile與non-secret infrastructure disposition；
 - 收集／確認產品名稱與 repository bootstrap 所需最小 identity input；
 - 保存 template origin repository 與 template baseline；
 - 將產品 current `VERSION` 與 template provenance 分離；
 - 將 README／project context／roadmap／CHANGELOG 等 current authority 從模板本體投影為產品 repository；
 - 需要 Android／iOS product identity 時，委派既有 `adopting-template-product-identity`；
+- selected CI profile required acceptance完成前不得宣稱live infrastructure configured或finalize product；
+- GitHub live infrastructure只接受fresh admission／authorized mutation／read-back evidence，不從tracked prose猜測；
 - 維持 blocking validation 完成前 canonical `repository_kind` 仍為 `template`；
 - prospective candidate-product validation PASS 後，最後一步才把 canonical manifest 切為 `product`，並立即 fresh re-verify。
 
@@ -45,11 +48,13 @@ Missing、malformed 或 unknown repository identity 必須 fail closed，不得�
 ```txt
 AGENTS.md
 repository_identity.json
+repository_infrastructure.json
 VERSION
 docs/project_context.md
 docs/roadmap.md
 docs/guides/template_repository_adoption.md（存在後）
 tools/docs/verify_repository_identity.py
+tools/docs/verify_repository_infrastructure.py
 .agents/skills/adopting-template-product-identity/SKILL.md（native identity in scope 時）
 ```
 
@@ -63,7 +68,9 @@ Human Guide 尚未建立時，不得自行發明平行 procedure；依 accepted 
 read template identity + VERSION
 → collect and confirm product inputs
 → repository docs/version/native mutations while canonical kind stays template
-→ required docs/native/component validation
+→ infrastructure manifest + CI profile selection
+→ required docs/native/infrastructure contract validation
+→ live infrastructure disposition / selected profile acceptance
 → prospective candidate-product identity validation
 → final canonical repository_identity transition to product
 → canonical identity/docs re-validation
@@ -71,6 +78,8 @@ read template identity + VERSION
 ```
 
 不得先把 `repository_kind` 改成 `product` 再補驗證。若中途失敗，persistent lifecycle state必須仍可被判定為尚未完成首次採用，而不是半完成 product。
+
+CI profile必須明確選定為`manual-local`、`self-hosted`或`github-hosted`；missing live `CI_EXECUTION_MODE`不得被解讀為預設值。Optional secret-backed capability可以明確`deferred`／`not-applicable`，但selected CI profile本身不可defer。Live infrastructure缺權限或fresh read-back不符時，不得宣稱`configured`。
 
 ## Product-state guard
 

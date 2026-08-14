@@ -6,9 +6,42 @@ import unittest
 from pathlib import Path
 
 from tools.docs.verify_repository_identity import check_repository_identity
+from tools.docs.verify_repository_infrastructure import check_repository_infrastructure
 
 
 class TemplateRepositoryBootstrapAtomicLifecycleTest(unittest.TestCase):
+    def test_product_transition_requires_selected_infrastructure_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "VERSION").write_text("0.1.0\n", encoding="utf-8")
+            (root / "repository_identity.json").write_text(
+                json.dumps(_identity("product", "Pickup Basketball Acceptance")),
+                encoding="utf-8",
+            )
+            infrastructure = {
+                "schema_version": 1,
+                "ci_execution_mode": "self-hosted",
+                "artifact_store": {
+                    "strategy": "managed-local",
+                    "product_key": "pickup-basketball",
+                },
+                "self_hosted_runner": {"disposition": "deferred"},
+                "github": {
+                    "actions_policy": "managed",
+                    "branch_protection": "minimum-safety",
+                    "fork_pr_policy": "configured",
+                },
+                "observability_remote_acceptance": {"disposition": "deferred"},
+            }
+            (root / "repository_infrastructure.json").write_text(
+                json.dumps(infrastructure), encoding="utf-8"
+            )
+
+            codes = {
+                issue.code for issue in check_repository_infrastructure(root)
+            }
+            self.assertIn("product-required-infrastructure-unresolved", codes)
+
     def test_product_transition_requires_prospective_validation_before_final_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

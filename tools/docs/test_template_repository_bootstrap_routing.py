@@ -33,6 +33,9 @@ class TemplateRepositoryBootstrapRoutingTest(unittest.TestCase):
         self.assertIn("adopting-template-product-identity", skill)
         self.assertIn("template", skill)
         self.assertIn("product", skill)
+        self.assertIn("repository_infrastructure.json", skill)
+        self.assertIn("CI profile", skill)
+        self.assertIn("live infrastructure", skill)
 
     def test_pressure_scenarios_cover_required_negative_routes(self) -> None:
         pressure = read(
@@ -47,6 +50,8 @@ class TemplateRepositoryBootstrapRoutingTest(unittest.TestCase):
             "visual-only",
             "單一平台",
             "discussion-only",
+            "CI profile未選定",
+            "live infrastructure缺權限",
         ):
             self.assertIn(required, pressure)
 
@@ -62,6 +67,8 @@ class TemplateRepositoryBootstrapRoutingTest(unittest.TestCase):
         self.assertIn("`adopting-template-repository`", workflow)
         self.assertIn("`adopting-template-product-identity`", workflow)
         self.assertIn("repository_identity.json", workflow)
+        self.assertIn("repository_infrastructure.json", workflow)
+        self.assertIn("ADR-031", workflow)
 
 
 if __name__ == "__main__":

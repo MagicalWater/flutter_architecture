@@ -63,3 +63,21 @@
 輸入：repository docs與native projections已修改，但 blocking validation 在 final lifecycle transition 前失敗。
 
 預期：canonical `repository_kind` 仍為 `template`；Task保持 open／blocked，修正後重新 prospective validate，不能留下半完成 product state。
+
+### R11 — CI profile未選定
+
+輸入：產品identity與native candidate均完成，但`repository_infrastructure.json`沒有合法selected CI profile，或live `CI_EXECUTION_MODE`缺失而Agent想把它視為manual-local。
+
+預期：fail closed；selected CI profile不可defer、不可從missing variable猜測，canonical `repository_kind`保持`template`。
+
+### R12 — live infrastructure缺權限
+
+輸入：tracked infrastructure manifest宣告某GitHub capability為`configured`，但Agent沒有權限讀取或fresh read-back live state。
+
+預期：不得宣稱configured；Task維持blocked或依accepted scope把optional capability改為explicit deferred。不得讀取或搬運secret value。
+
+### R13 — Optional provider capability deferred
+
+輸入：selected CI profile required acceptance已完成，但產品暫不配置Observability Environment／secret names。
+
+預期：允許`observability_remote_acceptance.disposition = deferred`；remote acceptance route必須安全skip，不阻止product bootstrap，也不得偽造provider readiness。

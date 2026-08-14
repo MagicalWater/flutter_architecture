@@ -383,6 +383,18 @@ class _fixture:
             '"template_origin":{"repository":"MagicalWater/flutter_architecture",'
             '"baseline":"1.17.0"}}\n',
         )
+        _write(
+            root,
+            "repository_infrastructure.json",
+            '{"schema_version":1,"ci_execution_mode":"self-hosted",'
+            '"artifact_store":{"strategy":"managed-local",'
+            '"product_key":"flutter_architecture"},'
+            '"self_hosted_runner":{"disposition":"configured"},'
+            '"github":{"actions_policy":"managed",'
+            '"branch_protection":"minimum-safety",'
+            '"fork_pr_policy":"configured"},'
+            '"observability_remote_acceptance":{"disposition":"deferred"}}\n',
+        )
         return root
 
     def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:

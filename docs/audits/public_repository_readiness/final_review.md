@@ -2,17 +2,17 @@
 document_type: final-review
 status: accepted
 authoritative_for:
-  - public-repository-readiness-integration-handoff
+  - public-repository-readiness-final-closure
 last_reviewed_baseline: 1.18.0
 ---
 
-# Public Repository Readiness — Final Review & Visibility Handoff
+# Public Repository Readiness — Final Review & Public Closure
 
 ## Final disposition
 
-**READY FOR INTEGRATION; visibility change remains explicitly gated.**
+**PUBLIC / CLOSED.**
 
-依 Requirement、accepted Design、accepted Implementation Plan、Tasks 1～7 與Template Baseline 1.18.0 fresh cross-platform validation，目前沒有發現阻止 repository 公開化的 credential、signing、fork-PR trusted-runner 或 privileged-secret blocker。
+依 Requirement、accepted Design、accepted Implementation Plan、Tasks 1～8 與Template Baseline 1.18.0 fresh cross-platform validation，repository已完成Public transition與post-Public GitHub settings closure；目前沒有未處置的credential、signing、fork-PR trusted-runner或privileged-secret blocker。
 
 ## Completed scope
 
@@ -23,6 +23,10 @@ last_reviewed_baseline: 1.18.0
 - Full planner-selected workspace / generated / Android / iOS validation。
 - Milestone 37 published-main authority sync與1.18.0 fresh revalidation。
 - Live GitHub Actions / runner / Environment audit、Public PR GitHub-hosted corrective與repository-level SHA pinning enforcement。
+- GitHub repository visibility已依使用者明確授權切換為Public。
+- Fork PR approval已收緊為`all_external_contributors`。
+- Actions已收緊為selected allowlist並維持full-SHA enforcement。
+- `main`已啟用禁止force-push與deletion的最低branch protection。
 
 ## Deliberately preserved
 
@@ -30,12 +34,12 @@ last_reviewed_baseline: 1.18.0
 - Git commit author `crazydennies@gmail.com` 保留；使用者已明確接受公開。
 - Git history未 rewrite。
 
-## Not performed
+## Deliberately not changed
 
-- 未修改 GitHub repository visibility。
-- 尚未把Public-readiness completion整合回`main`。
 - 未修改 Milestone 37 implementation scope。
 - 未新增、旋轉或讀取任何 Firebase / signing / GitHub credential value。
+- 未強制`main`採PR-only / required status checks，保留現有trusted direct push與local self-hosted CI操作模型。
+- 未對`staging-observability`加入required reviewer；secret-consuming workflow仍維持explicit trusted manual gate，required reviewer若需導入應另有reviewer ownership決策。
 
 ## Integration state
 
@@ -47,21 +51,28 @@ last_reviewed_baseline: 1.18.0
 - Public PR CI corrective authority：`c7ce70c316a9a8a4682b75d01d7d2af3bfd410cb`；PR不再受`CI_EXECUTION_MODE=self-hosted`關閉，且仍無法選到trusted self-hosted runner。
 - GitHub Actions live setting已啟用`sha_pinning_required = true`；default `GITHUB_TOKEN`保持read-only。
 - Live CI/settings evidence：`docs/audits/public_repository_readiness/task_7_public_ci_settings_hardening_review.md`。
+- Public visibility與post-Public settings closure evidence：`docs/audits/public_repository_readiness/task_8_post_public_visibility_closure_review.md`。
+- GitHub live state：visibility=`PUBLIC`、`isTemplate=true`、default branch=`main`。
+- Fork PR approval=`all_external_contributors`。
+- Actions=`selected`，GitHub-owned Actions + `subosito/flutter-action@*`；full-SHA pinning required。
+- `main` branch protection禁止force-push與deletion，不強迫PR-only。
 
-## Visibility gate
+## Visibility gate disposition
 
-Repository visibility 只能在以下條件成立後切換：
+原visibility gate三項條件均已完成：
 
-1. 本 branch 已安全整合到 intended `main` authority，且整合沒有覆蓋其他進行中工作。
-2. Fresh GitHub settings check確認目前 visibility、fork / Actions / Environment / branch protection相關設定沒有新的 blocker；Private期間不可用的fork approval / ruleset能力必須在visibility切換後立即完成post-Public closure。
-3. 使用者對「將 `MagicalWater/flutter_architecture` 改為 Public」給出明確授權。
+1. Public-readiness已安全整合到`main`。
+2. Fresh GitHub settings audit與post-Public hardening已完成。
+3. 使用者已明確授權將`MagicalWater/flutter_architecture`改為Public，visibility transition已執行並fresh read-back確認。
 
-在上述 gate 前，不得把「readiness PASS」誤寫成「repository 已 Public」。
+因此repository current visibility authority為：**PUBLIC**。
 
 ## Findings
 
 - Open P0：0。
 - Undisposed P1：0。
 - Remaining security blocker：0。
-- Remaining user-owned visibility gate：final GitHub visibility authorization；切Public後仍需立即完成fork approval / ruleset / Environment live-settings closure與fresh verification。
+- Remaining mandatory visibility / post-Public gate：0。
+
+Public Repository Readiness：**COMPLETED / CLOSED**。
 

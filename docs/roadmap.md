@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-State: Execution — Design accepted / Implementation Plan accepted
+State: Execution — Tasks 37-1 through 37-5 completed; Task 37-6 isolated bootstrap acceptance next
 Template Baseline: 1.17.0
 ```
 

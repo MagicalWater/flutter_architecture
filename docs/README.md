@@ -41,6 +41,7 @@ last_reviewed_baseline: 1.16.0
 
 ```txt
 AGENTS.md
+repository_identity.json
 VERSION
 docs/README.md
 docs/project_context.md
@@ -85,6 +86,8 @@ docs/roadmap.md
 所有 production App、Package 與 Feature 都已有 local README。修改前先讀對應 README，再依 task route 載入相關 Decision、source 與 tests。
 
 使用者若需要可直接複製的新功能、畫面、Bug、Refactor、Migration或discussion-only對話起頭，先讀`docs/guides/agent_assisted_development_quick_start.md`；該Guide只提供操作入口，不取代Feature README、Decision或中央治理Skill。
+
+若工作是從GitHub `Use this template`建立的新repository首次採用為產品，讀[`docs/guides/template_repository_adoption.md`](guides/template_repository_adoption.md)與ADR-030；repository lifecycle state先以root `repository_identity.json`判定，native Android／iOS identity procedure再按需路由`native_environment_adoption.md`。
 
 ### Active Milestone execution
 
@@ -157,7 +160,7 @@ Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆
 - `docs/governance/development_workflow.md`：需求分類、Superpowers、雙層Task、Skill registry與repository-local workflow／feature shortcut的治理總覽。
 - `docs/design_sources/README.md`：Repository-local design source與external admission boundary。
 - `docs/visual_authority/README.md`：Visual manifest contract、source ranking、hash與canonical viewport routing。
-- `docs/guides/`：可重複使用的操作指南；AI Agent日常入口與可複製Prompt請讀`docs/guides/agent_assisted_development_quick_start.md`，accepted `.pen`到Flutter請讀`docs/guides/pencil_to_flutter_workflow.md`，fresh isolated-agent Skill behavioral validation請讀`docs/guides/skill_behavioral_validation.md`，CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
+- `docs/guides/`：可重複使用的操作指南；GitHub Template Repository首次產品採用請讀`docs/guides/template_repository_adoption.md`，AI Agent日常入口與可複製Prompt請讀`docs/guides/agent_assisted_development_quick_start.md`，accepted `.pen`到Flutter請讀`docs/guides/pencil_to_flutter_workflow.md`，fresh isolated-agent Skill behavioral validation請讀`docs/guides/skill_behavioral_validation.md`，CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
 - `docs/mistakes/`：已知反模式與錯誤案例。
 - `docs/evolution/`：架構演進知識入口。
 

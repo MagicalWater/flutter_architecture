@@ -11,14 +11,15 @@ description: 當此 Flutter 模板 repository 中的工作需要評估、規劃�
 
 ## 必要順序
 
-1. 檢查需求與相關 current authority。
-2. 閱讀[工作分類](references/work-classification.md)，選擇 Level 0～5。
-3. 產生下方 Requirement Decision。
-4. 閱讀[artifact routing](references/artifact-routing.md)，選擇必要、可選與禁止的 artifacts、Skills 與 validation。
-5. 依選定模式套用[雙層 Task 治理](references/two-layer-task-governance.md)。
-6. 若工作會修改observable behavior，先依[Test Authoring Decision](references/test-authoring.md)判定是否需要新增regression test與primary owner，再依序使用已路由的 Superpowers Skills。
-7. 保持 current authority、review evidence 與 release state 同步。
-8. 任一必要 validation 失敗時，維持目前 Task 開啟；修正並 fresh re-verify 後，才可接受或建立 completion commit。
+1. 先讀取 root `repository_identity.json`，確認 repository lifecycle state；missing、malformed 或 unknown state 一律 fail closed，不得從 remote URL、資料夾名稱、README prose 或 bundle identifier 猜測。
+2. 檢查需求與相關 current authority。
+3. 閱讀[工作分類](references/work-classification.md)，選擇 Level 0～5。
+4. 產生下方 Requirement Decision。
+5. 閱讀[artifact routing](references/artifact-routing.md)，選擇必要、可選與禁止的 artifacts、Skills 與 validation。
+6. 依選定模式套用[雙層 Task 治理](references/two-layer-task-governance.md)。
+7. 若工作會修改observable behavior，先依[Test Authoring Decision](references/test-authoring.md)判定是否需要新增regression test與primary owner，再依序使用已路由的 Superpowers Skills。
+8. 保持 current authority、review evidence 與 release state 同步。
+9. 任一必要 validation 失敗時，維持目前 Task 開啟；修正並 fresh re-verify 後，才可接受或建立 completion commit。
 
 ## Requirement Decision
 
@@ -95,6 +96,23 @@ description: 當此 Flutter 模板 repository 中的工作需要評估、規劃�
 當已接受的 Requirement Decision 辨識出完整模板採用，且工作會修改跨平台 Android／iOS 產品識別或 development／staging／production 顯示名稱映射時，使用 `adopting-template-product-identity` 作為從屬 domain Skill。
 
 API-only change、visual-only rebranding、有界的單一平台 repair、environment contract change、signing 或 Store distribution，不得在沒有獨立中央分類的情況下交由此 Skill。Domain Skill 不得自行分類或核准需求，也不取代此治理 Skill。
+
+## Template → Product repository bootstrap route
+
+當 `repository_identity.json` 明確為 `template`，且已接受的 Requirement Decision 是把由 GitHub Template Repository 建立的新 repository 首次採用為具體產品時，使用 `adopting-template-repository` 作為薄型 repository bootstrap orchestration Skill。
+
+Routing 必須維持：
+
+```txt
+fresh request
+→ governing-template-development
+→ repository_identity admission
+→ accepted Requirement Decision
+→ adopting-template-repository
+→ adopting-template-product-identity（只有 native product identity portion）
+```
+
+若 manifest 為 `product`，再次要求首次 bootstrap 時不得重跑；應回到中央治理重新分類為 bounded repository／product identity change。Missing／invalid manifest 必須 fail closed。API-only、visual-only、單一平台 repair、discussion-only request 也不得誤觸首次 bootstrap Skill。
 
 ## Pencil-to-Flutter domain route
 

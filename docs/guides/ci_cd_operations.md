@@ -88,15 +88,15 @@ Milestone 32已於2026-07-31依reviewed manifest `7ad138bb845e42cbb133d07c`完�
 Self-hosted runner：
 
 ```txt
-name: water-mac-flutter-architecture
+name: <operator>-mac-flutter-architecture
 labels: self-hosted, macOS, ARM64, flutter-architecture, trusted-main
-install root: /Users/water/actions-runner/flutter-architecture
+install root: /Users/<user>/actions-runner/flutter-architecture
 ```
 
 Service操作必須從runner root執行：
 
 ```bash
-cd /Users/water/actions-runner/flutter-architecture
+cd /Users/<user>/actions-runner/flutter-architecture
 ./svc.sh status
 ./svc.sh stop
 ./svc.sh start
@@ -117,7 +117,7 @@ CI_ARTIFACT_ROOT
 Self-hosted必須明確設定checkout外的absolute root；缺值時fail closed，不會回退到runner `_work`、`RUNNER_TEMP`或repository。Mac operator目標範例：
 
 ```bash
-export CI_ARTIFACT_ROOT=/Users/water/Developer/ci-artifacts/flutter_architecture
+export CI_ARTIFACT_ROOT=/Users/<user>/Developer/ci-artifacts/flutter_architecture
 export CI_MANAGED_EXECUTION_MODE=self-hosted
 ```
 

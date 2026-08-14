@@ -21,6 +21,34 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# Local environment / secret material
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Android signing
+*.jks
+*.keystore
+key.properties
+
+# Apple signing / private material
+*.p12
+*.pfx
+*.mobileprovision
+*.cer
+*.crt
+*.der
+*.pem
+*.key
+
+# Firebase / provider configuration
+**/google-services.json
+**/GoogleService-Info.plist
+**/firebase_options.dart
+*service-account*.json
+*service_account*.json
+
 # Flutter platform build outputs
 android/.gradle/
 ios/Pods/

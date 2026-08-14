@@ -159,6 +159,7 @@ def resolve_artifact_root(
     execution_mode: str,
     platform_name: str,
     environment: Mapping[str, str],
+    product_key: str,
 ) -> Path:
     if execution_mode not in _EXECUTION_MODES:
         raise ValueError(f"Unsupported execution mode: {execution_mode!r}")
@@ -172,20 +173,27 @@ def resolve_artifact_root(
     if execution_mode == "self-hosted":
         raise ValueError("CI_ARTIFACT_ROOT is required for self-hosted execution")
 
+    try:
+        safe_product_key = sanitize_key(product_key)
+    except ValueError as error:
+        raise ValueError(f"invalid product_key: {error}") from error
+    if safe_product_key != product_key:
+        raise ValueError("product_key must already be a safe normalized identifier")
+
     if platform_name.lower().startswith("win"):
         local_app_data = environment.get("LOCALAPPDATA", "").strip()
         if not local_app_data:
             raise ValueError("LOCALAPPDATA is required for Windows manual-local")
-        return Path(local_app_data) / "flutter_architecture" / "ci-artifacts"
+        return Path(local_app_data) / safe_product_key / "ci-artifacts"
 
     state_home = environment.get("XDG_STATE_HOME", "").strip()
     if state_home:
-        return Path(state_home) / "flutter_architecture" / "ci-artifacts"
+        return Path(state_home) / safe_product_key / "ci-artifacts"
 
     home = environment.get("HOME", "").strip()
     if not home:
         raise ValueError("HOME is required for POSIX manual-local")
-    return Path(home) / ".local" / "state" / "flutter_architecture" / "ci-artifacts"
+    return Path(home) / ".local" / "state" / safe_product_key / "ci-artifacts"
 
 
 def validate_artifact_root(

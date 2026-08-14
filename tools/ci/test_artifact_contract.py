@@ -75,7 +75,7 @@ def _valid_manifest() -> Dict[str, Any]:
 class ArtifactRootResolutionTest(unittest.TestCase):
     def test_self_hosted_requires_explicit_root(self) -> None:
         with self.assertRaisesRegex(ValueError, "CI_ARTIFACT_ROOT"):
-            resolve_artifact_root(None, "self-hosted", "Darwin", {})
+            resolve_artifact_root(None, "self-hosted", "Darwin", {}, "flutter_architecture")
 
     def test_windows_manual_default_uses_local_app_data(self) -> None:
         root = resolve_artifact_root(
@@ -83,11 +83,12 @@ class ArtifactRootResolutionTest(unittest.TestCase):
             "manual-local",
             "Windows",
             {"LOCALAPPDATA": r"C:\Users\tester\AppData\Local"},
+            "pickup-basketball",
         )
         self.assertEqual(
             PureWindowsPath(str(root)),
             PureWindowsPath(
-                r"C:\Users\tester\AppData\Local\flutter_architecture\ci-artifacts"
+                r"C:\Users\tester\AppData\Local\pickup-basketball\ci-artifacts"
             ),
         )
 
@@ -97,8 +98,9 @@ class ArtifactRootResolutionTest(unittest.TestCase):
             "manual-local",
             "Darwin",
             {"XDG_STATE_HOME": "/state", "HOME": "/home/tester"},
+            "pickup-basketball",
         )
-        self.assertEqual(root, Path("/state/flutter_architecture/ci-artifacts"))
+        self.assertEqual(root, Path("/state/pickup-basketball/ci-artifacts"))
 
     def test_posix_manual_default_falls_back_to_home_local_state(self) -> None:
         root = resolve_artifact_root(
@@ -106,15 +108,16 @@ class ArtifactRootResolutionTest(unittest.TestCase):
             "manual-local",
             "Linux",
             {"HOME": "/home/tester"},
+            "pickup-basketball",
         )
         self.assertEqual(
             root,
-            Path("/home/tester/.local/state/flutter_architecture/ci-artifacts"),
+            Path("/home/tester/.local/state/pickup-basketball/ci-artifacts"),
         )
 
     def test_github_hosted_does_not_resolve_an_implicit_local_root(self) -> None:
         with self.assertRaisesRegex(ValueError, "github-hosted"):
-            resolve_artifact_root(None, "github-hosted", "Linux", {})
+            resolve_artifact_root(None, "github-hosted", "Linux", {}, "pickup-basketball")
 
     def test_explicit_root_wins_for_manual_local(self) -> None:
         self.assertEqual(
@@ -123,13 +126,34 @@ class ArtifactRootResolutionTest(unittest.TestCase):
                 "manual-local",
                 "Darwin",
                 {"HOME": "/home/tester"},
+                "pickup-basketball",
             ),
             Path("/external/store"),
         )
 
     def test_rejects_unknown_execution_mode(self) -> None:
         with self.assertRaisesRegex(ValueError, "execution mode"):
-            resolve_artifact_root("/external/store", "local", "Linux", {})
+            resolve_artifact_root("/external/store", "local", "Linux", {}, "pickup-basketball")
+
+    def test_manual_default_uses_explicit_product_key_not_repository_folder(self) -> None:
+        root = resolve_artifact_root(
+            None,
+            "manual-local",
+            "Linux",
+            {"HOME": "/home/tester"},
+            "nfc-lab",
+        )
+        self.assertEqual(root, Path("/home/tester/.local/state/nfc-lab/ci-artifacts"))
+
+    def test_manual_default_rejects_unnormalized_product_key(self) -> None:
+        with self.assertRaisesRegex(ValueError, "product_key"):
+            resolve_artifact_root(
+                None,
+                "manual-local",
+                "Linux",
+                {"HOME": "/home/tester"},
+                "../from-folder",
+            )
 
 
 class ArtifactRootSafetyTest(unittest.TestCase):

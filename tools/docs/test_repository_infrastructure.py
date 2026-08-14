@@ -81,9 +81,8 @@ class RepositoryInfrastructureContractTest(unittest.TestCase):
     def test_product_repository_cannot_keep_unresolved_required_profile_state(self) -> None:
         self._write_identity("product")
         self._write_manifest(
-            ci_execution_mode="manual-local",
-            branch_protection="explicit-deferred",
-            fork_pr_policy="explicit-deferred",
+            ci_execution_mode="self-hosted",
+            runner_disposition="deferred",
         )
         codes = self._codes(self._check())
         self.assertIn("product-required-infrastructure-unresolved", codes)

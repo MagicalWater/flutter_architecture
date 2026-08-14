@@ -12,6 +12,7 @@ if __package__ in (None, ""):
 
 from tools.docs.skill_lock import inspect_skill_lock
 from tools.docs.verify_repository_identity import check_repository_identity
+from tools.docs.verify_repository_infrastructure import check_repository_infrastructure
 from tools.visual.verify_visual_authority import verify_visual_authority
 
 
@@ -95,6 +96,10 @@ def check_repository(
     issues.extend(
         CheckIssue(issue.code, issue.path, issue.message)
         for issue in check_repository_identity(root, identity_manifest_path)
+    )
+    issues.extend(
+        CheckIssue(issue.code, issue.path, issue.message)
+        for issue in check_repository_infrastructure(root)
     )
     skill_lock = inspect_skill_lock(root)
     issues.extend(

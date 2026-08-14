@@ -74,12 +74,17 @@ import os
 import platform
 from pathlib import Path
 from tools.ci.artifact_contract import resolve_artifact_root, validate_artifact_root
+from tools.docs.verify_repository_infrastructure import read_product_key
+
+repo_root = Path(os.environ["REPO_ROOT_INPUT"])
+product_key = read_product_key(repo_root)
 
 root = resolve_artifact_root(
     os.environ.get("CI_ARTIFACT_ROOT_INPUT") or None,
     os.environ["CI_MANAGED_EXECUTION_MODE_INPUT"],
     platform.system(),
     os.environ,
+    product_key,
 )
 runner_work = (
     Path(os.environ["RUNNER_WORKSPACE"])
@@ -93,7 +98,7 @@ runner_temp = (
 )
 validated = validate_artifact_root(
     root,
-    Path(os.environ["REPO_ROOT_INPUT"]),
+    repo_root,
     runner_work=runner_work,
     runner_temp=runner_temp,
     home=Path.home(),

@@ -1,5 +1,5 @@
 ---
-document_type: task-review
+document_type: phase-review
 status: active
 authoritative_for:
   - milestone-38-task-38-1-infrastructure-contract-red

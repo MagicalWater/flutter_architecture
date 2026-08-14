@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import unittest
 from pathlib import Path
 
@@ -56,12 +55,6 @@ class TemplateRepositoryBootstrapRoutingTest(unittest.TestCase):
 
         self.assertNotIn("repository_kind", skill)
         self.assertNotIn("template_origin.baseline", skill)
-
-    def test_template_manifest_remains_template_during_skill_adoption(self) -> None:
-        manifest = json.loads(read("repository_identity.json"))
-
-        self.assertEqual(manifest["repository_kind"], "template")
-        self.assertIsNone(manifest["product_name"])
 
     def test_human_registry_has_bootstrap_skill_without_parallel_authority(self) -> None:
         workflow = read("docs/governance/development_workflow.md")

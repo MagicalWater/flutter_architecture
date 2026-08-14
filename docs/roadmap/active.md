@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.17.0
 
 ```txt
 Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-State: Execution — Tasks 37-1 through 37-5 completed; Task 37-6 isolated bootstrap acceptance next
+State: Execution — Tasks 37-1 through 37-6 completed; Task 37-7 fresh no-handoff Agent acceptance next
 Template Baseline: 1.17.0
 ```
 
@@ -44,6 +44,7 @@ Milestone 37只處理「Flutter Template repository 如何正式出生為新的 
 - Task 37-3 Central Admission Routing／Bootstrap Skill：Completed — `4af02d8`
 - Task 37-4 ADR-030／Human Adoption Procedure：Completed — `aa63239`
 - Task 37-5 Template Repository Current-Authority Integration：Completed — `docs/audits/milestone_37/37-5_current_authority_integration_review.md`
+- Task 37-6 Isolated Template → Product Bootstrap Acceptance：Completed — `docs/audits/milestone_37/37-6_isolated_bootstrap_acceptance.md`
 
 ## Latest Completed Milestone
 
@@ -58,6 +59,6 @@ Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective�
 Milestone 37 Requirement Decision：ACCEPTED
 → Design：ACCEPTED / review PASS
 → Implementation Plan：ACCEPTED / review PASS
-→ Tasks 37-1 ～ 37-5：COMPLETED
-→ Current next action：Task 37-6 isolated Template → Product bootstrap acceptance
+→ Tasks 37-1 ～ 37-6：COMPLETED
+→ Current next action：Task 37-7 fresh no-handoff Agent behavioral acceptance
 ```

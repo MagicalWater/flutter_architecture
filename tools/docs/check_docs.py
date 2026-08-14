@@ -60,7 +60,9 @@ _SCOPE_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 _MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 _CHANGELOG_VERSION_RE = re.compile(r"^##\s+\[?(\d+\.\d+\.\d+)\]?")
-_README_BASELINE_RE = re.compile(r"Template Baseline Version[：:]\s*`?\*{0,2}(\d+\.\d+\.\d+)")
+_README_VERSION_RE = re.compile(
+    r"(?:Template Baseline Version|Product Repository Version)[：:]\s*`?\*{0,2}(\d+\.\d+\.\d+)"
+)
 _ADR_ID_RE = re.compile(r"^ADR-(\d{3})$")
 _ADR_FILE_RE = re.compile(r"^adr-(\d{3})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
 _ADR_INDEX_ROW_RE = re.compile(
@@ -83,13 +85,16 @@ class CheckIssue:
         return f"[{self.code}] {display_path}: {self.message}"
 
 
-def check_repository(root: Path) -> list[CheckIssue]:
+def check_repository(
+    root: Path,
+    identity_manifest_path: Path | None = None,
+) -> list[CheckIssue]:
     root = root.resolve()
     markdown_files = sorted(_iter_markdown_files(root))
     issues: list[CheckIssue] = []
     issues.extend(
         CheckIssue(issue.code, issue.path, issue.message)
-        for issue in check_repository_identity(root)
+        for issue in check_repository_identity(root, identity_manifest_path)
     )
     skill_lock = inspect_skill_lock(root)
     issues.extend(
@@ -270,7 +275,7 @@ def _check_baseline(root: Path) -> list[CheckIssue]:
         return []
 
     version = version_path.read_text(encoding="utf-8").strip()
-    readme_match = _README_BASELINE_RE.search(readme_path.read_text(encoding="utf-8"))
+    readme_match = _README_VERSION_RE.search(readme_path.read_text(encoding="utf-8"))
     changelog_version = next(
         (
             match.group(1)
@@ -570,9 +575,14 @@ def _check_readme_coverage(root: Path) -> list[CheckIssue]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validate repository documentation consistency.")
     parser.add_argument("root", nargs="?", default=".", help="repository root")
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        help="validate docs against a prospective repository identity manifest",
+    )
     args = parser.parse_args(argv)
     root = Path(args.root).resolve()
-    issues = check_repository(root)
+    issues = check_repository(root, args.manifest)
     if issues:
         for issue in issues:
             print(issue.format(root))

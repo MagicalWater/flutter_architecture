@@ -68,9 +68,10 @@ Android與iOS目前皆為Supported平台。iOS已包含tracked runner、unsigned
 這是剛從 flutter_architecture template 建立的新產品 repository
 產品名稱
 Base identifier
+CI profile（manual-local | self-hosted | github-hosted，可省略後由Agent要求確認）
 ```
 
-Fresh Agent 會先讀 root `repository_identity.json` 判斷目前仍是 `template` 或已完成 `product` adoption。完整 repository birth、template provenance、VERSION transition、native identity delegation與fresh-conversation completion contract請讀：
+Fresh Agent 會先讀 root `repository_identity.json`與`repository_infrastructure.json`，判斷repository lifecycle、selected CI profile與infrastructure disposition。完整 repository birth、template provenance、VERSION transition、CI profile/live GitHub state、native identity delegation與fresh-conversation completion contract請讀：
 
 - `docs/guides/template_repository_adoption.md`
 

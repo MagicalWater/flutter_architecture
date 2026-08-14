@@ -328,11 +328,13 @@ D:\Developer\pickup-basketball
 
 產品名稱：找團體打籃球
 Base identifier：com.mgwater.pickupbasketball
+
+CI profile：manual-local | self-hosted | github-hosted
 ```
 
-使用者不需要知道 `adopting-template-repository` Skill 名稱。Fresh Agent 必須自行讀 `repository_identity.json`、進入中央治理並在符合首次 bootstrap trigger時路由該 Skill。
+`CI profile`可以在第一個prompt直接提供；若省略，Agent必須在final product transition前取得明確選擇，不能從template repository現況猜測。使用者不需要知道 `adopting-template-repository` Skill 名稱。Fresh Agent 必須自行讀 `repository_identity.json`與`repository_infrastructure.json`、進入中央治理並在符合首次 bootstrap trigger時路由該 Skill。
 
-完整 repository birth、VERSION／template provenance、atomic completion與fresh-conversation acceptance procedure，見 [Template Repository Adoption Guide](template_repository_adoption.md)。
+完整 repository birth、VERSION／template provenance、三種CI profile、GitHub live state/read-back、atomic completion與fresh-conversation acceptance procedure，見 [Template Repository Adoption Guide](template_repository_adoption.md)。
 
 ## 場景十：只處理跨平台 Native Product Identity 採用
 

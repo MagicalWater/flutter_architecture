@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - repository-ci-cd-operations
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # CI/CD Operations Guide
@@ -61,6 +61,30 @@ gh variable set CI_EXECUTION_MODE --body github-hosted
 ```
 
 四份workflow的manual dispatch都有`execution_mode` choice：`repository-default`沿用repository variable，另外三個選項只覆寫該次run。未知值、舊`local`／`github`或空值一律fail closed；不會自動fallback到付費runner。
+
+### Product repository bootstrap live-state boundary
+
+`CI_EXECUTION_MODE`是GitHub repository live variable，不會因`Use this template`而由template repository複製到新產品repository。新產品bootstrap的tracked desired/disposition authority是root `repository_infrastructure.json`；live GitHub state必須另外admit/configure並fresh read-back。
+
+因此在Template → Product adoption中，必須區分：
+
+```txt
+tracked workflow / scripts / repository_infrastructure.json
+vs
+live GitHub repository variable / policy / protection / runner / Environment state
+```
+
+不得因workflow YAML存在、template repository目前可正常跑CI，或舊conversation記得某設定，就宣稱new product repository已configured。
+
+三種selected profile都必須在final `repository_kind=product`前取得自己的acceptance evidence：
+
+- `manual-local`：live variable/disposition明確，local planner＋代表性quality route可執行；GitHub jobs skipped不等於CI PASS。
+- `self-hosted`：runner registration/labels/online state、checkout外`CI_ARTIFACT_ROOT`與trusted-main boundary有fresh evidence；offline時不得fallback。
+- `github-hosted`：representative PR/main workflow確實建立預期GitHub-hosted jobs，verification不依賴production signing secrets。
+
+任何GitHub live mutation都要保存before state並在mutation後fresh read-back。Permission failure、403、read-back mismatch只能記為blocked/deferred，不得記為configured。
+
+Secrets只驗證**名稱是否存在**與capability disposition；不得讀取、複製或記錄secret value、runner registration token、signing material或provider credential。
 
 ### Managed local artifact ownership and GitHub quota boundary
 

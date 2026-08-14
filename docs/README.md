@@ -87,7 +87,7 @@ docs/roadmap.md
 
 使用者若需要可直接複製的新功能、畫面、Bug、Refactor、Migration或discussion-only對話起頭，先讀`docs/guides/agent_assisted_development_quick_start.md`；該Guide只提供操作入口，不取代Feature README、Decision或中央治理Skill。
 
-若工作是從GitHub `Use this template`建立的新repository首次採用為產品，讀[`docs/guides/template_repository_adoption.md`](guides/template_repository_adoption.md)與ADR-030；repository lifecycle state先以root `repository_identity.json`判定，native Android／iOS identity procedure再按需路由`native_environment_adoption.md`。
+若工作是從GitHub `Use this template`建立的新repository首次採用為產品，讀[`docs/guides/template_repository_adoption.md`](guides/template_repository_adoption.md)、ADR-030與ADR-031；repository lifecycle state先以root `repository_identity.json`判定，CI profile／infrastructure disposition以root `repository_infrastructure.json`判定，native Android／iOS identity procedure再按需路由`native_environment_adoption.md`。
 
 ### Active Milestone execution
 

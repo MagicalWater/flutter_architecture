@@ -86,6 +86,28 @@ live GitHub repository variable / policy / protection / runner / Environment sta
 
 Secrets只驗證**名稱是否存在**與capability disposition；不得讀取、複製或記錄secret value、runner registration token、signing material或provider credential。
 
+Repository-owned live admission入口：
+
+```bash
+python tools/ci/repository_infrastructure.py \
+  --repository <owner>/<product-repo> \
+  snapshot \
+  --environment staging-observability:FIREBASE_SERVICE_ACCOUNT_JSON,FIREBASE_ANDROID_PRODUCTION_CONFIG_B64
+```
+
+Snapshot只投影review需要的safe fields：repository visibility/default branch、`CI_EXECUTION_MODE`、Actions/default token policy、fork PR approval policy、Branch Protection關鍵安全欄位、repository-scoped runner name/status/labels，以及指定Environment的secret **names**／missing names；不保存GitHub numeric object IDs或secret values。
+
+目前唯一提供的live mutation入口是`CI_EXECUTION_MODE`，且mutation後立即fresh read-back；不一致即fail closed：
+
+```bash
+python tools/ci/repository_infrastructure.py \
+  --repository <owner>/<product-repo> \
+  set-ci-execution-mode \
+  --mode manual-local
+```
+
+本工具沒有runner deletion、Environment deletion、secret write/delete、credential rotation或signing material操作。Branch Protection等live mutation若未有專用authorized contract，仍不得以零散`gh api`命令繞過review/read-back boundary。
+
 ### Managed local artifact ownership and GitHub quota boundary
 
 `manual-local`與`self-hosted`目前都使用repository-owned managed local artifact store。日常成功、失敗、Android／iOS verification與Observability raw evidence不再透過`actions/upload-artifact`進入GitHub Actions storage；四份workflow也不再使用`actions/cache`。

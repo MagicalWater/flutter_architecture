@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.18.0
 ```txt
 Template Baseline: 1.18.0
 Phase 1 / MVP: Completed
-Current active milestone: None
-Current phase: Maintenance / Requirement Decision entry
+Current active milestone: Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
+Current phase: Design proposed / awaiting user approval
 Latest completed initiative: Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance — 1.18.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -355,8 +355,8 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: None
-Current phase: Maintenance / Requirement Decision entry
+Current active milestone: Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
+Current phase: Design proposed / awaiting user approval
 Latest completed initiative: Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance — 1.18.0
 Maintenance mode: No active milestone
 Open Milestone 37 review findings: P0=0 / undisposed P1=0; formally closed by Task 37-9
@@ -371,6 +371,8 @@ Milestone 34已在既有Pencil-to-Flutter route加入representation classificati
 Milestone 35已把test execution over-validation修正為canonical change classifier + deterministic Minimum Sufficient Validation planner + plan-driven CI/local execution，並保留unknown／invalid／release的full fail-safe。Template Baseline 1.16.0 publication、Windows published-main fresh full regression與macOS/iOS production verification build均PASS；formal closure evidence見`docs/audits/milestone_35/35-9_post_release_validation.md`。
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
+
+Milestone 38已由Template Adoption completeness audit進入正式Level 5 corrective，Requirement Decision已接受，Design目前維持`proposed`等待使用者核准。Scope聚焦於Template → Product首次採用時尚未被Milestone 37納入的CI execution profile、runner、artifact identity、GitHub live settings、Branch Protection、Environment／Secrets disposition與fresh infrastructure acceptance；不得在Design／Plan核准前開始implementation。
 
 新的feature、bug、security／platform變化、產品採用需求或maintenance hardening都必須先進入Requirement Decision，再依Level 0～5分類執行。Audit與remediation進度由`docs/audits/README.md`與對應review擁有，不追加Task、commit、測試數或runtime evidence journal至本文件。
 

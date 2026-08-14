@@ -26,8 +26,9 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: None
-State: Maintenance / Requirement Decision entry
+Active Milestone: Milestone 38 — Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
+State: Design proposed / awaiting user approval
+Classification: Level 5 — Critical
 Template Baseline: 1.18.0
 ```
 

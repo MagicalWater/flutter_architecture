@@ -57,7 +57,8 @@ Final / Holistic Review
 - [`milestone_37/37-5_current_authority_integration_review.md`](milestone_37/37-5_current_authority_integration_review.md)：template current authority與newcomer routing同步review。
 - [`milestone_37/37-6_isolated_bootstrap_acceptance.md`](milestone_37/37-6_isolated_bootstrap_acceptance.md)：isolated Template → Product atomic transition、prospective docs／identity與product portability acceptance。
 - [`milestone_37/37-7_fresh_agent_behavioral_acceptance.md`](milestone_37/37-7_fresh_agent_behavioral_acceptance.md)：三個無handoff fresh ChatGPT contexts的template／product／invalid lifecycle behavioral acceptance。
-- [`milestone_37/37-8_holistic_final_review.md`](milestone_37/37-8_holistic_final_review.md)：Tasks 37-1～37-7 cross-Task authority review、full matrix validation與Template Baseline 1.18.0 local release disposition；publication pending。
+- [`milestone_37/37-8_holistic_final_review.md`](milestone_37/37-8_holistic_final_review.md)：Tasks 37-1～37-7 cross-Task authority review、full matrix validation與Template Baseline 1.18.0 local release disposition。
+- [`milestone_37/37-9_post_release_validation.md`](milestone_37/37-9_post_release_validation.md)：Template Baseline 1.18.0 published-main fresh identity/docs/full regression、generated、Android、macOS/iOS、GitHub Template Repository external setting、published Template → Product isolated acceptance與formal closure。
 
 ### Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
 

@@ -38,7 +38,7 @@
 - Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance：Completed / Archived（Release 1.15.2）
 - Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective：Completed / Archived（Release 1.16.0）
 - Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective：Completed / Archived（Release 1.17.0）
-- Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance：Active（Local Release Candidate 1.18.0；publication pending）
+- Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance：Completed / Archived（Release 1.18.0）
 
 平台能力：
 

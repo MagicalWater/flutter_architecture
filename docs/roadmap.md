@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-State: Local Release Candidate 1.18.0 — Task 37-8 PASS; publication approval pending
+Active Milestone: None
+State: Maintenance / Requirement Decision entry
 Template Baseline: 1.18.0
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 36 已完成或已有明確 disposition。Milestone 36已完成Template Baseline 1.17.0 publication與published-main post-release validation並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 37 已完成或已有明確 disposition。Milestone 37已完成Template Baseline 1.18.0 publication、published-main post-release validation與Template → Product isolated acceptance並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

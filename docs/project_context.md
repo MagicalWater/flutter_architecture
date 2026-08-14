@@ -29,9 +29,9 @@ last_reviewed_baseline: 1.18.0
 ```txt
 Template Baseline: 1.18.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-Current phase: Local release candidate 1.18.0 — Task 37-8 holistic final review PASS; publication approval pending
-Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance — 1.18.0
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -355,12 +355,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-Current phase: Local release candidate 1.18.0 — Task 37-8 holistic final review PASS; publication approval pending
-Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
-Maintenance mode: Milestone 37 local release candidate; publication pending
-Open Milestone 37 review findings: P0=0 / undisposed P1=0 after Task 37-8
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance — 1.18.0
+Maintenance mode: No active milestone
+Open Milestone 37 review findings: P0=0 / undisposed P1=0; formally closed by Task 37-9
 ```
+
+Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 
 Milestone 36已完成Risk-Based Test Authoring corrective、Template Baseline 1.17.0 publication與Task 36-9 post-release closure。Current governance把Test Authoring Decision與Milestone 35 Validation Execution Decision分離，新增`Required`／`Recommended`／`no-new-test justified`／`Should-not-add`，並明確禁止Task-for-test、class-for-test與layer-for-layer imitation。Fresh ChatGPT behavioral pressure、published-main authoring contracts、完整workspace regression與macOS/iOS verification均PASS；formal closure evidence見`docs/audits/milestone_36/36-9_post_release_validation.md`。
 

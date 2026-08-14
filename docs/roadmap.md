@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.17.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.17.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.17.0
+Template Baseline: 1.18.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,8 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-State: Execution — Tasks 37-1 through 37-7 completed; Task 37-8 holistic final review and release disposition next
-Template Baseline: 1.17.0
+State: Local Release Candidate 1.18.0 — Task 37-8 PASS; publication approval pending
+Template Baseline: 1.18.0
 ```
 
 完整 active scope、design、gate與 next action：

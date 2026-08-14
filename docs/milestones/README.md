@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.17.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # Milestone Routing
@@ -31,11 +31,24 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: None
-Template Baseline: 1.17.0
+Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
+Template Baseline: 1.18.0
 ```
 
-目前active authority：`docs/roadmap/active.md`；Milestone 36已完成Template Baseline 1.17.0 publication與Task 36-9 published-main post-release validation，current work回到Requirement Decision入口。
+目前active authority：`docs/roadmap/active.md`；Milestone 37已完成Tasks 37-1～37-8與local release candidate `1.18.0`，publication尚待使用者明確核准；Task 37-9只能在published main後執行。
+
+### Milestone 37 active routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_37/37-r_requirement_decision.md`
+- Design：Accepted — `docs/superpowers/specs/2026-08-14-milestone-37-template-to-product-repository-bootstrap-design.md`
+- Design Review：PASS / user approved — `docs/audits/milestone_37/37-0_design_spec_review.md`
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-14-milestone-37-template-to-product-repository-bootstrap.md`
+- Plan Review：PASS / user approved — `docs/audits/milestone_37/37-p_implementation_plan_review.md`
+- Task 37-6 Isolated Bootstrap Acceptance：Accepted — `docs/audits/milestone_37/37-6_isolated_bootstrap_acceptance.md`
+- Task 37-7 Fresh Agent Behavioral Acceptance：Accepted — `docs/audits/milestone_37/37-7_fresh_agent_behavioral_acceptance.md`
+- Task 37-8 Holistic Final Review：PASS / local release candidate — `docs/audits/milestone_37/37-8_holistic_final_review.md`
+- Release candidate：Template Baseline `1.18.0`，publication pending
+- Task 37-9：Published-main post-release validation，必須等publication approval後執行
 
 ### Milestone 36 closed routing
 

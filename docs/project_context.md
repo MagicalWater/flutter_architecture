@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.17.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.17.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.17.0
+Template Baseline: 1.18.0
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-Current phase: Execution — Tasks 37-1 through 37-7 completed; Task 37-8 holistic final review and release disposition next
+Current phase: Local release candidate 1.18.0 — Task 37-8 holistic final review PASS; publication approval pending
 Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -348,7 +348,7 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.17.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.18.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
@@ -356,10 +356,10 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-Current phase: Execution — Tasks 37-1 through 37-7 completed; Task 37-8 holistic final review and release disposition next
+Current phase: Local release candidate 1.18.0 — Task 37-8 holistic final review PASS; publication approval pending
 Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
-Maintenance mode: Milestone 37 execution in progress
-Open Milestone 37 review findings: P0=0 / undisposed P1=0 after Task 37-7
+Maintenance mode: Milestone 37 local release candidate; publication pending
+Open Milestone 37 review findings: P0=0 / undisposed P1=0 after Task 37-8
 ```
 
 Milestone 36已完成Risk-Based Test Authoring corrective、Template Baseline 1.17.0 publication與Task 36-9 post-release closure。Current governance把Test Authoring Decision與Milestone 35 Validation Execution Decision分離，新增`Required`／`Recommended`／`no-new-test justified`／`Should-not-add`，並明確禁止Task-for-test、class-for-test與layer-for-layer imitation。Fresh ChatGPT behavioral pressure、published-main authoring contracts、完整workspace regression與macOS/iOS verification均PASS；formal closure evidence見`docs/audits/milestone_36/36-9_post_release_validation.md`。

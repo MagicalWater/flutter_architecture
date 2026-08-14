@@ -3,7 +3,7 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.17.0
+last_reviewed_baseline: 1.18.0
 ---
 
 # Active Milestone
@@ -12,8 +12,8 @@ last_reviewed_baseline: 1.17.0
 
 ```txt
 Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-State: Execution — Tasks 37-1 through 37-7 completed; Task 37-8 holistic final review and release disposition next
-Template Baseline: 1.17.0
+State: Local Release Candidate 1.18.0 — Task 37-8 holistic final review PASS; publication approval pending
+Template Baseline: 1.18.0
 ```
 
 ## Scope
@@ -46,6 +46,7 @@ Milestone 37只處理「Flutter Template repository 如何正式出生為新的 
 - Task 37-5 Template Repository Current-Authority Integration：Completed — `docs/audits/milestone_37/37-5_current_authority_integration_review.md`
 - Task 37-6 Isolated Template → Product Bootstrap Acceptance：Completed — `docs/audits/milestone_37/37-6_isolated_bootstrap_acceptance.md`
 - Task 37-7 Fresh No-Handoff Agent Behavioral Acceptance：Completed — `docs/audits/milestone_37/37-7_fresh_agent_behavioral_acceptance.md`
+- Task 37-8 Holistic Final Review and Release Disposition：PASS — `docs/audits/milestone_37/37-8_holistic_final_review.md`
 
 ## Latest Completed Milestone
 
@@ -60,6 +61,8 @@ Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective�
 Milestone 37 Requirement Decision：ACCEPTED
 → Design：ACCEPTED / review PASS
 → Implementation Plan：ACCEPTED / review PASS
-→ Tasks 37-1 ～ 37-7：COMPLETED
-→ Current next action：Task 37-8 holistic final review and release disposition
+→ Tasks 37-1 ～ 37-8：COMPLETED
+→ Local Release Candidate：1.18.0
+→ Publication：PENDING USER APPROVAL
+→ Current next action after approval：Task 37-9 published-main post-release validation and closure
 ```

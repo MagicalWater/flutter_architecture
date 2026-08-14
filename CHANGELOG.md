@@ -20,6 +20,45 @@
 
 ---
 
+## [1.18.0] - 2026-08-14
+
+### Added
+
+- 完成 Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance，新增 machine-readable root `repository_identity.json`、repository identity verifier與 ADR-030。
+- 新增薄型 `adopting-template-repository` Skill、fresh admission lifecycle routing與 GitHub `Use this template` 的正式新人流程。
+- 新增 `docs/guides/template_repository_adoption.md`，定義獨立 Product Repository birth、template provenance、Product Repository Version 與 fresh no-handoff completion contract。
+- 新增 isolated Template → Product acceptance fixture與 atomic lifecycle regression owner，驗證 `template → prospective product → product` transition。
+
+### Changed
+
+- `AGENTS.md` fixed minimum read set新增 `repository_identity.json`；fresh Agent在任何 domain routing前先取得 machine lifecycle state，missing／malformed／unknown一律 fail closed。
+- Root `VERSION`語意依 lifecycle分離：template state代表 Template Baseline，product state代表 Product Repository Version；來源 template baseline只由 `repository_identity.json.template_origin.baseline`保存。
+- 首次 repository bootstrap需要 Android／iOS product identity時，仍委派既有 `adopting-template-product-identity`與`environments.json`／ADR-014／ADR-025，不建立第二份 native identity authority。
+- Documentation checker支援 prospective repository identity manifest與 Product Repository Version，讓 blocking docs validation可在 canonical lifecycle transition前完成。
+
+### Fixed
+
+- 修正 bootstrap中途若先把 canonical `repository_kind`切為`product`，失敗或中斷後可能讓 fresh Agent誤判首次採用已完成的 partial-state風險。
+- 修正 routing test把 current repository永久寫死為`template`，導致真正 adopted product repository無法通過治理驗證的 portability缺陷。
+- 修正 docs checker只理解 Template Baseline marker、無法驗證 adopted product current version與 prospective product docs的 portability缺陷。
+- 修正 Milestone routing index仍宣告 active milestone為None、與 Milestone 37 current roadmap衝突的 stale authority。
+
+### Verified
+
+- Repository identity、bootstrap routing、atomic lifecycle、docs與environment focused contracts fresh PASS；isolated product fixture完成 prospective identity/docs/native validation後才切 canonical product state，final product validation PASS。
+- 三個彼此獨立、無 handoff 的 fresh ChatGPT contexts分別驗證 template首次採用、已採用product拒絕重跑bootstrap、invalid lifecycle fail-closed，全部 PASS。
+- Whole-milestone validation planner fresh輸出`full`且`fail_safe=false`；Windows full Python／5-workspace analyze／完整Flutter regression PASS，App suite 493 cases PASS。
+- Generated consistency PASS；Windows Android Development Debug與Production Release verification builds PASS。
+- macOS exact candidate `ed2efe68ca42bd90d2c6ad3f7852bc50d6c924be` iOS run `local-20260814t013613z-34383-8c27d221` result=success、evidence_status=complete、278 artifacts。
+- Independent clean-checkout repository identity、41 focused governance tests、docs checker與diff check PASS。
+
+### Governance
+
+- Requirement Decision、Design、Implementation Plan與Tasks 37-1～37-8依Level 4雙層Task governance完成；Open P0=0、Open P1 without disposition=0。
+- `1.18.0`目前是local release candidate；尚未推送`main`，publication與Task 37-9 published-main post-release validation等待使用者明確核准。
+
+---
+
 ## [1.17.0] - 2026-08-12
 
 ### Added

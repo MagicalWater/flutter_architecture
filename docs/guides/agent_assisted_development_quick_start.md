@@ -316,7 +316,25 @@ AuthRepository目前同時負責Login API、OTP、credential persistence、sessi
 
 Discussion-only 限制必須保留；Agent 不得因需求看起來明確就直接開始 mutation。
 
-## 場景九：正式把模板採用成產品
+## 場景九：從 GitHub Template Repository 開始新產品
+
+先在 GitHub 對 `flutter_architecture` 使用 `Use this template` 建立新的產品 repository，clone 新 repo 後，新對話只需要提供 repo path、產品名稱與 base identifier：
+
+```txt
+@bridge-win 請開啟：
+D:\Developer\pickup-basketball
+
+這是剛從 flutter_architecture template 建立的新產品 repository。
+
+產品名稱：找團體打籃球
+Base identifier：com.mgwater.pickupbasketball
+```
+
+使用者不需要知道 `adopting-template-repository` Skill 名稱。Fresh Agent 必須自行讀 `repository_identity.json`、進入中央治理並在符合首次 bootstrap trigger時路由該 Skill。
+
+完整 repository birth、VERSION／template provenance、atomic completion與fresh-conversation acceptance procedure，見 [Template Repository Adoption Guide](template_repository_adoption.md)。
+
+## 場景十：只處理跨平台 Native Product Identity 採用
 
 只有完整跨 Android／iOS 產品 identity 與三環境 display-name mapping 採用時，才使用此入口。
 
@@ -468,6 +486,7 @@ Plan accepted後，Task通過就應自動進入下一個Task，不需要反覆�
 ## 相關文件
 
 - [Template Development Workflow Governance](../governance/development_workflow.md)
+- [Template Repository Adoption Guide](template_repository_adoption.md)
 - [Native Environment and Product Identity Adoption Guide](native_environment_adoption.md)
 - [Repository-local Pencil-to-Flutter Workflow Guide](pencil_to_flutter_workflow.md)
 - [Documentation Hub](../README.md)

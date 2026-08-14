@@ -55,4 +55,23 @@ Corrective不重新允許任意third-party Actions：selected-actions allowlist�
 - Public PR → trusted self-hosted exposure：0。
 - Corrective security downgrade：No；selected allowlist與repository-owned full-SHA contract保留。
 
-Task 9：**CORRECTIVE ACCEPTED**。
+## Fresh GitHub Actions GREEN verification
+
+Corrective commit：
+
+`6e9987d4e1798c5d5c1c0dd681b17a318cd1abb4`
+
+推送至Public `main`後，fresh GitHub Actions確認原先5個failing checks均恢復：
+
+- CI / Classify Changes：PASS。
+- CI / Generated Consistency：PASS（planner判定本次不需generated execution，job安全skip對應steps後成功完成）。
+- CI / Tests：PASS（planner判定本次不需Flutter tests，job安全skip對應steps後成功完成）。
+- CI / Quality：PASS。
+- CI / Artifact Summary：PASS。
+- iOS workflow：PASS。
+- Android workflow：PASS。
+- Observability Acceptance：依既有condition預期SKIPPED，非failure。
+
+因此Task 8造成的repository-level recursive SHA enforcement regression已完成live corrective closure。
+
+Task 9：**CORRECTIVE ACCEPTED / CLOSED**。

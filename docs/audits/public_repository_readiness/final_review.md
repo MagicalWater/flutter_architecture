@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.18.0
 
 ## Final disposition
 
-**PUBLIC / POST-PUBLIC CORRECTIVE IN PROGRESS.**
+**PUBLIC / CLOSED.**
 
 依 Requirement、accepted Design、accepted Implementation Plan、Tasks 1～8 與Template Baseline 1.18.0 fresh cross-platform validation，repository已完成Public transition與post-Public GitHub settings closure；目前沒有未處置的credential、signing、fork-PR trusted-runner或privileged-secret blocker。
 
@@ -73,7 +73,7 @@ last_reviewed_baseline: 1.18.0
 - Open P0：0。
 - Undisposed P1：0。
 - Remaining security blocker：0。
-- Remaining mandatory visibility / post-Public gate：fresh GitHub Actions GREEN verification after Task 9 corrective。
+- Remaining mandatory visibility / post-Public gate：0；Task 9 exact corrective commit已完成fresh GitHub Actions GREEN verification。
 
-Public Repository Readiness：**POST-PUBLIC CORRECTIVE IN PROGRESS**，待fresh GitHub Actions GREEN後重新CLOSED。
+Public Repository Readiness：**COMPLETED / CLOSED**。
 

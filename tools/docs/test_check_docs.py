@@ -10,6 +10,12 @@ from tools.docs.check_docs import check_repository
 
 
 class DocumentationCheckerTest(unittest.TestCase):
+    def test_repository_identity_is_checked_by_repository_docs_check(self) -> None:
+        with _fixture() as root:
+            (root / "repository_identity.json").unlink()
+
+            self.assertIn("missing-repository-identity", _codes(root))
+
     def test_check_docs_script_supports_direct_execution(self) -> None:
         with _fixture() as root:
             script = Path(__file__).with_name("check_docs.py")
@@ -325,7 +331,16 @@ def _codes(root: Path) -> list[str]:
 class _fixture:
     def __enter__(self) -> Path:
         self._temp = tempfile.TemporaryDirectory()
-        return Path(self._temp.name)
+        root = Path(self._temp.name)
+        _write(root, "VERSION", "1.17.0\n")
+        _write(
+            root,
+            "repository_identity.json",
+            '{"schema_version":1,"repository_kind":"template","product_name":null,'
+            '"template_origin":{"repository":"MagicalWater/flutter_architecture",'
+            '"baseline":"1.17.0"}}\n',
+        )
+        return root
 
     def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
         self._temp.cleanup()

@@ -11,6 +11,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.docs.skill_lock import inspect_skill_lock
+from tools.docs.verify_repository_identity import check_repository_identity
 from tools.visual.verify_visual_authority import verify_visual_authority
 
 
@@ -86,6 +87,10 @@ def check_repository(root: Path) -> list[CheckIssue]:
     root = root.resolve()
     markdown_files = sorted(_iter_markdown_files(root))
     issues: list[CheckIssue] = []
+    issues.extend(
+        CheckIssue(issue.code, issue.path, issue.message)
+        for issue in check_repository_identity(root)
+    )
     skill_lock = inspect_skill_lock(root)
     issues.extend(
         CheckIssue(issue.code, issue.path, issue.message)

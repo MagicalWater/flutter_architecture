@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.18.0
 
 **READY FOR INTEGRATION; visibility change remains explicitly gated.**
 
-依 Requirement、accepted Design、accepted Implementation Plan、Tasks 1～6 與Template Baseline 1.18.0 fresh cross-platform validation，目前沒有發現阻止 repository 公開化的 credential、signing、fork-PR trusted-runner 或 privileged-secret blocker。
+依 Requirement、accepted Design、accepted Implementation Plan、Tasks 1～7 與Template Baseline 1.18.0 fresh cross-platform validation，目前沒有發現阻止 repository 公開化的 credential、signing、fork-PR trusted-runner 或 privileged-secret blocker。
 
 ## Completed scope
 
@@ -22,6 +22,7 @@ last_reviewed_baseline: 1.18.0
 - Current tree + full Git history secret readiness scan。
 - Full planner-selected workspace / generated / Android / iOS validation。
 - Milestone 37 published-main authority sync與1.18.0 fresh revalidation。
+- Live GitHub Actions / runner / Environment audit、Public PR GitHub-hosted corrective與repository-level SHA pinning enforcement。
 
 ## Deliberately preserved
 
@@ -43,13 +44,16 @@ last_reviewed_baseline: 1.18.0
 - `VERSION = 1.18.0`；`repository_identity.json`仍為canonical source template lifecycle authority，`repository_kind = template`、origin baseline `1.18.0`。
 - 1.18.0 fresh planner full matrix、secret/history scan、Windows Android與macOS iOS exact-commit validation均PASS。
 - Fresh sync/revalidation evidence：`docs/audits/public_repository_readiness/task_6_main_authority_sync_review.md`。
+- Public PR CI corrective authority：`c7ce70c316a9a8a4682b75d01d7d2af3bfd410cb`；PR不再受`CI_EXECUTION_MODE=self-hosted`關閉，且仍無法選到trusted self-hosted runner。
+- GitHub Actions live setting已啟用`sha_pinning_required = true`；default `GITHUB_TOKEN`保持read-only。
+- Live CI/settings evidence：`docs/audits/public_repository_readiness/task_7_public_ci_settings_hardening_review.md`。
 
 ## Visibility gate
 
 Repository visibility 只能在以下條件成立後切換：
 
 1. 本 branch 已安全整合到 intended `main` authority，且整合沒有覆蓋其他進行中工作。
-2. Fresh GitHub settings check確認目前 visibility、fork / Actions / Environment / branch protection相關設定沒有新的 blocker。
+2. Fresh GitHub settings check確認目前 visibility、fork / Actions / Environment / branch protection相關設定沒有新的 blocker；Private期間不可用的fork approval / ruleset能力必須在visibility切換後立即完成post-Public closure。
 3. 使用者對「將 `MagicalWater/flutter_architecture` 改為 Public」給出明確授權。
 
 在上述 gate 前，不得把「readiness PASS」誤寫成「repository 已 Public」。
@@ -59,5 +63,5 @@ Repository visibility 只能在以下條件成立後切換：
 - Open P0：0。
 - Undisposed P1：0。
 - Remaining security blocker：0。
-- Remaining user-owned visibility gate：fresh GitHub settings audit + final GitHub visibility authorization。
+- Remaining user-owned visibility gate：final GitHub visibility authorization；切Public後仍需立即完成fork approval / ruleset / Environment live-settings closure與fresh verification。
 

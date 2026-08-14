@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.17.0
 Template Baseline: 1.17.0
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-Current phase: Execution — Tasks 37-1 through 37-6 completed; Task 37-7 fresh no-handoff Agent acceptance next
+Current phase: Execution — Tasks 37-1 through 37-7 completed; Task 37-8 holistic final review and release disposition next
 Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -356,10 +356,10 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-Current phase: Execution — Tasks 37-1 through 37-6 completed; Task 37-7 fresh no-handoff Agent acceptance next
+Current phase: Execution — Tasks 37-1 through 37-7 completed; Task 37-8 holistic final review and release disposition next
 Latest completed initiative: Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective — 1.17.0
 Maintenance mode: Milestone 37 execution in progress
-Open Milestone 37 review findings: P0=0 / undisposed P1=0 after Task 37-6
+Open Milestone 37 review findings: P0=0 / undisposed P1=0 after Task 37-7
 ```
 
 Milestone 36已完成Risk-Based Test Authoring corrective、Template Baseline 1.17.0 publication與Task 36-9 post-release closure。Current governance把Test Authoring Decision與Milestone 35 Validation Execution Decision分離，新增`Required`／`Recommended`／`no-new-test justified`／`Should-not-add`，並明確禁止Task-for-test、class-for-test與layer-for-layer imitation。Fresh ChatGPT behavioral pressure、published-main authoring contracts、完整workspace regression與macOS/iOS verification均PASS；formal closure evidence見`docs/audits/milestone_36/36-9_post_release_validation.md`。

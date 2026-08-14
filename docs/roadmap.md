@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-State: Execution — Tasks 37-1 through 37-6 completed; Task 37-7 fresh no-handoff Agent acceptance next
+State: Execution — Tasks 37-1 through 37-7 completed; Task 37-8 holistic final review and release disposition next
 Template Baseline: 1.17.0
 ```
 

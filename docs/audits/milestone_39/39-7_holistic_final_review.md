@@ -3,7 +3,7 @@ document_type: final-review
 status: active
 authoritative_for:
   - milestone-39-task-39-7-holistic-release-gate
-last_reviewed_baseline: 1.19.0
+last_reviewed_baseline: 1.20.0
 ---
 
 # Milestone 39 — Task 39-7 Holistic Final Review / Release Gate
@@ -13,7 +13,7 @@ last_reviewed_baseline: 1.19.0
 ```txt
 Milestone implementation Tasks 39-1～39-6: accepted
 Cross-Task Windows release validation: PASS
-macOS / iOS release validation: PASS on exact candidate d60ed443ed02c380ca74f9d4ebb4e0cff0879d52
+macOS / iOS release validation: PASS on exact release candidate 2166458e1a5c8824db599bd6e40d460d55b60f3b
 Template Baseline release candidate: 1.20.0
 VERSION: 1.20.0
 Milestone 39: open / publication and post-release validation pending
@@ -61,7 +61,18 @@ python tools/ci/validation_planner.py --event workflow_dispatch --base afd3f6e3f
 
 Result：`validation_level=release`、`release_full=true`、`full_regression=true`，並要求docs、Python `tools`、workspace analyze、generated consistency、full Flutter tests、Android build與iOS build。
 
-## Windows release evidence
+## Exact 1.20.0 release-candidate evidence
+
+Release metadata sync建立commit：
+
+```txt
+2166458e1a5c8824db599bd6e40d460d55b60f3b
+chore(release): 準備Template Baseline 1.20.0
+```
+
+`d60ed44..2166458` planner因`VERSION`／`CHANGELOG`／repository identity projection變更正確提升`release_full=true`。因此本Task沒有沿用較早SHA的平台結果，而是對exact `2166458`重新執行完整release matrix。
+
+### Windows release evidence
 
 ### Documentation / Python / analyze
 
@@ -86,7 +97,7 @@ Result：build_runner、Drift schema exports、drift worker compile與schema gov
 Generated files are consistent with source.
 ```
 
-Git for Windows autocrlf留下status-only generated line-ending noise；內容diff為空，驗證後已`git restore --worktree .`清除副作用，worktree回到clean。
+Git for Windows autocrlf留下status-only generated line-ending noise；內容diff為空，驗證後已精準`git restore --worktree`清除副作用，worktree回到clean。
 
 ### Full Flutter regression
 
@@ -113,6 +124,7 @@ Git for Windows環境的`python3` alias不可用，repository Android script不�
 Result：PASS。
 
 ```txt
+commit_sha=2166458e1a5c8824db599bd6e40d460d55b60f3b
 build_mode=debug
 environment=development
 package_id=com.example.flutterarchitecture.development
@@ -127,6 +139,7 @@ distribution=not production-ready
 Result：PASS。
 
 ```txt
+commit_sha=2166458e1a5c8824db599bd6e40d460d55b60f3b
 build_mode=release
 environment=production
 package_id=com.example.flutterarchitecture
@@ -139,15 +152,16 @@ distribution=not production-ready
 
 ## macOS / iOS exact-candidate verification
 
-先前`bridge-mac`／backup的connector HTTP 400 external blocker已於2026-08-15解除。為避免Mac驗證不同commit，Windows先把Milestone branch推成remote review branch（未動main），Mac fresh fetch後在managed detached worktree `/Users/water/.devspace/worktrees/flutter_architecture-b8d949c2`驗證exact candidate：
+先前`bridge-mac`／backup的connector HTTP 400 external blocker已於2026-08-15解除。為避免Mac驗證不同commit，Windows先把Milestone branch推成remote review branch（未動main），Mac fresh fetch後在managed detached worktree `/Users/water/.devspace/worktrees/flutter_architecture-b8d949c2`驗證exact release candidate：
 
 ```txt
-d60ed443ed02c380ca74f9d4ebb4e0cff0879d52
+2166458e1a5c8824db599bd6e40d460d55b60f3b
 ```
 
 Development：PASS。
 
 ```txt
+commit_sha=2166458e1a5c8824db599bd6e40d460d55b60f3b
 environment=development
 scheme=Development
 configuration=Debug-development
@@ -161,6 +175,7 @@ dsym=present
 Production：PASS。
 
 ```txt
+commit_sha=2166458e1a5c8824db599bd6e40d460d55b60f3b
 environment=production
 scheme=Production
 configuration=Release-production
@@ -171,7 +186,7 @@ signing=unsigned verification build
 dsym=present
 ```
 
-兩次artifact metadata的`commit_sha`皆為exact `d60ed443ed02c380ca74f9d4ebb4e0cff0879d52`。Xcode皆輸出`BUILD SUCCEEDED`；Firebase CocoaPods deprecation、package code-asset filename與plugin compiler warnings均為nonfatal，未改變verification result。
+兩次artifact metadata的`commit_sha`皆為exact `2166458e1a5c8824db599bd6e40d460d55b60f3b`。Xcode皆輸出`BUILD SUCCEEDED`；Firebase CocoaPods deprecation、asset catalog／AppIntents與plugin compiler warnings均為nonfatal，未改變verification result。
 
 ## Release-precondition documentation corrective
 
@@ -207,8 +222,9 @@ Focused pressure contract另新增`PTF-26 Single-client local MCP shortcut`，�
 - 唯一Pencil domain Skill ownership：PASS；仍只有`implementing-pencil-flutter-design`。
 - Repository-governed Pencil runtime route：PASS；唯一允許`pencil-session-mcp` isolated session，PTF-26鎖住single-client local MCP shortcut。
 - Mapping validator、runtime geometry、critical local AND semantics與wrong-representation recovery：PASS。
-- Windows full regression、generated、Android dev/prod：PASS。
-- macOS exact-candidate iOS dev/prod：PASS。
+- Windows exact `2166458` Python／docs／5-workspace analyze／generated／full Flutter regression：PASS。
+- Windows exact `2166458` Android dev/prod：PASS。
+- macOS exact `2166458` iOS dev/prod：PASS。
 
 ```txt
 Open P0: 0
@@ -223,16 +239,16 @@ Milestone 39 status: open until publication + post-release closure
 Fresh `git fetch origin`：
 
 ```txt
-Milestone HEAD before release metadata sync: d60ed443ed02c380ca74f9d4ebb4e0cff0879d52
+Release candidate HEAD: 2166458e1a5c8824db599bd6e40d460d55b60f3b
 origin/main:    afd3f6e3f1c75af04e18dafc80c552720c83e0b9
 ```
 
-Remote main自Milestone base後尚無漂移；目前沒有integration conflict evidence。但release尚未獲得iOS gate，因此不得fast-forward/push。
+Remote main自Milestone base後尚無漂移；目前沒有integration conflict evidence。Exact `2166458` release-full與Android／iOS platform gates皆PASS，因此Task 39-7已具備publication admission；Milestone completion仍需main publication與Task 39-8 published-main validation。
 
 ## Required resume route
 
 ```txt
-release metadata validation / release commit
+final review evidence commit / focused validation
 → main fast-forward / push
 → published-main clean checkout validation
 → published-main fresh ChatGPT Skill / representative PTF acceptance

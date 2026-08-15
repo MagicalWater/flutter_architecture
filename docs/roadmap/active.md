@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.19.0
 
 ```txt
 Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-State: Requirement accepted / Design accepted / Plan pending
+State: Requirement accepted / Design accepted / Plan accepted / Task 39-1 ready
 Template Baseline: 1.19.0
 ```
 
@@ -20,12 +20,14 @@ Milestone 39補強既有Pencil-to-Flutter route的critical-node mapping complete
 
 ## Current Gate
 
-Requirement Decision已接受。Formal Design Spec建立為`proposed`後必須完成Full雙層Design Task review並取得使用者明確核准，才可建立Implementation Plan；Plan accepted前不得implementation。
+Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full雙層Task review並取得使用者明確核准。Current next action是依accepted Plan進入Task 39-1；每個implementation Task仍須完整雙層review與planner-selected validation。
 
 ## Current Evidence
 
 - Requirement Decision：`docs/audits/milestone_39/39-r_requirement_decision.md`。
-- Design：`docs/superpowers/specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md`（proposed）。
+- Design：`docs/superpowers/specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md`（accepted）。
+- Implementation Plan：`docs/superpowers/plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md`（accepted）。
+- Plan review：`docs/audits/milestone_39/39-p_implementation_plan_review.md`（accepted）。
 
 ## Previous Closure
 

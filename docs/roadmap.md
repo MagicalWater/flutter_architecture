@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-State: Requirement accepted / Design accepted / Plan accepted / Task 39-2 complete / Task 39-3 ready
+State: Requirement accepted / Design accepted / Plan accepted / Task 39-3 complete / Task 39-4 ready
 Template Baseline: 1.19.0
 ```
 

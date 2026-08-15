@@ -13,13 +13,13 @@ last_reviewed_baseline: 1.19.0
 ```txt
 Milestone implementation Tasks 39-1～39-6: accepted
 Cross-Task Windows release validation: PASS
-macOS / iOS release validation: BLOCKED — bridge connector account HTTP 400
-Template Baseline release: NOT STARTED
-VERSION: 1.19.0
-Milestone 39: open / blocked at external iOS gate
+macOS / iOS release validation: PASS on exact candidate d60ed443ed02c380ca74f9d4ebb4e0cff0879d52
+Template Baseline release candidate: 1.20.0
+VERSION: 1.20.0
+Milestone 39: open / publication and post-release validation pending
 ```
 
-本文件不把Windows-only成功改寫成Milestone completion。Release planner明確要求Android與iOS；在fresh macOS iOS development／production verification完成前，不得升級`VERSION`、fast-forward main、push release或宣稱Milestone 39 closure。
+本文件不把release-candidate成功改寫成Milestone completion。Release planner要求的Windows、Android與iOS platform gates目前皆已PASS；但在main publication與published-main post-release validation完成前，仍不得宣稱Milestone 39 closure／Archived。
 
 ## Cross-Task consistency review
 
@@ -137,21 +137,41 @@ signing=debug signing for verification only
 distribution=not production-ready
 ```
 
-## macOS / iOS blocker
+## macOS / iOS exact-candidate verification
 
-Release planner要求iOS build。Fresh嘗試：
-
-1. `bridge-mac` open `/Users/water/Developer/projects/flutter_architecture` → connector account HTTP 400：`We couldn't connect your account. Please try again.`
-2. Primary失敗後依bridge failover規則嘗試`bridge-mac-backup` → 相同HTTP 400。
-
-因此尚未接觸macOS repository，也沒有執行或偽造：
+先前`bridge-mac`／backup的connector HTTP 400 external blocker已於2026-08-15解除。為避免Mac驗證不同commit，Windows先把Milestone branch推成remote review branch（未動main），Mac fresh fetch後在managed detached worktree `/Users/water/.devspace/worktrees/flutter_architecture-b8d949c2`驗證exact candidate：
 
 ```txt
-bash tools/ci/build_ios_development.sh
-bash tools/ci/build_ios_production.sh
+d60ed443ed02c380ca74f9d4ebb4e0cff0879d52
 ```
 
-Disposition：**external/manual blocker**。Mac bridge恢復後，必須fresh fetch exact Milestone release candidate，完成development＋production iOS verification，再回本Task fresh re-review。
+Development：PASS。
+
+```txt
+environment=development
+scheme=Development
+configuration=Debug-development
+sdk=iphonesimulator
+bundle_id=com.example.flutterarchitecture.development
+artifact=Flutter Architecture Dev.app
+signing=unsigned verification build
+dsym=present
+```
+
+Production：PASS。
+
+```txt
+environment=production
+scheme=Production
+configuration=Release-production
+sdk=iphoneos
+bundle_id=com.example.flutterarchitecture
+artifact=Flutter Architecture.app
+signing=unsigned verification build
+dsym=present
+```
+
+兩次artifact metadata的`commit_sha`皆為exact `d60ed443ed02c380ca74f9d4ebb4e0cff0879d52`。Xcode皆輸出`BUILD SUCCEEDED`；Firebase CocoaPods deprecation、package code-asset filename與plugin compiler warnings均為nonfatal，未改變verification result。
 
 ## Release-precondition documentation corrective
 
@@ -179,12 +199,31 @@ Re-review disposition：P1 **RESOLVED**。後續再次收斂authority：reposito
 
 Focused pressure contract另新增`PTF-26 Single-client local MCP shortcut`，明確拒絕「目前只有一個client所以可改用`pencil-local-mcp`」的合理化。Current authority scan沒有任何正向`pencil-local-mcp` admission；Milestone 33 Design／Plan／Audit中的舊route只保留為historical evidence，不得覆蓋ADR-028、current governance registry、human Guide與domain Skill admission reference。
 
+## Final holistic re-review
+
+在Pencil session唯一route corrective與macOS/iOS gate完成後fresh重審：
+
+- Requirement／Design／Plan與Tasks 39-1～39-6 authority chain：PASS。
+- 唯一Pencil domain Skill ownership：PASS；仍只有`implementing-pencil-flutter-design`。
+- Repository-governed Pencil runtime route：PASS；唯一允許`pencil-session-mcp` isolated session，PTF-26鎖住single-client local MCP shortcut。
+- Mapping validator、runtime geometry、critical local AND semantics與wrong-representation recovery：PASS。
+- Windows full regression、generated、Android dev/prod：PASS。
+- macOS exact-candidate iOS dev/prod：PASS。
+
+```txt
+Open P0: 0
+Open P1 without disposition: 0
+External blocker: none
+Task 39-7 disposition: RELEASE CANDIDATE ACCEPTED
+Milestone 39 status: open until publication + post-release closure
+```
+
 ## Remote drift check
 
 Fresh `git fetch origin`：
 
 ```txt
-Milestone HEAD: 2fa1458823b66f681e33f0eb570547f3744e3ff9
+Milestone HEAD before release metadata sync: d60ed443ed02c380ca74f9d4ebb4e0cff0879d52
 origin/main:    afd3f6e3f1c75af04e18dafc80c552720c83e0b9
 ```
 
@@ -193,13 +232,7 @@ Remote main自Milestone base後尚無漂移；目前沒有integration conflict e
 ## Required resume route
 
 ```txt
-restore bridge-mac or bridge-mac-backup
-→ fresh fetch exact release candidate
-→ iOS development verification PASS
-→ iOS production verification PASS
-→ fresh Task 39-7 holistic re-review
-→ VERSION / CHANGELOG / project_context / roadmap release sync
-→ release commit
+release metadata validation / release commit
 → main fast-forward / push
 → published-main clean checkout validation
 → published-main fresh ChatGPT Skill / representative PTF acceptance
@@ -211,7 +244,7 @@ restore bridge-mac or bridge-mac-backup
 ```txt
 Open P0: 0
 Open P1 without disposition: 0
-External blocker: macOS / iOS release gate
-Task 39-7 status: blocked
-Milestone 39 status: open
+External blocker: none
+Task 39-7 status: release candidate accepted
+Milestone 39 status: open pending publication / post-release validation
 ```

@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.19.0
+last_reviewed_baseline: 1.20.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.19.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.19.0
+Template Baseline: 1.20.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,8 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-State: Task 39-1～39-6 complete / Task 39-7 blocked at macOS/iOS release gate
-Template Baseline: 1.19.0
+State: Task 39-7 release candidate accepted / publication and Task 39-8 post-release closure pending
+Template Baseline: 1.20.0
 ```
 
 完整 active scope、design、gate與 next action：

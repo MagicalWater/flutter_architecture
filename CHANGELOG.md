@@ -20,6 +20,33 @@
 
 ---
 
+## [1.20.0] - 2026-08-15
+
+### Added
+
+- 完成Milestone 39 Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective，新增initiative-local `implementation_mapping.json` machine contract與critical mapping validator。
+- 新增critical runtime geometry／local fidelity gate，讓actual `RenderBox` evidence成為constraint-sensitive geometry authority，並以AND semantics鎖定`whole-screen PASS + critical local FAIL = overall FAIL`。
+- 新增PTF-19～PTF-26 behavioral pressure contract，涵蓋critical mapping omission、cross-library same-name icon、accepted static asset redraw、runtime geometry mismatch、critical local failure、wrong-representation tuning、unauthorized deviation與single-client local MCP shortcut。
+
+### Changed
+
+- `implementing-pencil-flutter-design`仍為唯一Pencil-to-Flutter domain Skill；representation classification、provenance、Flutter mapping、visual validation與wrong-representation recovery全部收斂於既有Skill／references，不建立第二個Pencil Skill或global asset registry。
+- Repository-governed Pencil workflow唯一允許`executor-local-mcp → pencil-session-mcp` isolated session；每個conversation／client必須fresh `session_create`、持有自己的exact `sessionId`並以`session_get_app_state`驗證active target。Visible Pencil Desktop／`pencil-local-mcp`不得作為admission、fallback或single-client替代route。
+- Wrong source／asset／icon／representation一旦被review判定，affected mapping立即invalid；不得以padding、scale、crop、offset、opacity或threshold tuning挽救candidate，必須回classification／provenance、resolve replacement、更新mapping evidence並fresh affected validation。
+
+### Validation
+
+- Fresh behavioral RED／DISCOVERY／EXPLICIT GREEN證明PTF-19～PTF-25全部符合accepted contract；後續Pencil session唯一route corrective新增PTF-26，focused policy 16/16、完整`tools/docs` 89/89與`docs_check`均PASS。
+- Windows release/full matrix PASS：5-workspace analyze、generated consistency、完整Flutter regression與Android development／production verification全部通過；App full suite 494 cases PASS。
+- macOS isolated worktree對exact candidate `d60ed443ed02c380ca74f9d4ebb4e0cff0879d52`完成iOS Development Simulator與Production iphoneos unsigned verification；兩者皆`BUILD SUCCEEDED`，bundle identity與dSYM contract PASS。
+
+### Governance
+
+- Requirement Decision、Design、Implementation Plan與Tasks 39-1～39-7依Level 4雙層Task governance完成release-candidate review；Open P0=0、Open P1 without disposition=0。
+- `1.20.0`目前是local release candidate；尚未fast-forward／push `main`，published-main fresh acceptance與Task 39-8 post-release closure仍待完成，因此Milestone 39尚未Archived。
+
+---
+
 ## [1.19.0] - 2026-08-15
 
 ### Added

@@ -8,7 +8,7 @@
 
 ## 專案狀態
 
-- Template Baseline Version：1.19.0
+- Template Baseline Version：1.20.0
 - Phase 1 / MVP：Completed
 - Melos 8 / Dart Pub Workspaces Migration：Completed
 - Dependency Upgrade：Completed
@@ -40,6 +40,7 @@
 - Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective：Completed / Archived（Release 1.17.0）
 - Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance：Completed / Archived（Release 1.18.0）
 - Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective：Completed / Archived（Release 1.19.0）
+- Milestone 39 Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective：Release Candidate 1.20.0（publication / post-release closure pending）
 
 平台能力：
 

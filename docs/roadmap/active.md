@@ -3,15 +3,15 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.19.0
+last_reviewed_baseline: 1.20.0
 ---
 
 # Active Milestone
 
 ```txt
 Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-State: Task 39-1～39-6 complete / Task 39-7 blocked at macOS/iOS release gate
-Template Baseline: 1.19.0
+State: Task 39-7 release candidate accepted / publication and Task 39-8 post-release closure pending
+Template Baseline: 1.20.0
 ```
 
 ## Current Scope
@@ -20,7 +20,7 @@ Milestone 39補強既有Pencil-to-Flutter route的critical-node mapping complete
 
 ## Current Gate
 
-Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full雙層Task review並取得使用者明確核准。Task 39-1～39-6已完成雙層review。Task 39-7的Windows release/full matrix已PASS，但fresh`bridge-mac`與`bridge-mac-backup`皆在connector account層HTTP 400，因此planner-required iOS development／production verification仍為external blocker；`VERSION`維持1.19.0，未開始release／integration。
+Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full雙層Task review並取得使用者明確核准。Task 39-1～39-6已完成雙層review；Task 39-7 Windows release/full matrix、Android development／production與macOS exact-candidate iOS development／production verification皆PASS。Final holistic re-review確認Open P0=0、Open P1 without disposition=0；`VERSION`已升為1.20.0 local release candidate。下一合法動作是fast-forward／push main後執行published-main fresh acceptance與Task 39-8 post-release closure，完成前Milestone仍保持active。
 
 ## Current Evidence
 
@@ -34,7 +34,7 @@ Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full�
 - Task 39-4 recovery Skill review：`docs/audits/milestone_39/39-4_recovery_skill_review.md`（accepted）。
 - Task 39-5 behavioral evidence：`docs/audits/milestone_39/39-5_fidelity_pressure_evidence.md`（accepted）。
 - Task 39-6 authority sync review：`docs/audits/milestone_39/39-6_authority_sync_review.md`（accepted）。
-- Task 39-7 holistic release gate：`docs/audits/milestone_39/39-7_holistic_final_review.md`（blocked only by macOS/iOS external gate）。
+- Task 39-7 holistic release gate：`docs/audits/milestone_39/39-7_holistic_final_review.md`（release candidate accepted；publication pending）。
 
 ## Previous Closure
 

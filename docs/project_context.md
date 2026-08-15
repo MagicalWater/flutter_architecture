@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.19.0
+last_reviewed_baseline: 1.20.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.19.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.19.0
+Template Baseline: 1.20.0
 Phase 1 / MVP: Completed
-Current active milestone: None
-Current phase: Maintenance / Requirement Decision entry
+Current active milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
+Current phase: Release candidate / publication and post-release validation pending
 Latest completed initiative: Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective — 1.19.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -348,18 +348,18 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.19.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.20.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: None
-Current phase: Maintenance / Requirement Decision entry
+Current active milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
+Current phase: Release candidate / publication and post-release validation pending
 Latest completed initiative: Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective — 1.19.0
-Maintenance mode: No active milestone
-Open Milestone 38 review findings: P0=0 / undisposed P1=0; self-hosted runtime external blocker dispositioned
+Maintenance mode: Suspended while Milestone 39 release closure is active
+Open Milestone 39 review findings: P0=0 / undisposed P1=0
 ```
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
@@ -373,6 +373,8 @@ Milestone 35已把test execution over-validation修正為canonical change classi
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 
 Milestone 38已完成Template → Product首次採用的repository infrastructure／CI governance corrective：新增`repository_infrastructure.json` desired/disposition authority、三種CI profile選擇、GitHub live read-back／受控mutation、product artifact identity、private-repository capability disposition與fresh no-handoff acceptance。`manual-local`與`github-hosted`具有accepted runtime evidence；`self-hosted` contract與template runner read-back已驗證，但product-scoped Mac runner runtime因外部Mac connector不可用保留明確external blocker disposition。Formal closure見`docs/audits/milestone_38/38-11_holistic_final_review.md`。
+
+Milestone 39已完成Pencil-to-Flutter critical mapping machine contract、runtime geometry／critical local fidelity gate、wrong-representation recovery與fresh behavioral pressure acceptance，並把repository-governed Pencil runtime authority完全收斂為`pencil-session-mcp` isolated session。Windows full regression、Android development／production與macOS exact-candidate iOS development／production verification皆PASS；目前`VERSION=1.20.0`為local release candidate，尚待main publication與published-main post-release validation，因此Milestone仍保持active而非Archived。Current final review見`docs/audits/milestone_39/39-7_holistic_final_review.md`。
 
 新的feature、bug、security／platform變化、產品採用需求或maintenance hardening都必須先進入Requirement Decision，再依Level 0～5分類執行。Audit與remediation進度由`docs/audits/README.md`與對應review擁有，不追加Task、commit、測試數或runtime evidence journal至本文件。
 

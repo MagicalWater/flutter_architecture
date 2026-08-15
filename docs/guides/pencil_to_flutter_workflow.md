@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - pencil-to-flutter-human-workflow-guide
-last_reviewed_baseline: 1.16.0
+last_reviewed_baseline: 1.19.0
 ---
 
 # Repository-local Pencil-to-Flutter Workflow Guide
@@ -246,6 +246,18 @@ Human-facing六類摘要：
 - Dynamic drawing：只有runtime state／value真正驅動geometry時才使用。
 
 以下任一成立時fail closed，不進production UI：字型authority unresolved、approximate icon未有accepted disposition、derived asset缺source／transformation／hash provenance、raster-everything mapping、static `CustomPainter` overbuild。完整decision matrix只由domain reference擁有，本Guide不複製其細節。
+
+對risk-selected critical nodes，另外建立initiative-local：
+
+```txt
+docs/visual_authority/<initiative>/implementation_mapping.json
+```
+
+它只保存implementation mapping evidence，不取代`.pen`或`manifest.md`。Critical mapping只能是`exact`、`verified-equivalent`、`intentional-deviation`、`unresolved`；後三者分別需要equivalence evidence、accepted deviation approval或維持fail-closed。Machine validator與完整field contract由`tools/visual/pencil_implementation_mapping.py`擁有，本Guide不複製schema。
+
+Critical geometry與micro-fidelity依risk選最小充分owner；不要求every-node geometry test、every-icon golden或every-section visual test。Whole-screen PASS不能覆蓋critical local FAIL，source constant也不能覆蓋runtime`RenderBox` evidence。
+
+若review已判定wrong source／asset／icon／representation，立即停止對該candidate繼續scale／padding／crop／offset／opacity微調，回representation classification／provenance取得replacement mapping並fresh驗證。這是recovery gate，不是事後review建議。
 
 每個extracted item只指定一個Flutter owner。Owner候選：
 

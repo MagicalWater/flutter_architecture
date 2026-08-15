@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-028-repository-local-pencil-to-flutter-design-implementation-workflow
-last_reviewed_baseline: 1.15.0
+last_reviewed_baseline: 1.19.0
 id: ADR-028
 title: Repository-local Pencil-to-Flutter Design Implementation Workflow
 supersedes:
@@ -85,6 +85,19 @@ Pencil design不得建立平行Flutter architecture：
 - 只有準確且具穩定共用價值的token／component才提升到Design System；單一畫面特有數值保留feature-local visual specification。
 - Presentation-only visual fixture不得建立虛假的Domain、Data、Repository、Use Case、Bloc或DI。
 
+Critical implementation items必須在Flutter production mapping前形成initiative-local、machine-readable implementation mapping evidence。此evidence不取代`.pen`或visual manifest，也不建立global asset registry；只對risk-selected critical nodes保存representation identity、Flutter owner／consumer與resolution state。
+
+Critical mapping disposition固定為：
+
+```txt
+exact
+verified-equivalent
+intentional-deviation
+unresolved
+```
+
+`verified-equivalent`必須有可追溯equivalence evidence；`intentional-deviation`必須有accepted approval reference；`unresolved` fail closed。名稱相同、語意相同或candidate肉眼接近不能自行升級為`exact`或accepted deviation。
+
 ### Single-renderer responsive fidelity
 
 一個accepted `.pen` screen只能映射到一套Flutter whole-screen visual component model。**One accepted screen → one whole-screen visual tree**；canonical、phone與narrow viewport可以在同一組components內使用不同layout policy，但不得依whole-screen breakpoint替換成另一套renderer。
@@ -104,6 +117,12 @@ Canonical fidelity與supported runtime fidelity必須驗證**同一production wh
 Accepted `.pen`只有單一手機frame時，可以在candidate implementation前由canonical Pencil preview依manifest固定的target、projection algorithm、crop／scroll contract產生derived runtime reference。Derived reference只作comparison evidence，不取得`.pen` authority；不得在candidate失敗後更換projection、resize策略、threshold或ignore regions。
 
 不得以full-screen raster embedding、全畫面fixed-canvas scaling、事後擴大threshold或任意ignore region取得通過。Pixel evidence與semantic review缺一不可。
+
+Whole-screen visual metrics是broad regression owner，不是micro-fidelity唯一authority。Risk-selected critical icon、asset、component或geometry可以有更小的local owner，例如component golden、事前固定ROI、asset identity/hash、icon equivalence evidence或runtime geometry assertion。Acceptance採AND semantics：**whole-screen PASS + critical local FAIL = overall FAIL**。
+
+Critical runtime geometry驗收實際render result，而不是source literal。當accepted geometry與Flutter source constant一致、但runtime`RenderBox`或等價runtime evidence不一致時，geometry gate仍FAIL；corrective implementation可繼續，但不得宣稱fidelity／production acceptance PASS。
+
+Reviewer一旦判定wrong source／wrong asset／wrong icon／wrong representation，受影響mapping立即invalid。不得繼續以padding、scale、crop、offset、opacity或threshold tuning挽救該candidate；必須回representation classification／provenance，resolve replacement representation、更新mapping evidence、fresh affected validation，再重新進affected visual acceptance。若真正需要改accepted`.pen`或Design authority，回中央Requirement／Design gate。
 
 ## Consequences
 
@@ -133,4 +152,4 @@ Accepted `.pen`只有單一手機frame時，可以在candidate implementation前
 
 ## Last Reviewed Baseline
 
-1.15.0；Milestone 33 corrective single-renderer amendment。
+1.19.0；Milestone 39補入critical mapping disposition、runtime geometry、local fidelity override與wrong-representation recovery stable contract。

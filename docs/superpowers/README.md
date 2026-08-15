@@ -17,6 +17,8 @@ last_reviewed_baseline: 1.16.0
 
 Spec 與 Plan 都不代表 implementation 已完成，也不取代 current snapshot、Architecture Decision、review evidence 或 release history。
 
+Milestone 39 accepted Design／Plan：[`specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md`](specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md)／[`plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md`](plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md)。Current execution state由`../roadmap/active.md`與`../audits/milestone_39/`擁有。
+
 Milestone 34 accepted Implementation Plan：[`plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`](plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md)。Tasks 34-1～34-4、34-5 Holistic Final Review、Template Baseline `1.15.2` publication與post-release validation均已完成；current active work回到Roadmap／Requirement Decision入口。
 
 ## 目錄

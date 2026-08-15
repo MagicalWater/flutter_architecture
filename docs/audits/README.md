@@ -45,6 +45,18 @@ Final / Holistic Review
 
 ## Evidence routes
 
+### Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
+
+- [`milestone_39/39-r_requirement_decision.md`](milestone_39/39-r_requirement_decision.md)：critical mapping completeness、runtime geometry、local fidelity與wrong-representation recovery的Level 4 Requirement Decision。
+- [`milestone_39/39-0_design_spec_review.md`](milestone_39/39-0_design_spec_review.md)：single Skill／initiative-local mapping／risk-based geometry與recovery Design review。
+- [`milestone_39/39-p_implementation_plan_review.md`](milestone_39/39-p_implementation_plan_review.md)：RED→validator→local fidelity→recovery→fresh behavioral→authority sync的accepted Plan review。
+- [`milestone_39/39-1_mapping_contract_red.md`](milestone_39/39-1_mapping_contract_red.md)：critical mapping validator missing-contract RED與post-commit command recovery evidence。
+- [`milestone_39/39-2_mapping_validator_review.md`](milestone_39/39-2_mapping_validator_review.md)：four-state mapping disposition與fail-closed validator GREEN。
+- [`milestone_39/39-3_geometry_local_fidelity_review.md`](milestone_39/39-3_geometry_local_fidelity_review.md)：runtime RenderBox geometry與critical local fidelity AND semantics review。
+- [`milestone_39/39-4_recovery_skill_review.md`](milestone_39/39-4_recovery_skill_review.md)：wrong-representation invalidation與stop-pixel-tuning Skill contract review。
+- [`milestone_39/39-5_fidelity_pressure_evidence.md`](milestone_39/39-5_fidelity_pressure_evidence.md)：fresh ChatGPT RED／DISCOVERY／EXPLICIT GREEN behavioral evidence，PTF-19～PTF-25無P0／undisposed P1。
+- [`milestone_39/39-6_authority_sync_review.md`](milestone_39/39-6_authority_sync_review.md)：ADR-028／Guide／existing proof mapping authority synchronization review。
+
 ### Milestone 38 — Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
 
 - [`milestone_38/38-r_requirement_decision.md`](milestone_38/38-r_requirement_decision.md)：repository infrastructure／CI adoption缺口的Level 5 Requirement Decision。

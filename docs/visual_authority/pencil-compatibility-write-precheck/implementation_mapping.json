@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "initiative": "pencil-compatibility-write-precheck",
+  "pencil_authority_sha256": "bd8926711ea28e7f9ae5a83128ed8fbc8d506cb5342c76eb35360c4c13544fdc",
+  "critical_nodes": [
+    {
+      "node_id": "lAOay",
+      "role": "accepted screen root / whole-screen visual tree",
+      "representation_class": "Layout primitive",
+      "disposition": "exact",
+      "flutter_owner": "WritePrecheckProjectedCanvas",
+      "consumer": "WritePrecheckView"
+    },
+    {
+      "node_id": "gY9yA",
+      "role": "reusable Data Row critical hierarchy",
+      "representation_class": "Layout primitive",
+      "disposition": "exact",
+      "flutter_owner": "PrecheckDataRow",
+      "consumer": "WritePrecheckProjectedCanvas"
+    },
+    {
+      "node_id": "H3co21",
+      "role": "reusable progress Step Item critical state geometry",
+      "representation_class": "Layout primitive",
+      "disposition": "exact",
+      "flutter_owner": "PrecheckProgress",
+      "consumer": "WritePrecheckProjectedCanvas"
+    },
+    {
+      "node_id": "aZMKq",
+      "role": "reusable Record Tile critical hierarchy",
+      "representation_class": "Layout primitive",
+      "disposition": "exact",
+      "flutter_owner": "PrecheckRecordTile",
+      "consumer": "WritePrecheckProjectedCanvas"
+    },
+    {
+      "node_id": "h6mPw5",
+      "role": "reusable Secondary Button critical action geometry",
+      "representation_class": "Layout primitive",
+      "disposition": "exact",
+      "flutter_owner": "feature-local secondary action widget",
+      "consumer": "WritePrecheckProjectedCanvas"
+    }
+  ]
+}

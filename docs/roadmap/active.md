@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.19.0
 
 ```txt
 Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-State: Requirement accepted / Design accepted / Plan accepted / Task 39-6 complete / Task 39-7 holistic and release ready
+State: Task 39-1～39-6 complete / Task 39-7 blocked at macOS/iOS release gate
 Template Baseline: 1.19.0
 ```
 
@@ -20,7 +20,7 @@ Milestone 39補強既有Pencil-to-Flutter route的critical-node mapping complete
 
 ## Current Gate
 
-Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full雙層Task review並取得使用者明確核准。Task 39-1～39-6已完成雙層review；Current next action是Task 39-7 cross-Task holistic review、release與post-release closure。
+Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full雙層Task review並取得使用者明確核准。Task 39-1～39-6已完成雙層review。Task 39-7的Windows release/full matrix已PASS，但fresh`bridge-mac`與`bridge-mac-backup`皆在connector account層HTTP 400，因此planner-required iOS development／production verification仍為external blocker；`VERSION`維持1.19.0，未開始release／integration。
 
 ## Current Evidence
 
@@ -34,6 +34,7 @@ Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full�
 - Task 39-4 recovery Skill review：`docs/audits/milestone_39/39-4_recovery_skill_review.md`（accepted）。
 - Task 39-5 behavioral evidence：`docs/audits/milestone_39/39-5_fidelity_pressure_evidence.md`（accepted）。
 - Task 39-6 authority sync review：`docs/audits/milestone_39/39-6_authority_sync_review.md`（accepted）。
+- Task 39-7 holistic release gate：`docs/audits/milestone_39/39-7_holistic_final_review.md`（blocked only by macOS/iOS external gate）。
 
 ## Previous Closure
 

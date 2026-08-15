@@ -84,6 +84,41 @@ Undisposed P1：**0**。
 
 ## Release / Post-release
 
-Template Baseline升級至`1.19.0`。Publication後必須以fresh clean checkout重新驗證root identity／infrastructure／docs authority與remote HEAD；若source-template self-hosted runner仍offline，GitHub main execution保持queued/blocked且不得fallback。
+Template Baseline已發布為`1.19.0`，publication commit：
 
-Formal closure在published-main fresh verification完成後成立。
+```text
+6da269eef14efacdd1fe1c18402c3557d732e5e0
+```
+
+Published-main fresh managed checkout直接由`origin/main`建立，base SHA精確為上述commit；fresh results：
+
+```text
+VERSION = 1.19.0
+repository identity verifier: PASS
+repository infrastructure verifier: PASS
+docs_check: PASS
+fresh admission / lifecycle / CI trust boundary corpus: 43 PASS
+published checkout: clean detached worktree from origin/main
+```
+
+Fresh live GitHub read-back：
+
+- repository visibility：`public`；
+- `CI_EXECUTION_MODE = self-hosted`；
+- Actions default workflow permission：`read`；
+- tracked/remote secret evidence只列Environment secret names，不讀secret values；
+- runner `water-mac-flutter-architecture` labels包含`self-hosted`、`macOS`、`ARM64`、`flutter-architecture`、`trusted-main`；
+- runner status：`offline`。
+
+Publication push `6da269e`實際GitHub runs：
+
+```text
+CI       31857641959  queued
+Android  31857641957  queued
+iOS      31857641966  queued
+Observability Acceptance 31857641958 skipped
+```
+
+此狀態與ADR-023／ADR-031一致：self-hosted runner offline時保持queued/blocked，不得automatic fallback至GitHub-hosted。Mac bridge fresh retry仍回connector account HTTP 400，因此Task 38-8 external blocker disposition保持有效，沒有偽造runtime成功。
+
+Published source authority、remote HEAD、fresh checkout與live GitHub disposition均已重新取得，Formal closure成立。

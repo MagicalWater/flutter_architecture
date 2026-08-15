@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.19.0
 
 ```txt
 Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-State: Requirement accepted / Design accepted / Plan accepted / Task 39-4 complete / Task 39-5 ready
+State: Requirement accepted / Design accepted / Plan accepted / Task 39-5 complete / Task 39-6 ready
 Template Baseline: 1.19.0
 ```
 
@@ -20,7 +20,7 @@ Milestone 39補強既有Pencil-to-Flutter route的critical-node mapping complete
 
 ## Current Gate
 
-Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full雙層Task review並取得使用者明確核准。Task 39-1～39-4已完成雙層review；Current next action是Task 39-5 fresh behavioral pressure validation。
+Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full雙層Task review並取得使用者明確核准。Task 39-1～39-5已完成雙層review；Current next action是Task 39-6 ADR-028／Guide／proof mapping authority synchronization。
 
 ## Current Evidence
 
@@ -32,6 +32,7 @@ Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full�
 - Task 39-2 validator review：`docs/audits/milestone_39/39-2_mapping_validator_review.md`（accepted）。
 - Task 39-3 geometry/local fidelity review：`docs/audits/milestone_39/39-3_geometry_local_fidelity_review.md`（accepted）。
 - Task 39-4 recovery Skill review：`docs/audits/milestone_39/39-4_recovery_skill_review.md`（accepted）。
+- Task 39-5 behavioral evidence：`docs/audits/milestone_39/39-5_fidelity_pressure_evidence.md`（accepted）。
 
 ## Previous Closure
 

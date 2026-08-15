@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-State: Task 39-7 release candidate accepted / publication and Task 39-8 post-release closure pending
+Active Milestone: None
+State: Maintenance / next work must enter Requirement Decision
 Template Baseline: 1.20.0
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 38 已完成或已有明確 disposition。Milestone 38已完成Template Baseline 1.19.0 publication、Template → Product infrastructure／CI adoption governance與三profile acceptance disposition並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 39 已完成或已有明確 disposition。Milestone 39已完成Template Baseline 1.20.0 publication、Pencil-to-Flutter fidelity／recovery governance、final published-main platform verification與fresh behavioral acceptance並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

@@ -1,8 +1,8 @@
 ---
 document_type: runtime-evidence
-status: active
+status: completed
 authoritative_for:
-  - milestone-39-task-39-7-post-release-validation
+  - milestone-39-task-39-8-post-release-validation
 last_reviewed_baseline: 1.20.0
 ---
 
@@ -176,5 +176,143 @@ app.android-arm64.symbols
 app.android-x64.symbols
 ```
 
-The formal repeated-run acceptance is still pending an exact corrective commit
-SHA and therefore this Task remains open.
+The formal repeated-run acceptance was then executed against the exact corrective
+commit and again after publication to `main`.
+
+## Exact corrective acceptance
+
+Corrective commit:
+
+```txt
+9b0612093248ebceced5444c53093363660830c0
+fix(ci): 修正Android production verification重跑symbols遺失
+```
+
+Planner classification for the corrective range was focused; planner-selected
+Python/docs checks passed. In addition, the Requirement Decision required direct
+runtime proof of the retry invariant.
+
+Using the same exact SHA and the same artifact directory, Android Production
+verification was executed twice consecutively. Both runs passed with:
+
+```txt
+commit_sha=9b0612093248ebceced5444c53093363660830c0
+environment=production
+package_id=com.example.flutterarchitecture
+flutter_symbols=3
+mapping_file=present
+```
+
+This directly closes the deterministic second-run symbols loss found on the
+previous published main.
+
+## Final published-main admission
+
+After the corrective was fast-forwarded and pushed, a fresh checkout confirmed:
+
+```txt
+HEAD = origin/main = 9b0612093248ebceced5444c53093363660830c0
+VERSION = 1.20.0
+repository_identity.template_origin.baseline = 1.20.0
+working tree = clean
+```
+
+Fresh published-main focused validation passed:
+
+- planner-selected Python/docs checks: PASS;
+- `docs_check`: PASS;
+- published-main Android Production repeated-run acceptance: PASS twice in the
+  same fresh checkout and artifact directory, each with three Flutter symbols
+  and mapping present.
+
+## Final published-main macOS / iOS evidence
+
+Mac used a fresh isolated worktree at the exact final published SHA
+`9b0612093248ebceced5444c53093363660830c0`.
+
+iOS Development verification: PASS.
+
+```txt
+environment=development
+scheme=Development
+configuration=Debug-development
+sdk=iphonesimulator
+bundle_id=com.example.flutterarchitecture.development
+commit_sha=9b0612093248ebceced5444c53093363660830c0
+dsym=present
+```
+
+iOS Production verification: PASS.
+
+```txt
+environment=production
+scheme=Production
+configuration=Release-production
+sdk=iphoneos
+bundle_id=com.example.flutterarchitecture
+commit_sha=9b0612093248ebceced5444c53093363660830c0
+dsym=present
+```
+
+Both Xcode builds reported `BUILD SUCCEEDED`. These are unsigned verification
+artifacts and do not expand the repository's Store-distribution claim.
+
+## Fresh published-main behavioral acceptance
+
+An independent fresh ChatGPT conversation performed repository-root discovery
+after a fresh fetch. Identity admission passed with:
+
+```txt
+HEAD = origin/main = 9b0612093248ebceced5444c53093363660830c0
+VERSION = 1.20.0
+template baseline = 1.20.0
+```
+
+It independently discovered the current route:
+
+```txt
+governing-template-development
+→ implementing-pencil-flutter-design
+→ current Pencil references / machine contracts
+→ pencil-session-mcp isolated session authority
+```
+
+Representative behavioral scenarios all rejected the unsafe shortcut being
+tested: missing critical mapping, cross-library same-name `exact`, static raster
+redraw through `CustomPainter`, source/runtime geometry mismatch, whole-screen
+PASS masking a critical local icon failure, continued pixel tuning after wrong
+representation, unauthorized `intentional-deviation`, and the single-client
+`pencil-local-mcp` shortcut.
+
+Fresh result:
+
+```txt
+Fresh Skill discovery: PASS
+Published-main authority self-consistency: PASS
+Blocking P0: 0
+Blocking P1 without disposition: 0
+Milestone 39 published-main behavioral acceptance: PASS
+```
+
+The fresh reviewer correctly identified that current snapshot/roadmap documents
+still described publication/post-release closure as pending. That is the final
+Task 39-8 authority-sync transition and is closed by the same closure commit as
+this evidence; it is not a behavioral-contract failure.
+
+## Final disposition
+
+All accepted Task 39-7/39-8 publication and post-release gates are satisfied:
+
+```txt
+Published final main: 9b0612093248ebceced5444c53093363660830c0
+Template Baseline: 1.20.0
+Android final published verification: PASS
+Android repeated-run idempotency: PASS
+iOS Development final published verification: PASS
+iOS Production final published verification: PASS
+Fresh published-main behavioral acceptance: PASS
+Open P0: 0
+Open P1 without disposition: 0
+External blocker: none
+Milestone 39: COMPLETED / ARCHIVED
+```

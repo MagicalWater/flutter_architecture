@@ -9,18 +9,18 @@ last_reviewed_baseline: 1.20.0
 # Active Milestone
 
 ```txt
-Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-State: Task 39-7 release candidate accepted / publication and Task 39-8 post-release closure pending
+Active Milestone: None
+State: Maintenance / next work must enter Requirement Decision
 Template Baseline: 1.20.0
 ```
 
 ## Current Scope
 
-Milestone 39補強既有Pencil-to-Flutter route的critical-node mapping completeness、mapping disposition、runtime geometry、component／section-level fidelity與wrong-representation recovery。它只補強`implementing-pencil-flutter-design`與machine enforcement，不建立第二個Pencil domain Skill，也不重寫Milestone 33／34 authority。
+目前沒有active milestone。Milestone 39已完成既有Pencil-to-Flutter route的critical-node mapping completeness、mapping disposition、runtime geometry、component／section-level fidelity與wrong-representation recovery補強，並已發布Template Baseline 1.20.0。
 
 ## Current Gate
 
-Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full雙層Task review並取得使用者明確核准。Task 39-1～39-6已完成雙層review；Task 39-7 Windows release/full matrix、Android development／production與macOS exact-candidate iOS development／production verification皆PASS。Final holistic re-review確認Open P0=0、Open P1 without disposition=0；`VERSION`已升為1.20.0 local release candidate。下一合法動作是fast-forward／push main後執行published-main fresh acceptance與Task 39-8 post-release closure，完成前Milestone仍保持active。
+Milestone 39 Requirement Decision、Formal Design Spec、Implementation Plan與Task-level雙層review皆完成。Task 39-7 release gate與Task 39-8 published-main closure皆PASS；final published main為`9b0612093248ebceced5444c53093363660830c0`，Android repeated-run verification、macOS/iOS Development／Production與fresh ChatGPT behavioral acceptance皆PASS，Open P0=0、Open P1 without disposition=0。下一個需求必須重新從Requirement Decision入口開始。
 
 ## Current Evidence
 
@@ -34,7 +34,8 @@ Requirement Decision、Formal Design Spec與Implementation Plan皆已完成Full�
 - Task 39-4 recovery Skill review：`docs/audits/milestone_39/39-4_recovery_skill_review.md`（accepted）。
 - Task 39-5 behavioral evidence：`docs/audits/milestone_39/39-5_fidelity_pressure_evidence.md`（accepted）。
 - Task 39-6 authority sync review：`docs/audits/milestone_39/39-6_authority_sync_review.md`（accepted）。
-- Task 39-7 holistic release gate：`docs/audits/milestone_39/39-7_holistic_final_review.md`（release candidate accepted；publication pending）。
+- Task 39-7 holistic release gate：`docs/audits/milestone_39/39-7_holistic_final_review.md`（release candidate accepted）。
+- Task 39-8 post-release closure：`docs/audits/milestone_39/39-8_post_release_validation.md`（completed；published-main closure authority）。
 
 ## Previous Closure
 

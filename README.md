@@ -40,7 +40,7 @@
 - Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective：Completed / Archived（Release 1.17.0）
 - Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance：Completed / Archived（Release 1.18.0）
 - Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective：Completed / Archived（Release 1.19.0）
-- Milestone 39 Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective：Release Candidate 1.20.0（publication / post-release closure pending）
+- Milestone 39 Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective：Completed / Archived（Release 1.20.0）
 
 平台能力：
 

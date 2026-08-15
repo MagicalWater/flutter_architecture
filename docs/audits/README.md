@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.19.0
+last_reviewed_baseline: 1.20.0
 ---
 
 # Audits and Review Evidence
@@ -56,6 +56,8 @@ Final / Holistic Review
 - [`milestone_39/39-4_recovery_skill_review.md`](milestone_39/39-4_recovery_skill_review.md)：wrong-representation invalidation與stop-pixel-tuning Skill contract review。
 - [`milestone_39/39-5_fidelity_pressure_evidence.md`](milestone_39/39-5_fidelity_pressure_evidence.md)：fresh ChatGPT RED／DISCOVERY／EXPLICIT GREEN behavioral evidence，PTF-19～PTF-25無P0／undisposed P1。
 - [`milestone_39/39-6_authority_sync_review.md`](milestone_39/39-6_authority_sync_review.md)：ADR-028／Guide／existing proof mapping authority synchronization review。
+- [`milestone_39/39-7_holistic_final_review.md`](milestone_39/39-7_holistic_final_review.md)：cross-Task release/full matrix、Pencil session唯一route corrective、Android／iOS exact-candidate platform gates與1.20.0 release-candidate acceptance。
+- [`milestone_39/39-8_post_release_validation.md`](milestone_39/39-8_post_release_validation.md)：1.20.0 published-main Android rerun-idempotency corrective、final Android／iOS exact-main verification、fresh ChatGPT behavioral acceptance與formal closure。
 
 ### Milestone 38 — Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
 

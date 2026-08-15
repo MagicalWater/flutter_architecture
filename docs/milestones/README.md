@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.19.0
+last_reviewed_baseline: 1.20.0
 ---
 
 # Milestone Routing
@@ -32,10 +32,20 @@ Milestone routing 只回答：
 
 ```txt
 Active Milestone: None
-Template Baseline: 1.19.0
+Template Baseline: 1.20.0
 ```
 
-目前沒有active milestone；current work回到`docs/roadmap/active.md`與Requirement Decision入口。Milestone 38已發布Template Baseline `1.19.0`並完成formal closure；self-hosted product runtime acceptance保留Design-authorized external blocker disposition。
+目前沒有active milestone；current work回到`docs/roadmap/active.md`與Requirement Decision入口。Milestone 39已發布Template Baseline `1.20.0`並完成formal closure。
+
+### Milestone 39 closed routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_39/39-r_requirement_decision.md`
+- Design：Accepted — `docs/superpowers/specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md`
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md`
+- Task 39-5 Fresh Behavioral Pressure：Accepted — `docs/audits/milestone_39/39-5_fidelity_pressure_evidence.md`
+- Task 39-7 Holistic Final Review：Release Candidate Accepted — `docs/audits/milestone_39/39-7_holistic_final_review.md`
+- Task 39-8 Post-release Validation：Completed — `docs/audits/milestone_39/39-8_post_release_validation.md`
+- Release：Template Baseline `1.20.0`已發布並完成formal closure
 
 ### Milestone 38 closed routing
 

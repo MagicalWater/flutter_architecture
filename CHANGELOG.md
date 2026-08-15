@@ -43,7 +43,8 @@
 ### Governance
 
 - Requirement Decision、Design、Implementation Plan與Tasks 39-1～39-7依Level 4雙層Task governance完成release-candidate review；Open P0=0、Open P1 without disposition=0。
-- `1.20.0`目前是local release candidate；尚未fast-forward／push `main`，published-main fresh acceptance與Task 39-8 post-release closure仍待完成，因此Milestone 39尚未Archived。
+- Template Baseline `1.20.0`已發布至`main`。Published-main驗證期間發現Android Production verifier同SHA重跑可能因cached AOT造成Flutter symbols遺失；已以invocation-specific split-debug-info staging修正並以同SHA、同artifact directory連續兩次Production verification證明idempotency。
+- Final published main `9b0612093248ebceced5444c53093363660830c0`通過Android repeated-run、macOS/iOS Development與Production verification，以及fresh ChatGPT published-main behavioral acceptance；Open P0=0、Open P1 without disposition=0，Milestone 39正式Completed / Archived。
 
 ---
 

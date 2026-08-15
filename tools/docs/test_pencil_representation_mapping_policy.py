@@ -10,6 +10,9 @@ ASSET_MAPPING_REFERENCE = Path(
 PENCIL_ADMISSION_REFERENCE = Path(
     ".agents/skills/implementing-pencil-flutter-design/references/pencil-admission.md"
 )
+PRESSURE_SCENARIOS_REFERENCE = Path(
+    ".agents/skills/implementing-pencil-flutter-design/references/pressure-scenarios.md"
+)
 
 POLICY_FILES = (
     Path(".agents/skills/implementing-pencil-flutter-design/SKILL.md"),
@@ -87,8 +90,18 @@ class PencilRepresentationMappingPolicyTest(unittest.TestCase):
     def test_isolated_admission_does_not_fallback_to_shared_desktop(self) -> None:
         admission = self.text_by_path[PENCIL_ADMISSION_REFERENCE]
         self.assertIn("pencil-local-mcp", admission)
-        self.assertIn("不得把共享active-editor state當作fallback", admission)
+        self.assertIn(
+            "不得作為admission、fallback或single-client替代route",
+            admission,
+        )
+        self.assertNotIn("single-client情境另有accepted disposition", self.all_text)
         self.assertIn("只可關閉自己持有的exact `sessionid`", admission)
+
+    def test_single_client_local_mcp_shortcut_is_explicitly_rejected(self) -> None:
+        pressure = _normalized(PRESSURE_SCENARIOS_REFERENCE)
+        self.assertIn("ptf-26 single-client local mcp shortcut", pressure)
+        self.assertIn("repository-governed pencil workflow唯一允許`pencil-session-mcp`", pressure)
+        self.assertIn("single-client不形成例外", pressure)
 
 
 if __name__ == "__main__":

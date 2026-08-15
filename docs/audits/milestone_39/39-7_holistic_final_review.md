@@ -163,7 +163,7 @@ Focused re-review新增machine regression owner，鎖定`pencil-session-mcp`、`
 
 ```txt
 python -m unittest tools.docs.test_pencil_representation_mapping_policy tools.docs.test_pencil_single_renderer_policy
-→ 15 PASS
+→ 16 PASS
 
 dart run melos run docs_check
 → PASS
@@ -175,7 +175,9 @@ Current forward-route scan
 → no stale positive pencil-local-mcp admission route
 ```
 
-Re-review disposition：P1 **RESOLVED**。保留的`pencil-local-mcp`字樣只用來明確描述Desktop/single-client authority與「isolated route不得隱式fallback」邊界，不再作為current Pencil-to-Flutter concurrent admission route。
+Re-review disposition：P1 **RESOLVED**。後續再次收斂authority：repository-governed Pencil workflow唯一允許`pencil-session-mcp` isolated session；`pencil-local-mcp`只保留在禁止性文字中，用來明確表達不得作為admission、fallback或single-client替代route。
+
+Focused pressure contract另新增`PTF-26 Single-client local MCP shortcut`，明確拒絕「目前只有一個client所以可改用`pencil-local-mcp`」的合理化。Current authority scan沒有任何正向`pencil-local-mcp` admission；Milestone 33 Design／Plan／Audit中的舊route只保留為historical evidence，不得覆蓋ADR-028、current governance registry、human Guide與domain Skill admission reference。
 
 ## Remote drift check
 

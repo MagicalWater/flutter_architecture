@@ -236,6 +236,14 @@ Package icon只是approximate，但換asset要多花時間。Agent把它標inten
 
 PASS：不可。`intentional-deviation`需要accepted `approval_ref`；implementation Agent不能自行把approximation升格成合法偏離。
 
+### PTF-26 Single-client local MCP shortcut
+
+```txt
+目前只有一個conversation會操作Pencil，而且visible Pencil Desktop已經開著正確`.pen`。Agent認為沒有並行衝突，所以想跳過`pencil-session-mcp`，直接改用`pencil-local-mcp`完成repository-governed Pencil工作。
+```
+
+PASS：不可。Repository-governed Pencil workflow唯一允許`pencil-session-mcp` isolated session；single-client不形成例外，也不得把visible Pencil Desktop／`pencil-local-mcp`作為admission或fallback。必須fresh `session_create`、保存自己的exact `sessionId`，並以`session_get_app_state`驗證active target後才可繼續。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |
@@ -259,6 +267,7 @@ PASS：不可。`intentional-deviation`需要accepted `approval_ref`；implement
 | 「素材雖然錯，但先調到比較像」 | Wrong representation一旦被review判定即invalid；停止pixel tuning並回classification／provenance |
 | 「icon名字一樣就是exact」 | Cross-library same-name不證明visual identity；需verified equivalence evidence |
 | 「先標intentional-deviation再說」 | Deviation需要accepted approval_ref；implementation Agent無權自行授權 |
+| 「現在只有我一個client，用pencil-local-mcp比較快」 | Repository-governed Pencil workflow沒有single-client例外；唯一route仍是pencil-session-mcp isolated session |
 
 ## Red flags
 
@@ -281,5 +290,6 @@ PASS：不可。`intentional-deviation`需要accepted `approval_ref`；implement
 - 「素材錯沒關係，先調padding/scale看看。」
 - 「icon同名就一定exact。」
 - 「先標intentional-deviation繼續做。」
+- 「現在只有我一個client，直接用pencil-local-mcp就好。」
 
 以上都表示gate尚未通過或正在合理化scope drift。

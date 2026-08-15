@@ -213,7 +213,7 @@ verify Executor scope／version
 → fresh hash／dimensions／manifest verification
 ```
 
-Pencil MCP unavailable、isolated session建立失敗、document identity錯誤、source hash drift或unsupported construct沒有accepted disposition時，保持blocked。不得切換成visible Pencil Desktop／`pencil-local-mcp`共享active-editor state、PNG猜測、OCR、native parser或直接Flutter implementation。Conversation只能關閉自己持有的exact `sessionId`；不得替其他conversation清理session。
+Pencil MCP unavailable、isolated session建立失敗、document identity錯誤、source hash drift或unsupported construct沒有accepted disposition時，保持blocked。Repository-governed Pencil workflow不得切換成visible Pencil Desktop／`pencil-local-mcp`，也不得以single-client為理由例外使用；PNG猜測、OCR、native parser或直接Flutter implementation同樣禁止。Conversation只能關閉自己持有的exact `sessionId`；不得替其他conversation清理session。
 
 ## Extraction, representation classification and Flutter mapping
 

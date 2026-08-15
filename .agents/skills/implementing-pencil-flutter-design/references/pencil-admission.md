@@ -9,7 +9,7 @@
 - Runtime實際載入worktree-local orchestration／Taste Skills，same-name collision為0。
 - `executor-local-mcp`與`pencil-session-mcp`可用；版本差異已有compatibility disposition。
 - Current normal route為isolated session：每個conversation／client fresh `session_create`，保存自己的exact `sessionId`，並立即以`session_get_app_state`驗證active document identity後才可繼續。
-- Visible Pencil Desktop／`pencil-local-mcp`不屬normal concurrent route；除非中央治理對特定single-client情境另有accepted disposition，不得把共享active-editor state當作fallback。
+- Repository-governed Pencil workflow唯一允許`pencil-session-mcp` isolated session；Visible Pencil Desktop／`pencil-local-mcp`不得作為admission、fallback或single-client替代route。
 
 ## 操作順序
 
@@ -32,7 +32,7 @@ Flutter implementation: NOT STARTED／STOPPED
 Next action: repair Pencil admission or obtain governed disposition
 ```
 
-不得改用visible Pencil Desktop／`pencil-local-mcp`共享active-editor state、PNG、OCR或過去記憶猜測structure。
+不得改用visible Pencil Desktop／`pencil-local-mcp`，也不得以single-client為理由例外使用；PNG、OCR或過去記憶猜測structure同樣禁止。
 
 Session lifecycle同樣受authority限制：conversation只可關閉自己持有的exact `sessionId`；不得kill broker、重啟bridge來清理其他conversation的live session，也不得替其他conversation執行`session_close`。
 

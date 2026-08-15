@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: None
-State: Milestone 38 completed / archived
+Active Milestone: Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
+State: Requirement accepted / Design accepted / Plan pending
 Template Baseline: 1.19.0
 ```
 

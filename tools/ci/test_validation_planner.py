@@ -155,6 +155,17 @@ class ValidationPlannerRoutingTest(unittest.TestCase):
         self.assertTrue(result.ios_build)
         self.assertTrue(result.fail_safe)
 
+    def test_repository_infrastructure_manifest_uses_governance_validation(self) -> None:
+        result = plan_validation(["repository_infrastructure.json"])
+
+        self.assertEqual(result.change_classes, ("governance",))
+        self.assertFalse(result.fail_safe)
+        self.assertEqual(result.validation_level, "focused")
+        self.assertTrue(result.docs_check)
+        self.assertFalse(result.full_regression)
+        self.assertFalse(result.android_build)
+        self.assertFalse(result.ios_build)
+
     def test_release_requires_full_and_both_platforms(self) -> None:
         result = plan_validation(CANONICAL_SCENARIOS["release"])
 

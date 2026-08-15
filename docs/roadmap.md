@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.18.0
+last_reviewed_baseline: 1.19.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.18.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.18.0
+Template Baseline: 1.19.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -26,10 +26,9 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: Milestone 38 — Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
-State: Design proposed / awaiting user approval
-Classification: Level 5 — Critical
-Template Baseline: 1.18.0
+Active Milestone: None
+State: Milestone 38 completed / archived
+Template Baseline: 1.19.0
 ```
 
 完整 active scope、design、gate與 next action：
@@ -50,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 37 已完成或已有明確 disposition。Milestone 37已完成Template Baseline 1.18.0 publication、published-main post-release validation與Template → Product isolated acceptance並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 38 已完成或已有明確 disposition。Milestone 38已完成Template Baseline 1.19.0 publication、Template → Product infrastructure／CI adoption governance與三profile acceptance disposition並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

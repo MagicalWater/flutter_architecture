@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.18.0
+last_reviewed_baseline: 1.19.0
 ---
 
 # Milestone Routing
@@ -32,10 +32,22 @@ Milestone routing 只回答：
 
 ```txt
 Active Milestone: None
-Template Baseline: 1.18.0
+Template Baseline: 1.19.0
 ```
 
-目前沒有active milestone；current work回到`docs/roadmap/active.md`與Requirement Decision入口。Milestone 37已發布Template Baseline `1.18.0`並完成Task 37-9 published-main post-release closure。
+目前沒有active milestone；current work回到`docs/roadmap/active.md`與Requirement Decision入口。Milestone 38已發布Template Baseline `1.19.0`並完成formal closure；self-hosted product runtime acceptance保留Design-authorized external blocker disposition。
+
+### Milestone 38 closed routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_38/38-r_requirement_decision.md`
+- Design：Accepted — `docs/superpowers/specs/2026-08-15-milestone-38-template-product-infrastructure-ci-adoption-design.md`
+- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-15-milestone-38-template-product-infrastructure-ci-adoption.md`
+- manual-local acceptance：Accepted — `docs/audits/milestone_38/38-7_manual_local_acceptance.md`
+- self-hosted acceptance：Blocked External / dispositioned — `docs/audits/milestone_38/38-8_self_hosted_acceptance.md`
+- github-hosted acceptance：Accepted — `docs/audits/milestone_38/38-9_github_hosted_acceptance.md`
+- Fresh no-handoff acceptance：Accepted — `docs/audits/milestone_38/38-10_fresh_agent_acceptance.md`
+- Holistic Final Review：Completed — `docs/audits/milestone_38/38-11_holistic_final_review.md`
+- Release：Template Baseline `1.19.0`
 
 ### Milestone 37 closed routing
 

@@ -8,7 +8,7 @@ last_reviewed_baseline: 1.14.0
 
 # Architecture Decision Records
 
-本文件是 Architecture Decision 的 canonical index，也是ADR-001至ADR-030的正式routing authority。
+本文件是 Architecture Decision 的 canonical index，也是ADR-001至ADR-031的正式routing authority。
 
 ## Migration State
 

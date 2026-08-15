@@ -20,6 +20,28 @@
 
 ---
 
+## [1.19.0] - 2026-08-15
+
+### Added
+
+- 完成Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective，新增root `repository_infrastructure.json`與ADR-031，讓首次產品採用明確選擇`manual-local`、`self-hosted`或`github-hosted` profile。
+- 新增repository live infrastructure read-back／受控`CI_EXECUTION_MODE` mutation工具，覆蓋Actions least-privilege、runner、Branch Protection／plan availability與Environment secret **names**，不讀取secret values。
+- 新增product-scoped managed artifact identity、三profile isolated acceptance與fresh no-handoff negative corpus。
+
+### Changed
+
+- Template → Product atomic completion新增selected-profile live disposition／acceptance gate；required CI infrastructure未完成前不得finalize `repository_kind=product`。
+- Validation classifier正式辨識`repository_infrastructure.json`為governance path，避免manifest-only產品採用變更錯誤升級unknown/full。
+- GitHub private repository admission現在明確處理不適用的fork-approval endpoint與plan-unavailable Branch Protection，不把一般403／422誤認成configured。
+
+### Validation
+
+- Whole-milestone planner判定full matrix；CI 268、docs 85、testing 11、visual 9 tests PASS，5-workspace analyze與full Flutter regression PASS，App suite 493 cases PASS，generated consistency PASS。
+- Android Production Release與GitHub-hosted iOS Production/Simulator在Task 38-6 exact runtime candidate `d55e4ff215ee6656e438bbfdefe6420b04ee5319`均PASS；之後runtime app/native/build workflow bytes未變。
+- `manual-local`與`github-hosted`產品acceptance PASS；`self-hosted` product-scoped Mac runner runtime因外部Mac connector不可用保留Design-authorized `BLOCKED_EXTERNAL` disposition，未以mock冒充成功。
+
+---
+
 ## [1.18.0] - 2026-08-14
 
 ### Added

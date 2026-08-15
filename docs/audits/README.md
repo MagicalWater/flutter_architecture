@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.18.0
+last_reviewed_baseline: 1.19.0
 ---
 
 # Audits and Review Evidence
@@ -44,6 +44,17 @@ Final / Holistic Review
 開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
 
 ## Evidence routes
+
+### Milestone 38 — Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
+
+- [`milestone_38/38-r_requirement_decision.md`](milestone_38/38-r_requirement_decision.md)：repository infrastructure／CI adoption缺口的Level 5 Requirement Decision。
+- [`milestone_38/38-0_design_spec_review.md`](milestone_38/38-0_design_spec_review.md)：Design ownership、security boundary與atomic completion review。
+- [`milestone_38/38-p_implementation_plan_review.md`](milestone_38/38-p_implementation_plan_review.md)：Implementation Plan與三profile acceptance ordering review。
+- [`milestone_38/38-7_manual_local_acceptance.md`](milestone_38/38-7_manual_local_acceptance.md)：manual-local product、managed artifact identity與atomic lifecycle acceptance。
+- [`milestone_38/38-8_self_hosted_acceptance.md`](milestone_38/38-8_self_hosted_acceptance.md)：self-hosted contract與source runner live read-back；product-scoped Mac runtime保留external blocker disposition。
+- [`milestone_38/38-9_github_hosted_acceptance.md`](milestone_38/38-9_github_hosted_acceptance.md)：private disposable product的GitHub-hosted PR/main live acceptance與fresh remote clone。
+- [`milestone_38/38-10_fresh_agent_acceptance.md`](milestone_38/38-10_fresh_agent_acceptance.md)：三profile no-handoff admission與negative corpus acceptance。
+- [`milestone_38/38-11_holistic_final_review.md`](milestone_38/38-11_holistic_final_review.md)：ADR consistency、security／rollback、full validation、release與post-release closure。
 
 ### Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
 

@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.18.0
+last_reviewed_baseline: 1.19.0
 ---
 
 # Project Context
@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.18.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.18.0
+Template Baseline: 1.19.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
-Current phase: Design proposed / awaiting user approval
-Latest completed initiative: Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance — 1.18.0
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective — 1.19.0
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -348,18 +348,18 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.18.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.19.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
-Current phase: Design proposed / awaiting user approval
-Latest completed initiative: Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance — 1.18.0
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective — 1.19.0
 Maintenance mode: No active milestone
-Open Milestone 37 review findings: P0=0 / undisposed P1=0; formally closed by Task 37-9
+Open Milestone 38 review findings: P0=0 / undisposed P1=0; self-hosted runtime external blocker dispositioned
 ```
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
@@ -372,7 +372,7 @@ Milestone 35已把test execution over-validation修正為canonical change classi
 
 Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
 
-Milestone 38已由Template Adoption completeness audit進入正式Level 5 corrective，Requirement Decision已接受，Design目前維持`proposed`等待使用者核准。Scope聚焦於Template → Product首次採用時尚未被Milestone 37納入的CI execution profile、runner、artifact identity、GitHub live settings、Branch Protection、Environment／Secrets disposition與fresh infrastructure acceptance；不得在Design／Plan核准前開始implementation。
+Milestone 38已完成Template → Product首次採用的repository infrastructure／CI governance corrective：新增`repository_infrastructure.json` desired/disposition authority、三種CI profile選擇、GitHub live read-back／受控mutation、product artifact identity、private-repository capability disposition與fresh no-handoff acceptance。`manual-local`與`github-hosted`具有accepted runtime evidence；`self-hosted` contract與template runner read-back已驗證，但product-scoped Mac runner runtime因外部Mac connector不可用保留明確external blocker disposition。Formal closure見`docs/audits/milestone_38/38-11_holistic_final_review.md`。
 
 新的feature、bug、security／platform變化、產品採用需求或maintenance hardening都必須先進入Requirement Decision，再依Level 0～5分類執行。Audit與remediation進度由`docs/audits/README.md`與對應review擁有，不追加Task、commit、測試數或runtime evidence journal至本文件。
 

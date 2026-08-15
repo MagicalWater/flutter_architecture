@@ -3,35 +3,26 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.18.0
+last_reviewed_baseline: 1.19.0
 ---
 
 # Active Milestone
 
 ```txt
-Active Milestone: Milestone 38 — Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
-State: Design accepted / Implementation Plan accepted / implementation active
-Classification: Level 5 — Critical
-Template Baseline: 1.18.0
-Branch: milestone-38-template-product-infrastructure-ci
-Managed worktree: C:\Users\crazy\.devspace\worktrees\flutter_architecture-d0e38710
-Requirement Decision: accepted
-Design Spec: accepted
-Implementation Plan: accepted
-Implementation: active
+Active Milestone: None
+State: Milestone 38 completed / archived
+Template Baseline: 1.19.0
 ```
 
-## Goal
+## Latest Closure
 
-補齊Milestone 37未涵蓋的repository infrastructure bootstrap，使由GitHub Template Repository建立的新產品除了identity/native adoption之外，也能對CI execution mode、runner、artifact ownership、GitHub live settings、Branch Protection與Environment／Secrets形成明確disposition與fresh acceptance。
+Milestone 38已完成Template → Product repository infrastructure／CI adoption governance corrective，發布Template Baseline 1.19.0。Current work回到Requirement Decision入口。
 
-## Current Gate
+## Closure Evidence
 
 - Requirement Decision：`docs/audits/milestone_38/38-r_requirement_decision.md`。
 - Accepted Design：`docs/superpowers/specs/2026-08-15-milestone-38-template-product-infrastructure-ci-adoption-design.md`。
-- Design Review：`docs/audits/milestone_38/38-0_design_spec_review.md`。
 - Accepted Implementation Plan：`docs/superpowers/plans/2026-08-15-milestone-38-template-product-infrastructure-ci-adoption.md`。
-- Plan Review：`docs/audits/milestone_38/38-p_implementation_plan_review.md`。
-- 使用者已明確核准Implementation Plan；依accepted Plan直接進入Task 38-1。
-
-Design與Implementation Plan均已於2026-08-15取得使用者明確核准；implementation依Task governance執行。
+- Profile acceptance：`docs/audits/milestone_38/38-7_manual_local_acceptance.md`、`38-8_self_hosted_acceptance.md`、`38-9_github_hosted_acceptance.md`。
+- Fresh no-handoff acceptance：`docs/audits/milestone_38/38-10_fresh_agent_acceptance.md`。
+- Final closure：`docs/audits/milestone_38/38-11_holistic_final_review.md`。

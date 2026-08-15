@@ -103,6 +103,7 @@ class RepositoryInfrastructureManager:
         default_branch = _string(repository_payload.get("default_branch"))
         if default_branch is None:
             raise RepositoryInfrastructureError("repository default_branch is missing")
+        visibility = _string(repository_payload.get("visibility"))
 
         variable = self._read_optional(
             "GET", f"{prefix}/actions/variables/CI_EXECUTION_MODE"
@@ -115,10 +116,12 @@ class RepositoryInfrastructureManager:
             self._transport.request("GET", f"{prefix}/actions/permissions/workflow"),
             "workflow permissions",
         )
-        fork_approval = self._read_optional(
-            "GET",
-            f"{prefix}/actions/permissions/fork-pr-contributor-approval",
-            absent_statuses={404, 422},
+        fork_approval = (
+            None
+            if visibility == "private"
+            else self._read_optional(
+                "GET", f"{prefix}/actions/permissions/fork-pr-contributor-approval"
+            )
         )
         protection = self._read_optional(
             "GET", f"{prefix}/branches/{quote(default_branch, safe='')}/protection"
@@ -130,7 +133,7 @@ class RepositoryInfrastructureManager:
 
         return {
             "repository": {
-                "visibility": _string(repository_payload.get("visibility")),
+                "visibility": visibility,
                 "default_branch": default_branch,
             },
             "ci_execution_mode": _variable_value(variable),
@@ -181,18 +184,11 @@ class RepositoryInfrastructureManager:
             )
         return {"before": before, "after": after}
 
-    def _read_optional(
-        self,
-        method: str,
-        path: str,
-        *,
-        absent_statuses: set[int] | None = None,
-    ) -> dict[str, Any] | None:
-        absent = absent_statuses or {404}
+    def _read_optional(self, method: str, path: str) -> dict[str, Any] | None:
         try:
             return _object(self._transport.request(method, path), path)
         except GitHubApiError as error:
-            if error.status in absent:
+            if error.status == 404:
                 return None
             raise
 

@@ -88,6 +88,23 @@ class RepositoryInfrastructureSnapshotTest(unittest.TestCase):
         self.assertIsNone(snapshot["ci_execution_mode"])
         self.assertEqual(snapshot["branch_protection"], {"present": False})
 
+    def test_private_repository_unsupported_fork_approval_is_reported_as_not_available(self) -> None:
+        responses = _snapshot_responses()
+        responses[("GET", "/repos/MagicalWater/example-product")] = {
+            "visibility": "private",
+            "default_branch": "main",
+        }
+        responses[("GET", "/repos/MagicalWater/example-product/actions/permissions/fork-pr-contributor-approval")] = GitHubApiError(
+            422,
+            "Fork PR approval is not allowed for private repositories",
+        )
+        manager = RepositoryInfrastructureManager(FakeTransport(responses))
+
+        snapshot = manager.snapshot(REPOSITORY)
+
+        self.assertEqual(snapshot["repository"]["visibility"], "private")
+        self.assertIsNone(snapshot["fork_pr_contributor_approval"])
+
 
 class RepositoryInfrastructureMutationTest(unittest.TestCase):
     def test_ci_execution_mode_update_records_before_and_fresh_read_back(self) -> None:

@@ -116,7 +116,9 @@ class RepositoryInfrastructureManager:
             "workflow permissions",
         )
         fork_approval = self._read_optional(
-            "GET", f"{prefix}/actions/permissions/fork-pr-contributor-approval"
+            "GET",
+            f"{prefix}/actions/permissions/fork-pr-contributor-approval",
+            absent_statuses={404, 422},
         )
         protection = self._read_optional(
             "GET", f"{prefix}/branches/{quote(default_branch, safe='')}/protection"
@@ -179,11 +181,18 @@ class RepositoryInfrastructureManager:
             )
         return {"before": before, "after": after}
 
-    def _read_optional(self, method: str, path: str) -> dict[str, Any] | None:
+    def _read_optional(
+        self,
+        method: str,
+        path: str,
+        *,
+        absent_statuses: set[int] | None = None,
+    ) -> dict[str, Any] | None:
+        absent = absent_statuses or {404}
         try:
             return _object(self._transport.request(method, path), path)
         except GitHubApiError as error:
-            if error.status == 404:
+            if error.status in absent:
                 return None
             raise
 

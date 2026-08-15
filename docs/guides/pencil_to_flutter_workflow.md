@@ -202,16 +202,18 @@ Path collision、global Skill先載入或hash drift都要先修復；不得以�
 
 ```txt
 verify Executor scope／version
-→ verify pencil-local-mcp discovery
-→ native Pencil開啟worktree-local source.pen
-→ fresh app state確認active document identity
+→ verify pencil-session-mcp discovery
+→ fresh session_create
+→ session_get_app_state 驗證exact active target
+→ isolated Pencil session持有worktree-local source.pen
+→ fresh session app state再次確認active document identity
 → load必要guidelines
 → Pencil MCP inventory／extraction
 → 如需export或mutation，只透過Pencil MCP
 → fresh hash／dimensions／manifest verification
 ```
 
-Pencil MCP unavailable、document identity錯誤、source hash drift或unsupported construct沒有accepted disposition時，保持blocked。不得切換成PNG猜測、OCR、native parser或直接Flutter implementation。
+Pencil MCP unavailable、isolated session建立失敗、document identity錯誤、source hash drift或unsupported construct沒有accepted disposition時，保持blocked。不得切換成visible Pencil Desktop／`pencil-local-mcp`共享active-editor state、PNG猜測、OCR、native parser或直接Flutter implementation。Conversation只能關閉自己持有的exact `sessionId`；不得替其他conversation清理session。
 
 ## Extraction, representation classification and Flutter mapping
 

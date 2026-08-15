@@ -7,6 +7,9 @@ ASSET_MAPPING_REFERENCE = Path(
     ".agents/skills/implementing-pencil-flutter-design/references/"
     "asset-and-typography-mapping.md"
 )
+PENCIL_ADMISSION_REFERENCE = Path(
+    ".agents/skills/implementing-pencil-flutter-design/references/pencil-admission.md"
+)
 
 POLICY_FILES = (
     Path(".agents/skills/implementing-pencil-flutter-design/SKILL.md"),
@@ -15,7 +18,10 @@ POLICY_FILES = (
         "flutter-mapping.md"
     ),
     ASSET_MAPPING_REFERENCE,
+    PENCIL_ADMISSION_REFERENCE,
     Path("docs/guides/pencil_to_flutter_workflow.md"),
+    Path("docs/adr/adr-028-repository-local-pencil-to-flutter-design-implementation-workflow.md"),
+    Path("docs/governance/development_workflow.md"),
 )
 
 
@@ -66,6 +72,23 @@ class PencilRepresentationMappingPolicyTest(unittest.TestCase):
         self.assert_contract("wrong representation")
         self.assert_contract("mapping invalid")
         self.assert_contract("pixel tuning")
+
+    def test_pencil_admission_uses_isolated_session_route(self) -> None:
+        admission = self.text_by_path[PENCIL_ADMISSION_REFERENCE]
+        guide = self.text_by_path[Path("docs/guides/pencil_to_flutter_workflow.md")]
+        self.assertIn("pencil-session-mcp", admission)
+        self.assertIn("session_create", admission)
+        self.assertIn("session_get_app_state", admission)
+        self.assertIn("exact `sessionid`", admission)
+        self.assertIn("pencil-session-mcp", guide)
+        self.assertIn("session_create", guide)
+        self.assertIn("session_get_app_state", guide)
+
+    def test_isolated_admission_does_not_fallback_to_shared_desktop(self) -> None:
+        admission = self.text_by_path[PENCIL_ADMISSION_REFERENCE]
+        self.assertIn("pencil-local-mcp", admission)
+        self.assertIn("不得把共享active-editor state當作fallback", admission)
+        self.assertIn("只可關閉自己持有的exact `sessionid`", admission)
 
 
 if __name__ == "__main__":

@@ -50,7 +50,7 @@ Manifest必須明確指定primary `.pen`、derived preview、supplementary origi
 
 ### Pencil MCP boundary
 
-`.pen`的結構讀取與修改只透過approved `pencil-local-mcp` integration。Repository code、scripts與agents不得以native JSON／text parser或direct file mutation作fallback。
+`.pen`的結構讀取與修改只透過approved Pencil MCP integration。Current governed concurrent route使用`pencil-session-mcp` isolated session；每個conversation／client必須持有自己的exact `sessionId`，fresh建立session後先驗證active document identity，並只關閉自己持有的session。Visible Pencil Desktop／`pencil-local-mcp`不屬current normal concurrent route，除非中央治理對特定single-client情境另有accepted disposition。Repository code、scripts與agents不得以native JSON／text parser或direct file mutation作fallback。
 
 Pencil unavailable、錯誤document state、source drift或unsupported construct必須形成blocked／finding disposition，不得靜默猜測。
 

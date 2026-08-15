@@ -153,6 +153,30 @@ bash tools/ci/build_ios_production.sh
 
 Disposition：**external/manual blocker**。Mac bridge恢復後，必須fresh fetch exact Milestone release candidate，完成development＋production iOS verification，再回本Task fresh re-review。
 
+## Release-precondition documentation corrective
+
+Holistic documentation review另發現一個release前P1 authority-consistency finding：ADR-028、development workflow registry、人類Pencil-to-Flutter Guide與domain Skill admission reference仍描述舊的共享`pencil-local-mcp` route，但current governed multi-conversation Pencil-to-Flutter workflow已採`pencil-session-mcp` isolated session。若不修正，fresh Agent可能依repository current authority走到共享active-editor state，與目前隔離session操作契約衝突。
+
+Disposition：**於Task 39-7內直接corrective，不另開Milestone**。Stable ownership不變：`implementing-pencil-flutter-design`仍是唯一Pencil-to-Flutter domain Skill；本corrective只同步Pencil MCP runtime/admission boundary，要求fresh isolated session、exact `sessionId` ownership與`session_get_app_state` active-target verification，並明確禁止在isolated admission失敗時隱式fallback到visible Pencil Desktop／`pencil-local-mcp`。這不建立第二Skill、不改`.pen` authority、不修改Flutter production UI，也不放寬fail-closed behavior。
+
+Focused re-review新增machine regression owner，鎖定`pencil-session-mcp`、`session_create`、`session_get_app_state`、exact `sessionId` ownership與禁止shared Desktop fallback。Fresh validation：
+
+```txt
+python -m unittest tools.docs.test_pencil_representation_mapping_policy tools.docs.test_pencil_single_renderer_policy
+→ 15 PASS
+
+dart run melos run docs_check
+→ PASS
+
+git diff --check
+→ PASS
+
+Current forward-route scan
+→ no stale positive pencil-local-mcp admission route
+```
+
+Re-review disposition：P1 **RESOLVED**。保留的`pencil-local-mcp`字樣只用來明確描述Desktop/single-client authority與「isolated route不得隱式fallback」邊界，不再作為current Pencil-to-Flutter concurrent admission route。
+
 ## Remote drift check
 
 Fresh `git fetch origin`：

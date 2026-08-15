@@ -13,6 +13,11 @@ from urllib.parse import quote
 VALID_CI_EXECUTION_MODES = {"manual-local", "self-hosted", "github-hosted"}
 _REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 _HTTP_STATUS_RE = re.compile(r"HTTP\s+(\d{3})", re.IGNORECASE)
+_BRANCH_PROTECTION_PLAN_UNAVAILABLE_RE = re.compile(
+    r"Upgrade to GitHub Pro or make this repository public to enable this feature",
+    re.IGNORECASE,
+)
+_PLAN_UNAVAILABLE = object()
 
 
 class RepositoryInfrastructureError(RuntimeError):
@@ -123,8 +128,9 @@ class RepositoryInfrastructureManager:
                 "GET", f"{prefix}/actions/permissions/fork-pr-contributor-approval"
             )
         )
-        protection = self._read_optional(
-            "GET", f"{prefix}/branches/{quote(default_branch, safe='')}/protection"
+        protection = self._read_branch_protection(
+            f"{prefix}/branches/{quote(default_branch, safe='')}/protection",
+            visibility=visibility,
         )
         runners = _object(
             self._transport.request("GET", f"{prefix}/actions/runners?per_page=100"),
@@ -150,7 +156,11 @@ class RepositoryInfrastructureManager:
             "fork_pr_contributor_approval": _optional_string_field(
                 fork_approval, "approval_policy"
             ),
-            "branch_protection": _branch_protection_snapshot(protection),
+            "branch_protection": (
+                {"present": False, "unavailable": "plan"}
+                if protection is _PLAN_UNAVAILABLE
+                else _branch_protection_snapshot(protection)
+            ),
             "runners": _runner_snapshots(runners),
             "environments": self._environment_snapshots(prefix, environments or {}),
         }
@@ -190,6 +200,25 @@ class RepositoryInfrastructureManager:
         except GitHubApiError as error:
             if error.status == 404:
                 return None
+            raise
+
+    def _read_branch_protection(
+        self,
+        path: str,
+        *,
+        visibility: str | None,
+    ) -> dict[str, Any] | None | object:
+        try:
+            return _object(self._transport.request("GET", path), path)
+        except GitHubApiError as error:
+            if error.status == 404:
+                return None
+            if (
+                visibility == "private"
+                and error.status == 403
+                and _BRANCH_PROTECTION_PLAN_UNAVAILABLE_RE.search(str(error))
+            ):
+                return _PLAN_UNAVAILABLE
             raise
 
     def _environment_snapshots(

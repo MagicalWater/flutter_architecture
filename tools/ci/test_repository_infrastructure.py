@@ -115,6 +115,37 @@ class RepositoryInfrastructureSnapshotTest(unittest.TestCase):
             transport.calls,
         )
 
+    def test_private_repository_plan_limited_branch_protection_is_reported_as_unavailable(self) -> None:
+        responses = _snapshot_responses()
+        responses[("GET", "/repos/MagicalWater/example-product")] = {
+            "visibility": "private",
+            "default_branch": "main",
+        }
+        responses[("GET", "/repos/MagicalWater/example-product/branches/main/protection")] = GitHubApiError(
+            403,
+            "Upgrade to GitHub Pro or make this repository public to enable this feature.",
+        )
+        transport = FakeTransport(responses)
+        manager = RepositoryInfrastructureManager(transport)
+
+        snapshot = manager.snapshot(REPOSITORY)
+
+        self.assertEqual(
+            snapshot["branch_protection"],
+            {"present": False, "unavailable": "plan"},
+        )
+
+    def test_branch_protection_permission_failure_still_fails_closed(self) -> None:
+        responses = _snapshot_responses()
+        responses[("GET", "/repos/MagicalWater/example-product/branches/main/protection")] = GitHubApiError(
+            403,
+            "Resource not accessible by personal access token",
+        )
+        manager = RepositoryInfrastructureManager(FakeTransport(responses))
+
+        with self.assertRaises(GitHubApiError):
+            manager.snapshot(REPOSITORY)
+
 
 class RepositoryInfrastructureMutationTest(unittest.TestCase):
     def test_ci_execution_mode_update_records_before_and_fresh_read_back(self) -> None:

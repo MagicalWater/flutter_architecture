@@ -201,6 +201,22 @@ class LocalBuildCommandsTest(unittest.TestCase):
         self.assertNotIn('rm -rf "$repo_root/artifacts"', android)
         self.assertNotIn('rm -rf "$repo_root/artifacts"', ios)
 
+    def test_android_release_symbols_use_invocation_specific_staging_before_promotion(self) -> None:
+        android = (ROOT / "tools/ci/build_android_environment.sh").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn(
+            'flutter_symbols_staging_dir="$artifact_dir/.flutter-symbols-build-$$"',
+            android,
+        )
+        self.assertIn('"--split-debug-info=$flutter_symbols_staging_dir"', android)
+        self.assertIn(
+            'mv "$flutter_symbols_staging_dir" "$flutter_symbols_dir"',
+            android,
+        )
+        self.assertNotIn('"--split-debug-info=$flutter_symbols_dir"', android)
+
     def test_local_observability_controlled_event_defaults_off(self) -> None:
         script = (ROOT / "tools/ci/run_local_ci.sh").read_text(encoding="utf-8")
         observability = script.split("execute_observability() {", 1)[1].split(

@@ -7,31 +7,44 @@ app_dir="$repo_root/apps/flutter_architecture"
 [[ -n "${ARTIFACT_DIR:-}" ]] || { echo "ARTIFACT_DIR is required for Android verification." >&2; exit 64; }
 artifact_dir="$ARTIFACT_DIR"
 flutter_symbols_dir="$artifact_dir/flutter-symbols"
+flutter_symbols_staging_dir="$artifact_dir/.flutter-symbols-build-$$"
 api_base_url="${API_BASE_URL:-}"
 commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
 run_key="${CI_RUN_KEY:-unmanaged}"
 job_key="${CI_JOB_KEY:-unmanaged-android-$environment}"
 python_bin="${PYTHON_BIN:-python3}"
+
+cleanup_android_symbol_staging() {
+  if [[ "$flutter_symbols_staging_dir" == "$artifact_dir"/.flutter-symbols-build-* ]]; then
+    rm -rf "$flutter_symbols_staging_dir"
+  fi
+}
+trap cleanup_android_symbol_staging EXIT
+
 if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is required for $environment Android verification." >&2; exit 1; fi
 observability_remote_collection="${OBSERVABILITY_REMOTE_COLLECTION_ENABLED:-false}"
 observability_acceptance_event="${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}"
 case "$observability_remote_collection" in true|false) ;; *) echo "OBSERVABILITY_REMOTE_COLLECTION_ENABLED must be true or false." >&2; exit 64 ;; esac
 case "$observability_acceptance_event" in true|false) ;; *) echo "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED must be true or false." >&2; exit 64 ;; esac
 "$python_bin" "$repo_root/tools/ci/verify_android_firebase_config.py" "$environment"
-mkdir -p "$artifact_dir"; rm -rf "$flutter_symbols_dir"; rm -f "$artifact_dir"/*.apk "$artifact_dir/artifact-metadata.txt" "$artifact_dir/mapping.txt"
+mkdir -p "$artifact_dir"; rm -rf "$flutter_symbols_dir" "$flutter_symbols_staging_dir"; rm -f "$artifact_dir"/*.apk "$artifact_dir/artifact-metadata.txt" "$artifact_dir/mapping.txt"
 args=(apk "--$build_mode" --flavor "$environment" -t "$entrypoint" "--dart-define=NATIVE_ENVIRONMENT=$environment" "--dart-define=API_MODE=$api_mode")
 args+=("--dart-define=APP_COMMIT_SHA=$commit_sha")
 [[ "$observability_remote_collection" == "true" ]] && args+=("--dart-define=OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")
 [[ "$observability_acceptance_event" == "true" ]] && args+=("--dart-define=OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")
 [[ -z "$api_base_url" ]] || args+=("--dart-define=API_BASE_URL=$api_base_url")
 if [[ "$build_mode" == "release" ]]; then
-  mkdir -p "$flutter_symbols_dir"
-  args+=(--obfuscate "--split-debug-info=$flutter_symbols_dir")
+  mkdir -p "$flutter_symbols_staging_dir"
+  args+=(--obfuscate "--split-debug-info=$flutter_symbols_staging_dir")
 fi
 (cd "$app_dir" && flutter build "${args[@]}")
-if [[ "$build_mode" == "release" ]] && ! find "$flutter_symbols_dir" -type f -name '*.symbols' -print -quit | grep -q .; then
-  echo "Expected Flutter symbols were not generated: $flutter_symbols_dir" >&2
-  exit 1
+if [[ "$build_mode" == "release" ]]; then
+  if ! find "$flutter_symbols_staging_dir" -type f -name '*.symbols' -print -quit | grep -q .; then
+    echo "Expected Flutter symbols were not generated: $flutter_symbols_staging_dir" >&2
+    exit 1
+  fi
+  rm -rf "$flutter_symbols_dir"
+  mv "$flutter_symbols_staging_dir" "$flutter_symbols_dir"
 fi
 source_apk="$app_dir/build/app/outputs/flutter-apk/app-$environment-$build_mode.apk"
 target_apk="$artifact_dir/flutter-architecture-$environment-$build_mode.apk"

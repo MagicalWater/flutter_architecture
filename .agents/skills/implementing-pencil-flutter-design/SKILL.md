@@ -22,6 +22,7 @@ delegate governing-template-development
 → classify visual representation and resolve provenance
 → map resolved representation to Flutter authority
 → route TDD and visual acceptance
+→ invalidate wrong representation and return to mapping when review finds source/identity drift
 → stop on authority conflict or drift
 ```
 
@@ -48,7 +49,8 @@ delegate governing-template-development
 4. 只把已resolved representation交給[Flutter mapping](references/flutter-mapping.md)，建立最小且真實的presentation boundary。
 5. 先建立並執行failing widget／route／localization tests，確認RED後才可寫Flutter production source。
 6. 依[Visual validation](references/visual-validation.md)執行TDD、golden、runtime與semantic review。
-7. 使用[Pressure scenarios](references/pressure-scenarios.md)檢查shortcut rationalization。
+7. 若review判定wrong source／asset／icon／representation，立即把該mapping視為invalid；依representation/provenance gate重新解決，禁止在錯誤candidate上繼續padding／scale／crop／offset／opacity tuning。
+8. 使用[Pressure scenarios](references/pressure-scenarios.md)檢查shortcut rationalization。
 
 ## Taste Skill邊界
 
@@ -67,8 +69,11 @@ delegate governing-template-development
 - 尚未觀察到正確RED就開始Flutter production source。
 - 看過candidate後擴大threshold、resize thumbnail或加入任意ignore region。
 - 在representation classification前直接選font fallback、approximate icon、raster／vector或static CustomPainter shortcut。
+- Review已判定wrong source／asset／icon／representation後，仍以padding、scale、crop、offset、opacity或threshold tuning嘗試挽救同一invalid mapping。
 - 在Design、`.pen`或repository architecture衝突時自行選邊。
 
 ## 停止條件
 
 遇到authority conflict、source/hash drift、Skill collision、錯誤document、Pencil MCP blocker、unsupported construct無accepted disposition、representation／provenance unresolved或需要推翻Design／Plan時，保持Task open／blocked並依中央治理停止。一般implementation或test failure則修正、fresh re-review並繼續。
+
+Wrong representation屬mapping recovery，不是一般pixel-tuning failure：先撤銷受影響mapping／visual PASS，回到classification／provenance取得replacement representation，fresh affected validation後才重進visual acceptance。若真正需要改accepted `.pen`或Design，回中央Requirement／Design gate。

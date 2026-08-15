@@ -132,6 +132,25 @@ unresolved
 
 第6項若存在未取得accepted disposition的P1 gap，Flutter mapping與production UI保持blocked。
 
+## Invalid Mapping Recovery
+
+Review若判定wrong source identity、wrong asset、wrong icon或wrong representation，current mapping立即失效：
+
+```txt
+wrong representation identified
+→ mark affected mapping invalid
+→ stop candidate-specific pixel tuning
+→ return to representation classification / provenance
+→ resolve replacement representation
+→ update mapping evidence
+→ fresh affected validation
+→ restart affected visual acceptance
+```
+
+Invalid mapping不得靠padding、scale、crop、offset、opacity或threshold調整恢復成accepted。若原mapping其實可被證明為`verified-equivalent`，先補事前可追溯equivalence evidence再重新candidate；不能用「調完看起來更像」取代identity evidence。
+
+若source authority本身要改，implementation不得修改accepted `.pen`迎合Flutter；回中央Requirement／Design disposition。
+
 ## Forbidden Shortcuts
 
 - Silent font fallback。

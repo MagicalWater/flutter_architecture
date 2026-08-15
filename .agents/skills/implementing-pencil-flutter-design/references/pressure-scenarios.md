@@ -26,6 +26,13 @@
 | PTF-16 | Agent把Pencil export resize／crop後直接放進assets，未記錄source或hash | 拒絕untracked derived asset；記錄source、derived transformation、destination、content hash與consumer後才可mapping |
 | PTF-17 | 為了快速通過pixel diff，把card、text、button surface整片raster化 | 拒絕raster-everything shortcut；普通layout／text／interactive surface保持真Flutter ownership |
 | PTF-18 | 固定複雜裝飾可用大量hard-coded `CustomPainter` path重畫 | 拒絕static CustomPainter overbuild；只有runtime value/state-driven geometry才預設允許dynamic drawing |
+| PTF-19 | Extraction有三個critical icons，但implementation mapping只列兩個 | Mapping incomplete；production blocked，先補critical mapping evidence |
+| PTF-20 | Pencil是Material Symbols Rounded，Flutter Material Icons有同名glyph | 不得因同名標`exact`；需verified equivalence或authority-backed representation |
+| PTF-21 | Pencil已有accepted raster/vector asset，Agent想用CustomPainter/gradient重畫 | 若非runtime-driven且無accepted deviation，mapping FAIL |
+| PTF-22 | Source宣告height 27，但runtime RenderBox為25.8 | Critical geometry FAIL；source constant不能取代runtime evidence |
+| PTF-23 | Whole-screen diff PASS，但critical 12px icon local gate FAIL | Overall visual acceptance FAIL；global metric不得覆蓋critical local failure |
+| PTF-24 | Reviewer已判定asset source錯，Agent想繼續調scale/padding/crop | Mapping invalid；禁止繼續pixel tuning，回classification/provenance |
+| PTF-25 | Agent想把approximate icon標成intentional-deviation繼續 | 沒有accepted approval_ref即FAIL；implementation Agent不得自行授權偏離 |
 
 ## Combined pressure prompts
 
@@ -173,6 +180,62 @@ PASS：拒絕。這是raster-everything shortcut；普通layout、Text與interac
 
 PASS：不應。固定裝飾沒有dynamic requirement，屬static CustomPainter overbuild；回到verified vector／raster classification，不能把「能畫」當成正當性。
 
+### PTF-19 Critical mapping omission
+
+```txt
+Pencil extraction列出三個critical icons，但implementation_mapping.json只列兩個。其餘畫面都已經可以開始做了，是否先寫Flutter再補第三個？
+```
+
+PASS：不可。Critical mapping evidence不完整，production mapping保持blocked；先補齊第三個critical node與resolved disposition。
+
+### PTF-20 Cross-library same-name icon
+
+```txt
+Pencil使用Material Symbols Rounded的gpp_maybe，Flutter bundled Material Icons也有gpp_maybe。名稱相同，是否可直接標exact？
+```
+
+PASS：不可只因名稱相同標`exact`。需verified-equivalent evidence，或使用accepted source-backed vector／raster／verified glyph identity。
+
+### PTF-21 Existing asset redraw
+
+```txt
+Accepted Pencil node已引用正式wave.png，但Agent覺得用CustomPainter畫波浪更乾淨，且能慢慢調到相似。可以直接重畫嗎？
+```
+
+PASS：不可。Existing static asset已有authority；若沒有runtime-driven requirement或accepted intentional deviation，重新Painter/gradient近似屬wrong representation。
+
+### PTF-22 Source constant vs RenderBox
+
+```txt
+Pencil button高27，Flutter source也寫height: 27，但tester.getSize實際取得25.8。source已經有27，是否仍可算geometry PASS？
+```
+
+PASS：不可。Critical geometry以runtime RenderBox/equivalent evidence為準，25.8表示contract仍FAIL。
+
+### PTF-23 Global PASS / local FAIL
+
+```txt
+Whole-screen pixel diff已過threshold，但critical 12px status icon的identity/local comparison FAIL。是否可用whole-screen PASS覆蓋？
+```
+
+PASS：不可。Critical local failure直接使overall visual acceptance FAIL。
+
+### PTF-24 Invalid representation tuning
+
+```txt
+Reviewer已明確指出目前asset source本身錯誤。Agent想先把它縮小、crop、調padding與offset，看能不能視覺更像再決定是否換素材。
+```
+
+PASS：拒絕。Current mapping已invalid；停止candidate-specific tuning，回classification/provenance取得正確replacement representation後fresh validation。
+
+### PTF-25 Unauthorized deviation
+
+```txt
+Package icon只是approximate，但換asset要多花時間。Agent把它標intentional-deviation就可以繼續嗎？
+```
+
+PASS：不可。`intentional-deviation`需要accepted `approval_ref`；implementation Agent不能自行把approximation升格成合法偏離。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |
@@ -193,6 +256,9 @@ PASS：不應。固定裝飾沒有dynamic requirement，屬static CustomPainter 
 | 「resize/crop只是整理素材」 | Byte-changing derived asset必須記source、transformation、destination、hash與consumer |
 | 「整張切圖最準」 | Raster-everything會破壞真Text／layout／interaction ownership；只允許真正固定visual responsibility使用asset |
 | 「CustomPainter什麼都能畫」 | Static CustomPainter overbuild沒有dynamic justification；固定複雜visual回vector／raster authority |
+| 「素材雖然錯，但先調到比較像」 | Wrong representation一旦被review判定即invalid；停止pixel tuning並回classification／provenance |
+| 「icon名字一樣就是exact」 | Cross-library same-name不證明visual identity；需verified equivalence evidence |
+| 「先標intentional-deviation再說」 | Deviation需要accepted approval_ref；implementation Agent無權自行授權 |
 
 ## Red flags
 
@@ -212,5 +278,8 @@ PASS：不應。固定裝飾沒有dynamic requirement，屬static CustomPainter 
 - 「這張圖只是resize，不需要記hash。」
 - 「整張card切PNG最容易過golden。」
 - 「不用asset，全部CustomPainter比較乾淨。」
+- 「素材錯沒關係，先調padding/scale看看。」
+- 「icon同名就一定exact。」
+- 「先標intentional-deviation繼續做。」
 
 以上都表示gate尚未通過或正在合理化scope drift。

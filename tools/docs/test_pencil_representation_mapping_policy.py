@@ -62,6 +62,11 @@ class PencilRepresentationMappingPolicyTest(unittest.TestCase):
     def test_static_custompainter_overbuild_is_forbidden(self) -> None:
         self.assert_contract("static custompainter")
 
+    def test_wrong_representation_recovery_stops_pixel_tuning(self) -> None:
+        self.assert_contract("wrong representation")
+        self.assert_contract("mapping invalid")
+        self.assert_contract("pixel tuning")
+
 
 if __name__ == "__main__":
     unittest.main()

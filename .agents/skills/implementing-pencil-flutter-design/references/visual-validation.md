@@ -31,6 +31,8 @@ Canonical與supported runtime必須render同一個production whole-screen visual
 
 Candidate失敗時修正implementation或取得新的Design decision。不得在同一Task放寬threshold、resize不同尺寸images、upscalethumbnail、加入dynamic masks或把semantic P1改成「肉眼可接受」。
 
+若failure root cause是wrong source／asset／icon／representation，不得把它當普通geometry mismatch繼續pixel tuning。Affected local/global PASS先失效，回representation classification／provenance取得replacement mapping，再fresh重跑受影響visual gates。
+
 對accepted Design／Plan標記為critical、且whole-screen metric容易稀釋的local fidelity owner，candidate前還必須固定最小充分local contract。合法owner可包含：
 
 ```txt

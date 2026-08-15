@@ -76,16 +76,34 @@ class PencilImplementationMappingContractTest(unittest.TestCase):
             "mapping-incomplete-asset-provenance", _codes(self._write(mapping))
         )
 
+    def test_valid_mapping_passes(self) -> None:
+        path = self._write(_valid_mapping())
+
+        self.assertEqual(_codes(path), [])
+
+    def test_authority_hash_mismatch_is_rejected(self) -> None:
+        path = self._write(_valid_mapping())
+
+        self.assertIn(
+            "mapping-authority-hash-mismatch",
+            _codes(path, expected_authority_sha256="b" * 64),
+        )
+
     def _write(self, mapping: dict[str, object]) -> Path:
         path = self._root / "implementation_mapping.json"
         path.write_text(json.dumps(mapping), encoding="utf-8")
         return path
 
 
-def _codes(path: Path) -> list[str]:
+def _codes(path: Path, *, expected_authority_sha256: str | None = None) -> list[str]:
     if validate_implementation_mapping is None:
         return ["mapping-validator-missing"]
-    return [issue.code for issue in validate_implementation_mapping(path)]
+    return [
+        issue.code
+        for issue in validate_implementation_mapping(
+            path, expected_authority_sha256=expected_authority_sha256
+        )
+    ]
 
 
 def _valid_mapping() -> dict[str, object]:

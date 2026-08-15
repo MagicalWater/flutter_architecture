@@ -98,6 +98,29 @@ accepted Pencil node / visual source
 
 ## Mapping Output Gate
 
+對accepted Design／Plan判定為critical的node／region，Task需建立initiative-local machine-readable implementation mapping evidence。預設位置：
+
+```txt
+docs/visual_authority/<initiative>/implementation_mapping.json
+```
+
+此artifact只保存critical implementation mapping，不取代`.pen`或visual authority manifest，也不建立global asset registry。Machine validator由`tools/visual/pencil_implementation_mapping.py`擁有。
+
+Critical mapping disposition固定為：
+
+```txt
+exact
+verified-equivalent
+intentional-deviation
+unresolved
+```
+
+- `verified-equivalent`必須有可追溯`evidence_ref`；語意或glyph名稱相同不是證據。
+- `intentional-deviation`必須有accepted `approval_ref`；implementation Agent不得自行宣告。
+- `unresolved`在production acceptance時fail closed。
+- Raster／Vector critical mapping必須保存source identity、derived transformation、destination與content hash。
+- Validator只檢查Pencil MCP extraction後的mapping evidence，不得解析`.pen`。
+
 進入`flutter-mapping.md`前，Task evidence必須能回答：
 
 1. 哪些元素是Layout primitive？

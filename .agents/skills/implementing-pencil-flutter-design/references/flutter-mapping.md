@@ -6,6 +6,8 @@
 
 這裡不重新決定font fallback、approximate icon visual equivalence、vector vs raster、static vs dynamic drawing或derived asset provenance。任何required representation仍unresolved時，不得進入Flutter owner mapping。
 
+若accepted Design／Plan將item標為critical，還必須先通過initiative-local`implementation_mapping.json` machine validation。`verified-equivalent`沒有evidence、`intentional-deviation`沒有approval或任何critical mapping仍`unresolved`時，不得以手寫Flutter owner mapping繞過validator。
+
 ## Mapping order
 
 每個Pencil item只能映射到一個明確owner：

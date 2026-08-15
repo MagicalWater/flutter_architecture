@@ -63,9 +63,12 @@ mapping-validator-missing
 ```txt
 Task: RED established / reviewed
 Baseline before Task: ffa06b8
-Command: python tools/visual/test_pencil_implementation_mapping.py
-Result: FAILED (failures=8), expected RED
-Actual shared cause: mapping-validator-missing
+Original command: python tools/visual/test_pencil_implementation_mapping.py
+Original command disposition: INVALID as final RED evidence; direct script execution does not put repository root on Python package import path
+Recovered command: python -m unittest tools.visual.test_pencil_implementation_mapping
+Recovered baseline: a300601 fresh detached worktree
+Recovered result: FAILED (failures=8), expected RED
+Recovered shared cause: mapping-validator-missing because production validator module is genuinely absent at a300601
 Existing representation policy: 7/7 PASS
 Existing single-renderer policy: 5/5 PASS
 docs_check: PASS
@@ -80,8 +83,10 @@ Open P1 without disposition: 0
 
 - Severity：P1。
 - Finding：若直接import尚不存在module造成test collection crash，無法證明各contract case已被正確鎖定。
-- Resolution：test以明確`mapping-validator-missing` sentinel表示current machine owner不存在；8個assertion因此各自以預期specific code vs sentinel形成可解釋FAIL。
-- Fresh re-review：PASS。
+- Initial resolution：test以明確`mapping-validator-missing` sentinel表示current machine owner不存在；8個assertion因此各自以預期specific code vs sentinel形成可解釋FAIL。
+- Post-commit finding：原始direct-script command本身也會讓repository package import失敗，因此原始run不足以證明validator真的不存在。Severity維持P1，早期gate不得回寫成已通過。
+- Recovery：在`a300601`建立fresh detached managed worktree，改用`python -m unittest tools.visual.test_pencil_implementation_mapping`。該baseline確實沒有`tools.visual.pencil_implementation_mapping`，8個cases再次以`mapping-validator-missing`穩定RED。
+- Fresh re-review：PASS after recovery。
 
 ### F-39-1-02 — Fixture不得解析`.pen`
 
@@ -102,3 +107,7 @@ Open P1 without disposition: 0
 Task 39-1只新增machine contract RED與evidence，沒有修改Skill、Guide、validator production module或Flutter source；Test Authoring維持單一fixture-driven direct owner，沒有every-node test expansion。
 
 Expected RED必須保持8 failures直到Task 39-2建立production validator；因此Task 39-1的completion semantics是「RED穩定且existing authorities保持GREEN」，不是把新test強行變GREEN。
+
+## Post-commit recovery note
+
+Task 39-2第一次GREEN run揭露原始RED command的Python import-path缺陷。依雙層治理，此finding沒有被隱藏或把早期evidence改寫成PASS；以fresh `a300601` worktree補做正確module-mode RED後才允許39-2繼續。

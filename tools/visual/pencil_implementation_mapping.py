@@ -1,0 +1,221 @@
+from __future__ import annotations
+
+import argparse
+import json
+import re
+from dataclasses import dataclass
+from pathlib import Path
+
+
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_REPRESENTATION_CLASSES = {
+    "Layout primitive",
+    "Typography",
+    "Approved package icon",
+    "Vector asset",
+    "Raster asset",
+    "Dynamic drawing",
+}
+_DISPOSITIONS = {
+    "exact",
+    "verified-equivalent",
+    "intentional-deviation",
+    "unresolved",
+}
+
+
+@dataclass(frozen=True)
+class PencilImplementationMappingIssue:
+    code: str
+    path: Path
+    message: str
+
+
+def validate_implementation_mapping(
+    mapping_path: Path,
+    *,
+    expected_authority_sha256: str | None = None,
+    production_acceptance: bool = True,
+) -> tuple[PencilImplementationMappingIssue, ...]:
+    path = mapping_path.resolve()
+    if not path.is_file():
+        return (_issue("mapping-artifact-missing", path, "mapping artifact is missing"),)
+
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        return (_issue("mapping-invalid-json", path, f"cannot read mapping JSON: {error}"),)
+
+    if not isinstance(data, dict):
+        return (_issue("mapping-invalid-root", path, "mapping root must be an object"),)
+
+    issues: list[PencilImplementationMappingIssue] = []
+    _check_metadata(path, data, expected_authority_sha256, issues)
+    _check_nodes(path, data.get("critical_nodes"), production_acceptance, issues)
+    return tuple(sorted(issues, key=lambda issue: (issue.code, issue.message)))
+
+
+def _check_metadata(
+    path: Path,
+    data: dict[str, object],
+    expected_authority_sha256: str | None,
+    issues: list[PencilImplementationMappingIssue],
+) -> None:
+    if data.get("schema_version") != 1:
+        issues.append(_issue("mapping-unsupported-schema", path, "schema_version must equal 1"))
+
+    initiative = data.get("initiative")
+    if not isinstance(initiative, str) or not initiative.strip():
+        issues.append(_issue("mapping-missing-initiative", path, "initiative is required"))
+
+    authority_hash = data.get("pencil_authority_sha256")
+    if not isinstance(authority_hash, str) or not _SHA256_RE.fullmatch(authority_hash):
+        issues.append(
+            _issue(
+                "mapping-invalid-authority-hash",
+                path,
+                "pencil_authority_sha256 must be 64-character lowercase hex",
+            )
+        )
+    elif expected_authority_sha256 is not None and authority_hash != expected_authority_sha256:
+        issues.append(
+            _issue(
+                "mapping-authority-hash-mismatch",
+                path,
+                "mapping authority hash does not match accepted visual authority",
+            )
+        )
+
+
+def _check_nodes(
+    path: Path,
+    raw_nodes: object,
+    production_acceptance: bool,
+    issues: list[PencilImplementationMappingIssue],
+) -> None:
+    if not isinstance(raw_nodes, list):
+        issues.append(_issue("mapping-invalid-critical-nodes", path, "critical_nodes must be a list"))
+        return
+
+    seen_ids: set[str] = set()
+    for index, raw_node in enumerate(raw_nodes):
+        if not isinstance(raw_node, dict):
+            issues.append(
+                _issue("mapping-invalid-node", path, f"critical_nodes[{index}] must be an object")
+            )
+            continue
+
+        node_id = raw_node.get("node_id")
+        if not isinstance(node_id, str) or not node_id.strip():
+            issues.append(_issue("mapping-missing-node-id", path, f"critical_nodes[{index}] needs node_id"))
+            node_label = f"index {index}"
+        else:
+            node_label = node_id
+            if node_id in seen_ids:
+                issues.append(
+                    _issue("mapping-duplicate-node-id", path, f"duplicate critical node ID {node_id!r}")
+                )
+            seen_ids.add(node_id)
+
+        for field in ("role", "flutter_owner", "consumer"):
+            value = raw_node.get(field)
+            if not isinstance(value, str) or not value.strip():
+                issues.append(
+                    _issue("mapping-missing-owner-field", path, f"{node_label}: {field} is required")
+                )
+
+        representation = raw_node.get("representation_class")
+        if representation not in _REPRESENTATION_CLASSES:
+            issues.append(
+                _issue(
+                    "mapping-unknown-representation-class",
+                    path,
+                    f"{node_label}: unsupported representation_class {representation!r}",
+                )
+            )
+
+        disposition = raw_node.get("disposition")
+        if disposition not in _DISPOSITIONS:
+            issues.append(
+                _issue(
+                    "mapping-unknown-disposition",
+                    path,
+                    f"{node_label}: unsupported disposition {disposition!r}",
+                )
+            )
+        elif disposition == "unresolved" and production_acceptance:
+            issues.append(
+                _issue("mapping-unresolved", path, f"{node_label}: unresolved mapping blocks acceptance")
+            )
+        elif disposition == "verified-equivalent" and not _non_empty(raw_node.get("evidence_ref")):
+            issues.append(
+                _issue(
+                    "mapping-missing-equivalence-evidence",
+                    path,
+                    f"{node_label}: verified-equivalent requires evidence_ref",
+                )
+            )
+        elif disposition == "intentional-deviation" and not _non_empty(raw_node.get("approval_ref")):
+            issues.append(
+                _issue(
+                    "mapping-missing-deviation-approval",
+                    path,
+                    f"{node_label}: intentional-deviation requires approval_ref",
+                )
+            )
+
+        if representation in {"Raster asset", "Vector asset"}:
+            _check_asset_provenance(path, node_label, raw_node.get("asset"), issues)
+
+
+def _check_asset_provenance(
+    path: Path,
+    node_label: str,
+    raw_asset: object,
+    issues: list[PencilImplementationMappingIssue],
+) -> None:
+    required = ("source_identity", "derived_transformation", "destination", "content_hash")
+    if not isinstance(raw_asset, dict):
+        issues.append(
+            _issue("mapping-incomplete-asset-provenance", path, f"{node_label}: asset provenance is required")
+        )
+        return
+    missing = [field for field in required if not _non_empty(raw_asset.get(field))]
+    content_hash = raw_asset.get("content_hash")
+    if missing or not isinstance(content_hash, str) or not _SHA256_RE.fullmatch(content_hash):
+        issues.append(
+            _issue(
+                "mapping-incomplete-asset-provenance",
+                path,
+                f"{node_label}: asset provenance requires source/transformation/destination/valid content hash",
+            )
+        )
+
+
+def _non_empty(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _issue(code: str, path: Path, message: str) -> PencilImplementationMappingIssue:
+    return PencilImplementationMappingIssue(code=code, path=path, message=message)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Validate Pencil → Flutter critical implementation mapping evidence.")
+    parser.add_argument("mapping", type=Path)
+    parser.add_argument("--authority-sha256")
+    parser.add_argument("--allow-unresolved", action="store_true")
+    args = parser.parse_args()
+
+    issues = validate_implementation_mapping(
+        args.mapping,
+        expected_authority_sha256=args.authority_sha256,
+        production_acceptance=not args.allow_unresolved,
+    )
+    for issue in issues:
+        print(f"{issue.code}: {issue.message}")
+    return 1 if issues else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

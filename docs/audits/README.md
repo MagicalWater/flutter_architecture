@@ -50,6 +50,7 @@ Final / Holistic Review
 - [`milestone_40/40-r_requirement_decision.md`](milestone_40/40-r_requirement_decision.md)：root README product landing、inline architecture visual、documentation authority與bootstrap compatibility的Level 4 Requirement Decision。
 - [`milestone_40/40-0_design_spec_review.md`](milestone_40/40-0_design_spec_review.md)：Design focused findings、fix、fresh re-review與whole-Design holistic review；2026-08-17使用者已核准。
 - [`milestone_40/40-p_implementation_plan_review.md`](milestone_40/40-p_implementation_plan_review.md)：preservation-first ordering、README landing implementation、authority alignment、bootstrap compatibility、checker safety與holistic closure的Plan review。
+- [`milestone_40/40-7_repository_hero_visual_review.md`](milestone_40/40-7_repository_hero_visual_review.md)：publication前補做的bounded Hero visual corrective；使用repository-approved `chatgpt-web-image`生成3:1品牌Hero，完成focused與first-screen holistic visual acceptance。
 - [`milestone_40/40-1_readme_preservation_matrix.md`](milestone_40/40-1_readme_preservation_matrix.md)：root README逐section disposition、canonical owner、bootstrap/checker sensitivity與semantic preservation manifest。
 - [`milestone_40/40-1_readme_preservation_review.md`](milestone_40/40-1_readme_preservation_review.md)：Task 40-1 focused／fresh／whole-Task review；P0=0、undisposed P1=0。
 - [`milestone_40/40-2_root_readme_review.md`](milestone_40/40-2_root_readme_review.md)：GitHub product landing、inline architecture visuals、preservation matrix與baseline machine contract的Task 40-2 review。

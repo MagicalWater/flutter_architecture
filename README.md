@@ -1,5 +1,7 @@
 # Flutter Enterprise Architecture Template
 
+![Flutter Enterprise Architecture Template hero](docs/assets/readme/flutter-enterprise-architecture-hero.png)
+
 一份可直接作為中大型 Flutter 產品起點的企業級架構模板：Clean Architecture、Feature First、Monorepo、可重用 packages、跨平台基礎能力、文件治理與可驗證的開發流程都已整合在同一個 repository。
 
 **Template Baseline Version：1.20.0**
@@ -7,19 +9,6 @@
 Android：Supported · iOS：Supported · Web / Windows / macOS / Linux：Dependency-ready
 
 > 想直接開始新產品？使用 GitHub 的 **Use this template** 建立獨立 repository，再依 [Template Repository Adoption Guide](docs/guides/template_repository_adoption.md) 完成一次性的 Template → Product bootstrap。
-
----
-
-## Why this template
-
-這個 repository 的目標不是把所有 Flutter 專案都做成同一種樣子，而是先把最容易在中大型專案失控的邊界固定下來：
-
-- **清楚的 ownership**：App、Feature、Domain、Data、Infrastructure 與 reusable package 有明確責任。
-- **可演進的依賴方向**：Presentation → Domain → Data → Infrastructure，不用靠跨 Feature Bloc 或全域 service 解決耦合。
-- **產品化而不是 Demo 化**：環境、身份、Auth、Storage、Localization、Design System、CI、Observability 等都有正式邊界。
-- **模板採用流程完整**：從 GitHub Template Repository 建立產品 repo 後，可保留 provenance 並轉成產品自己的 version / identity / infrastructure authority。
-- **文件是專案的一部分**：Architecture Decision、current snapshot、Guide、Roadmap、Review evidence 各自有唯一 owner，避免資訊只存在聊天紀錄。
-- **驗證成本受治理**：日常變更依 change-aware validation planner 決定 minimum sufficient validation，不把 full workspace test 當每次修改的固定成本。
 
 ---
 
@@ -50,6 +39,19 @@ Infrastructure / External Systems
 ```
 
 App 是 Composition Root；可重用 package 透過 constructor injection 表達依賴，不把 App-level DI lifecycle 反向帶進 package。
+
+---
+
+## Why this template
+
+這個 repository 的目標不是把所有 Flutter 專案都做成同一種樣子，而是先把最容易在中大型專案失控的邊界固定下來：
+
+- **清楚的 ownership**：App、Feature、Domain、Data、Infrastructure 與 reusable package 有明確責任。
+- **可演進的依賴方向**：Presentation → Domain → Data → Infrastructure，不用靠跨 Feature Bloc 或全域 service 解決耦合。
+- **產品化而不是 Demo 化**：環境、身份、Auth、Storage、Localization、Design System、CI、Observability 等都有正式邊界。
+- **模板採用流程完整**：從 GitHub Template Repository 建立產品 repo 後，可保留 provenance 並轉成產品自己的 version / identity / infrastructure authority。
+- **文件是專案的一部分**：Architecture Decision、current snapshot、Guide、Roadmap、Review evidence 各自有唯一 owner，避免資訊只存在聊天紀錄。
+- **驗證成本受治理**：日常變更依 change-aware validation planner 決定 minimum sufficient validation，不把 full workspace test 當每次修改的固定成本。
 
 ---
 

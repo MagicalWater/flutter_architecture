@@ -31,13 +31,13 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: None
+Active Milestone: Milestone 40 — Task 40-7 Hero Visual Corrective
 Template Baseline: 1.20.0
 ```
 
-目前沒有active milestone；current work回到`docs/roadmap/active.md`與Requirement Decision入口。Milestone 40已完成documentation-only closure，Template Baseline維持`1.20.0`。
+Milestone 40的40-1～40-6已完成；publication前的40-7 repository hero visual corrective因使用者否決review artifact visual preview而重新開啟，current gate以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
 
-### Milestone 40 closed routing
+### Milestone 40 active corrective routing
 
 - Requirement Decision：Accepted — `docs/audits/milestone_40/40-r_requirement_decision.md`
 - Design：Accepted / user approved 2026-08-17 — `docs/superpowers/specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`
@@ -45,6 +45,7 @@ Template Baseline: 1.20.0
 - Implementation Plan：Accepted / user approved 2026-08-17 — `docs/superpowers/plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`
 - Plan Review：Accepted — `docs/audits/milestone_40/40-p_implementation_plan_review.md`
 - Holistic Final Review：Completed — `docs/audits/milestone_40/40-6_holistic_final_review.md`
+- Pre-publication Hero Visual Corrective：Active / user visual acceptance pending — `docs/audits/milestone_40/40-7_repository_hero_visual_review.md`
 - Release：No release；Template Baseline remains `1.20.0`
 
 ### Milestone 39 closed routing

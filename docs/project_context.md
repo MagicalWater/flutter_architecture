@@ -29,9 +29,9 @@ last_reviewed_baseline: 1.20.0
 ```txt
 Template Baseline: 1.20.0
 Phase 1 / MVP: Completed
-Current active milestone: None
-Current phase: Maintenance / Requirement Decision entry
-Latest completed initiative: Milestone 40 GitHub Repository Landing Page & Documentation Authority Restructure — no release, baseline remains 1.20.0
+Current active milestone: Milestone 40 — Task 40-7 Hero Visual Corrective
+Current phase: user visual acceptance pending
+Latest completed initiative: Milestone 40 core Tasks 40-1～40-6 — no release, baseline remains 1.20.0
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -367,14 +367,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: None
-Current phase: Maintenance / Requirement Decision entry
-Latest completed initiative: Milestone 40 GitHub Repository Landing Page & Documentation Authority Restructure — no release, baseline remains 1.20.0
+Current active milestone: Milestone 40 — Task 40-7 Hero Visual Corrective
+Current phase: user visual acceptance pending
+Latest completed initiative: Milestone 40 core Tasks 40-1～40-6 — no release, baseline remains 1.20.0
 Maintenance mode: Active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 40已完成root README GitHub product landing-page重構、兩張正式架構圖inline preview、documentation owner邊界收斂、section-level preservation、Template → Product README compatibility與docs checker validation。Tasks 40-1～40-5及Holistic Final Review皆PASS，Open P0=0、undisposed P1=0；本次為documentation／presentation-only，未改變production或machine lifecycle contract，因此Template Baseline維持1.20.0。Closure evidence見`docs/audits/milestone_40/40-6_holistic_final_review.md`。
+Milestone 40 core Tasks 40-1～40-6已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility與docs checker validation。Publication前追加Task 40-7 Hero Visual Corrective；其asset與README consumer已完成，但使用者發現40-7 review artifact只展示Markdown syntax、沒有實際render驗收圖片，因此visual acceptance已撤銷。40-7目前active，等待使用者檢視Hero、productized topology與C4 dependency contract三張actual inline previews後明確核准；Template Baseline仍維持1.20.0。
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 

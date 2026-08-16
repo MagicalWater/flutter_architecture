@@ -21,7 +21,7 @@ last_reviewed_baseline: 1.16.0
 | 類型 | Authoritative scope | 主要位置 |
 |---|---|---|
 | Agent policy | AI 操作規則、禁止事項、讀取路由 | `AGENTS.md` |
-| Human entry | 專案定位、能力、快速開始 | root `README.md` |
+| Human entry | GitHub landing：產品定位、能力摘要、採用入口、快速開始與deep links | root `README.md` |
 | Current snapshot | 目前有效架構、能力與限制 | `docs/project_context.md` |
 | Architecture decision | 已拍板且仍有效的架構規則 | `docs/adr/README.md` 與 canonical ADR records |
 | Roadmap | Active、candidate、deferred 與 closed routing | `docs/roadmap.md` |
@@ -136,7 +136,7 @@ Audit 文件保存當時的 review 與 evidence，不取代 current snapshot 或
 VERSION
 CHANGELOG.md
 Milestone final review
-Root README current capability
+Root README landing summary consistency
 相關 current snapshot / Decision
 ```
 

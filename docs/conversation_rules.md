@@ -81,19 +81,21 @@ docs/roadmap.md
 
 ---
 
-## Rule 5：README 永遠保持最新
+## Rule 5：README 保持 landing-critical 資訊最新
 
-README 是第一次接觸專案的人會看的入口。
+Root README 是第一次接觸 repository 的人會看的產品入口，不是所有 current contract 與操作程序的彙總文件。
 
-如果新增：
+如果改變下列 landing-critical facts，必須同步更新 root README 的摘要或 route：
 
-- 啟動方式
-- 驗證方式
-- 平台限制
-- 重要依賴
-- 文件導覽
+- 專案定位或 template / product 身分。
+- Template / Product version 顯示。
+- Platform support 摘要。
+- `Use this template` / bootstrap newcomer path。
+- Quick Start 的最小可執行入口。
+- 主要能力摘要或重要限制。
+- 文件導覽入口。
 
-必須同步更新 README。
+詳細 architecture contract、validation policy、environment procedure、security evidence、AI mandatory reading rule 與歷史 Milestone journal 應更新其 canonical owner；不要為了「README 永遠最新」而把完整 detail 再複製回 root README。
 
 ---
 

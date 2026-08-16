@@ -29,9 +29,9 @@ last_reviewed_baseline: 1.20.0
 ```txt
 Template Baseline: 1.20.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
-Current phase: Implementation Plan proposed / user approval gate
-Latest completed initiative: Milestone 39 Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective — 1.20.0
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 40 GitHub Repository Landing Page & Documentation Authority Restructure — no release, baseline remains 1.20.0
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -367,14 +367,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
-Current phase: Implementation Plan proposed / user approval gate
-Latest completed initiative: Milestone 39 Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective — 1.20.0
+Current active milestone: None
+Current phase: Maintenance / Requirement Decision entry
+Latest completed initiative: Milestone 40 GitHub Repository Landing Page & Documentation Authority Restructure — no release, baseline remains 1.20.0
 Maintenance mode: Active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 40已完成fresh Requirement Decision並分類為Level 4 repository documentation／presentation governance工作。Design處理root README的GitHub product landing-page責任、兩張正式架構圖inline preview、documentation owner邊界、section-level preservation與Template → Product bootstrap compatibility，已完成完整Design review並於2026-08-17取得使用者核准。Current Implementation Plan已建立並進入Plan approval gate；Plan accepted前不得修改root README正文或搬移canonical documents。Current evidence由`docs/audits/milestone_40/40-r_requirement_decision.md`、`docs/superpowers/specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`、`docs/audits/milestone_40/40-0_design_spec_review.md`、`docs/superpowers/plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`與`docs/audits/milestone_40/40-p_implementation_plan_review.md`擁有。
+Milestone 40已完成root README GitHub product landing-page重構、兩張正式架構圖inline preview、documentation owner邊界收斂、section-level preservation、Template → Product README compatibility與docs checker validation。Tasks 40-1～40-5及Holistic Final Review皆PASS，Open P0=0、undisposed P1=0；本次為documentation／presentation-only，未改變production或machine lifecycle contract，因此Template Baseline維持1.20.0。Closure evidence見`docs/audits/milestone_40/40-6_holistic_final_review.md`。
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 

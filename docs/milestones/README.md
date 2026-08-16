@@ -35,7 +35,17 @@ Active Milestone: None
 Template Baseline: 1.20.0
 ```
 
-目前沒有active milestone；current work回到`docs/roadmap/active.md`與Requirement Decision入口。Milestone 39已發布Template Baseline `1.20.0`並完成formal closure。
+目前沒有active milestone；current work回到`docs/roadmap/active.md`與Requirement Decision入口。Milestone 40已完成documentation-only closure，Template Baseline維持`1.20.0`。
+
+### Milestone 40 closed routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_40/40-r_requirement_decision.md`
+- Design：Accepted / user approved 2026-08-17 — `docs/superpowers/specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`
+- Design Review：Accepted — `docs/audits/milestone_40/40-0_design_spec_review.md`
+- Implementation Plan：Accepted / user approved 2026-08-17 — `docs/superpowers/plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`
+- Plan Review：Accepted — `docs/audits/milestone_40/40-p_implementation_plan_review.md`
+- Holistic Final Review：Completed — `docs/audits/milestone_40/40-6_holistic_final_review.md`
+- Release：No release；Template Baseline remains `1.20.0`
 
 ### Milestone 39 closed routing
 

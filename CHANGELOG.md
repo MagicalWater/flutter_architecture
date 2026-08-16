@@ -18,6 +18,12 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 完成Milestone 40 GitHub Repository Landing Page & Documentation Authority Restructure：root README改為產品化GitHub landing page，直接預覽productized topology與C4 dependency contract，並移除Milestone journal與重複的deep technical procedure。
+- Root README責任收斂為產品定位、能力摘要、Template adoption、Quick Start、platform summary與documentation routes；current snapshot、ADR、Guide、Agent policy與history維持各自canonical owner。
+- Template → Product README transition與既有docs checker保持相容；`Template Baseline Version`／`Product Repository Version` machine contract不變，因此Template Baseline維持1.20.0。
+
 ---
 
 ## [1.20.0] - 2026-08-15

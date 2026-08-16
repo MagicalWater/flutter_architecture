@@ -31,7 +31,7 @@ State: Maintenance / next work must enter Requirement Decision
 Template Baseline: 1.20.0
 ```
 
-完整 active scope、design、gate與 next action：
+完整 active scope、Design gate與 next action：
 
 - `docs/roadmap/active.md`
 

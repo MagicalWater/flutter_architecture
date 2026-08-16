@@ -45,6 +45,19 @@ Final / Holistic Review
 
 ## Evidence routes
 
+### Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
+
+- [`milestone_40/40-r_requirement_decision.md`](milestone_40/40-r_requirement_decision.md)：root README product landing、inline architecture visual、documentation authority與bootstrap compatibility的Level 4 Requirement Decision。
+- [`milestone_40/40-0_design_spec_review.md`](milestone_40/40-0_design_spec_review.md)：Design focused findings、fix、fresh re-review與whole-Design holistic review；2026-08-17使用者已核准。
+- [`milestone_40/40-p_implementation_plan_review.md`](milestone_40/40-p_implementation_plan_review.md)：preservation-first ordering、README landing implementation、authority alignment、bootstrap compatibility、checker safety與holistic closure的Plan review。
+- [`milestone_40/40-1_readme_preservation_matrix.md`](milestone_40/40-1_readme_preservation_matrix.md)：root README逐section disposition、canonical owner、bootstrap/checker sensitivity與semantic preservation manifest。
+- [`milestone_40/40-1_readme_preservation_review.md`](milestone_40/40-1_readme_preservation_review.md)：Task 40-1 focused／fresh／whole-Task review；P0=0、undisposed P1=0。
+- [`milestone_40/40-2_root_readme_review.md`](milestone_40/40-2_root_readme_review.md)：GitHub product landing、inline architecture visuals、preservation matrix與baseline machine contract的Task 40-2 review。
+- [`milestone_40/40-3_documentation_authority_review.md`](milestone_40/40-3_documentation_authority_review.md)：Human landing與AI/current-contract owner分離、conversation Rule 5收斂及Single Authority review。
+- [`milestone_40/40-4_template_product_readme_compatibility_review.md`](milestone_40/40-4_template_product_readme_compatibility_review.md)：Template/Product version marker、bootstrap README transition與prospective product docs的compatibility review；Skill/Guide無需修改。
+- [`milestone_40/40-5_documentation_validation_review.md`](milestone_40/40-5_documentation_validation_review.md)：既有docs checker對template/product landing version marker持續有效，判定checker無需修改。
+- [`milestone_40/40-6_holistic_final_review.md`](milestone_40/40-6_holistic_final_review.md)：cross-Task authority、landing semantics、bootstrap/checker compatibility與no-release disposition的Milestone 40 formal closure。
+
 ### Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
 
 - [`milestone_39/39-r_requirement_decision.md`](milestone_39/39-r_requirement_decision.md)：critical mapping completeness、runtime geometry、local fidelity與wrong-representation recovery的Level 4 Requirement Decision。

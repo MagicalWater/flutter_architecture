@@ -121,6 +121,18 @@ root/
 
 ## Architecture Boundaries
 
+### Architecture Visual Overview
+
+以下兩張圖是目前 `1.20.0` 架構 authority 的**視覺摘要**，用來幫助人類快速理解 ownership、runtime composition、productization governance 與依賴契約；它們不建立新的平行 authority。若圖像摘要與 current snapshot、canonical ADR、root machine manifest 或 production source 衝突，仍以這些既有 authority 為準。
+
+產品化拓樸總覽：
+
+![Flutter 企業級架構模板產品化拓樸總覽](assets/architecture/productized-topology.png)
+
+正式 C4-style Component Map 與 Allowed Dependency Contract：
+
+![Flutter 企業級架構模板 C4-style 依賴契約](assets/architecture/c4-dependency-contract.png)
+
 ### Clean Architecture and Feature First
 
 主要依賴方向：

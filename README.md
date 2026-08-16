@@ -110,6 +110,15 @@ Bootstrap 只處理「新產品 repository 怎麼出生」；不替產品規劃 
   > 短期方便
 ```
 
+### 架構視覺總覽
+
+若要先用圖理解目前 Template Baseline `1.20.0` 的 ownership、Composition Root、reusable packages、App-owned adapters、外部系統與治理路徑，可直接查看：
+
+- [產品化拓樸總覽](docs/assets/architecture/productized-topology.png)
+- [正式 C4-style Component Map 與依賴契約](docs/assets/architecture/c4-dependency-contract.png)
+
+這兩張圖是 current architecture 的視覺摘要，不取代 `docs/project_context.md`、canonical ADR、root machine manifest 或 production source 的 authority。
+
 ---
 
 ## 技術選型

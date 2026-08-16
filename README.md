@@ -1,590 +1,205 @@
 # Flutter Enterprise Architecture Template
 
-本專案不是 Boilerplate，也不是 Demo，而是一份可以持續演進、可直接作為企業專案起點的 Flutter Enterprise Template。
+一份可直接作為中大型 Flutter 產品起點的企業級架構模板：Clean Architecture、Feature First、Monorepo、可重用 packages、跨平台基礎能力、文件治理與可驗證的開發流程都已整合在同一個 repository。
 
-它的目標是建立一個清楚、穩定、可擴充、可閱讀的 Flutter 架構模板，同時讓開發者能透過程式碼與文件理解 Clean Architecture 在中大型專案中的實際落地方式。
+**Template Baseline Version：1.20.0**
+
+Android：Supported · iOS：Supported · Web / Windows / macOS / Linux：Dependency-ready
+
+> 想直接開始新產品？使用 GitHub 的 **Use this template** 建立獨立 repository，再依 [Template Repository Adoption Guide](docs/guides/template_repository_adoption.md) 完成一次性的 Template → Product bootstrap。
 
 ---
 
-## 專案狀態
+## Why this template
 
-- Template Baseline Version：1.20.0
-- Phase 1 / MVP：Completed
-- Melos 8 / Dart Pub Workspaces Migration：Completed
-- Dependency Upgrade：Completed
-- Modernization Review：Completed
-- Milestone 12 Refresh Token / Concurrent 401：Completed
-- Milestone 13 Pagination / Search Debounce：Completed
-- Milestone 14 Offline Cache：Archived
-- Milestone 15 Design System Foundation：Completed
-- Milestone 16 Localization Foundation：Completed
-- Milestone 17 Exception & Failure Architecture：Completed
-- Milestone 18 Template Baseline Holistic Audit：Completed
-- Milestone 19 Secure Credential Storage & Migration：Completed / Archived
-- Milestone 20 OTP Step-Up Authentication：Completed / Archived
-- Milestone 21 Biometric-gated Local Session Unlock：Completed / Archived
-- Milestone 22 Documentation Authority & Navigation Foundation：Completed / Archived
-- Milestone 23 Architecture Decision Record Extraction & Normalization：Completed / Archived
-- Milestone 24 CI/CD Foundation：Completed / Archived
-- Milestone 25 iOS Platform Support Foundation：Completed / Archived
-- Milestone 26 Native Flavor & Product Identity Foundation：Completed / Archived
-- Milestone 27 Production Observability Foundation：Completed / Archived
-- Milestone 28 Connectivity and Offline State Foundation：Completed / Archived
-- Milestone 29 Drift Persistence Migration：Completed / Archived
-- Milestone 30 Test Suite Audit, Rationalization & Governance：Completed / Archived
-- Milestone 31 Template Development Workflow Governance：Completed / Archived
-- Milestone 32 CI產物本機化與GitHub儲存空間切換：Completed / Archived
-- Milestone 33 Repository-local Pencil-to-Flutter Workflow Foundation：Completed / Archived（Corrective Release 1.15.1）
-- Milestone 34 Pencil Asset / Vector / Typography Mapping & Provenance：Completed / Archived（Release 1.15.2）
-- Milestone 35 Test Execution Cost & Change-Aware Validation Governance Corrective：Completed / Archived（Release 1.16.0）
-- Milestone 36 Test Authoring Cost & Risk-Based Testing Governance Corrective：Completed / Archived（Release 1.17.0）
-- Milestone 37 Template-to-Product Repository Bootstrap & Adoption Governance：Completed / Archived（Release 1.18.0）
-- Milestone 38 Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective：Completed / Archived（Release 1.19.0）
-- Milestone 39 Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective：Completed / Archived（Release 1.20.0）
+這個 repository 的目標不是把所有 Flutter 專案都做成同一種樣子，而是先把最容易在中大型專案失控的邊界固定下來：
 
-平台能力：
+- **清楚的 ownership**：App、Feature、Domain、Data、Infrastructure 與 reusable package 有明確責任。
+- **可演進的依賴方向**：Presentation → Domain → Data → Infrastructure，不用靠跨 Feature Bloc 或全域 service 解決耦合。
+- **產品化而不是 Demo 化**：環境、身份、Auth、Storage、Localization、Design System、CI、Observability 等都有正式邊界。
+- **模板採用流程完整**：從 GitHub Template Repository 建立產品 repo 後，可保留 provenance 並轉成產品自己的 version / identity / infrastructure authority。
+- **文件是專案的一部分**：Architecture Decision、current snapshot、Guide、Roadmap、Review evidence 各自有唯一 owner，避免資訊只存在聊天紀錄。
+- **驗證成本受治理**：日常變更依 change-aware validation planner 決定 minimum sufficient validation，不把 full workspace test 當每次修改的固定成本。
 
-| Platform | Capability |
+---
+
+## Architecture Overview
+
+這張圖先從產品化角度呈現 App Composition Root、Features、reusable packages、platform adapters、external systems 與 governance route：
+
+![Flutter Enterprise Architecture Template productized topology](docs/assets/architecture/productized-topology.png)
+
+圖是 current architecture 的視覺摘要；完整 current state 以 [Project Context](docs/project_context.md)、canonical ADR 與 production source 為準。
+
+## Dependency Contract
+
+更細的 component ownership 與依賴契約：
+
+![Flutter Enterprise Architecture Template C4 dependency contract](docs/assets/architecture/c4-dependency-contract.png)
+
+核心依賴方向維持：
+
+```txt
+Presentation
+  ↓
+Domain
+  ↓
+Data
+  ↓
+Infrastructure / External Systems
+```
+
+App 是 Composition Root；可重用 package 透過 constructor injection 表達依賴，不把 App-level DI lifecycle 反向帶進 package。
+
+---
+
+## What is included
+
+| Area | Included baseline |
 |---|---|
-| Android | Supported（含biometric-gated local session unlock） |
-| iOS | Supported（Simulator與GitHub-hosted build verified；physical device／distribution deferred） |
-| Web | Dependency-ready |
-| Windows | Dependency-ready |
-| macOS | Dependency-ready |
-| Linux | Dependency-ready |
+| Architecture | Clean Architecture、Feature First、Monorepo、Melos / Dart Pub Workspaces |
+| Presentation | `flutter_bloc`、`flutter_hooks`、`hooked_bloc` |
+| Navigation | `auto_route`、typed routes、Route Guard、nested navigation |
+| Dependency Injection | `get_it` + `injectable`，由 App Composition Root 統一組裝 |
+| Models / Codegen | `freezed`、`json_serializable`、`build_runner` |
+| Network | Dio / Retrofit、Authorization header、refresh token rotation、concurrent 401 single-flight、safe replay |
+| Persistence | FlutterSecureStorage、SharedPreferences、Drift / SQLite、Web dependency-ready Wasm path |
+| Authentication | Session restore、secure credential storage、OTP step-up、Android biometric-gated local unlock |
+| Design System | Reusable theme package、Light / Dark / System、semantic colors、responsive / large-text coverage |
+| Localization | English + Traditional Chinese (`zh_TW`)、runtime locale switching、persisted preference |
+| Connectivity / Offline | Connectivity state、offline-aware flow、Catalog cache / stale-while-revalidate reference |
+| Observability | Production observability foundation與provider boundary |
+| CI / Governance | change-aware validation、risk-based test authoring、self-hosted / GitHub-hosted / manual-local profiles |
+| Design implementation | Repository-local Pencil → Flutter workflow、representation / provenance / fidelity gates |
 
-Android與iOS目前皆為Supported平台。iOS已包含tracked runner、unsigned Simulator build、runtime／storage／security smoke、macOS golden authority與GitHub-hosted build evidence；physical-device biometric acceptance、IPA signing與App Store distribution仍有明確deferred disposition。
-
-版本變更請參考 `CHANGELOG.md`。
-
----
-
-## 從此 Template 開始一個新產品
-
-本 repository 的正式 newcomer path 是 GitHub Template Repository 的 `Use this template`。新產品應建立自己的獨立 repository，再在新 repo 內完成一次性的 Template → Product bootstrap；一般產品起點不使用 Fork 來保存 template parent history。
-
-新 repository 第一次交給 Agent 時，不需要重貼本模板的治理流程，也不需要知道內部 Skill 名稱。最少只要提供：
-
-```txt
-新 repository 路徑
-這是剛從 flutter_architecture template 建立的新產品 repository
-產品名稱
-Base identifier
-CI profile（manual-local | self-hosted | github-hosted，可省略後由Agent要求確認）
-```
-
-Fresh Agent 會先讀 root `repository_identity.json`與`repository_infrastructure.json`，判斷repository lifecycle、selected CI profile與infrastructure disposition。完整 repository birth、template provenance、VERSION transition、CI profile/live GitHub state、native identity delegation與fresh-conversation completion contract請讀：
-
-- `docs/guides/template_repository_adoption.md`
-
-Android／iOS application／bundle identity 與三環境 display-name 的 exact procedure仍由：
-
-- `docs/guides/native_environment_adoption.md`
-
-Bootstrap 只處理「新產品 repository 怎麼出生」；不替產品規劃 MVP、Feature、UI／UX或產品 roadmap。
+完整能力與限制請讀 [Project Context](docs/project_context.md)；stable decisions 請從 [ADR Index](docs/adr/README.md) 進入。
 
 ---
 
-## 專案定位
+## Start a Product
 
-本專案適合已經會寫 Flutter，但開始遇到下列問題的開發者：
+### 1. 建立自己的 repository
 
-- Repository 應該放在哪？
-- UseCase 到底有什麼價值？
-- Feature First 要怎麼拆？
-- Auth 這種跨頁面功能要放 app feature，還是 package？
-- Route Guard 要不要依賴 Bloc？
-- Profile 頁面可不可以直接讀 AuthBloc？
-- Web / Desktop / Mobile 的本地資料庫差異要怎麼處理？
+在 GitHub repository 頁面使用 **Use this template**，建立新的產品 repository。一般產品採用不使用 Fork 保存 template parent history。
 
-本專案不追求最少程式碼，而是追求：
+### 2. 完成一次性的 Template → Product bootstrap
 
-```txt
-可讀性
-  > 炫技
+Bootstrap 會把 template repository authority 轉成產品 repository authority，包括：
 
-清楚邊界
-  > 快速堆功能
+- repository lifecycle / provenance
+- product version semantics
+- product name
+- CI profile / infrastructure disposition
+- Android / iOS identity（若納入本次 scope）
 
-長期維護
-  > 短期方便
-```
+正式流程：
 
-### 架構視覺總覽
+- [Template Repository Adoption Guide](docs/guides/template_repository_adoption.md)
+- [Native Environment and Product Identity Adoption Guide](docs/guides/native_environment_adoption.md)
 
-若要先用圖理解目前 Template Baseline `1.20.0` 的 ownership、Composition Root、reusable packages、App-owned adapters、外部系統與治理路徑，可直接查看：
-
-- [產品化拓樸總覽](docs/assets/architecture/productized-topology.png)
-- [正式 C4-style Component Map 與依賴契約](docs/assets/architecture/c4-dependency-contract.png)
-
-這兩張圖是 current architecture 的視覺摘要，不取代 `docs/project_context.md`、canonical ADR、root machine manifest 或 production source 的 authority。
+Bootstrap 只負責「產品 repository 如何出生」，不替產品決定 MVP、Feature、UI/UX 或產品 roadmap。
 
 ---
 
-## 技術選型
+## Quick Start
 
-### Architecture
-
-- Clean Architecture
-- Feature First
-- Monorepo
-- Melos
-
-### Presentation Layer
-
-- flutter_bloc
-- flutter_hooks
-- hooked_bloc
-
-### Navigation
-
-- auto_route
-- Route Guard
-- Nested Route
-- Bottom Navigation
-
-### Dependency Injection
-
-- get_it
-- injectable
-
-### Model / Code Generation
-
-- freezed
-- json_serializable
-- build_runner
-
-### Network
-
-- Dio
-- Retrofit
-- Mock API
-- Authorization Header Interceptor
-- Refresh Token rotation
-- Concurrent 401 single-flight refresh
-- Session-aware safe request replay
-
-真實 HTTP API 統一使用 Retrofit 宣告；Mock implementation 與 Retrofit generated implementation 共用相同 API abstraction，並由 App Composition Root 決定實際注入哪一個 implementation。
-
-Authenticated request 由 Main Dio 加入 access token；401 refresh 使用獨立 Refresh Dio，避免 refresh request 再次進入 auth interceptor。多個同 Session 的並行 401 共用一次 refresh，成功後只有可安全重送的 request 才會以新 token replay。Logout、Session expiration 或帳號切換後，舊 request / 舊 refresh response 都不得使用新 Session 身分繼續執行。
-
-`main.dart` 只保留 development compatibility；正式 native build 使用 environment-specific flavor／scheme 與 Dart entrypoint。預設 development 使用 Mock API。
-
-Development Android／iOS verification：
-
-```bash
-bash tools/ci/build_android_development.sh
-bash tools/ci/build_ios_development.sh
-```
-
-Staging Android／iOS verification：
-
-```bash
-API_BASE_URL=https://staging-api.your-domain.example \
-  bash tools/ci/build_android_environment.sh \
-    staging debug lib/main_staging.dart real
-
-API_BASE_URL=https://staging-api.your-domain.example \
-  bash tools/ci/build_ios_environment.sh \
-    staging Staging Debug-staging iphonesimulator \
-    lib/main_staging.dart real
-```
-
-Production Android／iOS verification：
-
-```bash
-API_BASE_URL=https://api.your-domain.example \
-  bash tools/ci/build_android_production.sh
-
-API_BASE_URL=https://api.your-domain.example \
-  bash tools/ci/build_ios_production.sh
-```
-
-規則：
-
-- `API_MODE` 只接受 `mock` 或 `real`。
-- development 可使用 Mock 或 Real API。
-- staging / production 只允許 Real API。
-- Real API 必須明確提供 `API_BASE_URL`。
-- URL 只允許 HTTP / HTTPS；production 強制 HTTPS，並拒絕 mock.local、localhost、loopback 與 `.invalid` URL。
-- Dart entrypoint 是 App Environment 的唯一來源；native flavor／scheme 透過 `NATIVE_ENVIRONMENT` sentinel 驗證 mapping，不使用 `APP_ENV` dart-define。
-- 預設 base identifier `com.example.flutterarchitecture` 與 display name 都是模板 placeholder。採用流程必須從 environment manifest 開始，同步 Android、iOS 與 verification projection。
-- Repository Android production APK 使用 debug signing，iOS production `.app` 不簽名；兩者都只用於 verification，不可直接上架。
-- 完整替換順序、三環境命令與 secret boundary 請讀 `docs/guides/native_environment_adoption.md`。
-
-### Storage
-
-- SharedPreferences
-- Drift / SQLite
-- Native background database executor
-- Drift Wasm + worker assets for dependency-ready Web
-- sqflite test-only historical compatibility harness
-
-### Reactive
-
-- RxDart
-
-### Design System
-
-- Reusable `packages/design_system`
-- Default / Ocean Theme identities
-- Light / Dark / System mode
-- Persistent appearance preference
-- Semantic colors and Material component themes
-- Shared blocking page-state surfaces
-- Non-blocking status banner and loading button content
-- Narrow viewport, large text and four-theme-combination regression coverage
-
-### Localization
-
-- Flutter official `gen_l10n`
-- English and Traditional Chinese (`zh_TW`)
-- System / English / Traditional Chinese locale preference
-- Runtime locale switching with persisted App-local preference
-- Explicit locale-list resolution for Traditional and Simplified Chinese
-- Feature-local user-facing failure mapping
-- Locale-aware Catalog date and time formatting through `intl`
-- App-owned localization; Design System only receives localized presentation text
-
----
-
-## 專案結構
-
-```txt
-root/
-  apps/
-    flutter_architecture/
-  packages/
-    core/
-    api_client/
-    auth/
-    design_system/
-  docs/
-  melos.yaml
-  pubspec.yaml
-  analysis_options.yaml
-  README.md
-```
-
-### apps/flutter_architecture
-
-主 App 專案。
-
-負責：
-
-- App bootstrap
-- Typed AppConfig
-- Dart environment entrypoints
-- Router
-- DI composition
-- ShellPage
-- LoginPage
-- ProfilePage
-- CatalogPage
-- ProtectedPage
-- Feature 的 Presentation Layer
-- Catalog cursor pagination、search debounce、refresh 與 load more 範例
-- Catalog feature-level Offline Cache、Stale-While-Revalidate、retention cleanup 與 cached/stale UI
-- App-local Theme 與 Locale preference、bootstrap restore、runtime selector 與 `MaterialApp.router` wiring
-- English / `zh_TW` App chrome、Auth、Profile、Protected 與 Catalog localization
-
-Catalog Cache 以 `query + requested cursor + limit` 作為 page identity。Fresh Cache 可直接呈現，Stale Cache 先顯示並背景更新，Pull-to-refresh 強制 Remote，Append 使用 retained page Cache 或 Remote fallback。Cache 是可重建的 public read model，因此 Logout 只清除 Auth state，不清除 Catalog Cache。
-
-### packages/core
-
-共用基礎能力。
-
-例如：
-
-- Result
-- Failure
-- AppException
-- Storage abstraction
-
-### packages/api_client
-
-Network boundary。
-
-例如：
-
-- Dio factory
-- API client
-- AuthHeaderInterceptor
-- AuthRefreshInterceptor
-- Auth refresh abstraction / result
-- Safe request replay metadata
-- API response model
-
-### packages/auth
-
-Auth 共用能力。
-
-目前負責：
-
-```txt
-packages/auth
-  負責 Auth domain / data / session
-  負責 Token Pair persistence
-  負責 refresh single-flight 與 token rotation
-  負責 Session invalidation 與 mutation coordination
-
-apps/flutter_architecture/lib/features/auth
-  只保留 Auth presentation
-```
-
-### packages/design_system
-
-Design System 共用能力。
-
-Milestone 15 已完成，現在提供：
-
-- Primitive design tokens。
-- Semantic color role contract。
-- Theme ID / metadata / definition contract。
-- Theme Registry 與 default / duplicate / fallback validation。
-- Default / Ocean Theme 的 Material 3 Light / Dark variants。
-- Typography、核心 Material component themes 與 semantic colors。
-- App-local Theme preference、persistence 與 Appearance selector。
-- Status Banner、constrained content、loading button content 與共用 page-state surfaces。
-- Login、Profile、Protected、Catalog 與 Shell 的 Theme-aware 導入範例。
-- 窄畫面、大型文字、四組 Theme composition 與 stable gallery golden regression。
-
-Package 不依賴 App、Feature、DI framework 或 persistence implementation；Theme preference、controller、storage 與 selector workflow 留在 App，App 仍是唯一 Composition Root。
-
----
-
-## Demo Flow
-
-目前 MVP 只需要四個頁面：
-
-```txt
-ShellPage(A)
-  ├── LoginPage(B)
-  ├── ProfilePage(C)
-  └── ProtectedPage(D)
-```
-
-需求：
-
-- ShellPage 有 AppBar 與 BottomNavigationBar。
-- BottomNavigationBar 有 Login 與 Profile 兩個 tab。
-- Login 頁面按下登入後，走完整 Clean Architecture 流程。
-- 登入成功後保存 token 與 profile。
-- Profile 頁面顯示目前登入的使用者名稱。
-- 沒登入時 Profile 頁面顯示尚未登入。
-- AppBar 右上角按鈕可以進入 ProtectedPage。
-- ProtectedPage 需要登入才能進入。
-- 未登入時 Route Guard 會導回 LoginPage。
-
----
-
-## Runtime Flow
-
-```txt
-UI
-  ↓
-Bloc
-  ↓
-UseCase
-  ↓
-Repository Interface
-  ↓
-RepositoryImpl
-  ↓
-DataSource
-  ↓
-ApiClient / SQLite / SharedPreferences
-```
-
----
-
-## 快速開始
-
-本專案使用 Melos 8 + Dart Pub Workspaces。
-
-目前 workspace SDK constraint 為：
-
-```yaml
-environment:
-  sdk: ">=3.8.0 <4.0.0"
-```
-
-Workspace 設定集中在 root `pubspec.yaml`：
-
-```txt
-workspace:
-  - apps/flutter_architecture
-  - packages/api_client
-  - packages/auth
-  - packages/core
-  - packages/design_system
-
-melos:
-  scripts:
-    analyze
-    build_runner
-```
-
-各 app / package 的 `pubspec.yaml` 需要設定：
-
-```yaml
-resolution: workspace
-```
-
-### 1. 安裝 dependencies
-
-本專案使用 Melos 8 + Dart Pub Workspaces，日常安裝 dependencies 請在 workspace root 執行：
+在 repository root：
 
 ```bash
 dart pub get
-```
-
-### 2. 清理 workspace 狀態（需要時）
-
-遇到 dependency link、build cache 或 workspace 狀態異常時，先清理：
-
-```bash
-dart run melos clean
-dart pub get
-```
-
-### 3. 產生程式碼
-
-```bash
 dart run melos run build_runner
-```
-
-`build_runner` script 會使用 `dart run build_runner build`，並搭配 `--order-dependents --concurrency=1`，確保上游 package 先產生 Freezed / JSON / Injectable / Auto Route 檔案，再產生下游 package。
-
-### 4. 分析與測試
-
-```bash
 dart run melos run analyze
-dart run melos exec -- flutter test
 ```
 
-### 5. Build 驗證
+基本 Flutter build 驗證：
 
 ```bash
 cd apps/flutter_architecture
 flutter build bundle
 ```
 
-目前 Android runtime smoke 已驗證：bootstrap、Mock Login、Login → Profile、Catalog 顯示與搜尋、Protected Route、Theme / Locale 持久化、Secure credential Login、force-stop / restart Restore、real API 401 → Refresh rotation → Replay、predecessor release Legacy migration、Logout destructive cleanup，以及 Android 上實際建立 Secure Storage、SharedPreferences 與 SQLite database。
-
-Auth persistence authority：
-
-```txt
-Credential Token Pair
-  → FlutterSecureStorage
-
-Public AuthUser identity
-  → SQLite
-
-Legacy SharedPreferences credential
-  → migration / cleanup only
-```
-
-Secure credential storage只提供credential-at-rest hardening，不代表可防止rooted device、runtime memory擷取或server compromise。
-
-目前baseline另包含server-issued OTP step-up authentication，以及Android上的biometric-gated local session unlock。OTP不宣稱可防止SIM-swap或保證SMS provider delivery；Biometric只驗證本機user presence，不是Server authentication，也不構成cryptographic Device Binding。Device Binding與Passkey仍不屬於目前baseline。
-
----
-
-## Flutter Web 注意事項
-
-若要更新 Drift Web database assets，請從App package context重新編譯worker，並維持resolved sqlite3 Wasm hash：
+日常 change validation 不固定要求 full workspace test。請先依 repository change-aware planner 取得 minimum sufficient validation：
 
 ```bash
-cd apps/flutter_architecture
-dart compile js web/drift_worker.dart -O4 -o web/drift_worker.js
+python tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
 ```
 
-Web 目前是 Dependency-ready，repository 不包含 tracked Web runner。要在自己的分支提升為可執行 Web application，可先建立 runner：
-
-```bash
-cd apps/flutter_architecture
-flutter create . --platforms web
-```
-
-之後可以執行：
-
-```bash
-flutter build web
-```
-
-Drift opener已透過條件匯入處理：
-
-```txt
-Mobile
-  使用NativeDatabase background executor與精確flutter_architecture.db path
-
-Desktop
-  使用NativeDatabase與App documents path
-
-Web
-  使用WasmDatabase、sqlite3.wasm與drift_worker.js
-```
+再執行 planner 選出的 focused / affected / workspace / platform validation。完整 testing policy 見 [Testing Governance](docs/guides/testing_governance.md)。
 
 ---
 
-## 文件導覽
-
-文件系統的正式入口是：
+## Repository Structure
 
 ```txt
-docs/README.md
+root/
+├─ apps/
+│  └─ flutter_architecture/   # reference app / Composition Root
+├─ packages/
+│  ├─ core/                   # shared primitives / failure / storage abstractions
+│  ├─ api_client/             # transport / network boundary
+│  ├─ auth/                   # reusable auth / session / token behavior
+│  └─ design_system/          # reusable visual foundation
+├─ docs/                      # current authority / ADR / Guides / plans / reviews
+├─ repository_identity.json
+├─ repository_infrastructure.json
+├─ VERSION
+└─ README.md
 ```
 
-它定義文件 taxonomy、authoritative owner、AI 最小讀取集，以及 Architecture、Feature、Package、Milestone、Review、Release 與 historical investigation 的按需路由。
+更細的責任可以直接從各 module README 進入：
 
-主要入口：
-
-- `AGENTS.md`：AI 操作規則與安全邊界。
-- `docs/guides/agent_assisted_development_quick_start.md`：AI Agent日常開發入口、Skill選擇與可直接複製的功能／畫面／除錯／架構Prompt。
-- `VERSION`：目前 Template Baseline Version 的唯一來源。
-- `docs/project_context.md`：目前有效 project snapshot。
-- `docs/roadmap.md`：Active、candidate、deferred 與 closed routing。
-- `docs/adr/README.md`：canonical Architecture Decision index與正式 authority。
-- `docs/architecture_decisions.md`：legacy compatibility route。
-- `docs/audits/README.md`：Review 與 runtime evidence 索引。
-- `docs/superpowers/README.md`：Design specs 與 implementation plans 索引。
-- `docs/milestones/README.md`：Milestone artifacts routing。
-- `docs/guides/ci_cd_operations.md`：CI、Branch Protection、artifact與failure／rollback操作指南。
-- `docs/guides/native_environment_adoption.md`：三環境本地命令、產品識別替換順序與 signing／Store 責任邊界。
-- `CHANGELOG.md`：正式版本變更紀錄。
-
-不要把所有文件都放入每次必讀清單；依 `docs/README.md` 的任務式路由讀取即可。
+- [Reference App](apps/flutter_architecture/README.md)
+- [Core Package](packages/core/README.md)
+- [API Client Package](packages/api_client/README.md)
+- [Auth Package](packages/auth/README.md)
+- [Design System Package](packages/design_system/README.md)
 
 ---
 
-## 開發原則
+## Platform Support
 
-- 文件、README、註解預設使用繁體中文。
-- 技術名詞、套件名稱、類別名稱保留英文。
-- 可讀性優先於技巧。
-- 不為了少寫幾行而犧牲架構邊界。
-- 跨 Feature 不直接依賴對方的 Bloc。
-- Route Guard 不依賴 AuthBloc，而應依賴 SessionManager 或 domain abstraction。
-- UseCase 以一個業務行為為單位，不使用過大的 AuthUseCase。
-- 每個 Milestone 必須驗證 analyze / test / build。
+| Platform | Status | Notes |
+|---|---|---|
+| Android | Supported | Native runtime / storage / security / environment verification covered |
+| iOS | Supported | Simulator與build verification covered；physical-device biometric acceptance / signing / Store distribution仍為明確deferred scope |
+| Web | Dependency-ready | Drift Wasm / worker dependency path存在；repository不把Web runner視為目前正式supported target |
+| Windows | Dependency-ready | Architecture / package boundaries已保持可延伸 |
+| macOS | Dependency-ready | Architecture / package boundaries已保持可延伸 |
+| Linux | Dependency-ready | Architecture / package boundaries已保持可延伸 |
+
+平台current evidence與deferred boundaries以 [Project Context](docs/project_context.md) 為準。
 
 ---
 
-## 開新對話（給 ChatGPT）
+## Documentation
 
-若需要在新的 ChatGPT 對話中延續本專案，固定先閱讀：
+文件系統正式入口：**[docs/README.md](docs/README.md)**。
 
-```txt
-AGENTS.md
-VERSION
-docs/README.md
-docs/project_context.md
-docs/roadmap.md
-```
+常用 routes：
 
-閱讀完成後，再依 `docs/README.md` 的 task-based route 載入該任務需要的 Decision、Feature／Package README、spec、plan、review、source 與 tests。
+- [Project Context](docs/project_context.md) — current project snapshot
+- [Architecture Decisions](docs/adr/README.md) — stable architecture authority
+- [Roadmap](docs/roadmap.md) — active / candidate / closed routing
+- [Milestone Routing](docs/milestones/README.md) — milestone artifact index
+- [Audits & Reviews](docs/audits/README.md) — review / runtime evidence
+- [Design Specs & Plans](docs/superpowers/README.md) — approved design / execution artifacts
+- [AI-assisted Development Quick Start](docs/guides/agent_assisted_development_quick_start.md) — 常見開發情境與Agent入口
+- [CI/CD Operations](docs/guides/ci_cd_operations.md) — CI、artifact、failure / rollback operations
+- [CHANGELOG](CHANGELOG.md) — released version history
 
-不要依賴舊對話內容作為唯一上下文，也不要把全部歷史文件載入 active context。
+AI / coding agent 的強制工作規則由 [AGENTS.md](AGENTS.md) 擁有；root README 不複製 mandatory reading contract 或完整治理流程。
 
-新增功能、畫面、Bug、Refactor、Migration或只讀評估時，可直接從 `docs/guides/agent_assisted_development_quick_start.md` 選擇對應場景並複製Prompt；不需要每次重貼完整雙層Task治理流程。
+---
+
+## Limitations / Non-goals
+
+這份 Template **不是**：
+
+- 所有產品都必須原樣照搬的唯一 Flutter architecture。
+- 已完成 App Store / Play Store signing、distribution 與商店發布的成品 App。
+- 所有平台都已具有正式 runner 與 runtime acceptance 的 cross-platform starter。
+- Device Binding / Passkey / rooted-device defense / server compromise defense 的安全保證。
+- 自動替新產品決定 Feature、MVP、UI/UX 或產品 roadmap 的生成器。
+- 要求每個小修改都執行 full repository regression 的流程模板。
+
+它提供的是一個已具備清楚 boundary、產品化採用流程、current documentation authority 與可驗證治理機制的 Flutter 起點；實際產品仍應依自己的 Requirement Decision 演進。

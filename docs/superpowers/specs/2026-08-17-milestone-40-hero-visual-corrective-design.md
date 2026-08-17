@@ -31,6 +31,43 @@ Flutter / mobile product foundation
 
 不能只靠 dark graphite、blue glow、3D blocks 等 generic developer-tool style 宣稱達成。
 
+## 2.1 Brainstorming / alternatives disposition
+
+Requirement routing要求本Level 2工作先完成brainstorming，因此Design不是直接指定一個prompt，而是比較以下方向：
+
+### A. Pure typography / no Hero
+
+- 優點：最穩定、無generated visual風險。
+- 缺點：已被使用者明確指出GitHub第一視覺完成度不足。
+- Disposition：**Reject as final target**；在新candidate accepted前仍作安全fallback。
+
+### B. Generic premium developer-tool banner
+
+- 例：dark graphite、3D blocks、motherboard、random network nodes、blue glow。
+- 優點：容易產生「精緻科技感」。
+- 缺點：與本repository沒有足夠identity；原40-7 candidate已實證失敗。
+- Disposition：**Reject**。
+
+### C. Flutter-logo-led branding
+
+- 優點：Flutter recognition強。
+- 缺點：Hero會退化為品牌logo artwork，且不表達本template的architecture／composition價值；也增加商標模仿風險。
+- Disposition：**Reject**。
+
+### D. Full architecture diagram as Hero
+
+- 優點：資訊密度高，repository-specific。
+- 缺點：與既有productized topology／C4 responsibility重複，形成第三張diagram。
+- Disposition：**Reject**。
+
+### E. Source-derived architecture composition metaphor
+
+- 核心：從兩張accepted visuals抽取結構語彙，以「modular reusable foundations → ordered architecture layers → composed mobile application shell」形成低資訊密度的editorial Hero。
+- 優點：兼具repository identity、mobile product signal與architecture metaphor，又不取代正式diagram。
+- Disposition：**Selected**。
+
+後續Plan與candidate不得重新默默切回A～D；若E方向本身被使用者否決，必須回Design decision，而不是在implementation階段自行換概念。
+
 ## 3. Source strategy
 
 新的 generation **必須以兩張已 accepted architecture visuals 作為 source-image context**，而不是只靠文字 prompt 從零生成：
@@ -39,6 +76,8 @@ Flutter / mobile product foundation
 - `docs/assets/architecture/c4-dependency-contract.png`
 
 目的不是把兩張圖拼貼或複製，而是讓 Hero 延續其形狀語彙、blue/cyan accent、layer／module relationship 與 repository-specific architecture identity。
+
+兩張source visuals含有大量架構標籤與文字，因此source-image使用只允許抽取**結構與visual family**，不得把source中的文字、字母、數字、節點名稱或diagram label帶入Hero。Candidate出現任何偽字、殘缺字形、label fragment或看似文字的裝飾glyph，一律判FAIL，不得以「不可讀所以不算文字」放行。
 
 在生成前，Plan 必須先對兩張 source visuals 做一份 **visual-family extraction**，至少記錄：
 
@@ -89,7 +128,7 @@ modular reusable foundations
 
 Generated Hero 預設 **不含文字**，repository identity 由 Markdown H1 與 prose 承擔。
 
-不得生成仿冒 Flutter 官方 logo；若需要 Flutter recognition，使用 mobile-app silhouette、Flutter-adjacent angular blue geometry與既有 architecture source language形成聯想，而不是直接複製商標。
+不得生成仿冒 Flutter 官方 logo。Hero本身的責任是讓人辨識「mobile application foundation + architecture template composition」，**不是在沒有文字／logo的前提下強行模仿Flutter品牌**。`Flutter`這個產品技術身份由緊鄰Hero的Markdown H1明確承擔；Hero只需提供mobile-app signal與repository-specific architecture-family signal。不得再使用「Flutter-adjacent angular blue geometry」作為candidate通過理由，避免把generic blue art誤判成Flutter recognition。
 
 ## 7. Relationship to existing visuals
 
@@ -143,6 +182,8 @@ GitHub desktop與窄viewport縮放時都必須成立：Hero縮到約700px寬及�
 9. **Downscale readability**：desktop與窄viewport縮小後，核心產品隱喻仍可辨識。
 10. **Crop safety**：中央核心不能靠近左右邊界；responsive縮放／預覽不得切掉產品辨識主體。
 11. **Cross-theme framing**：同一PNG置於GitHub light／dark背景都必須有完整邊界與視覺完成度，不依賴外部page color才能成立。
+12. **Zero generated text contamination**：不得出現source diagram帶入的文字、字母、數字、偽字、標籤碎片或裝飾性glyph。
+13. **Source-derived, not source-copied**：不得直接拼貼、重製或近似截圖兩張source diagram；Hero只能沿用抽象的geometry／module／connector family，不能變成裁切版或無字版diagram。
 
 任何一項 critical FAIL，candidate 必須 rejected；不得用「整體很精緻」抵銷。
 
@@ -171,6 +212,8 @@ Design approval 後的 Plan 必須包含：
 - `git diff --check`；
 - `dart run melos run docs_check`；
 - user visual acceptance gate before closure。
+
+Visual critique可按中央registry載入`high-end-visual-design`作**restricted anti-generic critique companion**，但只允許使用其hierarchy／spacing／surface／anti-generic judgment；其中Web／React／Tailwind、font、icon、motion、Double-Bezel等execution絕對規則全部不適用於本PNG Hero，不得反向改寫本Design或README authority。
 
 ## 12. Non-goals
 

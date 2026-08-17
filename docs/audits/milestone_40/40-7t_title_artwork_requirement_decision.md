@@ -49,4 +49,3 @@ last_reviewed_baseline: 1.20.0
 8. GitHub light / dark surrounding background 下都必須有完整邊界，不靠 page background 才成立。
 9. 使用者視覺核准前不得 promotion 到 README live consumer。
 10. 生成 route 必須使用 fresh discovered `chatgpt-web-generation`；已移除的 `chatgpt-web-image` 不得再作 current execution authority。
-

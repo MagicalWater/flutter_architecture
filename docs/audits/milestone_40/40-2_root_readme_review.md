@@ -74,4 +74,3 @@ Open P1 without disposition: 0
 Task 40-2 status: accepted
 Next Task: 40-3 Documentation ownership and reading-route alignment
 ```
-

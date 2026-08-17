@@ -44,6 +44,7 @@ Milestone 40 local closure PASS。Accepted title artwork已取代README內重複
 - Title Artwork Visual Review：`docs/audits/milestone_40/40-7t_title_artwork_review.md`（accepted；user visual acceptance PASS）。
 - Title Artwork README Consumer Review：`docs/audits/milestone_40/40-7t_readme_consumer_review.md`（accepted）。
 - Holistic Final Review Addendum：`docs/audits/milestone_40/40-8_holistic_final_review.md`（completed）。
+- Final Comprehensive Local Review：`docs/audits/milestone_40/40-10_final_comprehensive_review.md`（PASS；remote publication / main merge尚未執行）。
 - README Language / Authority Sync Corrective：`docs/audits/milestone_40/40-9_readme_language_and_authority_sync_review.md`（accepted；focused／fresh／whole-README PASS）。
 
 ## Previous Closure

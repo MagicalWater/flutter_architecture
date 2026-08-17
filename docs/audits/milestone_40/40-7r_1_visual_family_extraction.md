@@ -120,4 +120,3 @@ modular reusable foundations
 ## Candidate acceptance anchor
 
 若拿掉README H1，Hero至少仍必須讓人讀成「有秩序的模組／分層能力被組裝成mobile app foundation」，而不能自然替換成AI、cloud、security、DevOps banner。
-

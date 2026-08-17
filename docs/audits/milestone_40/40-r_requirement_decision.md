@@ -75,4 +75,3 @@ Design Spec 與 Implementation Plan 均完成完整 review 並取得使用者核
 - 不得搬移、刪除或拆分既有 canonical documentation；
 - 不得修改 docs checker implementation；
 - 不得宣稱新的 documentation ownership 已生效。
-

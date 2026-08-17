@@ -116,4 +116,3 @@ README promotion: forbidden
 Current Hero authority: none
 Next user-owned gate: Design-direction reconsideration
 ```
-

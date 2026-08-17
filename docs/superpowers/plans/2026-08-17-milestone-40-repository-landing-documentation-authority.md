@@ -14,7 +14,7 @@ last_reviewed_baseline: 1.20.0
 Requirement: accepted
 Design: accepted / user approved 2026-08-17
 Plan: accepted / user approved 2026-08-17
-Implementation: allowed by Task sequence
+Implementation: completed / Milestone 40 locally closed
 ```
 
 本Plan只執行已核准Design，不重新決定README資訊架構，也不擴張到Flutter production behavior、App／Package architecture或新文件系統。

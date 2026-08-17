@@ -58,4 +58,3 @@ Current corrective: 40-7T typographic title artwork
 Open P0: 0
 Open P1 without disposition: 0
 ```
-

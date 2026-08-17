@@ -92,4 +92,3 @@ Candidate C01: accepted / promoted
 User visual acceptance: PASS — 2026-08-17
 README promotion: completed
 ```
-

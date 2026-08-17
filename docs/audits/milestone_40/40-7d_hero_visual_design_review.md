@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: active
+status: accepted
 authoritative_for:
   - milestone-40-hero-visual-corrective-design-review
 last_reviewed_baseline: 1.20.0
@@ -196,8 +196,8 @@ Focused review: PASS after D07-D16 fixes
 Fresh focused re-review: PASS
 Whole-Design holistic review: PASS
 Documentation authority check: PASS
-Design status: proposed
-User approval: pending
-Plan: forbidden before user approval
+Design status: accepted
+User approval: accepted on 2026-08-17
+Plan: may be created; implementation remains forbidden until Plan acceptance
 Implementation: forbidden
 ```

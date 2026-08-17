@@ -35,7 +35,7 @@ Active Milestone: Milestone 40 — Task 40-7R Hero Visual Corrective
 Template Baseline: 1.20.0
 ```
 
-Milestone 40的40-1～40-6已完成；publication前原40-7 Hero attempt因invalid Level 2 governance與generic product identity被rejected。Current Task 40-7R已回到Design user approval gate，current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
+Milestone 40的40-1～40-6已完成；publication前原40-7 Hero attempt因invalid Level 2 governance與generic product identity被rejected。Current Task 40-7R Design已accepted，Implementation Plan已完成雙層review並位於user approval gate；current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
 
 ### Milestone 40 active corrective routing
 
@@ -47,7 +47,9 @@ Milestone 40的40-1～40-6已完成；publication前原40-7 Hero attempt因inval
 - Holistic Final Review：Completed — `docs/audits/milestone_40/40-6_holistic_final_review.md`
 - Rejected Hero attempt：Rejected / invalid governance — `docs/audits/milestone_40/40-7_repository_hero_visual_review.md`
 - Hero Corrective Requirement：Accepted — `docs/audits/milestone_40/40-7r_hero_visual_requirement_decision.md`
-- Hero Corrective Design：Proposed / user approval pending — `docs/superpowers/specs/2026-08-17-milestone-40-hero-visual-corrective-design.md`
+- Hero Corrective Design：Accepted / user approved 2026-08-17 — `docs/superpowers/specs/2026-08-17-milestone-40-hero-visual-corrective-design.md`
+- Hero Corrective Plan：Proposed / user approval pending — `docs/superpowers/plans/2026-08-17-milestone-40-hero-visual-corrective.md`
+- Hero Corrective Plan Review：PASS / user approval pending — `docs/audits/milestone_40/40-7p_hero_visual_plan_review.md`
 - Hero Corrective Design Review：PASS — `docs/audits/milestone_40/40-7d_hero_visual_design_review.md`
 - Release：No release；Template Baseline remains `1.20.0`
 

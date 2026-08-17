@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-40-hero-visual-corrective-design
 last_reviewed_baseline: 1.20.0
@@ -12,8 +12,8 @@ last_reviewed_baseline: 1.20.0
 
 ```txt
 Requirement: accepted
-Design: proposed
-Plan: forbidden before Design user approval
+Design: accepted / user approved 2026-08-17
+Plan: proposed / review complete / user approval pending
 Implementation: forbidden before Design and Plan acceptance
 ```
 

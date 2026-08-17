@@ -10,17 +10,17 @@ last_reviewed_baseline: 1.20.0
 
 ```txt
 Active Milestone: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
-State: Task 40-7R Hero Visual Corrective / Task 40-7R-1 visual-family extraction
+State: Task 40-7R Hero Visual Corrective / Design reconsideration after C02 rejection
 Template Baseline: 1.20.0
 ```
 
 ## Current Scope
 
-Milestone 40主體Tasks 40-1～40-6已完成。原Task 40-7 Hero attempt因錯誤跳過Level 2 required Design／Plan且candidate為generic dark-tech visual，被正式rejected並從README撤除。Current Task 40-7R Requirement Decision、Design與Implementation Plan均已accepted；目前執行Task 40-7R-1 visual-family extraction。Template Baseline維持1.20.0。
+Milestone 40主體Tasks 40-1～40-6已完成。原Task 40-7 Hero attempt因invalid governance與generic visual被rejected。40-7R Requirement、Design與Plan已accepted；40-7R-1 visual-family extraction完成，Image MCP依Plan生成C01與唯一replacement C02。C01因pseudo-text／UI-like execution defect rejected；C02因hardware／server-rack identity、repository-family mismatch與~2:1比例失敗而rejected。Regeneration budget已耗盡，C03禁止；目前必須回Design decision。Template Baseline維持1.20.0。
 
 ## Current Gate
 
-Milestone 40 Tasks 40-1～40-6保持PASS。原40-7 review已標記rejected／invalid governance evidence；40-7R Design與Plan均已accepted。40-7R-1完成前不得生成candidate；candidate取得使用者visual acceptance前不得把Hero加回README。
+Milestone 40 Tasks 40-1～40-6保持PASS。40-7R C01／C02均已形成actual visual evidence並被review拒絕；C02觸發accepted Plan的identity-loop stop condition。README仍維持無Hero安全狀態。下一步不是生成C03，而是使用者核准新的Design disposition或維持no-Hero fallback。
 
 ## Current Evidence
 
@@ -36,6 +36,9 @@ Milestone 40 Tasks 40-1～40-6保持PASS。原40-7 review已標記rejected／inv
 - Corrective Design review：`docs/audits/milestone_40/40-7d_hero_visual_design_review.md`（accepted）。
 - Corrective Implementation Plan：`docs/superpowers/plans/2026-08-17-milestone-40-hero-visual-corrective.md`（accepted；user approved 2026-08-17）。
 - Corrective Plan review：`docs/audits/milestone_40/40-7p_hero_visual_plan_review.md`（accepted）。
+- Visual-family extraction：`docs/audits/milestone_40/40-7r_1_visual_family_extraction.md`（accepted）。
+- Candidate generation evidence：`docs/audits/milestone_40/40-7r_2_candidate_generation_review.md`（completed；C01／C02 rejected）。
+- Candidate visual review：`docs/audits/milestone_40/40-7r_3_hero_candidate_review.md`（completed／FAIL；return to Design）。
 
 ## Previous Closure
 

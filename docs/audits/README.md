@@ -56,6 +56,8 @@ Final / Holistic Review
 - [`milestone_40/40-7p_hero_visual_plan_review.md`](milestone_40/40-7p_hero_visual_plan_review.md)：visual-family extraction、single-candidate generation、native-image identity、deterministic preview、user visual gate與regeneration budget的accepted Plan review。
 - [`milestone_40/40-7r_1_visual_family_extraction.md`](milestone_40/40-7r_1_visual_family_extraction.md)：accepted architecture visuals的geometry／module／hierarchy／connector／accent／density extraction與C01 generation brief。
 - [`milestone_40/40-7r_1_visual_family_review.md`](milestone_40/40-7r_1_visual_family_review.md)：Task 40-7R-1 focused／fresh／whole-Task review；鎖定source-family與anti-generic generation boundary。
+- [`milestone_40/40-7r_2_candidate_generation_review.md`](milestone_40/40-7r_2_candidate_generation_review.md)：fresh Executor／Image MCP admission、C01／C02 native image generation、SHA-256 byte identity與regeneration-budget evidence。
+- [`milestone_40/40-7r_3_hero_candidate_review.md`](milestone_40/40-7r_3_hero_candidate_review.md)：C01／C02 actual inline preview、13-gate focused review與whole-candidate rejection；C02觸發Design-return stop condition，禁止C03與README promotion。
 - [`milestone_40/40-1_readme_preservation_matrix.md`](milestone_40/40-1_readme_preservation_matrix.md)：root README逐section disposition、canonical owner、bootstrap/checker sensitivity與semantic preservation manifest。
 - [`milestone_40/40-1_readme_preservation_review.md`](milestone_40/40-1_readme_preservation_review.md)：Task 40-1 focused／fresh／whole-Task review；P0=0、undisposed P1=0。
 - [`milestone_40/40-2_root_readme_review.md`](milestone_40/40-2_root_readme_review.md)：GitHub product landing、inline architecture visuals、preservation matrix與baseline machine contract的Task 40-2 review。

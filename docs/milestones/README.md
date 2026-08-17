@@ -35,7 +35,7 @@ Active Milestone: Milestone 40 — Task 40-7R Hero Visual Corrective
 Template Baseline: 1.20.0
 ```
 
-Milestone 40的40-1～40-6已完成；publication前原40-7 Hero attempt因invalid Level 2 governance與generic product identity被rejected。Current Task 40-7R Design已accepted，Implementation Plan已完成雙層review並位於user approval gate；current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
+Milestone 40的40-1～40-6已完成；publication前原40-7 Hero attempt因invalid Level 2 governance與generic product identity被rejected。40-7R Design／Plan其後已accepted並執行C01／C02生成；兩張candidate均被正式visual review拒絕，C02觸發regeneration-budget Design-return gate。Current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
 
 ### Milestone 40 active corrective routing
 

@@ -1,7 +1,5 @@
 # Flutter Enterprise Architecture Template
 
-![Flutter Enterprise Architecture Template hero](docs/assets/readme/flutter-enterprise-architecture-hero.png)
-
 一份可直接作為中大型 Flutter 產品起點的企業級架構模板：Clean Architecture、Feature First、Monorepo、可重用 packages、跨平台基礎能力、文件治理與可驗證的開發流程都已整合在同一個 repository。
 
 **Template Baseline Version：1.20.0**

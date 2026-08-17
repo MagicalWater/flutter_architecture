@@ -17,7 +17,7 @@ last_reviewed_baseline: 1.20.0
 
 Spec 與 Plan 都不代表 implementation 已完成，也不取代 current snapshot、Architecture Decision、review evidence 或 release history。
 
-Milestone 40 accepted Design／Plan：[`specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`](specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md)／[`plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`](plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md)。Tasks 40-1～40-5、holistic closure與publication前Task 40-7 Hero visual corrective均完成；current state回到Roadmap／Requirement Decision入口。
+Milestone 40 core accepted Design／Plan：[`specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`](specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md)／[`plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`](plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md)。Tasks 40-1～40-6已完成；publication前原40-7 Hero attempt已rejected。Current proposed corrective Design：[`specs/2026-08-17-milestone-40-hero-visual-corrective-design.md`](specs/2026-08-17-milestone-40-hero-visual-corrective-design.md)，等待使用者Design核准後才允許建立Plan。
 
 Milestone 39 accepted Design／Plan：[`specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md`](specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md)／[`plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md`](plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md)。Milestone已完成1.20.0 publication與Task 39-8 post-release closure；current state由`../roadmap/active.md`與`../project_context.md`擁有。
 

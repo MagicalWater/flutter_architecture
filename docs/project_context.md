@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.20.0
 ```txt
 Template Baseline: 1.20.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 40 — Task 40-7 Hero Visual Corrective
-Current phase: user visual acceptance pending
+Current active milestone: Milestone 40 — Task 40-7R Hero Visual Corrective
+Current phase: Design user approval gate
 Latest completed initiative: Milestone 40 core Tasks 40-1～40-6 — no release, baseline remains 1.20.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -367,14 +367,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 40 — Task 40-7 Hero Visual Corrective
-Current phase: user visual acceptance pending
+Current active milestone: Milestone 40 — Task 40-7R Hero Visual Corrective
+Current phase: Design user approval gate
 Latest completed initiative: Milestone 40 core Tasks 40-1～40-6 — no release, baseline remains 1.20.0
 Maintenance mode: Active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 40 core Tasks 40-1～40-6已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility與docs checker validation。Publication前追加Task 40-7 Hero Visual Corrective；其asset與README consumer已完成，但使用者發現40-7 review artifact只展示Markdown syntax、沒有實際render驗收圖片，因此visual acceptance已撤銷。40-7目前active，等待使用者檢視Hero、productized topology與C4 dependency contract三張actual inline previews後明確核准；Template Baseline仍維持1.20.0。
+Milestone 40 core Tasks 40-1～40-6已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility與docs checker validation。Publication前原Task 40-7 Hero attempt因錯誤跳過Level 2 required Design／Plan且生成generic dark-tech candidate，被使用者明確否決並正式rejected；Hero已從README撤除。Current Task 40-7R依central governance重新進入Level 2 Requirement／Design流程，Design已完成focused／whole review但仍為proposed，等待使用者核准後才可建立Plan；Template Baseline維持1.20.0。
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 

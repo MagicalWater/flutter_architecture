@@ -1,37 +1,40 @@
 ---
 document_type: phase-review
-status: active
+status: archived
 authoritative_for:
-  - milestone-40-repository-hero-visual-corrective-review
+  - milestone-40-repository-hero-visual-invalid-attempt-evidence
 last_reviewed_baseline: 1.20.0
 ---
 
-# Milestone 40-7 — Repository Hero Visual & Landing First-Screen Acceptance
+# Milestone 40-7 — Rejected Repository Hero Visual Attempt
+
+> **Final disposition：REJECTED / INVALID GOVERNANCE.** 本文件只保留錯誤嘗試與失敗證據，不再代表有效 visual acceptance。
 
 ## Fresh corrective admission
 
 Milestone 40 local closure後，使用者在publication前指出root `README.md`雖已完成product landing restructure，但首屏仍只有H1與文字，缺少與後續architecture visuals同等完成度的品牌Hero視覺。
 
-本corrective重新進入Requirement Decision並判定：
+原corrective曾錯誤判定：
 
 ```txt
-Decision: Accept
+Decision: INVALIDATED
 Classification: Level 2 — bounded documentation / presentation corrective
-Design: reuse accepted Milestone 40 information architecture
-New Design Spec: not required
-New Implementation Plan: not required
+Design Spec: REQUIRED by current governance, but was incorrectly skipped
+Implementation Plan: REQUIRED by current governance, but was incorrectly skipped
 Architecture Decision: not required
 Release bump: not required
 ```
 
-理由：本變更只新增一個decorative／brand-oriented README visual asset與一行Markdown consumer，不改變documentation authority、technical architecture、Template → Product bootstrap machine contract、checker contract或Flutter production behavior。
+Current `work-classification.md`與`artifact-routing.md`明確規定Level 2必須有behavioral requirements、brainstorming、Design Spec、Implementation Plan與standard Task governance。原流程直接生成圖片並自行宣稱focused／holistic PASS，因此admission與acceptance都無效。
+
+使用者之後又明確否決候選視覺：該圖只是generic dark-tech 3D banner，無法辨識Flutter、Enterprise Architecture、Template、Composition Root或repository-specific identity。此finding是P1 product-identity failure。
 
 ## Implementation
 
 新增：
 
 ```txt
-docs/assets/readme/flutter-enterprise-architecture-hero.png
+docs/assets/readme/rejected/flutter-enterprise-architecture-hero-40-7.png
 ```
 
 生成route：repository-approved `chatgpt-web-image` integration，透過Executor fresh discovery取得：
@@ -52,7 +55,7 @@ PNG
 root `README.md`在H1後直接inline：
 
 ```md
-![Flutter Enterprise Architecture Template hero](docs/assets/readme/flutter-enterprise-architecture-hero.png)
+![Rejected Flutter Enterprise Architecture Template hero](../../assets/readme/rejected/flutter-enterprise-architecture-hero-40-7.png)
 ```
 
 ### Review artifact actual preview
@@ -61,7 +64,7 @@ root `README.md`在H1後直接inline：
 
 #### Hero visual
 
-![Flutter Enterprise Architecture Template hero preview](../../assets/readme/flutter-enterprise-architecture-hero.png)
+![Rejected Flutter Enterprise Architecture Template hero preview](../../assets/readme/rejected/flutter-enterprise-architecture-hero-40-7.png)
 
 #### Productized topology
 
@@ -131,12 +134,12 @@ README relative asset path exists
 ## Review conclusion
 
 ```txt
-Focused review: PASS after user-identified layout corrective
-Review artifact actual previews: FIXED after user rejection
-First-screen holistic review: pending user visual acceptance
+Focused review: INVALIDATED
+Review artifact actual previews: evidence only; candidate itself rejected
+First-screen holistic review: REJECTED BY USER
 Open P0: 0
-Open P1 without disposition: 0
-Corrective status: active / user visual acceptance pending
+Open P1 without disposition: 0 (candidate rejected and removed from README)
+Corrective status: rejected / superseded by governed corrective admission
 Template Baseline: remains 1.20.0
 ```
 

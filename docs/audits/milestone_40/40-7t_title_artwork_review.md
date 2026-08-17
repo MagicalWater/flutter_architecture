@@ -1,6 +1,6 @@
 ---
 document_type: phase-review
-status: active
+status: accepted
 authoritative_for:
   - milestone-40-readme-title-artwork-visual-review
 last_reviewed_baseline: 1.20.0
@@ -12,19 +12,19 @@ last_reviewed_baseline: 1.20.0
 
 ```txt
 Candidate: C01
-State: candidate / non-authoritative / not approved for README
+State: accepted / promoted to current README title artwork
 Generation route: chatgpt-web-generation.org.default.generate_chatgpt_web_generation
-Master: docs/assets/readme/candidates/flutter-enterprise-architecture-template-title-40-7t-c01.png
+Master: docs/assets/readme/flutter-enterprise-architecture-template-title.png
 Dimensions: 2172 × 724 (~3:1)
 SHA-256: d77e79ff9f72638c2bd5527ce391a16f54345845cdcfa057973caadb3d7c5892
-README consumer: absent
+README consumer: present directly after Markdown H1
 ```
 
 Fresh Executor discovery在本Task確認current integrations只有`chatgpt-web-generation`、`executor`、`pencil`與`pencil-session`；舊`chatgpt-web-image`已不在current integration list。Generation使用fresh discovered `chatgpt-web-generation.org.default.generate_chatgpt_web_generation`，並以native image content回傳給host model。
 
 ## Actual candidate preview
 
-![40-7T C01 title artwork candidate](../../assets/readme/candidates/flutter-enterprise-architecture-template-title-40-7t-c01.png)
+![40-7T C01 accepted title artwork](../../assets/readme/flutter-enterprise-architecture-template-title.png)
 
 ## Deterministic downscale evidence
 
@@ -77,6 +77,10 @@ PASS。Artwork只負責title / identity，`productized-topology.png`與`c4-depen
 
 PASS。主要視覺元素只有大字、細框線與少量blue/cyan accent；沒有再引入新的symbol system、brand logo或architecture metaphor。
 
+## User visual acceptance
+
+2026-08-17 使用者明確回覆「通過」。因此 C01 已取得 user-owned visual acceptance，允許從 candidate path promotion 到 current README title artwork path。
+
 ## Current disposition
 
 ```txt
@@ -84,9 +88,8 @@ Focused review: PASS
 Whole-candidate holistic review: PASS
 Open P0: 0
 Open P1 without disposition: 0
-Candidate C01: internally accepted for user visual review
-README promotion: BLOCKED until explicit user visual acceptance
+Candidate C01: accepted / promoted
+User visual acceptance: PASS — 2026-08-17
+README promotion: completed
 ```
-
-使用者若Reject，保留具體visual finding並修正／重新生成；不得把目前candidate偷偷接入README。使用者若Accept，才把candidate promotion到live asset path並完成README consumer + focused documentation review。
 

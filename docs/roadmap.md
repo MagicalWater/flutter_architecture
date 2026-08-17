@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 39 已完成或已有明確 disposition。Milestone 39已完成Template Baseline 1.20.0 publication、Pencil-to-Flutter fidelity／recovery governance、final published-main platform verification與fresh behavioral acceptance並正式封存。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 40 已完成或已有明確 disposition。Milestone 40已完成GitHub Repository Landing Page、documentation authority restructure與40-7T title artwork corrective；本次不升Template Baseline，仍維持1.20.0。Milestone 39的1.20.0 publication與post-release evidence仍是目前release authority。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

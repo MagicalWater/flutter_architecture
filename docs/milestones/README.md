@@ -31,13 +31,13 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: Milestone 40 — Task 40-7T README Title Artwork Corrective
+Active Milestone: none — Milestone 40 completed locally
 Template Baseline: 1.20.0
 ```
 
-Milestone 40的40-1～40-6已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence。Current corrective已重新收斂為40-7T Level 1 README title artwork：只為`Flutter Enterprise Architecture Template`建立typographic first visual，不新增第三張architecture illustration。Current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
+Milestone 40已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence，40-7T Level 1 README title artwork已取得使用者visual acceptance並promotion到root README。Current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
 
-### Milestone 40 active corrective routing
+### Milestone 40 closed routing
 
 - Requirement Decision：Accepted — `docs/audits/milestone_40/40-r_requirement_decision.md`
 - Design：Accepted / user approved 2026-08-17 — `docs/superpowers/specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`
@@ -48,9 +48,13 @@ Milestone 40的40-1～40-6已完成；40-7／40-7R architecture-Hero方向與C01
 - Rejected Hero attempt：Rejected / invalid governance — `docs/audits/milestone_40/40-7_repository_hero_visual_review.md`
 - Hero Corrective Requirement：Accepted — `docs/audits/milestone_40/40-7r_hero_visual_requirement_decision.md`
 - Hero Corrective Design：Accepted / user approved 2026-08-17 — `docs/superpowers/specs/2026-08-17-milestone-40-hero-visual-corrective-design.md`
-- Hero Corrective Plan：Proposed / user approval pending — `docs/superpowers/plans/2026-08-17-milestone-40-hero-visual-corrective.md`
-- Hero Corrective Plan Review：PASS / user approval pending — `docs/audits/milestone_40/40-7p_hero_visual_plan_review.md`
+- Hero Corrective Plan：Accepted / user approved 2026-08-17 — `docs/superpowers/plans/2026-08-17-milestone-40-hero-visual-corrective.md`
+- Hero Corrective Plan Review：Accepted — `docs/audits/milestone_40/40-7p_hero_visual_plan_review.md`
 - Hero Corrective Design Review：PASS — `docs/audits/milestone_40/40-7d_hero_visual_design_review.md`
+- Title Artwork Requirement：Accepted / Level 1 reduced scope — `docs/audits/milestone_40/40-7t_title_artwork_requirement_decision.md`
+- Title Artwork Visual Review：Accepted / user visual acceptance PASS — `docs/audits/milestone_40/40-7t_title_artwork_review.md`
+- Title Artwork Consumer Review：Accepted — `docs/audits/milestone_40/40-7t_readme_consumer_review.md`
+- Holistic Final Review Addendum：Completed — `docs/audits/milestone_40/40-8_holistic_final_review.md`
 - Release：No release；Template Baseline remains `1.20.0`
 
 ### Milestone 39 closed routing

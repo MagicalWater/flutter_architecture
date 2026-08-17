@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: active
+status: accepted
 authoritative_for:
   - milestone-40-hero-visual-corrective-plan-review
 last_reviewed_baseline: 1.20.0

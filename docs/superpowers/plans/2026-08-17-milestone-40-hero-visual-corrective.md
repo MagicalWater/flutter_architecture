@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-40-hero-visual-corrective-implementation-plan
 last_reviewed_baseline: 1.20.0
@@ -13,8 +13,8 @@ last_reviewed_baseline: 1.20.0
 ```txt
 Requirement: accepted
 Design: accepted / user approved 2026-08-17
-Plan: proposed
-Implementation: forbidden until Plan review and user approval
+Plan: accepted / user approved 2026-08-17
+Implementation: allowed by accepted Plan
 ```
 
 本Plan只執行accepted Hero Design，不重新決定Hero概念、README資訊架構或兩張existing architecture visuals的authority。
@@ -356,7 +356,7 @@ Rejected candidate不得用completion semantics commit成live Hero；應以revie
 
 只有以下情況停止：
 
-1. Plan review完成等待使用者Plan核准。
+1. Plan尚未取得使用者核准時停止；本Plan已於2026-08-17核准，因此此gate已通過。
 2. Source-image allowlist／Executor出現真正external blocker。
 3. Candidate完成雙層review後等待使用者visual acceptance。
 4. Candidate rejection證明accepted Design direction E本身不成立，需要回Design。

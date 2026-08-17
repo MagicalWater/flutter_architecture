@@ -10,17 +10,17 @@ last_reviewed_baseline: 1.20.0
 
 ```txt
 Active Milestone: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
-State: Task 40-7R Hero Visual Corrective / Implementation Plan user approval gate
+State: Task 40-7R Hero Visual Corrective / Task 40-7R-1 visual-family extraction
 Template Baseline: 1.20.0
 ```
 
 ## Current Scope
 
-Milestone 40主體Tasks 40-1～40-6已完成。原Task 40-7 Hero attempt因錯誤跳過Level 2 required Design／Plan且candidate為generic dark-tech visual，被正式rejected並從README撤除。Current Task 40-7R Requirement Decision與Design已accepted；Implementation Plan已完成focused findings／fix／fresh re-review與whole-Plan review，目前等待使用者Plan核准。Template Baseline維持1.20.0。
+Milestone 40主體Tasks 40-1～40-6已完成。原Task 40-7 Hero attempt因錯誤跳過Level 2 required Design／Plan且candidate為generic dark-tech visual，被正式rejected並從README撤除。Current Task 40-7R Requirement Decision、Design與Implementation Plan均已accepted；目前執行Task 40-7R-1 visual-family extraction。Template Baseline維持1.20.0。
 
 ## Current Gate
 
-Milestone 40 Tasks 40-1～40-6保持PASS。原40-7 review已標記rejected／invalid governance evidence；40-7R Design已accepted，Plan仍為proposed，因此目前不得再次呼叫image generation或把Hero加回README。
+Milestone 40 Tasks 40-1～40-6保持PASS。原40-7 review已標記rejected／invalid governance evidence；40-7R Design與Plan均已accepted。40-7R-1完成前不得生成candidate；candidate取得使用者visual acceptance前不得把Hero加回README。
 
 ## Current Evidence
 
@@ -34,8 +34,8 @@ Milestone 40 Tasks 40-1～40-6保持PASS。原40-7 review已標記rejected／inv
 - Corrective Requirement Decision：`docs/audits/milestone_40/40-7r_hero_visual_requirement_decision.md`（accepted）。
 - Corrective Design：`docs/superpowers/specs/2026-08-17-milestone-40-hero-visual-corrective-design.md`（accepted；user approved 2026-08-17）。
 - Corrective Design review：`docs/audits/milestone_40/40-7d_hero_visual_design_review.md`（accepted）。
-- Corrective Implementation Plan：`docs/superpowers/plans/2026-08-17-milestone-40-hero-visual-corrective.md`（proposed）。
-- Corrective Plan review：`docs/audits/milestone_40/40-7p_hero_visual_plan_review.md`（focused／fresh re-review／whole-Plan PASS；user approval pending）。
+- Corrective Implementation Plan：`docs/superpowers/plans/2026-08-17-milestone-40-hero-visual-corrective.md`（accepted；user approved 2026-08-17）。
+- Corrective Plan review：`docs/audits/milestone_40/40-7p_hero_visual_plan_review.md`（accepted）。
 
 ## Previous Closure
 

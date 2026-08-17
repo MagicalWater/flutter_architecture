@@ -31,11 +31,11 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: Milestone 40 — Task 40-7R Hero Visual Corrective
+Active Milestone: Milestone 40 — Task 40-7T README Title Artwork Corrective
 Template Baseline: 1.20.0
 ```
 
-Milestone 40的40-1～40-6已完成；publication前原40-7 Hero attempt因invalid Level 2 governance與generic product identity被rejected。40-7R Design／Plan其後已accepted並執行C01／C02生成；兩張candidate均被正式visual review拒絕，C02觸發regeneration-budget Design-return gate。Current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
+Milestone 40的40-1～40-6已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence。Current corrective已重新收斂為40-7T Level 1 README title artwork：只為`Flutter Enterprise Architecture Template`建立typographic first visual，不新增第三張architecture illustration。Current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
 
 ### Milestone 40 active corrective routing
 

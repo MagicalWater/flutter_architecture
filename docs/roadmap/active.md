@@ -10,17 +10,17 @@ last_reviewed_baseline: 1.20.0
 
 ```txt
 Active Milestone: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
-State: Task 40-7R Hero Visual Corrective / Design reconsideration after C02 rejection
+State: Task 40-7T README Title Artwork Corrective / user visual acceptance gate
 Template Baseline: 1.20.0
 ```
 
 ## Current Scope
 
-Milestone 40主體Tasks 40-1～40-6已完成。原Task 40-7 Hero attempt因invalid governance與generic visual被rejected。40-7R Requirement、Design與Plan已accepted；40-7R-1 visual-family extraction完成，Image MCP依Plan生成C01與唯一replacement C02。C01因pseudo-text／UI-like execution defect rejected；C02因hardware／server-rack identity、repository-family mismatch與~2:1比例失敗而rejected。Regeneration budget已耗盡，C03禁止；目前必須回Design decision。Template Baseline維持1.20.0。
+Milestone 40主體Tasks 40-1～40-6已完成。原Task 40-7與40-7R architecture-Hero方向均保留為rejected historical evidence；C01／C02沒有live README authority。使用者已把真正需求收斂為一張`Flutter Enterprise Architecture Template` typographic title artwork，因此40-7T以新的Level 1 Requirement Decision接管current corrective；不重做architecture diagram、不改documentation ownership。後續圖片生成只使用fresh discovered `chatgpt-web-generation`。Template Baseline維持1.20.0。
 
 ## Current Gate
 
-Milestone 40 Tasks 40-1～40-6保持PASS。40-7R C01／C02均已形成actual visual evidence並被review拒絕；C02觸發accepted Plan的identity-loop stop condition。README仍維持無Hero安全狀態。下一步不是生成C03，而是使用者核准新的Design disposition或維持no-Hero fallback。
+Milestone 40 Tasks 40-1～40-6保持PASS。40-7T C01 title artwork已透過fresh discovered `chatgpt-web-generation`生成，focused／whole-candidate review均PASS；目前停在使用者actual visual acceptance gate。Markdown H1與兩張accepted architecture visuals仍保持不變；使用者核准前README保持目前安全狀態。
 
 ## Current Evidence
 
@@ -39,6 +39,9 @@ Milestone 40 Tasks 40-1～40-6保持PASS。40-7R C01／C02均已形成actual vis
 - Visual-family extraction：`docs/audits/milestone_40/40-7r_1_visual_family_extraction.md`（accepted）。
 - Candidate generation evidence：`docs/audits/milestone_40/40-7r_2_candidate_generation_review.md`（completed；C01／C02 rejected）。
 - Candidate visual review：`docs/audits/milestone_40/40-7r_3_hero_candidate_review.md`（completed／FAIL；return to Design）。
+- Title Artwork Requirement Decision：`docs/audits/milestone_40/40-7t_title_artwork_requirement_decision.md`（accepted / Level 1 reduced scope）。
+- Governance Integrity Review：`docs/audits/milestone_40/40-7t_governance_integrity_review.md`（accepted；repository-wide governance corruption not found）。
+- Title Artwork Visual Review：`docs/audits/milestone_40/40-7t_title_artwork_review.md`（focused／holistic PASS；user visual acceptance pending）。
 
 ## Previous Closure
 

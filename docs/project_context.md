@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.20.0
 ```txt
 Template Baseline: 1.20.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 40 — Task 40-7R Hero Visual Corrective
-Current phase: Design reconsideration after C02 visual rejection
+Current active milestone: Milestone 40 — Task 40-7T README Title Artwork Corrective
+Current phase: title artwork user visual acceptance gate
 Latest completed initiative: Milestone 40 core Tasks 40-1～40-6 — no release, baseline remains 1.20.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -367,14 +367,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 40 — Task 40-7R Hero Visual Corrective
-Current phase: Design reconsideration after C02 visual rejection
+Current active milestone: Milestone 40 — Task 40-7T README Title Artwork Corrective
+Current phase: title artwork user visual acceptance gate
 Latest completed initiative: Milestone 40 core Tasks 40-1～40-6 — no release, baseline remains 1.20.0
 Maintenance mode: Active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 40 core Tasks 40-1～40-6已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility與docs checker validation。Publication前原40-7 Hero attempt已rejected；40-7R依central governance完成accepted Requirement／Design／Plan與visual-family extraction。Image MCP生成的C01因pseudo-text／UI-like execution defect rejected；唯一replacement C02因hardware／server-rack identity、repository-family mismatch與錯誤~2:1比例再次rejected。Accepted Plan禁止C03並要求返回Design；README目前保持無Hero安全狀態。Template Baseline維持1.20.0。
+Milestone 40 core Tasks 40-1～40-6已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility與docs checker validation。Publication前40-7／40-7R architecture-Hero方向及C01／C02均已rejected並保留historical evidence；它們沒有current README authority。使用者把真正需求收斂為`Flutter Enterprise Architecture Template`藝術字標題視覺，40-7T已以新的Level 1 reduced-scope Requirement Decision接管current corrective；後續generation只使用fresh discovered `chatgpt-web-generation`，使用者visual acceptance前不得接入README。Template Baseline維持1.20.0。
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 

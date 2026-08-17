@@ -20,7 +20,7 @@ Milestone 40主體Tasks 40-1～40-6與40-7T README Title Artwork Corrective均�
 
 ## Current Gate
 
-Milestone 40 local closure PASS。Markdown H1、accepted title artwork與兩張accepted architecture visuals均已形成正確consumer ordering；documentation ownership、Template → Product contract與repository lifecycle authority未改變。下一步不再有Milestone 40 implementation Task。
+Milestone 40 local closure PASS。Accepted title artwork已取代README內重複的純文字H1，並與兩張accepted architecture visuals形成正確consumer ordering；documentation ownership、Template → Product contract與repository lifecycle authority未改變。下一步不再有Milestone 40 implementation Task。
 
 ## Current Evidence
 

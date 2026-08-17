@@ -14,10 +14,10 @@ last_reviewed_baseline: 1.20.0
 
 ## Focused review
 
-### F-40-7T-C01 — Markdown H1 必須保留
+### F-40-7T-C01 — Title artwork 必須成為唯一 README 標題視覺
 
 - Result：PASS。
-- Evidence：root `README.md` 第一行仍是 `# Flutter Enterprise Architecture Template`；圖片不是 accessibility / SEO 唯一 title source。
+- Evidence：root `README.md` 不再重複顯示 `# Flutter Enterprise Architecture Template`；accepted title artwork 成為唯一 README 標題視覺，Markdown alt text 完整保留產品名稱。
 
 ### F-40-7T-C02 — Accepted artwork 必須使用 live asset path
 
@@ -32,7 +32,7 @@ last_reviewed_baseline: 1.20.0
 ### F-40-7T-C04 — First-screen responsibility 不得再漂移
 
 - Result：PASS。
-- Evidence：title artwork 只位於 Markdown H1 與 positioning paragraph 之間；沒有新增第三張 architecture diagram、server／phone／module illustration。
+- Evidence：title artwork 位於 README 最前方並直接接 positioning paragraph；沒有重複純文字 H1，也沒有新增第三張 architecture diagram、server／phone／module illustration。
 
 ### F-40-7T-C05 — Version / lifecycle / architecture authority 不得改變
 
@@ -41,7 +41,7 @@ last_reviewed_baseline: 1.20.0
 
 ## Fresh re-review
 
-重新檢查 root README title → artwork → positioning → baseline / platform / CTA → Architecture Overview → Dependency Contract 的閱讀順序，未發現新的 P0 / P1 finding。
+重新檢查 root README artwork title → positioning → baseline / platform / CTA → 架構總覽 → 依賴契約的閱讀順序，未發現新的 P0 / P1 finding。
 
 ## Whole-Task review
 

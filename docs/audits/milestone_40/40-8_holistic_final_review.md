@@ -19,8 +19,8 @@ last_reviewed_baseline: 1.20.0
 | Check | Result |
 |---|---|
 | Root README 是 product landing，而不是 milestone journal | PASS |
-| Markdown H1 保留 | PASS |
-| Accepted title artwork 位於第一視覺 | PASS |
+| README 不重複保留純文字 H1 | PASS |
+| Accepted title artwork 成為唯一標題第一視覺 | PASS |
 | Title artwork 不承擔 architecture explanation | PASS |
 | Productized topology 仍 inline | PASS |
 | C4 dependency contract 仍 inline | PASS |

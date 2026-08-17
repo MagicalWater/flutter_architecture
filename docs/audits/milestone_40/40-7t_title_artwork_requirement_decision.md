@@ -12,8 +12,8 @@ last_reviewed_baseline: 1.20.0
 
 - Request（需求）：為 root `README.md` 的 `Flutter Enterprise Architecture Template` 補上一張可直接辨識的藝術字標題視覺，後續圖片生成改用 `chatgpt-web-generation`；不再使用已移除的 `chatgpt-web-image`。
 - Problem（問題）：先前 40-7 / 40-7R 把「缺少標題第一視覺」過度設計成第三張 architecture-metaphor Hero，造成 C01／C02 用途不清、與兩張正式架構圖責任重疊，並觸發 accepted Plan 的 return-to-Design stop condition。
-- Current behavior（目前行為）：README 只有 Markdown H1 + prose，兩張正式 architecture visuals 已正確 inline；目前沒有 live Hero。40-7R C01／C02 均為 rejected historical evidence。
-- Expected behavior（預期行為）：保留 Markdown H1 與兩張正式 architecture visuals；新增一張以 **`Flutter Enterprise Architecture Template`** 文字本身為主體的 typographic title artwork。它只負責第一視覺／產品標題，不承擔 architecture explanation。
+- Current behavior（目前行為）：README 原本使用純文字標題 + prose，兩張正式 architecture visuals 已正確 inline；目前沒有 live Hero。40-7R C01／C02 均為 rejected historical evidence。
+- Expected behavior（預期行為）：以 **`Flutter Enterprise Architecture Template`** typographic title artwork 取代 README 內重複的純文字標題，並保留兩張正式 architecture visuals。Artwork 只負責第一視覺／產品標題，不承擔 architecture explanation。
 - Value（價值）：補足 GitHub 第一視覺，同時避免第三張架構圖、generic dark-tech illustration 與不必要的架構隱喻。
 - Classification（分類）：**Level 1 — Small Fix**。
 - Decision（決策）：**Accept with reduced scope**。
@@ -43,7 +43,7 @@ last_reviewed_baseline: 1.20.0
 2. 不得缺字、錯字、重字、偽字或把標題拆成無法理解的裝飾 glyph。
 3. 不得生成第三張 architecture diagram、server rack、phone mockup、motherboard 或 random modules illustration。
 4. 可以有少量幾何／藍青色／深 graphite 裝飾，但只能服務文字，不得搶走 title hierarchy。
-5. Markdown H1 必須保留，artwork 不成為 accessibility / SEO 唯一文字來源。
+5. README 不再額外保留重複的 Markdown H1；artwork 的 Markdown alt text 必須完整保存 `Flutter Enterprise Architecture Template`。
 6. 兩張 accepted architecture visuals 必須保持原有 authority 與 inline consumer。
 7. 約 3:1～4:1 橫幅；360px 寬時標題仍可辨識。
 8. GitHub light / dark surrounding background 下都必須有完整邊界，不靠 page background 才成立。

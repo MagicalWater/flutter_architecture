@@ -57,7 +57,7 @@ last_reviewed_baseline: 1.20.0
 
 重新由 root `README.md` 第一行掃到最後一行：
 
-- H1 `Flutter Enterprise Architecture Template`：保留，屬產品正式名稱。
+- `Flutter Enterprise Architecture Template`：由accepted title artwork承擔README內唯一標題視覺；不再重複保留純文字H1。
 - Title artwork：保留 accepted consumer。
 - 一般 section headings：全部已改為繁體中文。
 - 表格的一般欄名與支援狀態：已改為繁體中文。
@@ -71,7 +71,7 @@ Fresh focused re-review：**PASS**。Open P0 = 0；Open P1 without disposition =
 
 逐區塊重新驗收：
 
-1. H1 + title artwork：PASS。
+1. Title artwork作為唯一README標題視覺：PASS。
 2. 產品定位 / baseline / platform summary / adoption CTA：PASS。
 3. 架構總覽：PASS；Productized Topology inline 保留。
 4. 依賴契約：PASS；C4 Dependency Contract inline 保留。

@@ -17,7 +17,7 @@ Generation route: chatgpt-web-generation.org.default.generate_chatgpt_web_genera
 Master: docs/assets/readme/flutter-enterprise-architecture-template-title.png
 Dimensions: 2172 × 724 (~3:1)
 SHA-256: d77e79ff9f72638c2bd5527ce391a16f54345845cdcfa057973caadb3d7c5892
-README consumer: present directly after Markdown H1
+README consumer: present as the first README visual/title element
 ```
 
 Fresh Executor discovery在本Task確認current integrations只有`chatgpt-web-generation`、`executor`、`pencil`與`pencil-session`；舊`chatgpt-web-image`已不在current integration list。Generation使用fresh discovered `chatgpt-web-generation.org.default.generate_chatgpt_web_generation`，並以native image content回傳給host model。
@@ -59,7 +59,7 @@ Derived evidence只做等比例resize與solid-background padding，不做sharpen
 | Banner ratio / first-screen weight | **PASS** | `2172 × 724` is exactly ~3:1 and remains a low-height title band. |
 | 360px readability | **PASS** | Two-line title hierarchy remains legible in deterministic 360px preview. |
 | Cross-theme framing | **PASS** | Self-contained dark banner has a complete edge treatment on both light and dark surrounding canvases. |
-| Existing README authority preserved | **PASS** | Candidate is not consumed by README; Markdown H1 and both accepted architecture visuals remain untouched pending user acceptance. |
+| Existing README authority preserved | **PASS** | Candidate promotion不改兩張accepted architecture visuals或documentation authority；title artwork接管README內產品標題視覺。 |
 
 Focused result：**PASS**。
 

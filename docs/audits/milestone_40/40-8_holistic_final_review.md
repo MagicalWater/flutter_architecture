@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.20.0
 
 ## Closure scope
 
-本 addendum 在原 Tasks 40-1～40-6 已完成的 landing / documentation authority restructure 基礎上，納入 publication 前追加的 40-7T README title artwork corrective。
+本 addendum 在原 Tasks 40-1～40-6 已完成的 landing / documentation authority restructure 基礎上，納入 publication 前追加的 40-7T README title artwork corrective，以及 post-closure 40-9 README 語言一致性 / authority-sync corrective review。
 
 40-7 與 40-7R 的 architecture-Hero 嘗試均保留為 rejected historical evidence，不具有 current README authority；它們不覆蓋原 Milestone 40 accepted architecture / documentation decisions。
 
@@ -30,6 +30,8 @@ last_reviewed_baseline: 1.20.0
 | `repository_identity.json` lifecycle 未改變 | PASS |
 | `VERSION = 1.20.0` 未改變 | PASS |
 | Release bump required | NO |
+| Root README 一般閱讀標題 / table header 符合繁體中文文件規範 | PASS |
+| Accepted Milestone 40 Design / Plan status block 不再與 current closure矛盾 | PASS |
 
 ## Governance integrity disposition
 
@@ -42,6 +44,7 @@ Milestone 40 core Tasks 40-1～40-6: PASS
 40-7 / 40-7R architecture-Hero attempts: REJECTED historical evidence
 40-7T title artwork: PASS / user accepted
 40-7T README consumer: PASS
+40-9 README language / authority sync corrective: PASS
 Focused documentation validation: PASS
 Release: not required
 Template Baseline: 1.20.0

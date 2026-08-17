@@ -55,6 +55,7 @@ Milestone 40已完成；40-7／40-7R architecture-Hero方向與C01／C02均為re
 - Title Artwork Visual Review：Accepted / user visual acceptance PASS — `docs/audits/milestone_40/40-7t_title_artwork_review.md`
 - Title Artwork Consumer Review：Accepted — `docs/audits/milestone_40/40-7t_readme_consumer_review.md`
 - Holistic Final Review Addendum：Completed — `docs/audits/milestone_40/40-8_holistic_final_review.md`
+- README Language / Authority Sync Corrective：Accepted — `docs/audits/milestone_40/40-9_readme_language_and_authority_sync_review.md`
 - Release：No release；Template Baseline remains `1.20.0`
 
 ### Milestone 39 closed routing

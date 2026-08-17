@@ -14,8 +14,10 @@ last_reviewed_baseline: 1.20.0
 Requirement: accepted
 Design: accepted / user approved 2026-08-17
 Plan: accepted / user approved 2026-08-17
-Implementation: allowed by accepted Plan
+Implementation: completed with C01 / C02 rejected; no further candidate allowed
 ```
+
+> Historical status note：本 Plan 已完成 execution disposition；C02 觸發 return-to-Design stop condition，之後由 `40-7T` reduced-scope title artwork corrective 取代。文件內 `chatgpt-web-image` 相關內容是當時執行證據，不是 current generation integration authority；current route 由 fresh Executor discovery 決定。
 
 本Plan只執行accepted Hero Design，不重新決定Hero概念、README資訊架構或兩張existing architecture visuals的authority。
 

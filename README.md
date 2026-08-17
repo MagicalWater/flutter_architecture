@@ -6,21 +6,21 @@
 
 **Template Baseline Version：1.20.0**
 
-Android：Supported · iOS：Supported · Web / Windows / macOS / Linux：Dependency-ready
+Android：支援 · iOS：支援 · Web / Windows / macOS / Linux：依賴就緒
 
-> 想直接開始新產品？使用 GitHub 的 **Use this template** 建立獨立 repository，再依 [Template Repository Adoption Guide](docs/guides/template_repository_adoption.md) 完成一次性的 Template → Product bootstrap。
+> 想直接開始新產品？使用 GitHub 的 **Use this template** 建立獨立 repository，再依 [Template Repository 採用指南](docs/guides/template_repository_adoption.md) 完成一次性的 Template → Product bootstrap。
 
 ---
 
-## Architecture Overview
+## 架構總覽
 
-這張圖先從產品化角度呈現 App Composition Root、Features、reusable packages、platform adapters、external systems 與 governance route：
+這張圖先從產品化角度呈現 App Composition Root、Features、可重用 packages、platform adapters、external systems 與治理路由：
 
 ![Flutter Enterprise Architecture Template productized topology](docs/assets/architecture/productized-topology.png)
 
-圖是 current architecture 的視覺摘要；完整 current state 以 [Project Context](docs/project_context.md)、canonical ADR 與 production source 為準。
+圖是目前架構的視覺摘要；完整現況以 [專案現況](docs/project_context.md)、正式 ADR 與 production source 為準。
 
-## Dependency Contract
+## 依賴契約
 
 更細的 component ownership 與依賴契約：
 
@@ -42,7 +42,7 @@ App 是 Composition Root；可重用 package 透過 constructor injection 表達
 
 ---
 
-## Why this template
+## 為什麼選擇這個模板
 
 這個 repository 的目標不是把所有 Flutter 專案都做成同一種樣子，而是先把最容易在中大型專案失控的邊界固定下來：
 
@@ -55,30 +55,30 @@ App 是 Composition Root；可重用 package 透過 constructor injection 表達
 
 ---
 
-## What is included
+## 模板包含內容
 
-| Area | Included baseline |
+| 領域 | 已包含基線 |
 |---|---|
-| Architecture | Clean Architecture、Feature First、Monorepo、Melos / Dart Pub Workspaces |
+| 架構 | Clean Architecture、Feature First、Monorepo、Melos / Dart Pub Workspaces |
 | Presentation | `flutter_bloc`、`flutter_hooks`、`hooked_bloc` |
-| Navigation | `auto_route`、typed routes、Route Guard、nested navigation |
+| 導航 | `auto_route`、typed routes、Route Guard、nested navigation |
 | Dependency Injection | `get_it` + `injectable`，由 App Composition Root 統一組裝 |
 | Models / Codegen | `freezed`、`json_serializable`、`build_runner` |
-| Network | Dio / Retrofit、Authorization header、refresh token rotation、concurrent 401 single-flight、safe replay |
-| Persistence | FlutterSecureStorage、SharedPreferences、Drift / SQLite、Web dependency-ready Wasm path |
-| Authentication | Session restore、secure credential storage、OTP step-up、Android biometric-gated local unlock |
+| 網路 | Dio / Retrofit、Authorization header、refresh token rotation、concurrent 401 single-flight、safe replay |
+| 持久化 | FlutterSecureStorage、SharedPreferences、Drift / SQLite、Web dependency-ready Wasm path |
+| 認證 | Session restore、secure credential storage、OTP step-up、Android biometric-gated local unlock |
 | Design System | Reusable theme package、Light / Dark / System、semantic colors、responsive / large-text coverage |
 | Localization | English + Traditional Chinese (`zh_TW`)、runtime locale switching、persisted preference |
 | Connectivity / Offline | Connectivity state、offline-aware flow、Catalog cache / stale-while-revalidate reference |
-| Observability | Production observability foundation與provider boundary |
+| Observability | Production observability foundation 與 provider boundary |
 | CI / Governance | change-aware validation、risk-based test authoring、self-hosted / GitHub-hosted / manual-local profiles |
-| Design implementation | Repository-local Pencil → Flutter workflow、representation / provenance / fidelity gates |
+| 設計實作 | Repository-local Pencil → Flutter workflow、representation / provenance / fidelity gates |
 
-完整能力與限制請讀 [Project Context](docs/project_context.md)；stable decisions 請從 [ADR Index](docs/adr/README.md) 進入。
+完整能力與限制請讀 [專案現況](docs/project_context.md)；穩定決策請從 [ADR 索引](docs/adr/README.md) 進入。
 
 ---
 
-## Start a Product
+## 開始建立產品
 
 ### 1. 建立自己的 repository
 
@@ -96,14 +96,14 @@ Bootstrap 會把 template repository authority 轉成產品 repository authority
 
 正式流程：
 
-- [Template Repository Adoption Guide](docs/guides/template_repository_adoption.md)
-- [Native Environment and Product Identity Adoption Guide](docs/guides/native_environment_adoption.md)
+- [Template Repository 採用指南](docs/guides/template_repository_adoption.md)
+- [Native Environment 與 Product Identity 採用指南](docs/guides/native_environment_adoption.md)
 
 Bootstrap 只負責「產品 repository 如何出生」，不替產品決定 MVP、Feature、UI/UX 或產品 roadmap。
 
 ---
 
-## Quick Start
+## 快速開始
 
 在 repository root：
 
@@ -130,7 +130,7 @@ python tools/ci/validation_planner.py --event push --base <base-sha> --head <hea
 
 ---
 
-## Repository Structure
+## 專案結構
 
 ```txt
 root/
@@ -158,42 +158,42 @@ root/
 
 ---
 
-## Platform Support
+## 平台支援
 
-| Platform | Status | Notes |
+| 平台 | 狀態 | 說明 |
 |---|---|---|
-| Android | Supported | Native runtime / storage / security / environment verification covered |
-| iOS | Supported | Simulator與build verification covered；physical-device biometric acceptance / signing / Store distribution仍為明確deferred scope |
-| Web | Dependency-ready | Drift Wasm / worker dependency path存在；repository不把Web runner視為目前正式supported target |
-| Windows | Dependency-ready | Architecture / package boundaries已保持可延伸 |
-| macOS | Dependency-ready | Architecture / package boundaries已保持可延伸 |
-| Linux | Dependency-ready | Architecture / package boundaries已保持可延伸 |
+| Android | 支援 | Native runtime / storage / security / environment verification 已驗證 |
+| iOS | 支援 | Simulator 與 build verification 已驗證；physical-device biometric acceptance / signing / Store distribution 仍為明確 deferred scope |
+| Web | 依賴就緒 | Drift Wasm / worker dependency path 已存在；repository 不把 Web runner 視為目前正式支援 target |
+| Windows | 依賴就緒 | Architecture / package boundaries 已保持可延伸 |
+| macOS | 依賴就緒 | Architecture / package boundaries 已保持可延伸 |
+| Linux | 依賴就緒 | Architecture / package boundaries 已保持可延伸 |
 
-平台current evidence與deferred boundaries以 [Project Context](docs/project_context.md) 為準。
+平台目前證據與 deferred boundaries 以 [專案現況](docs/project_context.md) 為準。
 
 ---
 
-## Documentation
+## 文件導覽
 
 文件系統正式入口：**[docs/README.md](docs/README.md)**。
 
-常用 routes：
+常用路由：
 
-- [Project Context](docs/project_context.md) — current project snapshot
-- [Architecture Decisions](docs/adr/README.md) — stable architecture authority
-- [Roadmap](docs/roadmap.md) — active / candidate / closed routing
-- [Milestone Routing](docs/milestones/README.md) — milestone artifact index
-- [Audits & Reviews](docs/audits/README.md) — review / runtime evidence
-- [Design Specs & Plans](docs/superpowers/README.md) — approved design / execution artifacts
-- [AI-assisted Development Quick Start](docs/guides/agent_assisted_development_quick_start.md) — 常見開發情境與Agent入口
-- [CI/CD Operations](docs/guides/ci_cd_operations.md) — CI、artifact、failure / rollback operations
-- [CHANGELOG](CHANGELOG.md) — released version history
+- [專案現況](docs/project_context.md) — 目前專案快照
+- [Architecture Decisions](docs/adr/README.md) — 穩定架構 authority
+- [Roadmap](docs/roadmap.md) — active / candidate / closed 路由
+- [Milestone 路由](docs/milestones/README.md) — Milestone artifact 索引
+- [審查與驗收證據](docs/audits/README.md) — review / runtime evidence
+- [Design Specs 與 Plans](docs/superpowers/README.md) — 已核准 Design / execution artifacts
+- [AI 輔助開發快速開始](docs/guides/agent_assisted_development_quick_start.md) — 常見開發情境與 Agent 入口
+- [CI/CD 操作指南](docs/guides/ci_cd_operations.md) — CI、artifact、failure / rollback operations
+- [CHANGELOG](CHANGELOG.md) — 已發布版本紀錄
 
 AI / coding agent 的強制工作規則由 [AGENTS.md](AGENTS.md) 擁有；root README 不複製 mandatory reading contract 或完整治理流程。
 
 ---
 
-## Limitations / Non-goals
+## 限制與非目標
 
 這份 Template **不是**：
 

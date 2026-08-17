@@ -13,8 +13,8 @@ last_reviewed_baseline: 1.20.0
 ```txt
 Requirement: accepted
 Design: accepted / user approved 2026-08-17
-Plan: proposed / review in progress
-Implementation: forbidden until Plan is accepted
+Plan: accepted / user approved 2026-08-17
+Implementation: completed / Milestone 40 locally closed
 ```
 
 本 Design 只設計 repository human-entry 與 documentation authority restructure。它不修改 Flutter production architecture，也不把 root README、架構圖片或任何 Guide 升格成新的 technical authority。

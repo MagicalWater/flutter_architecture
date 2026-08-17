@@ -13,9 +13,11 @@ last_reviewed_baseline: 1.20.0
 ```txt
 Requirement: accepted
 Design: accepted / user approved 2026-08-17
-Plan: proposed / review complete / user approval pending
-Implementation: forbidden before Design and Plan acceptance
+Plan: accepted / user approved 2026-08-17
+Implementation: executed; C01 / C02 rejected; direction superseded by 40-7T
 ```
+
+> Historical status note：本 Design 的 architecture-metaphor Hero 方向已在 C01／C02 visual review 後判定失敗，current README title artwork authority 已由 `40-7T` reduced-scope corrective 接管。本文件內的舊 generation-tool routing只代表當時 execution contract，不代表 current tool authority。
 
 ## 2. Product identity objective
 

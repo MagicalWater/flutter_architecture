@@ -16,7 +16,7 @@ Template Baseline: 1.20.0
 
 ## Current Scope
 
-Milestone 40主體Tasks 40-1～40-6與40-7T README Title Artwork Corrective均已完成。原Task 40-7與40-7R architecture-Hero方向保留為rejected historical evidence；沒有live README authority。40-7T使用者visual acceptance已PASS，accepted artwork已promotion到root README。Template Baseline維持1.20.0，無release bump。
+Milestone 40主體Tasks 40-1～40-6與40-7T README Title Artwork Corrective均已完成；40-9 post-closure corrective亦已完成root README繁體中文一致性與accepted artifact status同步。原Task 40-7與40-7R architecture-Hero方向保留為rejected historical evidence；沒有live README authority。40-7T使用者visual acceptance已PASS，accepted artwork已promotion到root README。Template Baseline維持1.20.0，無release bump。
 
 ## Current Gate
 
@@ -44,6 +44,7 @@ Milestone 40 local closure PASS。Markdown H1、accepted title artwork與兩張a
 - Title Artwork Visual Review：`docs/audits/milestone_40/40-7t_title_artwork_review.md`（accepted；user visual acceptance PASS）。
 - Title Artwork README Consumer Review：`docs/audits/milestone_40/40-7t_readme_consumer_review.md`（accepted）。
 - Holistic Final Review Addendum：`docs/audits/milestone_40/40-8_holistic_final_review.md`（completed）。
+- README Language / Authority Sync Corrective：`docs/audits/milestone_40/40-9_readme_language_and_authority_sync_review.md`（accepted；focused／fresh／whole-README PASS）。
 
 ## Previous Closure
 

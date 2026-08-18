@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.21.0
 Template Baseline: 1.21.0 release candidate
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-Current phase: Revised Design accepted / rebuilt Implementation Plan review PASS / user Plan approval pending / Milestone 41 publication suspended
+Current phase: Revised Design accepted / rebuilt Implementation Plan accepted / implementation admitted / Milestone 41 publication suspended
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -368,7 +368,7 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-Current phase: Revised Design accepted / rebuilt Implementation Plan review PASS / user Plan approval pending; Milestone 41 publication suspended
+Current phase: Revised Design accepted / rebuilt Implementation Plan accepted / implementation admitted; Milestone 41 publication suspended
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
 Maintenance mode: Suspended while Milestone 42 is active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed

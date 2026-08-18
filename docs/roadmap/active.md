@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.21.0
 
 ```txt
 Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-State: Revised Design accepted / rebuilt Implementation Plan review PASS / user Plan approval pending / Milestone 41 publication suspended
+State: Revised Design accepted / rebuilt Implementation Plan accepted / implementation admitted / Milestone 41 publication suspended
 Template Baseline: 1.21.0 combined release candidate base
 ```
 

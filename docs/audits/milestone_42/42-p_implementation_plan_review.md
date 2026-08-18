@@ -134,12 +134,5 @@ Plan review：**PASS**。
 
 ## Approval gate
 
-Revised Design已取得使用者明確核准，Implementation Plan亦已依新Design重建並fresh完成雙層re-review PASS。Plan目前維持`proposed`，下一個合法gate是使用者Plan approval。
-
-取得Plan明確核准前：
-
-- 不得將Plan改為`accepted`；
-- 不得開始Task 42-1 implementation；
-- 不得修改production source、Design System或machine policy；
-- Milestone 41 publication維持suspended。
+Revised Design已取得使用者明確核准，Implementation Plan亦已依新Design重建並fresh完成雙層re-review PASS。使用者已於2026-08-18明確核准Plan；Plan轉為`accepted`，implementation正式admitted，自Task 42-1開始執行。Milestone 41 publication仍維持suspended直到combined release gate完成。
 

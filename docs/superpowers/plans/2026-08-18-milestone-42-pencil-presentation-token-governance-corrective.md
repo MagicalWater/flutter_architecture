@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-42-pencil-presentation-token-governance-corrective-implementation-plan
 last_reviewed_baseline: 1.21.0
@@ -13,15 +13,15 @@ last_reviewed_baseline: 1.21.0
 ```txt
 Requirement: accepted
 Design: accepted / revised Design user approved 2026-08-18
-Plan: proposed / user approval pending
-Implementation: NOT admitted
-Plan state: rebuilt from revised Design / approvable only after fresh Plan review PASS
+Plan: accepted / user approved 2026-08-18
+Implementation: admitted
+Plan state: rebuilt from revised Design / accepted after fresh Plan review PASS
 Managed worktree: C:\Users\crazy\.devspace\worktrees\flutter_architecture-79898d55
 Branch: milestone-42-pencil-presentation-token-governance-corrective
 Checkpoint before Plan: 91e17069064e428166d2331afc19a5728d0b5dd6
 ```
 
-本Plan已依2026-08-18使用者重新核准的Revised Design重建。它不只修正current reference，而是建立可重用的 **UI Design Ownership Architecture**：UI design values不得集中進generic `*VisualSpec`／`*VisualTokens`／`*UiSpec`／`*StyleConfig` catch-all；必須解析至Design System、asset／representation authority、visual-authority metadata、layout owner或smallest correct component owner。Plan取得使用者明確核准前，不得修改production source、Design System或machine policy。
+本Plan已依2026-08-18使用者重新核准的Revised Design重建，並於2026-08-18取得使用者明確Plan核准。它不只修正current reference，而是建立可重用的 **UI Design Ownership Architecture**：UI design values不得集中進generic `*VisualSpec`／`*VisualTokens`／`*UiSpec`／`*StyleConfig` catch-all；必須解析至Design System、asset／representation authority、visual-authority metadata、layout owner或smallest correct component owner。
 
 ## 2. Execution strategy
 

@@ -36,7 +36,7 @@ Milestone 41 尚未 merge／push／published-main，因此尚未 closure。2026-
 - Design Spec：Revision 1 `accepted`；2026-08-18使用者已重新核准。
 - Design Revision 1 two-layer re-review：PASS；Open P0 = 0；Open P1 without disposition = 0。
 - User revised-Design approval：**已取得**。
-- Implementation Plan：已依Revised Design重建為`proposed`，fresh two-layer Plan review PASS；使用者Plan approval尚未取得。
+- Implementation Plan：已依Revised Design重建並轉為`accepted`，fresh two-layer Plan review PASS；使用者於2026-08-18明確核准。
 - Production source / Design System / machine policy：Milestone 42 尚未修改。
 
 ## Confirmed Milestone 42 findings
@@ -82,7 +82,7 @@ Smallest correct component owner
 
 ## Next legal gate
 
-下一個對話必須 fresh admission 後先讀 Requirement、accepted Revised Design、Design Review、rebuilt proposed Implementation Plan、fresh Plan Review 與本 handoff。**下一個合法動作是取得使用者對 Milestone 42 Implementation Plan 的明確核准。** Plan核准前不得開始implementation或修改production source、Design System、machine policy。
+下一個對話必須 fresh admission 後先讀 Requirement、accepted Revised Design、Design Review、accepted rebuilt Implementation Plan、fresh Plan Review 與本 handoff。Implementation已admitted；下一個合法動作是依accepted Plan執行Task 42-1。Milestone 41 publication維持suspended。
 
 Plan核准後：
 

@@ -1,12 +1,14 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-42-pencil-presentation-token-governance-corrective-design
 last_reviewed_baseline: 1.21.0
 ---
 
 # Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective Design
+
+> Approval：2026-08-18 使用者明確核准。Design two-layer review PASS；Open P0 = 0；Open P1 without disposition = 0。
 
 ## 1. Goal
 

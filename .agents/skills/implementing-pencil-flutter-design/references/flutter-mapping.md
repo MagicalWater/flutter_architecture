@@ -60,7 +60,11 @@ unresolved
 
 Local component 可以使用 bounded overlay，但 bounded overlay 不取得 whole-screen page-flow ownership，也不構成 screen-root layout model。
 
-Presentation responsibility另外固定：`pages/`只做Page/View orchestration；custom RenderObject、projection/render calibration infrastructure不得藏在page owner；bounded section/component composition由`widgets/`或等價component owner持有。這不是file-length lint，也不要求每個widget獨立檔案。
+Presentation responsibility以ADR-032為stable authority。Page/View/Section/Component/Surface/Layout是responsibility roles，不是mandatory folder/class tree；Page/View orchestration不得同時直接擁有獨立custom RenderObject／projection engine，bounded Section/Component/Surface與layout mechanics依change reason／lifecycle／authority分owner。Handwritten `part`／`part of`不能用來掩蓋cross-owner coupling。
+
+同一handwritten source可以保留cohesive private helpers；只有出現不同change reason、lifecycle、state authority、navigation/layout owner或可獨立review/test surface時才extract。禁止以file line count、class/widget count、固定folder existence或Bloc/Cubit presence作architecture oracle。
+
+UI-local transient mechanics（controller、focus、scroll、animation、expand/collapse、presentation countdown等）預設留State／Hook／Controller；只有workflow transition、async ordering、retry/failure/concurrency等責任成立才升Cubit／Bloc。Dialog／BottomSheet／Overlay要分辨invocation owner與surface implementation owner；Shell可以launch surface，不等於Shell必須擁有surface實作。
 
 ## Presentation-only判定
 

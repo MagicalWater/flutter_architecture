@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.21.0
 
 ```txt
 Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
-State: Task 43-5 accepted / Task 43-6 consumer governance active
+State: Task 43-6 accepted / Task 43-7 holistic validation active
 Template Baseline: 1.21.0
 ```
 
@@ -20,7 +20,7 @@ Milestone 43已由candidate完成fresh Requirement Decision並以Level 4 Archite
 
 ## Current Gate
 
-Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；Tasks 43-1～43-5已完成Direct RED、ADR-032 stable authority、high-confidence machine contract、Pencil reference decomposition與ordinary feature adoption／positive no-refactor proofs。Current gate為Task 43-6 consumer Skills、human guide與behavioral pressure。
+Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；Tasks 43-1～43-6已完成Direct RED、ADR-032 stable authority、machine contract、Pencil/ordinary-feature adoption與consumer Skill/human behavioral pressure。Current gate為Task 43-7 holistic validation與release candidate decision。
 
 ## Current Evidence
 
@@ -30,6 +30,7 @@ Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan
 - Milestone 43 Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-43-presentation-component-architecture.md`（accepted；Plan review PASS；user approved 2026-08-18）。
 - Milestone 43 Plan Review：`docs/audits/milestone_43/43-p_implementation_plan_review.md`（accepted / PASS）。
 - Task 43-5 Generic Feature Adoption：`docs/audits/milestone_43/43-5_generic_feature_adoption_review.md`（accepted / PASS）。
+- Task 43-6 Behavioral Pressure：`docs/audits/milestone_43/43-6_behavioral_pressure_review.md`（accepted / PASS）。
 
 - Requirement Decision：`docs/audits/milestone_41/41-r_requirement_decision.md`（accepted）。
 - Design：`docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`（accepted；review PASS；user approved 2026-08-18）。

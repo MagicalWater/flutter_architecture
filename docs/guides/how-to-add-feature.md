@@ -105,6 +105,8 @@ Feature 內的 exact structure 應優先跟隨最相近的既有 Feature，而�
 
 Presentation細分由[ADR-032 — Presentation Component Responsibility and State Ownership](../adr/adr-032-presentation-component-responsibility-state-ownership.md)擁有。`Page`、`View`、`Section`、`Component`、`Surface`、`Layout`是responsibility roles，不是每個Feature都必須建立的資料夾或class tree。
 
+實作時先問「誰擁有這個change reason／lifecycle／state authority」，不要先問「它應該放pages還是widgets」。小Feature可以單一source完成相鄰責任；只有owner真正分離才拆檔。`setState`、Hook、Controller本身不是架構異味；純UI lifecycle state只有在升級為workflow／async ordering／retry/failure/concurrency responsibility後才需要Cubit／Bloc。
+
 小型Feature可以只有：
 
 ```txt

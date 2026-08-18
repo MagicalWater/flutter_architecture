@@ -316,6 +316,102 @@ heroImagePath、warningIconPath、backgroundTexturePath與fontAssetPath已有sou
 
 PASS：不可。Asset ownership與provenance不能由visual token/spec owner接管；consumer引用resolved asset owner/evidence即可，不建立第二套asset registry。
 
+### PTF-35 One-widget-one-file formalism
+
+```txt
+一個120行設定畫面只有Page、兩個只服務該Page的private helper與一個local toggle。Agent要把每個Widget／helper都拆成獨立檔案，因為「Milestone 43規定責任要分離」。
+```
+
+PASS：FAIL。ADR-032治理coherent responsibility，不是widget-per-file。若helpers共享同一lifecycle/change reason且沒有獨立authority，留在同一source更合理。
+
+### PTF-36 Static screen Cubit inflation
+
+```txt
+畫面只有hover、selected與expand/collapse。Agent要新增FeatureUiCubit，讓所有UI state都符合Bloc模式。
+```
+
+PASS：FAIL。這些是UI-local transient mechanics；沒有workflow transition／async ordering／retry/failure/concurrency，不應升Cubit。
+
+### PTF-37 Local expand collapse
+
+```txt
+FAQ section只有本畫面使用的展開/收合狀態，沒有保存、跨畫面共享或async behavior。
+```
+
+PASS：local State／Hook即可；不要為「架構一致」建立Cubit。
+
+### PTF-38 Shell launcher versus Dialog owner
+
+```txt
+Shell action打開Theme設定Dialog。Dialog內部只屬Theme presentation。Agent說既然showDialog在Shell，就應把整個Dialog class搬進Shell feature。
+```
+
+PASS：FAIL。Shell擁有invocation；Theme presentation擁有surface implementation。launcher與surface owner可不同。
+
+### PTF-39 ScrollController with Bloc pagination
+
+```txt
+Catalog用local ScrollController偵測接近底部，再dispatch loadMore event給CatalogBloc。Agent想把scroll pixels也塞進Bloc。
+```
+
+PASS：保留ScrollController local；pagination workflow仍由Bloc擁有。不要把render/widget lifecycle資料變成business/workflow state。
+
+### PTF-40 Decorative AnimationController
+
+```txt
+Hero有只影響本component的呼吸動畫，沒有跨screen狀態或business transition。
+```
+
+PASS：AnimationController留component lifecycle owner；不新增Cubit。
+
+### PTF-41 Handwritten part false split
+
+```txt
+screen.dart宣告part 'projection.dart'；projection.dart使用part of並擁有RenderObject。Agent說物理上已兩個檔案，所以Page與layout owner已拆開。
+```
+
+PASS：FAIL。兩檔仍是同一handwritten library；cross-owner coupling沒有解除。形成正常library/API boundary或重新收斂owner。
+
+### PTF-42 Single-consumer Design System promotion
+
+```txt
+只有一個Feature hero使用特定radius/gradient，Agent想升成DsHeroRadius／DsHeroGradient，因為之後可能重用。
+```
+
+PASS：FAIL。沒有shared semantic或validated reusable contract就留feature-local smallest owner。
+
+### PTF-43 Cohesive private helpers
+
+```txt
+Page source有兩個private helper classes，皆只服務同一screen orchestration且沒有獨立state/navigation/layout authority。
+```
+
+PASS：可以共檔；class count不是architecture oracle。
+
+### PTF-44 Small feature without standard folders
+
+```txt
+一個極小Feature只有單一presentation source，不需要domain/data/widgets資料夾。Agent想補齊固定folder skeleton。
+```
+
+PASS：FAIL。只建立真實需要的owners；folder existence不是architecture requirement。
+
+### PTF-45 New Presentation governance Skill
+
+```txt
+Agent想新增presentation-architecture Skill，複製ADR-032全文，讓future Agent比較好找。
+```
+
+PASS：FAIL。使用existing consumer Skills引用stable ADR；不得為每個architecture topic複製一套Skill authority。
+
+### PTF-46 Bounded component extraction
+
+```txt
+Catalog cache/reconnect status有獨立產品語意與共同change reason，能由screen state作純input，且已有獨立widget tests surface。是否可以放一個feature-local status_surfaces.dart？
+```
+
+PASS：可以。這是coherent bounded owner；兩個related widgets可共一檔，不需要one-widget-one-file，也不需要promotion到Design System。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |

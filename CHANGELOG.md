@@ -18,12 +18,34 @@
 
 ## [Unreleased]
 
+---
+
+## [1.21.0] - 2026-08-18
+
+### Added
+
+- 完成Milestone 41 Pencil-to-Flutter Constraint-based Layout Architecture Corrective，新增screen-root layout model machine contract；一般App screen必須解析為`constraint-relationship`，真正spatial surface才可使用`intentional-spatial-canvas`且必須具有accepted `approval_ref`。
+- 新增PTF-27～PTF-29 behavioral pressure，直接覆蓋whole-screen canonical-coordinate shortcut、bounded local overlay與genuine spatial canvas例外邊界。
+
 ### Changed
 
 - 完成Milestone 40 GitHub Repository Landing Page & Documentation Authority Restructure：root README改為產品化GitHub landing page，直接預覽productized topology與C4 dependency contract，並移除Milestone journal與重複的deep technical procedure。
 - Publication前補齊README標題第一視覺：以fresh discovered `chatgpt-web-generation`生成約3:1的`Flutter Enterprise Architecture Template`藝術字橫幅，經使用者visual acceptance後接入README並取代重複的純文字H1；先前architecture-Hero C01／C02均保留為rejected historical evidence。
 - Root README責任收斂為產品定位、能力摘要、Template adoption、Quick Start、platform summary與documentation routes；current snapshot、ADR、Guide、Agent policy與history維持各自canonical owner。
-- Template → Product README transition與既有docs checker保持相容；`Template Baseline Version`／`Product Repository Version` machine contract不變，因此Template Baseline維持1.20.0。
+- Template → Product README transition與既有docs checker保持相容；Milestone 40本身未升版，其變更隨下一個可交付baseline一併納入1.21.0。
+- `WritePrecheckProjectedCanvas`移除whole-page `designHeight=1672`、major-section canonical page-top ownership與screen-root scaled `RenderStack`；screen major sections改由Flutter `Column`、constraints與sibling relationships擁有page flow，bounded local `Stack`／`Positioned`只保留component-local composition責任。
+- ADR-028、`implementing-pencil-flutter-design` Skill references與human Guide同步明確禁止把canonical design-space `x/y`經global scale直接當成一般production screen runtime placement system；single renderer與true Flutter widgets不能作為absolute-coordinate shortcut的豁免。
+
+### Validation
+
+- Accepted `.pen`、canonical Pencil preview與360×640 runtime reference SHA-256均fresh符合manifest；沒有修改golden、visual threshold、crop或ignore region。
+- Pencil compatibility presentation suite 19 tests PASS；focused visual／mapping／policy suite 35 tests PASS；fresh behavioral pressure 4/4 PASS。
+- Workspace `flutter analyze` PASS；完整Flutter regression全部packages PASS，App suite 496 cases PASS；repository Python discovery regression 11 tests PASS；`flutter build bundle` PASS。
+
+### Governance
+
+- Requirement Decision、Design、Implementation Plan與Tasks 41-1～41-8依Level 4雙層Task governance完成holistic final review；Open P0=0、Open P1 without disposition=0。
+- Task 41-8正式決定發布Template Baseline `1.21.0`；Task 41-9仍需merge／push授權、published-main clean checkout、fresh full regression、required platform evidence與fresh PTF-27～29 acceptance後才能宣稱Milestone closed。
 
 ---
 

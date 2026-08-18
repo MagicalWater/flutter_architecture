@@ -3,15 +3,15 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.20.0
+last_reviewed_baseline: 1.21.0
 ---
 
 # Active Milestone
 
 ```txt
 Active Milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
-State: Plan accepted / implementation active
-Template Baseline: 1.20.0
+State: Holistic PASS / 1.21.0 release candidate / merge-push authorization pending
+Template Baseline: 1.21.0 release candidate
 ```
 
 ## Current Scope
@@ -20,7 +20,7 @@ Milestone 41處理current Pencil-to-Flutter stable policy與reference production
 
 ## Current Gate
 
-Requirement Decision與formal Design Spec均已接受；Implementation Plan與Plan review已完成。下一個合法gate是使用者明確核准Implementation Plan；Plan accepted前不得開始Task 41-1或修改production implementation。
+Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過。Holistic final review決定發布Template Baseline `1.21.0`。下一個合法gate是Task 41-9的merge／push明確授權；授權前不得把release candidate宣稱為published-main或完成Milestone closure。
 
 ## Current Evidence
 
@@ -29,7 +29,8 @@ Requirement Decision與formal Design Spec均已接受；Implementation Plan與Pl
 - Design Review：`docs/audits/milestone_41/41-0_design_spec_review.md`（completed / PASS）。
 - Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-41-pencil-layout-architecture-corrective.md`（accepted；review PASS；user approved 2026-08-18）。
 - Plan Review：`docs/audits/milestone_41/41-p_implementation_plan_review.md`（completed / PASS）。
+- Task 41-8 Holistic Final Review：`docs/audits/milestone_41/41-8_holistic_final_review.md`（accepted / PASS；release decision = 1.21.0）。
 
 ## Previous Closure
 
-Milestone 40已完成GitHub Repository Landing Page與documentation authority restructure，未升Template Baseline；Milestone 39的1.20.0 publication仍是current release authority。
+Milestone 40已完成GitHub Repository Landing Page與documentation authority restructure，未升Template Baseline；Milestone 39的1.20.0 publication在Task 41-9完成前仍是最後一個已發布baseline authority。

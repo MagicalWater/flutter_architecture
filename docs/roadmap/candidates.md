@@ -12,21 +12,15 @@ last_reviewed_baseline: 1.21.0
 
 Candidate 不代表 commitment。開始 implementation 前仍需 scope review、Architecture Decision 判斷、acceptance criteria 與正式 active promotion。
 
-## Candidate — Milestone 43 / Flutter Presentation Component Architecture & UI Responsibility Governance
+## Promoted — Milestone 43 / Flutter Presentation Component Architecture & UI Responsibility Governance
 
-候選問題：目前 repository 已有 Feature First、Clean Architecture、Bloc cross-feature boundary，以及 Milestone 42 建立的 UI Design Ownership Architecture；但通用 Presentation layer 對 `Page`、`View`、screen section、feature component、Dialog／BottomSheet／Overlay、layout/controller、ephemeral UI state 與 compilation-unit cohesion 尚未形成完整 repository-wide contract。
+Milestone 43已於2026-08-18完成Level 4 Requirement Decision並promotion為active Milestone。Current authority移至：
 
-候選目標：建立 responsibility-based Presentation Component Architecture，使「同屬 Presentation layer」不再成為把大量獨立 UI responsibility 塞進同一 page/file 的理由，同時避免反方向採用 one-class-one-file、line-count hard limit 或為 static UI 強造 Bloc 的形式主義。
+- `docs/roadmap/active.md`
+- `docs/audits/milestone_43/43-r_requirement_decision.md`
+- `docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`
 
-至少需要評估：
-
-- Page／View／Section／Component／Dialog／BottomSheet／Overlay／Layout／Controller 的責任與 dependency boundary；
-- business／screen workflow state 與 ephemeral UI state 的 Bloc／Cubit／Hook／local controller ownership；
-- `one file = one coherent primary responsibility`，允許同 responsibility 的 private helper classes，但拒絕多個 independently reviewable change reasons 的 monolith；
-- feature-local component → Design System promotion 與 Milestone 42 UI Design Ownership Architecture 的銜接；
-- repository-wide review／behavioral pressure，不能只靠 Pencil-specific detector。
-
-Non-goals：不預設每個 feature 必須建立所有資料夾；不要求每 widget 一檔；不以行數／class 數作 architecture oracle；不在 candidate 階段修改 production source。
+本文件不再保存其active scope細節。
 
 ## Candidate — Additional Platform Support
 

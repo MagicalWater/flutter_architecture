@@ -9,20 +9,23 @@ last_reviewed_baseline: 1.21.0
 # Active Milestone
 
 ```txt
-Active Milestone: none
-State: Milestone 41 + 42 published / post-release closure PASS
+Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
+State: Requirement accepted / Design proposed
 Template Baseline: 1.21.0
 ```
 
 ## Current Scope
 
-目前沒有active Milestone。Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併為Template Baseline 1.21.0並完成published-main post-release validation。下一個Presentation Component Architecture議題只存在於`docs/roadmap/candidates.md`，尚未完成Requirement Decision，不得直接implementation。
+Milestone 43已由candidate完成fresh Requirement Decision並以Level 4 Architecture / Milestone正式promotion。Current scope是建立repository-wide Flutter Presentation Component Architecture：Page/View/Section/Component/Surface、shell/navigation orchestration、layout/render owner、Bloc/Cubit/local state escalation、compilation-unit cohesion與Design System promotion。Design目前仍為`proposed`，不得開始Implementation Plan或production refactor。
 
 ## Current Gate
 
-Milestone 41 + 42 closure已完成；Task 42-10 fresh evidence確認Windows full regression、required iOS Simulator/Production verification與PTF-30～34 published-main acceptance全部PASS。Current maintenance state回到可接受新Requirement Decision；Milestone 43仍只是candidate。
+Milestone 41 + 42 closure維持不變。Milestone 43 Requirement已accepted；current gate為Design完整雙層Task governance與使用者明確Design approval。Design accepted前不得建立accepted Plan、不得修改production architecture、不得先寫machine detector。
 
 ## Current Evidence
+
+- Milestone 43 Requirement Decision：`docs/audits/milestone_43/43-r_requirement_decision.md`（accepted / Level 4）。
+- Milestone 43 Design：`docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`（proposed；等待Design Task review與user approval）。
 
 - Requirement Decision：`docs/audits/milestone_41/41-r_requirement_decision.md`（accepted）。
 - Design：`docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`（accepted；review PASS；user approved 2026-08-18）。

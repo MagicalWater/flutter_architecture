@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: none
-State: Milestone 41 + 42 published / post-release closure PASS
+Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
+State: Requirement accepted / Design proposed
 Template Baseline: 1.21.0
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 42 已完成或已有明確 disposition。Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0，Task 42-10 published-main post-release validation完成後正式closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 42 已完成或已有明確 disposition。Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0，Task 42-10 published-main post-release validation完成後正式closure。Milestone 43已完成Level 4 Requirement Decision並進入Design gate；尚未核准Design或開始implementation。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

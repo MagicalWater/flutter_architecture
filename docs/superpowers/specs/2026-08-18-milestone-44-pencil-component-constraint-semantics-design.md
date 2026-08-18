@@ -6,7 +6,7 @@ authoritative_for:
 last_reviewed_baseline: 1.22.0
 ---
 
-# Milestone 44 — Presentation Flow & Pencil Constraint Semantics Corrective — Design
+# Milestone 44 — Pencil Component Constraint Semantics Corrective — Design
 
 ## Status
 
@@ -16,7 +16,7 @@ last_reviewed_baseline: 1.22.0
 
 Milestone 41解決了whole-screen page coordinate ownership，Milestone 43解決了Presentation responsibility/state ownership；但 current Pencil reference仍證明兩個contract之間有漏洞：只要 major sections由Column排列，就能在每個bounded region內繼續以大量canonical `left/top`排普通content。這種做法視覺上可以exact，架構上卻仍把Pencil座標當主要 runtime layout semantics。
 
-本Milestone同時補齊兩個相鄰但未正式定義的ownership問題：multi-screen `Flow/Coordinator`與same-semantic Pencil colors的Theme reconciliation。
+本Milestone只把這個已有production evidence的layout correctness defect作為主責。Fresh audit另外發現multi-screen `Flow/Coordinator`完整性議題與same-semantic Pencil colors edge case；前者記錄為follow-up candidate，後者只做bounded governance clarification，不擴張為Theme/Design System production refactor。
 
 ## Design principles
 
@@ -42,17 +42,13 @@ Screen root使用Column不代表下層可以任意重建fixed canvas。Machine c
 
 `WritePrecheckProjection`不得再成為「所有child x/y都乘scale」的通用排版引擎。Measurement projection仍可服務accepted design width下的尺寸、gap、radius、stroke、icon/artwork sizing；normal content placement改由Flutter relationship layout。
 
-### 4. Flow / Coordinator 是 optional orchestration role
+### 4. Flow / Coordinator finding disposition
 
-ADR-032新增 `Flow / Coordinator → multi-screen / multi-step presentation workflow owner`。
+本Milestone不新增`Flow/Coordinator` stable role、framework或folder contract。原因是目前只有governance completeness finding，沒有需要此owner才能修正的current production failure。Requirement evidence保留此finding，後續只有在真實multi-screen/multi-step presentation workflow出現獨立transition semantics時，才以fresh Requirement Decision評估是否補ADR-032。
 
-成立訊號：step identity跨screen存在；next/back/cancel/retry/resume有獨立transition semantics；navigation order本身是workflow contract；同一presentation workflow跨多個Page，但仍不應下沉Domain。
+這個disposition同時禁止兩個極端：不得把Flow當M44順手補齊的預先抽象，也不得把未來真正multi-screen workflow永久塞回Page/Shell；是否升級由未來evidence決定。
 
-不成立：Page A單純push Page B；Shell tab switching；單screen local expand/collapse；domain process/business state只因有UI就改名Flow。
-
-Flow可以由plain coordinator、Cubit/Bloc或router orchestration實作，選型依state escalation，不要求`flows/` folder。
-
-### 5. Pencil exact color → Theme/Design System reconciliation algorithm
+### 5. Same-semantic Pencil color bounded clarification
 
 同一accepted design中出現近似但不完全相同raw colors時，依下列順序裁決：
 
@@ -73,18 +69,18 @@ Step 4 — Pure decoration/artwork exact value?
 → smallest correct component owner
 ```
 
-禁止因hex不同少量RGB就自動建立`HomeColors/SettingsColors/...`；也禁止因「Theme要一致」就無視accepted source中的intentional semantic/context variant。
+禁止因hex不同少量RGB就自動建立`HomeColors/SettingsColors/...`；也禁止因「Theme要一致」就無視accepted source中的intentional semantic/context variant。此Milestone最多更新ADR-018/ADR-028 wording與pressure scenario；沒有production misuse evidence時不修改Theme/Design System production source。
 
 ### 6. Machine + behavioral governance一起補
 
-新增/擴充 direct architecture tests與policy tests，至少覆蓋：screen Column + local component fixed-canvas laundering FAIL；Hero local badge/glow overlay PASS；DataRow以Row/Align/Expanded呈現 PASS；component public API以`left/top`排列normal content FAIL；simple push建立Flow FAIL；true multi-step cross-screen workflow有Flow owner PASS；same semantic CTA只因small RGB drift拆feature colors FAIL；different semantic roles即使hex接近仍可不同token PASS；intentional single-component decorative exact color PASS。
+新增/擴充 direct architecture tests與policy tests，至少覆蓋：screen Column + local component fixed-canvas laundering FAIL；Hero local badge/glow overlay PASS；DataRow以Row/Align/Expanded呈現 PASS；component public API以`left/top`排列normal content FAIL；same semantic CTA只因small RGB drift拆feature colors FAIL；different semantic roles即使hex接近仍可不同token PASS；intentional single-component decorative exact color PASS。Flow不建立新的machine/production contract，只保留Requirement disposition evidence。
 
 Fresh behavioral pressure延續既有`implementing-pencil-flutter-design` consumer Skill，不新增 `flow-governance` 或 `color-governance` Skill。
 
 ## Architecture ownership changes
 
-- **ADR-032**：加入optional Flow/Coordinator role、component-local fixed-canvas laundering prohibition，以及normal content relationship ownership review question。
-- **ADR-018**：加入semantic-color reconciliation algorithm。
+- **ADR-032**：只在必要時加入component-local fixed-canvas laundering prohibition／normal content relationship ownership review question；不新增Flow/Coordinator stable role。
+- **ADR-018**：最多加入semantic-color bounded reconciliation clarification，不觸發Theme/Design System production refactor。
 - **ADR-028**：把bounded overlay permission收斂為genuinely spatial/overlay semantics，禁止普通content拆成bounded canvas後繼續canonical x/y reconstruction。
 - **Pencil consumer Skill / mapping**：對risk-selected components記relationship-layout / bounded-spatial-overlay rationale；generic `left/top` APIs與positioned text helpers成為review pressure target。
 
@@ -102,8 +98,8 @@ Fresh behavioral pressure延續既有`implementing-pencil-flutter-design` consum
 - current reference不再以generic coordinate helpers排普通文字、rows、buttons/cards。
 - major section與section-internal normal content都由relationships擁有。
 - remaining `Positioned`都有bounded spatial rationale，且machine/behavioral tests能區分合法與違法。
-- Flow/Coordinator optional role在ADR、Guide/consumer route與pressure scenarios一致。
-- same-semantic color drift不會生成feature-local token proliferation。
+- Flow/Coordinator finding有明確defer/follow-up disposition，不被M44錯誤升級成預先抽象。
+- same-semantic color drift不會生成feature-local token proliferation，且此clarification不無證據擴張成Theme/Design System refactor。
 - Pencil accepted visual authority維持；任何visual regression必須修implementation，不得放寬threshold掩蓋。
 - full two-layer review P0=0、undisposed P1=0。
 
@@ -113,6 +109,8 @@ Fresh behavioral pressure延續既有`implementing-pencil-flutter-design` consum
 - 不強迫所有component改成Material標準外觀。
 - 不要求one-widget-one-file。
 - 不要求每個feature有Flow/Cubit/Bloc。
+- 不在本Milestone導入Flow/Coordinator stable role或generic orchestration framework。
+- 不重構Theme/Design System production implementation，除非implementation前新增fresh production misuse evidence並重新做Requirement Decision。
 - 不重設計Pencil source。
 - 不建立新的Design System mega token layer。
 

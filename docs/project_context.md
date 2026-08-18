@@ -29,7 +29,7 @@ last_reviewed_baseline: 1.22.0
 ```txt
 Template Baseline: 1.22.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 44 — Presentation Flow & Pencil Constraint Semantics Corrective
+Current active milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
 Current phase: Requirement accepted / Design proposed and review PASS / user Design approval required
 Latest completed initiative: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance（Template Baseline 1.22.0 published and post-release validated）
 Architecture Decision authority: docs/adr/README.md

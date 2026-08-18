@@ -9,14 +9,14 @@ last_reviewed_baseline: 1.22.0
 # Active Milestone
 
 ```txt
-Active Milestone: Milestone 44 — Presentation Flow & Pencil Constraint Semantics Corrective
+Active Milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
 State: Requirement accepted / Design proposed and review PASS / user Design approval required
 Template Baseline: 1.22.0
 ```
 
 ## Current Scope
 
-Milestone 44已完成fresh Requirement Decision並以Level 4 Architecture / Milestone正式promotion。Current scope是修正bounded-component fixed-canvas laundering、補optional Flow/Coordinator responsibility、建立Pencil exact color與Theme semantic reconciliation，並把current Pencil compatibility reference遷移為section-internal relationship-owned layout。Design technical review已PASS，但在使用者明確核准前仍為proposed，不得建立Plan或修改production implementation。
+Milestone 44已完成fresh Requirement Decision與scope corrective，維持Level 4 Architecture / Milestone。Current主責只修正bounded-component fixed-canvas laundering，並把current Pencil compatibility reference遷移為section-internal relationship-owned layout；Flow/Coordinator降為follow-up candidate，same-semantic color只做bounded governance clarification，不擴張Theme/Design System production scope。Revised Design fresh technical review已PASS，但在使用者明確核准前仍為proposed，不得建立Plan或修改production implementation。
 
 ## Current Gate
 
@@ -25,7 +25,7 @@ Milestone 41～43 closure維持不變。Current gate為Milestone 44 Design user 
 ## Current Evidence
 
 - Milestone 44 Requirement Decision：`docs/audits/milestone_44/44-r_requirement_decision.md`（accepted / Level 4）。
-- Milestone 44 Design：`docs/superpowers/specs/2026-08-18-milestone-44-presentation-flow-pencil-constraint-semantics-design.md`（proposed；technical review PASS；user approval required）。
+- Milestone 44 Design：`docs/superpowers/specs/2026-08-18-milestone-44-pencil-component-constraint-semantics-design.md`（proposed；revised technical review PASS；user approval required）。
 - Milestone 44 Design Review：`docs/audits/milestone_44/44-0_design_spec_review.md`（completed / PASS）。
 
 - Milestone 43 Requirement Decision：`docs/audits/milestone_43/43-r_requirement_decision.md`（accepted / Level 4）。

@@ -26,7 +26,7 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: Milestone 44 — Presentation Flow & Pencil Constraint Semantics Corrective
+Active Milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
 State: Requirement accepted / Design proposed and review PASS / user approval required
 Template Baseline: 1.22.0
 ```
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 43 已完成或已有明確 disposition。Milestone 44已由fresh audit確認為Level 4 corrective，current Design technical review PASS但仍等待使用者明確核准；Milestone 43仍維持Template Baseline 1.22.0正式closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 43 已完成或已有明確 disposition。Milestone 44已由fresh audit確認為Level 4 corrective，且已完成scope corrective：主責鎖定component-local fixed-canvas laundering；Flow/Coordinator不納入本Milestone implementation，same-semantic color只做bounded clarification。Revised Design technical review PASS但仍等待使用者明確核准；Milestone 43仍維持Template Baseline 1.22.0正式closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

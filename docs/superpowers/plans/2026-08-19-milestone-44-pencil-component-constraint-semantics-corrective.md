@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-44-pencil-component-constraint-semantics-implementation-plan
 last_reviewed_baseline: 1.22.0
@@ -13,17 +13,17 @@ last_reviewed_baseline: 1.22.0
 ```txt
 Requirement: accepted / Level 4
 Design: accepted / user approved 2026-08-19
-Plan: proposed / review PASS / awaiting user approval
-Implementation: NOT ADMITTED
+Plan: accepted / review PASS / user approved 2026-08-19
+Implementation: ADMITTED
 Repository: template
 Branch: main
 Fresh main == origin/main == a7ffeb9ac6d9f5bd0c224dcfa004d77370772be0
 VERSION: 1.22.0
 Working tree at admission: clean
-Managed worktree: not created yet; create only after Plan acceptance
+Managed worktree: create after this acceptance-state sync
 ```
 
-本 Plan 只執行已核准 Design 的主責：**component-local fixed-canvas laundering corrective**。Plan 尚未取得使用者明確核准前，不得修改 production implementation、stable ADR authority、consumer Skill contract或 machine enforcement。
+本 Plan 只執行已核准 Design 的主責：**component-local fixed-canvas laundering corrective**。本 Plan 已於2026-08-19取得使用者明確核准；implementation正式admitted，後續只可依本 Plan 的Task順序修改production source、stable ADR authority、consumer Skill contract與machine enforcement。
 
 ## 2. Execution strategy
 
@@ -317,5 +317,5 @@ Release identity不等於closure；published-main/post-release evidence未PASS�
 
 ## 11. Plan approval disposition
 
-本Plan已完成focused Plan review、findings disposition、fresh focused re-review與whole-Plan review，review結果PASS；但依Level 4治理，**仍維持`proposed`直到使用者明確核准**。在此之前production implementation與managed worktree execution均不得開始。
+本Plan已完成focused Plan review、findings disposition、fresh focused re-review與whole-Plan review，review結果PASS，並於2026-08-19取得使用者明確核准。Plan正式轉為`accepted`；44-1 direct RED implementation與managed worktree execution現在admitted，但每個後續Task仍須完成Level 4完整雙層Task governance。
 

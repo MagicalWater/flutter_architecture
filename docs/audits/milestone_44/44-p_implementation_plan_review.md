@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: completed
+status: accepted
 authoritative_for:
   - milestone-44-pencil-component-constraint-semantics-plan-review
 last_reviewed_baseline: 1.22.0
@@ -153,11 +153,11 @@ Fresh focused re-review：**PASS**。
 
 ```txt
 Plan review = PASS
-Plan status = proposed
-User Plan approval = NOT YET RECORDED
-Production implementation = NOT ALLOWED
-Next legal step = user explicit Plan approval
+Plan status = accepted
+User Plan approval = APPROVED 2026-08-19
+Production implementation = ALLOWED BY ACCEPTED PLAN
+Next legal step = create managed worktree and execute Task 44-1 direct RED
 ```
 
-本review完成不等於Plan已accepted。只有使用者明確核准後，才可把Plan frontmatter轉`accepted`、建立managed worktree並開始Task 44-1。
+2026-08-19 使用者已明確核准本Implementation Plan。Plan frontmatter已轉`accepted`，44-1 direct RED implementation正式admitted；後續ADR、machine contract、production source與Skills只能依accepted Plan順序修改，每個Task仍須完成完整雙層Task governance與planner-selected validation。
 

@@ -101,6 +101,39 @@ data/
 
 Feature 內的 exact structure 應優先跟隨最相近的既有 Feature，而不是建立新的全域慣例。
 
+### Presentation structure依責任建立，不依folder模板建立
+
+Presentation細分由[ADR-032 — Presentation Component Responsibility and State Ownership](../adr/adr-032-presentation-component-responsibility-state-ownership.md)擁有。`Page`、`View`、`Section`、`Component`、`Surface`、`Layout`是responsibility roles，不是每個Feature都必須建立的資料夾或class tree。
+
+小型Feature可以只有：
+
+```txt
+presentation/
+  feature_page.dart
+```
+
+只要該source仍是一個coherent primary responsibility，就不需要為了形式建立`pages/`、`widgets/`、`components/`。反之，如果一個Page/View同時擁有route orchestration、獨立section implementation與custom RenderObject/layout engine，即使全部都在Presentation，也應依change reason拆到正確owner。
+
+常見判斷：
+
+| 問題 | 預設owner |
+|---|---|
+| route/screen admission、自己Bloc binding、screen-level effect | Page |
+| screen state → loading/error/content composition | View |
+| screen內具獨立產品語意的bounded區塊 | Section |
+| bounded且有穩定input/output的UI unit | Component |
+| Dialog/BottomSheet/Overlay本身UI與local interaction | Surface implementation owner |
+| 何時打開Surface、結果如何接回flow | Invocation owner |
+| projection/custom RenderObject/layout algorithm | Layout owner |
+| TextEditing/Focus/Scroll/Animation controller、expand/collapse | local State/Hook/Controller |
+| workflow transition、async ordering、retry/failure/concurrency | Cubit/Bloc |
+
+不要因為檔案很長就直接拆，也不要因為存在兩個private widgets就一個class一檔。真正的extract signals是不同change reason、lifecycle、state/navigation/layout authority，或已形成可獨立review/test/replace/reuse的boundary。
+
+Handwritten `part`／`part of`仍是同一Dart library；把不同owner搬到不同folder但繼續用`part of`綁在一起，不算完成responsibility separation。Generated `part`不受此規則限制。
+
+Feature-local UI promotion到Design System仍依[ADR-018](../adr/adr-018-design-system-theme-boundaries.md)：single-screen exact component留feature-local，只有shared semantic、Theme Identity或validated reusable component才promotion。
+
 ## 3. Define Domain Contracts First
 
 先定義對 Presentation 有意義的 Domain contract：

@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.21.0
 
 ```txt
 Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
-State: Requirement accepted / Design accepted / Plan accepted / Implementation active
+State: Task 43-2 accepted / Task 43-3 machine contract active
 Template Baseline: 1.21.0
 ```
 
@@ -20,7 +20,7 @@ Milestone 43已由candidate完成fresh Requirement Decision並以Level 4 Archite
 
 ## Current Gate
 
-Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；current gate為Task 43-1 Direct RED。各Task必須依accepted Plan順序完成雙層治理、planner-selected validation與completion commit。
+Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；Task 43-1 Direct RED與Task 43-2 ADR-032 stable authority已accepted。Current gate為Task 43-3 high-confidence machine contract GREEN。
 
 ## Current Evidence
 

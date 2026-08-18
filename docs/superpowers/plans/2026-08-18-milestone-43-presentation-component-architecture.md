@@ -305,7 +305,7 @@ Release identity不等於closure；post-release evidence PASS前不得宣稱Mile
 - 重做Milestone 41/42 accepted visual/design ownership；
 - 以更新golden/threshold/accepted `.pen`掩蓋source refactor regression。
 
-## 12. Plan approval gate
+## 12. Plan approval disposition
 
-此Plan目前為`proposed`。完成Plan focused review、findings修正、fresh re-review、whole-Plan review並取得使用者明確核准前，不得開始Task 43-1 implementation。
+此Plan已完成focused review、findings修正、fresh re-review與whole-Plan review，並於2026-08-18取得使用者明確核准；Task 43-1～43-8依本accepted execution authority執行。
 

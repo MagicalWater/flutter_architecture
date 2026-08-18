@@ -49,6 +49,10 @@ void main() {
         'lib/features/pencil_compatibility/presentation/pages/'
         'write_precheck_projected_canvas.dart',
       ).readAsStringSync();
+      final visualSpecSource = File(
+        'lib/features/pencil_compatibility/presentation/visual_spec/'
+        'pencil_compatibility_visual_spec.dart',
+      ).readAsStringSync();
       if (pageSource.contains('FittedBox(')) {
         violations.add('WritePrecheckView uses fixed-canvas FittedBox scaling');
       }
@@ -68,6 +72,16 @@ void main() {
         violations.add(
           'WritePrecheckProjectedCanvas does not expose constraint-owned '
           'page flow',
+        );
+      }
+      if (_pageOwnsRenderOrProjectionInfrastructure(projectedCanvasSource)) {
+        violations.add(
+          'presentation/pages owns custom render/projection infrastructure',
+        );
+      }
+      if (_isGenericUiSpecCatchAll(visualSpecSource)) {
+        violations.add(
+          'PencilCompatibilityVisualSpec mixes UI design ownership domains',
         );
       }
       for (final forbidden in <String>[
@@ -145,6 +159,73 @@ class _RenderProjectedStack extends RenderStack {
 
     expect(_usesWholeScreenCanonicalCoordinateProjection(source), isTrue);
   });
+
+  test('page owner rejects custom render and projection infrastructure', () {
+    const pageSource = '''
+class ScreenView extends StatelessWidget {
+  Widget build(BuildContext context) => Content();
+}
+class _ProjectedStack extends MultiChildRenderObjectWidget {}
+class _RenderProjectedStack extends RenderStack {}
+''';
+    const layoutSource = '''
+class ProjectedStack extends MultiChildRenderObjectWidget {}
+class RenderProjectedStack extends RenderStack {}
+''';
+
+    expect(_pageOwnsRenderOrProjectionInfrastructure(pageSource), isTrue);
+    expect(_pageOwnsRenderOrProjectionInfrastructure(layoutSource), isTrue);
+  });
+
+  test('generic UI spec catch-all is rejected without banning local constants', () {
+    const catchAll = '''
+abstract final class FeatureVisualSpec {
+  static const Size canonicalSize = Size(360, 640);
+  static const Color background = Color(0xFF000000);
+  static const String fontFamily = 'Example';
+  static const double cardRadius = 17;
+  static const LinearGradient heroGradient = LinearGradient(colors: []);
+  static const String heroAssetPath = 'assets/hero.png';
+}
+''';
+    const componentLocal = '''
+class HeroCard extends StatelessWidget {
+  static const double _radius = 17;
+}
+''';
+
+    expect(_isGenericUiSpecCatchAll(catchAll), isTrue);
+    expect(_isGenericUiSpecCatchAll(componentLocal), isFalse);
+  });
+}
+
+bool _pageOwnsRenderOrProjectionInfrastructure(String source) {
+  return source.contains('MultiChildRenderObjectWidget') ||
+      source.contains('RenderStack') ||
+      source.contains('createRenderObject(') ||
+      source.contains('updateRenderObject(');
+}
+
+bool _isGenericUiSpecCatchAll(String source) {
+  final looksLikeGenericSpec = RegExp(
+    r'class\s+\w*(?:VisualSpec|VisualTokens|UiSpec|StyleConfig)\b',
+  ).hasMatch(source);
+  if (!looksLikeGenericSpec) return false;
+
+  final ownershipDomains = <bool>[
+    source.contains('canonicalSize') ||
+        source.contains('canonicalDevicePixelRatio'),
+    source.contains('Color('),
+    source.contains('fontFamily') || source.contains('TextStyle'),
+    source.contains('Radius') ||
+        source.contains('radius') ||
+        source.contains('Width') ||
+        source.contains('Height'),
+    source.contains('Gradient'),
+    source.contains('AssetPath') || source.contains('assetPath'),
+  ].where((matched) => matched).length;
+
+  return ownershipDomains >= 3;
 }
 
 bool _usesWholeScreenCanonicalCoordinateProjection(String source) {

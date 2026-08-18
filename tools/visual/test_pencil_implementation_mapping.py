@@ -81,6 +81,14 @@ class PencilImplementationMappingContractTest(unittest.TestCase):
 
         self.assertEqual(_codes(path), [])
 
+    def test_missing_ui_design_ownerships_fails_closed(self) -> None:
+        mapping = _valid_mapping()
+        mapping.pop("ui_design_ownerships", None)
+
+        self.assertIn(
+            "mapping-missing-ui-design-ownerships", _codes(self._write(mapping))
+        )
+
     def test_missing_screen_layouts_fails_closed(self) -> None:
         mapping = _valid_mapping()
         mapping.pop("screen_layouts")

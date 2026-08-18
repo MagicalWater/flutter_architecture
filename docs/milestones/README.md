@@ -31,11 +31,20 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: none — Milestone 40 completed locally
+Active Milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
 Template Baseline: 1.20.0
 ```
 
-Milestone 40已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence，40-7T Level 1 README title artwork已取得使用者visual acceptance並promotion到root README。Current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
+Milestone 41已完成formal Requirement Decision並進入Design gate；current state以`docs/roadmap/active.md`為準。Template Baseline目前仍為`1.20.0`。
+
+### Milestone 41 active routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_41/41-r_requirement_decision.md`
+- Design：Required / not yet accepted。
+- Implementation Plan：Forbidden until Design user approval。
+- Production implementation：Forbidden until Plan user approval。
+
+Milestone 40已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence，40-7T Level 1 README title artwork已取得使用者visual acceptance並promotion到root README。
 
 ### Milestone 40 closed routing
 

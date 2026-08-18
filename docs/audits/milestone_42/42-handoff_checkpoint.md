@@ -33,10 +33,10 @@ Milestone 41 尚未 merge／push／published-main，因此尚未 closure。2026-
 - Requirement Decision：accepted。
 - Classification：Level 4 — Architecture／Milestone。
 - Requirement completion commit：`6bb1ee535e5d54815b22da729ecd84eb4871ea3a`。
-- Design Spec：原版曾`accepted`；Plan approval前新增UI Design Ownership Architecture P1後已進入Revision 1並回`proposed`。
+- Design Spec：Revision 1 `accepted`；2026-08-18使用者已重新核准。
 - Design Revision 1 two-layer re-review：PASS；Open P0 = 0；Open P1 without disposition = 0。
-- User revised-Design approval：**尚未取得**。
-- Implementation Plan：已建立但因Revised Design尚未重新核准而`proposed / suspended`；不得以舊Plan review直接進implementation。
+- User revised-Design approval：**已取得**。
+- Implementation Plan：已依Revised Design重建為`proposed`，fresh two-layer Plan review PASS；使用者Plan approval尚未取得。
 - Production source / Design System / machine policy：Milestone 42 尚未修改。
 
 ## Confirmed Milestone 42 findings
@@ -46,7 +46,7 @@ Milestone 41 尚未 merge／push／published-main，因此尚未 closure。2026-
 3. ADR-028 允許 single-screen exact values feature-local，ADR-018 同時要求 shared semantic/theme authority集中於 Design System；current workflow缺少足夠明確的 token promotion/non-promotion enforcement，存在 `FeatureVisualSpec` 逃生艙風險。
 4. Plan approval前使用者進一步要求：尺寸、顏色、typography、assets、gradient、geometry等UI design data不得再形成generic `*VisualSpec` / `*VisualTokens`小型Design System；必須整合既有Design System、asset/provenance、visual authority、layout與component ownership成repository-wide UI Design Ownership Architecture。
 
-## Revised design direction pending user approval
+## Accepted revised design direction
 
 Presentation ownership：
 
@@ -82,15 +82,12 @@ Smallest correct component owner
 
 ## Next legal gate
 
-下一個對話必須 fresh admission 後先讀 Requirement、Revised Design、Design Review、suspended Implementation Plan、Plan Review 與本 handoff。**下一個合法動作是取得使用者對 Milestone 42 Revised Design 的明確核准。** Revised Design核准前不得更新Plan為可核准狀態，也不得開始implementation或修改production source、Design System、machine policy。
+下一個對話必須 fresh admission 後先讀 Requirement、accepted Revised Design、Design Review、rebuilt proposed Implementation Plan、fresh Plan Review 與本 handoff。**下一個合法動作是取得使用者對 Milestone 42 Implementation Plan 的明確核准。** Plan核准前不得開始implementation或修改production source、Design System、machine policy。
 
-Revised Design核准後：
+Plan核准後：
 
 ```txt
-update Implementation Plan to revised Design
-→ Plan two-layer re-review
-→ user Plan approval
-→ Plan accepted + commit
+Plan accepted + commit
 → implementation Tasks
 → holistic review
 → combined 1.21.0 release candidate

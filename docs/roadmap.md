@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
-State: Requirement accepted / Design required
+State: Design reviewed / user approval pending
 Template Baseline: 1.20.0
 ```
 

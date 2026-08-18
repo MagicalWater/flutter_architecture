@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.20.0
 Template Baseline: 1.20.0
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
-Current phase: requirement accepted / Design required
+Current phase: Design reviewed / user approval pending
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -368,13 +368,13 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
-Current phase: requirement accepted / Design required
+Current phase: Design reviewed / user approval pending
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
 Maintenance mode: Suspended while Milestone 41 is active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 41已因fresh audit確認Pencil-to-Flutter layout architecture authority drift而啟動。Current stable policy禁止把canonical design-space `x/y`機械套成runtime固定座標，但既有`WritePrecheckProjectedCanvas`仍使用whole-screen projected `Stack`／`Positioned`與global scale，且現有tests無法攔截。Requirement Decision已接受；Design／Plan核准前不得修改production implementation。Current scope與next gate以`docs/roadmap/active.md`及`docs/audits/milestone_41/41-r_requirement_decision.md`為準。
+Milestone 41已因fresh audit確認Pencil-to-Flutter layout architecture authority drift而啟動。Current stable policy禁止把canonical design-space `x/y`機械套成runtime固定座標，但既有`WritePrecheckProjectedCanvas`仍使用whole-screen projected `Stack`／`Positioned`與global scale，且現有tests無法攔截。Requirement Decision已接受；formal Design與Design review已完成並等待使用者明確核准，Plan／production implementation仍禁止。Current scope與next gate以`docs/roadmap/active.md`為準。
 
 Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Template Baseline維持1.20.0。
 

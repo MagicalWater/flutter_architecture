@@ -10,17 +10,17 @@ last_reviewed_baseline: 1.21.0
 
 ```txt
 Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-State: Revised Design accepted / rebuilt Implementation Plan accepted / implementation admitted / Milestone 41 publication suspended
+State: Tasks 42-1～42-6 accepted / Task 42-7 stable authority synchronization in progress / Milestone 41 publication suspended
 Template Baseline: 1.21.0 combined release candidate base
 ```
 
 ## Current Scope
 
-Milestone 42處理Milestone 41 merge前fresh architecture review新增的presentation ownership與visual token governance finding。Current reference已移除whole-screen canonical coordinate owner，但`pages/write_precheck_projected_canvas.dart`仍混合page以外的render/layout/component責任，`PencilCompatibilityVisualSpec`亦混合visual authority metadata、palette、typography、layout/component tokens與gradients。Scope包含Presentation responsibility decomposition、Design System promotion/non-promotion contract、feature-local visual token boundary、machine/review enforcement與reference migration；不修改accepted `.pen`或降低visual fidelity。
+Milestone 42處理Milestone 41 merge前fresh architecture review新增的presentation ownership與UI design ownership governance finding。Current implementation已完成`pages/`／`layout/`／`widgets/`責任拆分並退休`PencilCompatibilityVisualSpec` catch-all；scope進一步建立repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion、asset/provenance與visual-authority separation、machine/review enforcement與fresh behavioral pressure；不修改accepted `.pen`或降低visual fidelity。
 
 ## Current Gate
 
-Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42首次Design曾accepted，但Plan approval前使用者新增P1：必須建立repository-wide UI Design Ownership Architecture並禁止generic `*VisualSpec` / `*VisualTokens` catch-all。Revised Design已重新取得使用者核准；rebuilt Implementation Plan已fresh完成雙層review PASS，目前等待使用者Plan核准。42完成後必須重新形成combined holistic/release candidate，再取得merge／push授權。
+Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42 Revised Design與rebuilt Implementation Plan均已accepted；Tasks 42-1～42-6已accepted，目前執行Task 42-7 stable authority synchronization。42完成後必須重新形成combined holistic/release candidate，再取得merge／push授權。
 
 ## Current Evidence
 
@@ -32,10 +32,10 @@ Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均�
 - Task 41-8 Holistic Final Review：`docs/audits/milestone_41/41-8_holistic_final_review.md`（accepted / PASS；release decision = 1.21.0）。
 - Milestone 42 Requirement Decision：`docs/audits/milestone_42/42-r_requirement_decision.md`（accepted；Milestone 41 publication suspended）。
 - Milestone 42 Design：`docs/superpowers/specs/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective-design.md`（Revision 1 accepted；revision review PASS；user revised-Design approved 2026-08-18）。
-- Milestone 42 Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md`（rebuilt proposed；fresh Plan review PASS；user approval pending）。
+- Milestone 42 Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md`（rebuilt accepted；fresh Plan review PASS；user approved 2026-08-18）。
 - Milestone 42 Design Review：`docs/audits/milestone_42/42-0_design_spec_review.md`（completed / PASS）。
-- Milestone 42 Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md`（proposed but suspended；必須在Revised Design重新核准後更新與re-review）。
 - Milestone 42 Plan Review：`docs/audits/milestone_42/42-p_implementation_plan_review.md`（completed / PASS）。
+- Milestone 42 Tasks 42-1～42-6：`docs/audits/milestone_42/42-1_ownership_red_review.md` 至 `42-6_visual_runtime_fidelity_review.md`（accepted；visual authority unchanged）。
 
 ## Previous Closure
 

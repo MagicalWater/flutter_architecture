@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-028-repository-local-pencil-to-flutter-design-implementation-workflow
-last_reviewed_baseline: 1.19.0
+last_reviewed_baseline: 1.21.0
 id: ADR-028
 title: Repository-local Pencil-to-Flutter Design Implementation Workflow
 supersedes:
@@ -82,10 +82,18 @@ Pencil design不得建立平行Flutter architecture：
 - Feature使用Feature First。
 - Visible strings使用既有Localization authority。
 - Base theme與semantic color優先使用既有Design System。
-- 只有準確且具穩定共用價值的token／component才提升到Design System；單一畫面特有數值保留feature-local visual specification。
+- Flutter mapping必須同時完成layout ownership、representation/provenance與UI design ownership；不得只做widget owner mapping。
+- 只有具shared semantic identity、stable theme responsibility或validated reusable consumer的token／component才提升到Design System；single-screen exact values留smallest correct local owner。
+- 禁止`FeatureVisualSpec`／`FeatureVisualTokens`／`FeatureUiSpec`／`StyleConfig`成為colors、dimensions、typography、assets、gradients、geometry與canonical metadata的catch-all owner。
+- Raster/vector/icon/font/texture走existing representation/provenance authority；asset path與hash不得被visual token class接管。
+- Canonical viewport／DPR只屬visual-authority metadata，不進Design System。
 - Presentation-only visual fixture不得建立虛假的Domain、Data、Repository、Use Case、Bloc或DI。
 
 Critical implementation items必須在Flutter production mapping前形成initiative-local、machine-readable implementation mapping evidence。此evidence不取代`.pen`或visual manifest，也不建立global asset registry；只對risk-selected critical nodes保存representation identity、Flutter owner／consumer與resolution state。
+
+Risk-selected UI design values亦必須在同一initiative-local mapping保存resolved ownership evidence。Allowed owner vocabulary為`visual-authority`、`design-system`、`feature-local`、`component-local`；`unresolved` fail closed。Design System owner只能引用public API；`intentional-local`需要local-scope rationale；asset-reference只能引用existing provenance evidence，不得重複建立asset registry。
+
+Presentation source responsibility同樣受mapping/review治理：`pages/`只負責Page/View orchestration；projection/render mechanics移至明確`layout/` owner；bounded visual composition由`widgets/`或等價component owner持有。這是Presentation cohesion contract，不是用file line count或「每widget一檔」作形式主義。
 
 Critical mapping disposition固定為：
 
@@ -156,4 +164,4 @@ Reviewer一旦判定wrong source／wrong asset／wrong icon／wrong representati
 
 ## Last Reviewed Baseline
 
-1.20.0；Milestone 41補入constraint／relationship-owned screen layout、bounded local overlay與intentional spatial canvas stable contract。
+1.21.0；Milestone 41補入constraint／relationship-owned screen layout；Milestone 42再補Presentation responsibility與repository-wide UI Design Ownership Architecture stable contract。

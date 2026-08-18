@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - pencil-to-flutter-human-workflow-guide
-last_reviewed_baseline: 1.19.0
+last_reviewed_baseline: 1.21.0
 ---
 
 # Repository-local Pencil-to-Flutter Workflow Guide
@@ -235,6 +235,7 @@ extraction inventory
 → source / availability verification
 → provenance resolution
 → unresolved gap check
+→ UI Design Ownership classification
 → resolved Flutter owner mapping
 ```
 
@@ -257,23 +258,36 @@ docs/visual_authority/<initiative>/implementation_mapping.json
 
 它只保存implementation mapping evidence，不取代`.pen`或`manifest.md`。Critical mapping只能是`exact`、`verified-equivalent`、`intentional-deviation`、`unresolved`；後三者分別需要equivalence evidence、accepted deviation approval或維持fail-closed。Machine validator與完整field contract由`tools/visual/pencil_implementation_mapping.py`擁有，本Guide不複製schema。
 
+同一mapping還必須對risk-selected UI design values保存resolved ownership。Human decision route：
+
+```txt
+shared semantic / Theme Identity / validated reusable component
+→ Design System public API
+
+raster / vector / icon / font / texture
+→ existing asset / representation provenance authority
+
+canonical viewport / DPR / comparison metadata
+→ visual-authority metadata
+
+screen / section placement mechanics
+→ presentation layout owner
+
+single-screen exact geometry / decoration
+→ smallest correct component owner
+```
+
+禁止以`FeatureVisualSpec`、`FeatureVisualTokens`、`FeatureUiSpec`、`StyleConfig`或等價class把colors、dimensions、typography、asset paths、gradients、geometry與canonical metadata重新集中。這些名稱本身不是唯一判準；真正的failure是responsibility mixture與unresolved ownership。
+
+Design System promotion依semantic identity、stable theme responsibility與consumer evidence，不依hex/數值剛好相同。Asset path/hash/source transformation繼續由existing provenance contract擁有，UI ownership record只能引用其evidence，不能建立第二套asset registry。
+
 Critical geometry與micro-fidelity依risk選最小充分owner；不要求every-node geometry test、every-icon golden或every-section visual test。Whole-screen PASS不能覆蓋critical local FAIL，source constant也不能覆蓋runtime`RenderBox` evidence。
 
 若review已判定wrong source／asset／icon／representation，立即停止對該candidate繼續scale／padding／crop／offset／opacity微調，回representation classification／provenance取得replacement mapping並fresh驗證。這是recovery gate，不是事後review建議。
 
-每個extracted item只指定一個Flutter owner。Owner候選：
+每個extracted item只指定一個Flutter owner。Feature-local只允許窄責任例外，例如同一accepted proof多個bounded components真正共享的local palette或typography；single-component radius、gap、gradient、offset等優先由component本身持有，不建立feature-wide token袋。
 
-```txt
-existing ColorScheme / DsSemanticColors
-existing DsSpace / DsRadius
-feature-local visual spec
-generated localization key
-approved icon package identity
-feature-local widget
-decorative Flutter primitive
-```
-
-只有真正存在第二個consumer時才提升為global Design System token。Pencil-specific exact cyan、gold、glow、gradient或單頁尺寸不因「看起來可共用」就提升。
+只有shared semantic／Theme Identity／validated reusable consumer成立時才提升為global Design System token。Pencil-specific exact cyan、gold、glow、gradient或單頁尺寸不因「看起來可共用」就提升；反過來，真正app-wide background/text/brand semantic也不能以「Pencil exact」為理由複製進每個feature。
 
 ## Feature First and localization rules
 
@@ -282,6 +296,7 @@ Pencil只擁有visual／structural authority，不建立第二套App architectur
 **Flutter Feature First是code ownership；Pencil document boundary是design authority ownership，兩者不得互相推導。** 真實產品通常由一份App master `.pen`同時涵蓋多個Flutter features。
 
 - 新UI仍放入`apps/flutter_architecture/lib/features/<feature>/presentation/`。
+- `presentation/pages/`只負責Page/View orchestration；projection/render mechanics放明確`layout/` owner，bounded section/component composition放`widgets/`或等價component owner。不得把custom RenderObject與整頁section dump藏在page file。
 - 只有實際business behavior才引入Domain／Data；presentation-only proof不得建立假的Repository／UseCase／Bloc。
 - App仍是Composition Root。
 - Visible copy進generated ARB localization；不要把accepted中文直接散落在widgets。

@@ -10,24 +10,35 @@
 
 ## Mapping order
 
-每個Pencil item只能映射到一個明確owner：
+每個Pencil item只能映射到一個明確owner；representation resolved後還必須做UI Design Ownership classification：
 
 ```txt
-existing ColorScheme／DsSemanticColors
-existing DsSpace／DsRadius
-feature-local visual specification
-generated localization key
-approved icon package
-feature-local widget
-decorative Flutter primitive
+shared semantic / Theme Identity / reusable component
+→ existing public Design System owner
+
+raster / vector / icon / font / texture
+→ existing representation / provenance authority
+
+canonical viewport / DPR / comparison assumptions
+→ visual-authority metadata
+
+screen / section placement mechanics
+→ layout owner
+
+single-screen exact geometry / decorative value
+→ smallest correct component owner
 ```
 
 沒有第二consumer evidence，不得把單畫面數值提升為global Design System token。
 
+同樣禁止另一個方向：不得建立`FeatureVisualSpec`、`FeatureVisualTokens`、`FeatureUiSpec`、`StyleConfig`或等價class，把colors、dimensions、typography、asset paths、gradients與geometry集中成feature內第二套Design System。Feature-local owner只能是窄責任例外，例如accepted proof中多個bounded components真正共享的local palette或typography。
+
+`implementation_mapping.json`的risk-selected `ui_design_ownerships`必須resolved；Design System owner需指向public API，`intentional-local`需local-scope reason，asset-reference只引用existing provenance evidence。Missing／unresolved ownership是production hard stop。
+
 ## Architecture boundary
 
 - App保持唯一Composition Root。
-- 使用Feature First；presentation-only proof只建立feature README、page、view、visual spec、copy與widgets。
+- 使用Feature First；presentation-only proof只建立真實需要的page/view、layout、widgets、copy與窄責任UI owners，不預設建立visual spec。
 - Visible strings進既有ARB／generated localization。
 - Base theme與semantic colors優先使用既有Design System。
 - Route遵守accepted Plan的guard、initial與Shell boundary。
@@ -48,6 +59,8 @@ unresolved
 一般 App screen 預設使用 `constraint-relationship`；canonical page coordinates 只可作 design evidence，不能成為 runtime page coordinate system。`intentional-spatial-canvas` 只限 map／game board／diagram editor 等真正 spatial surface，且必須有 accepted `approval_ref`。`unresolved` fail closed。
 
 Local component 可以使用 bounded overlay，但 bounded overlay 不取得 whole-screen page-flow ownership，也不構成 screen-root layout model。
+
+Presentation responsibility另外固定：`pages/`只做Page/View orchestration；custom RenderObject、projection/render calibration infrastructure不得藏在page owner；bounded section/component composition由`widgets/`或等價component owner持有。這不是file-length lint，也不要求每個widget獨立檔案。
 
 ## Presentation-only判定
 

@@ -10,23 +10,25 @@ last_reviewed_baseline: 1.22.0
 
 ```txt
 Active Milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
-State: Requirement accepted / Revised Design accepted / Implementation Plan not started
+State: Requirement accepted / Revised Design accepted / Implementation Plan proposed; Plan review PASS; awaiting user approval
 Template Baseline: 1.22.0
 ```
 
 ## Current Scope
 
-Milestone 44已完成fresh Requirement Decision與scope corrective，維持Level 4 Architecture / Milestone。Current主責只修正bounded-component fixed-canvas laundering，並把current Pencil compatibility reference遷移為section-internal relationship-owned layout；Flow/Coordinator降為follow-up candidate，same-semantic color只做bounded governance clarification，不擴張Theme/Design System production scope。Revised Design已完成fresh雙層review並於2026-08-19取得使用者明確核准。下一個合法步驟是建立Implementation Plan；Plan未核准前不得修改production implementation。
+Milestone 44已完成fresh Requirement Decision與scope corrective，維持Level 4 Architecture / Milestone。Current主責只修正bounded-component fixed-canvas laundering，並把current Pencil compatibility reference遷移為section-internal relationship-owned layout；Flow/Coordinator降為follow-up candidate，same-semantic color只做bounded governance clarification，不擴張Theme/Design System production scope。Revised Design已完成fresh雙層review並於2026-08-19取得使用者明確核准。Implementation Plan已建立為`proposed`並完成完整雙層Plan review PASS；下一個合法步驟是取得使用者明確Plan核准。Plan未核准前不得修改production implementation或建立implementation worktree。
 
 ## Current Gate
 
-Milestone 41～43 closure維持不變。Milestone 44 Design gate已於2026-08-19通過。Current gate為Implementation Plan尚未建立；Open P0=0；Design review中的P1均已有disposition。
+Milestone 41～43 closure維持不變。Milestone 44 Design gate已於2026-08-19通過。Current gate為Implementation Plan proposed／Plan review PASS／awaiting user approval；Open P0=0；Open P1 without disposition=0。
 
 ## Current Evidence
 
 - Milestone 44 Requirement Decision：`docs/audits/milestone_44/44-r_requirement_decision.md`（accepted / Level 4）。
 - Milestone 44 Design：`docs/superpowers/specs/2026-08-18-milestone-44-pencil-component-constraint-semantics-design.md`（accepted；revised雙層review PASS；user approved 2026-08-19）。
 - Milestone 44 Design Review：`docs/audits/milestone_44/44-0_design_spec_review.md`（completed / PASS）。
+- Milestone 44 Implementation Plan：`docs/superpowers/plans/2026-08-19-milestone-44-pencil-component-constraint-semantics-corrective.md`（proposed；Plan review PASS；awaiting user approval）。
+- Milestone 44 Plan Review：`docs/audits/milestone_44/44-p_implementation_plan_review.md`（completed / PASS）。
 
 - Milestone 43 Requirement Decision：`docs/audits/milestone_43/43-r_requirement_decision.md`（accepted / Level 4）。
 - Milestone 43 Design：`docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`（accepted；review PASS；user approved 2026-08-18）。

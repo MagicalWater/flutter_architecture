@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
-State: Requirement accepted / Revised Design accepted / Implementation Plan not started
+State: Requirement accepted / Revised Design accepted / Implementation Plan proposed; Plan review PASS; awaiting user approval
 Template Baseline: 1.22.0
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 43 已完成或已有明確 disposition。Milestone 44已由fresh audit確認為Level 4 corrective，且已完成scope corrective：主責鎖定component-local fixed-canvas laundering；Flow/Coordinator不納入本Milestone implementation，same-semantic color只做bounded clarification。Revised Design已完成雙層review並於2026-08-19取得使用者明確核准；下一步為建立Implementation Plan。Milestone 43仍維持Template Baseline 1.22.0正式closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 43 已完成或已有明確 disposition。Milestone 44已由fresh audit確認為Level 4 corrective，且已完成scope corrective：主責鎖定component-local fixed-canvas laundering；Flow/Coordinator不納入本Milestone implementation，same-semantic color只做bounded clarification。Revised Design已完成雙層review並於2026-08-19取得使用者明確核准；Implementation Plan已建立為`proposed`並完成Plan雙層review PASS，目前等待使用者明確Plan核准。Milestone 43仍維持Template Baseline 1.22.0正式closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

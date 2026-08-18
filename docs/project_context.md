@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.22.0
 ---
 
 # Project Context
@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.21.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.21.0
+Template Baseline: 1.22.0
 Phase 1 / MVP: Completed
-Current active milestone: None
-Current phase: Milestone 41 + 42 published / post-release closure PASS
-Latest completed initiative: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective, combined with Milestone 41 in Template Baseline 1.21.0
+Current active milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
+Current phase: Task 43-7 accepted / Task 43-8 publication active
+Latest completed initiative: Milestone 43 implementation and holistic review accepted; Template Baseline 1.22.0 publication in progress
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -364,7 +364,7 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.21.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.22.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
@@ -373,8 +373,8 @@ Current iOS deployment baseline為15.0。
 ```txt
 Current active milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
 Current phase: Task 43-7 accepted / Task 43-8 publication active
-Latest completed initiative: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective, combined with Milestone 41 in Template Baseline 1.21.0
-Maintenance mode: Active architecture planning; production implementation blocked until Design / Plan approval
+Latest completed initiative: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance（Task 43-7 accepted；1.22.0 publication in progress）
+Maintenance mode: Active publication / post-release validation
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 

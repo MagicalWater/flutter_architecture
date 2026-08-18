@@ -3,7 +3,7 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.22.0
 ---
 
 # Active Milestone
@@ -11,7 +11,7 @@ last_reviewed_baseline: 1.21.0
 ```txt
 Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
 State: Task 43-7 accepted / Task 43-8 publication active
-Template Baseline: 1.21.0
+Template Baseline: 1.22.0
 ```
 
 ## Current Scope

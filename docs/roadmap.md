@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.22.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.21.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.21.0
+Template Baseline: 1.22.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -28,7 +28,7 @@ Other platforms: Dependency-ready
 ```txt
 Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
 State: Requirement accepted / Design accepted / Plan accepted / Task 43-7 holistic review accepted
-Template Baseline: 1.21.0
+Template Baseline: 1.22.0
 ```
 
 完整 active scope、current gate與 next action：

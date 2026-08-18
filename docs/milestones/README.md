@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.20.0
+last_reviewed_baseline: 1.21.0
 ---
 
 # Milestone Routing
@@ -31,25 +31,33 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
-Template Baseline: 1.20.0
+Active Milestone: none
+Template Baseline: 1.21.0
 ```
 
-Milestone 41已完成formal Requirement Decision並進入Design gate；current state以`docs/roadmap/active.md`為準。Template Baseline目前仍為`1.20.0`。
+Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline `1.21.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
 
-### Milestone 41 active routing
+### Milestone 42 closed routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_42/42-r_requirement_decision.md`
+- Revised Design：Accepted / user approved 2026-08-18 — `docs/superpowers/specs/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective-design.md`
+- Design Review：Completed / PASS — `docs/audits/milestone_42/42-0_design_spec_review.md`
+- Rebuilt Implementation Plan：Accepted / user approved 2026-08-18 — `docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md`
+- Plan Review：Completed / PASS — `docs/audits/milestone_42/42-p_implementation_plan_review.md`
+- Behavioral Pressure：Accepted / PASS — `docs/audits/milestone_42/42-8_behavioral_pressure_review.md`
+- Combined Holistic Final Review：Accepted / PASS — `docs/audits/milestone_42/42-9_combined_holistic_final_review.md`
+- Post-release Validation：Completed / PASS — `docs/audits/milestone_42/42-10_post_release_validation.md`
+- Release：Template Baseline `1.21.0`；Milestone 41 + 42 formal closure。
+
+### Milestone 41 closed routing
 
 - Requirement Decision：Accepted — `docs/audits/milestone_41/41-r_requirement_decision.md`
 - Design：Accepted / user approved 2026-08-18 — `docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`
 - Design Review：Completed / PASS — `docs/audits/milestone_41/41-0_design_spec_review.md`
-- Implementation Plan：Proposed / review PASS / user approval pending — `docs/superpowers/plans/2026-08-18-milestone-41-pencil-layout-architecture-corrective.md`
+- Implementation Plan：Accepted / user approved 2026-08-18 — `docs/superpowers/plans/2026-08-18-milestone-41-pencil-layout-architecture-corrective.md`
 - Plan Review：Completed / PASS — `docs/audits/milestone_41/41-p_implementation_plan_review.md`
-
-- Requirement Decision：Accepted — `docs/audits/milestone_41/41-r_requirement_decision.md`
-- Design：Proposed / review PASS / user approval pending — `docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`
-- Design Review：Completed / PASS — `docs/audits/milestone_41/41-0_design_spec_review.md`
-- Implementation Plan：Forbidden until Design user approval。
-- Production implementation：Forbidden until Plan user approval。
+- Holistic Final Review：Accepted / PASS — `docs/audits/milestone_41/41-8_holistic_final_review.md`
+- Publication disposition：與Milestone 42合併為`1.21.0`，formal closure由`docs/audits/milestone_42/42-10_post_release_validation.md`擁有。
 
 Milestone 40已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence，40-7T Level 1 README title artwork已取得使用者visual acceptance並promotion到root README。
 

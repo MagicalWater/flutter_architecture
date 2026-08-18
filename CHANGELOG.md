@@ -53,7 +53,7 @@
 
 - Requirement Decision、Design、Implementation Plan與Tasks 41-1～41-8依Level 4雙層Task governance完成holistic final review；Open P0=0、Open P1 without disposition=0。
 - Milestone 42 Revised Design與rebuilt Implementation Plan均經雙層review與使用者核准；Tasks 42-1～42-9依雙層Task governance完成，combined Milestone 41+42 holistic Open P0=0、Open P1 without disposition=0。
-- Template Baseline維持combined `1.21.0` release candidate，不因pre-publication corrective另增無語意版本；Task 42-10仍需使用者merge／push授權、published-main clean checkout、required platform evidence與fresh behavioral acceptance後，Milestone 41／42才能formal closure。
+- Template Baseline `1.21.0`已由Milestone 41 + 42 combined candidate正式發布；Task 42-10在exact published runtime SHA完成fresh clean-checkout Windows full regression、GitHub-hosted iOS Simulator與unsigned Production `iphoneos` verification，以及PTF-30～34 published-main fresh behavioral acceptance，Milestone 41／42正式closure。
 
 ---
 

@@ -9,18 +9,18 @@ last_reviewed_baseline: 1.21.0
 # Active Milestone
 
 ```txt
-Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-State: Tasks 42-1～42-9 accepted / combined Milestone 41+42 release candidate PASS / merge-push authorization pending
-Template Baseline: 1.21.0 combined release candidate base
+Active Milestone: none
+State: Milestone 41 + 42 published / post-release closure PASS
+Template Baseline: 1.21.0
 ```
 
 ## Current Scope
 
-Milestone 42處理Milestone 41 merge前fresh architecture review新增的presentation ownership與UI design ownership governance finding。Current implementation已完成`pages/`／`layout/`／`widgets/`責任拆分並退休`PencilCompatibilityVisualSpec` catch-all；scope進一步建立repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion、asset/provenance與visual-authority separation、machine/review enforcement與fresh behavioral pressure；不修改accepted `.pen`或降低visual fidelity。
+目前沒有active Milestone。Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併為Template Baseline 1.21.0並完成published-main post-release validation。下一個Presentation Component Architecture議題只存在於`docs/roadmap/candidates.md`，尚未完成Requirement Decision，不得直接implementation。
 
 ## Current Gate
 
-Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42 Revised Design與rebuilt Implementation Plan均已accepted；Tasks 42-1～42-9已accepted。Combined Milestone 41+42 holistic / release candidate已fresh PASS，下一個合法gate是使用者merge／push authorization；Task 42-10 publication / post-release closure在授權前不得開始。
+Milestone 41 + 42 closure已完成；Task 42-10 fresh evidence確認Windows full regression、required iOS Simulator/Production verification與PTF-30～34 published-main acceptance全部PASS。Current maintenance state回到可接受新Requirement Decision；Milestone 43仍只是candidate。
 
 ## Current Evidence
 
@@ -37,7 +37,8 @@ Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均�
 - Milestone 42 Plan Review：`docs/audits/milestone_42/42-p_implementation_plan_review.md`（completed / PASS）。
 - Milestone 42 Tasks 42-1～42-8：`docs/audits/milestone_42/42-1_ownership_red_review.md` 至 `42-8_behavioral_pressure_review.md`（accepted；visual authority unchanged；PTF-30～34與edge/positive controls PASS）。
 - Milestone 42 Task 42-9：`docs/audits/milestone_42/42-9_combined_holistic_final_review.md`（accepted / PASS；combined 1.21.0 release candidate；Open P0=0 / Open P1 without disposition=0）。
+- Milestone 42 Task 42-10：`docs/audits/milestone_42/42-10_post_release_validation.md`（completed / PASS；Template Baseline 1.21.0 published；Milestone 41 + 42 closed）。
 
 ## Previous Closure
 
-Milestone 40已完成GitHub Repository Landing Page與documentation authority restructure，未升Template Baseline；Milestone 39的1.20.0 publication在Task 41-9完成前仍是最後一個已發布baseline authority。
+Milestone 40已完成GitHub Repository Landing Page與documentation authority restructure；Milestone 41 + 42隨Template Baseline 1.21.0 publication正式封存。

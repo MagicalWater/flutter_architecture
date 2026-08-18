@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.21.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.21.0 release candidate
+Template Baseline: 1.21.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-Current phase: Tasks 42-1～42-9 accepted / combined Milestone 41+42 release candidate PASS / merge-push authorization pending
-Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
+Current active milestone: None
+Current phase: Milestone 41 + 42 published / post-release closure PASS
+Latest completed initiative: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective, combined with Milestone 41 in Template Baseline 1.21.0
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -369,18 +369,18 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-Current phase: Tasks 42-1～42-9 accepted / combined Milestone 41+42 release candidate PASS / merge-push authorization pending
-Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
-Maintenance mode: Suspended while Milestone 42 is active
+Current active milestone: None
+Current phase: Milestone 41 + 42 published / post-release closure PASS
+Latest completed initiative: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective, combined with Milestone 41 in Template Baseline 1.21.0
+Maintenance mode: Available for new Requirement Decision
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 41已完成41-1～41-8且其constraint/relationship layout corrective仍PASS；merge前fresh architecture review新增的presentation ownership與`PencilCompatibilityVisualSpec` catch-all P1，已由Milestone 42完整處理。Current source已拆分`pages/` orchestration、`layout/` projection/render mechanics與`widgets/` bounded composition，舊VisualSpec已退休；shared semantic/theme、asset/provenance、visual-authority metadata、layout owner與smallest component owner的UI Design Ownership Architecture已同步到ADR-018、ADR-028、`implementing-pencil-flutter-design` Skill、human Guide與machine mapping。PTF-30～34、same-hex negative edge與shared-semantic positive control均fresh PASS。Task 42-9 combined holistic與release/full validation已PASS；下一個合法gate是使用者merge／push authorization，publication前Milestone 41與42仍不得宣稱closed。
+Milestone 41 constraint/relationship layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0。Current source已拆分`pages/` orchestration、`layout/` projection/render mechanics與`widgets/` bounded composition，舊VisualSpec已退休；shared semantic/theme、asset/provenance、visual-authority metadata、layout owner與smallest component owner的UI Design Ownership Architecture已同步到ADR-018、ADR-028、`implementing-pencil-flutter-design` Skill、human Guide、root Agent policy與machine mapping。Task 42-10在exact published runtime SHA完成Windows full regression、GitHub-hosted iOS Simulator/Production verification與PTF-30～34 fresh acceptance；Milestone 41與42正式closed。更大的Presentation Component Architecture只登記為Milestone 43 candidate，尚未admitted。
 
 Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Template Baseline維持1.20.0。
 
-Milestone 41 holistic gate已確認Open P0=0、undisposed P1=0；workspace analyze、full Flutter regression（App 496 cases）、Pencil visual/runtime gates、repository Python regression與`flutter build bundle` fresh PASS。Release candidate metadata已同步為1.21.0，但在Task 41-9 published-main gate完成前不得宣稱Milestone closed。
+Milestone 41 + 42 final closure evidence由`docs/audits/milestone_42/42-10_post_release_validation.md`擁有；Open P0=0、Open P1 without disposition=0。
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 

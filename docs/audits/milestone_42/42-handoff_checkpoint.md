@@ -1,12 +1,14 @@
 ---
 document_type: planning-review
-status: completed
+status: superseded
 authoritative_for:
   - milestone-42-cross-conversation-handoff
 last_reviewed_baseline: 1.21.0
 ---
 
 # Milestone 42 — Cross-Conversation Handoff Checkpoint
+
+> 本handoff已由`docs/audits/milestone_42/42-10_post_release_validation.md`正式closure evidence取代；以下內容保留為publication前歷史交接狀態，不再代表current next gate。
 
 ## Purpose
 

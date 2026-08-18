@@ -112,6 +112,15 @@ data/
 - 不要跨 feature 直接讀取其他 feature 的 Bloc。
 - 跨 feature 狀態應透過 SessionManager、Repository Interface、UseCase 或 domain abstraction。
 
+### UI Design Ownership 邊界
+
+- Shared semantic／Theme Identity／validated reusable component 才由 `packages/design_system` 擁有。
+- Raster／vector／icon／font／texture 的 identity、source、hash 與 provenance 走既有 asset／representation authority，不塞進 generic visual constants class。
+- Canonical viewport／DPR／comparison metadata 屬 visual authority，不進 Design System。
+- Single-screen exact geometry、decorative gradient、局部 spacing／radius 等只留在 smallest correct component owner；不得因 raw value 相同就 promotion。
+- 不建立 `*VisualSpec`、`*VisualTokens`、`*UiSpec`、`*StyleConfig` 或等價 catch-all，把 colors、dimensions、typography、assets、gradients、geometry、canonical metadata 混成 feature 內第二套 Design System。
+- Pencil/source-driven mapping 的完整 contract 由 ADR-018、ADR-028 與 `implementing-pencil-flutter-design` Skill 擁有；一般 feature 也不得違反上述 repository-wide ownership boundary。
+
 ### Route Guard 邊界
 
 - Route Guard 不依賴 AuthBloc。

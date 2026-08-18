@@ -52,6 +52,28 @@ class PencilSingleRendererPolicyTest(unittest.TestCase):
         self.assertIn("transform.scale", self.all_text)
         self.assertIn("top-level", self.all_text)
 
+    def test_canonical_page_coordinates_are_not_runtime_page_coordinates(self) -> None:
+        self.assertIn("canonical page", self.all_text)
+        self.assertIn("runtime page coordinate", self.all_text)
+
+    def test_screen_flow_is_constraint_relationship_owned(self) -> None:
+        self.assertIn("constraint", self.all_text)
+        self.assertIn("relationship", self.all_text)
+        self.assertIn("page-flow ownership", self.all_text)
+
+    def test_bounded_local_overlay_remains_legal(self) -> None:
+        self.assertIn("bounded local overlay", self.all_text)
+        self.assertIn("stack", self.all_text)
+        self.assertIn("positioned", self.all_text)
+
+    def test_spatial_canvas_requires_accepted_approval(self) -> None:
+        self.assertIn("intentional-spatial-canvas", self.all_text)
+        self.assertIn("approval_ref", self.all_text)
+
+    def test_single_renderer_does_not_exempt_coordinate_reconstruction(self) -> None:
+        self.assertIn("single-renderer", self.all_text)
+        self.assertIn("canonical-coordinate reconstruction", self.all_text)
+
 
 if __name__ == "__main__":
     unittest.main()

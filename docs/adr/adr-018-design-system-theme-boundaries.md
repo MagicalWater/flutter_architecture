@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-018-design-system-theme-boundaries
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.21.0
 id: ADR-018
 title: Design System and Theme Boundaries
 supersedes:
@@ -85,6 +85,33 @@ Blocking與 non-blocking operation surface必須分離。Initial blocking error�
 
 不為單一 feature情境建立尚未被多個 consumer驗證的 generic component framework。
 
+### UI Design Ownership Architecture
+
+Pencil/source-driven UI不得用`FeatureVisualSpec`、`FeatureVisualTokens`、`FeatureUiSpec`、`StyleConfig`或等價catch-all建立第二套Design System。每個risk-selected UI design value必須先解析到正確owner：
+
+```txt
+shared semantic / Theme Identity / validated reusable component
+→ packages/design_system public API
+
+raster / vector / icon / font / texture representation
+→ asset / representation provenance authority
+
+canonical viewport / DPR / comparison assumptions
+→ visual-authority metadata
+
+screen / section placement mechanics
+→ presentation layout owner
+
+single-screen exact geometry / decoration
+→ smallest correct component owner
+```
+
+Promotion判斷依semantic identity、stable theme responsibility與consumer evidence，不依raw value相同。反方向也禁止把single-consumer exact radius、gradient、offset或artwork geometry提升成global Design System token。
+
+Feature-local owner只允許窄責任、可解釋的exact visual authority，例如同一accepted proof多個bounded components共用的local palette或typography。它不是「只要Pencil exact就全部放feature-local」的逃生艙，也不得同時承擔colors、dimensions、typography、asset paths、gradients與canonical metadata。
+
+Asset path/provenance不得由visual token/spec owner接管；Design System也不保存canonical viewport/DPR或initiative-specific comparison metadata。
+
 ### App-owned preference
 
 Theme preference至少包含 stable `themeId`與 `system | light | dark` mode。App負責 preference model、versioned persistence、bootstrap restore、controller lifecycle、registry composition、`MaterialApp` wiring與 selector UI；Design System不依賴 persistence implementation。
@@ -131,4 +158,4 @@ Design System與 feature integration不得禁止 system text scaling，不以固
 
 ## Last Reviewed Baseline
 
-1.5.1。
+1.21.0；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract。

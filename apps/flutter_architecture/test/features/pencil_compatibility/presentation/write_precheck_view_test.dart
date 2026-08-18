@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_architecture/features/pencil_compatibility/presentation/pages/write_precheck_projected_canvas.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/pages/write_precheck_view.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/write_precheck_copy.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_content.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 

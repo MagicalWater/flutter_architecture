@@ -1,7 +1,60 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "initiative": "pencil-compatibility-write-precheck",
   "pencil_authority_sha256": "bd8926711ea28e7f9ae5a83128ed8fbc8d506cb5342c76eb35360c4c13544fdc",
+  "screen_layouts": [
+    {
+      "node_id": "lAOay",
+      "flutter_owner": "WritePrecheckProjectedCanvas",
+      "layout_model": "constraint-relationship",
+      "evidence_ref": "apps/flutter_architecture/test/features/pencil_compatibility/presentation/write_precheck_architecture_contract_test.dart"
+    }
+  ],
+  "ui_design_ownerships": [
+    {
+      "id": "write-precheck-canonical-viewport",
+      "kind": "visual-authority-metadata",
+      "semantic_role": "canonical-viewport-and-dpr",
+      "owner": "visual-authority",
+      "disposition": "exact",
+      "consumer_scope": "write-precheck-comparison",
+      "evidence_ref": "docs/visual_authority/pencil-compatibility-write-precheck/manifest.md"
+    },
+    {
+      "id": "write-precheck-proof-palette",
+      "kind": "semantic-color",
+      "semantic_role": "proof-screen-surface-text-accent-palette",
+      "owner": "feature-local",
+      "disposition": "intentional-local",
+      "consumer_scope": "write-precheck",
+      "local_scope_reason": "accepted template proof art direction is not a template-wide Theme Identity"
+    },
+    {
+      "id": "write-precheck-proof-typography",
+      "kind": "typography",
+      "semantic_role": "proof-screen-noto-sans-tc",
+      "owner": "feature-local",
+      "disposition": "intentional-local",
+      "consumer_scope": "write-precheck",
+      "local_scope_reason": "accepted proof typography is not the current template-global typography authority"
+    },
+    {
+      "id": "write-precheck-component-geometry",
+      "kind": "geometry",
+      "semantic_role": "screen-component-exact-geometry",
+      "owner": "component-local",
+      "disposition": "exact",
+      "consumer_scope": "write-precheck bounded components"
+    },
+    {
+      "id": "write-precheck-decorative-gradients",
+      "kind": "decoration",
+      "semantic_role": "screen-specific-decorative-gradients",
+      "owner": "component-local",
+      "disposition": "exact",
+      "consumer_scope": "write-precheck bounded components"
+    }
+  ],
   "critical_nodes": [
     {
       "node_id": "lAOay",

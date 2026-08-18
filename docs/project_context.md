@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.20.0
+last_reviewed_baseline: 1.21.0
 ---
 
 # Project Context
@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.20.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.20.0
+Template Baseline: 1.21.0 release candidate
 Phase 1 / MVP: Completed
-Current active milestone: none — Milestone 40 completed locally
-Current phase: maintenance / next initiative selection
+Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
+Current phase: Tasks 42-1～42-9 accepted / combined Milestone 41+42 release candidate PASS / merge-push authorization pending
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -123,7 +123,7 @@ root/
 
 ### Architecture Visual Overview
 
-以下兩張圖是目前 `1.20.0` 架構 authority 的**視覺摘要**，用來幫助人類快速理解 ownership、runtime composition、productization governance 與依賴契約；它們不建立新的平行 authority。若圖像摘要與 current snapshot、canonical ADR、root machine manifest 或 production source 衝突，仍以這些既有 authority 為準。
+以下兩張圖是目前 `1.21.0` release candidate 架構 authority 的**視覺摘要**，用來幫助人類快速理解 ownership、runtime composition、productization governance 與依賴契約；它們不建立新的平行 authority。若圖像摘要與 current snapshot、canonical ADR、root machine manifest 或 production source 衝突，仍以這些既有 authority 為準。
 
 產品化拓樸總覽：
 
@@ -310,6 +310,8 @@ Restore、Login、Refresh、Logout 與 passive invalidation 共用明確 lifecyc
 - Primitive tokens 與 semantic color roles。
 - Default／Ocean Light／Dark themes。
 - Theme identity 與 Theme mode 分離。
+- Pencil/source-driven UI採UI Design Ownership Architecture：shared semantic／Theme Identity／validated reusable component才進Design System；asset provenance、visual-authority metadata、layout mechanics與single-screen exact component values各由獨立owner承擔。
+- Generic `*VisualSpec`／`*VisualTokens`／`*UiSpec`／`*StyleConfig`不得同時集中colors、dimensions、typography、assets、gradients、geometry或canonical metadata形成平行Design System。
 - Persistent appearance preference。
 - Shared blocking page-state surfaces 與 non-blocking status primitives。
 - Narrow viewport、large text、theme matrix 與 stable gallery regression。
@@ -360,21 +362,25 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.20.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.21.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: none — Milestone 40 completed locally
-Current phase: maintenance / next initiative selection
+Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
+Current phase: Tasks 42-1～42-9 accepted / combined Milestone 41+42 release candidate PASS / merge-push authorization pending
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
-Maintenance mode: Active
+Maintenance mode: Suspended while Milestone 42 is active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
+Milestone 41已完成41-1～41-8且其constraint/relationship layout corrective仍PASS；merge前fresh architecture review新增的presentation ownership與`PencilCompatibilityVisualSpec` catch-all P1，已由Milestone 42完整處理。Current source已拆分`pages/` orchestration、`layout/` projection/render mechanics與`widgets/` bounded composition，舊VisualSpec已退休；shared semantic/theme、asset/provenance、visual-authority metadata、layout owner與smallest component owner的UI Design Ownership Architecture已同步到ADR-018、ADR-028、`implementing-pencil-flutter-design` Skill、human Guide與machine mapping。PTF-30～34、same-hex negative edge與shared-semantic positive control均fresh PASS。Task 42-9 combined holistic與release/full validation已PASS；下一個合法gate是使用者merge／push authorization，publication前Milestone 41與42仍不得宣稱closed。
+
 Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Template Baseline維持1.20.0。
+
+Milestone 41 holistic gate已確認Open P0=0、undisposed P1=0；workspace analyze、full Flutter regression（App 496 cases）、Pencil visual/runtime gates、repository Python regression與`flutter build bundle` fresh PASS。Release candidate metadata已同步為1.21.0，但在Task 41-9 published-main gate完成前不得宣稱Milestone closed。
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 

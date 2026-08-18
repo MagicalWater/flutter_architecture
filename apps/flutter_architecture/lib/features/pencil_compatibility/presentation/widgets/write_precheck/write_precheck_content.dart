@@ -2,21 +2,12 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_architecture/features/pencil_compatibility/presentation/visual_spec/pencil_compatibility_visual_spec.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/write_precheck_copy.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_palette.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_typography.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
-final class WritePrecheckProjection {
-  const WritePrecheckProjection({required this.availableWidth});
-
-  static const double designWidth = 941;
-  static const double designHeight = 1672;
-
-  final double availableWidth;
-
-  double get scale => availableWidth / designWidth;
-  double px(double designPixels) => designPixels * scale;
-}
+part '../../layout/write_precheck_projection.dart';
 
 class WritePrecheckProjectedCanvas extends StatelessWidget {
   const WritePrecheckProjectedCanvas({
@@ -51,324 +42,6 @@ class WritePrecheckProjectedCanvas extends StatelessWidget {
   }
 }
 
-final class _ProjectionTextScaler extends TextScaler {
-  const _ProjectionTextScaler(this.base, this.projectionScale);
-
-  final TextScaler base;
-  final double projectionScale;
-
-  @override
-  double scale(double fontSize) => base.scale(fontSize) * projectionScale;
-
-  @override
-  double get textScaleFactor => base.scale(1) * projectionScale;
-}
-
-class _ProjectionScope extends InheritedWidget {
-  const _ProjectionScope({required this.projection, required super.child});
-
-  final WritePrecheckProjection projection;
-
-  static WritePrecheckProjection of(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<_ProjectionScope>()!
-      .projection;
-
-  @override
-  bool updateShouldNotify(_ProjectionScope oldWidget) =>
-      projection.availableWidth != oldWidget.projection.availableWidth;
-}
-
-double _px(BuildContext context, double designPixels) =>
-    _ProjectionScope.of(context).px(designPixels);
-
-class _ProjectedDecoratedBox extends StatelessWidget {
-  const _ProjectedDecoratedBox({required this.decoration, this.child});
-
-  final BoxDecoration decoration;
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) {
-    final scale = _ProjectionScope.of(context).scale;
-    final border = decoration.border;
-    return DecoratedBox(
-      decoration: decoration.copyWith(
-        borderRadius: decoration.borderRadius == null
-            ? null
-            : decoration.borderRadius! * scale,
-        border: border is Border ? border.scale(scale) : border,
-        boxShadow: decoration.boxShadow
-            ?.map((shadow) => shadow.scale(scale))
-            .toList(growable: false),
-      ),
-      child: child,
-    );
-  }
-}
-
-class _ProjectedPadding extends StatelessWidget {
-  const _ProjectedPadding({required this.padding, required this.child});
-
-  final EdgeInsetsGeometry padding;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: padding * _ProjectionScope.of(context).scale,
-    child: child,
-  );
-}
-
-class _ProjectedClipRRect extends StatelessWidget {
-  const _ProjectedClipRRect({required this.borderRadius, required this.child});
-
-  final BorderRadius borderRadius;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => ClipRRect(
-    borderRadius: borderRadius * _ProjectionScope.of(context).scale,
-    child: child,
-  );
-}
-
-class _ProjectedIcon extends StatelessWidget {
-  const _ProjectedIcon(this.icon, {required this.size, this.color});
-
-  final IconData icon;
-  final double size;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) =>
-      Icon(icon, size: _px(context, size), color: color);
-}
-
-class _ProjectedHairline extends StatelessWidget {
-  const _ProjectedHairline({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final coverage = _ProjectionScope.of(context).scale.clamp(0.0, 1.0);
-    return ColoredBox(
-      color: color.withAlpha((color.a * 255 * coverage).round()),
-    );
-  }
-}
-
-class _ProjectedComponent extends StatelessWidget {
-  const _ProjectedComponent({
-    required this.designWidth,
-    required this.designHeight,
-    required this.child,
-  });
-
-  final double designWidth;
-  final double designHeight;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final projection = _ProjectionScope.of(context);
-    final mediaQuery = MediaQuery.maybeOf(context);
-    final baseTextScaler = mediaQuery?.textScaler is _ProjectionTextScaler
-        ? (mediaQuery!.textScaler as _ProjectionTextScaler).base
-        : mediaQuery?.textScaler;
-
-    Widget designChild = _ProjectionScope(
-      projection: const WritePrecheckProjection(
-        availableWidth: WritePrecheckProjection.designWidth,
-      ),
-      child: child,
-    );
-    if (mediaQuery != null && baseTextScaler != null) {
-      designChild = MediaQuery(
-        data: mediaQuery.copyWith(textScaler: baseTextScaler),
-        child: designChild,
-      );
-    }
-
-    return OverflowBox(
-      alignment: Alignment.topLeft,
-      minWidth: designWidth,
-      maxWidth: designWidth,
-      minHeight: designHeight,
-      maxHeight: designHeight,
-      child: Transform.scale(
-        alignment: Alignment.topLeft,
-        scale: projection.scale,
-        filterQuality: FilterQuality.high,
-        child: SizedBox(
-          width: designWidth,
-          height: designHeight,
-          child: designChild,
-        ),
-      ),
-    );
-  }
-}
-
-class _ProjectedTranslate extends StatelessWidget {
-  const _ProjectedTranslate({required this.offset, required this.child});
-
-  final Offset offset;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Transform.translate(
-    offset: Offset(_px(context, offset.dx), _px(context, offset.dy)),
-    child: child,
-  );
-}
-
-class _ProjectedStack extends StatelessWidget {
-  const _ProjectedStack({
-    this.clipBehavior = Clip.hardEdge,
-    this.children = const <Widget>[],
-  });
-
-  final Clip clipBehavior;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) => _RawProjectedStack(
-    scale: _ProjectionScope.of(context).scale,
-    clipBehavior: clipBehavior,
-    children: children,
-  );
-}
-
-class _RawProjectedStack extends MultiChildRenderObjectWidget {
-  const _RawProjectedStack({
-    required this.scale,
-    required this.clipBehavior,
-    required super.children,
-  });
-
-  final double scale;
-  final Clip clipBehavior;
-
-  @override
-  _RenderProjectedStack createRenderObject(BuildContext context) =>
-      _RenderProjectedStack(
-        scale: scale,
-        alignment: AlignmentDirectional.topStart,
-        textDirection: Directionality.maybeOf(context),
-        fit: StackFit.loose,
-        clipBehavior: clipBehavior,
-      );
-
-  @override
-  void updateRenderObject(
-    BuildContext context,
-    _RenderProjectedStack renderObject,
-  ) {
-    renderObject
-      ..scale = scale
-      ..textDirection = Directionality.maybeOf(context)
-      ..clipBehavior = clipBehavior;
-  }
-}
-
-final class _RenderProjectedStack extends RenderStack {
-  _RenderProjectedStack({
-    required double scale,
-    required super.alignment,
-    required super.textDirection,
-    required super.fit,
-    required super.clipBehavior,
-  }) : _scale = scale;
-
-  double _scale;
-
-  double get scale => _scale;
-  set scale(double value) {
-    if (_scale == value) {
-      return;
-    }
-    _scale = value;
-    markNeedsLayout();
-  }
-
-  @override
-  void performLayout() {
-    if (_scale == 1) {
-      super.performLayout();
-      return;
-    }
-
-    final snapshots = <StackParentData, _StackParentDataSnapshot>{};
-    for (
-      RenderBox? child = firstChild;
-      child != null;
-      child = childAfter(child)
-    ) {
-      final data = child.parentData! as StackParentData;
-      if (!data.isPositioned) {
-        continue;
-      }
-      snapshots[data] = _StackParentDataSnapshot.from(data);
-      data
-        ..left = _scaled(data.left)
-        ..top = _scaled(data.top)
-        ..right = _scaled(data.right)
-        ..bottom = _scaled(data.bottom)
-        ..width = _scaled(data.width)
-        ..height = _scaled(data.height);
-    }
-
-    try {
-      super.performLayout();
-    } finally {
-      for (final entry in snapshots.entries) {
-        entry.value.restore(entry.key);
-      }
-    }
-  }
-
-  double? _scaled(double? value) => value == null ? null : value * _scale;
-}
-
-final class _StackParentDataSnapshot {
-  const _StackParentDataSnapshot({
-    required this.left,
-    required this.top,
-    required this.right,
-    required this.bottom,
-    required this.width,
-    required this.height,
-  });
-
-  factory _StackParentDataSnapshot.from(StackParentData data) =>
-      _StackParentDataSnapshot(
-        left: data.left,
-        top: data.top,
-        right: data.right,
-        bottom: data.bottom,
-        width: data.width,
-        height: data.height,
-      );
-
-  final double? left;
-  final double? top;
-  final double? right;
-  final double? bottom;
-  final double? width;
-  final double? height;
-
-  void restore(StackParentData data) {
-    data
-      ..left = left
-      ..top = top
-      ..right = right
-      ..bottom = bottom
-      ..width = width
-      ..height = height;
-  }
-}
-
 class _ProjectedScreen extends StatelessWidget {
   const _ProjectedScreen({required this.copy});
 
@@ -379,29 +52,103 @@ class _ProjectedScreen extends StatelessWidget {
     final projection = _ProjectionScope.of(context);
     return SizedBox(
       width: projection.px(WritePrecheckProjection.designWidth),
-      height: projection.px(WritePrecheckProjection.designHeight),
       child: ClipRect(
-        child: _ProjectedStack(
+        child: Stack(
+          alignment: AlignmentDirectional.topStart,
           clipBehavior: Clip.hardEdge,
           children: <Widget>[
             const Positioned.fill(child: _CanonicalBackground()),
-            _CanonicalAmbientGlows(projection: projection),
-            _topChrome(context),
-            _progressComponent(context),
-            _hero(context),
-            _summaryCard(context),
-            _resultsCard(context),
-            _recordsCard(context),
-            _guidanceCard(context),
-            ..._primarySupplementalGlows(context),
-            _primaryAction(context),
-            ..._secondaryActions(context),
-            ..._footer(context),
+            Positioned.fill(
+              child: _CanonicalAmbientGlows(projection: projection),
+            ),
+            ..._primarySupplementalGlows(projection),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                _flowRegion(
+                  context,
+                  designHeight: 220,
+                  children: <Widget>[
+                    _topChrome(context),
+                    _progressComponent(context),
+                  ],
+                ),
+                _flowGap(context, 12),
+                _flowRegion(
+                  context,
+                  designHeight: 254,
+                  children: <Widget>[_hero(context)],
+                ),
+                _flowGap(context, 8),
+                _flowRegion(
+                  context,
+                  designHeight: 260,
+                  children: <Widget>[_summaryCard(context)],
+                ),
+                _flowGap(context, 5),
+                _flowRegion(
+                  context,
+                  designHeight: 286,
+                  children: <Widget>[_resultsCard(context)],
+                ),
+                _flowGap(context, 5),
+                _flowRegion(
+                  context,
+                  designHeight: 219,
+                  children: <Widget>[_recordsCard(context)],
+                ),
+                _flowGap(context, 8),
+                _flowRegion(
+                  context,
+                  designHeight: 171,
+                  children: <Widget>[
+                    _guidanceCard(context),
+                    _guidanceTrailingGlow(),
+                  ],
+                ),
+                _flowRegion(
+                  context,
+                  designHeight: 7,
+                  children: <Widget>[_primaryLeadingGlow()],
+                ),
+                _flowRegion(
+                  context,
+                  designHeight: 72,
+                  children: <Widget>[_primaryAction(context)],
+                ),
+                _flowGap(context, 9),
+                _flowRegion(
+                  context,
+                  designHeight: 60,
+                  children: _secondaryActions(context),
+                ),
+                _flowGap(context, 10),
+                _flowRegion(
+                  context,
+                  designHeight: 66,
+                  children: _footer(context),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
+
+  Widget _flowGap(BuildContext context, double designHeight) =>
+      SizedBox(height: _px(context, designHeight));
+
+  Widget _flowRegion(
+    BuildContext context, {
+    required double designHeight,
+    required List<Widget> children,
+  }) => SizedBox(
+    width: _px(context, WritePrecheckProjection.designWidth),
+    height: _px(context, designHeight),
+    child: _ProjectedStack(children: children),
+  );
 
   Widget _topChrome(BuildContext context) => Positioned(
     left: 0,
@@ -502,7 +249,7 @@ class _ProjectedScreen extends StatelessWidget {
             child: _ProjectedIcon(
               PhosphorIcons.arrowLeftLight,
               size: 28,
-              color: PencilCompatibilityVisualSpec.text,
+              color: WritePrecheckPalette.text,
             ),
           ),
         ),
@@ -529,7 +276,7 @@ class _ProjectedScreen extends StatelessWidget {
       height: 29,
       size: 20,
       letterSpacing: 0.05,
-      color: PencilCompatibilityVisualSpec.muted,
+      color: WritePrecheckPalette.muted,
     ),
   ];
 
@@ -635,7 +382,7 @@ class _ProjectedScreen extends StatelessWidget {
   Widget _hero(BuildContext context) => Positioned(
     key: const ValueKey<String>('precheckHero'),
     left: 37,
-    top: 232,
+    top: 0,
     width: 853,
     height: 254,
     child: Semantics(
@@ -742,7 +489,7 @@ class _ProjectedScreen extends StatelessWidget {
                   height: 56,
                   size: 20,
                   lineHeight: 1.42,
-                  color: PencilCompatibilityVisualSpec.muted,
+                  color: WritePrecheckPalette.muted,
                   scaleX: 0.989,
                   maxLines: 2,
                 ),
@@ -813,7 +560,6 @@ class _ProjectedScreen extends StatelessWidget {
     context: context,
     key: const ValueKey<String>('precheckSummary'),
     semanticsLabel: copy.summaryTitle,
-    top: 495,
     height: 258,
     title: copy.summaryTitle,
     titleIcon: PhosphorIcons.clipboardTextLight,
@@ -830,10 +576,10 @@ class _ProjectedScreen extends StatelessWidget {
           value: copy.summaryRows[index].value,
           iconColor: index == 3
               ? const Color(0xFFF5B941)
-              : PencilCompatibilityVisualSpec.muted,
+              : WritePrecheckPalette.muted,
           valueColor: index == 3
               ? const Color(0xFFF5B941)
-              : PencilCompatibilityVisualSpec.text,
+              : WritePrecheckPalette.text,
           labelSize: 19,
           valueSize: 18,
           iconSize: 26,
@@ -846,7 +592,6 @@ class _ProjectedScreen extends StatelessWidget {
     context: context,
     key: const ValueKey<String>('precheckResults'),
     semanticsLabel: copy.resultsTitle,
-    top: 760,
     height: 284,
     title: copy.resultsTitle,
     titleIcon: PhosphorIcons.checksLight,
@@ -863,10 +608,10 @@ class _ProjectedScreen extends StatelessWidget {
           value: copy.resultRows[index].value,
           iconColor: index == 4
               ? const Color(0xFFF5B941)
-              : PencilCompatibilityVisualSpec.muted,
+              : WritePrecheckPalette.muted,
           valueColor: index == 4
               ? const Color(0xFFF5B941)
-              : PencilCompatibilityVisualSpec.text,
+              : WritePrecheckPalette.text,
           labelSize: 17,
           valueSize: 17,
           iconSize: 24,
@@ -897,10 +642,7 @@ class _ProjectedScreen extends StatelessWidget {
                   copy.technicalDetail,
                   maxLines: 1,
                   overflow: TextOverflow.clip,
-                  style: _style(
-                    size: 16,
-                    color: PencilCompatibilityVisualSpec.muted,
-                  ),
+                  style: _style(size: 16, color: WritePrecheckPalette.muted),
                 ),
               ),
             ],
@@ -914,7 +656,6 @@ class _ProjectedScreen extends StatelessWidget {
     context: context,
     key: const ValueKey<String>('precheckRecords'),
     semanticsLabel: copy.recordsTitle,
-    top: 1051,
     height: 217,
     title: copy.recordsTitle,
     titleIcon: PhosphorIcons.filesLight,
@@ -939,7 +680,7 @@ class _ProjectedScreen extends StatelessWidget {
         width: 17,
         height: 17,
         size: 17,
-        color: PencilCompatibilityVisualSpec.dim,
+        color: WritePrecheckPalette.dim,
       ),
       _localText(
         text: copy.recordsNotice,
@@ -949,7 +690,7 @@ class _ProjectedScreen extends StatelessWidget {
         height: 22,
         size: 15,
         rasterWeight: 450,
-        color: PencilCompatibilityVisualSpec.dim,
+        color: WritePrecheckPalette.dim,
       ),
     ],
   );
@@ -957,7 +698,7 @@ class _ProjectedScreen extends StatelessWidget {
   Widget _guidanceCard(BuildContext context) => Positioned(
     key: const ValueKey<String>('precheckGuidance'),
     left: 36,
-    top: 1277,
+    top: 0,
     width: 855,
     height: 171,
     child: _ProjectedComponent(
@@ -1037,7 +778,7 @@ class _ProjectedScreen extends StatelessWidget {
                       weight: FontWeight.w300,
                       letterSpacing: -0.2,
                       rasterWeight: 250,
-                      color: PencilCompatibilityVisualSpec.muted,
+                      color: WritePrecheckPalette.muted,
                       scaleX: 1.009,
                     ),
                   ],
@@ -1113,10 +854,61 @@ class _ProjectedScreen extends StatelessWidget {
     ),
   );
 
+  Widget _guidanceTrailingGlow() => const Positioned(
+    left: 19,
+    top: 163,
+    width: 889,
+    height: 8,
+    child: _ProjectedComponent(
+      designWidth: 889,
+      designHeight: 8,
+      child: IgnorePointer(
+        child: _ProjectedDecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[
+                Color(0x0A3DAEFF),
+                Color(0x163DAEFF),
+                Color(0x133DAEFF),
+              ],
+              stops: <double>[0, 0.7, 1],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _primaryLeadingGlow() => const Positioned(
+    left: 19,
+    top: 0,
+    width: 889,
+    height: 5,
+    child: _ProjectedComponent(
+      designWidth: 889,
+      designHeight: 5,
+      child: IgnorePointer(
+        child: _ProjectedDecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(3)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[Color(0x213DAEFF), Color(0x303DAEFF)],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
   Widget _primaryAction(BuildContext context) => Positioned(
     key: const ValueKey<String>('precheckPrimaryAction'),
     left: 36,
-    top: 1455,
+    top: 0,
     width: 855,
     height: 72,
     child: _ProjectedComponent(
@@ -1197,63 +989,14 @@ class _ProjectedScreen extends StatelessWidget {
     ),
   );
 
-  List<Widget> _primarySupplementalGlows(BuildContext context) =>
-      const <Widget>[
+  List<Widget> _primarySupplementalGlows(WritePrecheckProjection projection) =>
+      <Widget>[
         Positioned(
-          left: 19,
-          top: 1440,
-          width: 889,
-          height: 8,
-          child: _ProjectedComponent(
-            designWidth: 889,
-            designHeight: 8,
-            child: IgnorePointer(
-              child: _ProjectedDecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[
-                      Color(0x0A3DAEFF),
-                      Color(0x163DAEFF),
-                      Color(0x133DAEFF),
-                    ],
-                    stops: <double>[0, 0.7, 1],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 19,
-          top: 1448,
-          width: 889,
-          height: 5,
-          child: _ProjectedComponent(
-            designWidth: 889,
-            designHeight: 5,
-            child: IgnorePointer(
-              child: _ProjectedDecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(3)),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[Color(0x213DAEFF), Color(0x303DAEFF)],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 19,
-          top: 1529,
-          width: 889,
-          height: 17,
-          child: _ProjectedComponent(
+          left: projection.px(19),
+          top: projection.px(1529),
+          width: projection.px(889),
+          height: projection.px(17),
+          child: const _ProjectedComponent(
             designWidth: 889,
             designHeight: 17,
             child: IgnorePointer(
@@ -1298,7 +1041,7 @@ class _ProjectedScreen extends StatelessWidget {
   List<Widget> _footer(BuildContext context) => <Widget>[
     const Positioned(
       left: 37,
-      top: 1606,
+      top: 0,
       width: 853,
       height: 1,
       child: _ProjectedHairline(color: Color(0xFF244056)),
@@ -1306,7 +1049,7 @@ class _ProjectedScreen extends StatelessWidget {
     Positioned(
       key: const ValueKey<String>('precheckEndFlowAction'),
       left: 351,
-      top: 1618,
+      top: 12,
       width: 209,
       height: 29,
       child: Semantics(
@@ -1321,7 +1064,7 @@ class _ProjectedScreen extends StatelessWidget {
                 child: _ProjectedIcon(
                   PhosphorIcons.xCircleLight,
                   size: 22,
-                  color: PencilCompatibilityVisualSpec.dim,
+                  color: WritePrecheckPalette.dim,
                 ),
               ),
               SizedBox(width: _px(context, 11)),
@@ -1334,7 +1077,7 @@ class _ProjectedScreen extends StatelessWidget {
                   style: _style(
                     size: 20,
                     weight: FontWeight.w500,
-                    color: PencilCompatibilityVisualSpec.muted,
+                    color: WritePrecheckPalette.muted,
                   ),
                 ),
               ),
@@ -1343,7 +1086,7 @@ class _ProjectedScreen extends StatelessWidget {
                 child: _ProjectedIcon(
                   PhosphorIcons.caretRightLight,
                   size: 22,
-                  color: PencilCompatibilityVisualSpec.dim,
+                  color: WritePrecheckPalette.dim,
                 ),
               ),
             ],
@@ -1357,7 +1100,6 @@ class _ProjectedScreen extends StatelessWidget {
     required BuildContext context,
     required Key key,
     required String semanticsLabel,
-    required double top,
     required double height,
     required String title,
     required IconData titleIcon,
@@ -1368,7 +1110,7 @@ class _ProjectedScreen extends StatelessWidget {
   }) => Positioned(
     key: key,
     left: 36,
-    top: top - 1,
+    top: 0,
     width: 855,
     height: height + 2,
     child: _ProjectedComponent(
@@ -1466,23 +1208,26 @@ class _CanonicalAmbientGlows extends StatelessWidget {
   final WritePrecheckProjection projection;
 
   @override
-  Widget build(BuildContext context) => const _ProjectedStack(
-    children: <Widget>[
-      Positioned(
-        left: 470,
-        top: -180,
-        width: 560,
-        height: 430,
-        child: _RadialGlow(centerColor: Color(0x401D91D9)),
-      ),
-      Positioned(
-        left: -240,
-        top: 100,
-        width: 520,
-        height: 520,
-        child: _RadialGlow(centerColor: Color(0x2C064974)),
-      ),
-    ],
+  Widget build(BuildContext context) => IgnorePointer(
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: <Widget>[
+        Positioned(
+          left: projection.px(470),
+          top: projection.px(-180),
+          width: projection.px(560),
+          height: projection.px(430),
+          child: const _RadialGlow(centerColor: Color(0x401D91D9)),
+        ),
+        Positioned(
+          left: projection.px(-240),
+          top: projection.px(100),
+          width: projection.px(520),
+          height: projection.px(520),
+          child: const _RadialGlow(centerColor: Color(0x2C064974)),
+        ),
+      ],
+    ),
   );
 }
 
@@ -1621,8 +1366,8 @@ class _CanonicalStep extends StatelessWidget {
                     color: active
                         ? const Color(0xFFF5B941)
                         : completed
-                        ? PencilCompatibilityVisualSpec.muted
-                        : PencilCompatibilityVisualSpec.dim,
+                        ? WritePrecheckPalette.muted
+                        : WritePrecheckPalette.dim,
                   ),
                 ),
               ),
@@ -1697,7 +1442,7 @@ class _CanonicalDataRow extends StatelessWidget {
               size: labelSize,
               weight: FontWeight.w500,
               rasterWeight: 350,
-              color: PencilCompatibilityVisualSpec.muted,
+              color: WritePrecheckPalette.muted,
             ),
           ),
         ),
@@ -1793,7 +1538,7 @@ class _CanonicalRecordTile extends StatelessWidget {
                   width: 450,
                   height: 25,
                   size: 17,
-                  color: PencilCompatibilityVisualSpec.muted,
+                  color: WritePrecheckPalette.muted,
                 ),
                 Positioned(
                   left: 665,
@@ -1815,7 +1560,7 @@ class _CanonicalRecordTile extends StatelessWidget {
                           size: 15,
                           weight: FontWeight.w500,
                           rasterWeight: 450,
-                          color: PencilCompatibilityVisualSpec.muted,
+                          color: WritePrecheckPalette.muted,
                         ),
                       ),
                     ),
@@ -1832,7 +1577,7 @@ class _CanonicalRecordTile extends StatelessWidget {
                     child: const _ProjectedIcon(
                       PhosphorIcons.caretRightLight,
                       size: 22,
-                      color: PencilCompatibilityVisualSpec.muted,
+                      color: WritePrecheckPalette.muted,
                     ),
                   ),
                 ),
@@ -1869,7 +1614,7 @@ class _CanonicalSecondaryAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Positioned(
     left: left - 1,
-    top: 1536,
+    top: 0,
     width: width + 2,
     height: 60,
     child: _ProjectedComponent(
@@ -2059,7 +1804,7 @@ Positioned _positionedText({
   required double height,
   required double size,
   FontWeight weight = FontWeight.w400,
-  Color color = PencilCompatibilityVisualSpec.text,
+  Color color = WritePrecheckPalette.text,
   double? lineHeight,
   double? letterSpacing,
   double? rasterWeight,
@@ -2120,7 +1865,7 @@ Positioned _positionedIcon({
   required double width,
   required double height,
   required double size,
-  Color color = PencilCompatibilityVisualSpec.text,
+  Color color = WritePrecheckPalette.text,
   double scaleX = 1,
   double scaleY = 1,
 }) => Positioned(
@@ -2143,7 +1888,7 @@ Positioned _localText({
   required double height,
   required double size,
   FontWeight weight = FontWeight.w400,
-  Color color = PencilCompatibilityVisualSpec.text,
+  Color color = WritePrecheckPalette.text,
   double? lineHeight,
   double? letterSpacing,
   double? rasterWeight,
@@ -2186,13 +1931,13 @@ Positioned _localIcon({
 TextStyle _style({
   required double size,
   FontWeight weight = FontWeight.w400,
-  Color color = PencilCompatibilityVisualSpec.text,
+  Color color = WritePrecheckPalette.text,
   double? lineHeight,
   double? letterSpacing,
   double? rasterWeight,
 }) => TextStyle(
-  fontFamily: PencilCompatibilityVisualSpec.fontFamily,
-  fontFamilyFallback: PencilCompatibilityVisualSpec.fontFamilyFallback,
+  fontFamily: WritePrecheckTypography.fontFamily,
+  fontFamilyFallback: WritePrecheckTypography.fontFamilyFallback,
   fontSize: size,
   fontWeight: _pencilRasterWeight(weight),
   fontVariations: rasterWeight == null

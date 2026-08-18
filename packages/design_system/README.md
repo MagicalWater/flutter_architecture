@@ -25,6 +25,10 @@ last_reviewed_baseline: 1.5.1
 - 不接受 `Failure`、Bloc state、Catalog entity等 business types。
 - 不建立 generic form、pagination、search或 responsive framework。
 - 不 export raw palette。
+- 不吸收single-screen exact radius／gradient／offset／artwork geometry或canonical viewport／DPR。
+- 不把Pencil／feature asset path、source hash或provenance當Design System token。
+
+Pencil/source-driven UI values進入本package前必須先做semantic／promotion decision。真正shared semantic、Theme Identity或validated reusable component才由Design System擁有；feature-local exact values留smallest correct owner，不能用generic `*VisualSpec`／`*VisualTokens`建立平行Design System。
 
 ## Public API
 

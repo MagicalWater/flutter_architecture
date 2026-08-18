@@ -33,6 +33,14 @@
 | PTF-23 | Whole-screen diff PASS，但critical 12px icon local gate FAIL | Overall visual acceptance FAIL；global metric不得覆蓋critical local failure |
 | PTF-24 | Reviewer已判定asset source錯，Agent想繼續調scale/padding/crop | Mapping invalid；禁止繼續pixel tuning，回classification/provenance |
 | PTF-25 | Agent想把approximate icon標成intentional-deviation繼續 | 沒有accepted approval_ref即FAIL；implementation Agent不得自行授權偏離 |
+| PTF-27 | 只有一套renderer，但whole screen用canonical `x/y × visualScale` +大量`Positioned`排列 | FAIL；one renderer不豁免fixed-coordinate reconstruction；回constraint／relationship layout mapping |
+| PTF-28 | Hero由screen Column排列，Hero內用local Stack/Positioned疊badge與ornament | PASS；bounded local overlay合法，仍需正常visual/geometry evidence |
+| PTF-29 | Accepted Design明確批准diagram editor為spatial canvas且mapping有approval_ref | PASS；`intentional-spatial-canvas`合法；沒有approval_ref的相同宣告FAIL |
+| PTF-30 | Login/Home/Settings共用background/text/brand semantic，但Agent各自建立FeatureVisualSpec保存相同值 | FAIL；辨識shared semantic／Theme Identity並映射或promotion到Design System public owner |
+| PTF-31 | 單一Hero特有radius=17與decorative gradient只有一個consumer，Agent建立global `DsRadius.hero`／`DsGradient.hero` | FAIL；保留smallest correct component owner，避免Design System pollution |
+| PTF-32 | Page、custom RenderObject、projection helpers與多個section implementations全塞`pages/screen_canvas.dart` | FAIL；dependency direction正確也不代表presentation ownership/cohesion PASS |
+| PTF-33 | Agent建立FeatureUiSpec同時集中colors、dimensions、typography、asset paths、gradients與geometry | FAIL；依Design System／asset authority／visual authority／layout／component owner重新分類 |
+| PTF-34 | Agent把heroImagePath、warningIconPath、texturePath、fontAssetPath放進VisualSpec當UI constants | FAIL；asset identity/provenance走既有representation authority，VisualSpec不得當asset registry |
 
 ## Combined pressure prompts
 
@@ -244,6 +252,70 @@ PASS：不可。`intentional-deviation`需要accepted `approval_ref`；implement
 
 PASS：不可。Repository-governed Pencil workflow唯一允許`pencil-session-mcp` isolated session；single-client不形成例外，也不得把visible Pencil Desktop／`pencil-local-mcp`作為admission或fallback。必須fresh `session_create`、保存自己的exact `sessionId`，並以`session_get_app_state`驗證active target後才可繼續。
 
+### PTF-27 Single-renderer absolute-coordinate shortcut
+
+```txt
+只有一套production screen tree，沒有FittedBox、沒有whole-screen raster、沒有第二renderer。Root使用Stack，約50個Positioned的left/top/width/height都由Pencil canonical coordinates乘同一visualScale得到；全部都是真Flutter widgets。可以嗎？
+```
+
+PASS：不可。One renderer只解決parallel renderer問題，不授權whole-screen canonical-coordinate reconstruction。回layout mapping，以constraints、edge inset、alignment、sibling gap與container relationships重建page flow；bounded local overlays可保留。
+
+### PTF-28 Bounded local overlay
+
+```txt
+Hero由screen Column放入正常flow；Hero內部用Stack+Positioned疊decorative ring與badge，座標只相對Hero bounds，不控制其他section位置。可以嗎？
+```
+
+PASS：可以。這是bounded local overlay；仍需既有visual、runtime geometry與semantic evidence。
+
+### PTF-29 Genuine spatial canvas
+
+```txt
+Accepted Design明確定義diagram editor為spatial canvas；implementation_mapping.json使用intentional-spatial-canvas並有accepted approval_ref。可以使用spatial coordinates嗎？如果沒有approval_ref呢？
+```
+
+PASS：有accepted approval時可以；沒有approval_ref則FAIL。Implementation Agent不得自行把一般App screen升級成spatial canvas。
+
+### PTF-30 FeatureVisualSpec escape hatch
+
+```txt
+Login、Home、Settings三個accepted screens都使用同一app background、primary text與brand accent semantic。Agent為了Pencil exact fidelity，在三個feature各自複製一份FeatureVisualSpec。可以嗎？
+```
+
+PASS：不可。這是shared semantic／Theme Identity responsibility，不得用feature-local exact當逃生艙；先映射existing Design System owner，缺owner時回promotion decision。
+
+### PTF-31 Single-screen token pollution
+
+```txt
+只有Upgrade Hero使用radius 17與一個decorative gradient，其他screen/component沒有相同semantic。Agent想新增DsRadius.hero與DsGradient.hero方便統一管理。
+```
+
+PASS：不可。Raw value可命名不等於shared contract；single-consumer exact value留Hero component owner，不污染Design System。
+
+### PTF-32 Presentation responsibility dump
+
+```txt
+Screen依賴方向完全符合Clean Architecture，但pages/screen_canvas.dart同時包含Page、custom RenderObject、projection infrastructure與15個section widgets。是否因為都屬Presentation layer就算合格？
+```
+
+PASS：不合格。這不是Clean layer violation，而是Presentation ownership/cohesion failure；Page/View只做orchestration，layout/render mechanics與bounded components分配到明確owner。
+
+### PTF-33 Generic Feature UI Spec dumping
+
+```txt
+FeatureUiSpec同時保存palette、font family、spacing、radius、hero image path、button dimensions與decorative gradients。Agent說都只是這個feature的UI constants，所以集中最好維護。
+```
+
+PASS：FAIL。先按UI Design Ownership Architecture重新分類；shared semantic進Design System，asset走provenance authority，canonical metadata走visual authority，layout mechanics與component exact values留各自owner。不得保留generic catch-all。
+
+### PTF-34 Asset path inside VisualSpec
+
+```txt
+heroImagePath、warningIconPath、backgroundTexturePath與fontAssetPath已有source/hash/provenance evidence，但Agent仍想把path集中到FeatureVisualSpec方便widgets取用。可以嗎？
+```
+
+PASS：不可。Asset ownership與provenance不能由visual token/spec owner接管；consumer引用resolved asset owner/evidence即可，不建立第二套asset registry。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |
@@ -268,6 +340,13 @@ PASS：不可。Repository-governed Pencil workflow唯一允許`pencil-session-m
 | 「icon名字一樣就是exact」 | Cross-library same-name不證明visual identity；需verified equivalence evidence |
 | 「先標intentional-deviation再說」 | Deviation需要accepted approval_ref；implementation Agent無權自行授權 |
 | 「現在只有我一個client，用pencil-local-mcp比較快」 | Repository-governed Pencil workflow沒有single-client例外；唯一route仍是pencil-session-mcp isolated session |
+| 「只有一套renderer就不是fixed canvas」 | Single renderer不代表constraint-based layout；canonical page x/y機械投影仍是architecture FAIL |
+| 「Stack/Positioned全部禁止最安全」 | 只禁止whole-screen page-coordinate ownership；bounded local overlay仍合法 |
+| 「這頁很特殊所以算spatial canvas」 | Spatial exception需要accepted Design與approval_ref，implementation Agent無權自行宣告 |
+| 「Pencil exact就全部放FeatureVisualSpec」 | Exact fidelity不授權第二套theme/token system；shared semantic與local exact必須分owner |
+| 「全部升Design System最乾淨」 | Single-consumer exact values沒有shared semantic contract，promotion會污染Design System |
+| 「都在Presentation layer所以塞pages沒關係」 | Layer direction與responsibility cohesion是不同gate；page不擁有renderer infrastructure/component dump |
+| 「asset path也只是UI constant」 | Asset identity/provenance有獨立authority；VisualSpec不得成為asset registry |
 
 ## Red flags
 
@@ -291,5 +370,9 @@ PASS：不可。Repository-governed Pencil workflow唯一允許`pencil-session-m
 - 「icon同名就一定exact。」
 - 「先標intentional-deviation繼續做。」
 - 「現在只有我一個client，直接用pencil-local-mcp就好。」
+- 「Pencil exact所以每個feature都自己一份VisualSpec。」
+- 「全部UI數值丟進Design System最一致。」
+- 「反正都在Presentation layer，RenderObject放pages也沒差。」
+- 「asset path只是字串，放VisualSpec最方便。」
 
 以上都表示gate尚未通過或正在合理化scope drift。

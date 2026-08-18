@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.20.0
+last_reviewed_baseline: 1.21.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.20.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.20.0
+Template Baseline: 1.21.0 release candidate
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -26,9 +26,9 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: None
-State: Maintenance / next work must enter Requirement Decision
-Template Baseline: 1.20.0
+Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
+State: Tasks 42-1～42-9 accepted / combined release candidate PASS / merge-push authorization pending
+Template Baseline: 1.21.0 release candidate
 ```
 
 完整 active scope、Design gate與 next action：
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 40 已完成或已有明確 disposition。Milestone 40已完成GitHub Repository Landing Page、documentation authority restructure與40-7T title artwork corrective；本次不升Template Baseline，仍維持1.20.0。Milestone 39的1.20.0 publication與post-release evidence仍是目前release authority。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 40 已完成或已有明確 disposition。Milestone 41已完成41-1～41-8 implementation／holistic gate並形成1.21.0 release candidate，但publication因Milestone 42 pre-publication P1 corrective而suspended；在Milestone 42完成combined holistic／release gate與published-main post-release validation前，Milestone 39的1.20.0 publication仍是最後一個已發布baseline authority。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

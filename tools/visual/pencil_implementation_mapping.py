@@ -22,6 +22,32 @@ _DISPOSITIONS = {
     "intentional-deviation",
     "unresolved",
 }
+_SCREEN_LAYOUT_MODELS = {
+    "constraint-relationship",
+    "intentional-spatial-canvas",
+    "unresolved",
+}
+_UI_DESIGN_OWNERS = {
+    "visual-authority",
+    "design-system",
+    "feature-local",
+    "component-local",
+}
+_UI_DESIGN_DISPOSITIONS = {
+    "exact",
+    "verified-equivalent",
+    "intentional-local",
+    "promoted",
+    "unresolved",
+}
+_UI_DESIGN_KINDS = {
+    "visual-authority-metadata",
+    "semantic-color",
+    "typography",
+    "geometry",
+    "decoration",
+    "asset-reference",
+}
 
 
 @dataclass(frozen=True)
@@ -52,6 +78,18 @@ def validate_implementation_mapping(
     issues: list[PencilImplementationMappingIssue] = []
     _check_metadata(path, data, expected_authority_sha256, issues)
     _check_nodes(path, data.get("critical_nodes"), production_acceptance, issues)
+    _check_screen_layouts(
+        path,
+        data.get("screen_layouts"),
+        production_acceptance,
+        issues,
+    )
+    _check_ui_design_ownerships(
+        path,
+        data.get("ui_design_ownerships"),
+        production_acceptance,
+        issues,
+    )
     return tuple(sorted(issues, key=lambda issue: (issue.code, issue.message)))
 
 
@@ -61,8 +99,8 @@ def _check_metadata(
     expected_authority_sha256: str | None,
     issues: list[PencilImplementationMappingIssue],
 ) -> None:
-    if data.get("schema_version") != 1:
-        issues.append(_issue("mapping-unsupported-schema", path, "schema_version must equal 1"))
+    if data.get("schema_version") != 2:
+        issues.append(_issue("mapping-unsupported-schema", path, "schema_version must equal 2"))
 
     initiative = data.get("initiative")
     if not isinstance(initiative, str) or not initiative.strip():
@@ -166,6 +204,270 @@ def _check_nodes(
 
         if representation in {"Raster asset", "Vector asset"}:
             _check_asset_provenance(path, node_label, raw_node.get("asset"), issues)
+
+
+def _check_screen_layouts(
+    path: Path,
+    raw_layouts: object,
+    production_acceptance: bool,
+    issues: list[PencilImplementationMappingIssue],
+) -> None:
+    if not isinstance(raw_layouts, list) or not raw_layouts:
+        issues.append(
+            _issue(
+                "mapping-missing-screen-layouts",
+                path,
+                "screen_layouts must contain at least one accepted screen root",
+            )
+        )
+        return
+
+    seen_ids: set[str] = set()
+    for index, raw_layout in enumerate(raw_layouts):
+        if not isinstance(raw_layout, dict):
+            issues.append(
+                _issue(
+                    "mapping-invalid-screen-layout",
+                    path,
+                    f"screen_layouts[{index}] must be an object",
+                )
+            )
+            continue
+
+        node_id = raw_layout.get("node_id")
+        if not _non_empty(node_id):
+            issues.append(
+                _issue(
+                    "mapping-missing-screen-layout-node-id",
+                    path,
+                    f"screen_layouts[{index}] requires node_id",
+                )
+            )
+            label = f"index {index}"
+        else:
+            assert isinstance(node_id, str)
+            label = node_id
+            if node_id in seen_ids:
+                issues.append(
+                    _issue(
+                        "mapping-duplicate-screen-layout-node-id",
+                        path,
+                        f"duplicate screen layout node ID {node_id!r}",
+                    )
+                )
+            seen_ids.add(node_id)
+
+        if not _non_empty(raw_layout.get("flutter_owner")):
+            issues.append(
+                _issue(
+                    "mapping-missing-screen-layout-owner",
+                    path,
+                    f"{label}: flutter_owner is required",
+                )
+            )
+
+        model = raw_layout.get("layout_model")
+        if model not in _SCREEN_LAYOUT_MODELS:
+            issues.append(
+                _issue(
+                    "mapping-unknown-screen-layout-model",
+                    path,
+                    f"{label}: unsupported layout_model {model!r}",
+                )
+            )
+            continue
+
+        if model == "unresolved" and production_acceptance:
+            issues.append(
+                _issue(
+                    "mapping-screen-layout-unresolved",
+                    path,
+                    f"{label}: unresolved screen layout blocks acceptance",
+                )
+            )
+        elif model == "intentional-spatial-canvas" and not _non_empty(
+            raw_layout.get("approval_ref")
+        ):
+            issues.append(
+                _issue(
+                    "mapping-missing-spatial-canvas-approval",
+                    path,
+                    f"{label}: intentional-spatial-canvas requires approval_ref",
+                )
+            )
+
+        if model != "unresolved" and not _non_empty(raw_layout.get("evidence_ref")):
+            issues.append(
+                _issue(
+                    "mapping-missing-screen-layout-evidence",
+                    path,
+                    f"{label}: resolved screen layout requires evidence_ref",
+                )
+            )
+
+
+def _check_ui_design_ownerships(
+    path: Path,
+    raw_ownerships: object,
+    production_acceptance: bool,
+    issues: list[PencilImplementationMappingIssue],
+) -> None:
+    if not isinstance(raw_ownerships, list) or not raw_ownerships:
+        issues.append(
+            _issue(
+                "mapping-missing-ui-design-ownerships",
+                path,
+                "ui_design_ownerships must contain risk-selected UI design ownership evidence",
+            )
+        )
+        return
+
+    seen_ids: set[str] = set()
+    for index, raw_ownership in enumerate(raw_ownerships):
+        if not isinstance(raw_ownership, dict):
+            issues.append(
+                _issue(
+                    "mapping-invalid-ui-design-ownership",
+                    path,
+                    f"ui_design_ownerships[{index}] must be an object",
+                )
+            )
+            continue
+
+        ownership_id = raw_ownership.get("id")
+        if not _non_empty(ownership_id):
+            issues.append(
+                _issue(
+                    "mapping-missing-ui-design-ownership-id",
+                    path,
+                    f"ui_design_ownerships[{index}] requires id",
+                )
+            )
+            label = f"index {index}"
+        else:
+            assert isinstance(ownership_id, str)
+            label = ownership_id
+            if ownership_id in seen_ids:
+                issues.append(
+                    _issue(
+                        "mapping-duplicate-ui-design-ownership-id",
+                        path,
+                        f"duplicate UI design ownership ID {ownership_id!r}",
+                    )
+                )
+            seen_ids.add(ownership_id)
+
+        kind = raw_ownership.get("kind")
+        if kind not in _UI_DESIGN_KINDS:
+            issues.append(
+                _issue(
+                    "mapping-unknown-ui-design-kind",
+                    path,
+                    f"{label}: unsupported kind {kind!r}",
+                )
+            )
+
+        for field in ("semantic_role", "consumer_scope"):
+            if not _non_empty(raw_ownership.get(field)):
+                issues.append(
+                    _issue(
+                        "mapping-missing-ui-design-owner-field",
+                        path,
+                        f"{label}: {field} is required",
+                    )
+                )
+
+        owner = raw_ownership.get("owner")
+        if owner not in _UI_DESIGN_OWNERS:
+            issues.append(
+                _issue(
+                    "mapping-unknown-ui-design-owner",
+                    path,
+                    f"{label}: unsupported owner {owner!r}",
+                )
+            )
+
+        disposition = raw_ownership.get("disposition")
+        if disposition not in _UI_DESIGN_DISPOSITIONS:
+            issues.append(
+                _issue(
+                    "mapping-unknown-ui-design-disposition",
+                    path,
+                    f"{label}: unsupported disposition {disposition!r}",
+                )
+            )
+        elif disposition == "unresolved" and production_acceptance:
+            issues.append(
+                _issue(
+                    "mapping-ui-design-unresolved",
+                    path,
+                    f"{label}: unresolved UI design ownership blocks acceptance",
+                )
+            )
+
+        if owner == "design-system":
+            public_ref = raw_ownership.get("public_owner_ref")
+            if not _non_empty(public_ref):
+                issues.append(
+                    _issue(
+                        "mapping-missing-design-system-public-owner",
+                        path,
+                        f"{label}: design-system owner requires public_owner_ref",
+                    )
+                )
+            elif isinstance(public_ref, str) and ("/src/" in public_ref or "\\src\\" in public_ref):
+                issues.append(
+                    _issue(
+                        "mapping-design-system-deep-import",
+                        path,
+                        f"{label}: design-system owner must use public API",
+                    )
+                )
+
+        if disposition == "intentional-local" and not _non_empty(
+            raw_ownership.get("local_scope_reason")
+        ):
+            issues.append(
+                _issue(
+                    "mapping-missing-local-scope-reason",
+                    path,
+                    f"{label}: intentional-local requires local_scope_reason",
+                )
+            )
+
+        if kind == "visual-authority-metadata" and owner != "visual-authority":
+            issues.append(
+                _issue(
+                    "mapping-visual-authority-owner-mismatch",
+                    path,
+                    f"{label}: visual-authority metadata must be owned by visual-authority",
+                )
+            )
+
+        if kind == "asset-reference":
+            if not _non_empty(raw_ownership.get("evidence_ref")):
+                issues.append(
+                    _issue(
+                        "mapping-asset-reference-missing-evidence",
+                        path,
+                        f"{label}: asset-reference must point to existing representation/provenance evidence",
+                    )
+                )
+            forbidden_asset_registry_fields = (
+                "asset_path",
+                "source_identity",
+                "derived_transformation",
+                "destination",
+                "content_hash",
+            )
+            if any(field in raw_ownership for field in forbidden_asset_registry_fields):
+                issues.append(
+                    _issue(
+                        "mapping-ui-design-asset-registry-leak",
+                        path,
+                        f"{label}: UI ownership must reference, not duplicate, asset provenance",
+                    )
+                )
 
 
 def _check_asset_provenance(

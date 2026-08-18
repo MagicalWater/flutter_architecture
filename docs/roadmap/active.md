@@ -3,50 +3,41 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.20.0
+last_reviewed_baseline: 1.21.0
 ---
 
 # Active Milestone
 
 ```txt
-Active Milestone: none
-State: Completed locally / no release required
-Template Baseline: 1.20.0
+Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
+State: Tasks 42-1～42-9 accepted / combined Milestone 41+42 release candidate PASS / merge-push authorization pending
+Template Baseline: 1.21.0 combined release candidate base
 ```
 
 ## Current Scope
 
-Milestone 40主體Tasks 40-1～40-6與40-7T README Title Artwork Corrective均已完成；40-9 post-closure corrective亦已完成root README繁體中文一致性與accepted artifact status同步。原Task 40-7與40-7R architecture-Hero方向保留為rejected historical evidence；沒有live README authority。40-7T使用者visual acceptance已PASS，accepted artwork已promotion到root README。Template Baseline維持1.20.0，無release bump。
+Milestone 42處理Milestone 41 merge前fresh architecture review新增的presentation ownership與UI design ownership governance finding。Current implementation已完成`pages/`／`layout/`／`widgets/`責任拆分並退休`PencilCompatibilityVisualSpec` catch-all；scope進一步建立repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion、asset/provenance與visual-authority separation、machine/review enforcement與fresh behavioral pressure；不修改accepted `.pen`或降低visual fidelity。
 
 ## Current Gate
 
-Milestone 40 local closure PASS。Accepted title artwork已取代README內重複的純文字H1，並與兩張accepted architecture visuals形成正確consumer ordering；documentation ownership、Template → Product contract與repository lifecycle authority未改變。下一步不再有Milestone 40 implementation Task。
+Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42 Revised Design與rebuilt Implementation Plan均已accepted；Tasks 42-1～42-9已accepted。Combined Milestone 41+42 holistic / release candidate已fresh PASS，下一個合法gate是使用者merge／push authorization；Task 42-10 publication / post-release closure在授權前不得開始。
 
 ## Current Evidence
 
-- Requirement Decision：`docs/audits/milestone_40/40-r_requirement_decision.md`（accepted）。
-- Design：`docs/superpowers/specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`（accepted；user approved 2026-08-17）。
-- Design review：`docs/audits/milestone_40/40-0_design_spec_review.md`（accepted）。
-- Implementation Plan：`docs/superpowers/plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`（accepted；user approved 2026-08-17）。
-- Plan review：`docs/audits/milestone_40/40-p_implementation_plan_review.md`（accepted）。
-- Holistic Final Review：`docs/audits/milestone_40/40-6_holistic_final_review.md`（accepted / completed）。
-- Rejected Hero attempt：`docs/audits/milestone_40/40-7_repository_hero_visual_review.md`（rejected / invalid governance evidence）。
-- Corrective Requirement Decision：`docs/audits/milestone_40/40-7r_hero_visual_requirement_decision.md`（accepted）。
-- Corrective Design：`docs/superpowers/specs/2026-08-17-milestone-40-hero-visual-corrective-design.md`（accepted；user approved 2026-08-17）。
-- Corrective Design review：`docs/audits/milestone_40/40-7d_hero_visual_design_review.md`（accepted）。
-- Corrective Implementation Plan：`docs/superpowers/plans/2026-08-17-milestone-40-hero-visual-corrective.md`（accepted；user approved 2026-08-17）。
-- Corrective Plan review：`docs/audits/milestone_40/40-7p_hero_visual_plan_review.md`（accepted）。
-- Visual-family extraction：`docs/audits/milestone_40/40-7r_1_visual_family_extraction.md`（accepted）。
-- Candidate generation evidence：`docs/audits/milestone_40/40-7r_2_candidate_generation_review.md`（completed；C01／C02 rejected）。
-- Candidate visual review：`docs/audits/milestone_40/40-7r_3_hero_candidate_review.md`（completed／FAIL；return to Design）。
-- Title Artwork Requirement Decision：`docs/audits/milestone_40/40-7t_title_artwork_requirement_decision.md`（accepted / Level 1 reduced scope）。
-- Governance Integrity Review：`docs/audits/milestone_40/40-7t_governance_integrity_review.md`（accepted；repository-wide governance corruption not found）。
-- Title Artwork Visual Review：`docs/audits/milestone_40/40-7t_title_artwork_review.md`（accepted；user visual acceptance PASS）。
-- Title Artwork README Consumer Review：`docs/audits/milestone_40/40-7t_readme_consumer_review.md`（accepted）。
-- Holistic Final Review Addendum：`docs/audits/milestone_40/40-8_holistic_final_review.md`（completed）。
-- Final Comprehensive Local Review：`docs/audits/milestone_40/40-10_final_comprehensive_review.md`（PASS；remote publication / main merge尚未執行）。
-- README Language / Authority Sync Corrective：`docs/audits/milestone_40/40-9_readme_language_and_authority_sync_review.md`（accepted；focused／fresh／whole-README PASS）。
+- Requirement Decision：`docs/audits/milestone_41/41-r_requirement_decision.md`（accepted）。
+- Design：`docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`（accepted；review PASS；user approved 2026-08-18）。
+- Design Review：`docs/audits/milestone_41/41-0_design_spec_review.md`（completed / PASS）。
+- Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-41-pencil-layout-architecture-corrective.md`（accepted；review PASS；user approved 2026-08-18）。
+- Plan Review：`docs/audits/milestone_41/41-p_implementation_plan_review.md`（completed / PASS）。
+- Task 41-8 Holistic Final Review：`docs/audits/milestone_41/41-8_holistic_final_review.md`（accepted / PASS；release decision = 1.21.0）。
+- Milestone 42 Requirement Decision：`docs/audits/milestone_42/42-r_requirement_decision.md`（accepted；Milestone 41 publication suspended）。
+- Milestone 42 Design：`docs/superpowers/specs/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective-design.md`（Revision 1 accepted；revision review PASS；user revised-Design approved 2026-08-18）。
+- Milestone 42 Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md`（rebuilt accepted；fresh Plan review PASS；user approved 2026-08-18）。
+- Milestone 42 Design Review：`docs/audits/milestone_42/42-0_design_spec_review.md`（completed / PASS）。
+- Milestone 42 Plan Review：`docs/audits/milestone_42/42-p_implementation_plan_review.md`（completed / PASS）。
+- Milestone 42 Tasks 42-1～42-8：`docs/audits/milestone_42/42-1_ownership_red_review.md` 至 `42-8_behavioral_pressure_review.md`（accepted；visual authority unchanged；PTF-30～34與edge/positive controls PASS）。
+- Milestone 42 Task 42-9：`docs/audits/milestone_42/42-9_combined_holistic_final_review.md`（accepted / PASS；combined 1.21.0 release candidate；Open P0=0 / Open P1 without disposition=0）。
 
 ## Previous Closure
 
-Milestone 39已完成Pencil-to-Flutter fidelity enforcement／recovery governance corrective並發布Template Baseline 1.20.0；closure evidence由`docs/audits/milestone_39/39-8_post_release_validation.md`擁有。
+Milestone 40已完成GitHub Repository Landing Page與documentation authority restructure，未升Template Baseline；Milestone 39的1.20.0 publication在Task 41-9完成前仍是最後一個已發布baseline authority。

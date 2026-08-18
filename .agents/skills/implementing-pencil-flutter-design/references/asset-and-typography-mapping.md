@@ -17,6 +17,10 @@ extracted visual inventory
 
 只要required representation仍unresolved，就不得開始Flutter production UI source。
 
+Representation／provenance完成後，screen root 還必須交給 Flutter mapping stage 的 `screen_layouts` gate 決定 page layout ownership。Representation classification 不授權把 canonical `x/y` 直接當 runtime page coordinates，也不授權 implementation Agent 自行宣告 spatial-canvas exception。
+
+Representation／provenance也不代表UI design ownership已完成。Asset identity、source、transformation、destination與content hash留在本contract；後續UI ownership mapping只能引用這些evidence，不得把asset path/hash重新包進`VisualSpec`／`VisualTokens`或建立第二套asset registry。
+
 ## Representation Classes
 
 每個需要實作決策的Pencil元素指定一個primary class：
@@ -129,6 +133,8 @@ unresolved
 4. 哪些是Vector asset／Raster asset，source、transformation、destination與content hash是什麼？
 5. 哪些是Dynamic drawing，runtime-driven理由是什麼？
 6. 是否仍有unresolved或approximate representation？
+
+Representation全部resolved後，仍必須交給`flutter-mapping.md`回答：shared semantic是否屬Design System、canonical metadata由誰擁有、layout mechanics在哪個owner、single-screen exact values是否留smallest component owner，以及是否存在generic UI Spec catch-all。
 
 第6項若存在未取得accepted disposition的P1 gap，Flutter mapping與production UI保持blocked。
 

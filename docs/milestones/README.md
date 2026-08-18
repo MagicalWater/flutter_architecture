@@ -31,11 +31,27 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: none — Milestone 40 completed locally
+Active Milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
 Template Baseline: 1.20.0
 ```
 
-Milestone 40已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence，40-7T Level 1 README title artwork已取得使用者visual acceptance並promotion到root README。Current state以`docs/roadmap/active.md`為準。Template Baseline維持`1.20.0`。
+Milestone 41已完成formal Requirement Decision並進入Design gate；current state以`docs/roadmap/active.md`為準。Template Baseline目前仍為`1.20.0`。
+
+### Milestone 41 active routing
+
+- Requirement Decision：Accepted — `docs/audits/milestone_41/41-r_requirement_decision.md`
+- Design：Accepted / user approved 2026-08-18 — `docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`
+- Design Review：Completed / PASS — `docs/audits/milestone_41/41-0_design_spec_review.md`
+- Implementation Plan：Proposed / review PASS / user approval pending — `docs/superpowers/plans/2026-08-18-milestone-41-pencil-layout-architecture-corrective.md`
+- Plan Review：Completed / PASS — `docs/audits/milestone_41/41-p_implementation_plan_review.md`
+
+- Requirement Decision：Accepted — `docs/audits/milestone_41/41-r_requirement_decision.md`
+- Design：Proposed / review PASS / user approval pending — `docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`
+- Design Review：Completed / PASS — `docs/audits/milestone_41/41-0_design_spec_review.md`
+- Implementation Plan：Forbidden until Design user approval。
+- Production implementation：Forbidden until Plan user approval。
+
+Milestone 40已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence，40-7T Level 1 README title artwork已取得使用者visual acceptance並promotion到root README。
 
 ### Milestone 40 closed routing
 

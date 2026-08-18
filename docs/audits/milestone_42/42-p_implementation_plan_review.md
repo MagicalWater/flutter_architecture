@@ -105,7 +105,11 @@ Plan review：**PASS**。
 
 ## Approval gate
 
-Implementation Plan目前維持`proposed`。取得使用者明確核准前：
+本Review只代表首次accepted Design版本下的Plan review。Plan approval前出現P1 UI Design Ownership Architecture strengthening，Revised Design已回`proposed`；因此此Plan與本Review目前都**suspended for approval purposes**，不能再直接提交使用者Plan核准。
+
+Revised Design重新取得使用者核准後，必須先更新Implementation Plan以納入anti-generic-Spec、asset ownership integration、PTF-33／34與repository-wide UI ownership routing，再fresh執行Plan雙層re-review。
+
+在此之前：
 
 - 不得將Plan改為`accepted`；
 - 不得開始Task 42-1 implementation；

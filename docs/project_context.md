@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.21.0
 Template Baseline: 1.21.0 release candidate
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-Current phase: Design accepted / Implementation Plan reviewed / user approval pending / Milestone 41 publication suspended
+Current phase: Revised Design proposed / revision review PASS / user revised-Design approval pending / existing Plan suspended / Milestone 41 publication suspended
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -368,13 +368,13 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-Current phase: Design accepted / Implementation Plan reviewed / user approval pending; Milestone 41 publication suspended
+Current phase: Revised Design proposed / revision review PASS / user revised-Design approval pending; existing Plan suspended; Milestone 41 publication suspended
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
 Maintenance mode: Suspended while Milestone 42 is active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 41已完成41-1～41-8且其layout corrective仍PASS；但merge前fresh architecture review新增P1：`pages/write_precheck_projected_canvas.dart`仍混合page以外的layout/render/component責任，`PencilCompatibilityVisualSpec`亦把visual-authority metadata、palette、typography、layout/component tokens與gradients混成catch-all。Milestone 41 publication因此暫停。Milestone 42 Requirement與Design已accepted，Implementation Plan已建立為`proposed`且雙層Plan review PASS；目前等待使用者Plan核准，核准前不得修改production source、Design System或machine policy。42將建立Presentation responsibility與Design System token promotion/non-promotion contract，完成後重新執行combined holistic/release gate。
+Milestone 41已完成41-1～41-8且其layout corrective仍PASS；但merge前fresh architecture review新增P1：`pages/write_precheck_projected_canvas.dart`仍混合page以外的layout/render/component責任，`PencilCompatibilityVisualSpec`亦把visual-authority metadata、palette、typography、layout/component tokens與gradients混成catch-all。Milestone 41 publication因此暫停。Milestone 42首次Design曾accepted；Plan核准前使用者再補充P1：本Milestone必須建立repository-wide UI Design Ownership Architecture，涵蓋尺寸、顏色、typography、asset、gradient、geometry，並禁止generic `*VisualSpec` / `*VisualTokens` catch-all。Revised Design已完成雙層re-review PASS，目前等待使用者重新核准；existing Plan suspended，不得開始implementation。
 
 Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Template Baseline維持1.20.0。
 

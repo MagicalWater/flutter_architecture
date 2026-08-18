@@ -15,12 +15,13 @@ Requirement: accepted
 Design: accepted / user approved 2026-08-18
 Plan: proposed / user approval pending
 Implementation: NOT admitted
+Plan state: suspended pending revised Design approval
 Managed worktree: C:\Users\crazy\.devspace\worktrees\flutter_architecture-79898d55
 Branch: milestone-42-pencil-presentation-token-governance-corrective
 Checkpoint before Plan: 91e17069064e428166d2331afc19a5728d0b5dd6
 ```
 
-本Plan只落實accepted Design，不重新決定Milestone 41 layout architecture，也不改accepted `.pen` visual authority。Plan取得使用者明確核准前，不得修改production source、Design System或machine policy。
+本Plan原本只落實2026-08-18首次accepted Design。Plan approval前使用者新增P1 UI Design Ownership Architecture scope，Design已回`proposed`進行revision；因此本Plan目前**suspended / not approvable**。Revised Design重新取得使用者核准後，必須依新Design更新Plan、重新完成Plan雙層review，才能再次進入Plan approval gate。
 
 ## 2. Execution strategy
 

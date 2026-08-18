@@ -95,3 +95,65 @@ Design目前維持`proposed`。取得使用者明確核准前：
 - 不得建立Implementation Plan為accepted；
 - 不得修改production source、Design System或machine policy；
 - Milestone 41 publication維持suspended。
+
+## Revision 1 — UI Design Ownership Architecture strengthening
+
+2026-08-18 Plan approval前，使用者補充本Milestone不可只修current reference，必須建立長期可重用UI design ownership architecture，特別禁止尺寸／顏色／資產／typography／gradient／geometry再被集中成generic `*VisualSpec` / `*VisualTokens`模板。
+
+此補充判定為P1 material Design strengthening。原使用者Design approval不被偽裝成已覆蓋新scope；Design狀態暫回`proposed`並fresh re-review。
+
+### Layer 1 — Revision focused review
+
+#### F-42-D-R1-01 — 是否真正禁止generic UI Spec replacement
+
+- Severity：P1。
+- Review：Revision明確禁止以`*VisualSpec`、`*VisualTokens`、`*UiSpec`、`*StyleConfig`建立colors/dimensions/assets/typography/geometry catch-all；判定依responsibility mixture而非命名。
+- Result：PASS。
+
+#### F-42-D-R1-02 — 是否建立完整UI design ownership routing
+
+- Severity：P1。
+- Review：Color/typography/spacing/radius/elevation/assets/canonical metadata/layout/one-off geometry均有明確owner route，並以Design System、asset authority、visual authority、layout owner、smallest component owner作核心架構。
+- Result：PASS。
+
+#### F-42-D-R1-03 — Asset governance是否被重複發明
+
+- Severity：P1 architecture duplication。
+- Review：Revision重用既有asset/representation/provenance contract，不建立第二套asset registry；只把asset ownership納入統一UI ownership gate。
+- Result：PASS。
+
+#### F-42-D-R1-04 — 是否又把feature-local token全面消滅
+
+- Severity：P1 fidelity/abstraction risk。
+- Review：Revision仍允許真正local semantic或exact component values，但要求smallest correct owner；只有穩定feature semantic identity成立才建立窄責任feature owner。
+- Result：PASS。
+
+#### F-42-D-R1-05 — 是否具有future-agent enforcement
+
+- Severity：P1 recurrence risk。
+- Review：新增PTF-33 Feature UI Spec dumping與PTF-34 Asset path inside VisualSpec，並要求Skill/Guide提供repository-wide reusable decision route。
+- Result：PASS。
+
+### Layer 2 — Revision whole-design review
+
+Revision後Design同時覆蓋：
+
+```txt
+current reference cleanup
++ Presentation responsibility architecture
++ Design System promotion/non-promotion
++ Asset / representation ownership integration
++ anti-generic-Spec governance
++ future Skill / Guide / machine enforcement
++ fresh PTF-30～34 behavioral pressure
+```
+
+Open P0：0。
+
+Open P1 without disposition：0。
+
+Revision Design review：**PASS**。
+
+### Revised approval gate
+
+因Revision materially擴充已核准Design，使用者需重新明確核准Revision Design。核准前existing proposed Implementation Plan視為**suspended / not approvable**，不得開始implementation。

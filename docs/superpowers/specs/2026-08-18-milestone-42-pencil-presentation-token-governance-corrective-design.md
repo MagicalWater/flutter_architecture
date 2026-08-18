@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: accepted
+status: proposed
 authoritative_for:
   - milestone-42-pencil-presentation-token-governance-corrective-design
 last_reviewed_baseline: 1.21.0
@@ -8,7 +8,7 @@ last_reviewed_baseline: 1.21.0
 
 # Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective Design
 
-> Approval：2026-08-18 使用者明確核准。Design two-layer review PASS；Open P0 = 0；Open P1 without disposition = 0。
+> Revision gate：原 Design 已於 2026-08-18 取得使用者核准；其後使用者在 Plan approval 前補充 P1：本 Milestone 必須不只修 current reference，還要建立長期 UI Design Ownership Architecture，涵蓋尺寸、顏色、字體、資產、gradient、geometry 等 UI design data，並禁止 `*VisualSpec` / `*VisualTokens` 類 catch-all 模板。此 revision 屬 material Design strengthening，故 Design 暫回 `proposed`，重新完成雙層 review並取得使用者核准後才可恢復 `accepted`。
 
 ## 1. Goal
 
@@ -50,6 +50,12 @@ Token promotion不是「看到 color/size 就搬進 package」。只有 shared s
 
 Feature-local只允許 screen/component exact authority。若一個值實際代表 app-wide surface、text、brand、status、typography或跨 screen semantic，必須走 Design System mapping/promotion decision。
 
+### 2.4 禁止 generic Feature UI Spec / VisualSpec catch-all
+
+本Milestone的長期規範不是把 `PencilCompatibilityVisualSpec` 換成比較小的Spec。Repository必須禁止 `*VisualSpec`、`*VisualTokens`、`*UiSpec`、`*StyleConfig` 成為 colors、spacing、radius、typography、asset paths、gradients、geometry或canonical metadata的集中容器。
+
+UI design data必須依責任分配至：Design System semantic/theme authority、Asset/representation authority、Visual authority metadata、Layout owner或smallest correct component owner。不得因為值都來自同一張Pencil畫面就建立feature-wide generic Spec。
+
 ## 3. Presentation source ownership
 
 ### 3.1 Target structure
@@ -76,13 +82,12 @@ features/pencil_compatibility/presentation/
 │     ├─ write_precheck_guidance.dart
 │     ├─ write_precheck_actions.dart
 │     └─ write_precheck_footer.dart
-├─ visual_spec/
-│  ├─ write_precheck_visual_authority.dart
-│  └─ write_precheck_visual_tokens.dart
+├─ visual_authority/
+│  └─ write_precheck_visual_authority.dart
 └─ write_precheck_copy.dart
 ```
 
-Exact file count不是contract；若兩個小component放在同一檔更清楚可以合併。不可退化成「一個2,000行 renderer file換成20個沒有責任邊界的碎檔」。
+Exact file count不是contract；若兩個小component放在同一檔更清楚可以合併。不可退化成「一個2,000行 renderer file換成20個沒有責任邊界的碎檔」。也不預設建立feature-wide `visual_tokens.dart`；只有真的存在feature-level stable semantic authority時，才允許建立窄責任owner。
 
 ### 3.2 `pages/` contract
 
@@ -166,7 +171,7 @@ screen-specific decorative gradient
 bounded artwork dimensions
 ```
 
-Owner：feature `visual_spec/` 或 component-local token group。
+Owner：優先由smallest correct component owner擁有；只有同一feature內多個bounded components共享且具穩定feature semantic identity時，才建立feature-local semantic owner。不得以generic `VisualSpec` / `VisualTokens`作預設容器。
 
 條件：值的語意只對該 accepted screen/component成立，且沒有跨 feature semantic responsibility。
 
@@ -174,9 +179,47 @@ Owner：feature `visual_spec/` 或 component-local token group。
 
 只在單一 component使用、沒有 reusable token semantics的 offset/size/gap，不放進 catch-all spec，直接由該 component local constant擁有。
 
+### 4.6 Asset / Representation Authority
+
+Raster、vector、icon、font、texture、illustration與其他固定visual assets不屬於visual token。Owner必須沿用既有representation/provenance contract：accepted Pencil node / visual source → source/export identity → transformation（如有）→ repository destination → content hash → Flutter owner/consumer。
+
+Asset path、font asset path、SVG path、texture path不得集中進 `FeatureVisualSpec` / `FeatureVisualTokens`。Flutter source可以透過既有asset constants、generated asset accessor或bounded asset owner引用，但provenance authority必須留在repository asset/mapping evidence，不由UI Spec class接管。本Milestone不建立第二套asset registry。
+
+### 4.7 UI Design Ownership Architecture
+
+所有Pencil/source-driven UI data在Flutter implementation前必須能回答「誰擁有它」，而不是只回答「值是多少」。Canonical routing：
+
+```txt
+Color / surface / text / status semantic
+→ Design System semantic/theme owner（若semantic identity成立）
+→ 否則smallest feature/component local owner
+
+Typography
+→ Design System typography（若global/theme identity成立）
+→ 否則explicit local typography authority
+
+Spacing / radius / elevation / icon size
+→ existing Design System token（若verified-equivalent）
+→ 否則component-local exact geometry
+
+Raster / vector / icon / font / texture
+→ asset / representation authority + provenance mapping
+
+Canonical viewport / DPR / comparison assumptions
+→ visual-authority metadata only
+
+Screen / section placement mechanics
+→ layout owner
+
+One-off decorative gradient / local geometry
+→ smallest correct component owner
+```
+
+此routing是repository-wide Pencil-to-Flutter architecture contract，不只適用於Write Precheck reference。
+
 ## 5. `PencilCompatibilityVisualSpec` disposition
 
-Current class必須 retired；不能只rename。
+Current class必須 retired；不能只rename，也不能以 `WritePrecheckVisualTokens`、`WritePrecheckUiSpec`、`WritePrecheckStyleConfig` 等價catch-all replacement取代。
 
 ### 5.1 `canonicalSize` / DPR
 
@@ -189,7 +232,7 @@ Current class必須 retired；不能只rename。
 Reference Pencil compatibility screen是template proof，可能刻意展示與default/ocean theme不同的 accepted visual language，因此不能為了消除local colors就污染global template theme。Decision rule：
 
 - 若對應 current DS semantic role且 visual contract允許 theme mapping → 使用 DS public semantic owner；
-- 若 Pencil exact color是此 proof screen 的 accepted local art direction且非 template-wide theme → 保留 `WritePrecheckVisualTokens` feature-local semantic palette；
+- 若 Pencil exact color是此 proof screen 的 accepted local art direction且非 template-wide theme → 由smallest correct local semantic owner持有；只有多個bounded components共享同一feature semantic identity時才允許窄責任feature-local palette owner；
 - 若未來 product master `.pen` 定義同一 palette 為 app-wide → 在產品 Requirement/Design中 promotion到 Design System，不沿用 proof screen的local例外。
 
 ### 5.3 Typography
@@ -201,6 +244,12 @@ Reference Pencil compatibility screen是template proof，可能刻意展示與de
 - 已與 `DsRadius` / `DsSpace` 等價且不犧牲 fidelity者使用 public DS token。
 - exact value不等價、只服務這個screen/component者保留 local。
 - component-only value優先移至component-local，避免重新製造 `WritePrecheckVisualTokens` mega-class。
+
+### 5.5 Assets
+
+- raster/vector/font/icon/texture path不得由visual token/spec owner持有；
+- Asset identity與hash由visual authority mapping / asset provenance contract擁有；
+- Flutter consumer只引用resolved asset owner，不得用Spec class當asset registry。
 
 ## 6. Machine-readable token disposition
 
@@ -253,7 +302,9 @@ FeatureVisualSpec = whole product design-system substitute
 
 ### Skill / Guide
 
-`implementing-pencil-flutter-design` extraction後，在Flutter mapping前新增 token ownership classification；若發現global semantic token沒有owner，停止implementation並回Design System mapping，不得先 hardcode feature-local。
+`implementing-pencil-flutter-design` extraction後，在Flutter mapping前新增完整UI Design Ownership classification：token ownership + asset/representation ownership + layout/visual-authority ownership。若發現global semantic token沒有owner、asset provenance unresolved、或implementation企圖建立generic Feature VisualSpec/UiSpec catch-all，停止implementation並回正確authority mapping，不得先hardcode feature-local。
+
+Skill / Guide必須提供reusable decision route，使未來Login/Home/Settings/任意Pencil screen都遵循同一ownership architecture，而不是只對`pencil_compatibility` reference特判。
 
 ## 8. Enforcement
 
@@ -278,6 +329,15 @@ Machine owner驗證：
 - intentional-local有scope/reason；
 - canonical metadata不被誤放Design System。
 
+### 8.3 UI ownership anti-catch-all contract
+
+Review/machine owner至少對risk-selected source驗證：
+
+- 不存在同時集中color + dimensions + typography + asset paths + gradients/geometry的generic feature Spec；
+- asset path/provenance不得由visual token owner接管；
+- local visual values能追溯到Design System、asset authority、visual authority、layout owner或smallest component owner之一；
+- 不以class/file naming alone判FAIL，而以responsibility mixture與mapping disposition判定。
+
 ## 9. Reference migration sequence
 
 ```txt
@@ -295,7 +355,7 @@ RED architecture/token ownership evidence
 
 ## 10. Behavioral pressure scenarios
 
-新增至少三題：
+新增至少五題：
 
 ### PTF-30 — FeatureVisualSpec escape hatch
 
@@ -308,6 +368,14 @@ Agent把一個 Hero 特有 `radius=17`、decorative gradient提升成 global `Ds
 ### PTF-32 — Presentation responsibility
 
 Agent把 page、custom RenderObject、15個section widgets與projection helpers全部放進 `pages/screen_canvas.dart`，dependency direction仍正確。Expected：architecture review FAIL；不是Clean layer violation，而是 presentation ownership/cohesion failure。
+
+### PTF-33 — Feature UI Spec dumping
+
+Agent為Login/Home/Settings各建立`*VisualSpec`，集中colors、padding、radius、typography、gradients與asset paths，理由是「每個feature自己管理最清楚」。Expected：FAIL；必須重新分類到Design System semantic/theme authority、asset/representation authority、visual authority、layout owner或smallest component owner。
+
+### PTF-34 — Asset path inside VisualSpec
+
+Agent把`heroImagePath`、`warningIconPath`、`backgroundTexturePath`、`fontAssetPath`放進FeatureVisualSpec，並把它稱為「UI constants」。Expected：FAIL；asset/provenance authority不得被visual token/spec owner取代。
 
 ## 11. Visual acceptance
 
@@ -324,11 +392,12 @@ Migration後必須維持：
 ## 12. Success criteria
 
 1. `pages/`只保留page/view orchestration，render/layout infrastructure與bounded components有明確 owner。
-2. `PencilCompatibilityVisualSpec` retired，沒有同功能 mega-class replacement。
+2. `PencilCompatibilityVisualSpec` retired，沒有 `*VisualSpec` / `*VisualTokens` / `*UiSpec` 等同功能 mega-class replacement。
 3. Risk-selected visual values有明確 `visual-authority / design-system / feature-local / component-local` ownership。
 4. Shared semantic token不能用「Pencil exact」逃避 Design System；single-screen exact token也不能污染Design System。
 5. ADR-018、ADR-028、Skill、Guide與machine contract一致。
-6. PTF-30～32 fresh behavioral pressure符合預期。
+6. PTF-30～34 fresh behavioral pressure符合預期。
 7. Accepted `.pen`與visual fidelity未改。
 8. Open P0=0、undisposed P1=0。
+9. UI尺寸、顏色、typography、asset、gradient、geometry皆能依repository-wide UI Design Ownership Architecture解析到正確owner；未來feature不能再以generic Spec class自成一套小型Design System。
 

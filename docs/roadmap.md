@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-State: Design accepted / Implementation Plan reviewed / user approval pending / Milestone 41 publication suspended
+State: Revised Design proposed / revision review PASS / user revised-Design approval pending / existing Plan suspended / Milestone 41 publication suspended
 Template Baseline: 1.21.0 release candidate
 ```
 

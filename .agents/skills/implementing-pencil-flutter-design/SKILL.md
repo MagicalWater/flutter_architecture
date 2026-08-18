@@ -21,6 +21,7 @@ delegate governing-template-development
 → extract structure and variables
 → classify visual representation and resolve provenance
 → classify UI design ownership and resolve promotion / local ownership
+→ classify Presentation responsibility and state ownership
 → map resolved representation to Flutter authority
 → route TDD and visual acceptance
 → invalidate wrong representation and return to mapping when review finds source/identity drift
@@ -48,11 +49,12 @@ delegate governing-template-development
 2. 依[Pencil admission](references/pencil-admission.md)操作Pencil；MCP不可用時保持blocked。
 3. 依[Asset / Vector / Typography mapping](references/asset-and-typography-mapping.md)完成representation classification與provenance resolution；任何required font／icon／asset／static-vs-dynamic representation unresolved時保持blocked。
 4. 依[Flutter mapping](references/flutter-mapping.md)完成UI Design Ownership classification：Design System、asset/provenance、visual-authority metadata、layout owner或smallest correct component owner。Generic `*VisualSpec`／`*VisualTokens`／`*UiSpec`／`*StyleConfig` catch-all或shared semantic owner unresolved時保持blocked。
-5. 只把已resolved representation與UI ownership交給Flutter production mapping，建立最小且真實的presentation boundary。
-6. 先建立並執行failing widget／route／localization tests，確認RED後才可寫Flutter production source。
-7. 依[Visual validation](references/visual-validation.md)執行TDD、golden、runtime與semantic review。
-8. 若review判定wrong source／asset／icon／representation，立即把該mapping視為invalid；依representation/provenance gate重新解決，禁止在錯誤candidate上繼續padding／scale／crop／offset／opacity tuning。
-9. 使用[Pressure scenarios](references/pressure-scenarios.md)檢查shortcut rationalization。
+5. 依ADR-032完成Presentation responsibility／state ownership：Page/View orchestration、bounded Section/Component/Surface、layout/render mechanics與local State/Hook/Controller各有coherent owner；不得以`part`假拆owner，也不得為了形式把每個widget拆檔或把所有UI state升Cubit。
+6. 只把已resolved representation、UI ownership與Presentation responsibility交給Flutter production mapping，建立最小且真實的presentation boundary。
+7. 先建立並執行failing widget／route／localization tests，確認RED後才可寫Flutter production source。
+8. 依[Visual validation](references/visual-validation.md)執行TDD、golden、runtime與semantic review。
+9. 若review判定wrong source／asset／icon／representation，立即把該mapping視為invalid；依representation/provenance gate重新解決，禁止在錯誤candidate上繼續padding／scale／crop／offset／opacity tuning。
+10. 使用[Pressure scenarios](references/pressure-scenarios.md)檢查shortcut rationalization。
 
 ## Taste Skill邊界
 
@@ -72,6 +74,8 @@ delegate governing-template-development
 - 看過candidate後擴大threshold、resize thumbnail或加入任意ignore region。
 - 在representation classification前直接選font fallback、approximate icon、raster／vector或static CustomPainter shortcut。
 - 建立會同時集中colors、dimensions、typography、asset paths、gradients、geometry或canonical metadata的generic Feature Visual/UI Spec。
+- 把Page/View/Section/Component當成mandatory class/folder taxonomy、用line/class count決定拆檔、或為所有UI-local state新增Cubit／Bloc。
+- 以handwritten `part`／`part of`把不同Presentation owners綁回同一library後宣稱已完成責任拆分。
 - 把canonical viewport／DPR放進Design System，或把asset provenance塞進visual token class。
 - Review已判定wrong source／asset／icon／representation後，仍以padding、scale、crop、offset、opacity或threshold tuning嘗試挽救同一invalid mapping。
 - 在Design、`.pen`或repository architecture衝突時自行選邊。

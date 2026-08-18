@@ -112,6 +112,15 @@ data/
 - 不要跨 feature 直接讀取其他 feature 的 Bloc。
 - 跨 feature 狀態應透過 SessionManager、Repository Interface、UseCase 或 domain abstraction。
 
+### Presentation Component 邊界
+
+- `Page`、`View`、`Section`、`Component`、`Surface`、`Layout`是responsibility roles，不是固定class/file/folder模板；stable authority見ADR-032。
+- Handwritten source遵循「one coherent primary responsibility」，但不要求one-class-one-file；private helpers只要同lifecycle／change reason且沒有獨立authority即可共檔。
+- Page/View orchestration不得同時直接擁有獨立custom RenderObject／projection engine；handwritten `part`／`part of`不能用來假裝cross-owner已拆分。
+- UI-local transient state預設由State／Hook／Controller擁有；只有workflow transition、async ordering、retry/failure/concurrency等責任成立才升Cubit／Bloc。
+- Dialog／BottomSheet／Overlay要分辨invocation owner與surface implementation owner；Shell可以觸發surface，不代表Shell必須擁有surface實作。
+- 不使用file line count、class/widget count、fixed folder tree、`setState` ban或Bloc/Cubit presence作architecture oracle。
+
 ### UI Design Ownership 邊界
 
 - Shared semantic／Theme Identity／validated reusable component 才由 `packages/design_system` 擁有。

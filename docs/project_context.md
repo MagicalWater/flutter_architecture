@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.22.0
 ---
 
 # Project Context
@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.21.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.21.0
+Template Baseline: 1.22.0
 Phase 1 / MVP: Completed
-Current active milestone: None
-Current phase: Milestone 41 + 42 published / post-release closure PASS
-Latest completed initiative: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective, combined with Milestone 41 in Template Baseline 1.21.0
+Current active milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
+Current phase: Task 43-7 accepted / Task 43-8 publication active
+Latest completed initiative: Milestone 43 implementation and holistic review accepted; Template Baseline 1.22.0 publication in progress
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -164,6 +164,8 @@ App 是唯一 Composition Root：
 - 跨 feature authority 透過 SessionManager、Repository Interface、UseCase 或 App coordinator 傳遞。
 - Route Guard 不依賴 AuthBloc，只依賴穩定的 Session authority。
 - UseCase 以單一業務行為為粒度。
+- ADR-032定義Presentation內部responsibility roles與state escalation：Page/View/Section/Component/Surface/Layout不是mandatory folder/class tree；handwritten source以coherent primary responsibility為界，local UI mechanics保留State/Hook/Controller，workflow transition才升Cubit/Bloc。
+- Modal UI區分invocation owner與surface implementation owner；custom RenderObject/projection有獨立layout responsibility時不得藏在Page/View orchestration owner。
 
 ### Generated Sources
 
@@ -362,21 +364,21 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.21.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.22.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: None
-Current phase: Milestone 41 + 42 published / post-release closure PASS
-Latest completed initiative: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective, combined with Milestone 41 in Template Baseline 1.21.0
-Maintenance mode: Available for new Requirement Decision
+Current active milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
+Current phase: Task 43-7 accepted / Task 43-8 publication active
+Latest completed initiative: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance（Task 43-7 accepted；1.22.0 publication in progress）
+Maintenance mode: Active publication / post-release validation
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 41 constraint/relationship layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0。Current source已拆分`pages/` orchestration、`layout/` projection/render mechanics與`widgets/` bounded composition，舊VisualSpec已退休；shared semantic/theme、asset/provenance、visual-authority metadata、layout owner與smallest component owner的UI Design Ownership Architecture已同步到ADR-018、ADR-028、`implementing-pencil-flutter-design` Skill、human Guide、root Agent policy與machine mapping。Task 42-10在exact published runtime SHA完成Windows full regression、GitHub-hosted iOS Simulator/Production verification與PTF-30～34 fresh acceptance；Milestone 41與42正式closed。更大的Presentation Component Architecture只登記為Milestone 43 candidate，尚未admitted。
+Milestone 41 constraint/relationship layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0。Current source已拆分`pages/` orchestration、`layout/` projection/render mechanics與`widgets/` bounded composition，舊VisualSpec已退休；shared semantic/theme、asset/provenance、visual-authority metadata、layout owner與smallest component owner的UI Design Ownership Architecture已同步到ADR-018、ADR-028、`implementing-pencil-flutter-design` Skill、human Guide、root Agent policy與machine mapping。Task 42-10在exact published runtime SHA完成Windows full regression、GitHub-hosted iOS Simulator/Production verification與PTF-30～34 fresh acceptance；Milestone 41與42正式closed。Milestone 43 Requirement、Design與Implementation Plan均accepted；43-1～43-7已完成Direct RED、ADR-032、generic machine contract、Pencil normal-library decomposition、Catalog/OTP/Shell adoption／positive proofs、consumer governance與holistic full validation。Release decision為Template Baseline 1.22.0 candidate；current gate為43-8 publication與published-main closure。
 
 Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Template Baseline維持1.20.0。
 

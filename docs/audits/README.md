@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.20.0
+last_reviewed_baseline: 1.21.0
 ---
 
 # Audits and Review Evidence
@@ -44,6 +44,12 @@ Final / Holistic Review
 開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
 
 ## Evidence routes
+
+### Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
+
+- [`milestone_43/43-r_requirement_decision.md`](milestone_43/43-r_requirement_decision.md)：repository-wide Presentation responsibility/state/cohesion的Level 4 Requirement Decision。
+- [`milestone_43/43-0_design_spec_review.md`](milestone_43/43-0_design_spec_review.md)：Design focused review、fresh re-review、whole-Design traceability與user approval gate evidence。
+- [`milestone_43/43-p_implementation_plan_review.md`](milestone_43/43-p_implementation_plan_review.md)：RED→stable authority→machine GREEN→representative adoption→behavioral pressure→holistic/post-release的Plan review。
 
 ### Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
 

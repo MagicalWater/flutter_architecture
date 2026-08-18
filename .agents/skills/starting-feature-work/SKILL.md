@@ -26,9 +26,10 @@ description: 當此 repository 要開始新的產品功能、畫面、使用者�
 
 1. 把使用者原始 wording 與 intent 保留為 request input。
 2. 先呼叫 `governing-template-development` 並產生其 Requirement Decision。
-3. 只依該 Decision 的 routing，檢查目前 feature、Design System、navigation、domain、data、API、state、accessibility、localization、offline、testing 與 documentation boundaries。
-4. 使用者只要求討論或探索時，不得開始 Design 或 implementation。
-5. 完整遵守中央治理 Skill 的 approval、worktree／branch、Task、validation、release 與 stop rules，不得在此重複建立第二套規則。
+3. 只依該 Decision 的 routing，檢查目前 feature、Presentation responsibility、Design System、navigation、domain、data、API、state、accessibility、localization、offline、testing 與 documentation boundaries。
+4. Presentation planning必須先讀ADR-032：Page/View/Section/Component/Surface/Layout是responsibility roles，不是固定class/folder tree；local UI mechanics不因存在state就自動升Cubit/Bloc，只有獨立change reason／lifecycle／authority成立才extract或escalate。
+5. 使用者只要求討論或探索時，不得開始 Design 或 implementation。
+6. 完整遵守中央治理 Skill 的 approval、worktree／branch、Task、validation、release 與 stop rules，不得在此重複建立第二套規則。
 
 ## 給使用者的呼叫方式
 

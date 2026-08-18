@@ -3,7 +3,7 @@ document_type: design-plan-index
 status: active
 authoritative_for:
   - design-spec-and-implementation-plan-routing
-last_reviewed_baseline: 1.20.0
+last_reviewed_baseline: 1.21.0
 ---
 
 # Design Specifications and Implementation Plans
@@ -32,6 +32,8 @@ docs/superpowers/specs/
 docs/superpowers/plans/
   Task-based implementation plans
 ```
+
+Milestone 43 accepted Design／accepted Plan：[`specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`](specs/2026-08-18-milestone-43-presentation-component-architecture-design.md)／[`plans/2026-08-18-milestone-43-presentation-component-architecture.md`](plans/2026-08-18-milestone-43-presentation-component-architecture.md)。Design與Plan均已於2026-08-18取得使用者核准；implementation自Task 43-1 Direct RED開始。
 
 目前最新計畫 routing：
 
@@ -64,6 +66,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
+- [`specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`](specs/2026-08-18-milestone-43-presentation-component-architecture-design.md)：accepted Milestone 43 Design；建立一般Flutter feature適用的Presentation role/state/cohesion contract，拒絕one-class-one-file、Cubit-everything與固定folder skeleton形式主義。
 - [`specs/2026-08-10-validation-planner-skill-governance-classification-corrective-design.md`](specs/2026-08-10-validation-planner-skill-governance-classification-corrective-design.md)：accepted standalone governance corrective；補齊`.agents/skills/**`、`skills-lock.json`與`third_party/skills/**`對既有`governance` class的routing，保留Skill lock integrity、semantic pressure review與unknown full fail-safe；2026-08-10已取得使用者核准並完成implementation。
 - [`specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`](specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md)：accepted Milestone 35 Corrective Design；以single deterministic validation planner、change classes、affected dependency scope、evidence reuse與fail-safe full escalation建立Minimum Sufficient Validation；Plan已accepted，implementation進入managed worktree admission。
 - [`specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`](specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md)：accepted Milestone 34 Design；補強Pencil extraction到Flutter mapping之間的asset／vector／typography representation classification與provenance gate；Implementation仍須等待Plan完成雙層治理與書面核准。

@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.22.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.21.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.21.0
+Template Baseline: 1.22.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -26,12 +26,12 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: none
-State: Milestone 41 + 42 published / post-release closure PASS
-Template Baseline: 1.21.0
+Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
+State: Requirement accepted / Design accepted / Plan accepted / Task 43-7 holistic review accepted
+Template Baseline: 1.22.0
 ```
 
-完整 active scope、Design gate與 next action：
+完整 active scope、current gate與 next action：
 
 - `docs/roadmap/active.md`
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 42 已完成或已有明確 disposition。Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0，Task 42-10 published-main post-release validation完成後正式closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 42 已完成或已有明確 disposition。Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0，Task 42-10 published-main post-release validation完成後正式closure。Milestone 43 Requirement、Design與Implementation Plan均accepted；Tasks 43-1～43-7已完成並形成1.22.0 release candidate，current gate為Task 43-8 publication／published-main closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

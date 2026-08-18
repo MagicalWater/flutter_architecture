@@ -20,6 +20,34 @@
 
 ---
 
+## [1.22.0] - 2026-08-18
+
+### Added
+
+- 完成Milestone 43 Flutter Presentation Component Architecture & UI Responsibility Governance，新增ADR-032，正式定義Page／View／Section／Component／Surface／Layout responsibility roles、source/library cohesion、modal surface ownership、shell/navigation orchestration與Presentation state escalation。
+- 新增repository-wide Presentation architecture machine contract，鎖定Page/View owner不得直接持有獨立custom RenderObject/projection engine、handwritten `part`不得冒充跨owner拆分，並保留cohesive private helpers與local ephemeral UI state的positive controls。
+- 新增PTF-35～PTF-46 behavioral pressure，覆蓋one-widget-one-file、Cubit-everything、local expand/collapse、Shell/Dialog ownership、ScrollController、AnimationController、`part`假拆、Design System over-promotion、small feature與governance Skill膨脹。
+
+### Changed
+
+- Pencil compatibility reference解除`write_precheck_content.dart`與projection的handwritten `part`耦合，projection成為正常Dart library；bounded content components、visual primitives與text style形成各自coherent owners，且不改accepted visual authority。
+- Catalog cache/reconnect status surfaces依共同change reason抽成單一feature-local owner；Catalog ScrollController維持Hook-local，沒有新增形式化`CatalogScrollCubit`。
+- OTP countdown Timer／`setState`與Shell surface launcher保留為accepted positive no-refactor examples，證明Presentation governance不要求所有UI state升Cubit，也不要求one-class-one-file。
+- `starting-feature-work`、`implementing-pencil-flutter-design`、Pencil mapping reference與How to Add a Feature Guide均接入ADR-032；不新增第二套Presentation governance Skill。
+
+### Validation
+
+- Milestone 43 holistic validation完成5-workspace analyze、完整App／package Flutter regression、Pencil runtime/golden、Design System golden、Python machine/policy suites、`docs_check`與`flutter build bundle`，全數PASS。
+- App完整test inventory以可確認exit code的分區執行，涵蓋app、feature、architecture與root smoke；Catalog 122、Pencil 22、Auth feature 105等代表性owner均維持GREEN。
+- Pencil runtime visual metrics維持accepted baseline，沒有修改golden、threshold、crop、ignore region或`.pen` authority。
+
+### Governance
+
+- Requirement Decision、Design與Implementation Plan均經Level 4雙層Task governance與使用者明確核准；Tasks 43-1～43-7完成focused review、fresh re-review、whole-Task／whole-milestone review，Open P0=0、Open P1 without disposition=0。
+- Release decision為Template Baseline `1.22.0`；Task 43-8負責publication、exact published-main identity、fresh Windows regression、GitHub-hosted iOS verification與post-release closure。
+
+---
+
 ## [1.21.0] - 2026-08-18
 
 ### Added

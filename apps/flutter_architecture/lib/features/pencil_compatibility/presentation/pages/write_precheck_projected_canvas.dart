@@ -223,18 +223,14 @@ class _ProjectedTranslate extends StatelessWidget {
 }
 
 class _ProjectedStack extends StatelessWidget {
-  const _ProjectedStack({
-    this.clipBehavior = Clip.hardEdge,
-    this.children = const <Widget>[],
-  });
+  const _ProjectedStack({this.children = const <Widget>[]});
 
-  final Clip clipBehavior;
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) => _RawProjectedStack(
     scale: _ProjectionScope.of(context).scale,
-    clipBehavior: clipBehavior,
+    clipBehavior: Clip.hardEdge,
     children: children,
   );
 }

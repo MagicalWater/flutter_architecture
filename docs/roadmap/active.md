@@ -10,22 +10,25 @@ last_reviewed_baseline: 1.21.0
 
 ```txt
 Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
-State: Requirement accepted / Design proposed
+State: Requirement accepted / Design accepted / Plan accepted / Implementation active
 Template Baseline: 1.21.0
 ```
 
 ## Current Scope
 
-Milestone 43已由candidate完成fresh Requirement Decision並以Level 4 Architecture / Milestone正式promotion。Current scope是建立repository-wide Flutter Presentation Component Architecture：Page/View/Section/Component/Surface、shell/navigation orchestration、layout/render owner、Bloc/Cubit/local state escalation、compilation-unit cohesion與Design System promotion。Design目前仍為`proposed`，不得開始Implementation Plan或production refactor。
+Milestone 43已由candidate完成fresh Requirement Decision並以Level 4 Architecture / Milestone正式promotion。Current scope是建立repository-wide Flutter Presentation Component Architecture：Page/View/Section/Component/Surface、shell/navigation orchestration、layout/render owner、Bloc/Cubit/local state escalation、compilation-unit cohesion與Design System promotion。Design與Implementation Plan均已完成雙層review並於2026-08-18取得使用者明確核准；implementation自Task 43-1開始。
 
 ## Current Gate
 
-Milestone 41 + 42 closure維持不變。Milestone 43 Requirement已accepted；current gate為Design完整雙層Task governance與使用者明確Design approval。Design accepted前不得建立accepted Plan、不得修改production architecture、不得先寫machine detector。
+Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；current gate為Task 43-1 Direct RED。各Task必須依accepted Plan順序完成雙層治理、planner-selected validation與completion commit。
 
 ## Current Evidence
 
 - Milestone 43 Requirement Decision：`docs/audits/milestone_43/43-r_requirement_decision.md`（accepted / Level 4）。
-- Milestone 43 Design：`docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`（proposed；等待Design Task review與user approval）。
+- Milestone 43 Design：`docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`（accepted；review PASS；user approved 2026-08-18）。
+- Milestone 43 Design Review：`docs/audits/milestone_43/43-0_design_spec_review.md`（completed / PASS）。
+- Milestone 43 Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-43-presentation-component-architecture.md`（accepted；Plan review PASS；user approved 2026-08-18）。
+- Milestone 43 Plan Review：`docs/audits/milestone_43/43-p_implementation_plan_review.md`（accepted / PASS）。
 
 - Requirement Decision：`docs/audits/milestone_41/41-r_requirement_decision.md`（accepted）。
 - Design：`docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`（accepted；review PASS；user approved 2026-08-18）。

@@ -47,8 +47,9 @@ Final / Holistic Review
 
 ### Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
 
-- [`milestone_43/43-r_requirement_decision.md`](milestone_43/43-r_requirement_decision.md)：repository-wide Presentation responsibility/cohesion缺口的Level 4 Requirement Decision；Milestone 43已promotion為active，Design尚未accepted。
-- [`milestone_43/43-0_design_spec_review.md`](milestone_43/43-0_design_spec_review.md)：Page/View/Section/Component/Surface、state escalation、compilation-unit cohesion、Skill routing與enforcement策略的Design雙層review。
+- [`milestone_43/43-r_requirement_decision.md`](milestone_43/43-r_requirement_decision.md)：repository-wide Presentation responsibility/state/cohesion的Level 4 Requirement Decision。
+- [`milestone_43/43-0_design_spec_review.md`](milestone_43/43-0_design_spec_review.md)：Design focused review、fresh re-review、whole-Design traceability與user approval gate evidence。
+- [`milestone_43/43-p_implementation_plan_review.md`](milestone_43/43-p_implementation_plan_review.md)：RED→stable authority→machine GREEN→representative adoption→behavioral pressure→holistic/post-release的Plan review。
 
 ### Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
 

@@ -17,8 +17,6 @@ last_reviewed_baseline: 1.21.0
 
 Spec 與 Plan 都不代表 implementation 已完成，也不取代 current snapshot、Architecture Decision、review evidence 或 release history。
 
-Milestone 43 proposed Design：[`specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`](specs/2026-08-18-milestone-43-presentation-component-architecture-design.md)。Requirement已accepted並promotion為active Level 4 Architecture Milestone；Design仍須完成雙層review與使用者明確核准，尚不得建立accepted Implementation Plan或開始production refactor。
-
 Milestone 40 core accepted Design／Plan：[`specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`](specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md)／[`plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`](plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md)。Tasks 40-1～40-6已完成。40-7R architecture-Hero corrective Design／Plan與C01／C02保留為historical failure evidence；最終40-7T透過新的Level 1 Requirement Decision收斂為typographic title artwork，使用者已accept C01並接入root README，因此不另建formal Design／Plan。Milestone 40已local closure，Template Baseline維持1.20.0。
 
 Milestone 39 accepted Design／Plan：[`specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md`](specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md)／[`plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md`](plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md)。Milestone已完成1.20.0 publication與Task 39-8 post-release closure；current state由`../roadmap/active.md`與`../project_context.md`擁有。
@@ -34,6 +32,8 @@ docs/superpowers/specs/
 docs/superpowers/plans/
   Task-based implementation plans
 ```
+
+Milestone 43 accepted Design／accepted Plan：[`specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`](specs/2026-08-18-milestone-43-presentation-component-architecture-design.md)／[`plans/2026-08-18-milestone-43-presentation-component-architecture.md`](plans/2026-08-18-milestone-43-presentation-component-architecture.md)。Design與Plan均已於2026-08-18取得使用者核准；implementation自Task 43-1 Direct RED開始。
 
 目前最新計畫 routing：
 
@@ -66,7 +66,7 @@ Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計
 
 目前最新設計 routing：
 
-- [`specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`](specs/2026-08-18-milestone-43-presentation-component-architecture-design.md)：proposed Milestone 43 Design；建立一般Flutter feature適用的Presentation role/state/cohesion contract，拒絕one-class-one-file、Cubit-everything與固定folder skeleton形式主義。
+- [`specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`](specs/2026-08-18-milestone-43-presentation-component-architecture-design.md)：accepted Milestone 43 Design；建立一般Flutter feature適用的Presentation role/state/cohesion contract，拒絕one-class-one-file、Cubit-everything與固定folder skeleton形式主義。
 - [`specs/2026-08-10-validation-planner-skill-governance-classification-corrective-design.md`](specs/2026-08-10-validation-planner-skill-governance-classification-corrective-design.md)：accepted standalone governance corrective；補齊`.agents/skills/**`、`skills-lock.json`與`third_party/skills/**`對既有`governance` class的routing，保留Skill lock integrity、semantic pressure review與unknown full fail-safe；2026-08-10已取得使用者核准並完成implementation。
 - [`specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`](specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md)：accepted Milestone 35 Corrective Design；以single deterministic validation planner、change classes、affected dependency scope、evidence reuse與fail-safe full escalation建立Minimum Sufficient Validation；Plan已accepted，implementation進入managed worktree admission。
 - [`specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`](specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md)：accepted Milestone 34 Design；補強Pencil extraction到Flutter mapping之間的asset／vector／typography representation classification與provenance gate；Implementation仍須等待Plan完成雙層治理與書面核准。

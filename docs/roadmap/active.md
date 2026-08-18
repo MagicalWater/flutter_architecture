@@ -9,18 +9,18 @@ last_reviewed_baseline: 1.21.0
 # Active Milestone
 
 ```txt
-Active Milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
-State: Holistic PASS / 1.21.0 release candidate / merge-push authorization pending
-Template Baseline: 1.21.0 release candidate
+Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
+State: Requirement accepted / Design in progress / Milestone 41 publication suspended
+Template Baseline: 1.21.0 combined release candidate base
 ```
 
 ## Current Scope
 
-Milestone 41處理current Pencil-to-Flutter stable policy與reference production implementation之間的layout architecture drift。Fresh audit已確認：current contract禁止canonical design-space `x/y`機械套成runtime固定座標，但`WritePrecheckProjectedCanvas`仍以whole-screen projected `Stack`／`Positioned`、global design scale與custom `RenderStack`縮放positioned parent data，且現有policy／architecture tests無法攔住。Scope包含constraint／relationship-based layout contract、bounded local overlay boundary、machine enforcement、reference implementation corrective與behavioral pressure；不修改accepted `.pen`或降低visual fidelity gate。
+Milestone 42處理Milestone 41 merge前fresh architecture review新增的presentation ownership與visual token governance finding。Current reference已移除whole-screen canonical coordinate owner，但`pages/write_precheck_projected_canvas.dart`仍混合page以外的render/layout/component責任，`PencilCompatibilityVisualSpec`亦混合visual authority metadata、palette、typography、layout/component tokens與gradients。Scope包含Presentation responsibility decomposition、Design System promotion/non-promotion contract、feature-local visual token boundary、machine/review enforcement與reference migration；不修改accepted `.pen`或降低visual fidelity。
 
 ## Current Gate
 
-Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過。Holistic final review決定發布Template Baseline `1.21.0`。下一個合法gate是Task 41-9的merge／push明確授權；授權前不得把release candidate宣稱為published-main或完成Milestone closure。
+Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42 Requirement Decision已accepted，下一個合法gate是Milestone 42 Design Task；42完成後必須重新形成combined holistic/release candidate，再取得merge／push授權。
 
 ## Current Evidence
 
@@ -30,6 +30,7 @@ Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通
 - Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-41-pencil-layout-architecture-corrective.md`（accepted；review PASS；user approved 2026-08-18）。
 - Plan Review：`docs/audits/milestone_41/41-p_implementation_plan_review.md`（completed / PASS）。
 - Task 41-8 Holistic Final Review：`docs/audits/milestone_41/41-8_holistic_final_review.md`（accepted / PASS；release decision = 1.21.0）。
+- Milestone 42 Requirement Decision：`docs/audits/milestone_42/42-r_requirement_decision.md`（accepted；Milestone 41 publication suspended）。
 
 ## Previous Closure
 

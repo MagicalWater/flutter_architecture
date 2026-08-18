@@ -116,6 +116,10 @@ Visible geometry可以由accepted design-space推導真Flutter widget的width、
 
 `Stack`／`Positioned`可用於bounded local overlay，例如Hero內badge、glow、ornament；local coordinates必須相對該bounded container，且不得決定其他section的placement。Map、game board、diagram editor等真正spatial surface只有在accepted Design明確標記`intentional-spatial-canvas`並提供approval reference時，才能以spatial coordinates作主要layout semantics。
 
+Bounded component本身**不是**fixed-canvas laundering boundary。即使screen root與major sections已由`Column`／constraints安排，component內的普通label/value row、button icon + label、card title/subtitle/trailing value、progress step distribution與其他normal content仍必須由`Padding`／`Align`／`Row`／`Column`／`Flex`／`Expanded`／`Spacer`／`Wrap`或等價parent-child relationships擁有。不得因component bounds固定，就把canonical `left/top/width/height`重新變成普通content的主要runtime layout semantics。
+
+Measurement projection可以繼續把accepted design-space轉成size、gap、padding、radius、stroke、icon/artwork sizing等measurement；它不授權generic positioned text/data-row/button helpers，也不授權normal content public API暴露`left/top`作placement contract。真正spatial/decorative overlay仍可在最小bounded owner內使用local coordinates，前提是其rationale來自z-order/spatial semantics，而不是「Pencil上有x/y」。
+
 `implementation_mapping.json`必須對accepted screen root記錄resolved screen layout model。一般App screen使用`constraint-relationship`；`unresolved` fail closed；`intentional-spatial-canvas`沒有accepted approval reference同樣fail closed。
 
 極窄width、localization、orientation或accessibility text scale真的需要調整時，只能在同一component tree內做content-aware adaptation，例如Row→Column、文字換行或扩大interactive hit region，不得建立parallel whole-screen visual renderer。

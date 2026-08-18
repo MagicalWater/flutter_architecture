@@ -73,6 +73,8 @@ Page/View role不得同時直接擁有獨立custom RenderObject/projection engin
 
 `Section`是screen-bounded、具有清楚產品語意與可能獨立change reason的區域；`Component`是bounded、具有穩定input/output的UI unit。並非每個Widget都是Component，也不是每個Section都要獨立file；只有責任真的分離才extract。
 
+Bounded Section/Component不取得fixed-canvas例外。普通content relationships仍由Flutter constraints與parent-child layout擁有；`Stack/Positioned`只在該owner真正承擔spatial／overlay semantics時合理。把screen切成多個bounded owners後，再由每個owner用canonical `left/top`排列普通Text、row、button或card content，仍是layout responsibility failure，不因責任已拆檔而合法。
+
 ### Dialog／BottomSheet／Overlay Surface
 
 Modal UI分成兩個owner：
@@ -152,6 +154,7 @@ Review一個Presentation source時優先問：
 4. 其中是否有部分已形成可獨立review/test/replace/reuse的boundary？
 5. 若拆分，是否真的降低責任耦合，而不是只增加file count？
 6. 若升Bloc/Cubit或Design System，是否有真實workflow/shared-semantic evidence？
+7. Bounded owner內的normal content是否仍由relationships擁有，還是把canonical coordinates洗成local fixed canvas？保留的`Stack/Positioned`是否有真正spatial/overlay rationale？
 
 ## Consequences
 

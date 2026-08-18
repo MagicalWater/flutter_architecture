@@ -60,6 +60,10 @@ unresolved
 
 Local component 可以使用 bounded overlay，但 bounded overlay 不取得 whole-screen page-flow ownership，也不構成 screen-root layout model。
 
+Bounded component同樣不取得normal-content coordinate ownership。普通label/value row、button icon + label、card content、progress step distribution等，即使位於固定bounds內，仍優先使用`Padding`、`Align`、`Row`、`Column`、`Flex`、`Expanded`、`Spacer`、`Wrap`與constraints表達relationships。Risk-selected component若以public `left/top`或generic positioned helper排列normal content，mapping視為unresolved／architecture failure，不能用「只是local overlay」合理化。
+
+Measurement projection仍可服務accepted design-space的size、gap、padding、radius、stroke、icon/artwork sizing；它不授權normal content的canonical x/y placement。保留`Stack/Positioned`時，review evidence必須能指出badge/glow/ornament/z-order等真正spatial rationale。
+
 Presentation responsibility以ADR-032為stable authority。Page/View/Section/Component/Surface/Layout是responsibility roles，不是mandatory folder/class tree；Page/View orchestration不得同時直接擁有獨立custom RenderObject／projection engine，bounded Section/Component/Surface與layout mechanics依change reason／lifecycle／authority分owner。Handwritten `part`／`part of`不能用來掩蓋cross-owner coupling。
 
 同一handwritten source可以保留cohesive private helpers；只有出現不同change reason、lifecycle、state authority、navigation/layout owner或可獨立review/test surface時才extract。禁止以file line count、class/widget count、固定folder existence或Bloc/Cubit presence作architecture oracle。

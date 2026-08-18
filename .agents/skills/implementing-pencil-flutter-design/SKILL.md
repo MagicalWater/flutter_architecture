@@ -50,11 +50,12 @@ delegate governing-template-development
 3. 依[Asset / Vector / Typography mapping](references/asset-and-typography-mapping.md)完成representation classification與provenance resolution；任何required font／icon／asset／static-vs-dynamic representation unresolved時保持blocked。
 4. 依[Flutter mapping](references/flutter-mapping.md)完成UI Design Ownership classification：Design System、asset/provenance、visual-authority metadata、layout owner或smallest correct component owner。Generic `*VisualSpec`／`*VisualTokens`／`*UiSpec`／`*StyleConfig` catch-all或shared semantic owner unresolved時保持blocked。
 5. 依ADR-032完成Presentation responsibility／state ownership：Page/View orchestration、bounded Section/Component/Surface、layout/render mechanics與local State/Hook/Controller各有coherent owner；不得以`part`假拆owner，也不得為了形式把每個widget拆檔或把所有UI state升Cubit。
-6. 只把已resolved representation、UI ownership與Presentation responsibility交給Flutter production mapping，建立最小且真實的presentation boundary。
-7. 先建立並執行failing widget／route／localization tests，確認RED後才可寫Flutter production source。
-8. 依[Visual validation](references/visual-validation.md)執行TDD、golden、runtime與semantic review。
-9. 若review判定wrong source／asset／icon／representation，立即把該mapping視為invalid；依representation/provenance gate重新解決，禁止在錯誤candidate上繼續padding／scale／crop／offset／opacity tuning。
-10. 使用[Pressure scenarios](references/pressure-scenarios.md)檢查shortcut rationalization。
+6. 對risk-selected bounded owners確認normal content relationship-owned：普通Text、row、button、card content不得以public `left/top`或generic positioned helper重建local fixed canvas；只有badge/glow/ornament等真正spatial overlay可保留local coordinates並記錄rationale。
+7. 只把已resolved representation、UI ownership與Presentation responsibility交給Flutter production mapping，建立最小且真實的presentation boundary。
+8. 先建立並執行failing widget／route／localization tests，確認RED後才可寫Flutter production source。
+9. 依[Visual validation](references/visual-validation.md)執行TDD、golden、runtime與semantic review。
+10. 若review判定wrong source／asset／icon／representation，立即把該mapping視為invalid；依representation/provenance gate重新解決，禁止在錯誤candidate上繼續padding／scale／crop／offset／opacity tuning。
+11. 使用[Pressure scenarios](references/pressure-scenarios.md)檢查shortcut rationalization。
 
 ## Taste Skill邊界
 
@@ -76,6 +77,7 @@ delegate governing-template-development
 - 建立會同時集中colors、dimensions、typography、asset paths、gradients、geometry或canonical metadata的generic Feature Visual/UI Spec。
 - 把Page/View/Section/Component當成mandatory class/folder taxonomy、用line/class count決定拆檔、或為所有UI-local state新增Cubit／Bloc。
 - 以handwritten `part`／`part of`把不同Presentation owners綁回同一library後宣稱已完成責任拆分。
+- 把bounded component當成fixed-canvas例外，用canonical `left/top`、public coordinate API或generic positioned text/data-row/button helper排列normal content。
 - 把canonical viewport／DPR放進Design System，或把asset provenance塞進visual token class。
 - Review已判定wrong source／asset／icon／representation後，仍以padding、scale、crop、offset、opacity或threshold tuning嘗試挽救同一invalid mapping。
 - 在Design、`.pen`或repository architecture衝突時自行選邊。

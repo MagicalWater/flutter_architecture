@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_architecture/features/pencil_compatibility/presentation/pages/write_precheck_projected_canvas.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/visual_spec/pencil_compatibility_visual_spec.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_content.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/write_precheck_copy.dart';
 
 class WritePrecheckView extends StatelessWidget {

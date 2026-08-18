@@ -45,9 +45,16 @@ void main() {
         'lib/features/pencil_compatibility/presentation/pages/'
         'write_precheck_view.dart',
       ).readAsStringSync();
+      final pageOwnershipSource =
+          Directory('lib/features/pencil_compatibility/presentation/pages')
+              .listSync()
+              .whereType<File>()
+              .where((file) => file.path.endsWith('.dart'))
+              .map((file) => file.readAsStringSync())
+              .join('\n');
       final projectedCanvasSource = File(
-        'lib/features/pencil_compatibility/presentation/pages/'
-        'write_precheck_projected_canvas.dart',
+        'lib/features/pencil_compatibility/presentation/widgets/'
+        'write_precheck/write_precheck_content.dart',
       ).readAsStringSync();
       final visualSpecSource = File(
         'lib/features/pencil_compatibility/presentation/visual_spec/'
@@ -74,12 +81,12 @@ void main() {
           'page flow',
         );
       }
-      if (_pageOwnsRenderOrProjectionInfrastructure(projectedCanvasSource)) {
+      if (_pageOwnsRenderOrProjectionInfrastructure(pageOwnershipSource)) {
         violations.add(
           'presentation/pages owns custom render/projection infrastructure',
         );
       }
-      if (_pageOwnsBoundedSectionImplementations(projectedCanvasSource)) {
+      if (_pageOwnsBoundedSectionImplementations(pageOwnershipSource)) {
         violations.add(
           'presentation/pages owns bounded write-precheck section implementations',
         );
@@ -182,8 +189,10 @@ class RenderProjectedStack extends RenderStack {}
     expect(_pageOwnsRenderOrProjectionInfrastructure(layoutSource), isTrue);
   });
 
-  test('generic UI spec catch-all is rejected without banning local constants', () {
-    const catchAll = '''
+  test(
+    'generic UI spec catch-all is rejected without banning local constants',
+    () {
+      const catchAll = '''
 abstract final class FeatureVisualSpec {
   static const Size canonicalSize = Size(360, 640);
   static const Color background = Color(0xFF000000);
@@ -193,15 +202,16 @@ abstract final class FeatureVisualSpec {
   static const String heroAssetPath = 'assets/hero.png';
 }
 ''';
-    const componentLocal = '''
+      const componentLocal = '''
 class HeroCard extends StatelessWidget {
   static const double _radius = 17;
 }
 ''';
 
-    expect(_isGenericUiSpecCatchAll(catchAll), isTrue);
-    expect(_isGenericUiSpecCatchAll(componentLocal), isFalse);
-  });
+      expect(_isGenericUiSpecCatchAll(catchAll), isTrue);
+      expect(_isGenericUiSpecCatchAll(componentLocal), isFalse);
+    },
+  );
 
   test('page orchestration does not own bounded section implementations', () {
     const orchestrationOnly = '''

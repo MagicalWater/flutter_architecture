@@ -45,11 +45,21 @@ void main() {
         'lib/features/pencil_compatibility/presentation/pages/'
         'write_precheck_view.dart',
       ).readAsStringSync();
+      final projectedCanvasSource = File(
+        'lib/features/pencil_compatibility/presentation/pages/'
+        'write_precheck_projected_canvas.dart',
+      ).readAsStringSync();
       if (pageSource.contains('FittedBox(')) {
         violations.add('WritePrecheckView uses fixed-canvas FittedBox scaling');
       }
       if (pageSource.contains('Transform.scale(')) {
         violations.add('WritePrecheckView uses top-level Transform.scale');
+      }
+      if (_usesWholeScreenCanonicalCoordinateProjection(projectedCanvasSource)) {
+        violations.add(
+          'WritePrecheckProjectedCanvas reconstructs page flow from canonical '
+          'coordinates and a shared whole-screen scale',
+        );
       }
       if (pageSource.contains('constraints.maxWidth >= 900') ||
           (pageSource.contains('WritePrecheckCanonicalCanvas') &&
@@ -62,4 +72,71 @@ void main() {
       expect(violations, isEmpty, reason: violations.join('\n'));
     },
   );
+
+  test('bounded local overlay is not classified as whole-screen projection', () {
+    const source = '''
+Widget build(BuildContext context) => Column(
+  children: [
+    Header(),
+    SizedBox(height: 24),
+    SizedBox(
+      height: 220,
+      child: Stack(children: [Positioned(right: 12, top: 8, child: Badge())]),
+    ),
+    Details(),
+  ],
+);
+''';
+
+    expect(_usesWholeScreenCanonicalCoordinateProjection(source), isFalse);
+  });
+
+  test('single renderer with scaled page coordinates is rejected', () {
+    const source = '''
+static const double designWidth = 941;
+static const double designHeight = 1672;
+double get scale => availableWidth / designWidth;
+class _ProjectedScreen extends StatelessWidget {
+  Widget build(BuildContext context) => SizedBox(
+    width: projection.px(designWidth),
+    height: projection.px(designHeight),
+    child: _ProjectedStack(children: [
+      Positioned(left: 37, top: 232, width: 853, height: 254, child: Hero()),
+      Positioned(left: 36, top: 1277, width: 855, height: 171, child: Guidance()),
+    ]),
+  );
+}
+class _RenderProjectedStack extends RenderStack {
+  void performLayout() {
+    final data = child.parentData! as StackParentData;
+    data
+      ..left = _scaled(data.left)
+      ..top = _scaled(data.top);
+  }
+  double? _scaled(double? value) => value == null ? null : value * scale;
+}
+''';
+
+    expect(_usesWholeScreenCanonicalCoordinateProjection(source), isTrue);
+  });
+}
+
+bool _usesWholeScreenCanonicalCoordinateProjection(String source) {
+  final ownsPageDesignHeight =
+      source.contains('designHeight = 1672') || source.contains('designHeight=1672');
+  final ownsSharedScale =
+      source.contains('availableWidth / designWidth') ||
+      source.contains('availableWidth/designWidth');
+  final hasScreenRootProjectedStack =
+      source.contains('class _ProjectedScreen') &&
+      source.contains('_ProjectedStack(');
+  final scalesPositionedParentData =
+      source.contains('StackParentData') &&
+      source.contains('..left = _scaled(data.left)') &&
+      source.contains('..top = _scaled(data.top)');
+
+  return ownsPageDesignHeight &&
+      ownsSharedScale &&
+      hasScreenRootProjectedStack &&
+      scalesPositionedParentData;
 }

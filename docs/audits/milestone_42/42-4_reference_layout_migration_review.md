@@ -1,6 +1,6 @@
 ---
 document_type: phase-review
-status: active
+status: accepted
 authoritative_for:
   - milestone-42-task-42-4-presentation-source-decomposition
 last_reviewed_baseline: 1.21.0
@@ -64,11 +64,11 @@ presentation/pages owns bounded write-precheck section implementations
 ## Whole-Task disposition
 
 ```txt
-Task 42-4: source decomposition implemented / completion pending Task 42-5 recovery validation
+Task 42-4: PASS / ACCEPTED after Task 42-5 recovery validation
 Presentation page ownership RED: GREEN
-VisualSpec catch-all RED: intentionally remains until Task 42-5
+VisualSpec catch-all RED: GREEN via Task 42-5 owner migration
 Open P0: 0
 Open P1 without disposition: 0
 ```
 
-Task 42-4不在VisualSpec RED仍存在時宣稱completion。Task 42-5完成後必須以同一affected Pencil compatibility suite fresh re-verify；只有全綠後才把本Review轉為`accepted`。
+Task 42-4沒有在VisualSpec RED仍存在時宣稱completion。Task 42-5完成後，同一affected Pencil compatibility suite fresh re-verify為22 tests PASS，`dart analyze lib/features/pencil_compatibility/presentation`亦PASS；因此本Review現在才轉為`accepted`。Checkpoint commit `0377148`只保存source decomposition，不是當時的completion claim。

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/write_precheck_copy.dart';
-import 'package:flutter_architecture/features/pencil_compatibility/presentation/visual_spec/pencil_compatibility_visual_spec.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_palette.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_typography.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -49,28 +50,19 @@ void main() {
     );
   });
 
-  test('visual spec 鎖定 accepted canonical viewport 與核心色票', () {
-    expect(PencilCompatibilityVisualSpec.canonicalSize, const Size(941, 1672));
-    expect(PencilCompatibilityVisualSpec.canonicalDevicePixelRatio, 1);
-    expect(PencilCompatibilityVisualSpec.background, const Color(0xFF020B14));
-    expect(
-      PencilCompatibilityVisualSpec.backgroundDeep,
-      const Color(0xFF01070D),
-    );
-    expect(PencilCompatibilityVisualSpec.surface, const Color(0xFF071522));
-    expect(
-      PencilCompatibilityVisualSpec.surfaceRaised,
-      const Color(0xFF0B1B2B),
-    );
-    expect(PencilCompatibilityVisualSpec.border, const Color(0xFF536B7E));
-    expect(PencilCompatibilityVisualSpec.borderSoft, const Color(0xFF244056));
-    expect(PencilCompatibilityVisualSpec.text, const Color(0xFFEAF2F8));
-    expect(PencilCompatibilityVisualSpec.muted, const Color(0xFFB8C4CF));
-    expect(PencilCompatibilityVisualSpec.dim, const Color(0xFF7F94A7));
-    expect(PencilCompatibilityVisualSpec.cyan, const Color(0xFF3DAEFF));
-    expect(PencilCompatibilityVisualSpec.cyanBright, const Color(0xFF74D8FF));
-    expect(PencilCompatibilityVisualSpec.gold, const Color(0xFFF5B941));
-    expect(PencilCompatibilityVisualSpec.goldSoft, const Color(0xFF9A6A25));
-    expect(PencilCompatibilityVisualSpec.cardRadius, 24);
-  });
+  test(
+    'focused local palette and typography preserve accepted proof identity',
+    () {
+      expect(WritePrecheckPalette.background, const Color(0xFF020B14));
+      expect(WritePrecheckPalette.text, const Color(0xFFEAF2F8));
+      expect(WritePrecheckPalette.muted, const Color(0xFFB8C4CF));
+      expect(WritePrecheckPalette.dim, const Color(0xFF7F94A7));
+      expect(WritePrecheckTypography.fontFamily, 'Noto Sans TC');
+      expect(WritePrecheckTypography.fontFamilyFallback, const <String>[
+        'Microsoft JhengHei',
+        'PingFang TC',
+        'Roboto',
+      ]);
+    },
+  );
 }

@@ -2,8 +2,9 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_architecture/features/pencil_compatibility/presentation/visual_spec/pencil_compatibility_visual_spec.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/write_precheck_copy.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_palette.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_typography.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 part '../../layout/write_precheck_projection.dart';
@@ -248,7 +249,7 @@ class _ProjectedScreen extends StatelessWidget {
             child: _ProjectedIcon(
               PhosphorIcons.arrowLeftLight,
               size: 28,
-              color: PencilCompatibilityVisualSpec.text,
+              color: WritePrecheckPalette.text,
             ),
           ),
         ),
@@ -275,7 +276,7 @@ class _ProjectedScreen extends StatelessWidget {
       height: 29,
       size: 20,
       letterSpacing: 0.05,
-      color: PencilCompatibilityVisualSpec.muted,
+      color: WritePrecheckPalette.muted,
     ),
   ];
 
@@ -488,7 +489,7 @@ class _ProjectedScreen extends StatelessWidget {
                   height: 56,
                   size: 20,
                   lineHeight: 1.42,
-                  color: PencilCompatibilityVisualSpec.muted,
+                  color: WritePrecheckPalette.muted,
                   scaleX: 0.989,
                   maxLines: 2,
                 ),
@@ -575,10 +576,10 @@ class _ProjectedScreen extends StatelessWidget {
           value: copy.summaryRows[index].value,
           iconColor: index == 3
               ? const Color(0xFFF5B941)
-              : PencilCompatibilityVisualSpec.muted,
+              : WritePrecheckPalette.muted,
           valueColor: index == 3
               ? const Color(0xFFF5B941)
-              : PencilCompatibilityVisualSpec.text,
+              : WritePrecheckPalette.text,
           labelSize: 19,
           valueSize: 18,
           iconSize: 26,
@@ -607,10 +608,10 @@ class _ProjectedScreen extends StatelessWidget {
           value: copy.resultRows[index].value,
           iconColor: index == 4
               ? const Color(0xFFF5B941)
-              : PencilCompatibilityVisualSpec.muted,
+              : WritePrecheckPalette.muted,
           valueColor: index == 4
               ? const Color(0xFFF5B941)
-              : PencilCompatibilityVisualSpec.text,
+              : WritePrecheckPalette.text,
           labelSize: 17,
           valueSize: 17,
           iconSize: 24,
@@ -641,10 +642,7 @@ class _ProjectedScreen extends StatelessWidget {
                   copy.technicalDetail,
                   maxLines: 1,
                   overflow: TextOverflow.clip,
-                  style: _style(
-                    size: 16,
-                    color: PencilCompatibilityVisualSpec.muted,
-                  ),
+                  style: _style(size: 16, color: WritePrecheckPalette.muted),
                 ),
               ),
             ],
@@ -682,7 +680,7 @@ class _ProjectedScreen extends StatelessWidget {
         width: 17,
         height: 17,
         size: 17,
-        color: PencilCompatibilityVisualSpec.dim,
+        color: WritePrecheckPalette.dim,
       ),
       _localText(
         text: copy.recordsNotice,
@@ -692,7 +690,7 @@ class _ProjectedScreen extends StatelessWidget {
         height: 22,
         size: 15,
         rasterWeight: 450,
-        color: PencilCompatibilityVisualSpec.dim,
+        color: WritePrecheckPalette.dim,
       ),
     ],
   );
@@ -780,7 +778,7 @@ class _ProjectedScreen extends StatelessWidget {
                       weight: FontWeight.w300,
                       letterSpacing: -0.2,
                       rasterWeight: 250,
-                      color: PencilCompatibilityVisualSpec.muted,
+                      color: WritePrecheckPalette.muted,
                       scaleX: 1.009,
                     ),
                   ],
@@ -1066,7 +1064,7 @@ class _ProjectedScreen extends StatelessWidget {
                 child: _ProjectedIcon(
                   PhosphorIcons.xCircleLight,
                   size: 22,
-                  color: PencilCompatibilityVisualSpec.dim,
+                  color: WritePrecheckPalette.dim,
                 ),
               ),
               SizedBox(width: _px(context, 11)),
@@ -1079,7 +1077,7 @@ class _ProjectedScreen extends StatelessWidget {
                   style: _style(
                     size: 20,
                     weight: FontWeight.w500,
-                    color: PencilCompatibilityVisualSpec.muted,
+                    color: WritePrecheckPalette.muted,
                   ),
                 ),
               ),
@@ -1088,7 +1086,7 @@ class _ProjectedScreen extends StatelessWidget {
                 child: _ProjectedIcon(
                   PhosphorIcons.caretRightLight,
                   size: 22,
-                  color: PencilCompatibilityVisualSpec.dim,
+                  color: WritePrecheckPalette.dim,
                 ),
               ),
             ],
@@ -1368,8 +1366,8 @@ class _CanonicalStep extends StatelessWidget {
                     color: active
                         ? const Color(0xFFF5B941)
                         : completed
-                        ? PencilCompatibilityVisualSpec.muted
-                        : PencilCompatibilityVisualSpec.dim,
+                        ? WritePrecheckPalette.muted
+                        : WritePrecheckPalette.dim,
                   ),
                 ),
               ),
@@ -1444,7 +1442,7 @@ class _CanonicalDataRow extends StatelessWidget {
               size: labelSize,
               weight: FontWeight.w500,
               rasterWeight: 350,
-              color: PencilCompatibilityVisualSpec.muted,
+              color: WritePrecheckPalette.muted,
             ),
           ),
         ),
@@ -1540,7 +1538,7 @@ class _CanonicalRecordTile extends StatelessWidget {
                   width: 450,
                   height: 25,
                   size: 17,
-                  color: PencilCompatibilityVisualSpec.muted,
+                  color: WritePrecheckPalette.muted,
                 ),
                 Positioned(
                   left: 665,
@@ -1562,7 +1560,7 @@ class _CanonicalRecordTile extends StatelessWidget {
                           size: 15,
                           weight: FontWeight.w500,
                           rasterWeight: 450,
-                          color: PencilCompatibilityVisualSpec.muted,
+                          color: WritePrecheckPalette.muted,
                         ),
                       ),
                     ),
@@ -1579,7 +1577,7 @@ class _CanonicalRecordTile extends StatelessWidget {
                     child: const _ProjectedIcon(
                       PhosphorIcons.caretRightLight,
                       size: 22,
-                      color: PencilCompatibilityVisualSpec.muted,
+                      color: WritePrecheckPalette.muted,
                     ),
                   ),
                 ),
@@ -1806,7 +1804,7 @@ Positioned _positionedText({
   required double height,
   required double size,
   FontWeight weight = FontWeight.w400,
-  Color color = PencilCompatibilityVisualSpec.text,
+  Color color = WritePrecheckPalette.text,
   double? lineHeight,
   double? letterSpacing,
   double? rasterWeight,
@@ -1867,7 +1865,7 @@ Positioned _positionedIcon({
   required double width,
   required double height,
   required double size,
-  Color color = PencilCompatibilityVisualSpec.text,
+  Color color = WritePrecheckPalette.text,
   double scaleX = 1,
   double scaleY = 1,
 }) => Positioned(
@@ -1890,7 +1888,7 @@ Positioned _localText({
   required double height,
   required double size,
   FontWeight weight = FontWeight.w400,
-  Color color = PencilCompatibilityVisualSpec.text,
+  Color color = WritePrecheckPalette.text,
   double? lineHeight,
   double? letterSpacing,
   double? rasterWeight,
@@ -1933,13 +1931,13 @@ Positioned _localIcon({
 TextStyle _style({
   required double size,
   FontWeight weight = FontWeight.w400,
-  Color color = PencilCompatibilityVisualSpec.text,
+  Color color = WritePrecheckPalette.text,
   double? lineHeight,
   double? letterSpacing,
   double? rasterWeight,
 }) => TextStyle(
-  fontFamily: PencilCompatibilityVisualSpec.fontFamily,
-  fontFamilyFallback: PencilCompatibilityVisualSpec.fontFamilyFallback,
+  fontFamily: WritePrecheckTypography.fontFamily,
+  fontFamilyFallback: WritePrecheckTypography.fontFamilyFallback,
   fontSize: size,
   fontWeight: _pencilRasterWeight(weight),
   fontVariations: rasterWeight == null

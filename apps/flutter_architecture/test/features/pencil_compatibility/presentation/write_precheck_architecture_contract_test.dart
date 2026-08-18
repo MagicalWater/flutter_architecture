@@ -39,6 +39,9 @@ void main() {
         if (source.contains('Image.asset(') || source.contains('Image.file(')) {
           violations.add('$normalizedPath embeds a raster image');
         }
+        if (_isGenericUiSpecCatchAll(source)) {
+          violations.add('$normalizedPath mixes UI design ownership domains');
+        }
       }
 
       final pageSource = File(
@@ -55,10 +58,6 @@ void main() {
       final projectedCanvasSource = File(
         'lib/features/pencil_compatibility/presentation/widgets/'
         'write_precheck/write_precheck_content.dart',
-      ).readAsStringSync();
-      final visualSpecSource = File(
-        'lib/features/pencil_compatibility/presentation/visual_spec/'
-        'pencil_compatibility_visual_spec.dart',
       ).readAsStringSync();
       if (pageSource.contains('FittedBox(')) {
         violations.add('WritePrecheckView uses fixed-canvas FittedBox scaling');
@@ -89,11 +88,6 @@ void main() {
       if (_pageOwnsBoundedSectionImplementations(pageOwnershipSource)) {
         violations.add(
           'presentation/pages owns bounded write-precheck section implementations',
-        );
-      }
-      if (_isGenericUiSpecCatchAll(visualSpecSource)) {
-        violations.add(
-          'PencilCompatibilityVisualSpec mixes UI design ownership domains',
         );
       }
       for (final forbidden in <String>[

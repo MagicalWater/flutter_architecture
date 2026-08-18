@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.21.0
 
 ```txt
 Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-State: Requirement accepted / Design in progress / Milestone 41 publication suspended
+State: Design accepted / Implementation Plan reviewed / user approval pending / Milestone 41 publication suspended
 Template Baseline: 1.21.0 combined release candidate base
 ```
 
@@ -20,7 +20,7 @@ Milestone 42處理Milestone 41 merge前fresh architecture review新增的present
 
 ## Current Gate
 
-Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42 Requirement Decision已accepted，下一個合法gate是Milestone 42 Design Task；42完成後必須重新形成combined holistic/release candidate，再取得merge／push授權。
+Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42 Requirement Decision與Design已accepted；Implementation Plan已建立為`proposed`且two-layer review PASS。**目前合法gate是使用者Plan核准**；核准前不得開始implementation。42完成後必須重新形成combined holistic/release candidate，再取得merge／push授權。
 
 ## Current Evidence
 
@@ -31,6 +31,10 @@ Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均�
 - Plan Review：`docs/audits/milestone_41/41-p_implementation_plan_review.md`（completed / PASS）。
 - Task 41-8 Holistic Final Review：`docs/audits/milestone_41/41-8_holistic_final_review.md`（accepted / PASS；release decision = 1.21.0）。
 - Milestone 42 Requirement Decision：`docs/audits/milestone_42/42-r_requirement_decision.md`（accepted；Milestone 41 publication suspended）。
+- Milestone 42 Design：`docs/superpowers/specs/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective-design.md`（accepted；review PASS；user approved 2026-08-18）。
+- Milestone 42 Design Review：`docs/audits/milestone_42/42-0_design_spec_review.md`（completed / PASS）。
+- Milestone 42 Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md`（proposed；review PASS；user approval pending）。
+- Milestone 42 Plan Review：`docs/audits/milestone_42/42-p_implementation_plan_review.md`（completed / PASS）。
 
 ## Previous Closure
 

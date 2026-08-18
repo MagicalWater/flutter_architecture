@@ -33,10 +33,10 @@ Milestone 41 尚未 merge／push／published-main，因此尚未 closure。2026-
 - Requirement Decision：accepted。
 - Classification：Level 4 — Architecture／Milestone。
 - Requirement completion commit：`6bb1ee535e5d54815b22da729ecd84eb4871ea3a`。
-- Design Spec：`proposed`，內容已完成。
+- Design Spec：`accepted`；使用者已於2026-08-18明確核准。
 - Design two-layer review：PASS；Open P0 = 0；Open P1 without disposition = 0。
-- User Design approval：**尚未取得**。
-- Implementation Plan：尚未建立。
+- User Design approval：**已取得**。
+- Implementation Plan：已建立為`proposed`並完成two-layer Plan review PASS；使用者Plan approval尚未取得。
 - Production source / Design System / machine policy：Milestone 42 尚未修改。
 
 ## Confirmed Milestone 42 findings
@@ -45,7 +45,7 @@ Milestone 41 尚未 merge／push／published-main，因此尚未 closure。2026-
 2. `PencilCompatibilityVisualSpec` 同時擁有 canonical viewport/DPR、palette、typography、layout/component tokens、gradients，形成 catch-all visual authority。
 3. ADR-028 允許 single-screen exact values feature-local，ADR-018 同時要求 shared semantic/theme authority集中於 Design System；current workflow缺少足夠明確的 token promotion/non-promotion enforcement，存在 `FeatureVisualSpec` 逃生艙風險。
 
-## Accepted design direction pending user approval
+## Accepted design direction
 
 Presentation ownership：
 
@@ -69,15 +69,12 @@ component-local
 
 ## Next legal gate
 
-下一個對話必須 fresh admission 後先讀 Requirement、Design、Design Review 與本 handoff。**下一個合法動作是取得使用者對 Milestone 42 Design 的明確核准。** 核准前不得建立 accepted Implementation Plan，也不得修改 production source、Design System 或 machine policy。
+下一個對話必須 fresh admission 後先讀 Requirement、accepted Design、Design Review、proposed Implementation Plan、Plan Review 與本 handoff。**下一個合法動作是取得使用者對 Milestone 42 Implementation Plan 的明確核准。** Plan核准前不得開始implementation，也不得修改production source、Design System或machine policy。
 
-Design核准後：
+Plan核准後：
 
 ```txt
-Design accepted + commit
-→ Implementation Plan
-→ Plan two-layer review
-→ user Plan approval
+Plan accepted + commit
 → implementation Tasks
 → holistic review
 → combined 1.21.0 release candidate
@@ -98,6 +95,8 @@ docs/audits/milestone_42/42-r_requirement_decision.md
 docs/superpowers/specs/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective-design.md
 docs/audits/milestone_42/42-0_design_spec_review.md
 docs/audits/milestone_42/42-handoff_checkpoint.md
+docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md
+docs/audits/milestone_42/42-p_implementation_plan_review.md
 docs/audits/milestone_41/41-8_holistic_final_review.md
 ```
 

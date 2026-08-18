@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.21.0
 
 ```txt
 Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
-State: Task 43-3 accepted / Task 43-4 Pencil decomposition active
+State: Task 43-4 accepted / Task 43-5 ordinary feature review active
 Template Baseline: 1.21.0
 ```
 
@@ -20,7 +20,7 @@ Milestone 43已由candidate完成fresh Requirement Decision並以Level 4 Archite
 
 ## Current Gate
 
-Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；Tasks 43-1～43-3已建立Direct RED、ADR-032 stable authority與high-confidence machine contract。Current gate為Task 43-4 Pencil reference library/cohesion decomposition。
+Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；Tasks 43-1～43-4已完成Direct RED、ADR-032 stable authority、high-confidence machine contract與Pencil reference library/cohesion decomposition。Current gate為Task 43-5 ordinary feature adoption與positive no-refactor proofs。
 
 ## Current Evidence
 

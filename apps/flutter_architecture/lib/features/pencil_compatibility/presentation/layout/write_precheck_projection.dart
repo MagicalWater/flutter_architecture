@@ -1,4 +1,5 @@
-part of '../widgets/write_precheck/write_precheck_content.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 final class WritePrecheckProjection {
   const WritePrecheckProjection({required this.availableWidth});
@@ -11,8 +12,8 @@ final class WritePrecheckProjection {
   double px(double designPixels) => designPixels * scale;
 }
 
-final class _ProjectionTextScaler extends TextScaler {
-  const _ProjectionTextScaler(this.base, this.projectionScale);
+final class ProjectionTextScaler extends TextScaler {
+  const ProjectionTextScaler(this.base, this.projectionScale);
 
   final TextScaler base;
   final double projectionScale;
@@ -24,32 +25,42 @@ final class _ProjectionTextScaler extends TextScaler {
   double get textScaleFactor => base.scale(1) * projectionScale;
 }
 
-class _ProjectionScope extends InheritedWidget {
-  const _ProjectionScope({required this.projection, required super.child});
+class ProjectionScope extends InheritedWidget {
+  const ProjectionScope({
+    required this.projection,
+    required super.child,
+    super.key,
+  });
 
   final WritePrecheckProjection projection;
 
-  static WritePrecheckProjection of(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<_ProjectionScope>()!
-      .projection;
+  static WritePrecheckProjection of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<ProjectionScope>()!.projection;
 
   @override
-  bool updateShouldNotify(_ProjectionScope oldWidget) =>
+  bool updateShouldNotify(ProjectionScope oldWidget) =>
       projection.availableWidth != oldWidget.projection.availableWidth;
 }
 
 double _px(BuildContext context, double designPixels) =>
-    _ProjectionScope.of(context).px(designPixels);
+    ProjectionScope.of(context).px(designPixels);
 
-class _ProjectedDecoratedBox extends StatelessWidget {
-  const _ProjectedDecoratedBox({required this.decoration, this.child});
+double projectedPx(BuildContext context, double designPixels) =>
+    ProjectionScope.of(context).px(designPixels);
+
+class ProjectedDecoratedBox extends StatelessWidget {
+  const ProjectedDecoratedBox({
+    required this.decoration,
+    this.child,
+    super.key,
+  });
 
   final BoxDecoration decoration;
   final Widget? child;
 
   @override
   Widget build(BuildContext context) {
-    final scale = _ProjectionScope.of(context).scale;
+    final scale = ProjectionScope.of(context).scale;
     final border = decoration.border;
     return DecoratedBox(
       decoration: decoration.copyWith(
@@ -66,34 +77,42 @@ class _ProjectedDecoratedBox extends StatelessWidget {
   }
 }
 
-class _ProjectedPadding extends StatelessWidget {
-  const _ProjectedPadding({required this.padding, required this.child});
+class ProjectedPadding extends StatelessWidget {
+  const ProjectedPadding({
+    required this.padding,
+    required this.child,
+    super.key,
+  });
 
   final EdgeInsetsGeometry padding;
   final Widget child;
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: padding * _ProjectionScope.of(context).scale,
+    padding: padding * ProjectionScope.of(context).scale,
     child: child,
   );
 }
 
-class _ProjectedClipRRect extends StatelessWidget {
-  const _ProjectedClipRRect({required this.borderRadius, required this.child});
+class ProjectedClipRRect extends StatelessWidget {
+  const ProjectedClipRRect({
+    required this.borderRadius,
+    required this.child,
+    super.key,
+  });
 
   final BorderRadius borderRadius;
   final Widget child;
 
   @override
   Widget build(BuildContext context) => ClipRRect(
-    borderRadius: borderRadius * _ProjectionScope.of(context).scale,
+    borderRadius: borderRadius * ProjectionScope.of(context).scale,
     child: child,
   );
 }
 
-class _ProjectedIcon extends StatelessWidget {
-  const _ProjectedIcon(this.icon, {required this.size, this.color});
+class ProjectedIcon extends StatelessWidget {
+  const ProjectedIcon(this.icon, {required this.size, this.color, super.key});
 
   final IconData icon;
   final double size;
@@ -104,25 +123,26 @@ class _ProjectedIcon extends StatelessWidget {
       Icon(icon, size: _px(context, size), color: color);
 }
 
-class _ProjectedHairline extends StatelessWidget {
-  const _ProjectedHairline({required this.color});
+class ProjectedHairline extends StatelessWidget {
+  const ProjectedHairline({required this.color, super.key});
 
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final coverage = _ProjectionScope.of(context).scale.clamp(0.0, 1.0);
+    final coverage = ProjectionScope.of(context).scale.clamp(0.0, 1.0);
     return ColoredBox(
       color: color.withAlpha((color.a * 255 * coverage).round()),
     );
   }
 }
 
-class _ProjectedComponent extends StatelessWidget {
-  const _ProjectedComponent({
+class ProjectedComponent extends StatelessWidget {
+  const ProjectedComponent({
     required this.designWidth,
     required this.designHeight,
     required this.child,
+    super.key,
   });
 
   final double designWidth;
@@ -131,13 +151,13 @@ class _ProjectedComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projection = _ProjectionScope.of(context);
+    final projection = ProjectionScope.of(context);
     final mediaQuery = MediaQuery.maybeOf(context);
-    final baseTextScaler = mediaQuery?.textScaler is _ProjectionTextScaler
-        ? (mediaQuery!.textScaler as _ProjectionTextScaler).base
+    final baseTextScaler = mediaQuery?.textScaler is ProjectionTextScaler
+        ? (mediaQuery!.textScaler as ProjectionTextScaler).base
         : mediaQuery?.textScaler;
 
-    Widget designChild = _ProjectionScope(
+    Widget designChild = ProjectionScope(
       projection: const WritePrecheckProjection(
         availableWidth: WritePrecheckProjection.designWidth,
       ),
@@ -170,8 +190,12 @@ class _ProjectedComponent extends StatelessWidget {
   }
 }
 
-class _ProjectedTranslate extends StatelessWidget {
-  const _ProjectedTranslate({required this.offset, required this.child});
+class ProjectedTranslate extends StatelessWidget {
+  const ProjectedTranslate({
+    required this.offset,
+    required this.child,
+    super.key,
+  });
 
   final Offset offset;
   final Widget child;
@@ -183,14 +207,14 @@ class _ProjectedTranslate extends StatelessWidget {
   );
 }
 
-class _ProjectedStack extends StatelessWidget {
-  const _ProjectedStack({this.children = const <Widget>[]});
+class ProjectedStack extends StatelessWidget {
+  const ProjectedStack({this.children = const <Widget>[], super.key});
 
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) => _RawProjectedStack(
-    scale: _ProjectionScope.of(context).scale,
+    scale: ProjectionScope.of(context).scale,
     clipBehavior: Clip.hardEdge,
     children: children,
   );

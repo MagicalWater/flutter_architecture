@@ -10,7 +10,6 @@ final class WritePrecheckProjection {
   const WritePrecheckProjection({required this.availableWidth});
 
   static const double designWidth = 941;
-  static const double designHeight = 1672;
 
   final double availableWidth;
 
@@ -379,29 +378,103 @@ class _ProjectedScreen extends StatelessWidget {
     final projection = _ProjectionScope.of(context);
     return SizedBox(
       width: projection.px(WritePrecheckProjection.designWidth),
-      height: projection.px(WritePrecheckProjection.designHeight),
       child: ClipRect(
-        child: _ProjectedStack(
+        child: Stack(
+          alignment: AlignmentDirectional.topStart,
           clipBehavior: Clip.hardEdge,
           children: <Widget>[
             const Positioned.fill(child: _CanonicalBackground()),
-            _CanonicalAmbientGlows(projection: projection),
-            _topChrome(context),
-            _progressComponent(context),
-            _hero(context),
-            _summaryCard(context),
-            _resultsCard(context),
-            _recordsCard(context),
-            _guidanceCard(context),
-            ..._primarySupplementalGlows(context),
-            _primaryAction(context),
-            ..._secondaryActions(context),
-            ..._footer(context),
+            Positioned.fill(
+              child: _CanonicalAmbientGlows(projection: projection),
+            ),
+            ..._primarySupplementalGlows(projection),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                _flowRegion(
+                  context,
+                  designHeight: 220,
+                  children: <Widget>[
+                    _topChrome(context),
+                    _progressComponent(context),
+                  ],
+                ),
+                _flowGap(context, 12),
+                _flowRegion(
+                  context,
+                  designHeight: 254,
+                  children: <Widget>[_hero(context)],
+                ),
+                _flowGap(context, 8),
+                _flowRegion(
+                  context,
+                  designHeight: 260,
+                  children: <Widget>[_summaryCard(context)],
+                ),
+                _flowGap(context, 5),
+                _flowRegion(
+                  context,
+                  designHeight: 286,
+                  children: <Widget>[_resultsCard(context)],
+                ),
+                _flowGap(context, 5),
+                _flowRegion(
+                  context,
+                  designHeight: 219,
+                  children: <Widget>[_recordsCard(context)],
+                ),
+                _flowGap(context, 8),
+                _flowRegion(
+                  context,
+                  designHeight: 171,
+                  children: <Widget>[
+                    _guidanceCard(context),
+                    _guidanceTrailingGlow(),
+                  ],
+                ),
+                _flowRegion(
+                  context,
+                  designHeight: 7,
+                  children: <Widget>[_primaryLeadingGlow()],
+                ),
+                _flowRegion(
+                  context,
+                  designHeight: 72,
+                  children: <Widget>[_primaryAction(context)],
+                ),
+                _flowGap(context, 9),
+                _flowRegion(
+                  context,
+                  designHeight: 60,
+                  children: _secondaryActions(context),
+                ),
+                _flowGap(context, 10),
+                _flowRegion(
+                  context,
+                  designHeight: 66,
+                  children: _footer(context),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
+
+  Widget _flowGap(BuildContext context, double designHeight) =>
+      SizedBox(height: _px(context, designHeight));
+
+  Widget _flowRegion(
+    BuildContext context, {
+    required double designHeight,
+    required List<Widget> children,
+  }) => SizedBox(
+    width: _px(context, WritePrecheckProjection.designWidth),
+    height: _px(context, designHeight),
+    child: _ProjectedStack(children: children),
+  );
 
   Widget _topChrome(BuildContext context) => Positioned(
     left: 0,
@@ -635,7 +708,7 @@ class _ProjectedScreen extends StatelessWidget {
   Widget _hero(BuildContext context) => Positioned(
     key: const ValueKey<String>('precheckHero'),
     left: 37,
-    top: 232,
+    top: 0,
     width: 853,
     height: 254,
     child: Semantics(
@@ -813,7 +886,6 @@ class _ProjectedScreen extends StatelessWidget {
     context: context,
     key: const ValueKey<String>('precheckSummary'),
     semanticsLabel: copy.summaryTitle,
-    top: 495,
     height: 258,
     title: copy.summaryTitle,
     titleIcon: PhosphorIcons.clipboardTextLight,
@@ -846,7 +918,6 @@ class _ProjectedScreen extends StatelessWidget {
     context: context,
     key: const ValueKey<String>('precheckResults'),
     semanticsLabel: copy.resultsTitle,
-    top: 760,
     height: 284,
     title: copy.resultsTitle,
     titleIcon: PhosphorIcons.checksLight,
@@ -914,7 +985,6 @@ class _ProjectedScreen extends StatelessWidget {
     context: context,
     key: const ValueKey<String>('precheckRecords'),
     semanticsLabel: copy.recordsTitle,
-    top: 1051,
     height: 217,
     title: copy.recordsTitle,
     titleIcon: PhosphorIcons.filesLight,
@@ -957,7 +1027,7 @@ class _ProjectedScreen extends StatelessWidget {
   Widget _guidanceCard(BuildContext context) => Positioned(
     key: const ValueKey<String>('precheckGuidance'),
     left: 36,
-    top: 1277,
+    top: 0,
     width: 855,
     height: 171,
     child: _ProjectedComponent(
@@ -1113,10 +1183,61 @@ class _ProjectedScreen extends StatelessWidget {
     ),
   );
 
+  Widget _guidanceTrailingGlow() => const Positioned(
+    left: 19,
+    top: 163,
+    width: 889,
+    height: 8,
+    child: _ProjectedComponent(
+      designWidth: 889,
+      designHeight: 8,
+      child: IgnorePointer(
+        child: _ProjectedDecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[
+                Color(0x0A3DAEFF),
+                Color(0x163DAEFF),
+                Color(0x133DAEFF),
+              ],
+              stops: <double>[0, 0.7, 1],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _primaryLeadingGlow() => const Positioned(
+    left: 19,
+    top: 0,
+    width: 889,
+    height: 5,
+    child: _ProjectedComponent(
+      designWidth: 889,
+      designHeight: 5,
+      child: IgnorePointer(
+        child: _ProjectedDecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(3)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[Color(0x213DAEFF), Color(0x303DAEFF)],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
   Widget _primaryAction(BuildContext context) => Positioned(
     key: const ValueKey<String>('precheckPrimaryAction'),
     left: 36,
-    top: 1455,
+    top: 0,
     width: 855,
     height: 72,
     child: _ProjectedComponent(
@@ -1197,63 +1318,14 @@ class _ProjectedScreen extends StatelessWidget {
     ),
   );
 
-  List<Widget> _primarySupplementalGlows(BuildContext context) =>
-      const <Widget>[
+  List<Widget> _primarySupplementalGlows(WritePrecheckProjection projection) =>
+      <Widget>[
         Positioned(
-          left: 19,
-          top: 1440,
-          width: 889,
-          height: 8,
-          child: _ProjectedComponent(
-            designWidth: 889,
-            designHeight: 8,
-            child: IgnorePointer(
-              child: _ProjectedDecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[
-                      Color(0x0A3DAEFF),
-                      Color(0x163DAEFF),
-                      Color(0x133DAEFF),
-                    ],
-                    stops: <double>[0, 0.7, 1],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 19,
-          top: 1448,
-          width: 889,
-          height: 5,
-          child: _ProjectedComponent(
-            designWidth: 889,
-            designHeight: 5,
-            child: IgnorePointer(
-              child: _ProjectedDecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(3)),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[Color(0x213DAEFF), Color(0x303DAEFF)],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 19,
-          top: 1529,
-          width: 889,
-          height: 17,
-          child: _ProjectedComponent(
+          left: projection.px(19),
+          top: projection.px(1529),
+          width: projection.px(889),
+          height: projection.px(17),
+          child: const _ProjectedComponent(
             designWidth: 889,
             designHeight: 17,
             child: IgnorePointer(
@@ -1298,7 +1370,7 @@ class _ProjectedScreen extends StatelessWidget {
   List<Widget> _footer(BuildContext context) => <Widget>[
     const Positioned(
       left: 37,
-      top: 1606,
+      top: 0,
       width: 853,
       height: 1,
       child: _ProjectedHairline(color: Color(0xFF244056)),
@@ -1306,7 +1378,7 @@ class _ProjectedScreen extends StatelessWidget {
     Positioned(
       key: const ValueKey<String>('precheckEndFlowAction'),
       left: 351,
-      top: 1618,
+      top: 12,
       width: 209,
       height: 29,
       child: Semantics(
@@ -1357,7 +1429,6 @@ class _ProjectedScreen extends StatelessWidget {
     required BuildContext context,
     required Key key,
     required String semanticsLabel,
-    required double top,
     required double height,
     required String title,
     required IconData titleIcon,
@@ -1368,7 +1439,7 @@ class _ProjectedScreen extends StatelessWidget {
   }) => Positioned(
     key: key,
     left: 36,
-    top: top - 1,
+    top: 0,
     width: 855,
     height: height + 2,
     child: _ProjectedComponent(
@@ -1466,23 +1537,26 @@ class _CanonicalAmbientGlows extends StatelessWidget {
   final WritePrecheckProjection projection;
 
   @override
-  Widget build(BuildContext context) => const _ProjectedStack(
-    children: <Widget>[
-      Positioned(
-        left: 470,
-        top: -180,
-        width: 560,
-        height: 430,
-        child: _RadialGlow(centerColor: Color(0x401D91D9)),
-      ),
-      Positioned(
-        left: -240,
-        top: 100,
-        width: 520,
-        height: 520,
-        child: _RadialGlow(centerColor: Color(0x2C064974)),
-      ),
-    ],
+  Widget build(BuildContext context) => IgnorePointer(
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: <Widget>[
+        Positioned(
+          left: projection.px(470),
+          top: projection.px(-180),
+          width: projection.px(560),
+          height: projection.px(430),
+          child: const _RadialGlow(centerColor: Color(0x401D91D9)),
+        ),
+        Positioned(
+          left: projection.px(-240),
+          top: projection.px(100),
+          width: projection.px(520),
+          height: projection.px(520),
+          child: const _RadialGlow(centerColor: Color(0x2C064974)),
+        ),
+      ],
+    ),
   );
 }
 
@@ -1869,7 +1943,7 @@ class _CanonicalSecondaryAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Positioned(
     left: left - 1,
-    top: 1536,
+    top: 0,
     width: width + 2,
     height: 60,
     child: _ProjectedComponent(

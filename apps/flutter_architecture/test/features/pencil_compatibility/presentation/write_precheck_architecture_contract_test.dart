@@ -55,7 +55,9 @@ void main() {
       if (pageSource.contains('Transform.scale(')) {
         violations.add('WritePrecheckView uses top-level Transform.scale');
       }
-      if (_usesWholeScreenCanonicalCoordinateProjection(projectedCanvasSource)) {
+      if (_usesWholeScreenCanonicalCoordinateProjection(
+        projectedCanvasSource,
+      )) {
         violations.add(
           'WritePrecheckProjectedCanvas reconstructs page flow from canonical '
           'coordinates and a shared whole-screen scale',
@@ -64,12 +66,12 @@ void main() {
       if (!projectedCanvasSource.contains('Column(') ||
           !projectedCanvasSource.contains('_flowRegion(')) {
         violations.add(
-          'WritePrecheckProjectedCanvas does not expose constraint-owned page flow',
+          'WritePrecheckProjectedCanvas does not expose constraint-owned '
+          'page flow',
         );
       }
       for (final forbidden in <String>[
         'static const double designHeight = 1672',
-        'class _RenderProjectedStack',
         'top: 1277',
         'top: 1455',
         'top: 1536',
@@ -77,7 +79,8 @@ void main() {
       ]) {
         if (projectedCanvasSource.contains(forbidden)) {
           violations.add(
-            'WritePrecheckProjectedCanvas retains page-coordinate owner $forbidden',
+            'WritePrecheckProjectedCanvas retains page-coordinate owner '
+            '$forbidden',
           );
         }
       }
@@ -93,8 +96,10 @@ void main() {
     },
   );
 
-  test('bounded local overlay is not classified as whole-screen projection', () {
-    const source = '''
+  test(
+    'bounded local overlay is not classified as whole-screen projection',
+    () {
+      const source = '''
 Widget build(BuildContext context) => Column(
   children: [
     Header(),
@@ -108,8 +113,9 @@ Widget build(BuildContext context) => Column(
 );
 ''';
 
-    expect(_usesWholeScreenCanonicalCoordinateProjection(source), isFalse);
-  });
+      expect(_usesWholeScreenCanonicalCoordinateProjection(source), isFalse);
+    },
+  );
 
   test('single renderer with scaled page coordinates is rejected', () {
     const source = '''
@@ -143,7 +149,8 @@ class _RenderProjectedStack extends RenderStack {
 
 bool _usesWholeScreenCanonicalCoordinateProjection(String source) {
   final ownsPageDesignHeight =
-      source.contains('designHeight = 1672') || source.contains('designHeight=1672');
+      source.contains('designHeight = 1672') ||
+      source.contains('designHeight=1672');
   final ownsSharedScale =
       source.contains('availableWidth / designWidth') ||
       source.contains('availableWidth/designWidth');

@@ -88,6 +88,10 @@ tester.getBottomRight(...)
 
 Responsive contract可以是exact size、edge inset、alignment、sibling gap、proportion或container relationship；不得把canonical design-space x/y機械套成所有runtime viewport的固定座標，也不得為每個Pencil node機械式新增geometry test。
 
+Screen-level acceptance還必須確認page flow由constraints／container／sibling relationships擁有。即使candidate只有一套renderer、所有元素都是真Flutter widgets，只要major sections仍由canonical page `x/y × shared scale`排列，仍屬whole-screen fixed-coordinate reconstruction，architecture FAIL。
+
+Bounded local `Stack`／`Positioned`可以保留，但只能擁有local overlay composition；不能用local mechanism反向取得whole-screen page-flow ownership。真正spatial canvas必須有accepted Design approval與mapping evidence。
+
 ## Anti-cheat
 
 拒絕：
@@ -95,6 +99,7 @@ Responsive contract可以是exact size、edge inset、alignment、sibling gap、
 - Full-screen screenshot embedding。
 - Top-level fixed-canvas `FittedBox`／`Transform.scale`。
 - Parallel whole-screen visual renderer或whole-screen breakpoint escape hatch。
+- Single-renderer whole-screen canonical-coordinate reconstruction。
 - Hidden overflow、offstage content或test-only layout branch。
 - Historical benchmark作current master。
 - 修改accepted golden而不重新review source authority。

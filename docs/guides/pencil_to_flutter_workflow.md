@@ -288,6 +288,9 @@ Pencil只擁有visual／structural authority，不建立第二套App architectur
 - icons沿accepted mapping使用既有package；不因第三方Web design Skill的icon規則改寫Flutter authority。
 - responsive implementation使用正常Flutter layout；不得以整張raster、`FittedBox`全屏縮放或hidden overlay假裝還原。
 - 一個accepted screen只允許一套whole-screen visual component tree。Canonical與runtime不能用breakpoint切換到parallel whole-screen visual renderer。
+- Screen page flow必須由Flutter constraints／relationships擁有；canonical page `x/y`只作design evidence，不能透過global scale機械轉成runtime section座標。只有一套renderer也不能豁免這條規則。
+- `Stack`／`Positioned`可用於bounded local overlay，但local coordinates只能相對local container，不得控制其他section placement。
+- 真正spatial surface只有在accepted Design明確核准並於mapping記錄`intentional-spatial-canvas`與`approval_ref`時例外。
 - Canonical Pencil viewport是**design/comparison space**，不是**Flutter logical breakpoint**。例如`.pen`寬度941不代表Flutter寬度低於900就能改走另一套mobile UI。
 - 正常portrait尺寸以同一design-space scale投影真Flutter widget geometry；必要的Row→Column、文字換行或touch-target放大只能發生在同一component tree內。
 - Design System／Theme／asset owner保持相同：canonical與runtime不能因「比較適合手機」而各自使用不同顏色、card hierarchy、icons或feature-local token。

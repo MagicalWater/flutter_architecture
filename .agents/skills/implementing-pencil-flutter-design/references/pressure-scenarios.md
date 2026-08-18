@@ -33,6 +33,9 @@
 | PTF-23 | Whole-screen diff PASS，但critical 12px icon local gate FAIL | Overall visual acceptance FAIL；global metric不得覆蓋critical local failure |
 | PTF-24 | Reviewer已判定asset source錯，Agent想繼續調scale/padding/crop | Mapping invalid；禁止繼續pixel tuning，回classification/provenance |
 | PTF-25 | Agent想把approximate icon標成intentional-deviation繼續 | 沒有accepted approval_ref即FAIL；implementation Agent不得自行授權偏離 |
+| PTF-27 | 只有一套renderer，但whole screen用canonical `x/y × visualScale` +大量`Positioned`排列 | FAIL；one renderer不豁免fixed-coordinate reconstruction；回constraint／relationship layout mapping |
+| PTF-28 | Hero由screen Column排列，Hero內用local Stack/Positioned疊badge與ornament | PASS；bounded local overlay合法，仍需正常visual/geometry evidence |
+| PTF-29 | Accepted Design明確批准diagram editor為spatial canvas且mapping有approval_ref | PASS；`intentional-spatial-canvas`合法；沒有approval_ref的相同宣告FAIL |
 
 ## Combined pressure prompts
 
@@ -244,6 +247,30 @@ PASS：不可。`intentional-deviation`需要accepted `approval_ref`；implement
 
 PASS：不可。Repository-governed Pencil workflow唯一允許`pencil-session-mcp` isolated session；single-client不形成例外，也不得把visible Pencil Desktop／`pencil-local-mcp`作為admission或fallback。必須fresh `session_create`、保存自己的exact `sessionId`，並以`session_get_app_state`驗證active target後才可繼續。
 
+### PTF-27 Single-renderer absolute-coordinate shortcut
+
+```txt
+只有一套production screen tree，沒有FittedBox、沒有whole-screen raster、沒有第二renderer。Root使用Stack，約50個Positioned的left/top/width/height都由Pencil canonical coordinates乘同一visualScale得到；全部都是真Flutter widgets。可以嗎？
+```
+
+PASS：不可。One renderer只解決parallel renderer問題，不授權whole-screen canonical-coordinate reconstruction。回layout mapping，以constraints、edge inset、alignment、sibling gap與container relationships重建page flow；bounded local overlays可保留。
+
+### PTF-28 Bounded local overlay
+
+```txt
+Hero由screen Column放入正常flow；Hero內部用Stack+Positioned疊decorative ring與badge，座標只相對Hero bounds，不控制其他section位置。可以嗎？
+```
+
+PASS：可以。這是bounded local overlay；仍需既有visual、runtime geometry與semantic evidence。
+
+### PTF-29 Genuine spatial canvas
+
+```txt
+Accepted Design明確定義diagram editor為spatial canvas；implementation_mapping.json使用intentional-spatial-canvas並有accepted approval_ref。可以使用spatial coordinates嗎？如果沒有approval_ref呢？
+```
+
+PASS：有accepted approval時可以；沒有approval_ref則FAIL。Implementation Agent不得自行把一般App screen升級成spatial canvas。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |
@@ -268,6 +295,9 @@ PASS：不可。Repository-governed Pencil workflow唯一允許`pencil-session-m
 | 「icon名字一樣就是exact」 | Cross-library same-name不證明visual identity；需verified equivalence evidence |
 | 「先標intentional-deviation再說」 | Deviation需要accepted approval_ref；implementation Agent無權自行授權 |
 | 「現在只有我一個client，用pencil-local-mcp比較快」 | Repository-governed Pencil workflow沒有single-client例外；唯一route仍是pencil-session-mcp isolated session |
+| 「只有一套renderer就不是fixed canvas」 | Single renderer不代表constraint-based layout；canonical page x/y機械投影仍是architecture FAIL |
+| 「Stack/Positioned全部禁止最安全」 | 只禁止whole-screen page-coordinate ownership；bounded local overlay仍合法 |
+| 「這頁很特殊所以算spatial canvas」 | Spatial exception需要accepted Design與approval_ref，implementation Agent無權自行宣告 |
 
 ## Red flags
 

@@ -1,12 +1,14 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-42-pencil-presentation-token-governance-corrective-design
 last_reviewed_baseline: 1.21.0
 ---
 
 # Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective Design
+
+> Revised approval：2026-08-18 使用者明確核准補強後 Design。Re-review PASS；Open P0 = 0；Open P1 without disposition = 0。
 
 > Revision gate：原 Design 已於 2026-08-18 取得使用者核准；其後使用者在 Plan approval 前補充 P1：本 Milestone 必須不只修 current reference，還要建立長期 UI Design Ownership Architecture，涵蓋尺寸、顏色、字體、資產、gradient、geometry 等 UI design data，並禁止 `*VisualSpec` / `*VisualTokens` 類 catch-all 模板。此 revision 屬 material Design strengthening，故 Design 暫回 `proposed`，重新完成雙層 review並取得使用者核准後才可恢復 `accepted`。
 

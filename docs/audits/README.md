@@ -50,6 +50,8 @@ Final / Holistic Review
 - [`milestone_43/43-r_requirement_decision.md`](milestone_43/43-r_requirement_decision.md)：repository-wide Presentation responsibility/state/cohesion的Level 4 Requirement Decision。
 - [`milestone_43/43-0_design_spec_review.md`](milestone_43/43-0_design_spec_review.md)：Design focused review、fresh re-review、whole-Design traceability與user approval gate evidence。
 - [`milestone_43/43-p_implementation_plan_review.md`](milestone_43/43-p_implementation_plan_review.md)：RED→stable authority→machine GREEN→representative adoption→behavioral pressure→holistic/post-release的Plan review。
+- [`milestone_43/43-7_holistic_final_review.md`](milestone_43/43-7_holistic_final_review.md)：Milestone 43 whole-architecture review與1.22.0 release decision。
+- [`milestone_43/43-8_post_release_validation.md`](milestone_43/43-8_post_release_validation.md)：exact published-main Windows／Android／iOS、PTF-35～46 fresh acceptance與Milestone 43 formal closure。
 
 ### Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
 

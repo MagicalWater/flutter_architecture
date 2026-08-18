@@ -29,9 +29,9 @@ last_reviewed_baseline: 1.22.0
 ```txt
 Template Baseline: 1.22.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
-Current phase: Task 43-7 accepted / Task 43-8 publication active
-Latest completed initiative: Milestone 43 implementation and holistic review accepted; Template Baseline 1.22.0 publication in progress
+Current active milestone: none
+Current phase: Milestone 43 closed / maintenance-ready
+Latest completed initiative: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance（Template Baseline 1.22.0 published and post-release validated）
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -123,7 +123,7 @@ root/
 
 ### Architecture Visual Overview
 
-以下兩張圖是目前 `1.21.0` release candidate 架構 authority 的**視覺摘要**，用來幫助人類快速理解 ownership、runtime composition、productization governance 與依賴契約；它們不建立新的平行 authority。若圖像摘要與 current snapshot、canonical ADR、root machine manifest 或 production source 衝突，仍以這些既有 authority 為準。
+以下兩張圖是目前 `1.22.0` 架構 authority 的**視覺摘要**，用來幫助人類快速理解 ownership、runtime composition、productization governance 與依賴契約；它們不建立新的平行 authority。若圖像摘要與 current snapshot、canonical ADR、root machine manifest 或 production source 衝突，仍以這些既有 authority 為準。
 
 產品化拓樸總覽：
 
@@ -371,16 +371,16 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
-Current phase: Task 43-7 accepted / Task 43-8 publication active
-Latest completed initiative: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance（Task 43-7 accepted；1.22.0 publication in progress）
-Maintenance mode: Active publication / post-release validation
+Current active milestone: none
+Current phase: Milestone 43 closed / maintenance-ready
+Latest completed initiative: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance（1.22.0 published；Task 43-8 post-release PASS）
+Maintenance mode: Available for new Requirement Decision
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 41 constraint/relationship layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0。Current source已拆分`pages/` orchestration、`layout/` projection/render mechanics與`widgets/` bounded composition，舊VisualSpec已退休；shared semantic/theme、asset/provenance、visual-authority metadata、layout owner與smallest component owner的UI Design Ownership Architecture已同步到ADR-018、ADR-028、`implementing-pencil-flutter-design` Skill、human Guide、root Agent policy與machine mapping。Task 42-10在exact published runtime SHA完成Windows full regression、GitHub-hosted iOS Simulator/Production verification與PTF-30～34 fresh acceptance；Milestone 41與42正式closed。Milestone 43 Requirement、Design與Implementation Plan均accepted；43-1～43-7已完成Direct RED、ADR-032、generic machine contract、Pencil normal-library decomposition、Catalog/OTP/Shell adoption／positive proofs、consumer governance與holistic full validation。Release decision為Template Baseline 1.22.0 candidate；current gate為43-8 publication與published-main closure。
+Milestone 41 constraint/relationship layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0並closed。Milestone 43再建立ADR-032 generic Presentation responsibility/state/cohesion authority，完成Pencil normal-library decomposition、Catalog/OTP/Shell adoption／positive proofs、consumer governance與machine contracts。Template Baseline 1.22.0已發布；Task 43-8在exact published SHA完成Windows release/full regression、canonical generated verification、GitHub-hosted Android Development/Production、GitHub-hosted iOS Simulator/Production與PTF-35～46 fresh acceptance，Milestone 43正式closed。Closure evidence見`docs/audits/milestone_43/43-8_post_release_validation.md`。
 
-Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Template Baseline維持1.20.0。
+Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Milestone 40本身未升版，其成果已由後續baseline承接。
 
 Milestone 41 + 42 final closure evidence由`docs/audits/milestone_42/42-10_post_release_validation.md`擁有；Open P0=0、Open P1 without disposition=0。
 

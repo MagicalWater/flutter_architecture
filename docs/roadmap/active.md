@@ -9,18 +9,18 @@ last_reviewed_baseline: 1.22.0
 # Active Milestone
 
 ```txt
-Active Milestone: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
-State: Task 43-7 accepted / Task 43-8 publication active
+Active Milestone: none
+State: Milestone 43 CLOSED / Task 43-8 post-release validation PASS
 Template Baseline: 1.22.0
 ```
 
 ## Current Scope
 
-Milestone 43已由candidate完成fresh Requirement Decision並以Level 4 Architecture / Milestone正式promotion。Current scope是建立repository-wide Flutter Presentation Component Architecture：Page/View/Section/Component/Surface、shell/navigation orchestration、layout/render owner、Bloc/Cubit/local state escalation、compilation-unit cohesion與Design System promotion。Design與Implementation Plan均已完成雙層review並於2026-08-18取得使用者明確核准；implementation自Task 43-1開始。
+目前沒有active Milestone。Milestone 43已完成repository-wide Flutter Presentation Component Architecture：Page/View/Section/Component/Surface、shell/navigation orchestration、layout/render owner、Bloc/Cubit/local state escalation、compilation-unit cohesion與Design System promotion，並隨Template Baseline 1.22.0完成publication與post-release closure。
 
 ## Current Gate
 
-Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；Tasks 43-1～43-7已完成Direct RED、ADR-032 stable authority、machine contract、Pencil/ordinary-feature adoption、consumer governance與holistic full validation。Release decision：Template Baseline 1.22.0 candidate。Current gate為Task 43-8 publication、published-main platform verification與post-release closure。
+Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan均accepted；Tasks 43-1～43-8已完成Direct RED、ADR-032 stable authority、machine contract、Pencil/ordinary-feature adoption、consumer governance、holistic full validation、1.22.0 publication、exact published-main Android/iOS/Windows verification與fresh PTF-35～46 acceptance。Current gate：無。
 
 ## Current Evidence
 
@@ -32,6 +32,7 @@ Milestone 41 + 42 closure維持不變。Milestone 43 Requirement、Design與Plan
 - Task 43-5 Generic Feature Adoption：`docs/audits/milestone_43/43-5_generic_feature_adoption_review.md`（accepted / PASS）。
 - Task 43-6 Behavioral Pressure：`docs/audits/milestone_43/43-6_behavioral_pressure_review.md`（accepted / PASS）。
 - Task 43-7 Holistic Final Review：`docs/audits/milestone_43/43-7_holistic_final_review.md`（accepted / PASS；release decision = 1.22.0 candidate）。
+- Task 43-8 Post-release Validation：`docs/audits/milestone_43/43-8_post_release_validation.md`（completed / PASS；Template Baseline 1.22.0 published；Milestone 43 closed）。
 
 - Requirement Decision：`docs/audits/milestone_41/41-r_requirement_decision.md`（accepted）。
 - Design：`docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`（accepted；review PASS；user approved 2026-08-18）。

@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.22.0
 ---
 
 # Milestone Routing
@@ -32,10 +32,23 @@ Milestone routing 只回答：
 
 ```txt
 Active Milestone: none
-Template Baseline: 1.21.0
+Template Baseline: 1.22.0
 ```
 
-Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline `1.21.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
+Milestone 43 Flutter Presentation Component Architecture & UI Responsibility Governance已發布為Template Baseline `1.22.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
+
+### Milestone 43 closed routing
+
+- Requirement Decision：Accepted / Level 4 — `docs/audits/milestone_43/43-r_requirement_decision.md`
+- Design：Accepted / user approved 2026-08-18 — `docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`
+- Design Review：Completed / PASS — `docs/audits/milestone_43/43-0_design_spec_review.md`
+- Implementation Plan：Accepted / user approved 2026-08-18 — `docs/superpowers/plans/2026-08-18-milestone-43-presentation-component-architecture.md`
+- Plan Review：Accepted / PASS — `docs/audits/milestone_43/43-p_implementation_plan_review.md`
+- Holistic Final Review：Accepted / PASS — `docs/audits/milestone_43/43-7_holistic_final_review.md`
+- Post-release Validation：Completed / PASS — `docs/audits/milestone_43/43-8_post_release_validation.md`
+- Release：Template Baseline `1.22.0`；exact published-main Windows／Android／iOS與PTF-35～46 fresh acceptance PASS；Milestone 43 formal closure。
+
+Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline `1.21.0`並完成post-release closure。
 
 ### Milestone 42 closed routing
 

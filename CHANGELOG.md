@@ -40,11 +40,13 @@
 - Milestone 43 holistic validation完成5-workspace analyze、完整App／package Flutter regression、Pencil runtime/golden、Design System golden、Python machine/policy suites、`docs_check`與`flutter build bundle`，全數PASS。
 - App完整test inventory以可確認exit code的分區執行，涵蓋app、feature、architecture與root smoke；Catalog 122、Pencil 22、Auth feature 105等代表性owner均維持GREEN。
 - Pencil runtime visual metrics維持accepted baseline，沒有修改golden、threshold、crop、ignore region或`.pen` authority。
+- Published-main fresh acceptance在exact `origin/main` SHA完成5-workspace analyze、756個Flutter tests、Python／policy suites、`docs_check`、bundle、generated consistency；GitHub-hosted Android Development/Production與iOS Simulator/Production workflow均SUCCESS。
+- PTF-35～46以production `chatgpt-web-generation` fresh contexts重新執行，12/12 PASS，確認responsibility cohesion與anti-formalism規則可被fresh Agent正確採用。
 
 ### Governance
 
 - Requirement Decision、Design與Implementation Plan均經Level 4雙層Task governance與使用者明確核准；Tasks 43-1～43-7完成focused review、fresh re-review、whole-Task／whole-milestone review，Open P0=0、Open P1 without disposition=0。
-- Release decision為Template Baseline `1.22.0`；Task 43-8負責publication、exact published-main identity、fresh Windows regression、GitHub-hosted iOS verification與post-release closure。
+- Template Baseline `1.22.0`已發布；Task 43-8完成exact published-main Windows／Android／iOS verification、PTF-35～46 fresh acceptance、雙層post-release review與current authority同步，Milestone 43正式CLOSED。
 
 ---
 

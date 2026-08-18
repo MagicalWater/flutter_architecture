@@ -81,6 +81,38 @@ class PencilImplementationMappingContractTest(unittest.TestCase):
 
         self.assertEqual(_codes(path), [])
 
+    def test_missing_screen_layouts_fails_closed(self) -> None:
+        mapping = _valid_mapping()
+        mapping.pop("screen_layouts")
+
+        self.assertIn("mapping-missing-screen-layouts", _codes(self._write(mapping)))
+
+    def test_unresolved_screen_layout_blocks_acceptance(self) -> None:
+        mapping = _valid_mapping()
+        mapping["screen_layouts"][0]["layout_model"] = "unresolved"
+
+        self.assertIn(
+            "mapping-screen-layout-unresolved",
+            _codes(self._write(mapping)),
+        )
+
+    def test_spatial_canvas_requires_accepted_approval(self) -> None:
+        mapping = _valid_mapping()
+        mapping["screen_layouts"][0]["layout_model"] = "intentional-spatial-canvas"
+
+        self.assertIn(
+            "mapping-missing-spatial-canvas-approval",
+            _codes(self._write(mapping)),
+        )
+
+    def test_spatial_canvas_with_approval_passes(self) -> None:
+        mapping = _valid_mapping()
+        layout = mapping["screen_layouts"][0]
+        layout["layout_model"] = "intentional-spatial-canvas"
+        layout["approval_ref"] = "docs/superpowers/specs/accepted-spatial-design.md"
+
+        self.assertEqual(_codes(self._write(mapping)), [])
+
     def test_authority_hash_mismatch_is_rejected(self) -> None:
         path = self._write(_valid_mapping())
 
@@ -108,9 +140,17 @@ def _codes(path: Path, *, expected_authority_sha256: str | None = None) -> list[
 
 def _valid_mapping() -> dict[str, object]:
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "initiative": "fixture",
         "pencil_authority_sha256": "a" * 64,
+        "screen_layouts": [
+            {
+                "node_id": "accepted-screen-root",
+                "flutter_owner": "FixturePage",
+                "layout_model": "constraint-relationship",
+                "evidence_ref": "test/fixture_layout_contract_test.dart",
+            }
+        ],
         "critical_nodes": [
             {
                 "node_id": "critical-icon-1",

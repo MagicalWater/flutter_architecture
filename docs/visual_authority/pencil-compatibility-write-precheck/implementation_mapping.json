@@ -1,7 +1,15 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "initiative": "pencil-compatibility-write-precheck",
   "pencil_authority_sha256": "bd8926711ea28e7f9ae5a83128ed8fbc8d506cb5342c76eb35360c4c13544fdc",
+  "screen_layouts": [
+    {
+      "node_id": "lAOay",
+      "flutter_owner": "WritePrecheckProjectedCanvas",
+      "layout_model": "constraint-relationship",
+      "evidence_ref": "apps/flutter_architecture/test/features/pencil_compatibility/presentation/write_precheck_architecture_contract_test.dart"
+    }
+  ],
   "critical_nodes": [
     {
       "node_id": "lAOay",

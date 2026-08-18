@@ -33,6 +33,22 @@ decorative Flutter primitive
 - Route遵守accepted Plan的guard、initial與Shell boundary。
 - Icon identity以accepted mapping為準；Taste Skill的Web-specific icon bans不具權威。
 
+## Screen layout model gate
+
+每個 accepted Pencil screen root 在 production mapping 前，必須於 initiative-local `implementation_mapping.json` 的 `screen_layouts` 提供 resolved layout model。
+
+允許值只有：
+
+```txt
+constraint-relationship
+intentional-spatial-canvas
+unresolved
+```
+
+一般 App screen 預設使用 `constraint-relationship`；canonical page coordinates 只可作 design evidence，不能成為 runtime page coordinate system。`intentional-spatial-canvas` 只限 map／game board／diagram editor 等真正 spatial surface，且必須有 accepted `approval_ref`。`unresolved` fail closed。
+
+Local component 可以使用 bounded overlay，但 bounded overlay 不取得 whole-screen page-flow ownership，也不構成 screen-root layout model。
+
 ## Presentation-only判定
 
 若畫面沒有business state、network、database、persistence或跨畫面domain behavior，就不得為了「展示Clean Architecture」虛構：

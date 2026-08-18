@@ -17,6 +17,8 @@ extracted visual inventory
 
 只要required representation仍unresolved，就不得開始Flutter production UI source。
 
+Representation／provenance完成後，screen root 還必須交給 Flutter mapping stage 的 `screen_layouts` gate 決定 page layout ownership。Representation classification 不授權把 canonical `x/y` 直接當 runtime page coordinates，也不授權 implementation Agent 自行宣告 spatial-canvas exception。
+
 ## Representation Classes
 
 每個需要實作決策的Pencil元素指定一個primary class：

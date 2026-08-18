@@ -489,4 +489,4 @@ Design階段不預先承諾「每個新role一個test」。Implementation前逐T
 
 ## 17. Approval gate
 
-此Design目前為`proposed`。只有完成focused review、findings修正、fresh re-review、whole-Design review並取得使用者明確核准後，才能轉`accepted`並開始Implementation Plan。
+2026-08-18 使用者已在focused review、findings修正、fresh re-review與whole-Design review全部PASS後明確核准本Design。Design狀態為`accepted`；現在允許建立Implementation Plan，但Plan完成雙層治理並取得使用者明確核准前，仍不得開始ADR-032 canonical implementation、production refactor或machine detector修改。

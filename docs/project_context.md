@@ -367,14 +367,14 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
-Current phase: Holistic PASS / 1.21.0 release candidate / merge-push authorization pending
+Current active milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
+Current phase: Requirement accepted / Design reviewed / user approval pending; Milestone 41 publication suspended
 Latest completed initiative: Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure, including 40-7T title artwork corrective; no release, baseline remains 1.20.0
 Maintenance mode: Suspended while Milestone 41 is active
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 41已完成41-1～41-8：machine mapping schema 2、direct architecture detector、reference production migration、canonical/runtime fidelity recovery、stable ADR／Skill／Guide sync、PTF-27～29 fresh behavioral pressure與holistic final review均PASS。Current reference screen的major sections改由Flutter constraints／Column／sibling relationships擁有page flow；bounded local Stack／Positioned只保留局部composition責任。Accepted `.pen`、canonical preview、runtime reference、golden與visual thresholds均未為corrective修改。Holistic release decision為Template Baseline `1.21.0`；Task 41-9目前等待merge／push明確授權。
+Milestone 41已完成41-1～41-8且其layout corrective仍PASS；但merge前fresh architecture review新增P1：`pages/write_precheck_projected_canvas.dart`仍混合page以外的layout/render/component責任，`PencilCompatibilityVisualSpec`亦把visual-authority metadata、palette、typography、layout/component tokens與gradients混成catch-all。Milestone 41 publication因此暫停，Milestone 42已accepted Requirement並完成proposed Design/review，等待使用者Design核准。42將建立Presentation responsibility與Design System token promotion/non-promotion contract，完成後重新執行combined holistic/release gate。
 
 Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Template Baseline維持1.20.0。
 

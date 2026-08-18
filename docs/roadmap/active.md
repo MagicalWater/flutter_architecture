@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.20.0
 
 ```txt
 Active Milestone: Milestone 41 — Pencil-to-Flutter Constraint-based Layout Architecture Corrective
-State: Design reviewed / user approval pending
+State: Plan accepted / implementation active
 Template Baseline: 1.20.0
 ```
 
@@ -20,13 +20,15 @@ Milestone 41處理current Pencil-to-Flutter stable policy與reference production
 
 ## Current Gate
 
-Requirement Decision與formal Design Spec均已接受，Design Task review與使用者核准已完成。下一個合法gate是建立並審查Implementation Plan；Plan取得使用者明確核准前不得修改production implementation。
+Requirement Decision與formal Design Spec均已接受；Implementation Plan與Plan review已完成。下一個合法gate是使用者明確核准Implementation Plan；Plan accepted前不得開始Task 41-1或修改production implementation。
 
 ## Current Evidence
 
 - Requirement Decision：`docs/audits/milestone_41/41-r_requirement_decision.md`（accepted）。
 - Design：`docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`（accepted；review PASS；user approved 2026-08-18）。
 - Design Review：`docs/audits/milestone_41/41-0_design_spec_review.md`（completed / PASS）。
+- Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-41-pencil-layout-architecture-corrective.md`（accepted；review PASS；user approved 2026-08-18）。
+- Plan Review：`docs/audits/milestone_41/41-p_implementation_plan_review.md`（completed / PASS）。
 
 ## Previous Closure
 

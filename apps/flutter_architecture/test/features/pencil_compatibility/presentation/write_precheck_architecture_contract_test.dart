@@ -79,6 +79,11 @@ void main() {
           'presentation/pages owns custom render/projection infrastructure',
         );
       }
+      if (_pageOwnsBoundedSectionImplementations(projectedCanvasSource)) {
+        violations.add(
+          'presentation/pages owns bounded write-precheck section implementations',
+        );
+      }
       if (_isGenericUiSpecCatchAll(visualSpecSource)) {
         violations.add(
           'PencilCompatibilityVisualSpec mixes UI design ownership domains',
@@ -197,6 +202,23 @@ class HeroCard extends StatelessWidget {
     expect(_isGenericUiSpecCatchAll(catchAll), isTrue);
     expect(_isGenericUiSpecCatchAll(componentLocal), isFalse);
   });
+
+  test('page orchestration does not own bounded section implementations', () {
+    const orchestrationOnly = '''
+class WritePrecheckView extends StatelessWidget {
+  Widget build(BuildContext context) => WritePrecheckContent();
+}
+''';
+    const sectionDump = '''
+class WritePrecheckView extends StatelessWidget {}
+class _CanonicalDataRow extends StatelessWidget {}
+class _CanonicalRecordTile extends StatelessWidget {}
+class _CanonicalSecondaryAction extends StatelessWidget {}
+''';
+
+    expect(_pageOwnsBoundedSectionImplementations(orchestrationOnly), isFalse);
+    expect(_pageOwnsBoundedSectionImplementations(sectionDump), isTrue);
+  });
 }
 
 bool _pageOwnsRenderOrProjectionInfrastructure(String source) {
@@ -204,6 +226,22 @@ bool _pageOwnsRenderOrProjectionInfrastructure(String source) {
       source.contains('RenderStack') ||
       source.contains('createRenderObject(') ||
       source.contains('updateRenderObject(');
+}
+
+bool _pageOwnsBoundedSectionImplementations(String source) {
+  const boundedSectionOwners = <String>[
+    'class _CanonicalBackground',
+    'class _CanonicalAmbientGlows',
+    'class _CanonicalStep',
+    'class _CanonicalDataRow',
+    'class _CanonicalRecordTile',
+    'class _CanonicalSecondaryAction',
+    'class _ShieldAuthority',
+    'class _Orbit',
+    'class _ActiveStepGlow',
+    'class _RadialGlow',
+  ];
+  return boundedSectionOwners.any(source.contains);
 }
 
 bool _isGenericUiSpecCatchAll(String source) {

@@ -89,6 +89,56 @@ class PencilImplementationMappingContractTest(unittest.TestCase):
             "mapping-missing-ui-design-ownerships", _codes(self._write(mapping))
         )
 
+    def test_unknown_ui_design_owner_is_rejected(self) -> None:
+        mapping = _valid_mapping()
+        mapping["ui_design_ownerships"][0]["owner"] = "FeatureVisualSpec"
+
+        self.assertIn("mapping-unknown-ui-design-owner", _codes(self._write(mapping)))
+
+    def test_design_system_owner_requires_public_api(self) -> None:
+        mapping = _valid_mapping()
+        ownership = mapping["ui_design_ownerships"][1]
+        ownership["owner"] = "design-system"
+        ownership["disposition"] = "promoted"
+        ownership["public_owner_ref"] = "packages/design_system/lib/src/tokens/colors.dart"
+
+        self.assertIn("mapping-design-system-deep-import", _codes(self._write(mapping)))
+
+    def test_intentional_local_requires_scope_reason(self) -> None:
+        mapping = _valid_mapping()
+        mapping["ui_design_ownerships"][1].pop("local_scope_reason")
+
+        self.assertIn("mapping-missing-local-scope-reason", _codes(self._write(mapping)))
+
+    def test_canonical_metadata_cannot_be_owned_by_design_system(self) -> None:
+        mapping = _valid_mapping()
+        ownership = mapping["ui_design_ownerships"][0]
+        ownership["owner"] = "design-system"
+        ownership["public_owner_ref"] = "package:design_system/design_system.dart#DsSpace"
+
+        self.assertIn(
+            "mapping-visual-authority-owner-mismatch", _codes(self._write(mapping))
+        )
+
+    def test_asset_reference_cannot_duplicate_asset_registry_fields(self) -> None:
+        mapping = _valid_mapping()
+        mapping["ui_design_ownerships"].append(
+            {
+                "id": "hero-artwork",
+                "kind": "asset-reference",
+                "semantic_role": "hero-artwork",
+                "owner": "component-local",
+                "disposition": "exact",
+                "consumer_scope": "FixtureHero",
+                "evidence_ref": "critical_nodes:critical-icon-1",
+                "asset_path": "assets/hero.png",
+            }
+        )
+
+        self.assertIn(
+            "mapping-ui-design-asset-registry-leak", _codes(self._write(mapping))
+        )
+
     def test_missing_screen_layouts_fails_closed(self) -> None:
         mapping = _valid_mapping()
         mapping.pop("screen_layouts")
@@ -158,6 +208,26 @@ def _valid_mapping() -> dict[str, object]:
                 "layout_model": "constraint-relationship",
                 "evidence_ref": "test/fixture_layout_contract_test.dart",
             }
+        ],
+        "ui_design_ownerships": [
+            {
+                "id": "canonical-viewport",
+                "kind": "visual-authority-metadata",
+                "semantic_role": "canonical-viewport",
+                "owner": "visual-authority",
+                "disposition": "exact",
+                "consumer_scope": "fixture",
+                "evidence_ref": "docs/visual_authority/fixture/manifest.md",
+            },
+            {
+                "id": "local-primary-text",
+                "kind": "semantic-color",
+                "semantic_role": "primary-text",
+                "owner": "feature-local",
+                "disposition": "intentional-local",
+                "consumer_scope": "fixture",
+                "local_scope_reason": "fixture-only accepted visual language",
+            },
         ],
         "critical_nodes": [
             {

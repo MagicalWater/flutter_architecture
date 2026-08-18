@@ -44,9 +44,13 @@ Scope ceiling review：**PASS**。以下項目明確不允許在Plan階段重新
 ## Approval state
 
 ```txt
-Design status = proposed
-User approval = REQUIRED
-Implementation Plan = NOT ALLOWED YET
+Design status = accepted
+User approval = APPROVED 2026-08-19
+Implementation Plan = NEXT LEGAL STEP
 Production implementation = NOT ALLOWED YET
 ```
+
+## User approval closure
+
+2026-08-19 使用者明確核准 revised Milestone 44 Design。Design Task 因此完成 current-stage acceptance；本 review 不把後續 Plan、implementation、holistic review 或 Milestone closure 冒充為已完成。
 

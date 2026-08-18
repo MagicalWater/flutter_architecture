@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-44-design
 last_reviewed_baseline: 1.22.0
@@ -10,7 +10,9 @@ last_reviewed_baseline: 1.22.0
 
 ## Status
 
-**Proposed — 等待使用者明確核准。**
+**Accepted — 2026-08-19 使用者明確核准。**
+
+Revised Design 已完成 scope corrective、fresh focused review、whole-Design review與 scope-ceiling review；Open P0 = 0，Open P1 without disposition = 0。下一個合法步驟是建立 Implementation Plan；本對話不開始 Plan 或 production implementation。
 
 ## Problem statement
 
@@ -116,5 +118,5 @@ Fresh behavioral pressure延續既有`implementing-pencil-flutter-design` consum
 
 ## Approval gate
 
-本Design完成repository review前保持`proposed`；取得使用者明確核准後才可標記`accepted`並建立Implementation Plan。Plan未核准前不得修改production implementation。
+本Design已於 2026-08-19 取得使用者明確核准並標記為`accepted`。下一步可建立Implementation Plan；Plan完成雙層Task治理並取得使用者明確核准前，不得修改production implementation。
 

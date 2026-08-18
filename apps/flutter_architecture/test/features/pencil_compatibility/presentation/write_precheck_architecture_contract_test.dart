@@ -61,6 +61,26 @@ void main() {
           'coordinates and a shared whole-screen scale',
         );
       }
+      if (!projectedCanvasSource.contains('Column(') ||
+          !projectedCanvasSource.contains('_flowRegion(')) {
+        violations.add(
+          'WritePrecheckProjectedCanvas does not expose constraint-owned page flow',
+        );
+      }
+      for (final forbidden in <String>[
+        'static const double designHeight = 1672',
+        'class _RenderProjectedStack',
+        'top: 1277',
+        'top: 1455',
+        'top: 1536',
+        'top: 1606',
+      ]) {
+        if (projectedCanvasSource.contains(forbidden)) {
+          violations.add(
+            'WritePrecheckProjectedCanvas retains page-coordinate owner $forbidden',
+          );
+        }
+      }
       if (pageSource.contains('constraints.maxWidth >= 900') ||
           (pageSource.contains('WritePrecheckCanonicalCanvas') &&
               pageSource.contains('PrecheckSectionCard'))) {

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/presentation_architecture_policy.dart';
+
 void main() {
   group('Presentation responsibility architecture contract', () {
     test('stable repository authority is discoverable from fresh admission', () {
@@ -33,7 +35,15 @@ class _CheckoutRenderStack extends MultiChildRenderObjectWidget {}
 class _RenderCheckoutStack extends RenderStack {}
 ''';
 
-      expect(_pageOrViewOwnsRenderInfrastructure(mixedOwner), isTrue);
+      expect(pageOrViewOwnsRenderInfrastructure(mixedOwner), isTrue);
+    });
+
+    test('repository Page and View owners do not own render infrastructure', () {
+      final violations = findPageOrViewRenderInfrastructureViolations(
+        Directory('lib'),
+      );
+
+      expect(violations, isEmpty, reason: violations.join('\n'));
     });
 
     test('handwritten part cannot masquerade as a separate responsibility owner', () {
@@ -47,7 +57,7 @@ class ProjectedLayout extends MultiChildRenderObjectWidget {}
 ''';
 
       expect(
-        _usesPartAcrossDeclaredResponsibilities(
+        usesPartAcrossDeclaredResponsibilities(
           ownerSource: ownerSource,
           ownerRole: PresentationResponsibility.component,
           partSource: partSource,
@@ -64,7 +74,7 @@ class _Avatar extends StatelessWidget {}
 class _DisplayName extends StatelessWidget {}
 ''';
 
-      expect(_requiresOneClassPerFile(source), isFalse);
+      expect(requiresOneClassPerFile(source), isFalse);
     });
 
     test('local ephemeral UI state does not require Cubit or Bloc', () {
@@ -76,7 +86,7 @@ class _ExpandableHintState extends State<ExpandableHint> {
 }
 ''';
 
-      expect(_requiresBlocForLocalUiState(localStateSource), isFalse);
+      expect(requiresBlocForLocalUiState(localStateSource), isFalse);
     });
 
     test('surface launcher may differ from surface implementation owner', () {
@@ -93,7 +103,7 @@ class AppearanceSelectorDialog extends StatelessWidget {}
 ''';
 
       expect(
-        _launcherAndSurfaceCanHaveDifferentOwners(
+        launcherAndSurfaceCanHaveDifferentOwners(
           launcherSource: shellSource,
           surfaceSource: surfaceSource,
         ),
@@ -101,48 +111,4 @@ class AppearanceSelectorDialog extends StatelessWidget {}
       );
     });
   });
-}
-
-enum PresentationResponsibility {
-  pageOrView,
-  component,
-  layout,
-  surface,
-}
-
-bool _pageOrViewOwnsRenderInfrastructure(String source) {
-  final declaresPageOrView = RegExp(
-    r'class\s+\w+(?:Page|View)\b',
-  ).hasMatch(source);
-  final declaresRenderInfrastructure =
-      source.contains('MultiChildRenderObjectWidget') ||
-      source.contains('RenderObject') ||
-      source.contains('RenderStack') ||
-      source.contains('createRenderObject(') ||
-      source.contains('updateRenderObject(');
-  return declaresPageOrView && declaresRenderInfrastructure;
-}
-
-bool _usesPartAcrossDeclaredResponsibilities({
-  required String ownerSource,
-  required PresentationResponsibility ownerRole,
-  required String partSource,
-  required PresentationResponsibility partRole,
-}) {
-  final handwrittenLibraryLink =
-      RegExp(r'''^\s*part\s+['"]''', multiLine: true).hasMatch(ownerSource) &&
-      RegExp(r'''^\s*part\s+of\s+['"]''', multiLine: true).hasMatch(partSource);
-  return handwrittenLibraryLink && ownerRole != partRole;
-}
-
-bool _requiresOneClassPerFile(String source) => false;
-
-bool _requiresBlocForLocalUiState(String source) => false;
-
-bool _launcherAndSurfaceCanHaveDifferentOwners({
-  required String launcherSource,
-  required String surfaceSource,
-}) {
-  return launcherSource.contains('showDialog') &&
-      surfaceSource.contains('Dialog');
 }

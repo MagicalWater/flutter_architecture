@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.21.0
 
 ## Purpose
 
-本文件固定 2026-08-18 對話切換前的 current authority，避免下一個對話依賴聊天記憶。
+本文件固定 2026-08-18 current authority，避免下一個對話依賴聊天記憶或重做已完成的 Milestone 42 implementation／holistic。
 
 ## Repository / Worktree
 
@@ -37,7 +37,8 @@ Milestone 41 尚未 merge／push／published-main，因此尚未 closure。2026-
 - Design Revision 1 two-layer re-review：PASS；Open P0 = 0；Open P1 without disposition = 0。
 - User revised-Design approval：**已取得**。
 - Implementation Plan：已依Revised Design重建並轉為`accepted`，fresh two-layer Plan review PASS；使用者於2026-08-18明確核准。
-- Production source / Design System / machine policy：Milestone 42 尚未修改。
+- Tasks 42-1～42-9：accepted；Task 42-9 combined Milestone 41+42 holistic / release candidate PASS。
+- Production source、machine policy、ADR／Skill／Guide與current docs已完成Milestone 42 accepted scope；accepted `.pen`與visual/runtime authority bytes未修改。
 
 ## Confirmed Milestone 42 findings
 
@@ -82,17 +83,16 @@ Smallest correct component owner
 
 ## Next legal gate
 
-下一個對話必須 fresh admission 後先讀 Requirement、accepted Revised Design、Design Review、accepted rebuilt Implementation Plan、fresh Plan Review 與本 handoff。Implementation已admitted；下一個合法動作是依accepted Plan執行Task 42-1。Milestone 41 publication維持suspended。
+下一個對話必須 fresh admission 後讀 current roadmap、Requirement、accepted Revised Design、accepted rebuilt Plan、Task 42-8 behavioral evidence、Task 42-9 combined holistic與本 handoff。**下一個合法動作只有取得使用者merge／push authorization。** 授權前不得開始Task 42-10 publication，也不得宣稱Milestone 41／42 closed。
 
-Plan核准後：
+授權後：
 
 ```txt
-Plan accepted + commit
-→ implementation Tasks
-→ holistic review
-→ combined 1.21.0 release candidate
+combined 1.21.0 release candidate PASS
+→ user merge / push authorization
 → single merge / push
 → published-main + macOS/iOS post-release validation
+→ fresh PTF-30～34 behavioral acceptance
 → Milestone 41 + 42 closure
 ```
 
@@ -110,6 +110,8 @@ docs/audits/milestone_42/42-0_design_spec_review.md
 docs/audits/milestone_42/42-handoff_checkpoint.md
 docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md
 docs/audits/milestone_42/42-p_implementation_plan_review.md
+docs/audits/milestone_42/42-8_behavioral_pressure_review.md
+docs/audits/milestone_42/42-9_combined_holistic_final_review.md
 docs/audits/milestone_41/41-8_holistic_final_review.md
 ```
 

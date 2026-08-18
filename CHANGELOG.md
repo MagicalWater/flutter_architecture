@@ -26,6 +26,8 @@
 
 - 完成Milestone 41 Pencil-to-Flutter Constraint-based Layout Architecture Corrective，新增screen-root layout model machine contract；一般App screen必須解析為`constraint-relationship`，真正spatial surface才可使用`intentional-spatial-canvas`且必須具有accepted `approval_ref`。
 - 新增PTF-27～PTF-29 behavioral pressure，直接覆蓋whole-screen canonical-coordinate shortcut、bounded local overlay與genuine spatial canvas例外邊界。
+- 完成Milestone 42 Pencil Presentation Ownership & Visual Token Governance Corrective，新增initiative-local `ui_design_ownerships` machine contract；risk-selected UI design values必須解析至`visual-authority`、`design-system`、`feature-local`或`component-local`，不得用generic UI Spec逃避owner decision。
+- 新增PTF-30～PTF-34與same-literal negative edge／shared-semantic positive control，覆蓋FeatureVisualSpec逃避Design System、single-screen exact value污染Design System、page responsibility dump、FeatureUiSpec catch-all與asset path/provenance ownership錯置。
 
 ### Changed
 
@@ -35,17 +37,23 @@
 - Template → Product README transition與既有docs checker保持相容；Milestone 40本身未升版，其變更隨下一個可交付baseline一併納入1.21.0。
 - `WritePrecheckProjectedCanvas`移除whole-page `designHeight=1672`、major-section canonical page-top ownership與screen-root scaled `RenderStack`；screen major sections改由Flutter `Column`、constraints與sibling relationships擁有page flow，bounded local `Stack`／`Positioned`只保留component-local composition責任。
 - ADR-028、`implementing-pencil-flutter-design` Skill references與human Guide同步明確禁止把canonical design-space `x/y`經global scale直接當成一般production screen runtime placement system；single renderer與true Flutter widgets不能作為absolute-coordinate shortcut的豁免。
+- Presentation ownership再收斂為`pages/` Page/View orchestration、`layout/` projection/render mechanics與`widgets/` bounded visual composition；custom RenderObject/projection infrastructure與bounded sections不再由page file直接擁有。
+- `PencilCompatibilityVisualSpec`正式退休，未建立等價mega-class replacement；unused canonical/token fields直接移除，current proof palette與typography只保留為窄責任feature-local owners。
+- ADR-018／ADR-028、Pencil-to-Flutter Skill／Guide與Design System boundary同步UI Design Ownership Architecture：shared semantic/theme values在semantic identity與stable shared ownership成立時promotion；single-screen exact geometry／decoration留smallest correct owner；asset identity/path/provenance沿用既有representation authority，不能塞進VisualSpec／VisualTokens。
 
 ### Validation
 
 - Accepted `.pen`、canonical Pencil preview與360×640 runtime reference SHA-256均fresh符合manifest；沒有修改golden、visual threshold、crop或ignore region。
-- Pencil compatibility presentation suite 19 tests PASS；focused visual／mapping／policy suite 35 tests PASS；fresh behavioral pressure 4/4 PASS。
-- Workspace `flutter analyze` PASS；完整Flutter regression全部packages PASS，App suite 496 cases PASS；repository Python discovery regression 11 tests PASS；`flutter build bundle` PASS。
+- Milestone 42 affected Pencil compatibility suite 22 tests PASS；mapping/visual machine contract 50 tests PASS；PTF-30～34、negative edge與positive control fresh behavioral pressure全數PASS。
+- Combined release/full planner判定`docs_content + governance + tooling + test_only + app_feature + package + release`，`full_regression=true`、`generated_check=true`、Android/iOS build required。
+- Workspace `flutter analyze`全5 packages PASS；完整Flutter regression全5 packages PASS：App 499、Design System 43、Auth 156、API Client 59、Core 4。
+- Repository Python discovery regression 11 tests PASS；visual/mapping/policy focused suite 50 tests PASS；`docs_check` PASS；Windows generated-consistency等價流程完成build_runner、Drift schema export/normalize、drift worker compile與zero-substantive-diff驗證PASS；`flutter build bundle` PASS。
 
 ### Governance
 
 - Requirement Decision、Design、Implementation Plan與Tasks 41-1～41-8依Level 4雙層Task governance完成holistic final review；Open P0=0、Open P1 without disposition=0。
-- Task 41-8正式決定發布Template Baseline `1.21.0`；Task 41-9仍需merge／push授權、published-main clean checkout、fresh full regression、required platform evidence與fresh PTF-27～29 acceptance後才能宣稱Milestone closed。
+- Milestone 42 Revised Design與rebuilt Implementation Plan均經雙層review與使用者核准；Tasks 42-1～42-9依雙層Task governance完成，combined Milestone 41+42 holistic Open P0=0、Open P1 without disposition=0。
+- Template Baseline維持combined `1.21.0` release candidate，不因pre-publication corrective另增無語意版本；Task 42-10仍需使用者merge／push授權、published-main clean checkout、required platform evidence與fresh behavioral acceptance後，Milestone 41／42才能formal closure。
 
 ---
 

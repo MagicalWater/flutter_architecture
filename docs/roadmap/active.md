@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.21.0
 
 ```txt
 Active Milestone: Milestone 42 — Pencil Presentation Ownership & Visual Token Governance Corrective
-State: Tasks 42-1～42-6 accepted / Task 42-7 stable authority synchronization in progress / Milestone 41 publication suspended
+State: Tasks 42-1～42-9 accepted / combined Milestone 41+42 release candidate PASS / merge-push authorization pending
 Template Baseline: 1.21.0 combined release candidate base
 ```
 
@@ -20,7 +20,7 @@ Milestone 42處理Milestone 41 merge前fresh architecture review新增的present
 
 ## Current Gate
 
-Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42 Revised Design與rebuilt Implementation Plan均已accepted；Tasks 42-1～42-6已accepted，目前執行Task 42-7 stable authority synchronization。42完成後必須重新形成combined holistic/release candidate，再取得merge／push授權。
+Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均已完成並通過，但在merge／push前發現scope-adjacent P1 architecture finding；41 publication因此暫停而不是宣稱closed。Milestone 42 Revised Design與rebuilt Implementation Plan均已accepted；Tasks 42-1～42-9已accepted。Combined Milestone 41+42 holistic / release candidate已fresh PASS，下一個合法gate是使用者merge／push authorization；Task 42-10 publication / post-release closure在授權前不得開始。
 
 ## Current Evidence
 
@@ -35,7 +35,8 @@ Milestone 41 Requirement、Design、Implementation Plan與Tasks 41-1～41-8均�
 - Milestone 42 Implementation Plan：`docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md`（rebuilt accepted；fresh Plan review PASS；user approved 2026-08-18）。
 - Milestone 42 Design Review：`docs/audits/milestone_42/42-0_design_spec_review.md`（completed / PASS）。
 - Milestone 42 Plan Review：`docs/audits/milestone_42/42-p_implementation_plan_review.md`（completed / PASS）。
-- Milestone 42 Tasks 42-1～42-6：`docs/audits/milestone_42/42-1_ownership_red_review.md` 至 `42-6_visual_runtime_fidelity_review.md`（accepted；visual authority unchanged）。
+- Milestone 42 Tasks 42-1～42-8：`docs/audits/milestone_42/42-1_ownership_red_review.md` 至 `42-8_behavioral_pressure_review.md`（accepted；visual authority unchanged；PTF-30～34與edge/positive controls PASS）。
+- Milestone 42 Task 42-9：`docs/audits/milestone_42/42-9_combined_holistic_final_review.md`（accepted / PASS；combined 1.21.0 release candidate；Open P0=0 / Open P1 without disposition=0）。
 
 ## Previous Closure
 

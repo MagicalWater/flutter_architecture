@@ -1,10 +1,6 @@
 name: Observability Acceptance
 
 on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       execution_mode:
@@ -53,13 +49,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify observability acceptance contract
-        run: >-
-          python3 -m unittest
-          tools.ci.test_observability_acceptance_workflow
-          tools.ci.test_android_observability_contract
-          tools.ci.test_ios_observability_contract
-          tools.ci.test_secret_leakage
-          tools.ci.test_artifact_workflow_contract
+        run: python3 -m unittest tools.ci.test_secret_leakage
       - name: Record upload disposition
         run: |
           echo "Upload skipped: PR-safe contract job never reads provider secrets."

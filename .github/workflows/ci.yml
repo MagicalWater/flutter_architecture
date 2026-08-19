@@ -9,6 +9,17 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      validation_mode:
+        description: Validation intent for this manual run
+        required: true
+        default: focused
+        type: choice
+        options:
+          - focused
+          - full
+          - android
+          - ios
+          - release
       execution_mode:
         description: CI execution mode for this run
         required: true
@@ -74,9 +85,11 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          VALIDATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.validation_mode || 'focused' }}
         run: |
           if ! python3 tools/ci/validation_planner.py \
             --event "$EVENT_NAME" \
+            --mode "$VALIDATION_MODE" \
             --base "$BASE_SHA" \
             --head "$HEAD_SHA" \
             --output "$GITHUB_OUTPUT"; then

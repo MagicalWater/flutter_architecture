@@ -45,9 +45,11 @@ Idea／Bug／Request
 → validation／release／post-release as classified
 ```
 
-Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不必要的Spec、Plan或Milestone。Level 2～5依風險逐步要求Behavioral Requirements、Design、Plan、ADR、完整regression與release closure。
+Level 0／1使用minimal或simplified治理，禁止因流程本身而建立不必要的Spec、Plan或Milestone。Level 2採brief decision＋one final review；Level 3才進入cross-cutting Design／Plan＋holistic review；Level 4／5只對repository-wide architecture、security、irreversible migration或platform／release infrastructure採formal-critical evidence。Classification使用lowest sufficient level by evidence，模糊本身不是升級理由。
 
-Task治理中的`required validation`不等於固定full workspace regression。Current machine selection由`tools/ci/validation_planner.py`依Minimum Sufficient Validation決定focused／affected／workspace／full／release；雙層Task治理負責何時需要validation與fresh evidence，不自行擴大selected scope。
+Task治理中的`required validation`不等於固定full workspace regression。Current machine selection由`tools/ci/validation_planner.py`依Minimum Sufficient Validation決定focused／affected-critical／explicit-full／release；雙層Task治理負責何時需要validation與fresh evidence，不自行擴大selected scope。同一exact SHA的holistic／post-release可以reuse相同GREEN evidence，publish後不重跑相同full source regression。
+
+Test lifecycle採test-by-exception：temporary RED／debug／acceptance test在GREEN後必須做Retention Decision；普通test預設在Task closure前刪除，只有critical failure protection取得permanent ownership。Low-value existing coverage可用`replacement = NONE`退休，Foundation不享有test-density豁免。
 
 ## Authority boundaries
 

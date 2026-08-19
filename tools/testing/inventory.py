@@ -114,8 +114,8 @@ def classify_metadata(relative: str, suite: str) -> dict[str, str]:
             "coverage_owner": "Historical compatibility harness",
             "implementation_classification": "historical",
             "execution_tier": "Tier 3",
-            "disposition": "Keep/Audit",
-            "replacement_or_notes": "Migration, rollback or fixture oracle; do not delete by name.",
+            "disposition": "Retention review",
+            "replacement_or_notes": "Retain only when critical migration/rollback compatibility value remains.",
         }
     if relative.startswith("tools/ci/"):
         execution_tier = "Tier 1"
@@ -144,8 +144,8 @@ def classify_metadata(relative: str, suite: str) -> dict[str, str]:
             "coverage_owner": "CI tooling",
             "implementation_classification": "current",
             "execution_tier": execution_tier,
-            "disposition": "Audit",
-            "replacement_or_notes": "Review duplicate workflow and classifier assertions.",
+            "disposition": "Critical-only",
+            "replacement_or_notes": "Retain only destructive safety, security or planner fail-safe protection.",
         }
     if relative.startswith("tools/docs/"):
         return {
@@ -153,8 +153,8 @@ def classify_metadata(relative: str, suite: str) -> dict[str, str]:
             "coverage_owner": "Documentation tooling",
             "implementation_classification": "current",
             "execution_tier": "Tier 1",
-            "disposition": "Keep/Audit",
-            "replacement_or_notes": "Documentation governance contract.",
+            "disposition": "Critical-only",
+            "replacement_or_notes": "Prose/wording contracts are not permanent-test owners.",
         }
     if "golden" in path:
         category = "Visual"
@@ -189,9 +189,9 @@ def classify_metadata(relative: str, suite: str) -> dict[str, str]:
         execution_tier = "Tier 2"
     else:
         execution_tier = "Unclassified"
-    notes = "Focused ownership review required."
+    notes = "Permanent retention requires critical failure-protection value."
     classification = "current"
-    disposition = "Keep/Audit"
+    disposition = "Retention review"
     if "sqflite_auth_user_store_test.dart" in path:
         classification = "historical-mixed"
         disposition = "Rewrite/Archive"
@@ -260,17 +260,20 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("docs/audits/milestone_30/30-2_test_inventory.csv"),
+        default=None,
     )
     args = parser.parse_args()
     root = args.root.resolve()
-    output = args.output if args.output.is_absolute() else root / args.output
     rows = inventory_rows(root, discover_test_files(root))
-    write_csv(output, rows)
+    output_text = "none"
+    if args.output is not None:
+        output = args.output if args.output.is_absolute() else root / args.output
+        write_csv(output, rows)
+        output_text = display_output_path(output, root)
     print(
         f"files={len(rows)} loc={sum(int(row['loc']) for row in rows)} "
         f"cases={sum(int(row['static_cases']) for row in rows)} "
-        f"output={display_output_path(output, root)}"
+        f"output={output_text}"
     )
     return 0
 

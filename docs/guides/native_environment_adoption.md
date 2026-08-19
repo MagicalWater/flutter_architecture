@@ -168,7 +168,6 @@ apps/flutter_architecture/ios/Runner.xcodeproj/project.pbxproj
 
 ```txt
 tools/ci/verify_environment_contract.py
-tools/ci/test_environment_contract.py
 tools/ci/build_android_environment.sh
 tools/ci/build_ios_environment.sh
 ```
@@ -197,18 +196,11 @@ API_BASE_URL
 
 ```bash
 python3 tools/ci/verify_environment_contract.py
-python3 -m unittest \
-  tools.ci.test_environment_contract \
-  tools.ci.test_environment_workflow_matrix_contract \
-  tools.ci.test_local_build_commands \
-  tools.ci.test_ios_workflow_contract \
-  tools.ci.test_shell_portability_contract
 dart run melos run docs_check
 dart run melos run analyze
-dart run melos exec -- flutter test
 ```
 
-接著執行本指南的 Android／iOS 三環境命令，核對 `artifact-metadata.txt` 與實際 package／bundle identity。
+接著執行本指南的 Android／iOS 三環境命令；真正native build與`artifact-metadata.txt`／package／bundle identity inspection就是此類變更的primary verification，不再用大量workflow/source-shape unit tests替代實際build evidence。
 
 ## Placeholder and Secret Boundary
 

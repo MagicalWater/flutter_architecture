@@ -3,16 +3,16 @@
 | 需求 | L0 | L1 | L2 | L3 | L4 | L5 |
 |---|---|---|---|---|---|---|
 | Requirement Decision | brief | required | required | required | formal | formal |
-| Behavioral requirements | no | optional | required | required | required | required |
-| Brainstorming | no | optional | required | required | required | required |
-| Design Spec | no | usually no | required | required | required | required |
-| Implementation Plan | no | inline | required | required | required | required |
+| Behavioral requirements | no | optional | brief | required | required | required |
+| Brainstorming | no | optional | optional | optional | required | required |
+| Design Spec | no | usually no | brief decision | required | required | required |
+| Implementation Plan | no | inline | inline／brief | required | required | required |
 | ADR gate | no | no | conditional | stable boundary 改變時 required | required | architecture 改變時 required |
-| 雙層 Task 模式 | minimal | simplified | standard | full | full | full-critical |
+| 雙層 Task 模式 | minimal | simplified | standard-light | cross-cutting | formal-critical | formal-critical |
 | Worktree／branch | no | optional | recommended | required | required | required |
-| Regression | focused | affected | feature／integration | affected workspace | full | full＋compatibility／platform |
-| Release | no | conditional | conditional | usually | 依 Milestone disposition required | required |
-| Post-release | no | no | conditional | conditional | required | required |
+| Regression | relevant check | focused | changed-risk | affected critical owners | explicit full only when justified | full＋compatibility／platform when justified |
+| Release | no | conditional | conditional | conditional | explicit disposition | required when production/release scope exists |
+| Post-release | no | no | identity/artifact only when needed | identity/artifact only when needed | identity/artifact by default | identity/artifact＋critical runtime evidence |
 
 ## Artifact ownership
 
@@ -35,13 +35,14 @@ Classification
 → Plan Task governance 與使用者核准
 → 依路由建立 worktree
 → Test Authoring Decision（Required／Recommended／no-new-test justified／Should-not-add）
-→ 依authoring disposition使用TDD／systematic debugging；TDD不代表每Task新增test
+→ 依authoring disposition使用TDD／systematic debugging；新test先視為temporary evidence
+→ implementation GREEN後執行Retention Decision（Retain／Merge／Smoke／Delete temporary）
 → implementation／refactor／production code review 搭配 karpathy-guidelines
 → executing-plans 或 subagent-driven-development
 → requesting／receiving code review
 → verification-before-completion
 → finishing-development-branch
-→ repository release 與 post-release closure
+→ repository release 與 post-release identity／artifact closure；same SHA不重跑相同full source regression
 ```
 
 Repository gate 的優先順序高於 Superpowers shortcut。尤其 Design Spec 尚未 accepted 前，不得開始 writing-plans；Plan 尚未 accepted 前，不得開始 implementation。

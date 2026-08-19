@@ -5,7 +5,7 @@ authoritative_for:
   - risk-based-test-authoring-governance
 last_reviewed_baseline: 1.16.0
 id: ADR-029
-title: Risk-Based Test Authoring Governance
+title: Test-by-Exception Authoring and Retention Governance
 supersedes: []
 superseded_by: []
 related:
@@ -13,7 +13,7 @@ related:
   - ADR-023
 ---
 
-# ADR-029 — Risk-Based Test Authoring Governance
+# ADR-029 — Test-by-Exception Authoring and Retention Governance
 
 ## Status
 
@@ -21,24 +21,26 @@ Accepted。
 
 ## Context
 
-Repository已透過Milestone 30建立existing test ownership／rationalization，並透過ADR-023與Milestone 35建立Minimum Sufficient Validation execution routing。但「一個新Task是否值得新增test」缺少stable authority。
+Repository早期透過Milestone 30建立coverage-preservation式existing test ownership／rationalization，並透過ADR-023與Milestone 35建立Minimum Sufficient Validation execution routing。後續實務證明，只限制「是否新增test」不足以阻止portfolio膨脹：temporary RED、UI regression、architecture prose與governance contracts會在Task完成後永久累積。
 
 若TDD、Feature reference與雙層Task被機械解讀為每Task／class／layer新增test，template foundation的高密度tests會被複製到普通產品Feature，形成Test Authoring／Maintenance Hell。
 
 ## Decision
 
-Test authoring採risk-based、minimum-sufficient原則：
+Test authoring與retention採risk-based、test-by-exception原則：
 
 ```txt
 risk / invariant / failure mode
 → existing owner coverage
 → Required | Recommended | no-new-test justified | Should-not-add
-→ nearest primary owner when adding
+→ temporary evidence when adding
+→ GREEN
+→ Retain | Merge | Smoke | Delete temporary
 ```
 
-TDD用於建立最小充分regression evidence，不代表每Task、每class或每architecture layer都必須新增test。
+TDD可用於建立temporary RED／GREEN evidence，不代表該test取得永久repository ownership。Task closure前必須完成Retention Decision。
 
-`Required`涵蓋business invariant、security、persistence／migration、concurrency／ordering、idempotency、複雜state machine與可靠bug regression等高風險行為。這些風險必須有direct regression owner。
+`Required`只涵蓋failure cost高、人工難穩定發現且長期automation價值明確的business invariant、security、persistence／migration、concurrency／ordering、idempotency等critical behavior。普通deterministic UI／copy／style／wiring bug可以使用temporary regression test，但fix後預設刪除。
 
 `Recommended`用於有實質observable branch但需比較regression detection value與maintenance cost的情況。
 
@@ -46,17 +48,19 @@ TDD用於建立最小充分regression evidence，不代表每Task、每class或�
 
 `Should-not-add`拒絕trivial getter／setter、pure passthrough called-once、framework behavior、layer-for-layer duplication、class-for-class files、mechanical golden與coverage quota testing。
 
-Template foundation test density不得成為產品Feature的test quota。Auth／Catalog／Profile可作architecture與owner boundary reference，但不是test-density reference。
+Foundation沒有test-density exemption。Auth／Catalog／Profile可作architecture與owner boundary reference，但每個permanent test仍須獨立證明critical retention價值。
 
-Test Authoring Decision與ADR-023的Validation Execution Decision保持分離。0 new tests永遠不等於0 validation；`tools/ci/validation_planner.py`仍是execution selection唯一machine authority。
+Test Authoring Decision、Retention Decision與ADR-023的Validation Execution Decision保持分離。0 permanent tests甚至0 automated tests都可以合法，只要changed risk有最低充分validation／runtime acceptance且沒有缺失critical owner。
+
+Existing coverage不享有preservation priority。Critical protection仍需要replacement／merged owner evidence；low-value protection intentionally retired時，`replacement = NONE`合法，不要求逐case deletion manifest。Portfolio reset以bucket-level disposition、critical keep matrix與before／after metrics即可。
 
 ## Consequences
 
 - 普通低風險Feature可以合法以`no-new-test justified`完成Task，而不被迫增加case count。
-- 高風險security／migration／persistence／concurrency behavior仍有強制regression owner。
+- 高風險security／migration／persistence／concurrency behavior仍有最小critical regression owner。
 - Test count、LOC與coverage percentage不再能作authoring成功KPI。
-- 雙層Task保留完整review與validation，但Task數不再自然轉換成test數。
-- Existing test deletion仍受既有replacement evidence與deletion manifest治理，本ADR不授權以「風險較低」直接刪除existing coverage。
+- Temporary tests在驗證完成後預設移除，portfolio不再隨Task數單向成長。
+- Existing low-value coverage可直接退休；replacement test不是刪除本身的前置條件。
 
 ## Related Decisions
 

@@ -61,10 +61,12 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          VALIDATION_MODE: ${{ github.event_name == 'workflow_dispatch' && 'ios' || 'focused' }}
         shell: bash
         run: |
           if ! python3 tools/ci/validation_planner.py \
             --event "$EVENT_NAME" \
+            --mode "$VALIDATION_MODE" \
             --base "$BASE_SHA" \
             --head "$HEAD_SHA" \
             --output "$GITHUB_OUTPUT"; then
@@ -143,12 +145,7 @@ jobs:
 
       - name: Check iOS workflow contract
         if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'github-hosted'
-        run: >-
-          python3 -m unittest
-          tools.ci.test_environment_workflow_matrix_contract
-          tools.ci.test_ios_workflow_contract
-          tools.ci.test_ios_observability_contract
-          tools.ci.test_secret_leakage
+        run: python3 -m unittest tools.ci.test_secret_leakage
 
       - name: Build unsigned iOS Simulator app
         if: needs.classify-changes.outputs.ios_build == 'true' && runner.environment == 'github-hosted'
@@ -176,7 +173,7 @@ jobs:
           bash tools/ci/run_local_ci.sh managed-command ios ios bash -lc '
             mkdir -p "$ARTIFACT_DIR/ios-diagnostics" &&
             { sw_vers; xcodebuild -version; flutter --version; flutter doctor -v; pod --version; } > "$ARTIFACT_DIR/ios-diagnostics/toolchain.txt" 2>&1 &&
-            python3 -m unittest tools.ci.test_environment_workflow_matrix_contract tools.ci.test_ios_workflow_contract &&
+            python3 -m unittest tools.ci.test_secret_leakage &&
             set -o pipefail && bash tools/ci/build_ios_development.sh 2>&1 | tee "$ARTIFACT_DIR/ios-diagnostics/build.log"
           '
 

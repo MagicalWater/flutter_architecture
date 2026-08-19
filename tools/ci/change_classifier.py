@@ -23,8 +23,8 @@ _FULL_MATRIX = Classification(
     change_classes=("unknown",),
     docs_only=False,
     full_ci=True,
-    android_build=True,
-    ios_build=True,
+    android_build=False,
+    ios_build=False,
     release_full=False,
     fail_safe=True,
     reason="fail-safe full matrix",
@@ -101,7 +101,7 @@ def _is_dependency_path(path: str) -> bool:
 
 def _classify_path(path: str) -> str | None:
     if path == "VERSION":
-        return "release"
+        return "release_metadata"
     if _is_classifier_path(path) or path == "tools/ci/validation_planner.py" or path == "tools/ci/test_validation_planner.py":
         return "validation_engine"
     if _is_governance_path(path):
@@ -147,6 +147,7 @@ _CHANGE_CLASS_ORDER = (
     "ios_native",
     "dependency",
     "validation_engine",
+    "release_metadata",
     "release",
     "unknown",
 )
@@ -203,30 +204,20 @@ def _is_database_critical_path(path: str) -> bool:
 def _is_android_path(path: str) -> bool:
     return (
         path.startswith("apps/flutter_architecture/android/")
-        or _is_shared_app_build_path(path)
-        or _is_database_critical_path(path)
-        or path.startswith("packages/")
         or path.startswith("tools/ci/build_android_")
         or path == "tools/ci/verify_environment_contract.py"
         or path == ".github/workflows/android.yml"
-        or path == ".github/workflows/ci.yml"
         or path in _PLATFORM_EXACT
-        or _is_classifier_path(path)
     )
 
 
 def _is_ios_path(path: str) -> bool:
     return (
         path.startswith("apps/flutter_architecture/ios/")
-        or _is_shared_app_build_path(path)
-        or _is_database_critical_path(path)
-        or path.startswith("packages/")
         or path.startswith("tools/ci/build_ios_")
         or path == "tools/ci/verify_environment_contract.py"
         or path == ".github/workflows/ios.yml"
-        or path == ".github/workflows/ci.yml"
         or path in _PLATFORM_EXACT
-        or _is_classifier_path(path)
     )
 
 
@@ -240,7 +231,7 @@ def classify_paths(
 
     if manual:
         return Classification(
-            ("release",), False, True, True, True, True, False, "manual full matrix"
+            ("manual",), False, False, False, False, False, False, "manual focused request"
         )
 
     if invalid_range or not normalized:
@@ -250,12 +241,12 @@ def classify_paths(
         return Classification(
             classify_change_classes(normalized),
             False,
-            True,
-            True,
-            True,
-            True,
             False,
-            "VERSION changed",
+            False,
+            False,
+            False,
+            False,
+            "VERSION metadata changed",
         )
 
     if all(_is_docs_path(path) for path in normalized):

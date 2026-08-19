@@ -173,6 +173,7 @@ def plan_validation(
     *,
     repository: Path | str = ".",
     manual: bool = False,
+    manual_mode: str = "focused",
     invalid_range: bool = False,
 ) -> ValidationPlan:
     classification = classify_paths(paths, manual=manual, invalid_range=invalid_range)
@@ -187,8 +188,8 @@ def plan_validation(
             (".",),
             True,
             True,
-            True,
-            True,
+            False,
+            False,
             True,
             False,
             classification.reason,
@@ -274,8 +275,6 @@ def plan_validation(
             generated_check = True
             flutter_scopes.append("apps/flutter_architecture/test")
             analyze_scopes.append("apps/flutter_architecture")
-            android_build = True
-            ios_build = True
         elif change_class == "android_native":
             level = _max_level(level, "workspace")
             android_build = True
@@ -289,9 +288,9 @@ def plan_validation(
             analyze_scopes[:] = ["."]
             docs_check = True
             generated_check = True
-            android_build = True
-            ios_build = True
             full_regression = True
+        elif change_class == "release_metadata":
+            docs_check = True
         elif change_class == "release":
             level = "release"
             flutter_scopes[:] = ["."]
@@ -304,18 +303,26 @@ def plan_validation(
             full_regression = True
             release_full = True
 
-    if manual:
-        level = "release"
+    if manual and manual_mode in {"full", "release"}:
+        level = "release" if manual_mode == "release" else "full"
         flutter_scopes[:] = ["."]
         python_scopes[:] = ["tools"]
         analyze_scopes[:] = ["."]
         docs_check = True
         generated_check = True
-        android_build = True
-        ios_build = True
+        android_build = manual_mode == "release"
+        ios_build = manual_mode == "release"
         full_regression = True
-        release_full = True
-        reasons.append("manual full request")
+        release_full = manual_mode == "release"
+        reasons.append(f"manual {manual_mode} request")
+    elif manual and manual_mode == "android":
+        android_build = True
+        reasons.append("manual android request")
+    elif manual and manual_mode == "ios":
+        ios_build = True
+        reasons.append("manual ios request")
+    elif manual:
+        reasons.append("manual focused request")
 
     return ValidationPlan(
         classes,
@@ -453,7 +460,7 @@ def can_reuse_validation_evidence(
     validation_engine_changed: bool = False,
     gate: str = "task",
 ) -> bool:
-    if gate in {"holistic", "release", "post_release"}:
+    if gate == "release":
         return False
     if not same_task or not previous_passed:
         return False
@@ -525,10 +532,18 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--repository", default=Path("."), type=Path)
     parser.add_argument("--stdout-json", action="store_true")
+    parser.add_argument(
+        "--mode",
+        choices=("focused", "full", "android", "ios", "release"),
+        default="focused",
+        help="Explicit workflow_dispatch validation intent",
+    )
     args = parser.parse_args()
 
     if args.event == "workflow_dispatch":
-        plan = plan_validation([], repository=args.repository, manual=True)
+        plan = plan_validation(
+            [], repository=args.repository, manual=True, manual_mode=args.mode
+        )
     else:
         plan = plan_range(args.base, args.head, repository=args.repository)
 

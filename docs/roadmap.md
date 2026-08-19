@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: none
-State: M44 post-closure C1-5 accepted / C1-6 publication active
+Active Milestone: Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
+State: local implementation complete / holistic review PASS / integration-publication pending
 Template Baseline: 1.23.1
 ```
 

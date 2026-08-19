@@ -135,7 +135,11 @@ execute_quality() {
   "$python_bin" -m unittest discover -s tools/ci -p 'test_*.py' || return $?
   dart run melos run analyze || return $?
   bash tools/ci/verify_generated.sh || return $?
-  dart run melos exec -- flutter test || return $?
+  dart run melos exec \
+    --scope=flutter_architecture \
+    --scope=auth \
+    --scope=api_client \
+    -- flutter test || return $?
   git diff --check || return $?
   mkdir -p "$artifact_dir/quality"
   printf 'suite=quality\ncommit_sha=%s\nresult=success\n' "$commit_sha" > "$artifact_dir/quality/quality-result.txt"

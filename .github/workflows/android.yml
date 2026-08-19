@@ -57,9 +57,11 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.before || '' }}
           HEAD_SHA: ${{ github.sha }}
+          VALIDATION_MODE: ${{ github.event_name == 'workflow_dispatch' && 'android' || 'focused' }}
         run: |
           if ! python3 tools/ci/validation_planner.py \
             --event "$EVENT_NAME" \
+            --mode "$VALIDATION_MODE" \
             --base "$BASE_SHA" \
             --head "$HEAD_SHA" \
             --output "$GITHUB_OUTPUT"; then

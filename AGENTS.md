@@ -216,7 +216,7 @@ dart pub get
 dart run melos run build_runner
 dart run melos run docs_check
 dart run melos run analyze
-dart run melos exec -- flutter test
+dart run melos exec --scope=flutter_architecture --scope=auth --scope=api_client -- flutter test
 ```
 
 Build 驗證：
@@ -279,10 +279,9 @@ Commit
 
 ## 測試治理
 
-新增、搬移、合併或刪除測試前，先閱讀`docs/guides/testing_governance.md`。Current behavior不得依賴historical fixture；刪除測試必須有replacement evidence與deletion manifest。盤點命令：
+新增、搬移、合併或刪除測試前，先閱讀`docs/guides/testing_governance.md`。永久test採test-by-exception：temporary test驗證完成後預設在Task closure前刪除；只有critical failure protection才保留。低價值protection可用`replacement = NONE`退休，不要求逐case deletion manifest。盤點命令：
 
 ```bash
-python3 -m unittest tools.testing.test_test_inventory
 python3 tools/testing/inventory.py
 ```
 
@@ -292,7 +291,7 @@ python3 tools/testing/inventory.py
 python3 tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
 ```
 
-依plan執行focused／affected／workspace validation；unknown path、invalid range、planner failure會fail-safe到full。`dart run melos exec -- flutter test`保留給planner要求full、Milestone holistic、manual full與release／post-release gate，不是每個Task／commit的固定minimum。
+依plan執行最低充分validation；ordinary source change只跑focused／affected critical owners。Workspace full只執行目前實際擁有permanent tests的`flutter_architecture`、`auth`、`api_client`，不對空test packages執行Flutter。Full只保留給explicit full／release candidate或真正高風險cross-cutting，不再因Milestone holistic、VERSION、manual或post-release名稱自動執行。
 
 ## Commit 前檢查
 
@@ -301,7 +300,7 @@ Commit 前至少確認：
 - 已依`tools/ci/validation_planner.py`取得本次Task／range的Minimum Sufficient Validation plan。
 - planner要求的focused／affected／workspace validations全部通過。
 - planner要求dependency resolution、analyze、generated、Android或iOS gate時，對應驗證已通過。
-- 若為Milestone holistic、manual full、release或post-release gate，fresh full regression已通過。
+- 若本次是explicit full或release candidate，fresh logical full regression已通過；same exact SHA的post-release不得重跑相同full source regression。
 - 若修改 generated source，已執行 build_runner。
 - 若修改 app runtime flow，已執行 `flutter build bundle`。
 - 文件與實作一致。

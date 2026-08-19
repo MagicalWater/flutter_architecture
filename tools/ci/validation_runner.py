@@ -18,7 +18,18 @@ def _workspace_command(scope: str, verb: str) -> tuple[Path, list[str]]:
     parts = normalized.parts
     if scope == ".":
         if verb == "test":
-            return Path("."), ["dart", "run", "melos", "exec", "--", "flutter", "test"]
+            return Path("."), [
+                "dart",
+                "run",
+                "melos",
+                "exec",
+                "--scope=flutter_architecture",
+                "--scope=auth",
+                "--scope=api_client",
+                "--",
+                "flutter",
+                "test",
+            ]
         return Path("."), ["dart", "run", "melos", "run", "analyze"]
 
     if len(parts) >= 2 and parts[0] in {"apps", "packages"}:

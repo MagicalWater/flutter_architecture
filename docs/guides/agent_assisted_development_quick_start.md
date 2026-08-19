@@ -211,7 +211,7 @@ Bug 不使用 `starting-feature-work`，直接交給中央治理。
 目前以下驗證失敗：
 
 [命令]
-dart run melos exec -- flutter test
+dart run melos exec --scope=flutter_architecture --scope=auth --scope=api_client -- flutter test
 
 [失敗內容]
 [貼上錯誤訊息、test名稱或CI連結]
@@ -220,7 +220,7 @@ dart run melos exec -- flutter test
 1. 先判斷是production regression、stale test、flaky test或environment問題。
 2. 使用systematic debugging找root cause。
 3. 不得只為讓test變綠而削弱assertion。
-4. 不得在沒有replacement evidence時刪除test。
+4. 先判斷test是否仍值得永久保留；低價值／temporary coverage可用`replacement = NONE`退休，critical protection才要求replacement owner。
 5. 修正後重跑focused test與affected regression。
 6. 完成Task review後再提交。
 ```
@@ -231,7 +231,7 @@ dart run melos exec -- flutter test
 
 ```txt
 請依 tools/ci/validation_planner.py 產生本次Task的 Minimum Sufficient Validation plan，
-執行returned focused／affected scopes；只有planner、holistic或release gate要求時才跑full regression。
+執行returned focused／affected-critical scopes；只有explicit full／release candidate或真正高風險cross-cutting才跑full regression。
 ```
 
 ## 場景六：Refactor 或技術債

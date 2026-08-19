@@ -11,36 +11,37 @@ change → diff review → focused validation → authority check → commit
 ### Simplified — Level 1
 
 ```txt
-reproduce／confirm → 使用 TDD 或 focused fix 實作 → focused review
-→ findings → fix → re-review → affected validation → authority check → commit
+reproduce／confirm → focused fix／必要temporary RED → focused validation
+→ review → findings/fix if any → authority check → commit
 ```
 
 ### Standard — Level 2
 
-Design、Plan 與每個 implementation unit 都使用完整 formal Task cycle。Feature regression 必須執行；full workspace regression 是否需要，依受影響 boundary 決定。
+使用brief behavioral/design decision、implementation與一次final review。不得要求每個implementation unit建立獨立audit artifact或independent commit。Validation只覆蓋changed risk與critical owners。
 
-Test Authoring與Task數量沒有一對一關係。**TDD不等於每個Task新增test**；一個Task可以是`0 new tests + planner-selected validation PASS`，前提是已記錄`no-new-test justified`或`Should-not-add` rationale，且沒有缺失的Required regression owner。
+Test Authoring與Task數量沒有一對一關係。**TDD test lifecycle不等於permanent portfolio**；temporary RED在GREEN後必須做Retention Decision，普通test預設在closure前刪除。
 
-### Full — Level 3～4
+### Cross-cutting — Level 3
 
-每個 Design Spec、Implementation Plan 與 implementation unit 都是 formal Task：
+Design與Plan可各自review一次；implementation完成後做一次whole-scope holistic review：
 
 ```txt
-create／implement
-→ focused review
-→ findings
-→ fix
-→ focused re-review
-→ whole-Task holistic review
+Design / Plan accepted
+→ implementation
+→ relevant focused checks during work
+→ whole-scope holistic review
 → documentation authority check
 → required validation
 → Open P0 = 0
 → Open P1 without disposition = 0
-→ independent commit
-→ next Task
+→ commit
 ```
 
-Design 必須先通過，才可建立 Plan。Plan 必須先通過，才可 implementation。
+Design／Plan approval gates仍存在，但不要求為每個implementation subtask重複formal evidence chain。
+
+### Formal Critical — Level 4～5
+
+只有真正repository-wide stable architecture、security、irreversible migration、platform／release infrastructure等高風險工作使用formal evidence。即使Level 4～5，也以risk boundary為artifact單位，不以subtask數量機械建立audit files。
 
 ## 自動繼續
 
@@ -55,13 +56,13 @@ holistic review
 → cross-Task consistency
 → architecture 與 authority review
 → runtime／remote evidence
-→ full regression
+→ explicit release candidate時才fresh full logical regression
 → findings 與 fixes
 → holistic re-review
 → VERSION／CHANGELOG／roadmap／current authority sync
 → release 與 archive decision
 → commit 與 push
-→ clean-checkout／post-release validation
+→ post-release identity／artifact verification；same SHA不重跑相同full source regression
 → formal closure
 ```
 
@@ -75,9 +76,9 @@ Design 與 Plan 在完成完整 Task cycle 並取得使用者明確核准前，�
 
 ## Evidence chain
 
-每個 formal Task 都要記錄 Task ID、artifact scope、focused findings、fixes、fresh re-review、whole-Task coverage、authority check、exact validation 與 independent commit。只標記 `Resolved`，但沒有 fix 與 re-review evidence，不足以通過。
+Formal evidence只記錄decision scope、material findings／fixes、authority check、exact relevant validation與final disposition。沒有material finding時不要求建立空白re-review artifact；subtask不要求independent commit。
 
-若Task修改observable behavior，evidence chain還要記錄Test Authoring Disposition與primary owner／justification。`0 new tests`不等於`0 validation`；exact validation仍由repository planner決定。
+若Task新增或修改test，closure evidence記錄Retention Decision。`0 permanent tests`與`0 automated tests`都可以合法，只要changed risk已由最低充分validation／runtime acceptance覆蓋且沒有缺失critical owner。
 
 ## Critical additions — Level 5
 

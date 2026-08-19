@@ -62,21 +62,21 @@ Artifact retention必須同時受到age、per-class count、global capacity與mi
 
 既有GitHub Actions artifacts與caches只有在replacement local runtime evidence成立後，才能依exact GitHub object IDs產生deletion manifest。GitHub deletion屬不可逆操作，必須完成focused review、whole-cleanup review並再次取得使用者明確核准；Milestone或Implementation Plan核准本身不構成delete approval。
 
-在`github-hosted`模式下，Pull Request到`main`與Push到`main`都必須先建立穩定、可審查的change classification。Repository-owned classifier依changed paths輸出`full_ci`、`android_build`與`ios_build`；unknown path、無效Git range與classifier execution failure一律fail-safe到完整矩陣。
+在`github-hosted`模式下，Pull Request到`main`與Push到`main`都先建立穩定、可審查的change classification。Repository-owned classifier／planner依changed paths輸出最低充分validation與platform flags；unknown path、無效Git range與planner execution failure fail-safe到**logical full**，但不因ambiguity自動啟動Android＋iOS昂貴platform builds。
 
-Milestone 35將上述binary routing收斂為 **Minimum Sufficient Validation**。`tools/ci/change_classifier.py`只擁有canonical change-class classification；`tools/ci/validation_planner.py`是validation selection唯一machine authority，依changed paths與workspace dependency metadata輸出focused、affected、workspace、full或release plan，以及exact Flutter／Python／analyze scopes、generated與platform flags。Workflow YAML、local shell與Agent prompt不得建立平行path-selection engine。
+`tools/ci/change_classifier.py`只擁有canonical change-class classification；`tools/ci/validation_planner.py`是validation selection唯一machine authority。Current contract以focused／affected-critical／explicit-full／release為主，輸出exact Flutter／Python／analyze scopes、generated與platform flags。Workflow YAML、local shell與Agent prompt不得建立平行path-selection engine。
 
-Package affected scope必須由tracked workspace dependency graph推導reverse dependents，不得以所有package一律full或手寫global dependency table取代。Ordinary App feature／leaf package change預設不自動要求Android＋iOS build；native、database artifact contract、dependency ambiguity、validation-engine self-change、release與fail-safe情境依planner升級。
+Package affected scope由tracked workspace dependency graph推導reverse dependents。Ordinary App feature／leaf package／database source change不自動要求Android＋iOS build；只有Android native、iOS native、explicit manual platform intent或explicit release才建立對應platform verification。
 
-Unknown path、invalid／missing Git range、dependency graph parse failure、planner／classifier exception或plan schema無法安全解析時，必須fail-safe到full matrix。Minimum Sufficient Validation不得把full regression改成nightly-only；Milestone holistic、manual full、release與post-release仍要求fresh full regression。
+Unknown path、invalid／missing Git range、dependency graph parse failure、planner／classifier exception或plan schema無法安全解析時，fail-safe到logical full source validation。Platform builds仍須explicit native／platform／release intent。Milestone holistic本身不要求full；`workflow_dispatch`預設focused，只有explicit `full`／`android`／`ios`／`release` mode才升級。
 
-同一formal Task只有在validation plan identity相同且selected inputs自GREEN後沒有相關mutation時，才能重用該evidence；review階段切換本身不要求重跑同一full suite。Selected source／test／dependency mutation、failure後fix、validation engine變更、holistic、release與post-release都會使reuse失效。
+同一exact SHA、validation plan identity與selected inputs相同時，GREEN evidence可以跨holistic與post-release reuse。Selected source／test／dependency mutation、failure後fix或validation engine變更會使reuse失效；explicit release candidate仍要求一次fresh logical full。Publish同一SHA後只驗published SHA／artifact／workflow identity，不重跑相同source suite。
 
 在`self-hosted`模式下，只有`main` push與`workflow_dispatch`可以建立execution jobs；Pull Request checks可以顯示為skipped，但`skipped`不得被解讀為已完成驗證。Branch Protection required checks必須依實際mode治理，不得要求一個在該mode永久不執行的job成功。
 
-在`github-hosted`模式下，穩定required checks `CI / Quality`、`CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`不得因documentation-only而消失。Documentation-only時，required job仍以原名稱建立並在同一job內完成明確no-op；不得以不同名稱summary取代。`VERSION`變更與`workflow_dispatch`強制完整CI及Android／iOS代表build。
+在`github-hosted`模式下，required checks依current branch-protection profile保持可預期，但不要求每個change都實際執行所有昂貴gate。Documentation-only可在stable job內no-op。`VERSION`只是release identity metadata，不再自動觸發full CI或Android／iOS build；`workflow_dispatch`依explicit validation mode決定focused／full／platform／release。
 
-支援iOS後，`iOS / Simulator Build`維持穩定check名稱：需要iOS驗證時使用GitHub-hosted `macos-15`執行Development Debug Simulator clean build；documentation-only時同一job改用Ubuntu完成no-op，不啟動macOS runner。Production另使用`tools/ci/build_ios_production.sh`建立generic-device unsigned Release verification。兩者都不使用Apple Team、certificate、provisioning profile或signing secret。
+需要iOS驗證時才使用GitHub-hosted `macos-15`執行Development Debug Simulator clean build；ordinary source／documentation change不得只為維持check歷史形狀而啟動macOS runner。Production另使用`tools/ci/build_ios_production.sh`建立generic-device unsigned Release verification。兩者都不使用Apple Team、certificate、provisioning profile或signing secret。
 
 CI使用固定runner OS major version、exact Flutter version與Java 17。Executable workspace追蹤root `pubspec.lock`，使乾淨runner驗證已知dependency graph。
 

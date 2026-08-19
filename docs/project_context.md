@@ -388,7 +388,9 @@ Milestone 41 + 42 final closure evidence由`docs/audits/milestone_42/42-10_post_
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 
-Milestone 36已完成Risk-Based Test Authoring corrective、Template Baseline 1.17.0 publication與Task 36-9 post-release closure。Current governance把Test Authoring Decision與Milestone 35 Validation Execution Decision分離，新增`Required`／`Recommended`／`no-new-test justified`／`Should-not-add`，並明確禁止Task-for-test、class-for-test與layer-for-layer imitation。Fresh ChatGPT behavioral pressure、published-main authoring contracts、完整workspace regression與macOS/iOS verification均PASS；formal closure evidence見`docs/audits/milestone_36/36-9_post_release_validation.md`。
+Milestone 45已完成local Test-by-Exception Portfolio Reset與Development Governance Simplification：permanent test預設不存在，temporary test在GREEN後必須做Retention Decision，low-value coverage可用`replacement = NONE`退休，Foundation無density exemption。Current portfolio由179 files／30,749 LOC／1,127 static cases縮至20 files／5,873 LOC／186 cases；canonical logical full Flutter只執行真正有permanent tests的`flutter_architecture`／`auth`／`api_client`，fresh wall-clock約9.37s。Classification改採lowest sufficient level；`VERSION`不再自動release、manual validation intent顯式化、same-SHA holistic／post-release evidence可reuse，Observability acceptance改為manual。Local holistic evidence見`docs/audits/milestone_45/45-1_holistic_final_review.md`；branch integration／publication尚未進行。
+
+Milestone 36是historical authoring governance baseline；其「existing portfolio不刪除」與Foundation density保留傾向已由Milestone 45 current authority取代。Formal historical closure evidence仍見`docs/audits/milestone_36/36-9_post_release_validation.md`。
 
 Milestone 34已在既有Pencil-to-Flutter route加入representation classification／asset-font provenance gate，Template Baseline 1.15.2 publication與post-release validation均PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`，Skill behavioral validation入口為`docs/guides/skill_behavioral_validation.md`。Final closure evidence由`docs/audits/milestone_34/34-6_post_release_validation.md`路由。
 
@@ -439,7 +441,7 @@ dart pub get
 dart run melos run build_runner
 dart run melos run docs_check
 dart run melos run analyze
-dart run melos exec -- flutter test
+dart run melos exec --scope=flutter_architecture --scope=auth --scope=api_client -- flutter test
 ```
 
 App bundle verification：

@@ -524,7 +524,7 @@ git diff --check
 ### Test failure
 
 ```bash
-dart run melos exec -- flutter test
+dart run melos exec --scope=flutter_architecture --scope=auth --scope=api_client -- flutter test
 ```
 
 確認是否可重現、是否為flaky test、shared state或平台差異。沒有證據前不得直接rerun直到變綠；若確認flaky，先建立focused fix與regression evidence。

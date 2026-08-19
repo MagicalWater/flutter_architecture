@@ -10,44 +10,43 @@ last_reviewed_baseline: 1.16.0
 
 ## Purpose
 
-本指南是repository test ownership、Test Authoring human policy、production／historical boundary、cleanup disposition與execution tier的current authority。測試數量、LOC、case count與coverage percentage都不是單獨品質指標；優先確保真正的risk／failure mode有清楚primary owner且沒有coverage hole，同時避免沒有regression value的測試膨脹。
+本指南是repository test ownership、Test Authoring／Retention human policy、production／historical boundary、cleanup disposition與execution tier的current authority。測試數量、LOC、case count與coverage percentage都不是品質KPI；永久test採**test-by-exception**，只有critical failure protection值得長期存在。
 
 Central executable authoring policy由`.agents/skills/governing-template-development/references/test-authoring.md`擁有；本Guide提供人類可讀語意，不建立第二套machine routing engine。
 
 ## Foundation tests and Product Feature tests
 
-Template foundation tests與一般產品Feature tests的目的不同：
-
-- Foundation tests：保護template shared contracts，例如security、migration、CI fail-safe、platform、architecture、shared persistence與Design System infrastructure，因此可以合理具有較高test density。
-- Product Feature tests：只依該Feature自己的business risk、state complexity、integration failure mode與regression value決定，不繼承Foundation的test數量或layer密度。
+Foundation不享有test-density exemption。Foundation與產品Feature都使用相同permanent-test admission：只有failure成本高、人工不易可靠發現、再發機率合理、deterministic且automation長期成本較低的critical protection才保留。Foundation只是較常包含security、migration、CI fail-safe、platform與shared persistence critical risks。
 
 Auth／Catalog／Profile等reference feature可用來理解architecture、boundary與owner placement，**不是test-density reference**。不得把既有Feature的test files／cases數當成新Feature的最低門檻。
 
 ## Test Authoring Decision
 
-Authoring順序固定為：
+Authoring／Retention順序固定為：
 
 ```txt
 changed behavior / risk / failure mode
 → existing owner是否已充分覆蓋
 → authoring disposition
-→ 若新增test，選最接近failure source的primary owner
+→ 若新增test，先作temporary evidence並選最接近failure source的primary owner
+→ implementation GREEN
+→ retention disposition
 → 再由Milestone 35 validation planner決定執行哪些validation
 ```
 
 ### Required
 
-新增或改變business invariant、security／authorization、credential lifecycle、persistence write／migration、destructive operation、concurrency／race／stale completion、retry／idempotency、pagination／ordering、狀態機、非平凡validation／failure classification，或可穩定重現的bug regression時，必須建立或明確指出direct regression owner。
+新增或改變failure cost高且人工難穩定發現的business invariant、security／authorization、credential lifecycle、persistence write／migration、destructive operation、concurrency／race／stale completion、retry／idempotency、資料遺失／錯序型pagination或critical failure classification時，必須建立或明確指出direct regression owner。普通UI／copy／style／wiring bug即使可穩定重現，也不自動取得permanent owner。
 
 ### Recommended
 
-有實質observable branch且test能明顯降低維護風險時建議新增，例如多分支state transition、feature-specific interaction／navigation、非平凡mapper、cache policy、cross-feature coordination。若fixture／mock／maintenance成本高於regression detection value，不應機械新增。
+有實質observable branch且temporary automation能加速開發時可以新增，例如多分支state transition、feature-specific interaction／navigation、非平凡mapper、cache policy、cross-feature coordination。是否永久保留由後續Retention Decision獨立決定。
 
 ### no-new-test justified
 
 允許本Task新增0個test，但必須記錄reason與existing owner／risk rationale，例如沒有新failure mode、既有owner已直接覆蓋、presentation-only copy／style或trivial forwarding。
 
-`no-new-test justified` **不等於不執行validation**。Milestone 35 `tools/ci/validation_planner.py`仍決定本Task必須執行的focused／affected／workspace validation；Required高風險mutation若沒有direct owner，不得使用此disposition逃避新增regression evidence。
+`no-new-test justified`不等於跳過validation。`tools/ci/validation_planner.py`仍選擇最低充分validation；Required critical mutation若沒有direct owner，不得使用此disposition逃避必要regression evidence。
 
 ### Should-not-add
 
@@ -64,12 +63,12 @@ changed behavior / risk / failure mode
 ## Test taxonomy and primary owner
 
 - Business invariant：由最接近決策的Repository、UseCase或Domain owner驗證。
-- Architecture boundary：驗證依賴方向、DI、package與Composition Root。
+- Architecture boundary：只有會造成實際runtime／build／security failure且不容易由compiler/analyzer捕捉時才考慮permanent test；一般source-shape／file ownership／prose contract不保留。
 - Implementation contract：只驗證adapter、DAO、serializer等實作邊界。
 - Migration compatibility／Historical-only：保存舊資料、rollback、fixture與expected oracle。
-- Platform／CI／Documentation／Visual：各由對應native、workflow、docs checker或Widget owner負責。
+- Platform／CI：只保留critical fail-safe／security／supported-build contract。Documentation／Visual預設使用checker或人工／visual acceptance，不建立大量permanent regression tests。
 
-同一概念跨層出現不等於重複。DAO擁有transaction與constraint；Repository擁有policy與emission ordering；Bloc擁有generation／cancellation；Widget擁有rendering與interaction。
+同一概念跨層出現時預設視為可能重複；只有不同failure source各自達到critical retention門檻才分層保留。不能因DAO／Repository／Bloc／Widget各自存在就機械保留四層tests。
 
 ## Production and historical boundary
 
@@ -82,23 +81,33 @@ changed behavior / risk / failure mode
 
 ### Add
 
-1. 先完成Test Authoring Decision；只有`Required`或經成本判斷後的`Recommended`才新增test。
+1. 先完成Test Authoring Decision；test可作temporary驗證工具，不等於永久資產。
 2. 指定primary owner與taxonomy。
 3. 優先放在最接近failure source的suite。
 4. 只在需要真實boundary時使用integration fixture。
-5. 更新inventory並執行focused tests。
+5. 執行focused驗證；Task closure前完成Retention Decision。
 
 ### Move／Merge
 
-必須保留scenario名稱、assertion與failure source，並先證明新owner可捕捉相同回歸。不要為降低LOC把不同domain語意合併成generic contract。
+只有critical protection仍需保留時，才要求證明新owner能捕捉相同failure。低價值matrix可直接退休，不需要為了case preservation而搬移。
 
 ### Delete
 
-刪除前需在deletion manifest記錄：舊coverage、原因、replacement owner、replacement test與validation。沒有replacement evidence不得刪除security、migration、concurrency、platform或fail-safe gates。
+Deletion採兩類：
+
+```txt
+critical protection still required
+→ replacement / merged owner evidence required
+
+protection intentionally retired
+→ replacement = NONE
+```
+
+普通UI／copy／style、framework behavior、architecture/docs prose、source-shape、mechanical golden、duplicate layer coverage與temporary RED完成後可直接退休。Portfolio-scale cleanup只需bucket-level disposition、critical keep matrix與before／after metrics，不要求逐case deletion manifest。
 
 ### Archive
 
-Historical executable tests預設保持可執行，不以文件取代。只有外部環境永久不可重現且已有正式disposition時，才可轉成manual evidence。
+Historical executable tests不享有preservation priority。只有仍保護critical migration／rollback／compatibility risk時保留；其他historical regression可轉成non-executable evidence或直接退休。
 
 ## Large test files
 
@@ -120,37 +129,34 @@ Execution tier描述test／artifact自身的執行特性；**validation level**�
 
 ## Minimum Sufficient Validation
 
-Test Authoring與Validation Execution是兩個不同決策。前者回答「是否新增test」，後者回答「本次change必須執行哪些validation」。即使authoring disposition為`no-new-test justified`或`Should-not-add`，後者仍然必須執行。
+Test Authoring、Retention與Validation Execution是三個不同決策。可以合法出現`0 permanent tests`甚至`0 automated tests`；但仍要有與changed risk相稱的最低充分validation／runtime／manual acceptance。
 
 Repository以`tools/ci/validation_planner.py`作為validation selection唯一machine authority：
 
 ```txt
 focused
-→ affected
-→ workspace
-→ full
+→ affected-critical
+→ explicit-full
 → release
 ```
 
-- Focused：直接owner或changed test／tool contract。
-- Affected：owner加真實reverse dependents。
-- Workspace：shared App／cross-owner boundary的受影響workspace regression。
-- Full：validation engine、dependency ambiguity、unknown／invalid range、holistic等完整驗證。
-- Release：fresh full加required platform／artifact／post-release evidence。
+- Focused：direct changed owner與必要critical tests。
+- Affected-critical：跨boundary change只擴到受影響critical owners，不因Feature存在就掃完整suite。
+- Explicit-full：explicit release candidate、major dependency／validation-engine、自身fail-safe或真正高風險cross-cutting才使用。
+- Release：同一candidate SHA只做一次fresh logical full與required platform verification；publish後驗SHA／artifact identity，不再重跑相同source suite。
 
-同一Task內只有plan identity與selected inputs未變時才能reuse既有GREEN evidence；selected boundary有mutation、failure後fix、planner contract改變、Milestone holistic、release與post-release都必須fresh rerun。
+同一exact SHA與selected inputs未變時應reuse既有GREEN evidence。Phase名稱改變、publish同SHA或post-release本身不構成fresh source regression理由。
 
 Change-aware routing必須fail-safe；unknown path、invalid range、dependency graph parse failure與planner／classifier failure不得靜默跳過重要gate。
 
 ## Commands
 
 ```bash
-python3 -m unittest tools.testing.test_test_inventory
-python3 tools/testing/inventory.py --output docs/audits/milestone_35/35-3_current_test_inventory.csv
+python3 tools/testing/inventory.py
 python3 tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
 python3 -m unittest discover -s tools/ci -p 'test_*.py'
-python3 -m unittest tools.docs.test_check_docs
+python3 -m unittest discover -s tools/docs -p 'test_*.py'
 dart run melos run docs_check
 ```
 
-Current inventory evidence位於`docs/audits/milestone_35/35-3_current_test_inventory.csv`。`docs/audits/milestone_30/30-2_test_inventory.csv`是Template Baseline 1.12.0 historical evidence，不得覆寫。受控刪除／搬移證據保存於對應Milestone deletion manifest。
+`tools/testing/inventory.py`預設只輸出current metrics，不寫入repository；需要一次性CSV evidence時才明確傳入`--output <path>`。Milestone 30／35 inventory CSV都是historical evidence，不得當成current retention authority或被預設覆寫。

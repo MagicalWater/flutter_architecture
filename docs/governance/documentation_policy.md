@@ -3,7 +3,7 @@ document_type: governance-policy
 status: accepted
 authoritative_for:
   - documentation-governance-and-metadata
-last_reviewed_baseline: 1.26.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Documentation Governance Policy

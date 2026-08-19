@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.26.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Milestone Routing
@@ -12,7 +12,7 @@ last_reviewed_baseline: 1.26.0
 
 ```txt
 Active Milestone: none
-Template Baseline: 1.26.0
+Template Baseline: 1.26.1
 ```
 
 ## Retention rule

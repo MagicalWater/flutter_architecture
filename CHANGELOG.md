@@ -20,6 +20,27 @@
 
 ---
 
+## [1.26.1] - 2026-08-19
+
+### Changed
+
+- 完成 historical documentation housekeeping：大量已完成的 Design／Plan／intermediate review／checkpoint／handoff 改由 Git history 追溯，不再永久堆疊於 repository。
+- `docs/audits/` 收斂為少量具有獨立長期價值的 security、不可逆 migration、platform/runtime、infrastructure 與重大 holistic evidence；不再為每個 Milestone 機械保留 final review。
+- 保留 Drift persistence migration design 作為不可逆資料遷移的 archive evidence，並保留 Template-to-Product infrastructure live acceptance evidence。
+- 修正 current ADR、Skill、README、migration routing 與 GitHub storage cleanup tooling 對已刪 historical artifacts 的 stale references；`CHANGELOG.md` 歷史紀錄本身不因 housekeeping 改寫。
+
+### Validation
+
+- Retention-focused review 與反向 review 均完成；latest deleted audit set 的 current/tooling filename reference sweep 為 0。
+- `docs_check`、`tools/docs`、affected `tools/ci` tests、App analyze 與 `git diff --check` 均 PASS；validation planner 判定為 affected，無 full Flutter regression、Android／iOS build 或 generated check 需求。
+
+### Governance
+
+- Completed Plan / Spec / review artifact 採 retention decision：只有具獨立長期價值者 Keep / Archive，其餘由 Git history 保存；Archive 不再是 closed artifact 的 mandatory destination。
+- 本次為 documentation / governance housekeeping 與 stale-reference corrective，依 Versioning Policy 採 PATCH baseline `1.26.1`。
+
+---
+
 ## [1.26.0] - 2026-08-19
 
 ### Added

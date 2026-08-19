@@ -3,7 +3,7 @@ document_type: active-milestone
 status: completed
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.26.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Active Milestone
@@ -11,7 +11,7 @@ last_reviewed_baseline: 1.26.0
 ```txt
 Active Milestone: none
 State: Asset Runtime & Theme-aware Visual Integration published / formal closure complete
-Template Baseline: 1.26.0
+Template Baseline: 1.26.1
 ```
 
 ## Current Gate

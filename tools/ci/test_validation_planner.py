@@ -146,6 +146,18 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         self.assertEqual(command[0].lower().replace("/", "\\").split("\\")[-1], "cmd.exe")
         self.assertIn("dart run melos run analyze", command[4])
 
+    @mock.patch("tools.ci.validation_runner.Path.is_file")
+    def test_windows_bash_prefers_git_bash_over_wsl_shim(self, is_file: mock.Mock) -> None:
+        is_file.side_effect = [True]
+
+        command = _execution_command(
+            ["bash", "tools/ci/verify_generated.sh"],
+            platform_name="nt",
+        )
+
+        self.assertTrue(command[0].lower().endswith(r"git\bin\bash.exe"))
+        self.assertEqual(command[1:], ["tools/ci/verify_generated.sh"])
+
     def test_same_identity_can_be_reused_for_holistic_and_post_release(self) -> None:
         plan = plan_validation(["docs/README.md"])
         identity = validation_evidence_identity(

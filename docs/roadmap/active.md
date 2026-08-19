@@ -16,7 +16,7 @@ Template Baseline: 1.24.0
 
 ## Current Scope
 
-Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation、corrective review與focused retention collapse。Current permanent portfolio為18 files／4,457 LOC／138 static cases，相對admission baseline分別縮減89.9%／85.5%／87.8%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。`dev`已完成整合；Template Baseline `1.24.0` MINOR release candidate 已建立，publication validation active。Milestone 44本體與既有1.23.x evidence不重新開啟。
+Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation、corrective review與focused retention collapse。Current permanent portfolio為18 files／4,469 LOC／139 static cases，相對admission baseline分別縮減89.9%／85.5%／87.7%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。`dev`已完成整合；Template Baseline `1.24.0` MINOR release candidate 已建立，publication validation active。Milestone 44本體與既有1.23.x evidence不重新開啟。
 
 ## Current Gate
 

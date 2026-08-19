@@ -154,7 +154,18 @@ def _execution_command(command: list[str], *, platform_name: str | None = None) 
     if platform != "nt" or not command:
         return command
 
-    resolved = shutil.which(command[0])
+    resolved: str | None = None
+    if command[0].lower() == "bash":
+        program_files = Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
+        for candidate in (
+            program_files / "Git" / "bin" / "bash.exe",
+            program_files / "Git" / "usr" / "bin" / "bash.exe",
+        ):
+            if candidate.is_file():
+                resolved = str(candidate)
+                break
+    if resolved is None:
+        resolved = shutil.which(command[0])
     if resolved is None:
         return command
     if Path(resolved).suffix.lower() not in {".bat", ".cmd"}:

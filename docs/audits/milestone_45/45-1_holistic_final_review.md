@@ -19,8 +19,8 @@ Open P0 = 0。Open P1 without disposition = 0。
 | Metric | Before | After | Reduction |
 |---|---:|---:|---:|
 | Test files | 179 | 18 | 89.9% |
-| Test LOC | 30,749 | 4,457 | 85.5% |
-| Static cases | 1,127 | 138 | 87.8% |
+| Test LOC | 30,749 | 4,469 | 85.5% |
+| Static cases | 1,127 | 139 | 87.7% |
 | Test + non-test tools + workflows unique LOC | ~43,718 | 18,168 | ~58.4% |
 
 Minimum success criterion（files與LOC均>=80% reduction）已通過。90% LOC stretch沒有以刪除真正critical security／migration／concurrency protection硬湊數字；後續若剩餘owner的maintenance value下降，仍可依test-by-exception直接再退休，不存在最低保留數量。
@@ -91,7 +91,7 @@ Current governance已完成以下反轉：
 - `python -m unittest discover -s tools/ci -p test_*.py`：45 PASS。
 - `python -m unittest discover -s tools/docs -p test_*.py`：6 PASS。
 - `dart run melos exec --scope=flutter_architecture --scope=auth --scope=api_client -- flutter test`：PASS。
-- `python tools/testing/inventory.py --output NUL`：`files=18 loc=4457 cases=138`；default不再覆寫historical CSV。
+- `python tools/testing/inventory.py --output NUL`：`files=18 loc=4469 cases=139`；default不再覆寫historical CSV。
 
 ## Findings disposition
 
@@ -105,6 +105,7 @@ Current governance已完成以下反轉：
 - Initial completion commit含4個EOF whitespace errors，因此先前`git diff --check PASS`聲明不成立：**review evidence mismatch corrective**。Corrective完成後重新以base→HEAD執行`git diff --check`作fresh gate。
 - `1.24.0` explicit release dry-run發現`python_test_scopes=["tools"]`會被runner直接送進`unittest discover -s tools`，在current nested permanent owners下得到0 tests／exit 5：**P1 release-runner corrective**。Runner現將workspace `tools` scope展開為實際 permanent owners `tools/ci`與`tools/docs`；新增1個critical contract case防止release mode再次退化成0-test假驗證。
 - 同一條release runner在Windows進入Flutter analyze時又暴露batch shim portability defect：shell可解析`dart.bat`，Python `subprocess`直接呼叫`dart`卻會`WinError 2`：**P1 Windows runner corrective**。Runner現對Windows `.bat/.cmd` tool shim透過`COMSPEC /d /s /c`執行，並由1個critical contract case保護；不改validation範圍。
+- Generated release phase在Windows曾由`shutil.which("bash")`解析到System32 WSL shim，造成Flutter shell環境路徑／CRLF失配：**P1 Windows bash selection corrective**。Runner現明確優先使用Git for Windows `Git/bin/bash.exe`（再fallback PATH）；新增1個critical contract case，避免release generated gate依machine PATH順序漂移。
 - Post-integration retention audit再次逐一審查20個remaining owners：`core_runtime_smoke_test.dart`退休為release/runtime acceptance evidence，獨立`AuthResult.toString`test併入既有credential redaction owner；Skill lock、secure-store、OTP、refresh、migration與destructive cleanup matrices只保留代表critical failure families。Result由20 files／5,902 LOC／189 cases再縮至18 files／4,430 LOC／136 cases，focused與current logical full fresh PASS。
 
 ## Release disposition

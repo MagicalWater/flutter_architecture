@@ -360,7 +360,8 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
             platform_name="nt",
         )
 
-        self.assertTrue(command[0].lower().endswith(r"git\bin\bash.exe"))
+        normalized = command[0].lower().replace("\\", "/")
+        self.assertTrue(normalized.endswith("git/bin/bash.exe"))
         self.assertEqual(command[1:], ["tools/ci/verify_generated.sh"])
 
     def test_same_identity_can_be_reused_for_holistic_and_post_release(self) -> None:

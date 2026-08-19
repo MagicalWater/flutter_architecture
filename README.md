@@ -61,11 +61,11 @@ App 是 Composition Root；可重用 package 透過 constructor injection 表達
 | Presentation | `flutter_bloc`、`flutter_hooks`、`hooked_bloc` |
 | 導航 | `auto_route`、typed routes、Route Guard、nested navigation |
 | Dependency Injection | `get_it` + `injectable`，由 App Composition Root 統一組裝 |
-| Models / Codegen | `freezed`、`json_serializable`、`build_runner` |
+| Models / Codegen | `freezed`、`json_serializable`、`build_runner`、FlutterGen typed asset access |
 | 網路 | Dio / Retrofit、Authorization header、refresh token rotation、concurrent 401 single-flight、safe replay |
 | 持久化 | FlutterSecureStorage、SharedPreferences、Drift / SQLite、Web dependency-ready Wasm path |
 | 認證 | Session restore、secure credential storage、OTP step-up、Android biometric-gated local unlock |
-| Design System | Reusable theme package、Light / Dark / System、semantic colors、responsive / large-text coverage |
+| Design System | Reusable theme package、Light / Dark / System、semantic colors、`flutter_screenutil` design-space scaling、responsive / large-text coverage |
 | Localization | English + Traditional Chinese (`zh_TW`)、runtime locale switching、persisted preference |
 | Connectivity / Offline | Connectivity state、offline-aware flow、Catalog cache / stale-while-revalidate reference |
 | Observability | Production observability foundation 與 provider boundary |

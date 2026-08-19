@@ -206,6 +206,7 @@ injection.config.dart
 - `freezed`。
 - `json_serializable`。
 - `build_runner`。
+- FlutterGen：App package runtime asset 的 generated typed accessor；不擁有 asset semantic ownership、Theme selection 或 provenance。
 - Retrofit generation。
 
 ### Network
@@ -230,6 +231,7 @@ injection.config.dart
 - Reusable Design System package。
 - Default／Ocean Theme identities。
 - Light／Dark／System mode。
+- `flutter_screenutil`：App-owned design baseline 初始化與 Design System / bounded feature-component design-space measurement scaling；Typography 不以 `.sp` 作 repository default。
 - Flutter official `gen_l10n`。
 - English 與繁體中文 `zh_TW`。
 - Locale-aware formatting through `intl`。

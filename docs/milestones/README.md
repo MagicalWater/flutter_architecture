@@ -37,7 +37,7 @@ Template Baseline: 1.26.0
 | 26 | `docs/audits/milestone_26/26-8_final_review.md` |
 | 27 | `docs/audits/milestone_27/27-8_final_review.md` |
 | 28 | `docs/audits/milestone_28/28-9_final_review.md` |
-| 29 | `docs/audits/milestone_29/29-10_final_review.md` |
+| 29 | `docs/audits/milestone_29/29-10_final_review.md`；migration rationale / rollback：`docs/archive/milestone_29_drift_persistence_migration_design.md` |
 | 30 | `docs/audits/milestone_30/30-11_final_review.md` |
 | 31 | `docs/audits/milestone_31/31-r10_local_final_review.md` |
 | 32 | `docs/audits/milestone_32/32-11_final_review.md` |

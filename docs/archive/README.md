@@ -8,6 +8,7 @@ Current 文件請由 `docs/README.md`、`AGENTS.md` 與 `docs/roadmap/active.md`
 
 - `progress_v1.0.0.md`：Template 1.0.0 建立過程與 Milestone 1–8 歷史摘要。
 - `milestone_14_offline_cache.md`：Milestone 14 Offline Cache 封存摘要。
+- `milestone_29_drift_persistence_migration_design.md`：Drift v1–v6 historical migration、data disposition、Web storage 與 rollback contract；屬不可逆 persistence migration 的 durable design evidence。
 
 ## Historical routing
 

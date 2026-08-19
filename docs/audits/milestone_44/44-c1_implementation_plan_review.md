@@ -1,6 +1,6 @@
 ---
 document_type: planning-review
-status: completed
+status: accepted
 authoritative_for:
   - milestone-44-post-closure-color-ownership-adoption-corrective-plan-review
 last_reviewed_baseline: 1.23.0
@@ -76,13 +76,13 @@ Whole-Plan review：**PASS**。
 
 ## Approval state
 
-Plan technical review已PASS；依Level 3 full governance仍需使用者明確核准。
+Plan technical review已PASS，且已於2026-08-19取得使用者明確核准。
 
 ```txt
-Plan status: proposed
+Plan status: accepted
 Technical review: PASS
-User approval: pending
-Managed worktree: forbidden until approval
-Production modification: forbidden until approval
+User approval: accepted 2026-08-19
+Managed worktree: allowed
+Production modification: allowed in managed worktree
 ```
 

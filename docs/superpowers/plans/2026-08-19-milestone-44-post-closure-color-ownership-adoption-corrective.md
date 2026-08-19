@@ -1,6 +1,6 @@
 ---
 document_type: implementation-plan
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-44-post-closure-color-ownership-adoption-corrective-plan
 last_reviewed_baseline: 1.23.0
@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.23.0
 
 ## Status
 
-**Proposed — awaiting user approval.**
+**Accepted — 2026-08-19 使用者明確核准。**
 
 Accepted Design：`docs/superpowers/specs/2026-08-19-milestone-44-post-closure-color-ownership-adoption-corrective-design.md`。
 

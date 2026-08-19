@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.23.1
+last_reviewed_baseline: 1.24.0
 ---
 
 # Project Context
@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.23.1
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.23.1
+Template Baseline: 1.24.0
 Phase 1 / MVP: Completed
-Current active milestone: none
-Current phase: M44 post-closure C1-5 accepted / C1-6 publication active
-Latest completed initiative: M44 post-closure C1 Color Ownership Adoption Corrective；1.23.1 PATCH candidate
+Current active milestone: Milestone 45
+Current phase: 1.24.0 release candidate / publication validation active
+Latest completed initiative: Milestone 45 Test-by-Exception Portfolio Reset & Development Governance Simplification
 Architecture Decision authority: docs/adr/README.md
 ```
 

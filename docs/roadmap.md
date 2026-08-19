@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.23.1
+last_reviewed_baseline: 1.24.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.23.1
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.23.1
+Template Baseline: 1.24.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,8 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
-State: dev integration complete / integration review pending publication
-Template Baseline: 1.23.1
+State: 1.24.0 release candidate / publication validation active
+Template Baseline: 1.24.0
 ```
 
 完整 active scope、current gate與 next action：

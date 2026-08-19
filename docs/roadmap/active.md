@@ -3,24 +3,24 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.23.1
+last_reviewed_baseline: 1.24.0
 ---
 
 # Active Milestone
 
 ```txt
 Active Milestone: Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
-State: dev integration complete / integration review pending publication
-Template Baseline: 1.23.1
+State: 1.24.0 release candidate / publication validation active
+Template Baseline: 1.24.0
 ```
 
 ## Current Scope
 
-Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation、corrective review與focused retention collapse。Current permanent portfolio為18 files／4,430 LOC／136 static cases，相對admission baseline分別縮減89.9%／85.6%／87.9%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。`dev`已整合至`9c23114`；尚未publication。Milestone 44本體與既有1.23.x evidence不重新開啟。
+Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation、corrective review與focused retention collapse。Current permanent portfolio為18 files／4,430 LOC／136 static cases，相對admission baseline分別縮減89.9%／85.6%／87.9%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。`dev`已完成整合；Template Baseline `1.24.0` MINOR release candidate 已建立，publication validation active。Milestone 44本體與既有1.23.x evidence不重新開啟。
 
 ## Current Gate
 
-Milestone 45 current gate：local holistic + corrective review + focused retention collapse已PASS，`dev`已整合到`9c23114`；下一個boundary是minor baseline publication disposition。M45 source branch仍為`milestone-45-test-by-exception-governance-reset`，整合target為`dev`，尚未push／merge到`main`。
+Milestone 45 current gate：local holistic + corrective review + focused retention collapse已PASS，`dev`已完成整合；`1.24.0` MINOR release candidate 已建立。Current boundary 是 explicit release validation → `main` publication → published-main identity/post-release closure。
 
 ## Current Evidence
 

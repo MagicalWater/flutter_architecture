@@ -3,7 +3,7 @@ document_type: documentation-hub
 status: active
 authoritative_for:
   - documentation-taxonomy-and-reading-routing
-last_reviewed_baseline: 1.23.1
+last_reviewed_baseline: 1.24.0
 ---
 
 # Documentation Hub

@@ -20,6 +20,28 @@
 
 ---
 
+## [1.24.0] - 2026-08-19
+
+### Changed
+
+- 完成 Milestone 45 Test-by-Exception Portfolio Reset & Development Governance Simplification：permanent test 改為 exception-based ownership，temporary test 在 GREEN 後必須做 Retention Decision，低價值 coverage 可用 `replacement = NONE` 退休，Foundation 不再享有 test-density exemption。
+- 開發治理改採 lowest-sufficient level；Level 0/1 維持 minimal，Level 2 採 brief decision + one final review，Level 3 才使用 cross-cutting Design/Plan + holistic review，避免每個小 Task 都生成 formal governance artifacts。
+- Validation planner 改為 focused-by-default：`VERSION` 不再自動等於 release，manual dispatch 使用 explicit validation intent，0-test feature/package 不會退化成整個 App suite，reverse dependents 只做 analyze，platform build script 才選對應 native build evidence。
+- Observability acceptance 改為 explicit manual acceptance；same exact SHA 的 holistic/post-release evidence 可 reuse，不再為 publication 重複相同 full source regression。
+
+### Testing
+
+- Permanent portfolio 由 179 files / 30,749 LOC / 1,127 static cases 收斂至 18 files / 4,430 LOC / 136 static cases，分別降低 89.9% / 85.6% / 87.9%。
+- 保留範圍集中在 credential/security、migration/rollback、concurrency/stale completion、destructive cleanup、public-repository security、validation planner fail-safe 與 third-party Skill integrity 等 critical failure families。
+- Current logical full Flutter suite 僅執行實際擁有 permanent tests 的 `flutter_architecture`、`auth`、`api_client`；focused retention collapse 後全 workspace analyze、Flutter permanent suite、CI critical tests、docs critical tests 與 docs checker 全部 PASS。
+
+### Governance
+
+- Milestone 45 local holistic review、corrective routing review、focused retention collapse 與 `dev` integration 均完成；Open P0 = 0，Open P1 without disposition = 0。
+- Release decision：Template Baseline `1.24.0` MINOR candidate；publication 使用 explicit release validation，published-main post-release 只驗證 identity 與 publication-specific evidence，不重跑 same-SHA full source regression。
+
+---
+
 ## [1.23.1] - 2026-08-19
 
 ### Fixed

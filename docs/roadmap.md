@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
-State: 1.24.0 release candidate / publication validation active
+Active Milestone: none
+State: Milestone 45 published / formal closure complete
 Template Baseline: 1.24.0
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 44 已完成或已有明確 disposition。Milestone 44本體已以Template Baseline `1.23.0`發布並formal closure；relationship-layout與PTF-47～58 evidence維持有效。Post-closure C1另確認same-semantic color production-adoption omission，已完成Level 3 Requirement、accepted Design／Plan、direct RED、shared palette adoption、machine GREEN與canonical/runtime affected validation。C1-5已接受Template Baseline `1.23.1` PATCH candidate，C1-6 publication／post-release closure active。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
+Milestone 1 至 45 已完成或已有明確 disposition。Milestone 45已以Template Baseline `1.24.0`發布並formal closure；current testing／governance authority採Test-by-Exception、lowest-sufficient validation與publication-before-main evidence模型。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

@@ -42,7 +42,7 @@ self-hosted
 github-hosted
 ```
 
-`manual-local`表示GitHub不派送任何hosted或self-hosted execution job，由操作者明確執行repository-owned本機腳本；`self-hosted`表示GitHub只把可信`main` push與`workflow_dispatch`工作派送至repository-scoped Mac runner；`github-hosted`表示沿用GitHub提供的Ubuntu／macOS runner。
+`manual-local`表示GitHub不派送任何hosted或self-hosted execution job，由操作者明確執行repository-owned本機腳本；`self-hosted`表示GitHub只把explicit `workflow_dispatch`工作派送至repository-scoped Mac runner；`github-hosted`表示沿用GitHub提供的Ubuntu／macOS runner。`main` publication push本身不建立execution jobs。
 
 Manual dispatch可以使用`repository-default`作為sentinel，表示沿用repository variable的execution mode。`repository-default`不是第四種execution mode，不得保存為current mode。
 
@@ -62,7 +62,7 @@ Artifact retention必須同時受到age、per-class count、global capacity與mi
 
 既有GitHub Actions artifacts與caches只有在replacement local runtime evidence成立後，才能依exact GitHub object IDs產生deletion manifest。GitHub deletion屬不可逆操作，必須完成focused review、whole-cleanup review並再次取得使用者明確核准；Milestone或Implementation Plan核准本身不構成delete approval。
 
-在`github-hosted`模式下，Pull Request到`main`與Push到`main`都先建立穩定、可審查的change classification。Repository-owned classifier／planner依changed paths輸出最低充分validation與platform flags；unknown path、無效Git range與planner execution failure fail-safe到**logical full**，但不因ambiguity自動啟動Android＋iOS昂貴platform builds。
+在`github-hosted`模式下，Pull Request到`main`與explicit `workflow_dispatch`先建立穩定、可審查的change classification。`main`是publication branch；publication必須先在candidate SHA完成explicit release validation，因此push到`main`本身不再自動重跑CI／Android／iOS。Repository-owned classifier／planner依changed paths輸出最低充分validation與platform flags；unknown path、無效Git range與planner execution failure fail-safe到**logical full**，但不因ambiguity自動啟動Android＋iOS昂貴platform builds。
 
 `tools/ci/change_classifier.py`只擁有canonical change-class classification；`tools/ci/validation_planner.py`是validation selection唯一machine authority。Current contract以focused／affected-critical／explicit-full／release為主，輸出exact Flutter／Python／analyze scopes、generated與platform flags。Workflow YAML、local shell與Agent prompt不得建立平行path-selection engine。
 
@@ -72,7 +72,7 @@ Unknown path、invalid／missing Git range、dependency graph parse failure、pl
 
 同一exact SHA、validation plan identity與selected inputs相同時，GREEN evidence可以跨holistic與post-release reuse。Selected source／test／dependency mutation、failure後fix或validation engine變更會使reuse失效；explicit release candidate仍要求一次fresh logical full。Publish同一SHA後只驗published SHA／artifact／workflow identity，不重跑相同source suite。
 
-在`self-hosted`模式下，只有`main` push與`workflow_dispatch`可以建立execution jobs；Pull Request checks可以顯示為skipped，但`skipped`不得被解讀為已完成驗證。Branch Protection required checks必須依實際mode治理，不得要求一個在該mode永久不執行的job成功。
+在`self-hosted`模式下，execution jobs由explicit `workflow_dispatch`建立；Pull Request checks可以顯示為skipped，但`skipped`不得被解讀為已完成驗證。`main` publication push不建立第二輪execution jobs。Branch Protection required checks必須依實際mode治理，不得要求一個在該mode永久不執行的job成功。
 
 在`github-hosted`模式下，required checks依current branch-protection profile保持可預期，但不要求每個change都實際執行所有昂貴gate。Documentation-only可在stable job內no-op。`VERSION`只是release identity metadata，不再自動觸發full CI或Android／iOS build；`workflow_dispatch`依explicit validation mode決定focused／full／platform／release。
 

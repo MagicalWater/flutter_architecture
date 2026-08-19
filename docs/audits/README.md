@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.23.1
+last_reviewed_baseline: 1.24.0
 ---
 
 # Audits and Review Evidence
@@ -44,6 +44,13 @@ Final / Holistic Review
 開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
 
 ## Evidence routes
+
+### Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
+
+- [`milestone_45/45-r_requirement_decision.md`](milestone_45/45-r_requirement_decision.md)：repository-wide test portfolio／governance reset Requirement Decision。
+- [`milestone_45/45-0_combined_planning_review.md`](milestone_45/45-0_combined_planning_review.md)：Design／Plan combined planning review與user approval evidence。
+- [`milestone_45/45-1_holistic_final_review.md`](milestone_45/45-1_holistic_final_review.md)：portfolio reduction、governance reset、planner／runner corrective與holistic final review。
+- [`milestone_45/45-2_post_release_validation.md`](milestone_45/45-2_post_release_validation.md)：Template Baseline 1.24.0 exact-SHA logical／Android／iOS publication evidence與formal closure。
 
 ### Milestone 44 — Pencil Component Constraint Semantics Corrective
 

@@ -1,6 +1,6 @@
 ---
 document_type: active-milestone
-status: active
+status: completed
 authoritative_for:
   - current-active-milestone
 last_reviewed_baseline: 1.24.0
@@ -9,18 +9,18 @@ last_reviewed_baseline: 1.24.0
 # Active Milestone
 
 ```txt
-Active Milestone: Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
-State: 1.24.0 release candidate / publication validation active
+Active Milestone: none
+State: Milestone 45 published / formal closure complete
 Template Baseline: 1.24.0
 ```
 
 ## Current Scope
 
-Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation、corrective review與focused retention collapse。Current permanent portfolio為18 files／4,469 LOC／139 static cases，相對admission baseline分別縮減89.9%／85.5%／87.7%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。`dev`已完成整合；Template Baseline `1.24.0` MINOR release candidate 已建立，publication validation active。Milestone 44本體與既有1.23.x evidence不重新開啟。
+Milestone 45 Requirement／Design／Implementation Plan、local implementation、corrective review、focused retention collapse、explicit release validation、`main` publication與post-release identity驗證均已完成。Current permanent portfolio為18 files／4,469 LOC／139 static cases，相對admission baseline分別縮減89.9%／85.5%／87.7%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse與publication-before-main evidence均已落地。Template Baseline `1.24.0` 已正式發布。
 
 ## Current Gate
 
-Milestone 45 current gate：local holistic + corrective review + focused retention collapse已PASS，`dev`已完成整合；`1.24.0` MINOR release candidate 已建立。Current boundary 是 explicit release validation → `main` publication → published-main identity/post-release closure。
+Milestone 45 current gate：**CLOSED**。沒有未完成publication gate；下一個需求從`dev`建立新的Requirement Decision／工作分類即可。
 
 ## Current Evidence
 
@@ -28,7 +28,8 @@ Milestone 45 current gate：local holistic + corrective review + focused retenti
 - Milestone 45 Combined Planning Review：`docs/audits/milestone_45/45-0_combined_planning_review.md`（PASS；Design／Plan user approved 2026-08-19）。
 - Milestone 45 Design：`docs/superpowers/specs/2026-08-19-milestone-45-test-by-exception-governance-reset-design.md`（accepted）。
 - Milestone 45 Implementation Plan：`docs/superpowers/plans/2026-08-19-milestone-45-test-by-exception-governance-reset.md`（accepted）。
-- Milestone 45 Holistic Final Review：`docs/audits/milestone_45/45-1_holistic_final_review.md`（local implementation + corrective review PASS；portfolio 88.8% files／80.8% LOC reduction；`dev` integration complete）。
+- Milestone 45 Holistic Final Review：`docs/audits/milestone_45/45-1_holistic_final_review.md`（local implementation + corrective review PASS；final portfolio 18 files／4,469 LOC／139 cases）。
+- Milestone 45 Post-release Validation：`docs/audits/milestone_45/45-2_post_release_validation.md`（Template Baseline 1.24.0 published；exact-SHA logical／Android／iOS evidence PASS；formal closure）。
 
 - Milestone 44 Requirement Decision：`docs/audits/milestone_44/44-r_requirement_decision.md`（accepted / Level 4）。
 - Milestone 44 Design：`docs/superpowers/specs/2026-08-18-milestone-44-pencil-component-constraint-semantics-design.md`（accepted；revised雙層review PASS；user approved 2026-08-19）。

@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.24.0
 ```txt
 Template Baseline: 1.24.0
 Phase 1 / MVP: Completed
-Current active milestone: Milestone 45
-Current phase: 1.24.0 release candidate / publication validation active
+Current active milestone: none
+Current phase: Milestone 45 closed / maintenance-ready
 Latest completed initiative: Milestone 45 Test-by-Exception Portfolio Reset & Development Governance Simplification
 Architecture Decision authority: docs/adr/README.md
 ```
@@ -364,7 +364,7 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.23.1。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.24.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
@@ -372,13 +372,13 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: none
-Current phase: M44 post-closure C1-5 accepted / C1-6 publication active
-Latest completed initiative: M44 post-closure C1 Color Ownership Adoption Corrective；1.23.1 PATCH candidate
-Maintenance mode: C1 publication / post-release validation
+Current phase: Milestone 45 closed / maintenance-ready
+Latest completed initiative: Milestone 45 Test-by-Exception Portfolio Reset & Development Governance Simplification；Template Baseline 1.24.0
+Maintenance mode: normal development from `dev`; `main` publication-only
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 44本體已完成component-local fixed-canvas laundering corrective並以Template Baseline `1.23.0`發布；relationship-layout、legal spatial overlay與PTF-47～58 evidence維持有效。Post-closure C1發現same-semantic color stable contract未完整落到Write Precheck consumers，已以shared feature-local palette、direct owner-bypass machine contract與visual/affected validation修正；沒有Theme/Design System production refactor，也沒有改accepted `.pen`或golden。C1-5已接受`1.23.1` PATCH candidate，C1-6 publication active；C1 authority見`docs/audits/milestone_44/44-c1_5_holistic_corrective_review.md`。
+Milestone 44本體已完成component-local fixed-canvas laundering corrective並以Template Baseline `1.23.0`發布；relationship-layout、legal spatial overlay與PTF-47～58 evidence維持有效。Post-closure C1的same-semantic color production-adoption corrective已由Template Baseline `1.23.1`承接；C1 authority見`docs/audits/milestone_44/44-c1_5_holistic_corrective_review.md`。
 
 Milestone 41 constraint/relationship layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0並closed。Milestone 43再建立ADR-032 generic Presentation responsibility/state/cohesion authority，完成Pencil normal-library decomposition、Catalog/OTP/Shell adoption／positive proofs、consumer governance與machine contracts。Template Baseline 1.22.0已發布；Task 43-8在exact published SHA完成Windows release/full regression、canonical generated verification、GitHub-hosted Android Development/Production、GitHub-hosted iOS Simulator/Production與PTF-35～46 fresh acceptance，Milestone 43正式closed。Closure evidence見`docs/audits/milestone_43/43-8_post_release_validation.md`。
 
@@ -388,7 +388,7 @@ Milestone 41 + 42 final closure evidence由`docs/audits/milestone_42/42-10_post_
 
 Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
 
-Milestone 45已完成Test-by-Exception Portfolio Reset、Development Governance Simplification、corrective routing review與focused retention collapse：permanent test預設不存在，temporary test在GREEN後必須做Retention Decision，low-value coverage可用`replacement = NONE`退休，Foundation無density exemption。Current portfolio由179 files／30,749 LOC／1,127 static cases縮至18 files／4,469 LOC／139 cases；canonical logical full Flutter只執行真正有permanent tests的`flutter_architecture`／`auth`／`api_client`。Classification改採lowest sufficient level；0-test feature/package不再退化成full suite，release `tools` Python scope會展開到實際`tools/ci`／`tools/docs` permanent owners，Windows runner會正確解析Flutter/Dart batch shim並優先使用Git Bash執行shell gates，platform build script改動會直接選到對應native build evidence；`VERSION`不再自動release、manual validation intent顯式化、same-SHA holistic／post-release evidence可reuse，Observability acceptance改為manual。`dev`已完成整合；`1.24.0` publication validation active。Holistic evidence見`docs/audits/milestone_45/45-1_holistic_final_review.md`。
+Milestone 45已完成Test-by-Exception Portfolio Reset、Development Governance Simplification、corrective routing review、focused retention collapse與publication closure：permanent test預設不存在，temporary test在GREEN後必須做Retention Decision，low-value coverage可用`replacement = NONE`退休，Foundation無density exemption。Current portfolio由179 files／30,749 LOC／1,127 static cases縮至18 files／4,469 LOC／139 cases；canonical logical full Flutter只執行真正有permanent tests的`flutter_architecture`／`auth`／`api_client`。Classification採lowest sufficient level；0-test feature/package不退化成full suite，release runner支援nested Python owners與Windows tool shims；candidate在進`main`前以explicit release完成logical／Android／iOS evidence，`main` push不再重跑相同CI。Template Baseline `1.24.0`已發布；formal closure evidence見`docs/audits/milestone_45/45-2_post_release_validation.md`。
 
 Milestone 36是historical authoring governance baseline；其「existing portfolio不刪除」與Foundation density保留傾向已由Milestone 45 current authority取代。Formal historical closure evidence仍見`docs/audits/milestone_36/36-9_post_release_validation.md`。
 

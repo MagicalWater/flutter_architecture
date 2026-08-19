@@ -40,7 +40,7 @@ Repository以GitHub Actions variable `CI_EXECUTION_MODE`控制驗證執行端：
 
 ```txt
 manual-local  → GitHub execution jobs全部skip，由人員執行本機入口
-self-hosted   → trusted main push與manual dispatch派送到Mac runner
+self-hosted   → explicit manual dispatch派送到Mac runner
 github-hosted → 使用GitHub提供的Ubuntu／macOS runner
 ```
 
@@ -336,8 +336,9 @@ Self-hosted runner離線時：
 Events：
 
 - Pull Request 到 `main`。
-- Push 到 `main`。
 - `workflow_dispatch`。
+
+`main`是publication branch。正式publication前必須在candidate SHA以explicit `release` mode完成fresh logical full與必要Android／iOS primary evidence；同一SHA push到`main`後只做published identity／workflow observation，不再自動建立第二輪相同CI。
 
 Stable checks：
 
@@ -362,16 +363,19 @@ iOS / Production Release Build
 
 三份workflow都先在Ubuntu執行repository-owned classifier。分類失敗、Git range無效或遇到未知路徑時，必須回退完整矩陣，不得以失敗分類作為略過驗證的理由。
 
-| 變更類型 | Full CI | Android | iOS | 備註 |
+| 變更類型 | Logical validation | Android | iOS | 備註 |
 |---|---:|---:|---:|---|
-| 純Markdown／managed docs | 否 | 否 | 否 | `Quality`跑輕量治理；Generated／Tests同job no-op；Simulator用Ubuntu no-op |
-| App Dart source／shared package | 是 | 是 | 是 | 兩平台代表build |
-| Android native only | 是 | 是 | 否 | iOS不啟動macOS |
-| iOS native only | 是 | 否 | 是 | Android build jobs skipped |
-| 一般repository tooling | 是 | 依分類 | 依分類 | 未知path fail-safe完整矩陣 |
-| Classifier／workflow wiring | 是 | 是 | 是 | 防止錯誤分類自行略過平台驗證 |
-| `VERSION` | 是 | 是 | 是 | Release override |
-| `workflow_dispatch`＋明確execution mode | 是 | 是 | 是 | 明確要求單次指定執行端完整驗證 |
+| 純Markdown／managed docs | focused | 否 | 否 | docs governance only |
+| Ordinary App Feature | focused affected owners | 否 | 否 | 0-test Feature合法，不退化成App full suite |
+| Shared package | package owner tests + dependent analyze | 否 | 否 | reverse dependent只analyze |
+| Database source | focused + generated | 否 | 否 | migration owners依changed risk選擇 |
+| Android native／Android build script | focused | 是 | 否 | 真實Android primary build evidence |
+| iOS native／iOS build script | focused | 否 | 是 | 真實iOS primary build evidence |
+| Unknown／invalid classifier input | logical full | 否 | 否 | fail-safe不等於自動燒兩平台 |
+| `VERSION` | focused metadata | 否 | 否 | 不再隱式等於release |
+| explicit `full` | logical full | 否 | 否 | 不含platform |
+| explicit `android`／`ios` | focused | 指定平台 | 指定平台 | manual platform intent |
+| explicit `release` | logical full | 是 | 是 | publication前唯一完整release gate |
 
 `CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`是穩定required-check候選。Documentation-only時它們會成功完成no-op，而不是整個job skipped。Android兩個build jobs目前不是PR required checks，因此可在`android_build=false`時skipped；`Android / Summary`會驗證skip或build結果是否符合classifier決策。
 
@@ -383,8 +387,9 @@ iOS / Production Release Build
 
 Events：
 
-- Push 到 `main`。
 - `workflow_dispatch`。
+
+Android verification是explicit platform/release evidence，不再因`main` publication push自動重跑。
 
 Jobs：
 
@@ -418,7 +423,7 @@ CI / Tests
 iOS / Simulator Build
 ```
 
-第一版不建議把 `Android / Release APK` 設為 Pull Request required check，因為它只在 `main` push或manual dispatch執行。`iOS / Simulator Build`會在Pull Request建立run；Milestone 25 remote validation已證明GitHub-hosted macOS job可成功執行，可依repository治理決定是否加入required checks。
+第一版不建議把 `Android / Release APK` 設為 Pull Request required check，因為它只在manual dispatch執行。`iOS / Simulator Build`會在Pull Request建立run；Milestone 25 remote validation已證明GitHub-hosted macOS job可成功執行，可依repository治理決定是否加入required checks。
 
 啟用 Merge Queue 前，必須先讓`ci.yml`與`ios.yml`支援`merge_group` event，確認所有已設定的required checks在merge queue context會建立run，再修改Branch Protection。
 

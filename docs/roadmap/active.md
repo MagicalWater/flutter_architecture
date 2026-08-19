@@ -3,24 +3,24 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.23.0
+last_reviewed_baseline: 1.23.1
 ---
 
 # Active Milestone
 
 ```txt
 Active Milestone: none
-State: Milestone 44 published / post-release closure completed
-Template Baseline: 1.23.0
+State: M44 post-closure C1-5 accepted / C1-6 publication active
+Template Baseline: 1.23.1
 ```
 
 ## Current Scope
 
-Milestone 44已發布為Template Baseline `1.23.0`並完成Task 44-7 post-release closure。Bounded-component fixed-canvas laundering corrective已關閉normal-content canonical-coordinate loophole；normal content由relationship layout擁有，合法bounded spatial overlay維持可用；same-semantic color治理維持bounded scope，沒有擴張Flow/Coordinator或Theme/Design System production scope。Current沒有active Milestone。
+Milestone 44本體已發布為Template Baseline `1.23.0`並完成Task 44-7 post-release closure；relationship-layout主責維持有效。Post-closure C1發現same-semantic color stable contract沒有完整落到Write Precheck production consumers，現已完成direct RED、shared palette adoption、machine GREEN與visual/affected regression；C1-5已接受`1.23.1` PATCH release candidate，C1-6 publication / post-release validation active。Current沒有新的active Milestone。
 
 ## Current Gate
 
-Milestone 41～43 closure維持不變。Milestone 44 Tasks 44-1～44-7、published-main Windows/full regression、canonical generated、GitHub-hosted Android/iOS與PTF-47～58 fresh acceptance均已完成。Current gate無未完成Milestone；Open P0=0；Open P1 without disposition=0。
+Milestone 41～43 closure維持不變；Milestone 44 `1.23.0` publication evidence維持有效。C1 Tasks C1-1～C1-5已完成雙層治理，current gate為Template Baseline `1.23.1` release identity prepared／C1-6 publication active；Open P0=0；Open P1 without disposition=0。
 
 ## Current Evidence
 
@@ -36,6 +36,11 @@ Milestone 41～43 closure維持不變。Milestone 44 Tasks 44-1～44-7、publish
 - Task 44-5 Behavioral Pressure：`docs/audits/milestone_44/44-5_behavioral_pressure_review.md`（accepted / PASS；PTF-47～58 fresh PASS）。
 - Task 44-6 Holistic Final Review：`docs/audits/milestone_44/44-6_holistic_final_review.md`（accepted / PASS；release decision = 1.23.0 candidate）。
 - Task 44-7 Post-release Validation：`docs/audits/milestone_44/44-7_post_release_validation.md`（completed / PASS；Template Baseline 1.23.0 published；Milestone 44 closed）。
+- C1 Requirement Decision：`docs/audits/milestone_44/44-c1_color_ownership_adoption_requirement_decision.md`（accepted / Level 3）。
+- C1 Design：`docs/superpowers/specs/2026-08-19-milestone-44-post-closure-color-ownership-adoption-corrective-design.md`（accepted；user approved 2026-08-19）。
+- C1 Implementation Plan：`docs/superpowers/plans/2026-08-19-milestone-44-post-closure-color-ownership-adoption-corrective.md`（accepted；user approved 2026-08-19）。
+- C1 Tasks C1-1～C1-4：`docs/audits/milestone_44/44-c1_1_palette_bypass_red_review.md` 至 `44-c1_4_visual_affected_regression_review.md`（RED→ownership adoption→machine GREEN→visual/affected regression PASS）。
+- C1-5 Holistic Corrective Review：`docs/audits/milestone_44/44-c1_5_holistic_corrective_review.md`（accepted / PASS；release decision = 1.23.1 PATCH candidate）。
 
 - Milestone 43 Requirement Decision：`docs/audits/milestone_43/43-r_requirement_decision.md`（accepted / Level 4）。
 - Milestone 43 Design：`docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`（accepted；review PASS；user approved 2026-08-18）。

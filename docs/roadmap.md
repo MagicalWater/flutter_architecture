@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.23.0
+last_reviewed_baseline: 1.23.1
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.23.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.23.0
+Template Baseline: 1.23.1
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,8 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: none
-State: Milestone 44 published / post-release closure completed
-Template Baseline: 1.23.0
+State: M44 post-closure C1-5 accepted / C1-6 publication active
+Template Baseline: 1.23.1
 ```
 
 完整 active scope、current gate與 next action：
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 44 已完成或已有明確 disposition。Milestone 44為Level 4 component-local fixed-canvas laundering corrective；Requirement、Revised Design、Implementation Plan與Tasks 44-1～44-7均已完成雙層治理。Current reference已關閉bounded component normal-content canonical-coordinate loophole，同時保留合法spatial overlay；PTF-47～58與same-semantic color bounded governance在exact published-main fresh PASS。Template Baseline `1.23.0`已發布，Windows release/full regression、canonical generated、GitHub-hosted Android/iOS與post-release routing皆PASS，Milestone 44正式closed。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
+Milestone 1 至 44 已完成或已有明確 disposition。Milestone 44本體已以Template Baseline `1.23.0`發布並formal closure；relationship-layout與PTF-47～58 evidence維持有效。Post-closure C1另確認same-semantic color production-adoption omission，已完成Level 3 Requirement、accepted Design／Plan、direct RED、shared palette adoption、machine GREEN與canonical/runtime affected validation。C1-5已接受Template Baseline `1.23.1` PATCH candidate，C1-6 publication／post-release closure active。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

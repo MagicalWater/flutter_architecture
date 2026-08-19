@@ -20,6 +20,21 @@
 
 ---
 
+## [1.23.1] - 2026-08-19
+
+### Fixed
+
+- 修正Milestone 44 same-semantic color ownership contract只完成stable governance／behavioral hardening、但Write Precheck reference production仍可直接重寫已由feature-local palette擁有的exact color literal；新增direct palette-bypass regression owner。
+- 將跨bounded owners共用的`goldAccent`、`blueAccent`、`cyanAccent`、`subtleOutline`與既有`dim`收斂至`WritePrecheckPalette`，consumer不再直接hard-code相同shared exact values；gradient／glow／shadow alpha與component-local exact decoration仍保留smallest correct owner。
+
+### Validation
+
+- Direct palette-bypass case先以current `0xFF7F94A7` owner bypass取得deterministic RED，migration後machine GREEN；synthetic negative與component-local positive controls均PASS。
+- `apps/flutter_architecture` analyze、Presentation responsibility 10/10、Pencil compatibility 25/25、canonical/runtime golden與docs checker均PASS；runtime visual diagnostics與1.23.0 accepted baseline完全一致，accepted `.pen`、manifest與golden bytes未修改。
+- C1-5 whole-corrective review判定此變更為已發布baseline的bug correction，依Versioning Policy採PATCH `1.23.1`；C1-6負責publication與exact published-main post-release validation。
+
+---
+
 ## [1.23.0] - 2026-08-19
 
 ### Added

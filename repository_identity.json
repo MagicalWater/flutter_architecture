@@ -4,6 +4,6 @@
   "product_name": null,
   "template_origin": {
     "repository": "MagicalWater/flutter_architecture",
-    "baseline": "1.25.2"
+    "baseline": "1.26.0"
   }
 }

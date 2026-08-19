@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.25.2
+last_reviewed_baseline: 1.26.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.25.2
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.25.2
+Template Baseline: 1.26.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,8 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: none
-State: Milestone 46 published / formal closure complete
-Template Baseline: 1.25.2
+State: Asset Runtime & Theme-aware Visual Integration release candidate
+Template Baseline: 1.26.0
 ```
 
 完整 active scope、current gate與 next action：

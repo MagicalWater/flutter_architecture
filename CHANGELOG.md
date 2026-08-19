@@ -20,6 +20,31 @@
 
 ---
 
+## [1.26.0] - 2026-08-19
+
+### Added
+
+- App runtime asset access導入 FlutterGen generated typed accessor；production consumer在 generated accessor已存在時不再重複手寫bundle path。
+- 新增 App-owned Theme-aware visual resolver，以 stable `DsThemeId` + resolved `Brightness` 選擇 Default／Ocean 的 Light／Dark representation；Theme selection不改變 asset ownership。
+- `ThemeControllerScope`提供 read-only resolved Theme Identity access，Presentation 不需要讀取 Theme preference persistence 或以 raw color 反推 Theme。
+
+### Changed
+
+- ADR-018、App README、Design System README、Project Context與root technology summary同步 runtime asset ownership、FlutterGen role、`flutter_screenutil` design-space scaling與 provenance separation。
+- FlutterGen只負責 generated bundle access；Design System、App／Feature ownership與既有 visual provenance authority維持分離，不新增 mega `AppAssets`、generic VisualSpec registry或 runtime provenance fields。
+
+### Validation
+
+- Temporary focused resolver evidence驗證 Default／Ocean × Light／Dark與unknown Theme ID fallback後已刪除，不新增永久test portfolio。
+- App analyze、docs check、planner-selected quality/tests與generated consistency均PASS；whole-scope implementation review Open P0 = 0、Open P1 without disposition = 0。
+
+### Governance
+
+- 本變更新增可選的模板 runtime asset / Theme-aware visual capability，依 Versioning Policy 採 MINOR baseline `1.26.0`。
+- Release publication前只執行 exact candidate SHA 的 planner-selected fresh release validation；published same SHA只做 identity / publication read-back，不重跑相同source suite。
+
+---
+
 ## [1.25.2] - 2026-08-19
 
 ### Changed

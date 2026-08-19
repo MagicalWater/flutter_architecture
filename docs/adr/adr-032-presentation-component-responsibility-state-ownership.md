@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-032-presentation-component-responsibility-state-ownership
-last_reviewed_baseline: 1.22.0
+last_reviewed_baseline: 1.23.0
 id: ADR-032
 title: Presentation Component Responsibility and State Ownership
 supersedes:
@@ -186,4 +186,4 @@ Review一個Presentation source時優先問：
 
 ## Last Reviewed Baseline
 
-1.22.0。
+1.23.0；Milestone 44補入bounded Presentation owner仍須relationship-own normal content、remaining coordinate overlay必須有spatial rationale的review contract。

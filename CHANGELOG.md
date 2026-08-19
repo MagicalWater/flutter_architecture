@@ -20,6 +20,32 @@
 
 ---
 
+## [1.23.0] - 2026-08-19
+
+### Added
+
+- 完成Milestone 44 Pencil Component Constraint Semantics Corrective，新增bounded-component normal-content machine contract，直接拒絕component public `left/top`、generic positioned-content engine與local fixed-canvas laundering，同時保留合法bounded spatial overlay positive controls。
+- 新增PTF-47～PTF-58 behavioral pressure，涵蓋bounded fixed canvas、公用coordinate API、generic positioned helper、relationship-owned DataRow、legal Hero overlay、blanket Stack ban、line-count split、Flow formalism與same-semantic color ownership edge cases。
+
+### Changed
+
+- `write_precheck` reference把普通Header／Hero content／cards／rows／records／guidance／actions／footer從component-local canonical-coordinate placement遷移為Flutter relationship layout，並依change reason拆成bounded presentation owners；accepted `.pen`與visual authority不變。
+- ADR-028正式定義bounded component不是fixed-canvas laundering豁免；ADR-032增加bounded owner normal-content ownership review question；ADR-018增加same-semantic raw color的representation-noise／semantic-role／contextual-variant／component-decoration裁決順序。
+- `implementing-pencil-flutter-design` mapping、pressure scenarios與human workflow同步上述contract；沒有新增Flow/Coordinator framework、mandatory `flows/`或Theme/Design System production refactor。
+
+### Validation
+
+- Milestone 44 holistic validation完成5-workspace analyze、App 497 tests、Design System 43、Auth package 156、API Client 59、Core 4、CI 269、visual 33、docs policy 101、root tools 11、`docs_check`與`flutter build bundle --no-pub`，全數PASS。
+- Pencil canonical與360×640 runtime golden、critical geometry、responsive/semantics與runtime visual diagnostics維持accepted baseline；沒有修改golden threshold、crop、ignore region或accepted Pencil source取得PASS。
+- PTF-47～58使用production ChatGPT Web generation text route、每題獨立fresh context完成behavioral acceptance，12/12 PASS。
+
+### Governance
+
+- Requirement Decision、Revised Design、Implementation Plan與Tasks 44-1～44-6均完成Level 4雙層Task governance；whole-milestone review Open P0=0、Open P1 without disposition=0。
+- Release decision為Template Baseline `1.23.0`；Task 44-7負責merge/push、exact published-main Windows／Android／iOS verification、fresh behavioral acceptance與formal closure。
+
+---
+
 ## [1.22.0] - 2026-08-18
 
 ### Added

@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-018-design-system-theme-boundaries
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.23.0
 id: ADR-018
 title: Design System and Theme Boundaries
 supersedes:
@@ -160,4 +160,4 @@ Design System與 feature integration不得禁止 system text scaling，不以固
 
 ## Last Reviewed Baseline
 
-1.21.0；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract。
+1.23.0；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract；Milestone 44再補same-semantic raw color的representation-noise／semantic-role／contextual-variant／component-decoration裁決順序。

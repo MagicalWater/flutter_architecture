@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-028-repository-local-pencil-to-flutter-design-implementation-workflow
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.23.0
 id: ADR-028
 title: Repository-local Pencil-to-Flutter Design Implementation Workflow
 supersedes:
@@ -168,4 +168,4 @@ Reviewer一旦判定wrong source／wrong asset／wrong icon／wrong representati
 
 ## Last Reviewed Baseline
 
-1.21.0；Milestone 41補入constraint／relationship-owned screen layout；Milestone 42再補Presentation responsibility與repository-wide UI Design Ownership Architecture stable contract。
+1.23.0；Milestone 41補入constraint／relationship-owned screen layout；Milestone 42再補Presentation responsibility與repository-wide UI Design Ownership Architecture stable contract；Milestone 44關閉bounded component local fixed-canvas laundering loophole並保留真正spatial overlay。

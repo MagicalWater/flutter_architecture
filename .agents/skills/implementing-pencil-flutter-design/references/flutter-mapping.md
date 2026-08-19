@@ -35,6 +35,8 @@ single-screen exact geometry / decorative value
 
 `implementation_mapping.json`的risk-selected `ui_design_ownerships`必須resolved；Design System owner需指向public API，`intentional-local`需local-scope reason，asset-reference只引用existing provenance evidence。Missing／unresolved ownership是production hard stop。
 
+Accepted Pencil/raw extraction出現近似但不完全相同的colors時，不得只看hex差異決定owner。Consumer decision order固定為：先排除alpha blending、anti-alias、raster sampling、gradient sample、export difference等representation noise；再判斷是否為不同semantic role；同semantic只有在存在明確intentional contextual variant與stable cross-consumer semantics時才建立variant；單一component decoration保留smallest correct component owner。這個edge case不構成Theme/Design System production refactor的自動授權。
+
 ## Architecture boundary
 
 - App保持唯一Composition Root。

@@ -281,6 +281,8 @@ single-screen exact geometry / decoration
 
 Design System promotion依semantic identity、stable theme responsibility與consumer evidence，不依hex/數值剛好相同。Asset path/hash/source transformation繼續由existing provenance contract擁有，UI ownership record只能引用其evidence，不能建立第二套asset registry。
 
+若同一accepted semantic role在Pencil/export中出現少量RGB漂移，先排除alpha blending、anti-alias、raster/gradient sampling與export difference等representation noise；再判semantic role與intentional contextual variant。不得只因raw RGB不同就各feature建立local color，也不得只因raw value接近就強迫不同semantic合併；沒有fresh production misuse evidence時，這個edge case不授權整體Theme/Design System production refactor。
+
 Critical geometry與micro-fidelity依risk選最小充分owner；不要求every-node geometry test、every-icon golden或every-section visual test。Whole-screen PASS不能覆蓋critical local FAIL，source constant也不能覆蓋runtime`RenderBox` evidence。
 
 若review已判定wrong source／asset／icon／representation，立即停止對該candidate繼續scale／padding／crop／offset／opacity微調，回representation classification／provenance取得replacement mapping並fresh驗證。這是recovery gate，不是事後review建議。
@@ -305,6 +307,7 @@ Pencil只擁有visual／structural authority，不建立第二套App architectur
 - 一個accepted screen只允許一套whole-screen visual component tree。Canonical與runtime不能用breakpoint切換到parallel whole-screen visual renderer。
 - Screen page flow必須由Flutter constraints／relationships擁有；canonical page `x/y`只作design evidence，不能透過global scale機械轉成runtime section座標。只有一套renderer也不能豁免這條規則。
 - `Stack`／`Positioned`可用於bounded local overlay，但local coordinates只能相對local container，不得控制其他section placement。
+- Bounded component也不能把普通Text、DataRow、button label/card content改用canonical x/y重新做local fixed canvas；normal content仍由Padding/Align/Row/Column/Flex/constraints等relationship layout擁有，只有badge/glow/ornament/z-order等真正spatial responsibility可保留coordinate overlay。
 - 真正spatial surface只有在accepted Design明確核准並於mapping記錄`intentional-spatial-canvas`與`approval_ref`時例外。
 - Canonical Pencil viewport是**design/comparison space**，不是**Flutter logical breakpoint**。例如`.pen`寬度941不代表Flutter寬度低於900就能改走另一套mobile UI。
 - 正常portrait尺寸以同一design-space scale投影真Flutter widget geometry；必要的Row→Column、文字換行或touch-target放大只能發生在同一component tree內。

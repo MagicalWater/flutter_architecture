@@ -70,6 +70,7 @@ PASS。`run_release_validation.py`維持唯一release validation入口；`github
 - CI / Android / iOS workflow YAML parse：PASS。
 - `git diff --check`：PASS。
 - failure-path contract確認manual-local primary validation失敗仍先執行managed run aggregation，再保留原始failure disposition；不得因evidence aggregation吞掉primary failure。
+- P1 recovery checkpoint `87ab17332ca57f04206d3335a5172b12a20524e7` 由canonical planner判定`docs_content + tooling + validation_engine`，要求logical full + generated、Android/iOS皆false；re-validation完成56/56 CI tools、6/6 docs owners、5-package analyze、retained Flutter suites與Generated Consistency全部PASS，沒有generated content drift。
 
 Planner對manual-local extension exact changed range判定`docs_content + governance + tooling + validation_engine`，要求logical full + generated，但不要求Android／iOS platform build；本地validation依此完成，沒有因Level名稱人工加碼platform build。
 

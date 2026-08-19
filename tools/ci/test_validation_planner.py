@@ -238,6 +238,7 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         self.assertIn("android_production_build: ${{ steps.classify.outputs.android_production_build }}", android)
         self.assertIn("needs.classify-changes.outputs.android_development_build == 'true'", android)
         self.assertIn("needs.classify-changes.outputs.android_production_build == 'true'", android)
+        self.assertNotIn("tools/ci/verify_generated.sh", android)
         self.assertIn("ios_simulator_build: ${{ steps.classify.outputs.ios_simulator_build }}", ios)
         self.assertIn("ios_production_build: ${{ steps.classify.outputs.ios_production_build }}", ios)
         self.assertIn("needs.classify-changes.outputs.ios_simulator_build == 'true'", ios)

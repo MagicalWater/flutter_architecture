@@ -229,10 +229,6 @@ jobs:
         if: runner.environment == 'github-hosted'
         run: dart pub get
 
-      - name: Verify generated files
-        if: runner.environment == 'github-hosted'
-        run: bash tools/ci/verify_generated.sh
-
       - name: Build Android release APK
         if: runner.environment == 'github-hosted'
         env:
@@ -255,7 +251,7 @@ jobs:
         run: |
           # Local-only evidence; not downloadable from GitHub. The wrapper writes $GITHUB_STEP_SUMMARY.
           bash tools/ci/run_local_ci.sh managed-command android android bash -lc '
-            dart pub get && bash tools/ci/verify_generated.sh && bash tools/ci/build_android_production.sh
+            dart pub get && bash tools/ci/build_android_production.sh
           '
 
       - name: Preflight Android production full artifact

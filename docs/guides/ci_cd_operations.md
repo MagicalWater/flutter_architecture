@@ -351,6 +351,8 @@ python tools/ci/run_release_validation.py \
 
 此CLI會先驗證local／remote candidate SHA，再由canonical planner選擇CI／Android／iOS families；所有selected workflows先完成dispatch才開始等待，因此wall-clock由最慢selected branch主導，而不是把各family串行相加。CLI只完成release validation admission，不修改`VERSION`、不merge、不push`main`、不publication。
 
+Generated consistency屬repository-level evidence family，由`CI / Generated Consistency`唯一擁有。Android／iOS workflow只負責platform build evidence，不自行重跑`tools/ci/verify_generated.sh`。需要「generated + Android」或「generated + iOS」的完整validation intent時，由canonical planner與上層orchestrator同時選擇CI與對應platform family；platform workflow本身不判斷其他workflow是否存在，也不維護第二份generated authority。
+
 Stable checks：
 
 ```txt
@@ -410,6 +412,8 @@ Android / Release APK
 ```
 
 兩個job分別建立development Debug與production Release verification APK；production仍使用debug signing，不是production distribution pipeline。Planner輸出`android_development_build`／`android_production_build`分別控制兩個job；`android_build`只保留aggregate compatibility／summary用途。
+
+Android Production build不再先執行`verify_generated.sh`。Tracked generated source的一致性由`CI / Generated Consistency`負責；Android job只做自身runner必要的dependency resolution與production APK build／artifact verification。這與iOS platform workflow責任一致。
 
 ## Recommended Branch Protection
 

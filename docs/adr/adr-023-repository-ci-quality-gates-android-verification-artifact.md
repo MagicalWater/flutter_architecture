@@ -84,7 +84,7 @@ Exact candidate release validation應採fan-out：planner先產生唯一plan，s
 
 CI使用固定runner OS major version、exact Flutter version與Java 17。Executable workspace追蹤root `pubspec.lock`，使乾淨runner驗證已知dependency graph。
 
-Generated source維持tracked。CI重跑generator後必須檢查Git tree；任何changed、deleted或untracked generated file都使gate失敗，CI不得自動commit。
+Generated source維持tracked。`CI / Generated Consistency`是repository-level generated source consistency的唯一workflow owner；CI重跑generator後必須檢查Git tree，任何changed、deleted或untracked generated file都使gate失敗，CI不得自動commit。Android／iOS platform verification workflow只消費同一exact SHA中的tracked generated source並負責各自platform build evidence，不得再內嵌第二份`verify_generated.sh`形成重複authority。若某個較高層validation intent需要「generated + platform」的self-contained evidence，必須由planner／orchestrator組合families，而不是把repository-level invariant藏進platform workflow。
 
 Android artifact使用default development／Mock entrypoint與repository既有verification signing。Artifact必須帶commit traceability與明確的非production classification。`flutter build bundle`不能替代Android APK artifact驗證。
 

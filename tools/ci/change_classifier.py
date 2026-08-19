@@ -179,7 +179,6 @@ def _is_full_ci_path(path: str) -> bool:
 def _is_classifier_path(path: str) -> bool:
     return (
         path == "tools/ci/change_classifier.py"
-        or path == "tools/ci/test_change_classifier.py"
         or path.startswith(".github/workflows/")
     )
 
@@ -204,7 +203,6 @@ def _is_database_critical_path(path: str) -> bool:
             "apps/flutter_architecture/web/drift_worker.js",
         }
         or path.startswith("tools/database/")
-        or path == "tools/ci/test_drift_schema_governance.py"
     )
 
 

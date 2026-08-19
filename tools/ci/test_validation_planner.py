@@ -129,6 +129,11 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
             ),
             (["apps/flutter_architecture/android/app/build.gradle.kts"], False, False, True, False),
             (["apps/flutter_architecture/ios/Runner/Info.plist"], False, False, False, True),
+            (["pubspec.lock"], True, True, True, True),
+            (["tools/ci/validation_planner.py"], True, True, True, True),
+            ([".github/workflows/android.yml"], True, True, True, False),
+            ([".github/workflows/ios.yml"], True, True, False, True),
+            ([".github/workflows/ci.yml"], True, True, False, False),
         )
 
         for paths, full, generated, android, ios in cases:
@@ -140,36 +145,6 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
                 self.assertEqual(plan.generated_check, generated)
                 self.assertEqual(plan.android_build, android)
                 self.assertEqual(plan.ios_build, ios)
-
-    def test_release_root_dependency_and_planner_change_require_both_platforms(self) -> None:
-        for paths in (["pubspec.lock"], ["tools/ci/validation_planner.py"]):
-            with self.subTest(paths=paths):
-                plan = apply_release_freshness(plan_validation(paths), paths)
-                self.assertTrue(plan.full_regression)
-                self.assertTrue(plan.generated_check)
-                self.assertTrue(plan.android_build)
-                self.assertTrue(plan.ios_build)
-
-    def test_release_platform_workflow_change_selects_only_affected_platform(self) -> None:
-        android = apply_release_freshness(
-            plan_validation([".github/workflows/android.yml"]),
-            [".github/workflows/android.yml"],
-        )
-        ios = apply_release_freshness(
-            plan_validation([".github/workflows/ios.yml"]),
-            [".github/workflows/ios.yml"],
-        )
-        ci = apply_release_freshness(
-            plan_validation([".github/workflows/ci.yml"]),
-            [".github/workflows/ci.yml"],
-        )
-
-        self.assertTrue(android.android_build)
-        self.assertFalse(android.ios_build)
-        self.assertFalse(ios.android_build)
-        self.assertTrue(ios.ios_build)
-        self.assertFalse(ci.android_build)
-        self.assertFalse(ci.ios_build)
 
     def test_release_invalid_range_fails_safe_to_full_generated_both_platforms(self) -> None:
         plan = apply_release_freshness(

@@ -9,6 +9,9 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 class WritePrecheckHeroSection extends StatelessWidget {
   const WritePrecheckHeroSection({required this.copy, super.key});
 
+  static const _titleOpticalScaleX = 0.996;
+  static const _descriptionOpticalScaleX = 0.989;
+
   final WritePrecheckCopy copy;
 
   @override
@@ -118,7 +121,7 @@ class WritePrecheckHeroSection extends StatelessWidget {
                               height: 49,
                               child: Transform.scale(
                                 alignment: Alignment.centerLeft,
-                                scaleX: 0.996,
+                                scaleX: _titleOpticalScaleX,
                                 child: Text(
                                   copy.heroTitle,
                                   maxLines: 1,
@@ -138,7 +141,7 @@ class WritePrecheckHeroSection extends StatelessWidget {
                                 height: 56,
                                 child: Transform.scale(
                                   alignment: Alignment.centerLeft,
-                                  scaleX: 0.989,
+                                  scaleX: _descriptionOpticalScaleX,
                                   child: Text(
                                     copy.heroDescription,
                                     maxLines: 2,

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/layout/write_precheck_projection.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/write_precheck_copy.dart';
-import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_content_components.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_step.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_palette.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_text_style.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class WritePrecheckTopArea extends StatelessWidget {
   const WritePrecheckTopArea({required this.copy, super.key});
+
+  static const _cellSignalOpticalScaleX = 1.3;
+  static const _cellSignalOpticalScaleY = 1.38;
 
   final WritePrecheckCopy copy;
 
@@ -73,8 +76,8 @@ class WritePrecheckTopArea extends StatelessWidget {
                       width: 24,
                       height: 24,
                       child: Transform.scale(
-                        scaleX: 1.3,
-                        scaleY: 1.38,
+                        scaleX: _cellSignalOpticalScaleX,
+                        scaleY: _cellSignalOpticalScaleY,
                         child: const ProjectedIcon(
                           PhosphorIcons.cellSignalHigh,
                           size: 24,

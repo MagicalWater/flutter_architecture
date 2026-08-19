@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/layout/write_precheck_projection.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/write_precheck_copy.dart';
-import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_content_components.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_secondary_action.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_palette.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_text_style.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
@@ -199,7 +199,9 @@ class WritePrecheckFooter extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               height: projectedPx(context, 1),
-              child: const ProjectedHairline(color: WritePrecheckPalette.subtleOutline),
+              child: const ProjectedHairline(
+                color: WritePrecheckPalette.subtleOutline,
+              ),
             ),
             SizedBox(height: projectedPx(context, 11)),
             Align(

@@ -7,7 +7,7 @@
       "node_id": "lAOay",
       "flutter_owner": "WritePrecheckProjectedCanvas",
       "layout_model": "constraint-relationship",
-      "evidence_ref": "apps/flutter_architecture/test/features/pencil_compatibility/presentation/write_precheck_architecture_contract_test.dart"
+      "evidence_ref": "apps/flutter_architecture/lib/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_content.dart"
     }
   ],
   "ui_design_ownerships": [
@@ -69,32 +69,32 @@
       "role": "reusable Data Row critical hierarchy",
       "representation_class": "Layout primitive",
       "disposition": "exact",
-      "flutter_owner": "PrecheckDataRow",
-      "consumer": "WritePrecheckProjectedCanvas"
+      "flutter_owner": "WritePrecheckDataRow",
+      "consumer": "WritePrecheckSummaryCard / WritePrecheckResultsCard"
     },
     {
       "node_id": "H3co21",
       "role": "reusable progress Step Item critical state geometry",
       "representation_class": "Layout primitive",
       "disposition": "exact",
-      "flutter_owner": "PrecheckProgress",
-      "consumer": "WritePrecheckProjectedCanvas"
+      "flutter_owner": "WritePrecheckStep",
+      "consumer": "WritePrecheckTopArea"
     },
     {
       "node_id": "aZMKq",
       "role": "reusable Record Tile critical hierarchy",
       "representation_class": "Layout primitive",
       "disposition": "exact",
-      "flutter_owner": "PrecheckRecordTile",
-      "consumer": "WritePrecheckProjectedCanvas"
+      "flutter_owner": "WritePrecheckRecordTile",
+      "consumer": "WritePrecheckRecordsCard"
     },
     {
       "node_id": "h6mPw5",
       "role": "reusable Secondary Button critical action geometry",
       "representation_class": "Layout primitive",
       "disposition": "exact",
-      "flutter_owner": "feature-local secondary action widget",
-      "consumer": "WritePrecheckProjectedCanvas"
+      "flutter_owner": "WritePrecheckSecondaryAction",
+      "consumer": "WritePrecheckSecondaryActions"
     }
   ]
 }

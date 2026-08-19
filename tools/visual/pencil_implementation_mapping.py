@@ -296,14 +296,78 @@ def _check_screen_layouts(
                 )
             )
 
-        if model != "unresolved" and not _non_empty(raw_layout.get("evidence_ref")):
-            issues.append(
-                _issue(
-                    "mapping-missing-screen-layout-evidence",
-                    path,
-                    f"{label}: resolved screen layout requires evidence_ref",
+        if model != "unresolved":
+            evidence_ref = raw_layout.get("evidence_ref")
+            if not _non_empty(evidence_ref):
+                issues.append(
+                    _issue(
+                        "mapping-missing-screen-layout-evidence",
+                        path,
+                        f"{label}: resolved screen layout requires evidence_ref",
+                    )
                 )
+            else:
+                assert isinstance(evidence_ref, str)
+                _check_live_repository_reference(path, label, evidence_ref, issues)
+
+
+def _check_live_repository_reference(
+    mapping_path: Path,
+    label: str,
+    evidence_ref: str,
+    issues: list[PencilImplementationMappingIssue],
+) -> None:
+    repository_root = _find_repository_root(mapping_path.parent)
+    if repository_root is None:
+        issues.append(
+            _issue(
+                "mapping-repository-root-unresolved",
+                mapping_path,
+                f"{label}: cannot resolve repository root for evidence_ref",
             )
+        )
+        return
+
+    reference_path = Path(evidence_ref)
+    if reference_path.is_absolute():
+        issues.append(
+            _issue(
+                "mapping-evidence-outside-repository",
+                mapping_path,
+                f"{label}: evidence_ref must be repository-relative",
+            )
+        )
+        return
+
+    resolved = (repository_root / reference_path).resolve()
+    try:
+        resolved.relative_to(repository_root)
+    except ValueError:
+        issues.append(
+            _issue(
+                "mapping-evidence-outside-repository",
+                mapping_path,
+                f"{label}: evidence_ref escapes repository root",
+            )
+        )
+        return
+
+    if not resolved.is_file():
+        issues.append(
+            _issue(
+                "mapping-evidence-missing",
+                mapping_path,
+                f"{label}: evidence_ref does not resolve to a live file: {evidence_ref}",
+            )
+        )
+
+
+def _find_repository_root(start: Path) -> Path | None:
+    current = start.resolve()
+    for candidate in (current, *current.parents):
+        if (candidate / "repository_identity.json").is_file():
+            return candidate
+    return None
 
 
 def _check_ui_design_ownerships(

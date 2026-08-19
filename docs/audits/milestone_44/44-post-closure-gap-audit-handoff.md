@@ -12,9 +12,18 @@ last_reviewed_baseline: 1.25.2
 
 Milestone 44 primary Pencil Component Constraint Semantics Corrective was formally closed and published in Template Baseline `1.23.0`; its bounded color-ownership post-closure corrective C1 was subsequently closed in `1.23.1`. Those historical closures remain valid for the exact scopes and evidence they actually proved.
 
-The user has now explicitly requested a **fresh post-closure audit of remaining project-code convergence / architecture gaps** before any new Template Baseline is published. This is not permission to rewrite historical PASS evidence or automatically reopen every Milestone 44 claim. The next conversation must fresh-read current repository authority and current production source, identify concrete still-present gaps, and only then decide the smallest sufficient corrective scope.
+The user explicitly requested a **fresh post-closure audit of remaining project-code convergence / architecture gaps** before any new Template Baseline is published. That fresh audit has now completed and produced a bounded Level 3 corrective. Historical PASS evidence was not rewritten and Milestone 44 was not reopened.
 
-## Next-conversation objective
+Current corrective authority：
+
+- Requirement：`docs/audits/milestone_44/44-post-closure-project-code-convergence-requirement-decision.md`
+- Design：`docs/superpowers/specs/2026-08-19-milestone-44-post-closure-project-code-convergence-corrective-design.md`
+- Plan：`docs/superpowers/plans/2026-08-19-milestone-44-post-closure-project-code-convergence-corrective.md`
+- Holistic review：`docs/audits/milestone_44/44-post-closure-project-code-convergence-holistic-review.md`
+
+The bounded corrective resolves the confirmed source-cohesion, risk-selected magic-code ownership, implementation-mapping identity and stale-evidence validator gaps. Publication remains intentionally deferred.
+
+## Original audit objective — completed
 
 Perform a fresh repository-level audit focused on code convergence and architecture completeness around the areas previously governed by Milestones 41–44, including but not limited to:
 
@@ -62,5 +71,5 @@ This branch must **not** be published merely because the next conversation start
 
 Start from repository current authority, not remembered conversation state. Use the repository-local `governing-template-development` skill and lowest-sufficient governance. Do not automatically create a new Milestone, Design or Plan before fresh admission determines whether a material corrective is actually required.
 
-The first task is therefore a **read-only fresh post-closure gap audit / Requirement Decision**, not implementation.
+The original read-only admission / Requirement Decision is complete. Future continuation must fresh-read repository current authority and treat the corrective holistic review above as the current post-closure convergence evidence; do not rerun the audit unless new source evidence requires it.
 

@@ -9,6 +9,9 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 class WritePrecheckGuidanceSection extends StatelessWidget {
   const WritePrecheckGuidanceSection({required this.copy, super.key});
 
+  static const _commitmentOpticalScaleX = 0.99;
+  static const _lineOpticalScaleX = 1.009;
+
   final WritePrecheckCopy copy;
 
   @override
@@ -139,7 +142,8 @@ class WritePrecheckGuidanceSection extends StatelessWidget {
                                                 const ProjectedIcon(
                                                   PhosphorIcons.warningLight,
                                                   size: 18,
-                                                  color: WritePrecheckPalette.goldAccent,
+                                                  color: WritePrecheckPalette
+                                                      .goldAccent,
                                                 ),
                                                 SizedBox(
                                                   width: projectedPx(
@@ -151,7 +155,8 @@ class WritePrecheckGuidanceSection extends StatelessWidget {
                                                   child: Transform.scale(
                                                     alignment:
                                                         Alignment.centerLeft,
-                                                    scaleX: 0.99,
+                                                    scaleX:
+                                                        _commitmentOpticalScaleX,
                                                     child: Text(
                                                       copy.commitmentNotice,
                                                       maxLines: 1,
@@ -162,7 +167,9 @@ class WritePrecheckGuidanceSection extends StatelessWidget {
                                                         weight: FontWeight.w500,
                                                         letterSpacing: 0.15,
                                                         rasterWeight: 330,
-                                                        color: WritePrecheckPalette.goldAccent,
+                                                        color:
+                                                            WritePrecheckPalette
+                                                                .goldAccent,
                                                       ),
                                                     ),
                                                   ),
@@ -211,7 +218,7 @@ class WritePrecheckGuidanceSection extends StatelessWidget {
           height: 25,
           child: Transform.scale(
             alignment: Alignment.centerLeft,
-            scaleX: 1.009,
+            scaleX: _lineOpticalScaleX,
             child: Text(
               line,
               maxLines: 1,

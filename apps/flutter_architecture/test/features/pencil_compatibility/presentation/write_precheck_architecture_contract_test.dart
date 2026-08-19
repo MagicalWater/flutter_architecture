@@ -295,6 +295,32 @@ class HeroCard {
       isEmpty,
     );
   });
+
+  test('synthetic shared palette literal bypass is rejected', () {
+    const paletteSource = '''
+abstract final class FeaturePalette {
+  static const Color sharedAccent = Color(0xFF112233);
+}
+''';
+    const consumerSource = '''
+class SummaryCard {
+  static const Color borderColor = Color(0xFF112233);
+}
+''';
+
+    expect(
+      _findSharedPaletteLiteralBypasses(
+        paletteSource: paletteSource,
+        consumerSources: const <String, String>{
+          'summary_card.dart': consumerSource,
+        },
+      ),
+      <String>[
+        'summary_card.dart hard-codes shared palette literal 0xFF112233 '
+            'owned by sharedAccent',
+      ],
+    );
+  });
 }
 
 List<String> _findSharedPaletteLiteralBypasses({

@@ -17,6 +17,8 @@ last_reviewed_baseline: 1.25.2
 - `.github/workflows/android.yml`
 - `.github/workflows/ci.yml`
 - `.github/workflows/ios.yml`
+- `tools/ci/run_release_validation.py`
+- `tools/ci/run_local_ci.sh`
 - `tools/ci/test_validation_planner.py`
 - ADR-023
 - `docs/guides/ci_cd_operations.md`
@@ -48,21 +50,27 @@ Retain。只在既有critical owner保留小型negative contract assertions：An
 
 PASS。`ci.yml`與`ios.yml`移除`pull_request -> main`，與`android.yml`一致由explicit `workflow_dispatch`建立核心validation run；branch push同樣不自動啟動。`observability-acceptance.yml`不在本scope，維持既有獨立PR-safe contract。
 
+### R7 — Manual-local release backend
+
+PASS。`run_release_validation.py`維持唯一release validation入口；`github-hosted`與`manual-local`共用clean local／remote candidate identity與canonical release planner。Manual-local logical evidence只執行planner-selected quality／tests／generated phases；Android／iOS只執行planner-selected development／production variants，且全部透過`run_local_ci.sh` managed entrypoint保存於checkout外artifact store。非macOS host遇到iOS requirement會在任何command開始前fail closed，不產生partial release evidence。
+
 ## Local evidence
 
-- `python -m unittest tools.ci.test_validation_planner`：21/21 PASS。
-- `python -m unittest discover -s tools/ci -p test_*.py`：52/52 PASS。
+- `python -m unittest tools.ci.test_validation_planner`：24/24 PASS。
+- `python -m unittest discover -s tools/ci -p test_*.py`：55/55 PASS。
 - `python -m unittest discover -s tools/docs -p test_*.py`：6/6 PASS。
 - `dart run melos run analyze`：5 packages PASS。
 - retained Flutter suites（`flutter_architecture`／`auth`／`api_client`）：PASS。
 - clean checkpoint `c4772810e657a1171c85b22851092d2a837c4e48` 執行`tools/ci/verify_generated.sh`：PASS，wall-clock約165秒；沒有generated content drift。
 - trigger-alignment checkpoint `0cdb362a253b5f6bcedebb8bc5fbda082917ef40` 重新驗證：52/52 CI tools、6/6 docs owners、5-package analyze、retained Flutter suites全部PASS；Git Bash執行Generated Consistency亦PASS，warm-cache wall-clock約57秒且沒有content drift。
+- manual-local checkpoint `1b90e7523659e4b995410b07663288e6bc61756e` 的exact-range planner判定`docs_content + governance + tooling + validation_engine`，要求logical full + generated、Android/iOS皆false；依該plan執行55/55 CI tools、6/6 docs owners、5-package analyze、retained Flutter suites全部PASS。
+- 同一checkpoint以新`run_local_ci.sh managed-validation-phase`實際執行Generated Consistency並成功aggregate managed run `release-manual-generated-1b90e75`；artifact root位於checkout外`%LOCALAPPDATA%/flutter_architecture/ci-artifacts`，generated content一致。
 - `ci.yml`／`android.yml`／`ios.yml` contract test確認三份核心workflow皆含`workflow_dispatch`且不含`pull_request` trigger；YAML parse PASS。
 - `python tools/docs/check_docs.py`：PASS。
 - CI / Android / iOS workflow YAML parse：PASS。
 - `git diff --check`：PASS。
 
-Planner對本corrective local changed paths判定`docs_content + governance + validation_engine`，要求logical full + generated，但不要求Android／iOS platform build；本地validation依此完成，沒有因Level名稱人工加碼platform build。
+Planner對manual-local extension exact changed range判定`docs_content + governance + tooling + validation_engine`，要求logical full + generated，但不要求Android／iOS platform build；本地validation依此完成，沒有因Level名稱人工加碼platform build。
 
 ## Release / remote evidence disposition
 

@@ -246,6 +246,84 @@ class _CanonicalSecondaryAction extends StatelessWidget {}
     expect(_pageOwnsBoundedSectionImplementations(orchestrationOnly), isFalse);
     expect(_pageOwnsBoundedSectionImplementations(sectionDump), isTrue);
   });
+
+  test('shared WritePrecheck palette values cannot be hard-coded by consumers', () {
+    final paletteFile = File(
+      'lib/features/pencil_compatibility/presentation/widgets/'
+      'write_precheck/write_precheck_palette.dart',
+    );
+    final consumerRoot = Directory(
+      'lib/features/pencil_compatibility/presentation/widgets/write_precheck',
+    );
+    final consumerSources = <String, String>{
+      for (final file in consumerRoot
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((file) => file.path.endsWith('.dart')))
+        if (file.path.replaceAll('\\', '/') !=
+            paletteFile.path.replaceAll('\\', '/'))
+          file.path.replaceAll('\\', '/'): file.readAsStringSync(),
+    };
+
+    final violations = _findSharedPaletteLiteralBypasses(
+      paletteSource: paletteFile.readAsStringSync(),
+      consumerSources: consumerSources,
+    );
+
+    expect(violations, isEmpty, reason: violations.join('\n'));
+  });
+
+  test('component-local exact color remains legal when palette has no owner', () {
+    const paletteSource = '''
+abstract final class FeaturePalette {
+  static const Color sharedAccent = Color(0xFF112233);
+}
+''';
+    const consumerSource = '''
+class HeroCard {
+  static const Color localArtworkColor = Color(0xFF445566);
+}
+''';
+
+    expect(
+      _findSharedPaletteLiteralBypasses(
+        paletteSource: paletteSource,
+        consumerSources: const <String, String>{
+          'hero_card.dart': consumerSource,
+        },
+      ),
+      isEmpty,
+    );
+  });
+}
+
+List<String> _findSharedPaletteLiteralBypasses({
+  required String paletteSource,
+  required Map<String, String> consumerSources,
+}) {
+  final paletteEntries = RegExp(
+    r'static\s+const\s+Color\s+(\w+)\s*=\s*Color\((0x[0-9A-Fa-f]{8})\)',
+  ).allMatches(paletteSource);
+  final violations = <String>[];
+
+  for (final entry in paletteEntries) {
+    final ownerName = entry.group(1)!;
+    final value = entry.group(2)!;
+    final literalPattern = RegExp(
+      'Color\\(\\s*${RegExp.escape(value)}\\s*\\)',
+      caseSensitive: false,
+    );
+    for (final consumer in consumerSources.entries) {
+      if (literalPattern.hasMatch(consumer.value)) {
+        violations.add(
+          '${consumer.key} hard-codes shared palette literal $value '
+          'owned by $ownerName',
+        );
+      }
+    }
+  }
+
+  return violations;
 }
 
 bool _pageOwnsRenderOrProjectionInfrastructure(String source) {

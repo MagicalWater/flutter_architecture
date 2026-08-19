@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.23.0
 ---
 
 # Audits and Review Evidence
@@ -44,6 +44,14 @@ Final / Holistic Review
 開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
 
 ## Evidence routes
+
+### Milestone 44 — Pencil Component Constraint Semantics Corrective
+
+- [`milestone_44/44-r_requirement_decision.md`](milestone_44/44-r_requirement_decision.md)：bounded-component fixed-canvas laundering corrective的Level 4 Requirement Decision。
+- [`milestone_44/44-0_design_spec_review.md`](milestone_44/44-0_design_spec_review.md)：Revised Design focused review、fresh re-review與user approval gate evidence。
+- [`milestone_44/44-p_implementation_plan_review.md`](milestone_44/44-p_implementation_plan_review.md)：direct RED→stable authority→relationship layout corrective→legal overlay→behavioral pressure→release/post-release的Plan review。
+- [`milestone_44/44-6_holistic_final_review.md`](milestone_44/44-6_holistic_final_review.md)：Milestone 44 whole-architecture review、full regression ceiling與1.23.0 release decision。
+- [`milestone_44/44-7_post_release_validation.md`](milestone_44/44-7_post_release_validation.md)：exact published-main Windows／canonical generated／Android／iOS、PTF-47～58 fresh acceptance與Milestone 44 formal closure。
 
 ### Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
 

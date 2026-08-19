@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.22.0
+last_reviewed_baseline: 1.23.0
 ---
 
 # Milestone Routing
@@ -32,8 +32,21 @@ Milestone routing 只回答：
 
 ```txt
 Active Milestone: none
-Template Baseline: 1.22.0
+Template Baseline: 1.23.0
 ```
+
+Milestone 44 Pencil Component Constraint Semantics Corrective已發布為Template Baseline `1.23.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
+
+### Milestone 44 closed routing
+
+- Requirement Decision：Accepted / Level 4 — `docs/audits/milestone_44/44-r_requirement_decision.md`
+- Revised Design：Accepted / user approved 2026-08-19 — `docs/superpowers/specs/2026-08-18-milestone-44-pencil-component-constraint-semantics-design.md`
+- Design Review：Completed / PASS — `docs/audits/milestone_44/44-0_design_spec_review.md`
+- Implementation Plan：Accepted / user approved 2026-08-19 — `docs/superpowers/plans/2026-08-19-milestone-44-pencil-component-constraint-semantics-corrective.md`
+- Plan Review：Accepted / PASS — `docs/audits/milestone_44/44-p_implementation_plan_review.md`
+- Holistic Final Review：Accepted / PASS — `docs/audits/milestone_44/44-6_holistic_final_review.md`
+- Post-release Validation：Completed / PASS — `docs/audits/milestone_44/44-7_post_release_validation.md`
+- Release：Template Baseline `1.23.0`；exact published-main Windows／Android／iOS與PTF-47～58 fresh acceptance PASS；Milestone 44 formal closure。
 
 Milestone 43 Flutter Presentation Component Architecture & UI Responsibility Governance已發布為Template Baseline `1.22.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
 

@@ -26,8 +26,8 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
-State: Task 44-6 accepted / Task 44-7 publication active
+Active Milestone: none
+State: Milestone 44 published / post-release closure completed
 Template Baseline: 1.23.0
 ```
 
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 43 已完成或已有明確 disposition。Milestone 44為Level 4 component-local fixed-canvas laundering corrective；Requirement、Revised Design、Implementation Plan與Tasks 44-1～44-6均已完成雙層治理。Current reference已關閉bounded component normal-content canonical-coordinate loophole，同時保留合法spatial overlay；PTF-47～58與same-semantic color bounded governance fresh PASS。Task 44-6已接受Template Baseline `1.23.0` release candidate；release identity現已準備完成，Task 44-7 publication / published-main / post-release closure active。Milestone 43仍維持Template Baseline 1.22.0正式closure。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
+Milestone 1 至 44 已完成或已有明確 disposition。Milestone 44為Level 4 component-local fixed-canvas laundering corrective；Requirement、Revised Design、Implementation Plan與Tasks 44-1～44-7均已完成雙層治理。Current reference已關閉bounded component normal-content canonical-coordinate loophole，同時保留合法spatial overlay；PTF-47～58與same-semantic color bounded governance在exact published-main fresh PASS。Template Baseline `1.23.0`已發布，Windows release/full regression、canonical generated、GitHub-hosted Android/iOS與post-release routing皆PASS，Milestone 44正式closed。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

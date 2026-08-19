@@ -141,7 +141,7 @@ Root README landing summary consistency
 
 ```txt
 docs/milestones/README.md
-→ 對應 audits / plans / final review
+→ retained closure / runtime evidence / CHANGELOG / Git history
 → docs/archive/（如已有封存摘要）
 ```
 
@@ -149,8 +149,8 @@ Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆
 
 ## 類型索引
 
-- `docs/audits/README.md`：Planning Review、phase review、final review、findings 與 runtime evidence。
-- `docs/superpowers/README.md`：Design specs 與 implementation plans。
+- `docs/audits/README.md`：少量 retained closure / runtime historical evidence；過程性 review 由 Git history 追溯。
+- `docs/superpowers/README.md`：需要 formal Design / Plan 時的工作入口；completed artifacts 不要求永久保留。
 - `docs/milestones/README.md`：Milestone routing 與 archive manifest 入口。
 - `docs/archive/README.md`：已明確封存的歷史內容。
 - `docs/governance/documentation_policy.md`：文件治理與 metadata contract。

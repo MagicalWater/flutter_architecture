@@ -183,8 +183,8 @@ Refresh concurrency、Session identity、safe replay、failure classification與
 - [Auth package README](../../packages/auth/README.md)
 - [API client README](../../packages/api_client/README.md)
 - [App README](../../apps/flutter_architecture/README.md)
-- [Milestone 18 holistic audit](../audits/milestone_18/)
-- [Milestone 19 planning review](../audits/milestone_19_planning_review.md)
+- [Milestone 18 holistic audit](../audits/milestone_18_holistic_audit.md)
+- [Milestone 19 holistic final review](../audits/milestone_19_holistic_final_review.md)
 
 ## Last Reviewed Baseline
 

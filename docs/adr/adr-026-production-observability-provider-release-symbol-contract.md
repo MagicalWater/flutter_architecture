@@ -206,9 +206,7 @@ Observability與Analytics維持獨立：
 
 ## Related Evidence
 
-- [Production Observability Capability Audit](../audits/production_observability_capability_audit.md)
-- [Production Observability Foundation Design](../superpowers/specs/2026-07-23-production-observability-foundation-design.md)
-- [Production Observability Design Review](../audits/production_observability_design_review.md)
+- Historical implementation / review evidence：Git history；current contract 以本 ADR 與 source/runtime 為準。
 
 ## Last Reviewed Baseline
 

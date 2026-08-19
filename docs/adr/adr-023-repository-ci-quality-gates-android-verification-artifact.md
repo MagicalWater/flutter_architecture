@@ -125,14 +125,10 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 
 ## Related Evidence
 
-- [Milestone 24 planning review](../audits/milestone_24/24-0_planning_review.md)
-- [Milestone 24 implementation plan](../superpowers/plans/2026-07-22-milestone-24-ci-cd-foundation.md)
-- [Change-aware CI design](../superpowers/specs/2026-07-23-change-aware-ci-execution-design.md)
-- [Change-aware CI planning review](../audits/change_aware_ci_plan_review.md)
-- [Task 27-7 self-hosted CI design](../superpowers/specs/2026-07-24-self-hosted-ci-execution-mode-design.md)
-- [Task 27-7 self-hosted CI plan](../superpowers/plans/2026-07-24-self-hosted-ci-execution-mode.md)
-- [Milestone 32 accepted Design](../superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md)
-- [Milestone 32 accepted Implementation Plan](../superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md)
+- [Milestone 24 final review](../audits/milestone_24/24-6_final_review.md)
+- [Change-aware CI holistic final review](../audits/change_aware_ci_holistic_final_review.md)
+- [Milestone 27 final review](../audits/milestone_27/27-8_final_review.md)
+- [Milestone 32 final review](../audits/milestone_32/32-11_final_review.md)
 
 ## Last Reviewed Baseline
 

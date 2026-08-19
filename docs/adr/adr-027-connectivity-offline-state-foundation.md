@@ -122,9 +122,8 @@ Auth 401 single-flight refresh與safe replay繼續由ADR-015擁有。
 
 ## Related Evidence
 
-- [Capability audit](../audits/connectivity_offline_state_capability_audit.md)
-- [Design spec](../superpowers/specs/2026-07-24-connectivity-offline-state-foundation-design.md)
-- [Implementation plan](../superpowers/plans/2026-07-24-milestone-28-connectivity-offline-state-foundation.md)
+- [Milestone 28 final review](../audits/milestone_28/28-9_final_review.md)
+- [Platform runtime evidence](../audits/milestone_28/28-7_platform_runtime_evidence.md)
 
 ## Last Reviewed Baseline
 

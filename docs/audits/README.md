@@ -3,12 +3,12 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.25.0
+last_reviewed_baseline: 1.26.0
 ---
 
 # Audits and Review Evidence
 
-`docs/audits/` 保存 planning review、implementation / holistic review、runtime evidence、findings 與 post-release evidence。
+`docs/audits/` 只保存具有獨立長期價值的 historical closure / runtime evidence。Intermediate Design review、Plan review、per-task review、checkpoint、handoff、temporary admission 與已被 final review 吸收的過程證據，不再永久保留；需要時由 Git history 追溯。
 
 ## Authority
 
@@ -24,7 +24,7 @@ Current facts 分別由 current snapshot、canonical ADR、roadmap、machine man
 docs/milestones/README.md
 ```
 
-路由到對應 audit / Design / Plan / release evidence。
+路由到保留的 durable evidence、`CHANGELOG.md` 與 Git history。
 
 若已知 Milestone，可直接進：
 
@@ -32,7 +32,7 @@ docs/milestones/README.md
 docs/audits/milestone_<N>/
 ```
 
-Standalone audit / corrective evidence 保留原檔名，可由 repository search 或其 owning Design / Plan / ADR link 進入。
+Standalone durable evidence 保留原檔名，可由 repository search、owning ADR 或 milestone router 進入。
 
 ## Reading rule
 
@@ -43,4 +43,4 @@ Standalone audit / corrective evidence 保留原檔名，可由 repository searc
 
 ## Growth rule
 
-M45 後不為每個 implementation subtask 機械建立 audit file。只有 material finding、formal critical boundary、runtime evidence 或 Milestone holistic / post-release closure 真正需要 durable evidence 時才建立。
+不為 implementation subtask 機械建立 audit file。只有 material incident、formal critical boundary、不可逆 migration、platform/runtime acceptance 或 consolidated holistic closure 真正需要 durable evidence 時才建立。Closed artifact 一律先做 retention decision；Archive trigger 不代表 mandatory permanent retention。

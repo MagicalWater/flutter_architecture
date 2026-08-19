@@ -68,7 +68,7 @@ Web採explicit reset disposition，不宣稱舊sqflite browser storage可自動�
 
 - [Current platform classification](../project_context.md#platform-capability)
 - [App README](../../apps/flutter_architecture/README.md)
-- [Milestone 18 documentation baseline review](../audits/milestone_18/18-6_documentation_baseline.md)
+- [Milestone 18 holistic audit](../audits/milestone_18_holistic_audit.md)
 
 ## Last Reviewed Baseline
 

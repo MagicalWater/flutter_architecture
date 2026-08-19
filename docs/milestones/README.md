@@ -3,279 +3,57 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.25.0
+last_reviewed_baseline: 1.26.0
 ---
 
 # Milestone Routing
 
-本目錄是 Milestone charter、plan、review、runtime evidence 與 release history 的穩定索引入口。
-
-本索引不搬移既有 artifacts；它只提供可持續的 routing，避免 current Roadmap 再次累積完整歷史 journal。
-
-## Authority
-
-Milestone routing 只回答：
-
-- Milestone 的正式名稱與狀態。
-- Design、plan、review、evidence 與 release 記錄位於何處。
-- 哪份文件是 final review。
-
-它不重複 Architecture Decision 內容，也不成為第二份 Roadmap 或 CHANGELOG。
-
-## Status rule
-
-- Active：以 `docs/roadmap/active.md` 為準。
-- Completed / Archived：以 final review、`CHANGELOG.md` 與 `VERSION` 為準。
-- Candidate：以 `docs/roadmap/candidates.md` 或 `docs/backlog.md` 為準。
-
-## Current routing
+本目錄只提供 closed milestone 的最低充分歷史入口，不保存完整 task journal。Current state 以 `docs/roadmap/active.md`、canonical ADR、source/runtime、`VERSION` 與 `CHANGELOG.md` 為準。
 
 ```txt
 Active Milestone: none
-Template Baseline: 1.25.0
+Template Baseline: 1.26.0
 ```
 
-Milestone 46 Documentation & Skill Governance Complexity Audit / Simplification 已發布為 Template Baseline `1.25.0` 並完成 formal closure；current state以`docs/roadmap/active.md`為準。
+## Retention rule
 
-### Milestone 46 closed routing
+- Closed Design / Plan、intermediate review、checkpoint、handoff、temporary admission 與 per-task review 已完成 retention cleanup；需要時由 Git history 追溯。
+- 下表只保留每個 milestone 最高資訊密度的 closure evidence；少數 security / platform runtime evidence 另保留於 `docs/audits/`。
+- Release identity 以 `CHANGELOG.md`、`VERSION`、Git tag / commit history 為準，不由 historical review 覆蓋。
 
-- State：published / formal closure complete；Template Baseline `1.25.0`。
+## Closed routing
 
-- Design：`docs/superpowers/specs/2026-08-19-milestone-46-documentation-skill-governance-simplification-design.md`
-- Implementation Plan：`docs/superpowers/plans/2026-08-19-milestone-46-documentation-skill-governance-simplification.md`
-- Holistic Final Review：`docs/audits/milestone_46/46-1_holistic_final_review.md`
-- Post-release Validation：`docs/audits/milestone_46/46-2_post_release_validation.md`
-- Release：Template Baseline `1.25.0`；candidate exact-SHA logical full、Windows Android、GitHub-hosted iOS Simulator／Production Release與published identity PASS。
+| Milestone | Primary retained evidence |
+|---|---|
+| 1–17 | `docs/archive/`、canonical ADR、`CHANGELOG.md`、Git history |
+| 18 | `docs/audits/milestone_18_holistic_audit.md` |
+| 19 | `docs/audits/milestone_19_holistic_final_review.md` |
+| 20 | `docs/audits/milestone_20/milestone_20_final_review.md` |
+| 21 | `docs/audits/milestone_21/milestone_21_final_review.md` |
+| 22 | `docs/audits/milestone_22/22-7_final_review.md` |
+| 23 | `docs/audits/milestone_23/23-9_final_review.md` |
+| 24 | `docs/audits/milestone_24/24-6_final_review.md` |
+| 25 | `docs/audits/milestone_25/25-10_final_review.md` |
+| 26 | `docs/audits/milestone_26/26-8_final_review.md` |
+| 27 | `docs/audits/milestone_27/27-8_final_review.md` |
+| 28 | `docs/audits/milestone_28/28-9_final_review.md` |
+| 29 | `docs/audits/milestone_29/29-10_final_review.md` |
+| 30 | `docs/audits/milestone_30/30-11_final_review.md` |
+| 31 | `docs/audits/milestone_31/31-r10_local_final_review.md` |
+| 32 | `docs/audits/milestone_32/32-11_final_review.md` |
+| 33 | `docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md` |
+| 34 | `docs/audits/milestone_34/34-5_holistic_final_review.md` |
+| 35 | `docs/audits/milestone_35/35-8_holistic_final_review.md` |
+| 36 | `docs/audits/milestone_36/36-8_holistic_final_review.md` |
+| 37 | `docs/audits/milestone_37/37-8_holistic_final_review.md` |
+| 38 | `docs/audits/milestone_38/38-11_holistic_final_review.md` |
+| 39 | `docs/audits/milestone_39/39-7_holistic_final_review.md` |
+| 40 | `docs/audits/milestone_40/40-10_final_comprehensive_review.md` |
+| 41 | `docs/audits/milestone_41/41-8_holistic_final_review.md` |
+| 42 | `docs/audits/milestone_42/42-9_combined_holistic_final_review.md` |
+| 43 | `docs/audits/milestone_43/43-7_holistic_final_review.md` |
+| 44 | `docs/audits/milestone_44/44-post-closure-project-code-convergence-holistic-review.md` |
+| 45 | `docs/audits/milestone_45/45-1_holistic_final_review.md` |
+| 46 | `docs/audits/milestone_46/46-1_holistic_final_review.md` |
 
-### Milestone 45 closed routing
-
-- Requirement Decision：Accepted — `docs/audits/milestone_45/45-r_requirement_decision.md`
-- Design：Accepted — `docs/superpowers/specs/2026-08-19-milestone-45-test-by-exception-governance-reset-design.md`
-- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-19-milestone-45-test-by-exception-governance-reset.md`
-- Holistic Final Review：Accepted / PASS — `docs/audits/milestone_45/45-1_holistic_final_review.md`
-- Post-release Validation：Completed / PASS — `docs/audits/milestone_45/45-2_post_release_validation.md`
-- Release：Template Baseline `1.24.0`；exact candidate logical full、Windows Android production Release、GitHub-hosted iOS Simulator／Production Release與published identity PASS；Milestone 45 formal closure。
-
-Milestone 44 Pencil Component Constraint Semantics Corrective已發布為Template Baseline `1.23.0`並完成post-release closure；post-closure C1已由Template Baseline `1.23.1`承接。
-
-Milestone 44 post-closure C1 Color Ownership Adoption Corrective已由Template Baseline `1.23.1`發布承接；不重新開啟M44 relationship-layout主責。
-
-2026-08-19 使用者另要求在下一次Template Baseline發布前，對Milestones 41–44之後的**current project-code convergence / architecture completeness**做fresh post-closure gap audit。此要求不推翻既有M44/C1 closure，也不預設一定要重開Milestone 44；continuation authority見`docs/audits/milestone_44/44-post-closure-gap-audit-handoff.md`。
-
-### Milestone 44 closed routing
-
-- Requirement Decision：Accepted / Level 4 — `docs/audits/milestone_44/44-r_requirement_decision.md`
-- Revised Design：Accepted / user approved 2026-08-19 — `docs/superpowers/specs/2026-08-18-milestone-44-pencil-component-constraint-semantics-design.md`
-- Design Review：Completed / PASS — `docs/audits/milestone_44/44-0_design_spec_review.md`
-- Implementation Plan：Accepted / user approved 2026-08-19 — `docs/superpowers/plans/2026-08-19-milestone-44-pencil-component-constraint-semantics-corrective.md`
-- Plan Review：Accepted / PASS — `docs/audits/milestone_44/44-p_implementation_plan_review.md`
-- Holistic Final Review：Accepted / PASS — `docs/audits/milestone_44/44-6_holistic_final_review.md`
-- Post-release Validation：Completed / PASS — `docs/audits/milestone_44/44-7_post_release_validation.md`
-- Release：Template Baseline `1.23.0`；exact published-main Windows／Android／iOS與PTF-47～58 fresh acceptance PASS；Milestone 44 formal closure。
-- Post-closure C1 Requirement：Accepted / Level 3 — `docs/audits/milestone_44/44-c1_color_ownership_adoption_requirement_decision.md`
-- Post-closure C1 Design／Plan：Accepted — `docs/superpowers/specs/2026-08-19-milestone-44-post-closure-color-ownership-adoption-corrective-design.md` / `docs/superpowers/plans/2026-08-19-milestone-44-post-closure-color-ownership-adoption-corrective.md`
-- Post-closure C1 Holistic Review：Accepted / PASS — `docs/audits/milestone_44/44-c1_5_holistic_corrective_review.md`
-- Post-closure C1 Release：Template Baseline `1.23.1`；published and superseded by current `1.24.0` baseline。
-
-Milestone 43 Flutter Presentation Component Architecture & UI Responsibility Governance已發布為Template Baseline `1.22.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
-
-### Milestone 43 closed routing
-
-- Requirement Decision：Accepted / Level 4 — `docs/audits/milestone_43/43-r_requirement_decision.md`
-- Design：Accepted / user approved 2026-08-18 — `docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`
-- Design Review：Completed / PASS — `docs/audits/milestone_43/43-0_design_spec_review.md`
-- Implementation Plan：Accepted / user approved 2026-08-18 — `docs/superpowers/plans/2026-08-18-milestone-43-presentation-component-architecture.md`
-- Plan Review：Accepted / PASS — `docs/audits/milestone_43/43-p_implementation_plan_review.md`
-- Holistic Final Review：Accepted / PASS — `docs/audits/milestone_43/43-7_holistic_final_review.md`
-- Post-release Validation：Completed / PASS — `docs/audits/milestone_43/43-8_post_release_validation.md`
-- Release：Template Baseline `1.22.0`；exact published-main Windows／Android／iOS與PTF-35～46 fresh acceptance PASS；Milestone 43 formal closure。
-
-Milestone 41 constraint-layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline `1.21.0`並完成post-release closure。
-
-### Milestone 42 closed routing
-
-- Requirement Decision：Accepted — `docs/audits/milestone_42/42-r_requirement_decision.md`
-- Revised Design：Accepted / user approved 2026-08-18 — `docs/superpowers/specs/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective-design.md`
-- Design Review：Completed / PASS — `docs/audits/milestone_42/42-0_design_spec_review.md`
-- Rebuilt Implementation Plan：Accepted / user approved 2026-08-18 — `docs/superpowers/plans/2026-08-18-milestone-42-pencil-presentation-token-governance-corrective.md`
-- Plan Review：Completed / PASS — `docs/audits/milestone_42/42-p_implementation_plan_review.md`
-- Behavioral Pressure：Accepted / PASS — `docs/audits/milestone_42/42-8_behavioral_pressure_review.md`
-- Combined Holistic Final Review：Accepted / PASS — `docs/audits/milestone_42/42-9_combined_holistic_final_review.md`
-- Post-release Validation：Completed / PASS — `docs/audits/milestone_42/42-10_post_release_validation.md`
-- Release：Template Baseline `1.21.0`；Milestone 41 + 42 formal closure。
-
-### Milestone 41 closed routing
-
-- Requirement Decision：Accepted — `docs/audits/milestone_41/41-r_requirement_decision.md`
-- Design：Accepted / user approved 2026-08-18 — `docs/superpowers/specs/2026-08-18-milestone-41-pencil-layout-architecture-corrective-design.md`
-- Design Review：Completed / PASS — `docs/audits/milestone_41/41-0_design_spec_review.md`
-- Implementation Plan：Accepted / user approved 2026-08-18 — `docs/superpowers/plans/2026-08-18-milestone-41-pencil-layout-architecture-corrective.md`
-- Plan Review：Completed / PASS — `docs/audits/milestone_41/41-p_implementation_plan_review.md`
-- Holistic Final Review：Accepted / PASS — `docs/audits/milestone_41/41-8_holistic_final_review.md`
-- Publication disposition：與Milestone 42合併為`1.21.0`，formal closure由`docs/audits/milestone_42/42-10_post_release_validation.md`擁有。
-
-Milestone 40已完成；40-7／40-7R architecture-Hero方向與C01／C02均為rejected historical evidence，40-7T Level 1 README title artwork已取得使用者visual acceptance並promotion到root README。
-
-### Milestone 40 closed routing
-
-- Requirement Decision：Accepted — `docs/audits/milestone_40/40-r_requirement_decision.md`
-- Design：Accepted / user approved 2026-08-17 — `docs/superpowers/specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`
-- Design Review：Accepted — `docs/audits/milestone_40/40-0_design_spec_review.md`
-- Implementation Plan：Accepted / user approved 2026-08-17 — `docs/superpowers/plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`
-- Plan Review：Accepted — `docs/audits/milestone_40/40-p_implementation_plan_review.md`
-- Holistic Final Review：Completed — `docs/audits/milestone_40/40-6_holistic_final_review.md`
-- Rejected Hero attempt：Rejected / invalid governance — `docs/audits/milestone_40/40-7_repository_hero_visual_review.md`
-- Hero Corrective Requirement：Accepted — `docs/audits/milestone_40/40-7r_hero_visual_requirement_decision.md`
-- Hero Corrective Design：Accepted / user approved 2026-08-17 — `docs/superpowers/specs/2026-08-17-milestone-40-hero-visual-corrective-design.md`
-- Hero Corrective Plan：Accepted / user approved 2026-08-17 — `docs/superpowers/plans/2026-08-17-milestone-40-hero-visual-corrective.md`
-- Hero Corrective Plan Review：Accepted — `docs/audits/milestone_40/40-7p_hero_visual_plan_review.md`
-- Hero Corrective Design Review：PASS — `docs/audits/milestone_40/40-7d_hero_visual_design_review.md`
-- Title Artwork Requirement：Accepted / Level 1 reduced scope — `docs/audits/milestone_40/40-7t_title_artwork_requirement_decision.md`
-- Title Artwork Visual Review：Accepted / user visual acceptance PASS — `docs/audits/milestone_40/40-7t_title_artwork_review.md`
-- Title Artwork Consumer Review：Accepted — `docs/audits/milestone_40/40-7t_readme_consumer_review.md`
-- Holistic Final Review Addendum：Completed — `docs/audits/milestone_40/40-8_holistic_final_review.md`
-- README Language / Authority Sync Corrective：Accepted — `docs/audits/milestone_40/40-9_readme_language_and_authority_sync_review.md`
-- Final Comprehensive Local Review：PASS — `docs/audits/milestone_40/40-10_final_comprehensive_review.md`
-- Release：No release；Template Baseline remains `1.20.0`
-
-### Milestone 39 closed routing
-
-- Requirement Decision：Accepted — `docs/audits/milestone_39/39-r_requirement_decision.md`
-- Design：Accepted — `docs/superpowers/specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md`
-- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md`
-- Task 39-5 Fresh Behavioral Pressure：Accepted — `docs/audits/milestone_39/39-5_fidelity_pressure_evidence.md`
-- Task 39-7 Holistic Final Review：Release Candidate Accepted — `docs/audits/milestone_39/39-7_holistic_final_review.md`
-- Task 39-8 Post-release Validation：Completed — `docs/audits/milestone_39/39-8_post_release_validation.md`
-- Release：Template Baseline `1.20.0`已發布並完成formal closure
-
-### Milestone 38 closed routing
-
-- Requirement Decision：Accepted — `docs/audits/milestone_38/38-r_requirement_decision.md`
-- Design：Accepted — `docs/superpowers/specs/2026-08-15-milestone-38-template-product-infrastructure-ci-adoption-design.md`
-- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-15-milestone-38-template-product-infrastructure-ci-adoption.md`
-- manual-local acceptance：Accepted — `docs/audits/milestone_38/38-7_manual_local_acceptance.md`
-- self-hosted acceptance：Blocked External / dispositioned — `docs/audits/milestone_38/38-8_self_hosted_acceptance.md`
-- github-hosted acceptance：Accepted — `docs/audits/milestone_38/38-9_github_hosted_acceptance.md`
-- Fresh no-handoff acceptance：Accepted — `docs/audits/milestone_38/38-10_fresh_agent_acceptance.md`
-- Holistic Final Review：Completed — `docs/audits/milestone_38/38-11_holistic_final_review.md`
-- Release：Template Baseline `1.19.0`
-
-### Milestone 37 closed routing
-
-- Requirement Decision：Accepted — `docs/audits/milestone_37/37-r_requirement_decision.md`
-- Design：Accepted — `docs/superpowers/specs/2026-08-14-milestone-37-template-to-product-repository-bootstrap-design.md`
-- Design Review：PASS / user approved — `docs/audits/milestone_37/37-0_design_spec_review.md`
-- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-14-milestone-37-template-to-product-repository-bootstrap.md`
-- Plan Review：PASS / user approved — `docs/audits/milestone_37/37-p_implementation_plan_review.md`
-- Task 37-6 Isolated Bootstrap Acceptance：Accepted — `docs/audits/milestone_37/37-6_isolated_bootstrap_acceptance.md`
-- Task 37-7 Fresh Agent Behavioral Acceptance：Accepted — `docs/audits/milestone_37/37-7_fresh_agent_behavioral_acceptance.md`
-- Task 37-8 Holistic Final Review：PASS — `docs/audits/milestone_37/37-8_holistic_final_review.md`
-- Task 37-9 Post-release Validation：Completed — `docs/audits/milestone_37/37-9_post_release_validation.md`
-- Release：Template Baseline `1.18.0`已發布並完成formal closure
-
-### Milestone 36 closed routing
-
-- Requirement Decision：Accepted — `docs/audits/milestone_36/36-r_requirement_decision.md`
-- Design：Accepted — `docs/superpowers/specs/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance-design.md`
-- Design Review：PASS / user approved — `docs/audits/milestone_36/36-0_design_spec_review.md`
-- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-12-milestone-36-test-authoring-cost-risk-based-testing-governance.md`
-- Plan Review：PASS / user approved — `docs/audits/milestone_36/36-p_implementation_plan_review.md`
-- Managed worktree：`C:\Users\crazy\.devspace\worktrees\flutter_architecture-98449518` / `milestone-36-test-authoring-governance`
-- Task 36-5 Behavioral Review：Accepted — `docs/audits/milestone_36/36-5_tdd_two_layer_governance_review.md`
-- Task 36-6 Reference Density Review：Accepted — `docs/audits/milestone_36/36-6_reference_feature_test_density_review.md`
-- Task 36-7 Acceptance Corpus：Accepted — `docs/audits/milestone_36/36-7_risk_based_authoring_acceptance_corpus.md`
-- Task 36-8 Holistic Final Review：Accepted — `docs/audits/milestone_36/36-8_holistic_final_review.md`
-- Task 36-9 Post-release Validation：Completed — `docs/audits/milestone_36/36-9_post_release_validation.md`
-- Release：Template Baseline `1.17.0`已發布並完成formal closure
-
-### Milestone 35 active routing
-
-- Admission audit：`docs/audits/milestone_35/35-0_test_execution_cost_admission_audit.md`
-- Requirement Decision：Accepted — `docs/audits/milestone_35/35-r_requirement_decision.md`
-- Design：Accepted — `docs/superpowers/specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`
-- Implementation Plan：Accepted — `docs/superpowers/plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`
-- Holistic Final Review：Accepted — `docs/audits/milestone_35/35-8_holistic_final_review.md`
-- Post-release Validation：Completed — `docs/audits/milestone_35/35-9_post_release_validation.md`
-- Release：Template Baseline `1.16.0`已發布並完成formal closure
-
-### Milestone 34 release routing
-
-- Accepted Design：`docs/superpowers/specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`
-- Accepted Implementation Plan：`docs/superpowers/plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`
-- Behavioral pressure evidence：`docs/audits/milestone_34/34-3_asset_typography_pressure_evidence.md`
-- Workflow documentation review：`docs/audits/milestone_34/34-4_workflow_documentation_review.md`
-- Holistic Final Review：`docs/audits/milestone_34/34-5_holistic_final_review.md`
-- Post-release validation：`docs/audits/milestone_34/34-6_post_release_validation.md`
-- Release：Template Baseline `1.15.2`已發布並完成post-release closure。
-
-### Milestone 33 closed routing
-
-- Accepted Design：`docs/superpowers/specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`
-- Accepted ADR stable decision draft：`docs/superpowers/specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`
-- Design review：`docs/audits/milestone_33/33-0_design_spec_review.md`
-- Accepted Implementation Plan：`docs/superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`
-- Plan review：`docs/audits/milestone_33/33-p_implementation_plan_review.md`
-- Execution admission：`docs/audits/milestone_33/33-execution-admission.md`
-- Corrective Design：`docs/superpowers/specs/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery-design.md`
-- Corrective Plan：`docs/superpowers/plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md`
-- Corrective C1 review：`docs/audits/milestone_33/33-c1_governance_contract_review.md`
-- Corrective C2 review：`docs/audits/milestone_33/33-c2_runtime_visual_contract_review.md`
-- Runtime Renderer Calibration Amendment：`docs/superpowers/specs/2026-08-08-milestone-33-corrective-runtime-renderer-calibration-amendment-design.md`
-- Calibration amendment review：`docs/audits/milestone_33/33-cp2_runtime_renderer_calibration_amendment_review.md`
-- C3 implementation review：`docs/audits/milestone_33/33-c3_single_renderer_implementation_review.md`
-- C4 Android runtime acceptance：`docs/audits/milestone_33/33-c4_android_runtime_acceptance.md`
-- C5 Corrective Holistic Final Review：`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md`
-- Corrective post-release validation：`docs/audits/milestone_33/33-c6_post_release_validation.md`
-- Latest accepted corrective work：C1／CP2／C2／C3／C4／C5、1.15.1 release與post-release closure均已PASS。
-- Reusable workflow Guide：`docs/guides/pencil_to_flutter_workflow.md`
-- Historical pre-corrective holistic final review：`docs/audits/milestone_33/33-12_holistic_final_review.md`；不得覆蓋current Corrective authority。
-- Historical 1.15.0 post-release validation：`docs/audits/milestone_33/33-13_post_release_validation.md`；只證明被Corrective supersede前的1.15.0 release closure。
-
-## Closed milestone routing
-
-| Milestone | Status | Primary routing |
-|---|---|---|
-| 1–8 | Completed / Archived | `docs/archive/progress_v1.0.0.md`、`CHANGELOG.md`、Git history |
-| 9 | Completed / Archived | Decision 013、`CHANGELOG.md`、Git history |
-| 10 | Completed / Archived | Decision 014、`CHANGELOG.md`、Git history |
-| 11 | Deferred | `docs/roadmap/candidates.md`、`docs/backlog.md` |
-| 12 | Completed / Archived | Decision 015、`CHANGELOG.md`、Git history |
-| 13 | Completed / Archived | Decision 016、`CHANGELOG.md`、Git history |
-| 14 | Completed / Archived | `docs/archive/milestone_14_offline_cache.md`、Decision 017 |
-| 15 | Completed / Archived | Decision 018、`docs/superpowers/plans/`、`CHANGELOG.md` |
-| 16 | Completed / Archived | Decision 019、`CHANGELOG.md`、Git history |
-| 17 | Completed / Archived | Decision 020、`CHANGELOG.md`、Git history |
-| 18 | Completed / Archived | `docs/audits/milestone_18_holistic_audit.md`、`docs/audits/milestone_18/` |
-| 19 | Completed / Archived | planning review、`docs/audits/milestone_19/`、holistic final review、plans |
-| 20 | Completed / Archived | planning review、`docs/audits/milestone_20/`、implementation plan |
-| 21 | Completed / Archived | planning review、`docs/audits/milestone_21/`、implementation plan |
-| 22 | Completed / Archived | planning review、implementation plan、`docs/audits/milestone_22/22-7_final_review.md` |
-| 23 | Completed / Archived | `docs/audits/milestone_23/23-0_planning_review.md`、migration manifest、batch reviews、`docs/audits/milestone_23/23-9_final_review.md` |
-| 24 | Completed / Archived | ADR-023、implementation plan、`docs/audits/milestone_24/24-6_final_review.md`、`docs/audits/milestone_24/24-7_post_release_remote_validation.md` |
-| 25 | Completed / Archived | ADR-024、implementation plan、`docs/audits/milestone_25/25-10_final_review.md`、`docs/audits/milestone_25/25-11_remote_validation.md` |
-| 26 | Completed / Archived | ADR-025、implementation plan、`docs/audits/milestone_26/26-8_final_review.md`、`docs/audits/milestone_26/26-6_remote_validation.md`、`docs/audits/milestone_26/26-9_post_release_remote_validation.md` |
-| 27 | Completed / Archived | ADR-026、implementation plan、`docs/audits/milestone_27/27-8_final_review.md`、`docs/audits/milestone_27/27-9_post_release_remote_validation.md`、Task 27-6 remote acceptance、Task 27-7 runtime evidence |
-| 28 | Completed / Archived | ADR-027、implementation plan、`docs/audits/milestone_28/28-9_final_review.md`、`docs/audits/milestone_28/28-10_post_release_validation.md`、Task 28-7 platform evidence |
-| 29 | Completed / Archived | ADR-010、implementation plan、`docs/audits/milestone_29/29-9_platform_runtime_regression.md`、`docs/audits/milestone_29/29-10_final_review.md`、`docs/audits/milestone_29/29-10_post_release_validation.md` |
-| 30 | Completed / Archived | Design Spec、implementation plan、`docs/audits/milestone_30/30-11_final_review.md`、`docs/audits/milestone_30/30-12_post_release_validation.md`、`docs/guides/testing_governance.md` |
-| 31 | Completed / Archived | Workflow Governance Skill、approved Design Spec、approved Recovery Plan、`docs/audits/milestone_31/31-r9_implementation_holistic_review.md`、`docs/audits/milestone_31/31-r10_local_final_review.md`、`docs/audits/milestone_31/31-r11_post_release_validation.md` |
-| 32 | Completed / Archived | accepted Design／Plan、`docs/audits/milestone_32/32-11_final_review.md`、`docs/audits/milestone_32/32-12_post_release_validation.md` |
-| 33 | Completed / Archived | ADR-028、accepted Design／Plan、Corrective C1～C6、`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md`、`docs/audits/milestone_33/33-c6_post_release_validation.md`、`docs/guides/pencil_to_flutter_workflow.md` |
-| 34 | Completed / Archived | accepted Design／Plan、Tasks 34-1～34-4、`docs/audits/milestone_34/34-5_holistic_final_review.md`、`docs/audits/milestone_34/34-6_post_release_validation.md`、representation/provenance Skill contract |
-
-## Milestone 32 closed routing
-
-- Accepted Design：`docs/superpowers/specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`
-- Design review：`docs/audits/milestone_32/32-0_design_spec_review.md`
-- Accepted Plan：`docs/superpowers/plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`
-- Plan review：`docs/audits/milestone_32/32-1_implementation_plan_review.md`
-- Phase reviews：`docs/audits/milestone_32/`
-- Holistic final review：`docs/audits/milestone_32/32-11_final_review.md`
-- Post-release validation：`docs/audits/milestone_32/32-12_post_release_validation.md`
-- Historical candidate handoff：`docs/audits/ci_artifact_storage_cutover_candidate_handoff.md`
-
-完整 disposition 與歷史保存位置記錄於 `docs/migrations/m22_roadmap_manifest.md`。
-
-## Routing rule
-
-Milestone index 只保存名稱、status 與 artifact route。它不得複製 Architecture Decision body、Task checklist、測試 journal、runtime evidence 或 release notes 全文。
+Additional retained evidence 可由 `docs/audits/README.md` 或 repository search 定位。Historical artifact 未列於本表時，以 Git history 為正式追溯方式。

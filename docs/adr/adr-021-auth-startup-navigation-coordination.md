@@ -89,7 +89,7 @@ Shell仍可使用 `AutoTabsRouter`管理使用者主動 tab切換；這不等於
 - [Auth feature README](../../apps/flutter_architecture/lib/features/auth/README.md)
 - [Shell feature README](../../apps/flutter_architecture/lib/features/shell/README.md)
 - [Profile feature README](../../apps/flutter_architecture/lib/features/profile/README.md)
-- [Milestone 18 remediation decision](../audits/milestone_18/remediation_decision.md)
+- [Milestone 18 holistic audit](../audits/milestone_18_holistic_audit.md)
 
 ## Last Reviewed Baseline
 

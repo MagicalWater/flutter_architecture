@@ -148,7 +148,7 @@ Remaining restriction：fresh isolated no-memory behavioral discovery、explicit
 
 上述`Pilot accepted with restrictions`是Task 6當時的歷史結論。2026-07-30後續取得三個fresh isolated behavioral outputs，已補齊原本唯一缺少的unnamed discovery、explicit safety與API-only non-trigger evidence。
 
-Evidence：[`adopting_template_product_identity_behavioral_pressure_evidence.md`](adopting_template_product_identity_behavioral_pressure_evidence.md)。
+細粒度 behavioral pressure evidence 已依 historical retention cleanup 由 Git history 保存；本 final review 保留其結論摘要。
 
 Current registry disposition已由後續approval closure review升級為：
 

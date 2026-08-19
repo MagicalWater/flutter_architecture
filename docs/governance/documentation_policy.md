@@ -3,7 +3,7 @@ document_type: governance-policy
 status: accepted
 authoritative_for:
   - documentation-governance-and-metadata
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.26.0
 ---
 
 # Documentation Governance Policy
@@ -166,7 +166,7 @@ Plan、review 與 evidence 完成後不持續改寫為新的 current state；cur
 
 ## 6. Archive Triggers
 
-符合下列任一條件時，文件應進入 archive routing：
+符合下列任一條件時，文件應進入 retention decision：
 
 - Milestone 已通過 final review 並發布或正式封存。
 - Current policy 或 Decision 已被 supersede。
@@ -174,7 +174,13 @@ Plan、review 與 evidence 完成後不持續改寫為新的 current state；cur
 - Review evidence 已完成 closure。
 - 文件只剩歷史解釋價值。
 
-Archive 不等於立即物理搬檔。若搬移會破壞連結，先建立 milestone index、migration manifest 或 transitional stub。
+Retention disposition只有三種：
+
+- **Keep**：仍是 current navigation / authority 必要入口。
+- **Archive**：重大 migration、incident、platform/runtime acceptance、architecture transition 或 consolidated closure，且具有獨立長期追溯價值。
+- **Delete**：只剩 implementation process 價值，已被 ADR、source、guide、final authority 或 later closure 吸收；由 Git history 保存即可。
+
+Archive trigger 不代表 mandatory permanent retention。Intermediate Design review、Plan review、per-task review、checkpoint、handoff、temporary admission 與已被 final review 吸收的過程證據，預設不永久保留。Archive 也不要求立即物理搬檔；只要 routing 清楚且不污染 current navigation，可以留在 historical tree。
 
 ## 7. Legacy Adoption Rule
 

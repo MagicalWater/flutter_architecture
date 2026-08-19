@@ -38,7 +38,7 @@ last_reviewed_baseline: 1.5.0
 | 12 | Completed / Archived | `closed-routing` | Decision 015、CHANGELOG、Git history |
 | 13 | Completed / Archived | `closed-routing` | Decision 016、CHANGELOG、Git history |
 | 14 | Completed / Archived | `closed-routing` | `docs/archive/milestone_14_offline_cache.md`、Decision 017 |
-| 15 | Completed / Archived | `closed-routing` | Decision 018、`docs/superpowers/plans/`、CHANGELOG |
+| 15 | Completed / Archived | `closed-routing` | Decision 018、CHANGELOG、Git history |
 | 16 | Completed / Archived | `closed-routing` | Decision 019、CHANGELOG、Git history |
 | 17 | Completed / Archived | `closed-routing` | Decision 020、CHANGELOG、Git history |
 | 18 | Completed / Archived | `closed-routing` | `docs/audits/milestone_18/`、holistic audit、CHANGELOG |

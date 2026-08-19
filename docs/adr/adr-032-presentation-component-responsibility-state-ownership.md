@@ -179,10 +179,8 @@ Review一個Presentation source時優先問：
 
 ## Related Evidence
 
-- `docs/audits/milestone_43/43-r_requirement_decision.md`
-- `docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`
-- `docs/superpowers/plans/2026-08-18-milestone-43-presentation-component-architecture.md`
-- `docs/audits/milestone_43/43-1_presentation_architecture_red_review.md`
+- `docs/audits/milestone_43/43-7_holistic_final_review.md`
+- Fine-grained Requirement / Design / Plan / RED review history：Git history。
 
 ## Last Reviewed Baseline
 

@@ -164,9 +164,8 @@ Reviewer一旦判定wrong source／wrong asset／wrong icon／wrong representati
 
 ## Related Evidence
 
-- [Milestone 33 Design](../superpowers/specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md)
-- [Milestone 33 Implementation Plan](../superpowers/plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)
-- [Milestone 33 Design review](../audits/milestone_33/33-0_design_spec_review.md)
+- [Milestone 33 corrective holistic final review](../audits/milestone_33/33-c5_corrective_holistic_final_review.md)
+- [Milestone 33 Android runtime acceptance](../audits/milestone_33/33-c4_android_runtime_acceptance.md)
 
 ## Last Reviewed Baseline
 

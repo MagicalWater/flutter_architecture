@@ -173,4 +173,4 @@ new behavioral evidence claimed by this run: No
 
 不得以目前對話已知的先前內容取代 isolated behavioral evidence，也不得因單次 runtime 無法建立 fresh context，就靜默覆蓋已由正式 evidence closure 支持的 current registry status。
 
-此 Skill 已由 [`adopting_template_product_identity_behavioral_pressure_evidence.md`](../../../../docs/audits/adopting_template_product_identity_behavioral_pressure_evidence.md) 與 [`adopting_template_product_identity_approval_closure_review.md`](../../../../docs/audits/adopting_template_product_identity_approval_closure_review.md) 完成 `Approved` closure。未來若 trigger、permissions、managed paths、workflow order 或 supported runtime 改變，仍必須依中央 Skill adoption governance 重新評估所需 behavioral evidence。
+此 Skill 的歷史 adoption / behavioral closure 已完成；保留摘要見 [`adopting_template_product_identity_final_review.md`](../../../../docs/audits/adopting_template_product_identity_final_review.md)，細粒度 pressure evidence 由 Git history 追溯。未來若 trigger、permissions、managed paths、workflow order 或 supported runtime 改變，仍必須依中央 Skill adoption governance 重新評估所需 behavioral evidence。

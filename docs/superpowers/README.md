@@ -3,12 +3,12 @@ document_type: design-plan-index
 status: active
 authoritative_for:
   - design-spec-and-implementation-plan-routing
-last_reviewed_baseline: 1.25.0
+last_reviewed_baseline: 1.26.0
 ---
 
 # Design Specifications and Implementation Plans
 
-`docs/superpowers/` 保存 accepted / proposed Design Spec 與 Implementation Plan。
+`docs/superpowers/` 是需要 formal Design Spec / Implementation Plan 時的工作入口，不是 completed artifact 的永久倉庫。
 
 ## Authority
 
@@ -18,20 +18,11 @@ last_reviewed_baseline: 1.25.0
 
 ## Current active artifacts
 
-- Design：[`specs/2026-08-19-milestone-46-documentation-skill-governance-simplification-design.md`](specs/2026-08-19-milestone-46-documentation-skill-governance-simplification-design.md)
-- Plan：[`plans/2026-08-19-milestone-46-documentation-skill-governance-simplification.md`](plans/2026-08-19-milestone-46-documentation-skill-governance-simplification.md)
-- Current execution gate：[`../roadmap/active.md`](../roadmap/active.md)
+目前沒有 active Design Spec / Implementation Plan。Current execution gate：[`../roadmap/active.md`](../roadmap/active.md)。
 
 ## Historical routing
 
-Completed / superseded specs and plans 保留原路徑，不在本 index 重複維護逐 Milestone 狀態。需要查歷史 Milestone 時由 [`../milestones/README.md`](../milestones/README.md) 路由到對應 Design / Plan / review / release evidence。
-
-直接目錄：
-
-```txt
-docs/superpowers/specs/
-docs/superpowers/plans/
-```
+Completed / superseded specs 與 plans 在 retention decision 後通常由 ADR、source、guide、consolidated closure 與 Git history 承接，不要求永久留在 repository。需要查歷史 Milestone 時由 [`../milestones/README.md`](../milestones/README.md) 定位 retained evidence 或 Git history。
 
 ## Reading rule
 
@@ -45,5 +36,5 @@ docs/superpowers/plans/
 Design proposed → review / user approval → accepted
 Plan proposed → review / user approval → accepted
 accepted Plan → implementation
-completed artifact → historical evidence；不再改寫成 current state
+completed artifact → retention decision → durable evidence / Git history
 ```

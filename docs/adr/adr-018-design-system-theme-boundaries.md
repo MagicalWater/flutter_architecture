@@ -187,7 +187,7 @@ Design System與 feature integration不得禁止 system text scaling，不以固
 
 - [Design System package README](../../packages/design_system/README.md)
 - [App README](../../apps/flutter_architecture/README.md)
-- [Milestone 15 implementation plan](../superpowers/plans/2026-07-18-milestone-15-3-default-theme.md)
+- Historical implementation details：Git history / `CHANGELOG.md`
 
 ## Last Reviewed Baseline
 

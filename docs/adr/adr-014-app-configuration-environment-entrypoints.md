@@ -107,7 +107,7 @@ Aggregate 中的 Milestone 9 背景、Milestone 18 evidence clarification 與「
 
 - [Current Project Context](../project_context.md)
 - [App README](../../apps/flutter_architecture/README.md)
-- [Milestone 18 remediation decision](../audits/milestone_18/remediation_decision.md)
+- [Milestone 18 holistic audit](../audits/milestone_18_holistic_audit.md)
 - [CHANGELOG](../../CHANGELOG.md)
 
 ## Last Reviewed Baseline

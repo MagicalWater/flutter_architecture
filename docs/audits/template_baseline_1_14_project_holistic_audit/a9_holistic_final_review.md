@@ -22,7 +22,7 @@ Audit branch merge／push／release: NOT PERFORMED
 Remote M32 branch deletion: NOT PERFORMED
 ```
 
-本文件整合A1～A8 evidence、central findings register與fresh repository regression。使用者已於2026-07-31明確核准本Final Review與B＋D disposition；後續於2026-08-01另行授權在無新decision時自動完成R1～R5。Exact remediation closure由[`a10_remediation_holistic_closure.md`](a10_remediation_holistic_closure.md)擁有。
+本文件整合A1～A8 evidence、central findings register與fresh repository regression。使用者已於2026-07-31明確核准本Final Review與B＋D disposition；後續 remediation 細節已於 historical retention cleanup 後改由 Git history 保存。
 
 ## Exact Audit Baseline
 
@@ -60,7 +60,7 @@ Audit branch相對main的commits全部是本次Design、Plan、A1～A9 evidence�
 | A7 | Documentation and current authority | Accepted | `0667a67` |
 | A8 | Future direction disposition | Accepted | `ae9a12b` |
 | A9 | Holistic synthesis and final review | Accepted／user-approved | `51ab3fe` proposal + approval closure |
-| A10 | R1～R5 remediation holistic closure | Accepted | `a10_remediation_holistic_closure.md` + closure commit |
+| A10 | R1～R5 remediation holistic closure | Accepted | Git history + closure commit |
 
 ## Cross-Task Consistency Review
 
@@ -96,7 +96,7 @@ A8沒有找到同時具備confirmed gap、stable boundary、reproducible blocker
 
 ## Frozen Finding Set
 
-Central authority：[`findings.md`](findings.md)。
+當時 frozen findings register 已由 Git history 保存；本文件保留 final disposition。
 
 ```txt
 Confirmed findings: 9
@@ -136,7 +136,7 @@ Resolved findings: 9 / 9
 Open P0／P1／P2／P3: 0
 ```
 
-Current finding status唯一owner仍為[`findings.md`](findings.md)；cross-remediation validation、maintenance-mode entry與integration boundary見[`a10_remediation_holistic_closure.md`](a10_remediation_holistic_closure.md)。
+當時 finding disposition、cross-remediation validation、maintenance-mode entry與integration boundary的細節由 Git history 追溯；current authority 不由本 historical review 擁有。
 
 ## Fresh Repository Validation
 

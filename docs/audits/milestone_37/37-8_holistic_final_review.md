@@ -16,11 +16,7 @@ last_reviewed_baseline: 1.18.0
 
 ## Accepted authority
 
-- Requirement Decision：`docs/audits/milestone_37/37-r_requirement_decision.md`
-- Design：`docs/superpowers/specs/2026-08-14-milestone-37-template-to-product-repository-bootstrap-design.md`
-- Design review：`docs/audits/milestone_37/37-0_design_spec_review.md`
-- Implementation Plan：`docs/superpowers/plans/2026-08-14-milestone-37-template-to-product-repository-bootstrap.md`
-- Plan review：`docs/audits/milestone_37/37-p_implementation_plan_review.md`
+- Requirement / Design / Plan 與 intermediate review 的完整歷史鏈已於 retention cleanup 後由 Git history 保存。
 - Stable lifecycle decision：ADR-030
 
 ## Cross-Task review

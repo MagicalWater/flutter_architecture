@@ -83,7 +83,7 @@ Flutter／Melos輸出中的startup lock文字是並行process等待訊息；comm
 - `CHANGELOG.md`：新增1.12.0 release。
 - Roadmap／project context／milestone index／superpowers index已同步。
 - `docs/guides/testing_governance.md`成為current testing authority。
-- Post-release evidence：`docs/audits/milestone_30/30-12_post_release_validation.md`。
+- Post-release validation 的細粒度歷史證據已於 retention cleanup 後由 Git history 保存；本 final review 保留 Milestone 30 的 closure 結論。
 
 ## Final disposition
 

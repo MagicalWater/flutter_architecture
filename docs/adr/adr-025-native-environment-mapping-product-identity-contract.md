@@ -69,14 +69,8 @@ Production signing、keystore、Apple Team、provisioning、AAB、IPA與Store pu
 
 ## Related Evidence
 
-- [Milestone 26 planning review](../audits/milestone_26/26-0_planning_review.md)
-- [Milestone 26 Task 26-1 review](../audits/milestone_26/26-1_environment_contract_review.md)
-- [Milestone 26 design](../superpowers/specs/2026-07-22-milestone-26-native-flavor-product-identity-foundation-design.md)
-- [Milestone 26 implementation plan](../superpowers/plans/2026-07-22-milestone-26-native-flavor-product-identity-foundation.md)
 - [Native Environment and Product Identity Adoption Guide](../guides/native_environment_adoption.md)
 - [Milestone 26 final review](../audits/milestone_26/26-8_final_review.md)
-- [Milestone 26 remote validation](../audits/milestone_26/26-6_remote_validation.md)
-- [Milestone 26 post-release remote validation](../audits/milestone_26/26-9_post_release_remote_validation.md)
 
 ## Last Reviewed Baseline
 

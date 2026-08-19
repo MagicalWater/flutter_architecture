@@ -3,24 +3,24 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.22.0
+last_reviewed_baseline: 1.23.0
 ---
 
 # Active Milestone
 
 ```txt
 Active Milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
-State: Requirement accepted / Revised Design accepted / Implementation Plan accepted; implementation admitted
-Template Baseline: 1.22.0
+State: Task 44-6 accepted / Task 44-7 publication active
+Template Baseline: 1.23.0
 ```
 
 ## Current Scope
 
-Milestone 44已完成fresh Requirement Decision與scope corrective，維持Level 4 Architecture / Milestone。Current主責只修正bounded-component fixed-canvas laundering，並把current Pencil compatibility reference遷移為section-internal relationship-owned layout；Flow/Coordinator降為follow-up candidate，same-semantic color只做bounded governance clarification，不擴張Theme/Design System production scope。Revised Design與Implementation Plan都已於2026-08-19取得使用者明確核准；implementation正式admitted，下一個合法步驟為建立managed worktree並執行Task 44-1 direct RED。
+Milestone 44已完成fresh Requirement Decision、Revised Design、Implementation Plan與Tasks 44-1～44-6雙層治理。Current主責維持bounded-component fixed-canvas laundering corrective；normal content已遷移為relationship-owned layout，合法bounded spatial overlay維持可用，same-semantic color只做bounded governance hardening，沒有擴張Flow/Coordinator或Theme/Design System production scope。Task 44-6 holistic review已接受`1.23.0` release candidate，release identity已準備完成；Task 44-7 publication / published-main / post-release closure active。
 
 ## Current Gate
 
-Milestone 41～43 closure維持不變。Milestone 44 Design與Plan gate均已於2026-08-19通過。Current gate為implementation admitted／Task 44-1 direct RED pending；Open P0=0；Open P1 without disposition=0。
+Milestone 41～43 closure維持不變。Milestone 44 Tasks 44-1～44-6均已完成focused review、fresh re-review、whole-Task／whole-milestone review與required validation。Current gate為Template Baseline `1.23.0` release identity prepared／Task 44-7 publication active；Open P0=0；Open P1 without disposition=0。
 
 ## Current Evidence
 
@@ -29,6 +29,12 @@ Milestone 41～43 closure維持不變。Milestone 44 Design與Plan gate均已於
 - Milestone 44 Design Review：`docs/audits/milestone_44/44-0_design_spec_review.md`（completed / PASS）。
 - Milestone 44 Implementation Plan：`docs/superpowers/plans/2026-08-19-milestone-44-pencil-component-constraint-semantics-corrective.md`（accepted；Plan review PASS；user approved 2026-08-19）。
 - Milestone 44 Plan Review：`docs/audits/milestone_44/44-p_implementation_plan_review.md`（accepted / PASS）。
+- Task 44-1 Component Constraint RED：`docs/audits/milestone_44/44-1_component_constraint_red_review.md`（accepted RED；direct owner established）。
+- Task 44-2 Constraint Authority：`docs/audits/milestone_44/44-2_constraint_authority_review.md`（accepted / PASS）。
+- Task 44-3 Relationship Layout Corrective：`docs/audits/milestone_44/44-3_write_precheck_relationship_layout_review.md`（accepted / PASS；canonical/runtime golden PASS）。
+- Task 44-4 Legal Overlay / Visual Fidelity：`docs/audits/milestone_44/44-4_legal_overlay_visual_fidelity_review.md`（accepted / PASS）。
+- Task 44-5 Behavioral Pressure：`docs/audits/milestone_44/44-5_behavioral_pressure_review.md`（accepted / PASS；PTF-47～58 fresh PASS）。
+- Task 44-6 Holistic Final Review：`docs/audits/milestone_44/44-6_holistic_final_review.md`（accepted / PASS；release decision = 1.23.0 candidate）。
 
 - Milestone 43 Requirement Decision：`docs/audits/milestone_43/43-r_requirement_decision.md`（accepted / Level 4）。
 - Milestone 43 Design：`docs/superpowers/specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`（accepted；review PASS；user approved 2026-08-18）。

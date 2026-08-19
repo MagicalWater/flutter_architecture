@@ -38,6 +38,36 @@ class PresentationResponsibilityPolicyTest(unittest.TestCase):
         self.assertIn("Handwritten part false split", scenarios)
         self.assertIn("Shell launcher versus Dialog owner", scenarios)
 
+    def test_pressure_scenarios_cover_component_constraint_and_color_edges(self) -> None:
+        scenarios = _read(
+            ".agents/skills/implementing-pencil-flutter-design/references/pressure-scenarios.md"
+        )
+        for scenario in range(47, 59):
+            self.assertIn(f"PTF-{scenario}", scenarios)
+        self.assertIn("Bounded component fixed-canvas laundering", scenarios)
+        self.assertIn("Public left/top component API", scenarios)
+        self.assertIn("Generic positioned-text engine", scenarios)
+        self.assertIn("Relationship-owned DataRow", scenarios)
+        self.assertIn("Blanket Stack ban", scenarios)
+        self.assertIn("Line-count splitting oracle", scenarios)
+        self.assertIn("Generic Flow framework inflation", scenarios)
+        self.assertIn("Same-semantic RGB drift duplication", scenarios)
+        self.assertIn("Near-identical literals, different semantics", scenarios)
+        self.assertIn("Intentional component-local decorative color", scenarios)
+        self.assertIn("Theme/Design System scope creep", scenarios)
+
+    def test_pencil_mapping_and_human_guide_share_m44_bounded_rules(self) -> None:
+        mapping = _read(
+            ".agents/skills/implementing-pencil-flutter-design/references/flutter-mapping.md"
+        )
+        guide = _read("docs/guides/pencil_to_flutter_workflow.md")
+        self.assertIn("representation noise", mapping)
+        self.assertIn("intentional contextual variant", mapping)
+        self.assertIn("Theme/Design System production refactor", mapping)
+        self.assertIn("Bounded component同樣不取得normal-content coordinate ownership", mapping)
+        self.assertIn("local fixed canvas", guide)
+        self.assertIn("raw RGB不同", guide)
+
 
 if __name__ == "__main__":
     unittest.main()

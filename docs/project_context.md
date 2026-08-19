@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.22.0
+last_reviewed_baseline: 1.23.0
 ---
 
 # Project Context
@@ -27,11 +27,11 @@ last_reviewed_baseline: 1.22.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.22.0
+Template Baseline: 1.23.0
 Phase 1 / MVP: Completed
 Current active milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
-Current phase: Milestone 44 Requirement accepted / Revised Design accepted / Implementation Plan accepted / implementation admitted
-Latest completed initiative: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance（Template Baseline 1.22.0 published and post-release validated）
+Current phase: Task 44-6 holistic final review accepted / Task 44-7 publication active
+Latest completed initiative: Milestone 44 implementation + holistic review accepted；Template Baseline 1.23.0 publication in progress
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -123,7 +123,7 @@ root/
 
 ### Architecture Visual Overview
 
-以下兩張圖是目前 `1.22.0` 架構 authority 的**視覺摘要**，用來幫助人類快速理解 ownership、runtime composition、productization governance 與依賴契約；它們不建立新的平行 authority。若圖像摘要與 current snapshot、canonical ADR、root machine manifest 或 production source 衝突，仍以這些既有 authority 為準。
+以下兩張圖是目前 `1.23.0` 架構 authority 的**視覺摘要**，用來幫助人類快速理解 ownership、runtime composition、productization governance 與依賴契約；它們不建立新的平行 authority。若圖像摘要與 current snapshot、canonical ADR、root machine manifest 或 production source 衝突，仍以這些既有 authority 為準。
 
 產品化拓樸總覽：
 
@@ -364,7 +364,7 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.22.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.23.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
@@ -372,13 +372,13 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
-Current phase: Implementation Plan accepted / implementation admitted / Task 44-1 direct RED pending
-Latest completed initiative: Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance（1.22.0 published；Task 43-8 post-release PASS）
-Maintenance mode: Suspended while Milestone 44 is active
+Current phase: Task 44-6 accepted / Task 44-7 publication active
+Latest completed initiative: Milestone 44 implementation + holistic review accepted；1.23.0 publication in progress
+Maintenance mode: Active publication / post-release validation
 Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 44目前只處理component-local fixed-canvas laundering corrective：normal content即使位於bounded component內仍必須由Flutter constraints／relationship layout擁有；真正spatial/decorative bounded overlay才可保留`Stack/Positioned`。Flow/Coordinator維持follow-up candidate，same-semantic Pencil color只做bounded governance clarification。Implementation Plan已完成雙層review並於2026-08-19取得使用者明確核准，production implementation現已admitted；Task 44-1 direct RED是目前執行入口。
+Milestone 44目前只處理component-local fixed-canvas laundering corrective：normal content即使位於bounded component內仍必須由Flutter constraints／relationship layout擁有；真正spatial/decorative bounded overlay才可保留`Stack/Positioned`。Tasks 44-1～44-5已完成direct machine contract、stable authority、reference production corrective、visual/runtime fidelity與PTF-47～58 behavioral pressure；Flow/Coordinator維持follow-up candidate，same-semantic Pencil color只做bounded governance clarification，沒有Theme/Design System production refactor。Task 44-6 holistic review與full regression ceiling已PASS並接受`1.23.0` release candidate；release identity已準備完成，Task 44-7 publication／published-main／post-release closure是目前執行入口。
 
 Milestone 41 constraint/relationship layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0並closed。Milestone 43再建立ADR-032 generic Presentation responsibility/state/cohesion authority，完成Pencil normal-library decomposition、Catalog/OTP/Shell adoption／positive proofs、consumer governance與machine contracts。Template Baseline 1.22.0已發布；Task 43-8在exact published SHA完成Windows release/full regression、canonical generated verification、GitHub-hosted Android Development/Production、GitHub-hosted iOS Simulator/Production與PTF-35～46 fresh acceptance，Milestone 43正式closed。Closure evidence見`docs/audits/milestone_43/43-8_post_release_validation.md`。
 

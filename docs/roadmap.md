@@ -3,7 +3,7 @@ document_type: roadmap-index
 status: active
 authoritative_for:
   - project-roadmap-routing
-last_reviewed_baseline: 1.22.0
+last_reviewed_baseline: 1.23.0
 ---
 
 # Roadmap
@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.22.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.22.0
+Template Baseline: 1.23.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -27,8 +27,8 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 44 — Pencil Component Constraint Semantics Corrective
-State: Requirement accepted / Revised Design accepted / Implementation Plan accepted; implementation admitted
-Template Baseline: 1.22.0
+State: Task 44-6 accepted / Task 44-7 publication active
+Template Baseline: 1.23.0
 ```
 
 完整 active scope、current gate與 next action：
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 43 已完成或已有明確 disposition。Milestone 44已由fresh audit確認為Level 4 corrective，且已完成scope corrective：主責鎖定component-local fixed-canvas laundering；Flow/Coordinator不納入本Milestone implementation，same-semantic color只做bounded clarification。Revised Design與Implementation Plan均已完成雙層review並於2026-08-19取得使用者明確核准；implementation已admitted，下一步為Task 44-1 direct RED。Milestone 43仍維持Template Baseline 1.22.0正式closure。歷史 plan、review、runtime evidence、release 與 archive routing 集中於：
+Milestone 1 至 43 已完成或已有明確 disposition。Milestone 44為Level 4 component-local fixed-canvas laundering corrective；Requirement、Revised Design、Implementation Plan與Tasks 44-1～44-6均已完成雙層治理。Current reference已關閉bounded component normal-content canonical-coordinate loophole，同時保留合法spatial overlay；PTF-47～58與same-semantic color bounded governance fresh PASS。Task 44-6已接受Template Baseline `1.23.0` release candidate；release identity現已準備完成，Task 44-7 publication / published-main / post-release closure active。Milestone 43仍維持Template Baseline 1.22.0正式closure。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

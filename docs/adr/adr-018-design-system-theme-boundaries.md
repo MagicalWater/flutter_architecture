@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-018-design-system-theme-boundaries
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.23.0
 id: ADR-018
 title: Design System and Theme Boundaries
 supersedes:
@@ -110,6 +110,8 @@ Promotion判斷依semantic identity、stable theme responsibility與consumer evi
 
 Feature-local owner只允許窄責任、可解釋的exact visual authority，例如同一accepted proof多個bounded components共用的local palette或typography。它不是「只要Pencil exact就全部放feature-local」的逃生艙，也不得同時承擔colors、dimensions、typography、asset paths、gradients與canonical metadata。
 
+Accepted Pencil/source中近似但不完全相同的raw colors不得只依hex差異自動新增feature-local token。裁決順序固定為：先排除alpha blending／anti-alias／raster sampling／gradient sample／export difference等representation noise；再判斷是否為不同semantic role；若為同semantic role，只有具明確intentional contextual variant且有stable cross-consumer semantics時才promotion為semantic/component variant；純單一component decoration則留smallest correct component owner。反方向也不得為了Theme一致而抹平accepted intentional semantic/context variant。
+
 Asset path/provenance不得由visual token/spec owner接管；Design System也不保存canonical viewport/DPR或initiative-specific comparison metadata。
 
 ### App-owned preference
@@ -158,4 +160,4 @@ Design System與 feature integration不得禁止 system text scaling，不以固
 
 ## Last Reviewed Baseline
 
-1.21.0；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract。
+1.23.0；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract；Milestone 44再補same-semantic raw color的representation-noise／semantic-role／contextual-variant／component-decoration裁決順序。

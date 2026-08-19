@@ -66,6 +66,17 @@ class PencilSingleRendererPolicyTest(unittest.TestCase):
         self.assertIn("stack", self.all_text)
         self.assertIn("positioned", self.all_text)
 
+    def test_bounded_component_is_not_fixed_canvas_laundering_boundary(self) -> None:
+        self.assertIn("fixed-canvas laundering boundary", self.all_text)
+        self.assertIn("normal content", self.all_text)
+        self.assertIn("left/top", self.all_text)
+
+    def test_measurement_projection_does_not_authorize_content_coordinates(self) -> None:
+        self.assertIn("measurement projection", self.all_text)
+        self.assertIn("size", self.all_text)
+        self.assertIn("gap", self.all_text)
+        self.assertIn("canonical x/y placement", self.all_text)
+
     def test_spatial_canvas_requires_accepted_approval(self) -> None:
         self.assertIn("intentional-spatial-canvas", self.all_text)
         self.assertIn("approval_ref", self.all_text)

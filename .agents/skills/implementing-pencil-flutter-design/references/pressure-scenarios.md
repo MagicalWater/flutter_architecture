@@ -41,6 +41,18 @@
 | PTF-32 | Page、custom RenderObject、projection helpers與多個section implementations全塞`pages/screen_canvas.dart` | FAIL；dependency direction正確也不代表presentation ownership/cohesion PASS |
 | PTF-33 | Agent建立FeatureUiSpec同時集中colors、dimensions、typography、asset paths、gradients與geometry | FAIL；依Design System／asset authority／visual authority／layout／component owner重新分類 |
 | PTF-34 | Agent把heroImagePath、warningIconPath、texturePath、fontAssetPath放進VisualSpec當UI constants | FAIL；asset identity/provenance走既有representation authority，VisualSpec不得當asset registry |
+| PTF-47 | Screen用Column，但bounded component內的普通Text/DataRow/Button仍全部用canonical x/y Position | FAIL；bounded component不是fixed-canvas laundering豁免，normal content仍須relationship-owned |
+| PTF-48 | Component public API暴露`left/top`來排列普通label/value/button content | FAIL；public coordinate API不能取得normal-content placement ownership |
+| PTF-49 | Component內用generic `_positionedText`／`_localText` helper作普通content排版引擎 | FAIL；generic positioned-content engine仍是local fixed-canvas laundering |
+| PTF-50 | DataRow使用`Row + Expanded/Align + Padding`表達icon/label/value關係 | PASS；normal content以relationship layout擁有placement |
+| PTF-51 | Hero由screen flow放置，Hero內badge/glow/ornament用bounded `Stack/Positioned` | PASS；真正spatial overlay合法，仍需visual/runtime evidence |
+| PTF-52 | Reviewer看到多個`Stack/Positioned`就要求全面禁用 | FAIL；只能拒絕normal-content coordinate ownership，不能禁止合法bounded overlay |
+| PTF-53 | Agent因file超過特定行數就要求每個widget拆成獨立檔案 | FAIL；line count不是responsibility oracle，依change reason/lifecycle/authority決定owner |
+| PTF-54 | Agent要求新增generic Flow framework與mandatory `flows/`資料夾才能符合Presentation治理 | FAIL；沒有真實workflow responsibility不得建立Flow/Coordinator formalism |
+| PTF-55 | 同一CTA semantic只因Pencil抽樣RGB有小幅漂移，就在多個feature各建local color | FAIL；先判representation noise與shared semantic，不得把same-semantic drift拆成多個owner |
+| PTF-56 | 兩個raw color很接近，但分別是informational border與disabled ornament且change reason獨立 | PASS；near-identical literal不證明同semantic，應保留不同semantic owners |
+| PTF-57 | 單一component有intentional exact decorative color，沒有shared semantic或第二consumer | PASS；保留smallest correct component-local owner，不必升Design System |
+| PTF-58 | 只因same-semantic color edge case，Agent要求重構整個Theme/Design System production source，卻沒有production misuse evidence | FAIL；屬scope creep，先做bounded reconciliation／behavioral governance |
 
 ## Combined pressure prompts
 
@@ -412,6 +424,102 @@ Catalog cache/reconnect status有獨立產品語意與共同change reason，能�
 
 PASS：可以。這是coherent bounded owner；兩個related widgets可共一檔，不需要one-widget-one-file，也不需要promotion到Design System。
 
+### PTF-47 Bounded component fixed-canvas laundering
+
+```txt
+Screen root已改成Column與section flow，所以Agent宣稱架構已responsive；但每個bounded Card/Step/Button元件內仍把普通Text、DataRow、button label依Pencil canonical x/y全部放進Stack+Positioned。這樣可以嗎？
+```
+
+PASS：不可。Bounded component不是fixed-canvas laundering邊界；普通content仍須由Padding/Align/Row/Column/Flex/constraints等relationship layout擁有。只有真正badge/glow/ornament/z-order可保留local spatial overlay。
+
+### PTF-48 Public left/top component API
+
+```txt
+Reusable InfoRow元件公開labelLeft、labelTop、valueLeft、valueTop參數，screen只傳accepted Pencil座標；元件本身是local bounds，不影響其他section。可以嗎？
+```
+
+PASS：不可。Public coordinate API已把normal-content placement contract化；應改成leading/trailing、gap、alignment、flex/constraints等relationship semantics。Local bounds不構成豁免。
+
+### PTF-49 Generic positioned-text engine
+
+```txt
+為了避免重複碼，Agent建立_localText(text,left,top,width,height,...)與_positionedIcon(...)，所有card/header/button normal content都透過這些helper排版。畫面只有一套renderer。可以嗎？
+```
+
+PASS：不可。這只是把fixed canvas藏進generic helper；one renderer也不豁免。普通content helper應表達semantic/relationship responsibility，而不是canonical coordinates。
+
+### PTF-50 Relationship-owned DataRow
+
+```txt
+DataRow用Row放icon、label與value；label/value以Expanded、Align、Padding與sibling gaps取得空間，沒有public left/top。這是否符合一般App normal-content layout？
+```
+
+PASS：符合。這是relationship-owned layout；仍需既有geometry、overflow、semantics與visual evidence，但架構方向正確。
+
+### PTF-51 Legal Hero overlay
+
+```txt
+Hero section由screen Column正常放置；Hero內容文字用Padding+Column，只有背景glow、badge、orbit與shield artwork在Hero bounds內用Stack+Positioned疊層。是否應全部改掉Positioned？
+```
+
+PASS：不應。這些是bounded spatial/decorative responsibilities；保留是合理的。只要它們不取得normal content或跨section flow ownership即可。
+
+### PTF-52 Blanket Stack ban
+
+```txt
+Reviewer看到production source仍有十多個Stack/Positioned，直接判定M44失敗並要求全部改成Row/Column，不區分用途。這個review合理嗎？
+```
+
+PASS：不合理。Review必須判斷ownership semantics；normal content coordinate placement要FAIL，但glow/ring/badge/ornament/optical artwork等真正spatial overlay可PASS。
+
+### PTF-53 Line-count splitting oracle
+
+```txt
+一個cohesive presentation owner約420行，包含同一change reason的private helpers。Agent設定「超過300行必拆檔」，因此要求每個widget各拆一檔。可以把這當architecture rule嗎？
+```
+
+PASS：不可。Line count不是architecture oracle；只有不同change reason、lifecycle、state/navigation/layout authority或獨立review surface成立時才extract。
+
+### PTF-54 Generic Flow framework inflation
+
+```txt
+目前畫面沒有多步workflow、async ordering或跨surface coordination，但Agent說Presentation治理完整就必須新增Flow/Coordinator base class與features/*/presentation/flows/資料夾。可以嗎？
+```
+
+PASS：不可。沒有真實responsibility就不建立generic Flow framework或mandatory folder；這是formalism/scope creep。
+
+### PTF-55 Same-semantic RGB drift duplication
+
+```txt
+Login、Home、Checkout的primary CTA都被accepted product design定義成同一semantic role；Pencil extraction分別得到#3DAEFF、#3CAEFE、#3DAEFE的小幅RGB差。Agent因此想在三個feature各自建立local CTA color。合理嗎？
+```
+
+PASS：不合理。先判斷representation/export noise與shared semantic identity；同一semantic不應只因raw RGB微差被拆成多個feature owner。若已有public Design System semantic owner，應映射/reconcile到該owner。
+
+### PTF-56 Near-identical literals, different semantics
+
+```txt
+Informational card border是#5A7184，disabled decorative ornament是#5B7083；兩者數值很接近，但產品語意與change reason獨立。要合併成同一Design System color嗎？
+```
+
+PASS：不必。Near-identical raw value不證明shared semantic；可以由不同semantic/component owners擁有，避免錯誤change coupling。
+
+### PTF-57 Intentional component-local decorative color
+
+```txt
+只有一個Hero ornament使用accepted exact #C88A32，沒有第二consumer、沒有Theme Identity語意，也不會與其他component共同演進。是否應新增global Design System token？
+```
+
+PASS：不應。保留Hero/component-local smallest correct owner；intentional decorative exact value本身不是global token contract。
+
+### PTF-58 Theme/Design System scope creep
+
+```txt
+目前只發現Pencil同一semantic CTA有少量RGB drift，production沒有Theme misuse或public token缺陷證據。Agent要求趁機重構整個Theme/Design System color API與所有consumer。合理嗎？
+```
+
+PASS：不合理。先做bounded semantic reconciliation與governance/pressure hardening；沒有fresh production misuse evidence不得把edge case膨脹成Theme/Design System production refactor。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |
@@ -443,6 +551,12 @@ PASS：可以。這是coherent bounded owner；兩個related widgets可共一檔
 | 「全部升Design System最乾淨」 | Single-consumer exact values沒有shared semantic contract，promotion會污染Design System |
 | 「都在Presentation layer所以塞pages沒關係」 | Layer direction與responsibility cohesion是不同gate；page不擁有renderer infrastructure/component dump |
 | 「asset path也只是UI constant」 | Asset identity/provenance有獨立authority；VisualSpec不得成為asset registry |
+| 「component有bounds，所以裡面用x/y排普通content沒問題」 | Bounded owner同樣受normal-content relationship ownership約束；local bounds只豁免真正spatial overlay |
+| 「Positioned很多就全部禁掉最安全」 | Positioning mechanism不是oracle；判斷normal content ownership與真正spatial rationale |
+| 「超過300行就一定要拆」 | Line count不是responsibility boundary；依change reason/lifecycle/authority決定 |
+| 「每個Presentation feature都應該有flows/」 | Flow/Coordinator只在真實workflow responsibility存在時建立 |
+| 「RGB不同就一定是不同semantic token」 | 先判representation noise與semantic identity；same-semantic小漂移不得製造多owner |
+| 「顏色很接近就一定共用token」 | Raw literal similarity不證明semantic identity或change coupling |
 
 ## Red flags
 
@@ -470,5 +584,12 @@ PASS：可以。這是coherent bounded owner；兩個related widgets可共一檔
 - 「全部UI數值丟進Design System最一致。」
 - 「反正都在Presentation layer，RenderObject放pages也沒差。」
 - 「asset path只是字串，放VisualSpec最方便。」
+- 「反正元件有固定bounds，裡面Text全部Positioned沒關係。」
+- 「看到Stack/Positioned就全部刪掉。」
+- 「檔案超過N行就一定要拆。」
+- 「Presentation完整就必須有Flow/Coordinator。」
+- 「Pencil RGB有一點不同，就各feature一個color。」
+- 「兩個hex很接近就升成同一Design System token。」
+- 「順便把整個Theme重構掉比較乾淨。」
 
 以上都表示gate尚未通過或正在合理化scope drift。

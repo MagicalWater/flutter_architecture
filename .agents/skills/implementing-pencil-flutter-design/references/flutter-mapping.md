@@ -35,6 +35,8 @@ single-screen exact geometry / decorative value
 
 `implementation_mapping.json`的risk-selected `ui_design_ownerships`必須resolved；Design System owner需指向public API，`intentional-local`需local-scope reason，asset-reference只引用existing provenance evidence。Missing／unresolved ownership是production hard stop。
 
+Accepted Pencil/raw extraction出現近似但不完全相同的colors時，不得只看hex差異決定owner。Consumer decision order固定為：先排除alpha blending、anti-alias、raster sampling、gradient sample、export difference等representation noise；再判斷是否為不同semantic role；同semantic只有在存在明確intentional contextual variant與stable cross-consumer semantics時才建立variant；單一component decoration保留smallest correct component owner。這個edge case不構成Theme/Design System production refactor的自動授權。
+
 ## Architecture boundary
 
 - App保持唯一Composition Root。
@@ -59,6 +61,10 @@ unresolved
 一般 App screen 預設使用 `constraint-relationship`；canonical page coordinates 只可作 design evidence，不能成為 runtime page coordinate system。`intentional-spatial-canvas` 只限 map／game board／diagram editor 等真正 spatial surface，且必須有 accepted `approval_ref`。`unresolved` fail closed。
 
 Local component 可以使用 bounded overlay，但 bounded overlay 不取得 whole-screen page-flow ownership，也不構成 screen-root layout model。
+
+Bounded component同樣不取得normal-content coordinate ownership。普通label/value row、button icon + label、card content、progress step distribution等，即使位於固定bounds內，仍優先使用`Padding`、`Align`、`Row`、`Column`、`Flex`、`Expanded`、`Spacer`、`Wrap`與constraints表達relationships。Risk-selected component若以public `left/top`或generic positioned helper排列normal content，mapping視為unresolved／architecture failure，不能用「只是local overlay」合理化。
+
+Measurement projection仍可服務accepted design-space的size、gap、padding、radius、stroke、icon/artwork sizing；它不授權normal content的canonical x/y placement。保留`Stack/Positioned`時，review evidence必須能指出badge/glow/ornament/z-order等真正spatial rationale。
 
 Presentation responsibility以ADR-032為stable authority。Page/View/Section/Component/Surface/Layout是responsibility roles，不是mandatory folder/class tree；Page/View orchestration不得同時直接擁有獨立custom RenderObject／projection engine，bounded Section/Component/Surface與layout mechanics依change reason／lifecycle／authority分owner。Handwritten `part`／`part of`不能用來掩蓋cross-owner coupling。
 

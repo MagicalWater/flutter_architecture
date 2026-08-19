@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import '../../../architecture/support/presentation_architecture_policy.dart';
 
 void main() {
   test(
@@ -59,6 +60,10 @@ void main() {
         'lib/features/pencil_compatibility/presentation/widgets/'
         'write_precheck/write_precheck_content.dart',
       ).readAsStringSync();
+      final componentSource = File(
+        'lib/features/pencil_compatibility/presentation/widgets/'
+        'write_precheck/write_precheck_content_components.dart',
+      ).readAsStringSync();
       if (pageSource.contains('FittedBox(')) {
         violations.add('WritePrecheckView uses fixed-canvas FittedBox scaling');
       }
@@ -90,6 +95,24 @@ void main() {
           'presentation/pages owns bounded write-precheck section implementations',
         );
       }
+      violations.addAll(
+        findNormalContentCoordinatePlacementViolations(
+          source: componentSource,
+          normalContentOwners: const <String>{
+            'WritePrecheckStep',
+            'WritePrecheckDataRow',
+            'WritePrecheckRecordTile',
+            'WritePrecheckSecondaryAction',
+          },
+          normalContentHelpers: const <String>{'_localText'},
+        ),
+      );
+      violations.addAll(
+        findNormalContentCoordinatePlacementViolations(
+          source: projectedCanvasSource,
+          normalContentHelpers: const <String>{'_positionedText'},
+        ),
+      );
       for (final forbidden in <String>[
         'static const double designHeight = 1672',
         'top: 1277',

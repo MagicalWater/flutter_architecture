@@ -50,7 +50,7 @@ Level 0／1 不得虛構 Milestone、Spec、Plan 或 formal audit；Level 2 使�
 - App 是唯一 Composition Root；reusable package 不直接綁 `get_it` / `injectable`。
 - Page 不跨 feature 直接讀其他 feature Bloc；跨 feature authority 使用 stable domain/app abstraction。
 - Route Guard 不依賴 AuthBloc 等 presentation detail。
-- Generated files（`*.freezed.dart`、`*.g.dart`、`*.gr.dart`、`injection.config.dart`）不得手改。
+- Generated files（`*.freezed.dart`、`*.g.dart`、`*.gr.dart`、`*.gen.dart`、`injection.config.dart`）不得手改。
 - Presentation responsibility / state ownership 以 ADR-032 為準；不要用固定 folder/class tree、line count、`setState` ban 或 Bloc presence 當 architecture oracle。
 - UI Design Ownership 以 ADR-018 / ADR-028 與 local owner 為準；禁止建立 feature-local catch-all `*VisualSpec` / `*VisualTokens` / `*UiSpec` / `*StyleConfig` 形成第二套 Design System。
 

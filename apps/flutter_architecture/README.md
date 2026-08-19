@@ -94,6 +94,22 @@ Logout 清除 Auth credential、Auth User 與 runtime Session，但保留 public
 - App 擁有 locale preference、restore 與 controller。
 - `design_system` 提供 Theme definitions 與 UI primitives；App 擁有 theme preference、controller 與 Appearance selector。
 
+### Runtime Assets 與 Theme-aware Visuals
+
+- App package使用FlutterGen產生`lib/gen/assets.gen.dart`；production UI優先消費generated accessor，不重寫相同`assets/...` path literal。
+- FlutterGen只負責bundle path access，不負責判定asset屬於Design System、App、Feature或component。
+- Theme-aware visual以`DsThemeId + Brightness`選擇representation；Theme Identity由`ThemeControllerScope.themeIdOf(context)`提供read-only presentation access，不由Feature讀取preference store。
+- 只有需要semantic/theme selection時才建立bounded resolver；單純generated accessor已清楚表達owner時直接使用，不建立mega `AppAssets`或每個asset一層wrapper。
+- Asset source、transformation、hash與consumer provenance仍由既有representation mapping authority擁有，不複製到runtime constants。
+
+新增／調整App assets後執行：
+
+```txt
+dart run build_runner build
+```
+
+FlutterGen output是generated source，不得手改。
+
 ## UI Design-space Scaling
 
 App Composition Root 透過 `ScreenUtilInit` 擁有 product-specific design baseline；current template placeholder 位於 `lib/app/ui/app_ui_design.dart`，採用 template 成為產品時應依主要 UI 設計來源替換。

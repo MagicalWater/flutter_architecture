@@ -123,4 +123,10 @@ final class ThemeControllerScope extends InheritedNotifier<ThemeController> {
     }
     return scope.notifier!;
   }
+
+  /// Presentation consumer 取得目前已由 registry resolve 的 Theme Identity。
+  ///
+  /// Theme-aware visual selection 應依賴這個 stable identity，而不是讀取
+  /// preference persistence 或用 raw color 反推目前 Theme。
+  static DsThemeId themeIdOf(BuildContext context) => of(context).definition.id;
 }

@@ -57,6 +57,7 @@ dev_dependencies:
 
   auto_route_generator: ^10.5.0
   build_runner: ^2.15.0
+  flutter_gen_runner: ^5.15.0
   flutter_lints: ^6.0.0
   freezed: 4.0.0-dev.2
   drift_dev: ^2.34.4
@@ -72,3 +73,8 @@ flutter:
     enable-swift-package-manager: false
   generate: true
   uses-material-design: true
+  assets:
+    - assets/theme_reference/
+
+flutter_gen:
+  output: lib/gen/

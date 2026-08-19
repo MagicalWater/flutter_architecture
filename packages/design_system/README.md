@@ -27,6 +27,7 @@ last_reviewed_baseline: 1.5.1
 - 不 export raw palette。
 - 不吸收single-screen exact radius／gradient／offset／artwork geometry或canonical viewport／DPR。
 - 不把Pencil／feature asset path、source hash或provenance當Design System token。
+- App／Feature artwork不會因為隨Theme Identity或Brightness切換就自動成為Design System responsibility；theme-aware selection與semantic ownership是不同軸。
 
 Pencil/source-driven UI values進入本package前必須先做semantic／promotion decision。真正shared semantic、Theme Identity或validated reusable component才由Design System擁有；feature-local exact values留smallest correct owner，不能用generic `*VisualSpec`／`*VisualTokens`建立平行Design System。
 
@@ -64,6 +65,8 @@ Ocean Theme    Light / Dark
 ```
 
 Ocean 使用獨立 palette、semantic colors與有限 typography／radius差異，證明 Theme Identity不是只替換 seed color。
+
+Theme Identity可以作為App／Feature visual resolver的selection key，但`design_system`不因此擁有那些product-specific assets。真正Design-System-owned representation必須先滿足shared semantic／validated reusable component的promotion evidence。
 
 `DsThemeId` 是 persistence與 registry共用的穩定識別值：
 

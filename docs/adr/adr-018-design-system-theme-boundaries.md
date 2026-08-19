@@ -125,6 +125,25 @@ Accepted Pencil/source中近似但不完全相同的raw colors不得只依hex差
 
 Asset path/provenance不得由visual token/spec owner接管；Design System也不保存canonical viewport/DPR或initiative-specific comparison metadata。
 
+Runtime asset integration必須再區分三個互不取代的軸：
+
+```txt
+ownership axis
+→ Design System / App-Product / Feature / smallest component owner
+
+selection axis
+→ static / Theme Identity / Brightness / bounded semantic state
+
+provenance axis
+→ accepted source / transformation / repository destination / content hash / consumer
+```
+
+Repository使用FlutterGen產生package-local typed asset accessor。FlutterGen只擁有bundle path的generated access，不擁有semantic identity、Theme selection或representation provenance；generated accessor已存在時，production consumer不得重新手寫相同bundle path。
+
+Theme-aware asset以stable `DsThemeId`與resolved `Brightness`作selection input，不以raw `Color` equality、seed color或screenshot sampled color反推。目前visual即使會隨Theme Identity切換，其ownership仍依change responsibility決定；App／Feature artwork不會因theme-aware就自動promotion到Design System。只有存在實際selection／semantic mapping時才建立bounded resolver；generated directory accessor本身已能清楚表達owner時，不為形式再包一層asset registry。
+
+App-owned theme-aware visual resolver必須使用`DsThemeRegistry`既有resolve/default semantics；不得建立第二套Theme fallback registry。Feature取得Theme Identity時只依賴App提供的presentation-level read contract，不直接讀theme preference persistence implementation。
+
 ### App-owned preference
 
 Theme preference至少包含 stable `themeId`與 `system | light | dark` mode。App負責 preference model、versioned persistence、bootstrap restore、controller lifecycle、registry composition、`MaterialApp` wiring與 selector UI；Design System不依賴 persistence implementation。
@@ -147,6 +166,7 @@ Design System與 feature integration不得禁止 system text scaling，不以固
 
 - Feature視覺依賴集中在 semantic theme contract，不綁定 raw palette。
 - Theme Identity可和 system／light／dark交叉組合。
+- Theme Identity／Brightness可選擇不同runtime asset representation，而不改變asset的App／Feature／Component ownership。
 - Design System維持 reusable UI package，不知道 Auth、Catalog、Cache、Failure或 localization workflow。
 - Theme preference與 persistence lifecycle由 App明確擁有。
 - Presentation migration不得改變既有 Auth、Pagination、SWR或 cache state machine。
@@ -171,4 +191,4 @@ Design System與 feature integration不得禁止 system text scaling，不以固
 
 ## Last Reviewed Baseline
 
-1.25.2；Design-space scaling integration補入shared design-derived measurement runtime scaling、App-owned baseline與property-neutral scaling contract；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract；Milestone 44再補same-semantic raw color的representation-noise／semantic-role／contextual-variant／component-decoration裁決順序。
+1.25.2；Design-space scaling integration補入shared design-derived measurement runtime scaling、App-owned baseline與property-neutral scaling contract；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract；Milestone 44再補same-semantic raw color的representation-noise／semantic-role／contextual-variant／component-decoration裁決順序；Asset Runtime Integration補入FlutterGen generated access、theme-aware selection與ownership/provenance axis分離。

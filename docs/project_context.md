@@ -87,6 +87,7 @@ root/
 - Connectivity lifecycle、reconnect signal與App-wide offline presentation。
 - SQLite database lifecycle 與 migration。
 - Theme、Locale 與 local unlock preference。
+- FlutterGen generated asset access、App-owned Theme-aware visual selection 與 runtime asset composition。
 - Feature presentation composition。
 - Android runner 與 release artifact verification。
 

@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
-State: local implementation complete / holistic review PASS / integration-publication pending
+State: dev integration complete / integration review pending publication
 Template Baseline: 1.23.1
 ```
 

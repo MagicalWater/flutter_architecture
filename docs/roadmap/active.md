@@ -10,17 +10,17 @@ last_reviewed_baseline: 1.23.1
 
 ```txt
 Active Milestone: Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
-State: local implementation complete / holistic review PASS / integration-publication pending
+State: dev integration complete / integration review pending publication
 Template Baseline: 1.23.1
 ```
 
 ## Current Scope
 
-Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation。Current permanent portfolio為20 files／5,873 LOC／186 static cases，相對admission baseline分別縮減88.8%／80.9%／83.5%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。Holistic local review PASS；尚未進行branch integration／publication。Milestone 44本體與既有1.23.x evidence不重新開啟。
+Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation與corrective review。Current permanent portfolio為20 files／5,902 LOC／189 static cases，相對admission baseline分別縮減88.8%／80.8%／83.2%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。`dev`已fast-forward整合至`4265c7c`；尚未publication。Milestone 44本體與既有1.23.x evidence不重新開啟。
 
 ## Current Gate
 
-Milestone 45 current gate：local holistic review已PASS；下一個boundary是branch integration／minor baseline publication disposition。Managed worktree：`C:\Users\crazy\.devspace\worktrees\flutter_architecture-d4c3ab18`；branch：`milestone-45-test-by-exception-governance-reset`；base：`dev@ff45162df04db652c670e4611b3b51acd52c5ad8`。
+Milestone 45 current gate：local holistic + corrective review已PASS，`dev`已fast-forward整合到`4265c7c`；下一個boundary是minor baseline publication disposition。M45 source branch仍為`milestone-45-test-by-exception-governance-reset`，整合target為`dev`，尚未push／merge到`main`。
 
 ## Current Evidence
 
@@ -28,7 +28,7 @@ Milestone 45 current gate：local holistic review已PASS；下一個boundary是b
 - Milestone 45 Combined Planning Review：`docs/audits/milestone_45/45-0_combined_planning_review.md`（PASS；Design／Plan user approved 2026-08-19）。
 - Milestone 45 Design：`docs/superpowers/specs/2026-08-19-milestone-45-test-by-exception-governance-reset-design.md`（accepted）。
 - Milestone 45 Implementation Plan：`docs/superpowers/plans/2026-08-19-milestone-45-test-by-exception-governance-reset.md`（accepted）。
-- Milestone 45 Holistic Final Review：`docs/audits/milestone_45/45-1_holistic_final_review.md`（local implementation PASS；portfolio 88.8% files／80.9% LOC reduction）。
+- Milestone 45 Holistic Final Review：`docs/audits/milestone_45/45-1_holistic_final_review.md`（local implementation + corrective review PASS；portfolio 88.8% files／80.8% LOC reduction；`dev` integration complete）。
 
 - Milestone 44 Requirement Decision：`docs/audits/milestone_44/44-r_requirement_decision.md`（accepted / Level 4）。
 - Milestone 44 Design：`docs/superpowers/specs/2026-08-18-milestone-44-pencil-component-constraint-semantics-design.md`（accepted；revised雙層review PASS；user approved 2026-08-19）。

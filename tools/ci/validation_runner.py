@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shlex
+import shutil
 import subprocess
 import sys
 from pathlib import Path, PurePosixPath
@@ -147,6 +149,26 @@ def render_commands(commands: Iterable[tuple[Path, list[str]]]) -> str:
     )
 
 
+def _execution_command(command: list[str], *, platform_name: str | None = None) -> list[str]:
+    platform = os.name if platform_name is None else platform_name
+    if platform != "nt" or not command:
+        return command
+
+    resolved = shutil.which(command[0])
+    if resolved is None:
+        return command
+    if Path(resolved).suffix.lower() not in {".bat", ".cmd"}:
+        return [resolved, *command[1:]]
+
+    return [
+        os.environ.get("COMSPEC", "cmd.exe"),
+        "/d",
+        "/s",
+        "/c",
+        subprocess.list2cmdline(command),
+    ]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Execute a serialized validation plan phase")
     parser.add_argument("--phase", required=True, choices=("quality", "tests", "generated"))
@@ -163,7 +185,7 @@ def main() -> int:
 
     root = args.repository.resolve()
     for cwd, command in commands:
-        subprocess.run(command, cwd=root / cwd, check=True)
+        subprocess.run(_execution_command(command), cwd=root / cwd, check=True)
     return 0
 
 

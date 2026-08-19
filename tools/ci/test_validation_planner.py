@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import unittest
 
-from tools.ci.validation_runner import commands_for_phase
+from unittest import mock
+
+from tools.ci.validation_runner import _execution_command, commands_for_phase
 from tools.ci.validation_planner import (
     can_reuse_validation_evidence,
     plan_payload,
@@ -130,6 +132,19 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         self.assertTrue(any("-s tools/ci" in command for command in rendered))
         self.assertTrue(any("-s tools/docs" in command for command in rendered))
         self.assertFalse(any("-s tools -p test_*.py" in command for command in rendered))
+
+    @mock.patch("tools.ci.validation_runner.shutil.which")
+    def test_windows_batch_shim_is_executed_through_cmd(self, which: mock.Mock) -> None:
+        which.return_value = r"C:\flutter\bin\dart.bat"
+
+        command = _execution_command(
+            ["dart", "run", "melos", "run", "analyze"],
+            platform_name="nt",
+        )
+
+        self.assertEqual(command[1:4], ["/d", "/s", "/c"])
+        self.assertEqual(command[0].lower().replace("/", "\\").split("\\")[-1], "cmd.exe")
+        self.assertIn("dart run melos run analyze", command[4])
 
     def test_same_identity_can_be_reused_for_holistic_and_post_release(self) -> None:
         plan = plan_validation(["docs/README.md"])

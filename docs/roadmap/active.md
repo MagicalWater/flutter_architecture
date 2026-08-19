@@ -10,19 +10,19 @@ last_reviewed_baseline: 1.26.0
 
 ```txt
 Active Milestone: none
-State: Asset Runtime & Theme-aware Visual Integration release candidate
+State: Asset Runtime & Theme-aware Visual Integration published / formal closure complete
 Template Baseline: 1.26.0
 ```
 
 ## Current Scope
 
-目前沒有 active Milestone。最新 maintenance capability candidate 為 Asset Runtime & Theme-aware Visual Integration，導入 FlutterGen typed asset access、Theme Identity + Brightness visual selection 與 ownership/provenance boundary；Template Baseline candidate 為 `1.26.0`。
+目前沒有 active Milestone。最新 maintenance capability release 為 Asset Runtime & Theme-aware Visual Integration，導入 FlutterGen typed asset access、Theme Identity + Brightness visual selection 與 ownership/provenance boundary；Template Baseline `1.26.0` 已發布。
 
 ## Current Gate
 
 - Active Milestone：**none**。
 - Open P0=0 / Open P1 without disposition=0。
-- 目前 gate：完成 `1.26.0` candidate exact-SHA release validation、publication 與 published identity closure。
+- Current gate：**CLOSED**。下一個需求從 `dev` 進入新的 Requirement Decision／最低充分分類。
 
 ## Current Authority
 

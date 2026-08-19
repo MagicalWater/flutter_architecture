@@ -27,7 +27,7 @@ Other platforms: Dependency-ready
 
 ```txt
 Active Milestone: none
-State: Asset Runtime & Theme-aware Visual Integration release candidate
+State: Asset Runtime & Theme-aware Visual Integration published / formal closure complete
 Template Baseline: 1.26.0
 ```
 

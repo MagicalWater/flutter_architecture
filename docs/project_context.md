@@ -30,7 +30,7 @@ last_reviewed_baseline: 1.26.0
 Template Baseline: 1.26.0
 Phase 1 / MVP: Completed
 Current active milestone: none
-Current phase: Asset Runtime & Theme-aware Visual Integration release candidate；maintenance-ready after publication
+Current phase: Asset Runtime & Theme-aware Visual Integration published / formal closure complete；maintenance-ready
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -374,7 +374,7 @@ Current iOS deployment baseline為15.0。
 
 ```txt
 Current active milestone: none
-Current phase: Asset Runtime & Theme-aware Visual Integration release candidate
+Current phase: Asset Runtime & Theme-aware Visual Integration published / formal closure complete
 Maintenance mode: normal development from `dev`; `main` publication-only
 ```
 

@@ -1,8 +1,10 @@
 # Asset Runtime Ownership & Theme-aware Representation Integration — Implementation Plan
 
-Status: **accepted**
+Status: **accepted / implementation complete**
 
 Accepted: 2026-08-19 by explicit user approval after whole-Plan review.
+
+Implementation completed: 2026-08-19. Release disposition remains separate.
 
 ## 1. Goal
 

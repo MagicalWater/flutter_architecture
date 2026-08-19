@@ -78,7 +78,7 @@ final class ProfileView extends StatelessWidget {
       return DsMessageState(
         title: l10n.profileUnauthenticatedTitle,
         message: l10n.profileUnauthenticatedMessage,
-        icon: const Icon(Icons.person_off_outlined, size: DsIconSize.hero),
+        icon: Icon(Icons.person_off_outlined, size: DsIconSize.hero),
       );
     }
 
@@ -114,14 +114,14 @@ final class ProfileView extends StatelessWidget {
               title: l10n.profileLogoutFailureTitle,
               message: failureMessage!,
             ),
-            const SizedBox(height: DsSpace.lg),
+            SizedBox(height: DsSpace.lg),
           ],
           Text(
             l10n.profileTitle,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          const SizedBox(height: DsSpace.lg),
+          SizedBox(height: DsSpace.lg),
           Text(
             l10n.profileCurrentUser(
               profile?.name ?? l10n.profileUnknownUserLabel,
@@ -129,7 +129,7 @@ final class ProfileView extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          const SizedBox(height: DsSpace.lg),
+          SizedBox(height: DsSpace.lg),
           FilledButton.tonal(
             onPressed: isLoading ? null : onLogout,
             child: DsButtonContent(

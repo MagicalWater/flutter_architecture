@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-028-repository-local-pencil-to-flutter-design-implementation-workflow
-last_reviewed_baseline: 1.23.0
+last_reviewed_baseline: 1.25.2
 id: ADR-028
 title: Repository-local Pencil-to-Flutter Design Implementation Workflow
 supersedes:
@@ -116,9 +116,11 @@ Visible geometry可以由accepted design-space推導真Flutter widget的width、
 
 `Stack`／`Positioned`可用於bounded local overlay，例如Hero內badge、glow、ornament；local coordinates必須相對該bounded container，且不得決定其他section的placement。Map、game board、diagram editor等真正spatial surface只有在accepted Design明確標記`intentional-spatial-canvas`並提供approval reference時，才能以spatial coordinates作主要layout semantics。
 
-Bounded component本身**不是**fixed-canvas laundering boundary。即使screen root與major sections已由`Column`／constraints安排，component內的普通label/value row、button icon + label、card title/subtitle/trailing value、progress step distribution與其他normal content仍必須由`Padding`／`Align`／`Row`／`Column`／`Flex`／`Expanded`／`Spacer`／`Wrap`或等價parent-child relationships擁有。不得因component bounds固定，就把canonical `left/top/width/height`重新變成普通content的主要runtime layout semantics。
+Bounded component本身**不是**fixed-canvas laundering boundary。Component內仍應使用最能表達實際UI semantics的layout owner：content-flow可以由`Padding`／`Align`／`Row`／`Column`／`Flex`／`Expanded`／`Spacer`／`Wrap`等relationships擁有；local/spatial semantics也可以合法由`Stack`／`Positioned`與scaled coordinates擁有。不能只因component bounds固定就把整個普通content flow機械轉成canonical page coordinates，但也不能只因使用`left/top/width/height`就判定違規。
 
-Measurement projection可以繼續把accepted design-space轉成size、gap、padding、radius、stroke、icon/artwork sizing等measurement；它不授權generic positioned text/data-row/button helpers，也不授權normal content public API暴露`left/top`作placement contract。真正spatial/decorative overlay仍可在最小bounded owner內使用local coordinates，前提是其rationale來自z-order/spatial semantics，而不是「Pencil上有x/y」。
+Measurement projection可以把accepted design-space轉成size、gap、padding、radius、stroke、icon/artwork sizing、offset與x/y coordinates等runtime measurements。`Stack`、`Positioned`、`left/top/right/bottom`本身不是architecture violation，也不得以widget/property名稱建立禁止名單。
+
+Architecture gate櫂查的是layout ownership：若placement本質上由前一個content size + gap決定，應由relationship layout擁有；若位置本身就是local/spatial UI contract，bounded owner可以直接使用scaled coordinates。Whole-page coordinate misuse的finding必須證明coordinate owner取代了本應由content relationships持有的flow，而不是只因source出現`Positioned`或x/y。
 
 `implementation_mapping.json`必須對accepted screen root記錄resolved screen layout model。一般App screen使用`constraint-relationship`；`unresolved` fail closed；`intentional-spatial-canvas`沒有accepted approval reference同樣fail closed。
 
@@ -168,4 +170,4 @@ Reviewer一旦判定wrong source／wrong asset／wrong icon／wrong representati
 
 ## Last Reviewed Baseline
 
-1.23.0；Milestone 41補入constraint／relationship-owned screen layout；Milestone 42再補Presentation responsibility與repository-wide UI Design Ownership Architecture stable contract；Milestone 44關閉bounded component local fixed-canvas laundering loophole並保留真正spatial overlay。
+1.25.2；Design-space scaling integration精準化coordinate scaling與layout ownership判斷；Milestone 41補入constraint／relationship-owned screen layout；Milestone 42再補Presentation responsibility與repository-wide UI Design Ownership Architecture stable contract；Milestone 44關閉bounded component local fixed-canvas laundering loophole並保留真正spatial overlay。

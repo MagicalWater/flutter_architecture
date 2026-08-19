@@ -24,7 +24,7 @@ class ProtectedPage extends StatelessWidget {
       body: DsMessageState(
         title: l10n.protectedAccessGrantedTitle,
         message: l10n.protectedAccessGrantedMessage,
-        icon: const Icon(Icons.verified_user_outlined, size: DsIconSize.hero),
+        icon: Icon(Icons.verified_user_outlined, size: DsIconSize.hero),
       ),
     );
   }

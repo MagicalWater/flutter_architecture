@@ -14,6 +14,8 @@ import 'package:flutter_architecture/app/navigation/auth_navigation_coordinator.
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/app/theme/theme_controller.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
+import 'package:flutter_architecture/app/ui/app_ui_design.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 
@@ -144,38 +146,42 @@ class _ArchitectureAppState extends State<ArchitectureApp>
 
   @override
   Widget build(BuildContext context) {
-    return LocaleControllerScope(
-      controller: widget.localeController,
-      child: ThemeControllerScope(
-        controller: widget.themeController,
-        child: ArchitectureThemeBuilder(
+    return ScreenUtilInit(
+      designSize: AppUiDesign.designSize,
+      splitScreenMode: false,
+      child: LocaleControllerScope(
+        controller: widget.localeController,
+        child: ThemeControllerScope(
           controller: widget.themeController,
-          builder: (context, lightTheme, darkTheme, themeMode) {
-            return ListenableBuilder(
-              listenable: widget.localeController,
-              builder: (context, _) {
-                return MaterialApp.router(
-                  locale: widget.localeController.locale,
-                  onGenerateTitle: (context) =>
-                      AppLocalizations.of(context).appTitle,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  supportedLocales: appSupportedLocales,
-                  localeListResolutionCallback: resolveAppLocale,
-                  theme: lightTheme,
-                  darkTheme: darkTheme,
-                  themeMode: themeMode,
-                  builder: (context, child) => ConnectivityScope(
-                    controller: _connectivityController,
-                    child: ConnectivityStatusBanner(
-                      child: child ?? const SizedBox.shrink(),
+          child: ArchitectureThemeBuilder(
+            controller: widget.themeController,
+            builder: (context, lightTheme, darkTheme, themeMode) {
+              return ListenableBuilder(
+                listenable: widget.localeController,
+                builder: (context, _) {
+                  return MaterialApp.router(
+                    locale: widget.localeController.locale,
+                    onGenerateTitle: (context) =>
+                        AppLocalizations.of(context).appTitle,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    supportedLocales: appSupportedLocales,
+                    localeListResolutionCallback: resolveAppLocale,
+                    theme: lightTheme,
+                    darkTheme: darkTheme,
+                    themeMode: themeMode,
+                    builder: (context, child) => ConnectivityScope(
+                      controller: _connectivityController,
+                      child: ConnectivityStatusBanner(
+                        child: child ?? const SizedBox.shrink(),
+                      ),
                     ),
-                  ),
-                  routerConfig: _router.config(),
-                );
-              },
-            );
-          },
+                    routerConfig: _router.config(),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );

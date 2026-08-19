@@ -65,15 +65,15 @@ final class LocalUnlockView extends StatelessWidget {
                     size: 56,
                     semanticLabel: l10n.localUnlockIconSemanticsLabel,
                   ),
-                  const SizedBox(height: DsSpace.lg),
+                  SizedBox(height: DsSpace.lg),
                   Text(
                     l10n.localUnlockTitle,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                  const SizedBox(height: DsSpace.md),
+                  SizedBox(height: DsSpace.md),
                   Text(message, textAlign: TextAlign.center),
-                  const SizedBox(height: DsSpace.xl),
+                  SizedBox(height: DsSpace.xl),
                   FilledButton(
                     onPressed: prompting ? null : () => onRetry(),
                     child: DsButtonContent(
@@ -85,7 +85,7 @@ final class LocalUnlockView extends StatelessWidget {
                           l10n.localUnlockPromptProgressSemanticsLabel,
                     ),
                   ),
-                  const SizedBox(height: DsSpace.md),
+                  SizedBox(height: DsSpace.md),
                   TextButton(
                     onPressed: prompting ? null : () => onUseLogin(),
                     child: Text(l10n.localUnlockUseLoginAction),

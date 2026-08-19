@@ -55,7 +55,7 @@ final class DsEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DsPageStateLayout(
-      leading: icon ?? const Icon(Icons.inbox_outlined, size: DsIconSize.hero),
+      leading: icon ?? Icon(Icons.inbox_outlined, size: DsIconSize.hero),
       title: title,
       message: message,
       primaryAction: primaryAction,
@@ -120,7 +120,7 @@ final class DsMessageState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DsPageStateLayout(
-      leading: icon ?? const Icon(Icons.info_outline, size: DsIconSize.hero),
+      leading: icon ?? Icon(Icons.info_outline, size: DsIconSize.hero),
       title: title,
       message: message,
       primaryAction: primaryAction,
@@ -152,7 +152,7 @@ final class _DsPageStateLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!scrollable) {
       return Padding(
-        padding: const EdgeInsets.all(DsSpace.lg),
+        padding: EdgeInsets.all(DsSpace.lg),
         child: Center(child: _buildContent()),
       );
     }
@@ -160,7 +160,7 @@ final class _DsPageStateLayout extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(DsSpace.lg),
+          padding: EdgeInsets.all(DsSpace.lg),
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: constraints.hasBoundedHeight
@@ -190,7 +190,7 @@ final class _DsPageStateLayout extends StatelessWidget {
             semanticsLabel: contentSemanticsLabel,
           ),
           if (primaryAction != null || secondaryAction != null) ...<Widget>[
-            const SizedBox(height: DsSpace.lg),
+            SizedBox(height: DsSpace.lg),
             Wrap(
               alignment: WrapAlignment.center,
               spacing: DsSpace.sm,
@@ -235,14 +235,14 @@ final class _PageStateContent extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         leading,
-        const SizedBox(height: DsSpace.md),
+        SizedBox(height: DsSpace.md),
         Text(
           title,
           textAlign: TextAlign.center,
           style: theme.textTheme.headlineSmall,
         ),
         if (message != null) ...<Widget>[
-          const SizedBox(height: DsSpace.xs),
+          SizedBox(height: DsSpace.xs),
           Text(
             message!,
             textAlign: TextAlign.center,

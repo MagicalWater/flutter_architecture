@@ -90,7 +90,7 @@ Responsive contract可以是exact size、edge inset、alignment、sibling gap、
 
 Screen-level acceptance還必須確認page flow由constraints／container／sibling relationships擁有。即使candidate只有一套renderer、所有元素都是真Flutter widgets，只要major sections仍由canonical page `x/y × shared scale`排列，仍屬whole-screen fixed-coordinate reconstruction，architecture FAIL。
 
-Bounded local `Stack`／`Positioned`可以保留，但只能擁有local overlay composition；不能用local mechanism反向取得whole-screen page-flow ownership。真正spatial canvas必須有accepted Design approval與mapping evidence。
+Bounded local `Stack`／`Positioned`與scaled coordinates可以保留，只要其coordinate owner符合實際local/spatial UI semantics；不能用local mechanism反向取得不屬於它的whole-screen page-flow ownership。真正whole-surface spatial canvas仍必須有accepted Design approval與mapping evidence。
 
 ## Anti-cheat
 

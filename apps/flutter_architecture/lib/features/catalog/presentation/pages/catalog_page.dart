@@ -48,7 +48,7 @@ class CatalogPage extends HookWidget {
     return Column(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.all(DsSpace.lg),
+          padding: EdgeInsets.all(DsSpace.lg),
           child: TextField(
             key: const Key('catalog-search-field'),
             onChanged: (value) => bloc.add(CatalogEvent.queryChanged(value)),
@@ -157,7 +157,7 @@ class CatalogView extends StatelessWidget {
                       ),
                       if (state.refreshFailure != null)
                         SliverPadding(
-                          padding: const EdgeInsets.all(DsSpace.lg),
+                          padding: EdgeInsets.all(DsSpace.lg),
                           sliver: SliverToBoxAdapter(
                             child: DsStatusBanner(
                               key: const Key('catalog-refresh-failure'),
@@ -193,7 +193,7 @@ class CatalogView extends StatelessWidget {
 
                       if (state.isLoadingMore) {
                         return Padding(
-                          padding: const EdgeInsets.all(DsSpace.lg),
+                          padding: EdgeInsets.all(DsSpace.lg),
                           child: Center(
                             child: DsButtonContent(
                               key: const Key('catalog-append-loading'),
@@ -208,7 +208,7 @@ class CatalogView extends StatelessWidget {
 
                       if (state.appendFailure != null) {
                         return Padding(
-                          padding: const EdgeInsets.all(DsSpace.lg),
+                          padding: EdgeInsets.all(DsSpace.lg),
                           child: DsStatusBanner(
                             key: const Key('catalog-append-failure'),
                             tone: DsStatusTone.error,
@@ -228,7 +228,7 @@ class CatalogView extends StatelessWidget {
 
                       if (state.refreshFailure != null) {
                         return Padding(
-                          padding: const EdgeInsets.all(DsSpace.lg),
+                          padding: EdgeInsets.all(DsSpace.lg),
                           child: DsStatusBanner(
                             key: const Key('catalog-refresh-failure'),
                             tone: DsStatusTone.error,
@@ -251,4 +251,3 @@ class CatalogView extends StatelessWidget {
     );
   }
 }
-

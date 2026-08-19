@@ -21,12 +21,7 @@ class CatalogReconnectStatus extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final failure = state.reconnectFailure;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        DsSpace.lg,
-        0,
-        DsSpace.lg,
-        DsSpace.sm,
-      ),
+      padding: EdgeInsets.fromLTRB(DsSpace.lg, 0, DsSpace.lg, DsSpace.sm),
       child: DsStatusBanner(
         key: Key(
           failure == null
@@ -78,7 +73,7 @@ class CatalogCacheStatus extends StatelessWidget {
 
     return Padding(
       key: const Key('catalog-cache-status'),
-      padding: const EdgeInsets.fromLTRB(DsSpace.lg, 0, DsSpace.lg, DsSpace.sm),
+      padding: EdgeInsets.fromLTRB(DsSpace.lg, 0, DsSpace.lg, DsSpace.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -96,7 +91,7 @@ class CatalogCacheStatus extends StatelessWidget {
                 : Icons.offline_pin_outlined,
           ),
           if (state.isRevalidating) ...<Widget>[
-            const SizedBox(height: DsSpace.xs),
+            SizedBox(height: DsSpace.xs),
             Align(
               alignment: AlignmentDirectional.centerEnd,
               child: DsButtonContent(

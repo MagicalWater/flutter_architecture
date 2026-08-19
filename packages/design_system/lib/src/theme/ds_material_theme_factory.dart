@@ -1,6 +1,8 @@
 import 'package:design_system/src/theme/ds_semantic_colors.dart';
+import 'package:design_system/src/tokens/ds_component_size.dart';
 import 'package:design_system/src/tokens/ds_elevation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// 只供 package 內 production Theme definitions 共用的 Material Theme factory。
 abstract final class DsMaterialThemeFactory {
@@ -40,7 +42,7 @@ abstract final class DsMaterialThemeFactory {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 72,
+        height: DsComponentSize.navigationBarHeight,
         elevation: DsElevation.low,
         backgroundColor: colorScheme.surfaceContainer,
         indicatorColor: colorScheme.secondaryContainer,
@@ -58,26 +60,32 @@ abstract final class DsMaterialThemeFactory {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(componentRadius),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2.r),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(64, 48),
+          minimumSize: Size(
+            DsComponentSize.buttonMinWidth,
+            DsComponentSize.controlMinExtent,
+          ),
           shape: outlineBorder,
           textStyle: textTheme.labelLarge,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(64, 48),
+          minimumSize: Size(
+            DsComponentSize.buttonMinWidth,
+            DsComponentSize.controlMinExtent,
+          ),
           shape: outlineBorder,
           textStyle: textTheme.labelLarge,
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          minimumSize: const Size(48, 48),
+          minimumSize: Size.square(DsComponentSize.controlMinExtent),
           shape: outlineBorder,
           textStyle: textTheme.labelLarge,
         ),

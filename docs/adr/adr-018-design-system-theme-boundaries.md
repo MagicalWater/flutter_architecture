@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-018-design-system-theme-boundaries
-last_reviewed_baseline: 1.23.0
+last_reviewed_baseline: 1.25.2
 id: ADR-018
 title: Design System and Theme Boundaries
 supersedes:
@@ -76,6 +76,17 @@ Component Tokens
 Raw palette保持 package internal。Feature使用 Material `ColorScheme`、public semantic extension、public layout tokens與 public primitives，不得 import raw palette或 deep import `lib/src/`。
 
 Material `ThemeData`與 component themes優先；`ThemeExtension`只補 success、warning、info等 Material contract未完整表達的 semantic role，不作為所有 raw token的容器。
+
+### Design-space measurement scaling
+
+Shared design-derived measurement 被 promotion 到 Design System 後，仍保留 design-space scaling；promotion 只改變 semantic ownership，不把設計稿數值轉成固定 runtime logical constant。
+
+- App Composition Root 擁有 product-specific design baseline 與 `ScreenUtilInit` lifecycle。
+- `packages/design_system` 可以依賴 shared sizing engine，解析 spacing、inset、radius、icon size、component geometry 等 shared design-derived tokens。
+- Current `DsSpace`、`DsRadius`、`DsIconSize` 使用 uniform `.r = min(widthScale, heightScale)` semantics；caller 直接消費 resolved token，不得再次 scaling。
+- Single-consumer exact measurement 留在 smallest correct presentation owner，可依 measurement semantics 使用 `.w/.h/.r`。
+- Scaling legality 不依 property 名稱決定；padding、offset、x/y、`left/top/right/bottom` 等都可以是 design-space measurement。Layout architecture 另依 relationship / spatial ownership 判斷。
+- Typography 不因 geometry scaling 自動採 `.sp`；system `TextScaler` 與 accessibility contract 必須保持有效。
 
 ### Feature boundary
 
@@ -160,4 +171,4 @@ Design System與 feature integration不得禁止 system text scaling，不以固
 
 ## Last Reviewed Baseline
 
-1.23.0；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract；Milestone 44再補same-semantic raw color的representation-noise／semantic-role／contextual-variant／component-decoration裁決順序。
+1.25.2；Design-space scaling integration補入shared design-derived measurement runtime scaling、App-owned baseline與property-neutral scaling contract；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract；Milestone 44再補same-semantic raw color的representation-noise／semantic-role／contextual-variant／component-decoration裁決順序。

@@ -154,7 +154,7 @@ Review一個Presentation source時優先問：
 4. 其中是否有部分已形成可獨立review/test/replace/reuse的boundary？
 5. 若拆分，是否真的降低責任耦合，而不是只增加file count？
 6. 若升Bloc/Cubit或Design System，是否有真實workflow/shared-semantic evidence？
-7. Bounded owner內的normal content是否仍由relationships擁有，還是把canonical coordinates洗成local fixed canvas？保留的`Stack/Positioned`是否有真正spatial/overlay rationale？
+7. Layout owner是否符合實際UI semantics？Content flow若由前一個content size + gap決定，是否由relationships擁有；位置本身若是local/spatial contract，`Stack/Positioned`與scaled coordinates是否由正確owner持有？不得只以widget/property名稱判定fixed canvas。
 
 ## Consequences
 
@@ -186,4 +186,4 @@ Review一個Presentation source時優先問：
 
 ## Last Reviewed Baseline
 
-1.23.0；Milestone 44補入bounded Presentation owner仍須relationship-own normal content、remaining coordinate overlay必須有spatial rationale的review contract。
+1.25.2；Design-space scaling integration把review contract精準化為layout ownership／UI semantics，不再以`Stack/Positioned`或coordinate property作architecture oracle；Milestone 44原本的fixed-canvas laundering防護仍保留在錯誤owner判斷。

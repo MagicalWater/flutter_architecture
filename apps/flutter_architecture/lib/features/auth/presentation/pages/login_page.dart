@@ -92,7 +92,7 @@ final class LoginView extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
-                const SizedBox(height: DsSpace.xl),
+                SizedBox(height: DsSpace.xl),
                 TextField(
                   controller: accountController,
                   textInputAction: TextInputAction.next,
@@ -100,7 +100,7 @@ final class LoginView extends StatelessWidget {
                     labelText: l10n.loginAccountLabel,
                   ),
                 ),
-                const SizedBox(height: DsSpace.md),
+                SizedBox(height: DsSpace.md),
                 TextField(
                   controller: passwordController,
                   obscureText: true,
@@ -110,7 +110,7 @@ final class LoginView extends StatelessWidget {
                     labelText: l10n.loginPasswordLabel,
                   ),
                 ),
-                const SizedBox(height: DsSpace.lg),
+                SizedBox(height: DsSpace.lg),
                 if (failureMessage != null) ...<Widget>[
                   Text(
                     failureMessage!,
@@ -118,7 +118,7 @@ final class LoginView extends StatelessWidget {
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
-                  const SizedBox(height: DsSpace.md),
+                  SizedBox(height: DsSpace.md),
                 ],
                 FilledButton(
                   onPressed: isLoading ? null : onLogin,
@@ -130,7 +130,7 @@ final class LoginView extends StatelessWidget {
                     progressSemanticsLabel: l10n.loginProgressSemanticsLabel,
                   ),
                 ),
-                const SizedBox(height: DsSpace.md),
+                SizedBox(height: DsSpace.md),
                 OutlinedButton(
                   onPressed: onOpenProtected,
                   child: Text(l10n.loginOpenProtectedAction),

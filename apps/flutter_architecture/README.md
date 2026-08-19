@@ -94,6 +94,15 @@ Logout 清除 Auth credential、Auth User 與 runtime Session，但保留 public
 - App 擁有 locale preference、restore 與 controller。
 - `design_system` 提供 Theme definitions 與 UI primitives；App 擁有 theme preference、controller 與 Appearance selector。
 
+## UI Design-space Scaling
+
+App Composition Root 透過 `ScreenUtilInit` 擁有 product-specific design baseline；current template placeholder 位於 `lib/app/ui/app_ui_design.dart`，採用 template 成為產品時應依主要 UI 設計來源替換。
+
+- Shared design-derived measurements 由 `design_system` public tokens 提供，token 本身已完成 runtime scaling。
+- Feature/component 尚未 promotion 的 exact measurement 可直接使用 `flutter_screenutil` 的 `.w/.h/.r`。
+- Scaling 只負責 design-space → runtime measurement conversion；`Row`／`Column`／`Stack`／`Positioned` 等 layout primitive 依實際 flow / spatial semantics 選擇。
+- 不把 `.sp` 當 typography default，也不關閉 system `TextScaler`。
+
 ## Database Schema and Migration Route
 
 App Drift schema 與 migration 的 current source 位於：

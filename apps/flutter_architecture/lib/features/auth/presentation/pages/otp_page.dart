@@ -112,7 +112,7 @@ final class _OtpViewState extends State<OtpView> {
                   l10n.otpInstruction(widget.maskedDestination),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: DsSpace.xl),
+                SizedBox(height: DsSpace.xl),
                 TextField(
                   key: const ValueKey('otpCodeField'),
                   controller: widget.codeController,
@@ -126,7 +126,7 @@ final class _OtpViewState extends State<OtpView> {
                   onSubmitted: busy ? null : (_) => widget.onVerify(),
                   decoration: InputDecoration(labelText: l10n.otpCodeLabel),
                 ),
-                const SizedBox(height: DsSpace.lg),
+                SizedBox(height: DsSpace.lg),
                 if (widget.failureMessage != null) ...<Widget>[
                   Text(
                     widget.failureMessage!,
@@ -134,7 +134,7 @@ final class _OtpViewState extends State<OtpView> {
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
-                  const SizedBox(height: DsSpace.md),
+                  SizedBox(height: DsSpace.md),
                 ],
                 FilledButton(
                   onPressed: busy ? null : widget.onVerify,
@@ -147,7 +147,7 @@ final class _OtpViewState extends State<OtpView> {
                         l10n.otpVerifyProgressSemanticsLabel,
                   ),
                 ),
-                const SizedBox(height: DsSpace.md),
+                SizedBox(height: DsSpace.md),
                 TextButton(
                   onPressed: canResend ? widget.onResend : null,
                   child: Text(

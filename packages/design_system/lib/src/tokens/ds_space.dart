@@ -1,9 +1,11 @@
-/// Design System 共用 spacing scale。
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+/// Design System 共用 spacing / inset scale。
 abstract final class DsSpace {
-  static const double xxs = 4;
-  static const double xs = 8;
-  static const double sm = 12;
-  static const double md = 16;
-  static const double lg = 24;
-  static const double xl = 32;
+  static double get xxs => 4.r;
+  static double get xs => 8.r;
+  static double get sm => 12.r;
+  static double get md => 16.r;
+  static double get lg => 24.r;
+  static double get xl => 32.r;
 }

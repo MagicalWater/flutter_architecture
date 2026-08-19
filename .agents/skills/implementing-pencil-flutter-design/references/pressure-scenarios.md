@@ -41,12 +41,12 @@
 | PTF-32 | Page、custom RenderObject、projection helpers與多個section implementations全塞`pages/screen_canvas.dart` | FAIL；dependency direction正確也不代表presentation ownership/cohesion PASS |
 | PTF-33 | Agent建立FeatureUiSpec同時集中colors、dimensions、typography、asset paths、gradients與geometry | FAIL；依Design System／asset authority／visual authority／layout／component owner重新分類 |
 | PTF-34 | Agent把heroImagePath、warningIconPath、texturePath、fontAssetPath放進VisualSpec當UI constants | FAIL；asset identity/provenance走既有representation authority，VisualSpec不得當asset registry |
-| PTF-47 | Screen用Column，但bounded component內的普通Text/DataRow/Button仍全部用canonical x/y Position | FAIL；bounded component不是fixed-canvas laundering豁免，normal content仍須relationship-owned |
-| PTF-48 | Component public API暴露`left/top`來排列普通label/value/button content | FAIL；public coordinate API不能取得normal-content placement ownership |
-| PTF-49 | Component內用generic `_positionedText`／`_localText` helper作普通content排版引擎 | FAIL；generic positioned-content engine仍是local fixed-canvas laundering |
+| PTF-47 | Screen用Column，bounded component內使用scaled x/y / Positioned | 不能只看語法判FAIL；需判定coordinate owner是否符合local/spatial semantics，若只是取代content-flow relationship才FAIL |
+| PTF-48 | Component public API暴露`left/top`來排列label/value/button content | 需依UI semantics判斷；若position本身是component contract可PASS，若只是取代應由content-flow relationship持有的placement才FAIL |
+| PTF-49 | Component使用generic `_positionedText`／`_localText` helper | 需審查ownership；若helper只是合法local/spatial coordinate primitive可PASS，若機械取代content-flow relationship才FAIL |
 | PTF-50 | DataRow使用`Row + Expanded/Align + Padding`表達icon/label/value關係 | PASS；normal content以relationship layout擁有placement |
 | PTF-51 | Hero由screen flow放置，Hero內badge/glow/ornament用bounded `Stack/Positioned` | PASS；真正spatial overlay合法，仍需visual/runtime evidence |
-| PTF-52 | Reviewer看到多個`Stack/Positioned`就要求全面禁用 | FAIL；只能拒絕normal-content coordinate ownership，不能禁止合法bounded overlay |
+| PTF-52 | Reviewer看到多個`Stack/Positioned`就要求全面禁用 | FAIL；widget/property名稱不是architecture oracle，應審查flow／spatial ownership |
 | PTF-53 | Agent因file超過特定行數就要求每個widget拆成獨立檔案 | FAIL；line count不是responsibility oracle，依change reason/lifecycle/authority決定owner |
 | PTF-54 | Agent要求新增generic Flow framework與mandatory `flows/`資料夾才能符合Presentation治理 | FAIL；沒有真實workflow responsibility不得建立Flow/Coordinator formalism |
 | PTF-55 | 同一CTA semantic只因Pencil抽樣RGB有小幅漂移，就在多個feature各建local color | FAIL；先判representation noise與shared semantic，不得把same-semantic drift拆成多個owner |
@@ -430,7 +430,7 @@ PASS：可以。這是coherent bounded owner；兩個related widgets可共一檔
 Screen root已改成Column與section flow，所以Agent宣稱架構已responsive；但每個bounded Card/Step/Button元件內仍把普通Text、DataRow、button label依Pencil canonical x/y全部放進Stack+Positioned。這樣可以嗎？
 ```
 
-PASS：不可。Bounded component不是fixed-canvas laundering邊界；普通content仍須由Padding/Align/Row/Column/Flex/constraints等relationship layout擁有。只有真正badge/glow/ornament/z-order可保留local spatial overlay。
+PASS：不能只靠是否使用canonical-derived x/y判定。若placement實際由content flow決定卻被固定coordinate取代則FAIL；若位置本身就是local/spatial UI contract，scaled x/y / Positioned可以PASS。
 
 ### PTF-48 Public left/top component API
 
@@ -438,7 +438,7 @@ PASS：不可。Bounded component不是fixed-canvas laundering邊界；普通con
 Reusable InfoRow元件公開labelLeft、labelTop、valueLeft、valueTop參數，screen只傳accepted Pencil座標；元件本身是local bounds，不影響其他section。可以嗎？
 ```
 
-PASS：不可。Public coordinate API已把normal-content placement contract化；應改成leading/trailing、gap、alignment、flex/constraints等relationship semantics。Local bounds不構成豁免。
+PASS：不能只因public API使用`left/top`就判FAIL。若這些參數表達的就是元件公開的spatial/position contract可合法存在；若普通content其實應由leading/trailing、gap、alignment、flex/constraints等relationship決定，卻被座標API取代才FAIL。
 
 ### PTF-49 Generic positioned-text engine
 
@@ -446,7 +446,7 @@ PASS：不可。Public coordinate API已把normal-content placement contract化�
 為了避免重複碼，Agent建立_localText(text,left,top,width,height,...)與_positionedIcon(...)，所有card/header/button normal content都透過這些helper排版。畫面只有一套renderer。可以嗎？
 ```
 
-PASS：不可。這只是把fixed canvas藏進generic helper；one renderer也不豁免。普通content helper應表達semantic/relationship responsibility，而不是canonical coordinates。
+PASS：不能只因helper接受座標就判FAIL。若helper只是共用合法local/spatial coordinate primitive可PASS；若它被用成機械式whole-content positioning engine，取代本應由relationship持有的flow才FAIL。
 
 ### PTF-50 Relationship-owned DataRow
 
@@ -470,7 +470,7 @@ PASS：不應。這些是bounded spatial/decorative responsibilities；保留是
 Reviewer看到production source仍有十多個Stack/Positioned，直接判定M44失敗並要求全部改成Row/Column，不區分用途。這個review合理嗎？
 ```
 
-PASS：不合理。Review必須判斷ownership semantics；normal content coordinate placement要FAIL，但glow/ring/badge/ornament/optical artwork等真正spatial overlay可PASS。
+PASS：不合理。Review必須判斷ownership semantics；flow relationship被coordinate錯誤取代才FAIL，合法local/spatial coordinate placement可PASS，不能用`Stack/Positioned`數量作oracle。
 
 ### PTF-53 Line-count splitting oracle
 

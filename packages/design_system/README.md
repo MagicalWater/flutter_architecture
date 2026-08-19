@@ -30,6 +30,20 @@ last_reviewed_baseline: 1.5.1
 
 Pencil/source-driven UI values進入本package前必須先做semantic／promotion decision。真正shared semantic、Theme Identity或validated reusable component才由Design System擁有；feature-local exact values留smallest correct owner，不能用generic `*VisualSpec`／`*VisualTokens`建立平行Design System。
 
+## Design-space Measurement
+
+Design System 的 shared design-derived measurements 由 `flutter_screenutil` 解析 runtime scale。Promotion 到 shared token 只改變 semantic ownership，不會把原本的設計稿 measurement 固定成 runtime logical constant。
+
+目前 shared measurement contract：
+
+- `DsSpace`、`DsRadius`、`DsIconSize` 使用 uniform `.r` scaling，也就是 `min(widthScale, heightScale)`。
+- Consumer 直接使用 `DsSpace.md` 等 public token；token 已完成 scaling，不得再套 `.r/.w/.h`。
+- 尚未 promotion 的 feature/component exact measurement 可直接使用 `.w/.h/.r`，由 measurement 的 axis / uniform semantics 決定。
+- Padding、gap、radius、size、offset、x/y、`Positioned` coordinate 都可承載 scaled design measurement；layout correctness 由 relationship / spatial ownership 判斷，不以 widget 或 property 名稱禁止。
+- Typography 本階段不把 `.sp` 當 repository default；system `TextScaler` 必須保持有效。
+
+Product-specific `designSize` 由 App Composition Root 擁有，Design System 不保存產品 baseline。
+
 ## Public API
 
 Consumer 只透過：
@@ -90,7 +104,7 @@ App 是唯一 Composition Root。App 選擇 Theme definition、保存 preference
 
 ## Tests
 
-測試位於 `packages/design_system/test/`，應涵蓋 token contract、registry validation、Theme matrix、semantic colors、callbacks、Semantics、text scaling與少量 stable gallery goldens。
+測試遵守 repository test-by-exception。普通 responsive/layout/scaling probe 預設只作 temporary evidence，驗證完成後刪除；只有符合 current test-authoring critical retention 條件的 failure protection 才永久保留。
 
 ## Related Decisions
 

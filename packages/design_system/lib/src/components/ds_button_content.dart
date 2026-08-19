@@ -30,7 +30,7 @@ final class DsButtonContent extends StatelessWidget {
               dimension: 18,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            const SizedBox(width: DsSpace.xs),
+            SizedBox(width: DsSpace.xs),
             Flexible(child: Text(label)),
           ],
         ),

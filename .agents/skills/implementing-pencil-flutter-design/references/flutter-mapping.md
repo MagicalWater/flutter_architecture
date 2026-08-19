@@ -62,9 +62,9 @@ unresolved
 
 Local component 可以使用 bounded overlay，但 bounded overlay 不取得 whole-screen page-flow ownership，也不構成 screen-root layout model。
 
-Bounded component同樣不取得normal-content coordinate ownership。普通label/value row、button icon + label、card content、progress step distribution等，即使位於固定bounds內，仍優先使用`Padding`、`Align`、`Row`、`Column`、`Flex`、`Expanded`、`Spacer`、`Wrap`與constraints表達relationships。Risk-selected component若以public `left/top`或generic positioned helper排列normal content，mapping視為unresolved／architecture failure，不能用「只是local overlay」合理化。
+Bounded component不因bounds固定就取得任意whole-flow coordinate ownership，但也不建立normal-content property blacklist。普通label/value row、button、card content、progress step等若placement本質由content size + gap決定，應以`Padding`、`Align`、`Row`、`Column`、`Flex`、`Expanded`、`Spacer`、`Wrap`與constraints表達relationships；若位置本身就是local/spatial UI contract，`Stack`／`Positioned`可以合法持有scaled coordinates。
 
-Measurement projection仍可服務accepted design-space的size、gap、padding、radius、stroke、icon/artwork sizing；它不授權normal content的canonical x/y placement。保留`Stack/Positioned`時，review evidence必須能指出badge/glow/ornament/z-order等真正spatial rationale。
+Measurement projection可服務accepted design-space的size、gap、padding、radius、stroke、icon/artwork sizing、offset與x/y coordinates。Review evidence應說明coordinate owner為何符合實際UI semantics；不得只因出現`left/top`、generic positioned helper或`Stack/Positioned`就判定architecture failure。
 
 Presentation responsibility以ADR-032為stable authority。Page/View/Section/Component/Surface/Layout是responsibility roles，不是mandatory folder/class tree；Page/View orchestration不得同時直接擁有獨立custom RenderObject／projection engine，bounded Section/Component/Surface與layout mechanics依change reason／lifecycle／authority分owner。Handwritten `part`／`part of`不能用來掩蓋cross-owner coupling。
 
@@ -91,7 +91,7 @@ Mapping matrix只決定owner，不等於production implementation admission。�
 
 Canonical viewport是**design/comparison space**，不是**Flutter logical breakpoint**。一個accepted screen只能有一套whole-screen visual component tree；canonical、runtime與narrow mode都必須由同一組screen components建立。禁止以breakpoint切換到**parallel whole-screen visual renderer**。
 
-正常portrait runtime可以由accepted design width導出feature-local visual scale，用於component size、padding、gap、radius、stroke、shadow、icon與feature-local typography等**measurement projection**。但screen major-section placement必須由constraints／edge inset／alignment／sibling gap／container relationship擁有；不得把canonical page `left/top/right/bottom`經shared scale直接當runtime page coordinates。Owner mapping仍遵守Design System／feature-local boundary；projection不授權另造顏色、container hierarchy或runtime-only visual identity。
+正常runtime可以從accepted design-space導出runtime scale，用於component size、padding、gap、radius、stroke、shadow、icon、offset與x/y等**measurement projection**。Screen/page的layout owner仍按實際semantics決定：content flow由constraints／edge inset／alignment／sibling gap／container relationship擁有；local/spatial placement可以由scaled coordinates擁有。Owner mapping仍遵守Design System／feature-local boundary；projection不授權另造顏色、container hierarchy或runtime-only visual identity。
 
 這不是blind canvas scaling。禁止full-screen raster、**top-level `FittedBox`、`Transform.scale`**、single-renderer whole-screen canonical-coordinate reconstruction、隱藏內容或只為golden成立的layout。Bounded local overlay可以使用local Stack／Positioned或等價geometry projection，只要它不取得page-flow ownership。Interactive hit region與accessibility content可以大於visible projected geometry；text scale、localization、orientation或極窄width真的需要時，只能在同一component內做content-aware adaptation。
 

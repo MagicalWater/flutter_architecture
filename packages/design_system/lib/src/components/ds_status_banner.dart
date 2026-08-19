@@ -41,12 +41,12 @@ final class DsStatusBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(DsRadius.md),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(DsSpace.md),
+        padding: EdgeInsets.all(DsSpace.md),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Icon(icon ?? _defaultIcon(tone), color: colors.foreground),
-            const SizedBox(width: DsSpace.sm),
+            SizedBox(width: DsSpace.sm),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +68,7 @@ final class DsStatusBanner extends StatelessWidget {
                             ),
                           ),
                           if (message != null) ...<Widget>[
-                            const SizedBox(height: DsSpace.xxs),
+                            SizedBox(height: DsSpace.xxs),
                             Text(
                               message!,
                               style: theme.textTheme.bodyMedium?.copyWith(
@@ -81,7 +81,7 @@ final class DsStatusBanner extends StatelessWidget {
                     ),
                   ),
                   if (action != null) ...<Widget>[
-                    const SizedBox(height: DsSpace.xs),
+                    SizedBox(height: DsSpace.xs),
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: TextButton(

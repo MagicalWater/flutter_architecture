@@ -10,6 +10,7 @@ export 'src/theme/ds_theme_id.dart';
 export 'src/theme/ds_theme_metadata.dart';
 export 'src/theme/ds_theme_registry.dart';
 export 'src/tokens/ds_elevation.dart';
+export 'src/tokens/ds_component_size.dart';
 export 'src/tokens/ds_icon_size.dart';
 export 'src/tokens/ds_radius.dart';
 export 'src/tokens/ds_semantic_color_role.dart';

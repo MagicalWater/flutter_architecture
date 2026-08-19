@@ -3,12 +3,13 @@ import 'package:flutter/widgets.dart';
 
 /// 將頁面內容置中，並套用一致的最大寬度與外圍留白。
 final class DsConstrainedContent extends StatelessWidget {
-  const DsConstrainedContent({
+  DsConstrainedContent({
     required this.child,
     this.maxWidth = 640,
-    this.padding = const EdgeInsets.all(DsSpace.lg),
+    EdgeInsetsGeometry? padding,
     super.key,
-  }) : assert(maxWidth > 0, 'maxWidth must be greater than zero.');
+  }) : padding = padding ?? EdgeInsets.all(DsSpace.lg),
+       assert(maxWidth > 0, 'maxWidth must be greater than zero.');
 
   final Widget child;
   final double maxWidth;

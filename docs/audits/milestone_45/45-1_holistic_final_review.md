@@ -107,4 +107,4 @@ Current governance已完成以下反轉：
 
 ## Release disposition
 
-Local implementation、corrective review與`dev` fast-forward integration已完成；integration target exact SHA為`4265c7c`。這是template governance／CI behavior的重大變更，適合作為下一個minor template baseline候選；publication／merge到`main`仍未執行，避免在未完成publication disposition前觸發production CI。
+Local implementation、corrective review、focused retention collapse與`dev` integration已完成；current integration target exact SHA為`9c23114`。這是template governance／CI behavior的重大變更，適合作為下一個minor template baseline候選；publication／merge到`main`仍未執行，避免在未完成publication disposition前觸發production CI。

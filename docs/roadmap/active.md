@@ -16,11 +16,11 @@ Template Baseline: 1.23.1
 
 ## Current Scope
 
-Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation與corrective review。Current permanent portfolio為20 files／5,902 LOC／189 static cases，相對admission baseline分別縮減88.8%／80.8%／83.2%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。`dev`已fast-forward整合至`4265c7c`；尚未publication。Milestone 44本體與既有1.23.x evidence不重新開啟。
+Milestone 45 Requirement／Design／Implementation Plan均已accepted並完成local implementation、corrective review與focused retention collapse。Current permanent portfolio為18 files／4,430 LOC／136 static cases，相對admission baseline分別縮減89.9%／85.6%／87.9%；test-by-exception、temporary retention、`replacement = NONE`、lowest-sufficient classification、same-SHA reuse、explicit manual validation mode與observability acceptance降頻均已落地。`dev`已整合至`9c23114`；尚未publication。Milestone 44本體與既有1.23.x evidence不重新開啟。
 
 ## Current Gate
 
-Milestone 45 current gate：local holistic + corrective review已PASS，`dev`已fast-forward整合到`4265c7c`；下一個boundary是minor baseline publication disposition。M45 source branch仍為`milestone-45-test-by-exception-governance-reset`，整合target為`dev`，尚未push／merge到`main`。
+Milestone 45 current gate：local holistic + corrective review + focused retention collapse已PASS，`dev`已整合到`9c23114`；下一個boundary是minor baseline publication disposition。M45 source branch仍為`milestone-45-test-by-exception-governance-reset`，整合target為`dev`，尚未push／merge到`main`。
 
 ## Current Evidence
 

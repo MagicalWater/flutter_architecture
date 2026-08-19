@@ -33,6 +33,7 @@ Template Baseline: 1.26.0
 | Drift migration | `docs/audits/milestone_29/29-10_final_review.md`、`docs/audits/milestone_29/29-9_platform_runtime_regression.md`、`docs/archive/milestone_29_drift_persistence_migration_design.md` |
 | GitHub artifact storage cutover | `docs/audits/milestone_32/32-11_final_review.md` |
 | Pencil runtime / corrective acceptance | `docs/audits/milestone_33/33-c4_android_runtime_acceptance.md`、`docs/audits/milestone_33/33-c5_corrective_holistic_final_review.md` |
+| Repository infrastructure / CI live acceptance | `docs/audits/milestone_38/38-11_holistic_final_review.md` |
 | Public repository security | `docs/audits/public_repository_readiness/task_5_holistic_final_review.md` |
 | Template holistic baseline audit | `docs/audits/template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md` |
 

@@ -20,6 +20,27 @@
 
 ---
 
+## [1.25.2] - 2026-08-19
+
+### Changed
+
+- Release validation新增 build-kind granularity：Android Development／Production與iOS Simulator／Production由planner分別選擇；aggregate platform flags只保留相容用途，不再直接啟動該平台全部variants。
+- 新增repository-owned `tools/ci/run_release_validation.py` exact-candidate runner；它只消費canonical planner結果，先同時dispatch selected CI／Android／iOS workflows，再等待fresh exact-SHA結果，不擁有change classification、VERSION、merge或publication authority。
+- Release orchestration會排除dispatch前已存在的workflow run IDs，避免同一candidate SHA誤重用舊run作fresh release evidence。
+
+### Validation
+
+- Planner/CI critical owner 52/52 PASS、docs critical owner 6/6 PASS、5-package Flutter analyze、retained Flutter suites、generated consistency、workflow YAML parse、docs checker與`git diff --check`均PASS。
+- Validation-engine-only release probe只選 Android Production + iOS Production；workflow/shared/dependency/invalid-range風險仍可升級both variants。
+- 本1.25.2 candidate因本身修改Android/iOS workflow，final exact-candidate acceptance仍要求四個platform variants；其主要驗收目標是證明CI／Android／iOS families可同時fan-out且所有run綁同一candidate SHA。
+
+### Governance
+
+- Design、Implementation Plan與其reviews均accepted；holistic implementation review PASS，Open P0 = 0、Open P1 without disposition = 0。
+- 本 corrective採PATCH baseline `1.25.2`；publication後same SHA只做identity／workflow read-back，不重新執行相同source validation。
+
+---
+
 ## [1.25.1] - 2026-08-19
 
 ### Fixed

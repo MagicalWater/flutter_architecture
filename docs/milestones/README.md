@@ -60,6 +60,8 @@ Milestone 44 Pencil Component Constraint Semantics Corrective已發布為Templat
 
 Milestone 44 post-closure C1 Color Ownership Adoption Corrective已由Template Baseline `1.23.1`發布承接；不重新開啟M44 relationship-layout主責。
 
+2026-08-19 使用者另要求在下一次Template Baseline發布前，對Milestones 41–44之後的**current project-code convergence / architecture completeness**做fresh post-closure gap audit。此要求不推翻既有M44/C1 closure，也不預設一定要重開Milestone 44；continuation authority見`docs/audits/milestone_44/44-post-closure-gap-audit-handoff.md`。
+
 ### Milestone 44 closed routing
 
 - Requirement Decision：Accepted / Level 4 — `docs/audits/milestone_44/44-r_requirement_decision.md`

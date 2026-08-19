@@ -15,7 +15,7 @@ last_reviewed_baseline: 1.25.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.25.0 release candidate
+Template Baseline: 1.25.0
 Supported platforms: Android, iOS
 iOS: Simulator and GitHub-hosted build verified; physical device and distribution deferred
 Other platforms: Dependency-ready
@@ -26,9 +26,9 @@ Other platforms: Dependency-ready
 ## Active Milestone
 
 ```txt
-Active Milestone: 46
-State: implementation / holistic review / release preflight PASS；publication candidate validation
-Template Baseline: 1.25.0 release candidate
+Active Milestone: none
+State: Milestone 46 published / formal closure complete
+Template Baseline: 1.25.0
 ```
 
 完整 active scope、current gate與 next action：
@@ -49,7 +49,7 @@ Candidate 不代表已核准，不得直接開始 implementation。
 
 ## Closed Milestones
 
-Milestone 1 至 45 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
+Milestone 1 至 46 已完成或已有明確 disposition。歷史 plan、review、runtime evidence、release 與 archive routing集中於：
 
 - `docs/milestones/README.md`
 - `docs/archive/README.md`

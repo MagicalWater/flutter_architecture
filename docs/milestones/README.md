@@ -31,18 +31,21 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: 46
-Template Baseline: 1.25.0 release candidate
+Active Milestone: none
+Template Baseline: 1.25.0
 ```
 
-Milestone 46 Documentation & Skill Governance Complexity Audit / Simplification 已完成 Requirement Decision、accepted Design、accepted Implementation Plan 與 Plan holistic review；current state以`docs/roadmap/active.md`為準。
+Milestone 46 Documentation & Skill Governance Complexity Audit / Simplification 已發布為 Template Baseline `1.25.0` 並完成 formal closure；current state以`docs/roadmap/active.md`為準。
 
-### Milestone 46 active routing
+### Milestone 46 closed routing
 
-- State：local implementation / holistic review / release preflight PASS；Template Baseline `1.25.0` release candidate。
+- State：published / formal closure complete；Template Baseline `1.25.0`。
 
 - Design：`docs/superpowers/specs/2026-08-19-milestone-46-documentation-skill-governance-simplification-design.md`
 - Implementation Plan：`docs/superpowers/plans/2026-08-19-milestone-46-documentation-skill-governance-simplification.md`
+- Holistic Final Review：`docs/audits/milestone_46/46-1_holistic_final_review.md`
+- Post-release Validation：`docs/audits/milestone_46/46-2_post_release_validation.md`
+- Release：Template Baseline `1.25.0`；candidate exact-SHA logical full、Windows Android、GitHub-hosted iOS Simulator／Production Release與published identity PASS。
 
 ### Milestone 45 closed routing
 

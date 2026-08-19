@@ -37,7 +37,7 @@
 ### Governance
 
 - Design、Implementation Plan 與 Plan holistic review均完成並取得使用者核准；implementation holistic final review PASS，Open P0 = 0，Open P1 without disposition = 0。
-- Release preflight確認本次改變 template consumer / fresh Agent 的 repository-wide development governance contract，採 Template Baseline `1.25.0` MINOR release；publication 前仍依 explicit release mode 完成 candidate SHA release evidence。
+- Release preflight確認本次改變 template consumer / fresh Agent 的 repository-wide development governance contract，採 Template Baseline `1.25.0` MINOR release；candidate exact-SHA explicit release validation、Android／iOS primary evidence、publication與formal closure均已完成。
 
 ---
 

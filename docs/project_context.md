@@ -27,10 +27,10 @@ last_reviewed_baseline: 1.25.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.25.0 release candidate
+Template Baseline: 1.25.0
 Phase 1 / MVP: Completed
-Current active milestone: 46
-Current phase: Milestone 46 release preflight PASS；publication candidate validation
+Current active milestone: none
+Current phase: Milestone 46 published / formal closure complete；maintenance-ready
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -363,15 +363,15 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.25.0 release candidate。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.25.0。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: 46 — Documentation & Skill Governance Complexity Audit / Simplification
-Current phase: release preflight PASS；publication candidate validation
+Current active milestone: none
+Current phase: Milestone 46 published / formal closure complete
 Maintenance mode: normal development from `dev`; `main` publication-only
 ```
 

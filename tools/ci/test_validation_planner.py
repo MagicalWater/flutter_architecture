@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import unittest
 
+from tools.ci.validation_runner import commands_for_phase
 from tools.ci.validation_planner import (
     can_reuse_validation_evidence,
+    plan_payload,
     plan_validation,
     validation_evidence_identity,
 )
@@ -118,6 +120,16 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         self.assertTrue(plan.release_full)
         self.assertTrue(plan.android_build)
         self.assertTrue(plan.ios_build)
+
+    def test_release_tools_scope_runs_actual_permanent_python_owners(self) -> None:
+        plan = plan_payload(plan_validation([], manual=True, manual_mode="release"))
+
+        commands = commands_for_phase(plan, "quality")
+        rendered = [" ".join(command) for _, command in commands]
+
+        self.assertTrue(any("-s tools/ci" in command for command in rendered))
+        self.assertTrue(any("-s tools/docs" in command for command in rendered))
+        self.assertFalse(any("-s tools -p test_*.py" in command for command in rendered))
 
     def test_same_identity_can_be_reused_for_holistic_and_post_release(self) -> None:
         plan = plan_validation(["docs/README.md"])

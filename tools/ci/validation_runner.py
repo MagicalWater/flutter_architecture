@@ -43,15 +43,56 @@ def _workspace_command(scope: str, verb: str) -> tuple[Path, list[str]]:
     raise ValueError(f"unsupported Flutter scope: {scope}")
 
 
-def _python_command(scope: str) -> tuple[Path, list[str]]:
+def _python_commands(scope: str) -> tuple[tuple[Path, list[str]], ...]:
     normalized = scope.replace("\\", "/")
     if normalized == "tools":
-        return Path("."), [sys.executable, "-m", "unittest", "discover", "-s", "tools", "-p", "test_*.py"]
+        return (
+            (
+                Path("."),
+                [
+                    sys.executable,
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    "tools/ci",
+                    "-p",
+                    "test_*.py",
+                ],
+            ),
+            (
+                Path("."),
+                [
+                    sys.executable,
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    "tools/docs",
+                    "-p",
+                    "test_*.py",
+                ],
+            ),
+        )
     if normalized.startswith("tools/") and normalized.endswith(".py"):
         module = normalized[:-3].replace("/", ".")
-        return Path("."), [sys.executable, "-m", "unittest", module]
+        return ((Path("."), [sys.executable, "-m", "unittest", module]),)
     if normalized.startswith("tools/"):
-        return Path("."), [sys.executable, "-m", "unittest", "discover", "-s", normalized, "-p", "test_*.py"]
+        return (
+            (
+                Path("."),
+                [
+                    sys.executable,
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    normalized,
+                    "-p",
+                    "test_*.py",
+                ],
+            ),
+        )
     raise ValueError(f"unsupported Python scope: {scope}")
 
 
@@ -69,7 +110,7 @@ def commands_for_phase(plan: dict[str, object], phase: str) -> tuple[tuple[Path,
         if bool(plan["docs_check"]):
             commands.append((Path("."), [sys.executable, "tools/docs/check_docs.py", "."]))
         for scope in plan["python_test_scopes"]:
-            commands.append(_python_command(str(scope)))
+            commands.extend(_python_commands(str(scope)))
         for scope in plan["analyze_scopes"]:
             commands.append(_workspace_command(str(scope), "analyze"))
         commands.append((Path("."), ["git", "diff", "--check"]))

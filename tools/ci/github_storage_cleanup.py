@@ -23,7 +23,7 @@ from tools.ci.secret_leakage import assert_secret_safe_text
 
 SCHEMA_VERSION = 1
 DEFAULT_REPLACEMENT_EVIDENCE_ROUTE = (
-    "docs/audits/milestone_32/32-9_runtime_acceptance_review.md"
+    "docs/audits/milestone_32/32-11_final_review.md"
 )
 _REPOSITORY_PATTERN = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 _SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")

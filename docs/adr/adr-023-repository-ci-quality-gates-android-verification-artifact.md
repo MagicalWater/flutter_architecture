@@ -125,8 +125,6 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 
 ## Related Evidence
 
-- [Milestone 24 final review](../audits/milestone_24/24-6_final_review.md)
-- [Change-aware CI holistic final review](../audits/change_aware_ci_holistic_final_review.md)
 - [Milestone 27 final review](../audits/milestone_27/27-8_final_review.md)
 - [Milestone 32 final review](../audits/milestone_32/32-11_final_review.md)
 

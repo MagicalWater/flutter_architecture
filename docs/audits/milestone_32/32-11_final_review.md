@@ -83,4 +83,4 @@ Post-release self-hosted validation: PASSED
 Formal remote closure: COMPLETED
 ```
 
-Release SHA已完成self-hosted CI／Android／iOS、Observability ordinary push skipped、GitHub storage 0／0與clean-checkout驗證。Post-release authority由`32-12_post_release_validation.md`保存，Milestone可正式closure。
+Release SHA已完成self-hosted CI／Android／iOS、Observability ordinary push skipped、GitHub storage 0／0與clean-checkout驗證。細粒度 post-release evidence 由 Git history 追溯，Milestone可正式closure。

@@ -217,33 +217,9 @@ P2 / P3
 
 ---
 
-## 固定輸出檔案
+## Historical evidence retention
 
-Milestone 18 的詳細證據與 findings 不直接堆入 Roadmap。
-
-```txt
-docs/audits/milestone_18_holistic_audit.md
-  Milestone contract與review gate。
-
-docs/audits/milestone_18/
-  18-1_architecture_inventory.md
-  18-2_runtime_flows.md
-  18-3_persistence_database.md
-  18-4_platform_capabilities.md
-  18-5_test_matrix.md
-  18-6_documentation_baseline.md
-  findings.md
-  remediation_decision.md
-  release_validation.md
-```
-
-各檔案應在對應子階段首次需要時建立，不預先建立空白 placeholder。
-
-`findings.md` 是所有正式 finding 的唯一 Single Source of Truth。各子階段文件只保存 inventory、matrix、evidence、分析過程與 Finding ID 引用，不複製完整 finding 內容。
-
-`remediation_decision.md` 只保存 Audit Review Gate 對各 Finding ID 的 disposition、理由、target phase與verification要求；不得另行改寫finding內容。
-
-Roadmap只保存目前階段、重要結論與完成摘要；歷史細節移入audit文件或`docs/archive/`。
+Milestone 18 當時曾拆分 architecture inventory、runtime flows、persistence、platform、test matrix、documentation baseline、findings、remediation 與 release validation 等細粒度 evidence。這些 process artifacts 已在後續 historical retention cleanup 中移除；本 holistic audit 保留整體 audit contract 與主要結論，細粒度原始 evidence 由 Git history 追溯。
 
 ---
 
@@ -324,7 +300,7 @@ Roadmap只保存目前階段、重要結論與完成摘要；歷史細節移入a
 - Audit Review Gate與18-7 / 18-8進入條件明確。
 - 最終planning review沒有未處理的P0 / P1規劃finding。
 - 所有P2 / P3規劃finding已有明確disposition。
-- `findings.md`與各子階段文件的SSOT責任已拍板。
+- 當時 findings 與各子階段 evidence 的 SSOT responsibility 已拍板；原始細粒度 artifacts 現由 Git history 追溯。
 - Roadmap、Project Context與CHANGELOG已同步為18-0 Completed。
 - 下一個正式階段已設定為18-1 Architecture & Dependency Audit。
 - 尚未開始production code修改。

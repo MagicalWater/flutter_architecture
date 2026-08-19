@@ -179,7 +179,6 @@ Review一個Presentation source時優先問：
 
 ## Related Evidence
 
-- `docs/audits/milestone_43/43-7_holistic_final_review.md`
 - Fine-grained Requirement / Design / Plan / RED review history：Git history。
 
 ## Last Reviewed Baseline

@@ -41,7 +41,7 @@ last_reviewed_baseline: 1.5.0
 | 15 | Completed / Archived | `closed-routing` | Decision 018、CHANGELOG、Git history |
 | 16 | Completed / Archived | `closed-routing` | Decision 019、CHANGELOG、Git history |
 | 17 | Completed / Archived | `closed-routing` | Decision 020、CHANGELOG、Git history |
-| 18 | Completed / Archived | `closed-routing` | `docs/audits/milestone_18/`、holistic audit、CHANGELOG |
+| 18 | Completed / Archived | `closed-routing` | `docs/audits/milestone_18_holistic_audit.md`、CHANGELOG、Git history |
 | 19 | Completed / Archived | `closed-routing` | planning review、plans、phase reviews、holistic final review、CHANGELOG |
 | 20 | Completed / Archived | `closed-routing` | planning review、implementation plan、phase reviews、final review、CHANGELOG |
 | 21 | Completed / Archived | `closed-routing` | planning review、implementation plan、phase reviews、final review、CHANGELOG |

@@ -171,8 +171,6 @@ ADR-015的完整 credential snapshot invariant、persistence-first commit、refr
 - [API client README](../../packages/api_client/README.md)
 - [App README](../../apps/flutter_architecture/README.md)
 - [Milestone 19 holistic final review](../audits/milestone_19_holistic_final_review.md)
-- [Milestone 20 final review](../audits/milestone_20/milestone_20_final_review.md)
-- [Milestone 21 final review](../audits/milestone_21/milestone_21_final_review.md)
 - [Android security runtime evidence](../audits/milestone_21/21-5_android_security_runtime_review.md)
 
 ## Last Reviewed Baseline

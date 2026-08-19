@@ -20,7 +20,7 @@ last_reviewed_baseline: 1.5.0
 - `route-decision`：由 `docs/architecture_decisions.md` 的相關 Decision 擁有。
 - `route-roadmap`：由 `docs/roadmap.md` 或後續 active／closed milestone routing 擁有。
 - `route-release`：由 `CHANGELOG.md`、`VERSION` 或 release artifact 擁有。
-- `route-evidence`：由 `docs/audits/` 的 planning、phase、runtime 或 final review 擁有。
+- `route-evidence`：由少量 retained durable audit evidence 與 Git history 擁有；不要求永久保留 planning / phase / per-task review。
 - `route-archive`：由 `docs/archive/`、`docs/milestones/` 或 Git history 保存。
 - `route-governance`：由 `AGENTS.md`、`docs/README.md` 或 `docs/governance/` 擁有。
 
@@ -59,7 +59,7 @@ last_reviewed_baseline: 1.5.0
 | `已拍板的重要設計` | Decision 005–012 的摘要副本 | `route-decision` | `docs/architecture_decisions.md`；snapshot 只保留 current architecture map，不複製 Decision body |
 | `驗證命令` | Workspace standard commands | `retain-current` + `route-governance` | snapshot 保留短版；`AGENTS.md` 擁有 agent operational rule |
 | `新對話恢復流程` | 舊大型必讀清單 | `route-governance` | `AGENTS.md` 與 `docs/README.md` 的 Milestone 22-2 reading contract；舊清單不保留 |
-| `Authentication Security Initiative：Milestone 19 至 21` | 19–21 逐 phase implementation journal、tests、commits、final status | `route-evidence` + `route-release` + current capability summary | `docs/audits/milestone_19*`、`milestone_20*`、`milestone_21*`、Decision 022、`CHANGELOG.md`; snapshot 只保留現行安全能力與 claim boundary |
+| `Authentication Security Initiative：Milestone 19 至 21` | 19–21 逐 phase implementation journal、tests、commits、final status | `route-evidence` + `route-release` + current capability summary | retained security evidence、Decision 022、`CHANGELOG.md`、Git history；snapshot 只保留現行安全能力與 claim boundary |
 
 ## Semantic Preservation Rules
 

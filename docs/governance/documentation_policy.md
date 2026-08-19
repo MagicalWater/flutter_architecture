@@ -130,7 +130,7 @@ title: Authentication Security Capability Boundaries
 owners:
   - app-architecture
 related:
-  - docs/audits/milestone_21/milestone_21_final_review.md
+  - docs/audits/milestone_21/21-5_android_security_runtime_review.md
 supersedes:
   - ADR-015
 superseded_by:

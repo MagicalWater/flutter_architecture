@@ -72,5 +72,4 @@ docs/adr/adr-NNN-stable-kebab-title.md
 逐 Decision disposition與批次策略：
 
 - `../migrations/m23_adr_extraction_manifest.md`
-- `../audits/milestone_23/23-0_planning_review.md`
 

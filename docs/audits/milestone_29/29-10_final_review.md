@@ -91,5 +91,4 @@ Web runtime、Windows／Linux host build未被記錄為pass。
 - Open P1 without disposition：0。
 - Version：1.11.0。
 - Release disposition：accepted。
-- Push與post-release validation：於release commit後執行並記錄於
-  `29-10_post_release_validation.md`。
+- Push與post-release validation：於release commit後執行；細粒度 evidence 依 historical retention policy 由 Git history 追溯。

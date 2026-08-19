@@ -56,7 +56,6 @@ Milestone 22 沒有取代「文件優於聊天記憶」的核心決策，而是�
 
 - [Documentation Hub](../README.md)
 - [Documentation Governance Policy](../governance/documentation_policy.md)
-- [Milestone 22 final review](../audits/milestone_22/22-7_final_review.md)
 
 ## Last Reviewed Baseline
 

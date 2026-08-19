@@ -88,8 +88,8 @@ Final build保留兩項既有非阻斷warning：第三方`local_auth_darwin` Swi
 - Android run `29970226525`：Development Debug APK與Production Release APK成功。
 - iOS run `29970226484`：Development Simulator與Production unsigned device Release成功。
 - iOS toolchain closure run `29971307542`：兩個iOS代表build再次成功，並永久保存macOS 15.7.7、Xcode 16.4、Flutter 3.41.6、Dart 3.11.4與CocoaPods 1.17.0 evidence。
-- 完整artifact metadata與下載後identity inspection見`26-6_remote_validation.md`。
-- Release／archive commit `40ce1f97a2c6db568cb42f2734cb5ee19d564f3e`的post-release runs亦全部成功：CI `29973185824`、Android `29973185891`、iOS `29973185825`。完整release-SHA artifacts、digests與toolchain evidence見`26-9_post_release_remote_validation.md`。
+- 細粒度 artifact metadata、下載後 identity inspection 與 remote validation evidence 已依 historical retention cleanup 移除，必要時由 Git history 追溯。
+- Release／archive commit `40ce1f97a2c6db568cb42f2734cb5ee19d564f3e`的post-release runs亦全部成功：CI `29973185824`、Android `29973185891`、iOS `29973185825`。
 
 ## Release Decision
 

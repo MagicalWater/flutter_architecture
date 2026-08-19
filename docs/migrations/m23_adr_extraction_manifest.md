@@ -112,7 +112,7 @@ Batch E aggregate source sections remain unchanged. 21 rows were `extracted` bef
 
 | ID | Migration state | Semantic preservation | Non-ADR routing | Relation result |
 |---|---|---|---|---|
-| ADR-022 | extracted | secure credential、OTP typed challenge、local unlock、plugin ownership、platform claim與 security non-goals retained | M19–21 planning supplements、review gates、test evidence、dates、versions與 release decisions routed to audits/plans/CHANGELOG | reciprocal partial supersession established with ADR-015 credential-storage scope |
+| ADR-022 | extracted | secure credential、OTP typed challenge、local unlock、plugin ownership、platform claim與 security non-goals retained | M19–21 planning supplements、review gates、test evidence、dates、versions與 release decisions routed to retained security evidence、CHANGELOG、Git history | reciprocal partial supersession established with ADR-015 credential-storage scope |
 
 Batch F aggregate source section remained unchanged until authority cutover。
 

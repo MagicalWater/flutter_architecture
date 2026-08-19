@@ -6,7 +6,7 @@
 
 - Primary visual authority：`docs/design_sources/pencil-compatibility-write-precheck/source.pen`
 - Manifest：`docs/visual_authority/pencil-compatibility-write-precheck/manifest.md`
-- Flutter mapping：`docs/audits/milestone_33/33-6_flutter_mapping_matrix.md`
+- Flutter mapping：`docs/visual_authority/pencil-compatibility-write-precheck/implementation_mapping.json`
 
 ## Boundary
 

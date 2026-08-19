@@ -59,7 +59,7 @@ Final gate期間發現並修正兩個macOS shell portability P1：
 - CI run `29910826260`：Quality、Generated Consistency與Tests通過。
 - iOS run `29910826245`：`macos-15`上的unsigned Simulator build通過。
 - Android run `29910826210`：release verification APK build與artifact upload通過。
-- 詳細證據與claim boundary由`25-11_remote_validation.md`保存。
+- 細粒度 remote validation evidence 已依 historical retention cleanup 移除，必要時由 Git history 追溯。
 
 ## Release Disposition
 

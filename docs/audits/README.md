@@ -26,13 +26,7 @@ docs/milestones/README.md
 
 路由到保留的 durable evidence、`CHANGELOG.md` 與 Git history。
 
-若已知 Milestone，可直接進：
-
-```txt
-docs/audits/milestone_<N>/
-```
-
-Standalone durable evidence 保留原檔名，可由 repository search、owning ADR 或 milestone router 進入。
+只有確實保留 durable evidence 的 Milestone 才會存在對應子目錄；不要假設每個 Milestone 都有 audit directory。Standalone durable evidence 保留原檔名，可由 repository search、owning ADR 或 milestone router 進入。
 
 ## Reading rule
 

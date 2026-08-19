@@ -45,9 +45,16 @@ Retain。只在既有critical owner加入一個negative contract assertion：And
 ## Local evidence
 
 - `python -m unittest tools.ci.test_validation_planner`：21/21 PASS。
+- `python -m unittest discover -s tools/ci -p test_*.py`：52/52 PASS。
+- `python -m unittest discover -s tools/docs -p test_*.py`：6/6 PASS。
+- `dart run melos run analyze`：5 packages PASS。
+- retained Flutter suites（`flutter_architecture`／`auth`／`api_client`）：PASS。
+- clean checkpoint `c4772810e657a1171c85b22851092d2a837c4e48` 執行`tools/ci/verify_generated.sh`：PASS，wall-clock約165秒；沒有generated content drift。
 - `python tools/docs/check_docs.py`：PASS。
 - CI / Android / iOS workflow YAML parse：PASS。
 - `git diff --check`：PASS。
+
+Planner對本corrective local changed paths判定`docs_content + governance + validation_engine`，要求logical full + generated，但不要求Android／iOS platform build；本地validation依此完成，沒有因Level名稱人工加碼platform build。
 
 ## Release / remote evidence disposition
 

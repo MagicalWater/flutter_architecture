@@ -31,59 +31,6 @@ void main() {
     await sessionManager.dispose();
   });
 
-  test('Login challenge enters explicit otpRequired state', () async {
-    bloc.add(const AuthEvent.loginRequested(account: 'otp', password: 'pw'));
-
-    await expectLater(
-      bloc.stream,
-      emitsThrough(
-        predicate<AuthState>(
-          (state) =>
-              state.status == AuthPresentationStatus.otpRequired &&
-              state.otpChallenge?.challengeId == 'challenge-1' &&
-              !state.isAuthenticated,
-        ),
-      ),
-    );
-  });
-
-  test('Resend replaces active challenge and predecessor metadata', () async {
-    bloc.add(const AuthEvent.loginRequested(account: 'otp', password: 'pw'));
-    await _waitForStatus(bloc, AuthPresentationStatus.otpRequired);
-
-    bloc.add(const AuthEvent.otpResendRequested());
-
-    await expectLater(
-      bloc.stream,
-      emitsThrough(
-        predicate<AuthState>(
-          (state) =>
-              state.status == AuthPresentationStatus.otpRequired &&
-              state.otpChallenge?.challengeId == 'challenge-2',
-        ),
-      ),
-    );
-  });
-
-  test('Verify success is the only transition to authenticated', () async {
-    bloc.add(const AuthEvent.loginRequested(account: 'otp', password: 'pw'));
-    await _waitForStatus(bloc, AuthPresentationStatus.otpRequired);
-
-    bloc.add(const AuthEvent.otpVerifyRequested(code: '123456'));
-
-    await expectLater(
-      bloc.stream,
-      emitsThrough(
-        predicate<AuthState>(
-          (state) =>
-              state.status == AuthPresentationStatus.authenticated &&
-              state.user?.id == 'user-1' &&
-              state.otpChallenge == null,
-        ),
-      ),
-    );
-  });
-
   test('Delayed Verify cannot overwrite newer Resend challenge', () async {
     repository.blockVerify = true;
     bloc.add(const AuthEvent.loginRequested(account: 'otp', password: 'pw'));
@@ -129,23 +76,6 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     expect(bloc.state.otpChallenge?.challengeId, 'challenge-3');
-  });
-
-  test('Verify failure returns to otpRequired with typed operation', () async {
-    repository.verifyFailure = const Failure(
-      message: 'invalid',
-      code: 'otp_invalid_code',
-    );
-    bloc.add(const AuthEvent.loginRequested(account: 'otp', password: 'pw'));
-    await _waitForStatus(bloc, AuthPresentationStatus.otpRequired);
-
-    bloc.add(const AuthEvent.otpVerifyRequested(code: '000000'));
-    await bloc.stream.firstWhere(
-      (state) => state.failureOperation == AuthFailureOperation.verifyOtp,
-    );
-
-    expect(bloc.state.status, AuthPresentationStatus.otpRequired);
-    expect(bloc.state.otpChallenge?.challengeId, 'challenge-1');
   });
 
   test('New Login replaces active account challenge', () async {

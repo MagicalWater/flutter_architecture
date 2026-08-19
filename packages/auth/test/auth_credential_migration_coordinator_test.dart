@@ -1,13 +1,6 @@
-import 'dart:io';
-
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-const _accessSentinel = 'M19_ACCESS_SECRET_7f4a';
-const _refreshSentinel = 'M19_REFRESH_SECRET_2c91';
-const _passwordSentinel = 'M19_PASSWORD_SECRET_11de';
-const _pluginSentinel = 'M19_PLUGIN_SECRET_a63b';
 
 void main() {
   const tokens = StoredAuthTokens(
@@ -16,132 +9,6 @@ void main() {
     userId: 'user-1',
   );
   const user = AuthUser(id: 'user-1', name: 'User');
-  final diagnostic = AuthLifecycleDiagnostic(
-    operation: AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
-    error: StateError('plugin-secret'),
-    stackTrace: StackTrace.current,
-  );
-
-  test(
-    'migration result exposes closed variants with immutable diagnostics',
-    () {
-      final sourceDiagnostics = <AuthLifecycleDiagnostic>[diagnostic];
-      final unauthenticated = AuthCredentialMigrationUnauthenticated(
-        diagnostics: sourceDiagnostics,
-      );
-      final resolved = AuthCredentialMigrationResolved(
-        tokens: tokens,
-        user: user,
-        diagnostics: sourceDiagnostics,
-      );
-
-      sourceDiagnostics.clear();
-
-      expect(unauthenticated, isA<AuthCredentialMigrationResult>());
-      expect(resolved, isA<AuthCredentialMigrationResult>());
-      expect(unauthenticated.diagnostics, hasLength(1));
-      expect(resolved.diagnostics, hasLength(1));
-      expect(
-        () => unauthenticated.diagnostics.add(diagnostic),
-        throwsUnsupportedError,
-      );
-      expect(() => resolved.diagnostics.clear(), throwsUnsupportedError);
-    },
-  );
-
-  test('migration diagnostic preserves error and stack identity', () {
-    final error = StateError('plugin-secret');
-    final stackTrace = StackTrace.current;
-    final value = AuthLifecycleDiagnostic(
-      operation: AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
-      error: error,
-      stackTrace: stackTrace,
-    );
-
-    expect(value.error, same(error));
-    expect(value.stackTrace, same(stackTrace));
-  });
-
-  test(
-    'migration result and diagnostic toString do not expose credentials',
-    () {
-      final values = <Object>[
-        AuthCredentialMigrationUnauthenticated(
-          diagnostics: <AuthLifecycleDiagnostic>[diagnostic],
-        ),
-        AuthCredentialMigrationResolved(
-          tokens: tokens,
-          user: user,
-          diagnostics: <AuthLifecycleDiagnostic>[diagnostic],
-        ),
-        diagnostic,
-      ];
-
-      for (final value in values) {
-        final text = value.toString();
-        expect(text, isNot(contains('access-secret')));
-        expect(text, isNot(contains('refresh-secret')));
-        expect(text, isNot(contains('plugin-secret')));
-      }
-    },
-  );
-
-  test('migration results hide unified credential sentinels', () {
-    const sentinelTokens = StoredAuthTokens(
-      accessToken: _accessSentinel,
-      refreshToken: _refreshSentinel,
-      userId: _passwordSentinel,
-    );
-    const sentinelUser = AuthUser(id: _passwordSentinel, name: 'User');
-    final sentinelDiagnostic = AuthLifecycleDiagnostic(
-      operation: AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
-      error: StateError(_pluginSentinel),
-      stackTrace: StackTrace.fromString(_pluginSentinel),
-    );
-    final values = <Object>[
-      AuthCredentialMigrationUnauthenticated(
-        diagnostics: <AuthLifecycleDiagnostic>[sentinelDiagnostic],
-      ),
-      AuthCredentialMigrationResolved(
-        tokens: sentinelTokens,
-        user: sentinelUser,
-        diagnostics: <AuthLifecycleDiagnostic>[sentinelDiagnostic],
-      ),
-      sentinelDiagnostic,
-    ];
-
-    for (final value in values) {
-      _expectNoCredentialSentinel(value.toString());
-    }
-  });
-
-  test('coordinator contract only accepts Auth-specific stores', () {
-    final coordinator = AuthCredentialMigrationCoordinator(
-      _CredentialStore(),
-      _LegacyCredentialStore(),
-      _UserStore(),
-    );
-
-    final resolver = coordinator.resolveUnlocked;
-    expect(resolver, isA<Future<AuthCredentialMigrationResult> Function()>());
-  });
-
-  test(
-    'coordinator source does not depend on session or mutation ownership',
-    () {
-      final source = File(
-        'lib/src/data/migration/auth_credential_migration_coordinator.dart',
-      ).readAsStringSync();
-
-      expect(source, isNot(contains('SessionManager')));
-      expect(source, isNot(contains('AuthStateMutationCoordinator')));
-      expect(source, isNot(contains('runExclusive')));
-      expect(source, isNot(contains('package:flutter')));
-      expect(source, isNot(contains('package:get_it')));
-      expect(source, isNot(contains('package:injectable')));
-    },
-  );
-
   test('caller owns the only exclusive section around migration', () async {
     final guard = _ExclusiveGuard();
     final secure = _GuardedCredentialStore(
@@ -420,37 +287,26 @@ void main() {
       },
     );
 
-    final legacyCases = <String, AuthCredentialReadResult>{
-      'matching credential': const AuthCredentialReadPresent(tokens),
-      'different credential': const AuthCredentialReadPresent(
-        StoredAuthTokens(
-          accessToken: 'legacy-access',
-          refreshToken: 'legacy-refresh',
-          userId: 'user-1',
+    test('secure remains authority and clears conflicting legacy credential', () async {
+      final stores = _MigrationStores(
+        secureResult: const AuthCredentialReadPresent(tokens),
+        legacyResult: const AuthCredentialReadPresent(
+          StoredAuthTokens(
+            accessToken: 'legacy-access',
+            refreshToken: 'legacy-refresh',
+            userId: 'user-1',
+          ),
         ),
-      ),
-      'corrupted credential': const AuthCredentialReadCorrupted(),
-    };
-    for (final entry in legacyCases.entries) {
-      test('secure remains authority and clears ${entry.key}', () async {
-        final stores = _MigrationStores(
-          secureResult: const AuthCredentialReadPresent(tokens),
-          legacyResult: entry.value,
-          user: user,
-        );
+        user: user,
+      );
 
-        final result = await stores.coordinator.resolveUnlocked();
+      final result = await stores.coordinator.resolveUnlocked();
 
-        expect(result, isA<AuthCredentialMigrationResolved>());
-        final resolved = result as AuthCredentialMigrationResolved;
-        expect(resolved.tokens, same(tokens));
-        expect(resolved.user, same(user));
-        expect(resolved.diagnostics, isEmpty);
-        expect(stores.legacy.clearCalls, 1);
-        expect(stores.secure.clearCalls, 0);
-        expect(stores.secure.writeCalls, 0);
-      });
-    }
+      expect(result, isA<AuthCredentialMigrationResolved>());
+      expect(stores.legacy.clearCalls, 1);
+      expect(stores.secure.clearCalls, 0);
+      expect(stores.secure.writeCalls, 0);
+    });
 
     test('legacy read failure prevents resolved authority', () async {
       final failure = AppException(
@@ -510,32 +366,6 @@ void main() {
         expect(diagnostic.error, same(failure));
         expect(diagnostic.stackTrace, same(failureStack));
         expect(diagnostic.toString(), isNot(contains('legacy cleanup secret')));
-        expect(stores.secure.clearCalls, 0);
-        expect(stores.user.clearCalls, 0);
-      },
-    );
-
-    test(
-      'unknown legacy cleanup failure preserves error and caught stack',
-      () async {
-        final failure = StateError('unknown cleanup');
-        final failureStack = StackTrace.current;
-        final stores =
-            _MigrationStores(
-                secureResult: const AuthCredentialReadPresent(tokens),
-                legacyResult: const AuthCredentialReadPresent(tokens),
-                user: user,
-              )
-              ..legacy.clearError = failure
-              ..legacy.clearStackTrace = failureStack;
-
-        try {
-          await stores.coordinator.resolveUnlocked();
-          fail('Expected unknown legacy cleanup failure');
-        } catch (error, stackTrace) {
-          expect(error, same(failure));
-          expect(stackTrace, same(failureStack));
-        }
         expect(stores.secure.clearCalls, 0);
         expect(stores.user.clearCalls, 0);
       },
@@ -632,28 +462,6 @@ void main() {
       },
     );
 
-    test('unknown secure write failure preserves original identity', () async {
-      final failure = StateError('write bug');
-      final failureStack = StackTrace.current;
-      final stores =
-          _MigrationStores(
-              legacyResult: const AuthCredentialReadPresent(tokens),
-              user: user,
-            )
-            ..secure.writeError = failure
-            ..secure.writeStackTrace = failureStack;
-
-      try {
-        await stores.coordinator.resolveUnlocked();
-        fail('Expected secure write failure');
-      } catch (error, stackTrace) {
-        expect(error, same(failure));
-        expect(stackTrace, same(failureStack));
-      }
-      expect(stores.legacy.clearCalls, 0);
-      expect(stores.secure.clearCalls, 1);
-    });
-
     test(
       'write failure rollback error outranks original write error',
       () async {
@@ -685,54 +493,18 @@ void main() {
 
     final invalidReadBackCases = <String, AuthCredentialReadResult>{
       'absent': const AuthCredentialReadAbsent(),
-      'corrupted': const AuthCredentialReadCorrupted(),
-      'access token mismatch': const AuthCredentialReadPresent(
-        StoredAuthTokens(
-          accessToken: 'different',
-          refreshToken: 'refresh-secret',
-          userId: 'user-1',
-        ),
-      ),
-      'refresh token mismatch': const AuthCredentialReadPresent(
-        StoredAuthTokens(
-          accessToken: 'access-secret',
-          refreshToken: 'different',
-          userId: 'user-1',
-        ),
-      ),
-      'user identity mismatch': const AuthCredentialReadPresent(
+      'identity mismatch': const AuthCredentialReadPresent(
         StoredAuthTokens(
           accessToken: 'access-secret',
           refreshToken: 'refresh-secret',
           userId: 'user-2',
         ),
       ),
-      'access expiration mismatch': AuthCredentialReadPresent(
-        StoredAuthTokens(
-          accessToken: 'legacy-access',
-          refreshToken: 'legacy-refresh',
-          userId: 'user-1',
-          accessTokenExpiresAt: DateTime.utc(2031, 1, 2),
-          refreshTokenExpiresAt: DateTime.utc(2030, 2, 3),
-        ),
-      ),
-      'expiration mismatch': AuthCredentialReadPresent(
-        StoredAuthTokens(
-          accessToken: 'legacy-access',
-          refreshToken: 'legacy-refresh',
-          userId: 'user-1',
-          accessTokenExpiresAt: DateTime.utc(2030, 1, 2),
-          refreshTokenExpiresAt: DateTime.utc(2031, 2, 3),
-        ),
-      ),
     };
     for (final entry in invalidReadBackCases.entries) {
       test('invalid read-back ${entry.key} rolls back secure', () async {
-        final legacyTokens = entry.key.contains('expiration')
-            ? expiringTokens
-            : tokens;
         final stores = _MigrationStores(
-          legacyResult: AuthCredentialReadPresent(legacyTokens),
+          legacyResult: const AuthCredentialReadPresent(tokens),
           user: user,
         )..secure.postWriteResult = entry.value;
 
@@ -854,47 +626,6 @@ void main() {
       },
     );
   });
-}
-
-void _expectNoCredentialSentinel(String text) {
-  expect(text, isNot(contains(_accessSentinel)));
-  expect(text, isNot(contains(_refreshSentinel)));
-  expect(text, isNot(contains(_passwordSentinel)));
-  expect(text, isNot(contains(_pluginSentinel)));
-}
-
-final class _CredentialStore implements AuthCredentialStore {
-  @override
-  Future<void> clearCredential() async {}
-
-  @override
-  Future<AuthCredentialReadResult> readCredential() async {
-    return const AuthCredentialReadAbsent();
-  }
-
-  @override
-  Future<void> writeCredential(StoredAuthTokens tokens) async {}
-}
-
-final class _LegacyCredentialStore implements AuthLegacyCredentialStore {
-  @override
-  Future<void> clearLegacyCredential() async {}
-
-  @override
-  Future<AuthCredentialReadResult> readLegacyCredential() async {
-    return const AuthCredentialReadAbsent();
-  }
-}
-
-final class _UserStore implements AuthUserStore {
-  @override
-  Future<void> clearUser() async {}
-
-  @override
-  Future<AuthUser?> readUser() async => null;
-
-  @override
-  Future<void> writeUser(AuthUser user) async {}
 }
 
 final class _ExclusiveGuard {

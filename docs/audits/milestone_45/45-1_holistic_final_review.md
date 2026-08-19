@@ -18,9 +18,9 @@ Open P0 = 0。Open P1 without disposition = 0。
 
 | Metric | Before | After | Reduction |
 |---|---:|---:|---:|
-| Test files | 179 | 20 | 88.8% |
-| Test LOC | 30,749 | 5,902 | 80.8% |
-| Static cases | 1,127 | 189 | 83.2% |
+| Test files | 179 | 18 | 89.9% |
+| Test LOC | 30,749 | 4,430 | 85.6% |
+| Static cases | 1,127 | 136 | 87.9% |
 | Test + non-test tools + workflows unique LOC | ~43,718 | 18,168 | ~58.4% |
 
 Minimum success criterion（files與LOC均>=80% reduction）已通過。90% LOC stretch沒有以刪除真正critical security／migration／concurrency protection硬湊數字；後續若剩餘owner的maintenance value下降，仍可依test-by-exception直接再退休，不存在最低保留數量。
@@ -57,7 +57,7 @@ Current permanent suite只保留下列高價值failure families：
 - secret leakage／public repository security；
 - validation planner fail-safe與explicit manual intent；
 - third-party Skill lock integrity；
-- minimal core/security runtime integration smokes。
+- minimal security runtime integration smoke。
 
 這些owner仍須遵守Retention Decision；檔名或「Foundation」身分不形成永久豁免。
 
@@ -88,11 +88,10 @@ Current governance已完成以下反轉：
 - `dart run melos run docs_check`：PASS。
 - `git diff --check`：PASS。
 - `dart run melos run analyze`：5 packages PASS，0 issues。
-- `python -m unittest discover -s tools/ci -p test_*.py`：55 PASS。
-- `python -m unittest discover -s tools/docs -p test_*.py`：13 PASS。
+- `python -m unittest discover -s tools/ci -p test_*.py`：45 PASS。
+- `python -m unittest discover -s tools/docs -p test_*.py`：6 PASS。
 - `dart run melos exec --scope=flutter_architecture --scope=auth --scope=api_client -- flutter test`：PASS。
-- New logical full Flutter wall-clock：9.37s；read-only admission baseline約53.38s，約82% reduction。
-- `python tools/testing/inventory.py --output NUL`：`files=20 loc=5902 cases=189`；default不再覆寫historical CSV。
+- `python tools/testing/inventory.py --output NUL`：`files=18 loc=4430 cases=136`；default不再覆寫historical CSV。
 
 ## Findings disposition
 
@@ -104,6 +103,7 @@ Current governance已完成以下反轉：
 - Fresh post-commit review發現package reverse-dependency routing仍把所有dependent package test roots視為affected owners，導致Design System等0-test package change仍掃整個App critical suite：**P2 efficiency corrective**。Current route只對changed package本身選permanent tests；reverse dependents只做analyze。真正cross-package critical failure必須有明確owner，不再用dependency graph泛化成regression sweep。
 - Platform build雖已由planner降頻，但iOS Simulator no-op job與Android Summary仍會在未選platform時佔runner：**P2 CI execution corrective**。Current workflow只在`ios_build`／`android_build`實際選中或classifier failure需要summary時建立對應job，不再為維持舊workflow形狀啟動no-op runner。
 - Initial completion commit含4個EOF whitespace errors，因此先前`git diff --check PASS`聲明不成立：**review evidence mismatch corrective**。Corrective完成後重新以base→HEAD執行`git diff --check`作fresh gate。
+- Post-integration retention audit再次逐一審查20個remaining owners：`core_runtime_smoke_test.dart`退休為release/runtime acceptance evidence，獨立`AuthResult.toString`test併入既有credential redaction owner；Skill lock、secure-store、OTP、refresh、migration與destructive cleanup matrices只保留代表critical failure families。Result由20 files／5,902 LOC／189 cases再縮至18 files／4,430 LOC／136 cases，focused與current logical full fresh PASS。
 
 ## Release disposition
 

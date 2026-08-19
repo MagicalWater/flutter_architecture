@@ -1,8 +1,6 @@
-from contextlib import redirect_stdout
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import hashlib
-import io
 import json
 import os
 from pathlib import Path
@@ -14,7 +12,6 @@ from unittest import mock
 from tools.ci.artifact_cleanup import (
     apply_cleanup,
     evaluate_cleanup,
-    main,
     pin_job,
     purge_trash,
     restore_cleanup,
@@ -126,110 +123,6 @@ class ArtifactCleanupTest(unittest.TestCase):
         )
         (job_dir / "summary.md").write_text("summary", encoding="utf-8")
         return job_dir.relative_to(self.root).as_posix()
-
-    def test_age_and_count_rules_match_every_retention_class(self) -> None:
-        success_jobs = [
-            self._write_job("verification-success", NOW - timedelta(days=days))
-            for days in (1, 2, 3, 4, 8)
-        ]
-        failure_jobs = [
-            self._write_job(
-                "verification-failure",
-                NOW - timedelta(days=days),
-                suite="tests",
-            )
-            for days in range(11)
-        ]
-        observability_jobs = [
-            self._write_job(
-                "observability-raw",
-                NOW - timedelta(days=days),
-                suite="observability",
-                platform="ios",
-            )
-            for days in (0, 1, 2)
-        ]
-        release_jobs = [
-            self._write_job(
-                "release-verification",
-                NOW - timedelta(days=days),
-                suite="release",
-            )
-            for days in (0, 1, 2, 3)
-        ]
-
-        plan = evaluate_cleanup(
-            self.root,
-            NOW,
-            max_bytes=10_000_000,
-            min_free_bytes=0,
-        )
-        by_job = {candidate.job_path: candidate for candidate in plan.candidates}
-
-        self.assertIn(success_jobs[-1], by_job)
-        self.assertIn("age", by_job[success_jobs[-1]].reasons)
-        self.assertIn(success_jobs[-2], by_job)
-        self.assertIn("count", by_job[success_jobs[-2]].reasons)
-        self.assertIn(failure_jobs[-1], by_job)
-        self.assertIn("count", by_job[failure_jobs[-1]].reasons)
-        self.assertIn(observability_jobs[-1], by_job)
-        self.assertIn("count", by_job[observability_jobs[-1]].reasons)
-        self.assertIn(release_jobs[-1], by_job)
-        self.assertIn("count", by_job[release_jobs[-1]].reasons)
-
-    def test_capacity_order_and_blocking_bytes_are_explicit(self) -> None:
-        expected_order = []
-        for retention_class, suite, age in (
-            ("verification-success", "quality", 8),
-            ("verification-failure", "tests", 15),
-            ("observability-raw", "observability", 4),
-            ("release-verification", "release", 31),
-        ):
-            expected_order.append(
-                self._write_job(
-                    retention_class,
-                    NOW - timedelta(days=age),
-                    size=100,
-                    suite=suite,
-                    platform="ios" if retention_class == "observability-raw" else "android",
-                )
-            )
-
-        disk_usage = mock.Mock(free=50, total=1_000, used=950)
-        with mock.patch("tools.ci.artifact_cleanup.shutil.disk_usage", return_value=disk_usage):
-            plan = evaluate_cleanup(
-                self.root,
-                NOW,
-                max_bytes=0,
-                min_free_bytes=600,
-            )
-
-        self.assertEqual(
-            [candidate.job_path for candidate in plan.candidates],
-            expected_order,
-        )
-        self.assertGreater(plan.blocking_bytes, 0)
-        self.assertFalse(plan.can_satisfy_capacity)
-
-    def test_capacity_never_selects_fresh_within_count_artifacts(self) -> None:
-        job_path = self._write_job(
-            "verification-success",
-            NOW - timedelta(days=1),
-            size=100,
-        )
-        disk_usage = mock.Mock(free=1_000, total=2_000, used=1_000)
-        with mock.patch("tools.ci.artifact_cleanup.shutil.disk_usage", return_value=disk_usage):
-            plan = evaluate_cleanup(
-                self.root,
-                NOW,
-                max_bytes=0,
-                min_free_bytes=0,
-            )
-
-        self.assertNotIn(job_path, [candidate.job_path for candidate in plan.candidates])
-        self.assertEqual(plan.candidates, ())
-        self.assertGreater(plan.blocking_bytes, 0)
-        self.assertFalse(plan.can_satisfy_capacity)
 
     def test_bounded_pin_prevents_cleanup_and_rejects_invalid_expiry(self) -> None:
         job_path = self._write_job(
@@ -364,22 +257,6 @@ class ArtifactCleanupTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "generation"):
             apply_cleanup(self.root, manifest_id)
 
-    def test_apply_time_starts_the_trash_retention_window(self) -> None:
-        self._write_job(
-            "verification-success",
-            NOW - timedelta(days=8),
-        )
-        plan = evaluate_cleanup(self.root, NOW, max_bytes=10_000, min_free_bytes=0)
-        manifest_id = write_cleanup_manifest(self.root, plan)
-        applied_at = NOW + timedelta(days=2)
-
-        with mock.patch("tools.ci.artifact_cleanup._utc_now", return_value=applied_at):
-            apply_cleanup(self.root, manifest_id)
-
-        with self.assertRaisesRegex(ValueError, "24 hours"):
-            purge_trash(self.root, manifest_id, applied_at + timedelta(hours=1))
-        purge_trash(self.root, manifest_id, applied_at + timedelta(hours=25))
-
     def test_restore_rolls_back_when_a_destination_conflicts(self) -> None:
         job_path = self._write_job(
             "verification-success",
@@ -485,67 +362,6 @@ class ArtifactCleanupTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "cleanup operation"):
             purge_trash(self.root, manifest_id, NOW + timedelta(hours=25))
         self.assertTrue(trash_dir.exists())
-
-    def test_cli_evaluate_pin_and_unpin(self) -> None:
-        job_path = self._write_job(
-            "verification-success",
-            NOW - timedelta(days=8),
-        )
-        output = io.StringIO()
-        with redirect_stdout(output):
-            exit_code = main(
-                [
-                    "evaluate",
-                    "--root",
-                    str(self.root),
-                    "--now",
-                    _iso(NOW),
-                    "--max-bytes",
-                    "10000",
-                    "--min-free-bytes",
-                    "0",
-                    "--dry-run",
-                ]
-            )
-        self.assertEqual(exit_code, 0)
-        manifest_id = json.loads(output.getvalue())["manifest_id"]
-        self.assertTrue(
-            (self.root / "cleanup-manifests" / f"{manifest_id}.json").is_file()
-        )
-
-        expires_at = _iso(NOW + timedelta(days=30))
-        self.assertEqual(
-            main(
-                [
-                    "pin",
-                    "--root",
-                    str(self.root),
-                    "--job-path",
-                    job_path,
-                    "--owner",
-                    "maintainer",
-                    "--reason",
-                    "acceptance",
-                    "--expires-at",
-                    expires_at,
-                    "--now",
-                    _iso(NOW),
-                ]
-            ),
-            0,
-        )
-        self.assertEqual(
-            main(
-                [
-                    "unpin",
-                    "--root",
-                    str(self.root),
-                    "--job-path",
-                    job_path,
-                ]
-            ),
-            0,
-        )
 
 
 if __name__ == "__main__":

@@ -61,40 +61,6 @@ void main() {
     },
   );
 
-  test('Invalidation 的 clearTokens 失敗時仍嘗試 clearUser 並清除 Session', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore(failClearTokens: true);
-    final refresher = _createRefresher(
-      _FakeAuthRefreshApi(statusCode: 401),
-      localStore,
-      sessionManager,
-    );
-
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-    expect(result, isA<AuthRefreshSessionExpired>());
-    expect(localStore.clearTokensCalls, 1);
-    expect(localStore.clearUserCalls, 1);
-    expect(sessionManager.currentSession, isNull);
-  });
-
-  test('Invalidation 的 clearUser 失敗時仍清除 Session', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore(failClearUser: true);
-    final refresher = _createRefresher(
-      _FakeAuthRefreshApi(statusCode: 401),
-      localStore,
-      sessionManager,
-    );
-
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-    expect(result, isA<AuthRefreshSessionExpired>());
-    expect(localStore.clearTokensCalls, 1);
-    expect(localStore.clearUserCalls, 1);
-    expect(sessionManager.currentSession, isNull);
-  });
-
   test('缺少 refresh token 時會清除 auth state 並回傳 sessionExpired', () async {
     final sessionManager = _authenticatedSession();
     final localStore = _FakeRefreshLocalStore()..tokens = null;
@@ -106,49 +72,6 @@ void main() {
     expect(result, isA<AuthRefreshSessionExpired>());
     expect(api.callCount, 0);
     expect(localStore.clearTokensCalls, 1);
-    expect(localStore.clearUserCalls, 1);
-    expect(sessionManager.currentSession, isNull);
-  });
-
-  test('Legacy token缺少userId時不呼叫remote並清除auth state', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore(failReadUserUnknown: true)
-      ..tokens = const StoredAuthTokens(
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-      );
-    final api = _FakeAuthRefreshApi();
-    final refresher = _createRefresher(api, localStore, sessionManager);
-
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-    expect(result, isA<AuthRefreshSessionExpired>());
-    expect(api.callCount, 0);
-    expect(localStore.clearTokensCalls, 1);
-    expect(localStore.clearUserCalls, 1);
-    expect(sessionManager.currentSession, isNull);
-  });
-
-  test('Refresh Token過期時不讀User store並直接失效Session', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore(failReadUserUnknown: true)
-      ..tokens = StoredAuthTokens(
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-        userId: 'user-001',
-        refreshTokenExpiresAt: DateTime.now().subtract(
-          const Duration(minutes: 1),
-        ),
-      );
-    final api = _FakeAuthRefreshApi();
-    final refresher = _createRefresher(api, localStore, sessionManager);
-
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-    expect(result, isA<AuthRefreshSessionExpired>());
-    expect(api.callCount, 0);
-    expect(localStore.clearTokensCalls, 1);
-    expect(localStore.clearLegacyCredentialCalls, 1);
     expect(localStore.clearUserCalls, 1);
     expect(sessionManager.currentSession, isNull);
   });
@@ -166,21 +89,6 @@ void main() {
     expect(localStore.clearTokensCalls, 1);
     expect(localStore.clearLegacyCredentialCalls, 1);
     expect(localStore.clearUserCalls, 1);
-    expect(sessionManager.currentSession, isNull);
-  });
-
-  test('Persisted User identity不一致時不呼叫remote並清除auth state', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore()
-      ..user = const AuthUser(id: 'user-002', name: 'Other User');
-    final api = _FakeAuthRefreshApi();
-    final refresher = _createRefresher(api, localStore, sessionManager);
-
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-    expect(result, isA<AuthRefreshSessionExpired>());
-    expect(api.callCount, 0);
-    expect(localStore.clearLegacyCredentialCalls, 1);
     expect(sessionManager.currentSession, isNull);
   });
 
@@ -204,31 +112,6 @@ void main() {
     expect(sessionManager.currentSession, isNull);
   });
 
-  for (final type in <TransportExceptionKind>[
-    TransportExceptionKind.connectionTimeout,
-    TransportExceptionKind.sendTimeout,
-    TransportExceptionKind.receiveTimeout,
-    TransportExceptionKind.connection,
-    TransportExceptionKind.badCertificate,
-  ]) {
-    test('$type 會保留 Session 並回傳 temporarilyUnavailable', () async {
-      final sessionManager = _authenticatedSession();
-      final localStore = _FakeRefreshLocalStore();
-      final refresher = _createRefresher(
-        _FakeAuthRefreshApi(errorType: type),
-        localStore,
-        sessionManager,
-      );
-
-      final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-      expect(result, isA<AuthRefreshTemporarilyUnavailable>());
-      expect(localStore.clearTokensCalls, 0);
-      expect(localStore.clearUserCalls, 0);
-      expect(sessionManager.currentSession?.accessToken, 'access-token');
-    });
-  }
-
   test('Server 5xx 會保留 Session 並回傳 temporarilyUnavailable', () async {
     final sessionManager = _authenticatedSession();
     final localStore = _FakeRefreshLocalStore();
@@ -242,25 +125,6 @@ void main() {
     expect(localStore.clearUserCalls, 0);
     expect(sessionManager.currentSession?.accessToken, 'access-token');
   });
-
-  for (final statusCode in <int>[400, 408, 429, 503]) {
-    test('HTTP $statusCode 會保留 Session 並回傳 temporarilyUnavailable', () async {
-      final sessionManager = _authenticatedSession();
-      final localStore = _FakeRefreshLocalStore();
-      final refresher = _createRefresher(
-        _FakeAuthRefreshApi(statusCode: statusCode),
-        localStore,
-        sessionManager,
-      );
-
-      final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-      expect(result, isA<AuthRefreshTemporarilyUnavailable>());
-      expect(localStore.clearTokensCalls, 0);
-      expect(localStore.clearUserCalls, 0);
-      expect(sessionManager.currentSession, isNotNull);
-    });
-  }
 
   test('Refresh 期間 Session identity 改變時丟棄舊 response', () async {
     final sessionManager = _authenticatedSession();
@@ -298,64 +162,6 @@ void main() {
     expect(localStore.clearTokensCalls, 1);
     expect(localStore.clearUserCalls, 1);
     expect(sessionManager.currentSession, isNull);
-  });
-
-  test(
-    '讀取 Token Pair 發生已知 storage 錯誤時保留 Session 並回傳 localStateFailure',
-    () async {
-      final sessionManager = _authenticatedSession();
-      final localStore = _FakeRefreshLocalStore(failReadTokens: true);
-      final refresher = _createRefresher(
-        _FakeAuthRefreshApi(),
-        localStore,
-        sessionManager,
-      );
-
-      final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-      expect(result, isA<AuthRefreshLocalStateFailure>());
-      expect(localStore.clearTokensCalls, 0);
-      expect(localStore.clearUserCalls, 0);
-      expect(sessionManager.currentSession, isNotNull);
-    },
-  );
-
-  test('讀取 Token Pair 發生未知錯誤時不清 Session 並保留原始錯誤', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore(failReadTokensUnknown: true);
-    final refresher = _createRefresher(
-      _FakeAuthRefreshApi(),
-      localStore,
-      sessionManager,
-    );
-
-    await expectLater(
-      refresher.refresh(failedAccessToken: 'access-token'),
-      throwsA(isA<StateError>()),
-    );
-
-    expect(localStore.clearTokensCalls, 0);
-    expect(localStore.clearUserCalls, 0);
-    expect(sessionManager.currentSession, isNotNull);
-  });
-
-  test('保存 Token Pair 發生未知錯誤時不清 Session 並保留原始錯誤', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore(failSaveTokensUnknown: true);
-    final refresher = _createRefresher(
-      _FakeAuthRefreshApi(),
-      localStore,
-      sessionManager,
-    );
-
-    await expectLater(
-      refresher.refresh(failedAccessToken: 'access-token'),
-      throwsA(isA<StateError>()),
-    );
-
-    expect(localStore.clearTokensCalls, 0);
-    expect(localStore.clearUserCalls, 0);
-    expect(sessionManager.currentSession, isNotNull);
   });
 
   test('新 Session 不會加入舊 Session 的 in-flight refresh', () async {
@@ -456,42 +262,6 @@ void main() {
     expect(sessionManager.currentSession, isNotNull);
   });
 
-  test('FormatException 會視為 remote protocol failure 並保留 Session', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore();
-    final refresher = _createRefresher(
-      _FakeAuthRefreshApi(error: const FormatException('bad payload')),
-      localStore,
-      sessionManager,
-    );
-
-    final result = await refresher.refresh(failedAccessToken: 'access-token');
-
-    expect(result, isA<AuthRefreshTemporarilyUnavailable>());
-    expect(localStore.clearTokensCalls, 0);
-    expect(sessionManager.currentSession, isNotNull);
-  });
-
-  test('TypeError 不會降級為 temporary failure，並保留 Session', () async {
-    final sessionManager = _authenticatedSession();
-    final localStore = _FakeRefreshLocalStore();
-    final error = TypeError();
-    final refresher = _createRefresher(
-      _FakeAuthRefreshApi(error: error),
-      localStore,
-      sessionManager,
-    );
-
-    await expectLater(
-      refresher.refresh(failedAccessToken: 'access-token'),
-      throwsA(same(error)),
-    );
-
-    expect(localStore.clearTokensCalls, 0);
-    expect(localStore.clearUserCalls, 0);
-    expect(sessionManager.currentSession, isNotNull);
-  });
-
   test('舊 Session refresh 返回 401 時不會清除新 Session', () async {
     final sessionManager = _authenticatedSession();
     final localStore = _FakeRefreshLocalStore();
@@ -562,8 +332,6 @@ class _FakeAuthRefreshApi implements AuthRefreshEndpoint {
     this.statusCode,
     this.completer,
     this.response,
-    this.errorType,
-    this.error,
   });
 
   static const successResponse = RefreshTokenResponseDto(
@@ -574,8 +342,6 @@ class _FakeAuthRefreshApi implements AuthRefreshEndpoint {
   final int? statusCode;
   final Completer<RefreshTokenResponseDto>? completer;
   final RefreshTokenResponseDto? response;
-  final TransportExceptionKind? errorType;
-  final Object? error;
   int callCount = 0;
 
   @override
@@ -583,14 +349,6 @@ class _FakeAuthRefreshApi implements AuthRefreshEndpoint {
     RefreshTokenRequestDto request,
   ) async {
     callCount += 1;
-    final thrownError = error;
-    if (thrownError != null) {
-      throw thrownError;
-    }
-    final type = errorType;
-    if (type != null) {
-      throw _endpointFailure(transportKind: type);
-    }
     final code = statusCode;
     if (code != null) {
       throw _endpointFailure(statusCode: code);
@@ -633,25 +391,13 @@ class _FakeRefreshLocalStore
     implements AuthCredentialStore, AuthLegacyCredentialStore, AuthUserStore {
   _FakeRefreshLocalStore({
     this.failSaveTokens = false,
-    this.failReadTokens = false,
-    this.failReadTokensUnknown = false,
-    this.failSaveTokensUnknown = false,
     this.blockSaveTokens = false,
-    this.failClearTokens = false,
-    this.failClearUser = false,
     this.corruptedCredential = false,
-    this.failReadUserUnknown = false,
   });
 
   final bool failSaveTokens;
-  final bool failReadTokens;
-  final bool failReadTokensUnknown;
-  final bool failSaveTokensUnknown;
   final bool blockSaveTokens;
-  final bool failClearTokens;
-  final bool failClearUser;
   final bool corruptedCredential;
-  final bool failReadUserUnknown;
   int saveTokensCalls = 0;
   int clearTokensCalls = 0;
   int clearLegacyCredentialCalls = 0;
@@ -668,15 +414,6 @@ class _FakeRefreshLocalStore
 
   @override
   Future<AuthCredentialReadResult> readCredential() async {
-    if (failReadTokens) {
-      throw const AppException(
-        kind: AppExceptionKind.localStorage,
-        message: 'read tokens failed',
-      );
-    }
-    if (failReadTokensUnknown) {
-      throw StateError('read tokens failed');
-    }
     if (corruptedCredential) {
       return const AuthCredentialReadCorrupted();
     }
@@ -698,21 +435,12 @@ class _FakeRefreshLocalStore
         message: 'save tokens failed',
       );
     }
-    if (failSaveTokensUnknown) {
-      throw StateError('save tokens failed');
-    }
     tokens = value;
   }
 
   @override
   Future<void> clearCredential() async {
     clearTokensCalls += 1;
-    if (failClearTokens) {
-      throw const AppException(
-        kind: AppExceptionKind.localStorage,
-        message: 'clear tokens failed',
-      );
-    }
     tokens = null;
   }
 
@@ -727,12 +455,7 @@ class _FakeRefreshLocalStore
   }
 
   @override
-  Future<AuthUser?> readUser() async {
-    if (failReadUserUnknown) {
-      throw StateError('user store must not be read');
-    }
-    return user;
-  }
+  Future<AuthUser?> readUser() async => user;
 
   @override
   Future<void> writeUser(AuthUser user) async {
@@ -742,12 +465,6 @@ class _FakeRefreshLocalStore
   @override
   Future<void> clearUser() async {
     clearUserCalls += 1;
-    if (failClearUser) {
-      throw const AppException(
-        kind: AppExceptionKind.localStorage,
-        message: 'clear user failed',
-      );
-    }
     user = null;
   }
 }

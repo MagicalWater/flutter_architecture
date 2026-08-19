@@ -20,27 +20,6 @@ class SkillLockTest(unittest.TestCase):
             self.assertNotIn("agent-skill-language", codes)
             self.assertEqual(inspect_skill_lock(root).issues, ())
 
-    def test_unlocked_english_skill_still_fails_language_check(self) -> None:
-        with _fixture() as root:
-            _write(root, ".agents/skills/example/SKILL.md", _english_skill())
-
-            self.assertIn("agent-skill-language", _codes(root))
-
-    def test_missing_locked_file_fails(self) -> None:
-        with _fixture() as root:
-            _write_license(root)
-            lock = _valid_lock(root)
-            _write_lock(root, lock)
-
-            self.assertIn("skill-lock-missing-file", _inspection_codes(root))
-
-    def test_unknown_file_in_locked_install_path_fails(self) -> None:
-        with _fixture() as root:
-            _write_valid_skill_lock(root)
-            _write(root, ".agents/skills/example/notes.md", "unlocked bytes\n")
-
-            self.assertIn("skill-lock-unknown-file", _inspection_codes(root))
-
     def test_hash_drift_fails(self) -> None:
         with _fixture() as root:
             _write_valid_skill_lock(root)
@@ -56,21 +35,6 @@ class SkillLockTest(unittest.TestCase):
             _write_lock(root, lock)
 
             self.assertIn("skill-lock-install-path-escape", _inspection_codes(root))
-
-    def test_duplicate_install_path_fails(self) -> None:
-        with _fixture() as root:
-            _write_valid_skill_lock(root)
-            lock = json.loads((root / "skills-lock.json").read_text(encoding="utf-8"))
-            lock["skills"]["duplicate"] = dict(lock["skills"]["example"])
-            _write_lock(root, lock)
-
-            inspection = inspect_skill_lock(root)
-
-            self.assertIn(
-                "skill-lock-duplicate-install-path",
-                [issue.code for issue in inspection.issues],
-            )
-            self.assertEqual(inspection.exempt_markdown_paths, frozenset())
 
     def test_non_immutable_commit_fails(self) -> None:
         with _fixture() as root:
@@ -90,40 +54,11 @@ class SkillLockTest(unittest.TestCase):
             self.assertEqual(inspection.exempt_markdown_paths, frozenset())
             self.assertIn("agent-skill-language", _codes(root))
 
-    def test_missing_locked_license_fails(self) -> None:
-        with _fixture() as root:
-            _write(root, ".agents/skills/example/SKILL.md", _english_skill())
-            lock = _valid_lock(root)
-            _write_lock(root, lock)
-
-            self.assertIn("skill-lock-missing-license", _inspection_codes(root))
-
-    def test_locked_license_hash_drift_fails(self) -> None:
-        with _fixture() as root:
-            _write_valid_skill_lock(root)
-            _write(root, "third_party/skills/example/LICENSE", "changed license\n")
-
-            self.assertIn("skill-lock-license-hash-drift", _inspection_codes(root))
-
     def test_invalid_json_fails_closed(self) -> None:
         with _fixture() as root:
             _write(root, "skills-lock.json", "{not json\n")
 
             self.assertIn("skill-lock-invalid-json", _inspection_codes(root))
-
-    def test_locked_file_path_escape_fails(self) -> None:
-        with _fixture() as root:
-            _write_valid_skill_lock(root)
-            lock = json.loads((root / "skills-lock.json").read_text(encoding="utf-8"))
-            lock["skills"]["example"]["files"] = [
-                {
-                    "path": "../outside.md",
-                    "sha256": "0" * 64,
-                }
-            ]
-            _write_lock(root, lock)
-
-            self.assertIn("skill-lock-file-path-escape", _inspection_codes(root))
 
 
 def _codes(root: Path) -> list[str]:

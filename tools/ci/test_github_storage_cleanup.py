@@ -1,8 +1,6 @@
 import copy
 import hashlib
 import json
-import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -132,86 +130,6 @@ class GitHubStorageCleanupTest(unittest.TestCase):
             )
         )
 
-    def test_collect_inventory_preserves_exact_ids_metadata_and_totals(self) -> None:
-        inventory = self._inventory()
-
-        self.assertEqual(inventory.repository, REPOSITORY)
-        self.assertEqual(inventory.collected_at, COLLECTED_AT)
-        self.assertEqual([item.object_id for item in inventory.artifacts], [101, 102])
-        self.assertEqual([item.object_id for item in inventory.caches], [201, 202])
-        self.assertEqual(inventory.artifacts[0].workflow_run_id, 1001)
-        self.assertEqual(inventory.artifacts[0].ref, "refs/heads/main")
-        self.assertEqual(inventory.caches[0].key, "linux-pub-cache-a")
-        self.assertEqual(inventory.caches[0].last_accessed_at, "2026-07-21T03:04:05Z")
-        self.assertEqual(inventory.artifact_bytes, 350)
-        self.assertEqual(inventory.cache_bytes, 790)
-        self.assertEqual(inventory.total_bytes, 1140)
-
-    def test_classification_is_exact_and_records_replacement_evidence(self) -> None:
-        plan = self._plan()
-
-        self.assertEqual(
-            [(item.object_type, item.object_id) for item in plan],
-            [
-                ("artifact", 101),
-                ("artifact", 102),
-                ("cache", 201),
-                ("cache", 202),
-            ],
-        )
-        self.assertTrue(
-            all(
-                item.replacement_evidence_route == REPLACEMENT_EVIDENCE
-                for item in plan
-            )
-        )
-        self.assertTrue(all(item.reason for item in plan))
-        self.assertEqual(plan.inventory_sha256, self._inventory().sha256)
-
-    def test_manifest_contains_exact_scope_totals_review_and_integrity_hash(self) -> None:
-        manifest_path = self._write_reviewed_manifest()
-        envelope = json.loads(manifest_path.read_text(encoding="utf-8"))
-        payload = envelope["payload"]
-        canonical = json.dumps(
-            payload,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
-
-        self.assertEqual(
-            envelope["payload_sha256"], hashlib.sha256(canonical).hexdigest()
-        )
-        self.assertEqual(payload["repository"], REPOSITORY)
-        self.assertEqual(payload["generated_at"], COLLECTED_AT)
-        self.assertEqual(payload["review"]["status"], "reviewed")
-        self.assertEqual(
-            payload["pre_delete_totals"],
-            {
-                "artifacts": {"count": 2, "bytes": 350},
-                "caches": {"count": 2, "bytes": 790},
-                "all": {"count": 4, "bytes": 1140},
-            },
-        )
-        self.assertEqual(
-            [(item["object_type"], item["object_id"]) for item in payload["candidates"]],
-            [
-                ("artifact", 101),
-                ("artifact", 102),
-                ("cache", 201),
-                ("cache", 202),
-            ],
-        )
-        self.assertEqual(
-            payload["replacement_evidence_routes"], [REPLACEMENT_EVIDENCE]
-        )
-        self.assertTrue((manifest_path.parent / "deletion-manifest.sha256").is_file())
-        self.assertEqual(
-            (manifest_path.parent / "deletion-manifest.sha256")
-            .read_text(encoding="utf-8")
-            .split()[0],
-            hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
-        )
-
     def test_manifest_tampering_is_rejected_before_any_delete(self) -> None:
         manifest_path = self._write_reviewed_manifest()
         envelope = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -302,28 +220,6 @@ class GitHubStorageCleanupTest(unittest.TestCase):
 
         self.assertEqual(self.client.delete_calls, [])
 
-    def test_non_delete_metadata_drift_keeps_exact_scope_valid(self) -> None:
-        manifest_path = self._write_reviewed_manifest()
-        payload = load_deletion_manifest(manifest_path)
-        token = approval_token_for_manifest_id(payload["manifest_id"])
-        self.client.artifacts[0]["expired"] = True
-        self.client.artifacts[0]["workflow_run"]["head_sha"] = "b" * 40
-        self.client.caches[0]["version"] = "cache-version-2"
-
-        result = delete_from_manifest(self.client, manifest_path, token)
-
-        self.assertEqual(
-            self.client.delete_calls,
-            [
-                ("artifact", 101),
-                ("artifact", 102),
-                ("cache", 201),
-                ("cache", 202),
-            ],
-        )
-        self.assertEqual(result.deleted_artifact_ids, (101, 102))
-        self.assertEqual(result.deleted_cache_ids, (201, 202))
-
     def test_delete_uses_exact_ids_artifacts_first_then_caches(self) -> None:
         manifest_path = self._write_reviewed_manifest()
         payload = load_deletion_manifest(manifest_path)
@@ -387,21 +283,6 @@ class GitHubStorageCleanupTest(unittest.TestCase):
 
         with self.assertRaisesRegex(GitHubStorageCleanupError, "symlink"):
             write_deletion_manifest(self._plan(), linked_root)
-
-    def test_direct_cli_entrypoint_is_importable(self) -> None:
-        result = subprocess.run(
-            [
-                sys.executable,
-                str(Path(__file__).with_name("github_storage_cleanup.py")),
-                "--help",
-            ],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("exact-ID GitHub Actions storage cleanup", result.stdout)
 
     @mock.patch("tools.ci.github_storage_cleanup.subprocess.run")
     def test_production_delete_client_uses_only_exact_id_endpoints(

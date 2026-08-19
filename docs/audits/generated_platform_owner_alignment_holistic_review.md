@@ -52,7 +52,7 @@ PASS。`ci.yml`與`ios.yml`移除`pull_request -> main`，與`android.yml`一致
 
 ### R7 — Manual-local release backend
 
-PASS。`run_release_validation.py`維持唯一release validation入口；`github-hosted`與`manual-local`共用clean local／remote candidate identity與canonical release planner。Manual-local logical evidence只執行planner-selected quality／tests／generated phases；Android／iOS只執行planner-selected development／production variants，且全部透過`run_local_ci.sh` managed entrypoint保存於checkout外artifact store。非macOS host遇到iOS requirement會在任何command開始前fail closed，不產生partial release evidence。
+PASS。`run_release_validation.py`維持唯一release validation入口；`github-hosted`與`manual-local`共用clean local／remote candidate identity與canonical release planner。Manual-local logical evidence只執行planner-selected quality／tests／generated phases；Android／iOS只執行planner-selected development／production variants，且全部透過`run_local_ci.sh` managed entrypoint保存於checkout外artifact store。非macOS host遇到iOS requirement會在任何command開始前fail closed，不產生partial release evidence。Holistic review另發現 failure job雖會正確finalize，但orchestrator原先會在primary error時略過run aggregation；已修正為先aggregate已產生的success/failure manifests再重新拋出primary failure，避免失敗release少掉run-level evidence。
 
 ## Local evidence
 
@@ -69,6 +69,7 @@ PASS。`run_release_validation.py`維持唯一release validation入口；`github
 - `python tools/docs/check_docs.py`：PASS。
 - CI / Android / iOS workflow YAML parse：PASS。
 - `git diff --check`：PASS。
+- failure-path contract確認manual-local primary validation失敗仍先執行managed run aggregation，再保留原始failure disposition；不得因evidence aggregation吞掉primary failure。
 
 Planner對manual-local extension exact changed range判定`docs_content + governance + tooling + validation_engine`，要求logical full + generated，但不要求Android／iOS platform build；本地validation依此完成，沒有因Level名稱人工加碼platform build。
 

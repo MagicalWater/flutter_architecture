@@ -378,6 +378,28 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         aggregate.assert_called_once()
         assert_identity.assert_called_once()
 
+    @mock.patch("tools.ci.run_release_validation._aggregate_managed_local_run")
+    @mock.patch("tools.ci.run_release_validation._run_managed_local_command")
+    def test_manual_local_aggregates_failure_evidence_before_raising(
+        self,
+        run_managed: mock.Mock,
+        aggregate: mock.Mock,
+    ) -> None:
+        run_managed.side_effect = subprocess.CalledProcessError(1, ["validation"])
+        payload = plan_payload(plan_validation(["docs/guides/ci_cd_operations.md"]))
+
+        with self.assertRaises(subprocess.CalledProcessError):
+            from tools.ci.run_release_validation import _run_manual_local
+
+            _run_manual_local(
+                repository=Path("."),
+                head="a" * 40,
+                payload=payload,
+                plan_b64="encoded-plan",
+            )
+
+        aggregate.assert_called_once()
+
     @mock.patch("tools.ci.run_release_validation.sys.platform", "win32")
     @mock.patch("tools.ci.run_release_validation._run_managed_local_command")
     @mock.patch("tools.ci.run_release_validation._assert_candidate_identity")

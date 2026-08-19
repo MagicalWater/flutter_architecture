@@ -334,31 +334,43 @@ def _run_manual_local(
         )
     run_key = f"release-{head[:12]}-{int(time.time())}"
     evidence: list[RunEvidence] = []
-    for family in families:
-        started_at = _utc_now()
-        for command in commands[family]:
-            _run_managed_local_command(
-                family,
-                command,
-                repository=repository,
-                run_key=run_key,
+    primary_error: Exception | None = None
+    try:
+        for family in families:
+            started_at = _utc_now()
+            for command in commands[family]:
+                _run_managed_local_command(
+                    family,
+                    command,
+                    repository=repository,
+                    run_key=run_key,
+                )
+            finished_at = _utc_now()
+            evidence.append(
+                RunEvidence(
+                    family=family,
+                    run_id=None,
+                    head_sha=head,
+                    conclusion="success",
+                    url="",
+                    created_at=started_at,
+                    started_at=started_at,
+                    updated_at=finished_at,
+                    backend="manual-local",
+                    evidence_ref=run_key,
+                )
             )
-        finished_at = _utc_now()
-        evidence.append(
-            RunEvidence(
-                family=family,
-                run_id=None,
-                head_sha=head,
-                conclusion="success",
-                url="",
-                created_at=started_at,
-                started_at=started_at,
-                updated_at=finished_at,
-                backend="manual-local",
-                evidence_ref=run_key,
-            )
-        )
-    _aggregate_managed_local_run(repository=repository, run_key=run_key)
+    except Exception as error:
+        primary_error = error
+
+    try:
+        _aggregate_managed_local_run(repository=repository, run_key=run_key)
+    except Exception:
+        if primary_error is None:
+            raise
+
+    if primary_error is not None:
+        raise primary_error
     return tuple(evidence)
 
 

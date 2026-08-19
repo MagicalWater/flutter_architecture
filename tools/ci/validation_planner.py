@@ -17,7 +17,7 @@ from tools.ci.change_classifier import classify_paths
 from tools.ci.change_classifier import classify_change_classes
 
 
-PLANNER_CONTRACT_VERSION = "1"
+PLANNER_CONTRACT_VERSION = "2"
 
 
 @dataclass(frozen=True)
@@ -42,6 +42,10 @@ class ValidationPlan:
     release_full: bool
     reason: str
     fail_safe: bool
+    android_development_build: bool = False
+    android_production_build: bool = False
+    ios_simulator_build: bool = False
+    ios_production_build: bool = False
 
 
 _LEVEL_RANK = {
@@ -70,6 +74,106 @@ _KNOWN_VALIDATION_WORKFLOWS = {
     ".github/workflows/android.yml",
     ".github/workflows/ios.yml",
 }
+
+_ANDROID_DEVELOPMENT_PATHS = {
+    "tools/ci/build_android_development.sh",
+}
+
+_ANDROID_PRODUCTION_PATHS = {
+    "tools/ci/build_android_production.sh",
+}
+
+_IOS_SIMULATOR_PATHS = {
+    "tools/ci/build_ios_development.sh",
+}
+
+_IOS_PRODUCTION_PATHS = {
+    "tools/ci/build_ios_production.sh",
+}
+
+
+def _platform_build_kinds(
+    paths: Sequence[str],
+    *,
+    android_build: bool,
+    ios_build: bool,
+    invalid_range: bool = False,
+    manual_mode: str = "",
+    release_candidate: bool = False,
+) -> tuple[bool, bool, bool, bool]:
+    """Select minimum platform build variants without re-classifying change risk."""
+    if invalid_range:
+        return True, True, True, True
+
+    normalized = tuple(
+        dict.fromkeys(
+            str(PurePosixPath(path.replace("\\", "/"))).removeprefix("./")
+            for path in paths
+            if path.strip()
+        )
+    )
+
+    android_development = False
+    android_production = False
+    ios_simulator = False
+    ios_production = False
+
+    if manual_mode == "android":
+        android_development = True
+        android_production = True
+    if manual_mode == "ios":
+        ios_simulator = True
+        ios_production = True
+
+    if android_build and not (android_development or android_production):
+        android_paths = tuple(
+            path
+            for path in normalized
+            if path.startswith("apps/flutter_architecture/android/")
+            or path.startswith("tools/ci/build_android_")
+            or path == ".github/workflows/android.yml"
+            or path in _ROOT_CROSS_PLATFORM_RELEASE_PATHS
+            or path == "tools/ci/verify_environment_contract.py"
+        )
+        if release_candidate and any(path in _PLANNER_SELECTION_PATHS for path in normalized):
+            android_production = True
+        for path in android_paths:
+            if path in _ANDROID_DEVELOPMENT_PATHS or "/src/development/" in path:
+                android_development = True
+            elif path in _ANDROID_PRODUCTION_PATHS or "/src/production/" in path:
+                android_production = True
+            else:
+                android_development = True
+                android_production = True
+        if not android_paths and not android_production:
+            android_development = True
+            android_production = True
+
+    if ios_build and not (ios_simulator or ios_production):
+        ios_paths = tuple(
+            path
+            for path in normalized
+            if path.startswith("apps/flutter_architecture/ios/")
+            or path.startswith("tools/ci/build_ios_")
+            or path == ".github/workflows/ios.yml"
+            or path in _ROOT_CROSS_PLATFORM_RELEASE_PATHS
+            or path == "tools/ci/verify_environment_contract.py"
+        )
+        if release_candidate and any(path in _PLANNER_SELECTION_PATHS for path in normalized):
+            ios_production = True
+        for path in ios_paths:
+            if path in _IOS_SIMULATOR_PATHS or "Debug-development" in path:
+                ios_simulator = True
+            elif path in _IOS_PRODUCTION_PATHS or "Release-production" in path:
+                ios_production = True
+            else:
+                ios_simulator = True
+                ios_production = True
+        if not ios_paths and not ios_production:
+            ios_simulator = True
+            ios_production = True
+
+    return android_development, android_production, ios_simulator, ios_production
 
 
 def _ordered_unique(values: Iterable[str]) -> tuple[str, ...]:
@@ -211,7 +315,7 @@ def plan_validation(
     classes = classification.change_classes
 
     if classification.fail_safe or "unknown" in classes:
-        return ValidationPlan(
+        plan = ValidationPlan(
             classes,
             "full",
             (".",),
@@ -225,6 +329,20 @@ def plan_validation(
             False,
             classification.reason,
             True,
+        )
+        kinds = _platform_build_kinds(
+            paths,
+            android_build=plan.android_build,
+            ios_build=plan.ios_build,
+            invalid_range=invalid_range,
+            manual_mode=manual_mode if manual else "",
+        )
+        return replace(
+            plan,
+            android_development_build=kinds[0],
+            android_production_build=kinds[1],
+            ios_simulator_build=kinds[2],
+            ios_production_build=kinds[3],
         )
 
     level = "focused"
@@ -284,7 +402,7 @@ def plan_validation(
                     )
                     flutter_scopes.append(f"{changed_package.path}/test")
             except (OSError, ValueError):
-                return ValidationPlan(
+                plan = ValidationPlan(
                     classes,
                     "full",
                     (".",),
@@ -298,6 +416,19 @@ def plan_validation(
                     False,
                     "workspace dependency graph parse failed; fail-safe full matrix",
                     True,
+                )
+                kinds = _platform_build_kinds(
+                    normalized_paths,
+                    android_build=plan.android_build,
+                    ios_build=plan.ios_build,
+                    invalid_range=True,
+                )
+                return replace(
+                    plan,
+                    android_development_build=kinds[0],
+                    android_production_build=kinds[1],
+                    ios_simulator_build=kinds[2],
+                    ios_production_build=kinds[3],
                 )
         elif change_class == "generated":
             level = _max_level(level, "workspace")
@@ -371,7 +502,7 @@ def plan_validation(
         if _flutter_scope_has_tests(repository, scope)
     ]
 
-    return ValidationPlan(
+    plan = ValidationPlan(
         classes,
         level,
         tuple(flutter_scopes),
@@ -385,6 +516,20 @@ def plan_validation(
         release_full,
         ", ".join(reasons) or classification.reason,
         False,
+    )
+    kinds = _platform_build_kinds(
+        normalized_paths,
+        android_build=plan.android_build,
+        ios_build=plan.ios_build,
+        invalid_range=invalid_range,
+        manual_mode=manual_mode if manual else "",
+    )
+    return replace(
+        plan,
+        android_development_build=kinds[0],
+        android_production_build=kinds[1],
+        ios_simulator_build=kinds[2],
+        ios_production_build=kinds[3],
     )
 
 
@@ -443,6 +588,14 @@ def apply_release_freshness(
     else:
         reason = "release candidate freshness"
 
+    kinds = _platform_build_kinds(
+        normalized,
+        android_build=android_build,
+        ios_build=ios_build,
+        invalid_range=invalid_range,
+        release_candidate=True,
+    )
+
     return replace(
         plan,
         validation_level="release",
@@ -453,6 +606,10 @@ def apply_release_freshness(
         release_full=True,
         reason=reason,
         fail_safe=fail_safe,
+        android_development_build=kinds[0],
+        android_production_build=kinds[1],
+        ios_simulator_build=kinds[2],
+        ios_production_build=kinds[3],
     )
 
 
@@ -467,6 +624,10 @@ def plan_payload(plan: ValidationPlan) -> dict[str, object]:
         "generated_check": plan.generated_check,
         "android_build": plan.android_build,
         "ios_build": plan.ios_build,
+        "android_development_build": plan.android_development_build,
+        "android_production_build": plan.android_production_build,
+        "ios_simulator_build": plan.ios_simulator_build,
+        "ios_production_build": plan.ios_production_build,
         "full_regression": plan.full_regression,
         "release_full": plan.release_full,
         "reason": plan.reason,
@@ -656,6 +817,10 @@ def _write_output(path: Path, plan: ValidationPlan) -> None:
         "generated_check": plan.generated_check,
         "android_build": plan.android_build,
         "ios_build": plan.ios_build,
+        "android_development_build": plan.android_development_build,
+        "android_production_build": plan.android_production_build,
+        "ios_simulator_build": plan.ios_simulator_build,
+        "ios_production_build": plan.ios_production_build,
         "full_ci": plan.full_regression,
         "release_full": plan.release_full,
         "fail_safe": plan.fail_safe,

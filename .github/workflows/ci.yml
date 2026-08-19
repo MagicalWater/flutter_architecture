@@ -70,6 +70,10 @@ jobs:
       generated_check: ${{ steps.classify.outputs.generated_check }}
       android_build: ${{ steps.classify.outputs.android_build }}
       ios_build: ${{ steps.classify.outputs.ios_build }}
+      android_development_build: ${{ steps.classify.outputs.android_development_build }}
+      android_production_build: ${{ steps.classify.outputs.android_production_build }}
+      ios_simulator_build: ${{ steps.classify.outputs.ios_simulator_build }}
+      ios_production_build: ${{ steps.classify.outputs.ios_production_build }}
       release_full: ${{ steps.classify.outputs.release_full }}
       fail_safe: ${{ steps.classify.outputs.fail_safe }}
       reason: ${{ steps.classify.outputs.reason }}
@@ -122,6 +126,10 @@ jobs:
             echo "generated_check=true" >> "$GITHUB_OUTPUT"
             echo "android_build=$fallback_android" >> "$GITHUB_OUTPUT"
             echo "ios_build=$fallback_ios" >> "$GITHUB_OUTPUT"
+            echo "android_development_build=$fallback_android" >> "$GITHUB_OUTPUT"
+            echo "android_production_build=$fallback_android" >> "$GITHUB_OUTPUT"
+            echo "ios_simulator_build=$fallback_ios" >> "$GITHUB_OUTPUT"
+            echo "ios_production_build=$fallback_ios" >> "$GITHUB_OUTPUT"
             echo "release_full=$([ "$VALIDATION_MODE" = "release" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
             echo "fail_safe=true" >> "$GITHUB_OUTPUT"
             echo "reason=validation planner execution failed; logical full fallback with classifier platform impact" >> "$GITHUB_OUTPUT"

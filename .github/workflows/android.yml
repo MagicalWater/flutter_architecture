@@ -49,6 +49,8 @@ jobs:
       full_ci: ${{ steps.classify.outputs.full_ci }}
       android_build: ${{ steps.classify.outputs.android_build }}
       ios_build: ${{ steps.classify.outputs.ios_build }}
+      android_development_build: ${{ steps.classify.outputs.android_development_build }}
+      android_production_build: ${{ steps.classify.outputs.android_production_build }}
       release_full: ${{ steps.classify.outputs.release_full }}
       reason: ${{ steps.classify.outputs.reason }}
     steps:
@@ -96,6 +98,8 @@ jobs:
             echo "full_ci=true" >> "$GITHUB_OUTPUT"
             echo "android_build=$fallback_android" >> "$GITHUB_OUTPUT"
             echo "ios_build=$fallback_ios" >> "$GITHUB_OUTPUT"
+            echo "android_development_build=$fallback_android" >> "$GITHUB_OUTPUT"
+            echo "android_production_build=$fallback_android" >> "$GITHUB_OUTPUT"
             echo "release_full=$([ "$VALIDATION_MODE" = "release" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
             echo "reason=validation planner execution failure; logical full fallback with classifier platform impact" >> "$GITHUB_OUTPUT"
           fi
@@ -105,7 +109,7 @@ jobs:
     needs: classify-changes
     if: >-
       needs.classify-changes.result == 'success' &&
-      needs.classify-changes.outputs.android_build == 'true'
+      needs.classify-changes.outputs.android_development_build == 'true'
     runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
@@ -191,7 +195,7 @@ jobs:
     needs: classify-changes
     if: >-
       needs.classify-changes.result == 'success' &&
-      needs.classify-changes.outputs.android_build == 'true'
+      needs.classify-changes.outputs.android_production_build == 'true'
     runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository

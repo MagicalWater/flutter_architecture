@@ -340,6 +340,17 @@ Events：
 
 `main`是publication branch。正式publication前必須在candidate SHA以explicit `release` mode完成fresh planner-selected evidence；release dispatch以明確`release_base`＋exact candidate SHA規劃changed range，不再把release intent無條件翻成logical full／generated／Android／iOS。只有changed risk要求的平台才建立primary evidence；同一SHA push到`main`後只做published identity／workflow observation，不再自動建立第二輪相同CI。
 
+Exact candidate已push到同名remote branch後，建議使用repository-owned fan-out入口一次派送所有planner-selected families：
+
+```bash
+python tools/ci/run_release_validation.py \
+  --base <release-base-sha> \
+  --head <exact-candidate-sha> \
+  --execution-mode github-hosted
+```
+
+此CLI會先驗證local／remote candidate SHA，再由canonical planner選擇CI／Android／iOS families；所有selected workflows先完成dispatch才開始等待，因此wall-clock由最慢selected branch主導，而不是把各family串行相加。CLI只完成release validation admission，不修改`VERSION`、不merge、不push`main`、不publication。
+
 Stable checks：
 
 ```txt
@@ -369,13 +380,13 @@ iOS / Production Release Build
 | Ordinary App Feature | focused affected owners | 否 | 否 | 0-test Feature合法，不退化成App full suite |
 | Shared package | package owner tests + dependent analyze | 否 | 否 | reverse dependent只analyze |
 | Database source | focused + generated | 否 | 否 | migration owners依changed risk選擇 |
-| Android native／Android build script | focused | 是 | 否 | 真實Android primary build evidence |
-| iOS native／iOS build script | focused | 否 | 是 | 真實iOS primary build evidence |
+| Android native／Android build script | focused | 依build-kind | 否 | development／production specific只選對應variant；shared native選both |
+| iOS native／iOS build script | focused | 否 | 依build-kind | simulator／production specific只選對應variant；shared native選both |
 | Unknown／invalid classifier input | logical full | 否 | 否 | fail-safe不等於自動燒兩平台 |
 | `VERSION` | focused metadata | 否 | 否 | 不再隱式等於release |
 | explicit `full` | logical full | 否 | 否 | 不含platform |
 | explicit `android`／`ios` | focused | 指定平台 | 指定平台 | manual platform intent |
-| explicit `release` | 依candidate changed range | 依risk | 依risk | publication前fresh planner-selected release gate；需`release_base` |
+| explicit `release` | 依candidate changed range | 依risk＋build-kind | 依risk＋build-kind | publication前fresh planner-selected release gate；需`release_base` |
 
 `CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`是穩定required-check候選。Documentation-only時它們會成功完成no-op，而不是整個job skipped。Android兩個build jobs目前不是PR required checks，因此可在`android_build=false`時skipped；`Android / Summary`會驗證skip或build結果是否符合classifier決策。
 
@@ -398,7 +409,7 @@ Android / Development Debug APK
 Android / Release APK
 ```
 
-兩個job分別建立development Debug與production Release verification APK；production仍使用debug signing，不是production distribution pipeline。
+兩個job分別建立development Debug與production Release verification APK；production仍使用debug signing，不是production distribution pipeline。Planner輸出`android_development_build`／`android_production_build`分別控制兩個job；`android_build`只保留aggregate compatibility／summary用途。
 
 ## Recommended Branch Protection
 

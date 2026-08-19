@@ -20,6 +20,8 @@ last_reviewed_baseline: 1.25.2
 4. 將`ci.yml`與`ios.yml`的`pull_request -> main` trigger移除，與`android.yml`一致採`workflow_dispatch` only；不修改observability acceptance workflow。
 5. 同步ADR-023與CI/CD guide，明確generated owner、platform owner、explicit trigger與orchestrator組合責任。
 6. 執行critical owner tests、docs checker、YAML parse、`git diff --check`與planner changed-risk probe；做一次whole-scope review。
+7. 擴充`run_release_validation.py`支援`manual-local` execution backend；保留同一candidate identity與planner，logical phases透過`validation_runner.py`、platform variants透過既有build scripts執行，並統一走`run_local_ci.sh managed-command` managed evidence。
+8. 加入critical contract：manual-local不得擴張planner-selected platform variants，且非macOS host不得在iOS requirement下產生partial release evidence。
 
 ## Test Retention Decision
 

@@ -558,6 +558,24 @@ case "$requested_suite" in
     run_managed_job "$managed_suite" "$managed_platform" "$@"
     exit $?
     ;;
+  managed-validation-phase)
+    [[ $# -eq 3 ]] || {
+      echo "Usage: $0 managed-validation-phase <quality|tests|generated> <plan-b64>" >&2
+      exit 64
+    }
+    case "$2" in
+      quality|tests|generated) ;;
+      *) echo "Unsupported validation phase: $2" >&2; exit 64 ;;
+    esac
+    run_managed_job \
+      release-ci \
+      repository \
+      "$python_bin" tools/ci/validation_runner.py \
+        --phase "$2" \
+        --plan-b64 "$3" \
+        --repository "$python_repo_root"
+    exit $?
+    ;;
   quality|android|observability)
     run_requested_suite "$requested_suite"
     primary_exit_code=$?
@@ -595,7 +613,7 @@ case "$requested_suite" in
     exit "$aggregate_exit_code"
     ;;
   *)
-    echo "Usage: $0 {quality|android|ios|observability|all}" >&2
+    echo "Usage: $0 {quality|android|ios|observability|all|managed-command|managed-validation-phase}" >&2
     exit 64
     ;;
 esac

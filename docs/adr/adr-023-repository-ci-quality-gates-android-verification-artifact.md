@@ -74,7 +74,7 @@ Unknown path、dependency graph parse failure或一般classification ambiguity f
 
 同一exact SHA、validation plan identity與selected inputs相同時，GREEN evidence可以跨holistic與post-release reuse。Selected source／test／dependency mutation、failure後fix或validation engine變更會使reuse失效；explicit release candidate仍要求一次fresh planner-selected evidence，但freshness不得把scope無條件擴張成logical full或雙平台。Publish同一SHA後只驗published SHA／artifact／workflow identity，不重跑相同source suite。
 
-Exact candidate release validation應採fan-out：planner先產生唯一plan，selected CI／Android／iOS independent families立即派送，再共同等待結果；不得人工等前一family結束後才啟動下一family。Repository-owned `tools/ci/run_release_validation.py`可負責dispatch、run-id收集、exact-SHA／conclusion驗證與結果彙整，但不得分類changed paths、修改release identity、merge、push `main`或publication。
+Exact candidate release validation只有一個repository-owned入口：`tools/ci/run_release_validation.py`。它先驗證clean local／remote candidate identity，再由canonical planner產生唯一plan，最後只依`execution_mode`替換execution backend。`github-hosted`會fan-out selected CI／Android／iOS workflows並驗證fresh run-id、exact SHA與conclusion；`manual-local`則以相同plan呼叫managed local validation runner與planner-selected platform build variants，將evidence保存至checkout外managed artifact store。兩種backend都不得重新分類changed paths、修改release identity、merge、push `main`或publication。
 
 在`self-hosted`模式下，execution jobs由explicit `workflow_dispatch`建立；核心CI／Android／iOS不建立Pull Request checks。`main` publication push不建立第二輪execution jobs。Branch Protection不得把這三條dispatch-only workflow設成每個PR都必須自動出現的required checks；若需要merge前證據，應由明確的validation orchestration先建立對應run。
 

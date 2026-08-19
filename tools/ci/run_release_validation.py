@@ -2,18 +2,21 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
 
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.ci.validation_planner import plan_payload, plan_release_range
+from tools.ci.validation_planner import encode_plan, plan_payload, plan_release_range
+from tools.ci.validation_runner import _execution_command
 
 
 _WORKFLOWS = {
@@ -26,13 +29,15 @@ _WORKFLOWS = {
 @dataclass(frozen=True)
 class RunEvidence:
     family: str
-    run_id: int
+    run_id: int | None
     head_sha: str
     conclusion: str
     url: str
     created_at: str
     started_at: str
     updated_at: str
+    backend: str = "github-hosted"
+    evidence_ref: str = ""
 
 
 def _run(command: Sequence[str], *, repository: Path) -> subprocess.CompletedProcess[str]:
@@ -203,6 +208,160 @@ def _wait_for_run(
     return evidence
 
 
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _manual_local_commands(payload: dict[str, object], plan_b64: str) -> dict[str, tuple[tuple[str, ...], ...]]:
+    commands: dict[str, list[tuple[str, ...]]] = {"ci": [], "android": [], "ios": []}
+    if "ci" in _selected_families(payload):
+        if bool(payload.get("docs_check")) or payload.get("python_test_scopes") or payload.get(
+            "analyze_scopes"
+        ):
+            commands["ci"].append(("__validation_phase__", "quality", plan_b64))
+        if payload.get("flutter_test_scopes"):
+            commands["ci"].append(("__validation_phase__", "tests", plan_b64))
+        if bool(payload.get("generated_check")):
+            commands["ci"].append(("__validation_phase__", "generated", plan_b64))
+    if bool(payload.get("android_development_build")):
+        commands["android"].append(("bash", "tools/ci/build_android_development.sh"))
+    if bool(payload.get("android_production_build")):
+        commands["android"].append(("bash", "tools/ci/build_android_production.sh"))
+    if bool(payload.get("ios_simulator_build")):
+        commands["ios"].append(("bash", "tools/ci/build_ios_development.sh"))
+    if bool(payload.get("ios_production_build")):
+        commands["ios"].append(("bash", "tools/ci/build_ios_production.sh"))
+    return {family: tuple(items) for family, items in commands.items()}
+
+
+def _manual_platform(family: str, command: Sequence[str]) -> str:
+    if family == "ci":
+        return "repository"
+    if family == "android":
+        return "android"
+    if family == "ios":
+        return "ios"
+    raise ValueError(f"unsupported manual-local family: {family}")
+
+
+def _manual_job_key(family: str, command: Sequence[str]) -> str:
+    if family == "ci":
+        return f"release-ci-{command[1]}"
+    target = Path(command[-1]).stem.replace("_", "-")
+    return f"release-{family}-{target}"
+
+
+def _run_managed_local_command(
+    family: str,
+    command: Sequence[str],
+    *,
+    repository: Path,
+    run_key: str,
+) -> None:
+    env = os.environ.copy()
+    env.update(
+        {
+            "CI_MANAGED_EXECUTION_MODE": "manual-local",
+            "CI_RUN_KEY": run_key,
+            "CI_JOB_KEY": _manual_job_key(family, command),
+            "CI_RETENTION_CLASS": "release-verification",
+            "CI_CLASSIFIER_REASON": "release-planner-selected-manual-local",
+        }
+    )
+    if family == "ci":
+        managed_command = [
+            "bash",
+            "tools/ci/run_local_ci.sh",
+            "managed-validation-phase",
+            command[1],
+            command[2],
+        ]
+    else:
+        managed_command = [
+            "bash",
+            "tools/ci/run_local_ci.sh",
+            "managed-command",
+            f"release-{family}",
+            _manual_platform(family, command),
+            *command,
+        ]
+    subprocess.run(
+        _execution_command(managed_command),
+        cwd=repository,
+        env=env,
+        check=True,
+    )
+
+
+def _aggregate_managed_local_run(*, repository: Path, run_key: str) -> None:
+    env = os.environ.copy()
+    env.update(
+        {
+            "CI_MANAGED_EXECUTION_MODE": "manual-local",
+            "CI_RUN_KEY": run_key,
+            "CI_RETENTION_CLASS": "release-verification",
+        }
+    )
+    subprocess.run(
+        _execution_command(
+            ["bash", "tools/ci/run_local_ci.sh", "aggregate-managed-run"]
+        ),
+        cwd=repository,
+        env=env,
+        check=True,
+    )
+
+
+def _run_manual_local(
+    *,
+    repository: Path,
+    head: str,
+    payload: dict[str, object],
+    plan_b64: str,
+) -> tuple[RunEvidence, ...]:
+    families = _selected_families(payload)
+    if "ios" in families and sys.platform != "darwin":
+        raise RuntimeError(
+            "manual-local release validation requires macOS when iOS evidence is selected"
+        )
+
+    commands = _manual_local_commands(payload, plan_b64)
+    empty_families = [family for family in families if not commands[family]]
+    if empty_families:
+        raise RuntimeError(
+            "manual-local planner selected family without executable evidence: "
+            + ", ".join(empty_families)
+        )
+    run_key = f"release-{head[:12]}-{int(time.time())}"
+    evidence: list[RunEvidence] = []
+    for family in families:
+        started_at = _utc_now()
+        for command in commands[family]:
+            _run_managed_local_command(
+                family,
+                command,
+                repository=repository,
+                run_key=run_key,
+            )
+        finished_at = _utc_now()
+        evidence.append(
+            RunEvidence(
+                family=family,
+                run_id=None,
+                head_sha=head,
+                conclusion="success",
+                url="",
+                created_at=started_at,
+                started_at=started_at,
+                updated_at=finished_at,
+                backend="manual-local",
+                evidence_ref=run_key,
+            )
+        )
+    _aggregate_managed_local_run(repository=repository, run_key=run_key)
+    return tuple(evidence)
+
+
 def run_release_validation(
     *,
     repository: Path,
@@ -210,15 +369,24 @@ def run_release_validation(
     head: str,
     execution_mode: str,
 ) -> tuple[RunEvidence, ...]:
-    if execution_mode != "github-hosted":
-        raise ValueError("first implementation supports only github-hosted execution")
+    if execution_mode not in {"github-hosted", "manual-local"}:
+        raise ValueError(f"unsupported execution mode: {execution_mode}")
 
     branch = _current_branch(repository)
     _assert_candidate_identity(repository, branch, head)
-    payload = plan_payload(plan_release_range(base, head, repository=repository))
+    plan = plan_release_range(base, head, repository=repository)
+    payload = plan_payload(plan)
     families = _selected_families(payload)
     if not families:
         raise RuntimeError("release planner selected no evidence families")
+
+    if execution_mode == "manual-local":
+        return _run_manual_local(
+            repository=repository,
+            head=head,
+            payload=payload,
+            plan_b64=encode_plan(plan),
+        )
 
     previous_ids = {
         family: frozenset(
@@ -265,14 +433,14 @@ def run_release_validation(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Fan out planner-selected exact-candidate release validation"
+        description="Execute planner-selected exact-candidate release validation"
     )
     parser.add_argument("--base", required=True)
     parser.add_argument("--head", required=True)
     parser.add_argument("--repository", type=Path, default=Path("."))
     parser.add_argument(
         "--execution-mode",
-        choices=("github-hosted",),
+        choices=("github-hosted", "manual-local"),
         default="github-hosted",
     )
     args = parser.parse_args()

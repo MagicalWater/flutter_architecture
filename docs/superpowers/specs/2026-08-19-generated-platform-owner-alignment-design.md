@@ -29,6 +29,9 @@ Level 5 — release/platform validation contract。Scope bounded，不建立新M
 - Planner決定需要哪些evidence；orchestrator依plan組合CI／Android／iOS families。
 - Platform workflow不需要知道其他workflow是否同步執行，也不得靠跨workflow偵測決定是否跳過generated。
 - Standalone「完整platform validation」若需要generated evidence，應由上層orchestrator組合`CI + platform`，不把generated塞回platform workflow。
+- `run_release_validation.py`維持唯一release validation入口；GitHub-hosted與manual-local只能是execution backend差異，不建立第二套release selection authority。
+- `manual-local`必須重用相同planner payload、`validation_runner.py`與既有platform build scripts，並透過managed local artifact store保存release evidence；不得用固定full suite取代planner選擇。
+- 非macOS host遇到planner-selected iOS evidence時，在執行任何release validation command前fail closed。
 - 核心CI／Android／iOS workflow trigger統一為explicit `workflow_dispatch` only；Pull Request與branch push不再自動啟動核心validation。
 
 ### Compatibility / rollback

@@ -10,6 +10,7 @@ from unittest import mock
 from tools.ci.validation_runner import _execution_command, commands_for_phase
 from tools.ci.run_release_validation import (
     RunEvidence,
+    _manual_local_commands,
     _selected_families,
     _wait_for_run,
     run_release_validation,
@@ -318,6 +319,92 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         self.assertEqual(wait_run.call_count, 3)
         self.assertEqual(tuple(item.family for item in evidence), ("ci", "android", "ios"))
         assert_identity.assert_called_once()
+
+    def test_manual_local_commands_preserve_planner_selected_build_variants(self) -> None:
+        payload = plan_payload(
+            apply_release_freshness(
+                plan_validation(["tools/ci/build_android_production.sh"]),
+                ["tools/ci/build_android_production.sh"],
+            )
+        )
+
+        commands = _manual_local_commands(payload, "encoded-plan")
+
+        self.assertEqual(commands["ci"], ())
+        self.assertEqual(
+            commands["android"],
+            (("bash", "tools/ci/build_android_production.sh"),),
+        )
+        self.assertEqual(commands["ios"], ())
+
+        logical_payload = plan_payload(plan_validation(["docs/guides/ci_cd_operations.md"]))
+        logical_commands = _manual_local_commands(logical_payload, "encoded-plan")
+        self.assertEqual(
+            tuple(command[1] for command in logical_commands["ci"]),
+            ("quality",),
+        )
+        self.assertEqual(logical_commands["android"], ())
+        self.assertEqual(logical_commands["ios"], ())
+
+    @mock.patch("tools.ci.run_release_validation._aggregate_managed_local_run")
+    @mock.patch("tools.ci.run_release_validation._run_managed_local_command")
+    @mock.patch("tools.ci.run_release_validation._assert_candidate_identity")
+    @mock.patch("tools.ci.run_release_validation._current_branch")
+    @mock.patch("tools.ci.run_release_validation.plan_release_range")
+    def test_manual_local_release_uses_same_planner_without_github_dispatch(
+        self,
+        plan_release: mock.Mock,
+        current_branch: mock.Mock,
+        assert_identity: mock.Mock,
+        run_managed: mock.Mock,
+        aggregate: mock.Mock,
+    ) -> None:
+        plan_release.return_value = apply_release_freshness(
+            plan_validation(["tools/ci/build_android_production.sh"]),
+            ["tools/ci/build_android_production.sh"],
+        )
+        current_branch.return_value = "candidate"
+
+        evidence = run_release_validation(
+            repository=Path("."),
+            base="base",
+            head="head",
+            execution_mode="manual-local",
+        )
+
+        self.assertEqual(tuple(item.family for item in evidence), ("android",))
+        self.assertTrue(all(item.backend == "manual-local" for item in evidence))
+        self.assertEqual(run_managed.call_count, 1)
+        aggregate.assert_called_once()
+        assert_identity.assert_called_once()
+
+    @mock.patch("tools.ci.run_release_validation.sys.platform", "win32")
+    @mock.patch("tools.ci.run_release_validation._run_managed_local_command")
+    @mock.patch("tools.ci.run_release_validation._assert_candidate_identity")
+    @mock.patch("tools.ci.run_release_validation._current_branch")
+    @mock.patch("tools.ci.run_release_validation.plan_release_range")
+    def test_manual_local_rejects_ios_before_any_partial_evidence(
+        self,
+        plan_release: mock.Mock,
+        current_branch: mock.Mock,
+        assert_identity: mock.Mock,
+        run_managed: mock.Mock,
+    ) -> None:
+        plan_release.return_value = apply_release_freshness(
+            plan_validation(["tools/ci/build_ios_production.sh"]),
+            ["tools/ci/build_ios_production.sh"],
+        )
+        current_branch.return_value = "candidate"
+
+        with self.assertRaisesRegex(RuntimeError, "requires macOS"):
+            run_release_validation(
+                repository=Path("."),
+                base="base",
+                head="head",
+                execution_mode="manual-local",
+            )
+
+        run_managed.assert_not_called()
 
     @mock.patch("tools.ci.run_release_validation._run")
     def test_release_orchestrator_rejects_run_sha_mismatch(self, run: mock.Mock) -> None:

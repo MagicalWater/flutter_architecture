@@ -80,7 +80,7 @@ live GitHub repository variable / policy / protection / runner / Environment sta
 
 - `manual-local`：live variable/disposition明確，local planner＋代表性quality route可執行；GitHub jobs skipped不等於CI PASS。
 - `self-hosted`：runner registration/labels/online state、checkout外`CI_ARTIFACT_ROOT`與trusted-main boundary有fresh evidence；offline時不得fallback。
-- `github-hosted`：representative PR/main workflow確實建立預期GitHub-hosted jobs，verification不依賴production signing secrets。
+- `github-hosted`：representative explicit `workflow_dispatch`確實建立預期GitHub-hosted jobs，verification不依賴production signing secrets；核心CI／Android／iOS不以PR或main push作acceptance trigger。
 
 任何GitHub live mutation都要保存before state並在mutation後fresh read-back。Permission failure、403、read-back mismatch只能記為blocked/deferred，不得記為configured。
 
@@ -339,7 +339,7 @@ Events：
 
 `main`是publication branch。正式publication前必須在candidate SHA以explicit `release` mode完成fresh planner-selected evidence；release dispatch以明確`release_base`＋exact candidate SHA規劃changed range，不再把release intent無條件翻成logical full／generated／Android／iOS。只有changed risk要求的平台才建立primary evidence；同一SHA push到`main`後只做published identity／workflow observation，不再自動建立第二輪相同CI。
 
-Exact candidate已push到同名remote branch後，建議使用repository-owned fan-out入口一次派送所有planner-selected families：
+Exact candidate已push到同名remote branch後，使用唯一repository-owned release validation入口。GitHub-hosted可fan-out到GitHub Actions：
 
 ```bash
 python tools/ci/run_release_validation.py \
@@ -349,6 +349,19 @@ python tools/ci/run_release_validation.py \
 ```
 
 此CLI會先驗證local／remote candidate SHA，再由canonical planner選擇CI／Android／iOS families；所有selected workflows先完成dispatch才開始等待，因此wall-clock由最慢selected branch主導，而不是把各family串行相加。CLI只完成release validation admission，不修改`VERSION`、不merge、不push`main`、不publication。
+
+Private repository的GitHub-hosted quota不足、或明確不希望消耗hosted runner時，不建立第二套release script；同一入口改用`manual-local`：
+
+```bash
+python tools/ci/run_release_validation.py \
+  --base <release-base-sha> \
+  --head <exact-candidate-sha> \
+  --execution-mode manual-local
+```
+
+`manual-local`仍使用完全相同的release planner與exact candidate identity contract。Logical CI透過`validation_runner.py`執行planner-selected quality／tests／generated phases；Android／iOS只執行planner明確選中的development／production variant，且每個command都經`run_local_ci.sh managed-command`進入managed artifact store，整輪使用`release-verification` retention。不得用`run_local_ci.sh all`取代release plan，因為`all`會無條件擴張platform variants。
+
+若planner要求iOS evidence，`manual-local`必須從macOS candidate checkout執行；非macOS host在任何validation command開始前fail closed，不會先跑出部分release evidence後再把iOS標成skipped。Production platform build仍要求其既有環境輸入（例如`API_BASE_URL`），orchestrator不注入假的production default。
 
 Generated consistency屬repository-level evidence family，由`CI / Generated Consistency`唯一擁有。Android／iOS workflow只負責platform build evidence，不自行重跑`tools/ci/verify_generated.sh`。需要「generated + Android」或「generated + iOS」的完整validation intent時，由canonical planner與上層orchestrator同時選擇CI與對應platform family；platform workflow本身不判斷其他workflow是否存在，也不維護第二份generated authority。
 

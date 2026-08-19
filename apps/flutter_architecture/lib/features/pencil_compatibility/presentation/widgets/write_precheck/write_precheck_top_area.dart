@@ -265,7 +265,10 @@ class WritePrecheckTopArea extends StatelessWidget {
                     right: Radius.circular(2),
                   ),
                   gradient: LinearGradient(
-                    colors: <Color>[Color(0xFF3DAEFF), Color(0xFFF5B941)],
+                    colors: <Color>[
+                      WritePrecheckPalette.blueAccent,
+                      WritePrecheckPalette.goldAccent,
+                    ],
                   ),
                   boxShadow: <BoxShadow>[
                     BoxShadow(color: Color(0x663DAEFF), blurRadius: 8),

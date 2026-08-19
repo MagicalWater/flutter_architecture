@@ -30,7 +30,7 @@ class WritePrecheckHeroSection extends StatelessWidget {
             child: ProjectedDecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFFF5B941)),
+                border: Border.all(color: WritePrecheckPalette.goldAccent),
                 gradient: const LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
@@ -84,7 +84,7 @@ class WritePrecheckHeroSection extends StatelessWidget {
                       child: ProjectedDecoratedBox(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFFF5B941),
+                          color: WritePrecheckPalette.goldAccent,
                         ),
                       ),
                     ),
@@ -96,7 +96,7 @@ class WritePrecheckHeroSection extends StatelessWidget {
                       child: ProjectedDecoratedBox(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFFF5B941),
+                          color: WritePrecheckPalette.goldAccent,
                         ),
                       ),
                     ),
@@ -175,7 +175,7 @@ class WritePrecheckHeroSection extends StatelessWidget {
     final statusStyle = _style(
       size: 19,
       weight: FontWeight.w600,
-      color: const Color(0xFFF5B941),
+      color: WritePrecheckPalette.goldAccent,
     );
     final statusPainter = TextPainter(
       text: TextSpan(text: copy.heroStatus, style: statusStyle),
@@ -200,7 +200,7 @@ class WritePrecheckHeroSection extends StatelessWidget {
           const ProjectedIcon(
             PhosphorIcons.checkCircleLight,
             size: 24,
-            color: Color(0xFFF5B941),
+            color: WritePrecheckPalette.goldAccent,
           ),
           SizedBox(width: projectedPx(context, 10)),
           Text(copy.heroStatus, style: statusStyle),

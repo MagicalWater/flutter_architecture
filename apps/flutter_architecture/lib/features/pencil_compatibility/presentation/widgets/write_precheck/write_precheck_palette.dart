@@ -9,4 +9,8 @@ abstract final class WritePrecheckPalette {
   static const Color text = Color(0xFFEAF2F8);
   static const Color muted = Color(0xFFB8C4CF);
   static const Color dim = Color(0xFF7F94A7);
+  static const Color goldAccent = Color(0xFFF5B941);
+  static const Color blueAccent = Color(0xFF3DAEFF);
+  static const Color cyanAccent = Color(0xFF74D8FF);
+  static const Color subtleOutline = Color(0xFF244056);
 }

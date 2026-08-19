@@ -35,15 +35,15 @@ class WritePrecheckStep extends StatelessWidget {
         ? const Color(0xFF082A46)
         : const Color(0xFF05111C);
     final accent = active
-        ? const Color(0xFFF5B941)
+        ? WritePrecheckPalette.goldAccent
         : completed
-        ? const Color(0xFF3DAEFF)
+        ? WritePrecheckPalette.blueAccent
         : const Color(0xFF4B6173);
     final contentColor = active
-        ? const Color(0xFFF5B941)
+        ? WritePrecheckPalette.goldAccent
         : completed
-        ? const Color(0xFF74D8FF)
-        : const Color(0xFF7F94A7);
+        ? WritePrecheckPalette.cyanAccent
+        : WritePrecheckPalette.dim;
     final glyphLeft = active || number == 4 ? 96.0 : 94.0;
     final glyphWidth = active
         ? 15.0
@@ -138,7 +138,7 @@ class WritePrecheckStep extends StatelessWidget {
                         weight: active ? FontWeight.w700 : FontWeight.w500,
                         rasterWeight: 450,
                         color: active
-                            ? const Color(0xFFF5B941)
+                            ? WritePrecheckPalette.goldAccent
                             : completed
                             ? WritePrecheckPalette.muted
                             : WritePrecheckPalette.dim,
@@ -252,7 +252,7 @@ class WritePrecheckDataRow extends StatelessWidget {
             const SizedBox(
               width: double.infinity,
               height: 1,
-              child: ProjectedHairline(color: Color(0xFF244056)),
+              child: ProjectedHairline(color: WritePrecheckPalette.subtleOutline),
             ),
         ],
       ),
@@ -308,7 +308,7 @@ class WritePrecheckRecordTile extends StatelessWidget {
                           child: ProjectedIcon(
                             icon,
                             size: 30,
-                            color: const Color(0xFF74D8FF),
+                            color: WritePrecheckPalette.cyanAccent,
                           ),
                         ),
                       ),
@@ -374,7 +374,7 @@ class WritePrecheckRecordTile extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: const Color(0xFF0C1A2A),
                           borderRadius: BorderRadius.circular(17),
-                          border: Border.all(color: const Color(0xFF244056)),
+                          border: Border.all(color: WritePrecheckPalette.subtleOutline),
                         ),
                         child: Center(
                           child: Text(
@@ -451,7 +451,7 @@ class WritePrecheckSecondaryAction extends StatelessWidget {
           child: ProjectedDecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(17),
-              border: Border.all(color: const Color(0xFF3DAEFF), width: 2),
+              border: Border.all(color: WritePrecheckPalette.blueAccent, width: 2),
               boxShadow: const <BoxShadow>[
                 BoxShadow(color: Color(0x223DAEFF), blurRadius: 10),
               ],
@@ -486,7 +486,7 @@ class WritePrecheckSecondaryAction extends StatelessWidget {
                                 child: ProjectedIcon(
                                   icon,
                                   size: 30,
-                                  color: const Color(0xFF3DAEFF),
+                                  color: WritePrecheckPalette.blueAccent,
                                 ),
                               ),
                             ),
@@ -505,7 +505,7 @@ class WritePrecheckSecondaryAction extends StatelessWidget {
                                     size: 24,
                                     weight: FontWeight.w500,
                                     rasterWeight: 500,
-                                    color: const Color(0xFF3DAEFF),
+                                    color: WritePrecheckPalette.blueAccent,
                                   ),
                                 ),
                               ),

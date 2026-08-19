@@ -199,7 +199,7 @@ class WritePrecheckFooter extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               height: projectedPx(context, 1),
-              child: const ProjectedHairline(color: Color(0xFF244056)),
+              child: const ProjectedHairline(color: WritePrecheckPalette.subtleOutline),
             ),
             SizedBox(height: projectedPx(context, 11)),
             Align(

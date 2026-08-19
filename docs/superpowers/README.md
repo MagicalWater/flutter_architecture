@@ -3,99 +3,47 @@ document_type: design-plan-index
 status: active
 authoritative_for:
   - design-spec-and-implementation-plan-routing
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.25.0
 ---
 
 # Design Specifications and Implementation Plans
 
-`docs/superpowers/` 保存經討論形成的 design specification，以及核准後可執行的 implementation plan。
+`docs/superpowers/` 保存 accepted / proposed Design Spec 與 Implementation Plan。
 
 ## Authority
 
-- Spec 是核准設計、scope 與非目標的 artifact。
-- Plan 是執行順序、檔案範圍、驗證與 commit 邊界的 artifact。
+- Spec 擁有需求行為、scope、non-goals 與 technical design。
+- Plan 擁有 execution sequence、file scope、validation 與 completion boundaries。
+- Spec / Plan 不代表 implementation 已完成，也不取代 ADR、current snapshot、review evidence、release state 或 runtime truth。
 
-Spec 與 Plan 都不代表 implementation 已完成，也不取代 current snapshot、Architecture Decision、review evidence 或 release history。
+## Current active artifacts
 
-Milestone 40 core accepted Design／Plan：[`specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md`](specs/2026-08-17-milestone-40-repository-landing-documentation-authority-design.md)／[`plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md`](plans/2026-08-17-milestone-40-repository-landing-documentation-authority.md)。Tasks 40-1～40-6已完成。40-7R architecture-Hero corrective Design／Plan與C01／C02保留為historical failure evidence；最終40-7T透過新的Level 1 Requirement Decision收斂為typographic title artwork，使用者已accept C01並接入root README，因此不另建formal Design／Plan。Milestone 40已local closure，Template Baseline維持1.20.0。
+- Design：[`specs/2026-08-19-milestone-46-documentation-skill-governance-simplification-design.md`](specs/2026-08-19-milestone-46-documentation-skill-governance-simplification-design.md)
+- Plan：[`plans/2026-08-19-milestone-46-documentation-skill-governance-simplification.md`](plans/2026-08-19-milestone-46-documentation-skill-governance-simplification.md)
+- Current execution gate：[`../roadmap/active.md`](../roadmap/active.md)
 
-Milestone 39 accepted Design／Plan：[`specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md`](specs/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery-design.md)／[`plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md`](plans/2026-08-15-milestone-39-pencil-flutter-fidelity-enforcement-recovery.md)。Milestone已完成1.20.0 publication與Task 39-8 post-release closure；current state由`../roadmap/active.md`與`../project_context.md`擁有。
+## Historical routing
 
-Milestone 34 accepted Implementation Plan：[`plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md`](plans/2026-08-09-milestone-34-pencil-asset-typography-mapping.md)。Tasks 34-1～34-4、34-5 Holistic Final Review、Template Baseline `1.15.2` publication與post-release validation均已完成；current active work回到Roadmap／Requirement Decision入口。
+Completed / superseded specs and plans 保留原路徑，不在本 index 重複維護逐 Milestone 狀態。需要查歷史 Milestone 時由 [`../milestones/README.md`](../milestones/README.md) 路由到對應 Design / Plan / review / release evidence。
 
-## 目錄
+直接目錄：
 
 ```txt
 docs/superpowers/specs/
-  Design specifications
-
 docs/superpowers/plans/
-  Task-based implementation plans
 ```
-
-Milestone 43 accepted Design／accepted Plan：[`specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`](specs/2026-08-18-milestone-43-presentation-component-architecture-design.md)／[`plans/2026-08-18-milestone-43-presentation-component-architecture.md`](plans/2026-08-18-milestone-43-presentation-component-architecture.md)。Design與Plan均已於2026-08-18取得使用者核准；implementation自Task 43-1 Direct RED開始。
-
-目前最新計畫 routing：
-
-- [`plans/2026-08-10-validation-planner-skill-governance-classification-corrective.md`](plans/2026-08-10-validation-planner-skill-governance-classification-corrective.md)：accepted standalone Level 4 governance corrective Plan；SG-1～SG-4已依RED→minimal GREEN→Skill lock／consumer verification→holistic platform review完成，等待branch finishing／integration disposition。
-- [`plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md`](plans/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance.md)：accepted Milestone 35 Implementation Plan；Tasks 35-1～35-9、Template Baseline 1.16.0 publication與published-main post-release closure均已完成。
-- [`plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md`](plans/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation.md)：accepted Milestone 33 Implementation Plan；Tasks 33-1至33-13、Template Baseline 1.15.0 release、main publication與fresh clean-checkout post-release closure均已完成。
-- [`plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md`](plans/2026-08-07-milestone-33-corrective-single-renderer-responsive-fidelity-recovery.md)：accepted Corrective C1～C5 Plan；single-renderer recovery、Android人工visual acceptance、C5 Holistic Final Review、Template Baseline 1.15.1與post-release closure均已完成。
-
-Milestone 33 current reusable human workflow：[`../guides/pencil_to_flutter_workflow.md`](../guides/pencil_to_flutter_workflow.md)。Spec／Plan仍只擁有accepted design與execution sequence，不取代該Guide或current roadmap state。
-- [`plans/2026-08-01-r4-test-inventory-external-output-bugfix.md`](plans/2026-08-01-r4-test-inventory-external-output-bugfix.md)：accepted R4 TDD Plan；以unit＋subprocess regression修復external output false failure，並保護tracked M30 inventory baseline。
-- [`plans/2026-08-01-r3-api-client-transport-neutral-error-boundary.md`](plans/2026-08-01-r3-api-client-transport-neutral-error-boundary.md)：accepted R3 TDD Plan；依序建立api_client endpoint boundary、遷移Auth、更新App Composition／generated DI並完成full workspace closure。
-- [`plans/2026-08-01-r2-project-context-current-only-rationalization.md`](plans/2026-08-01-r2-project-context-current-only-rationalization.md)：accepted R2 Plan；以committed preservation matrix先行、current-only rewrite與single-finding closure三階段執行，只處理`F-A7-02`。
-- [`plans/2026-08-01-r1-current-authority-contradiction-closure.md`](plans/2026-08-01-r1-current-authority-contradiction-closure.md)：R1 current authority矛盾修復的accepted Implementation Plan；定義R1-P與R1-1～R1-4 exact file scope、semantic assertions、five-finding closure guard、獨立commit與R1 Final Review使用者核准Gate，目前允許依序執行R1-1～R1-4。
-- [`plans/2026-07-31-template-baseline-1.14-project-holistic-audit.md`](plans/2026-07-31-template-baseline-1.14-project-holistic-audit.md)：accepted Execution Plan；A1～A9、fresh full regression與B＋D Final Review均已完成並取得使用者核准，後續remediation依獨立Requirement Decision執行。
-- [`plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md`](plans/2026-07-30-milestone-32-ci-artifact-local-storage-cutover.md)：Milestone 32 managed artifact store、workflow transport、retention／cleanup、runtime acceptance與GitHub storage cutover的accepted Implementation Plan；Tasks 1～11、1.14.0 release與post-release closure均已完成。
-- [`plans/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery.md`](plans/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery.md)：對四個repository-local Skills繁體中文化補做Level 3 full two-layer Task governance、mechanical language gate與holistic remote closure；current execution進度見對應final review。
-- [`plans/2026-07-30-adopting-template-product-identity-skill.md`](plans/2026-07-30-adopting-template-product-identity-skill.md)：薄型模板產品識別Skill的RED／GREEN、中央routing、Guide authority與clean-checkout計畫；Tasks 1–6原以restricted Pilot完成，後續fresh isolated behavioral evidence closure已將current registry狀態升級為`Approved`。
-- [`plans/2026-07-25-karpathy-guidelines-adoption.md`](plans/2026-07-25-karpathy-guidelines-adoption.md)：primary-workflow recovery已完成，Karpathy companion目前為`Pilot／Approved with restrictions`；不依賴Ponytail，fresh isolated ChatGPT behavioral GREEN仍待平台能力。
-- [`plans/2026-07-24-milestone-31-template-development-workflow-governance.md`](plans/2026-07-24-milestone-31-template-development-workflow-governance.md)：accepted Recovery Implementation Plan；Milestone 31治理證據鏈已完成local final review與post-release validation，歷史closure見`docs/audits/milestone_31/31-r10_local_final_review.md`與`docs/audits/milestone_31/31-r11_post_release_validation.md`。
-- [`plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md`](plans/2026-07-24-milestone-30-test-suite-audit-rationalization-governance.md)：Repository-wide test inventory、coverage ownership、production／historical boundary、controlled cleanup與execution governance。
-- [`plans/2026-07-24-milestone-29-drift-persistence-migration.md`](plans/2026-07-24-milestone-29-drift-persistence-migration.md)：Drift整體遷移、historical compatibility、single-owner cutover與platform acceptance。
-- [`plans/2026-07-23-milestone-27-production-observability-foundation.md`](plans/2026-07-23-milestone-27-production-observability-foundation.md)
-- [`plans/2026-07-24-self-hosted-ci-execution-mode.md`](plans/2026-07-24-self-hosted-ci-execution-mode.md)：Task 27-7三種CI執行端、Mac self-hosted runner與closure實作計畫。
-
-Milestone 30已完成release與post-release closure；Spec與Plan僅保留設計、執行順序與歷史追溯，不保存runtime pending狀態。
 
 ## Reading rule
 
-執行某個 Milestone 或 phase 時，只讀該工作相關的 spec、plan 與 review；不要把所有歷史 plans 加入 AI 每次進入 repository 的必讀集合。
-
-目前最新設計 routing：
-
-- [`specs/2026-08-18-milestone-43-presentation-component-architecture-design.md`](specs/2026-08-18-milestone-43-presentation-component-architecture-design.md)：accepted Milestone 43 Design；建立一般Flutter feature適用的Presentation role/state/cohesion contract，拒絕one-class-one-file、Cubit-everything與固定folder skeleton形式主義。
-- [`specs/2026-08-10-validation-planner-skill-governance-classification-corrective-design.md`](specs/2026-08-10-validation-planner-skill-governance-classification-corrective-design.md)：accepted standalone governance corrective；補齊`.agents/skills/**`、`skills-lock.json`與`third_party/skills/**`對既有`governance` class的routing，保留Skill lock integrity、semantic pressure review與unknown full fail-safe；2026-08-10已取得使用者核准並完成implementation。
-- [`specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md`](specs/2026-08-09-milestone-35-test-execution-cost-change-aware-validation-governance-design.md)：accepted Milestone 35 Corrective Design；以single deterministic validation planner、change classes、affected dependency scope、evidence reuse與fail-safe full escalation建立Minimum Sufficient Validation；Plan已accepted，implementation進入managed worktree admission。
-- [`specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md`](specs/2026-08-09-milestone-34-pencil-asset-typography-mapping-design.md)：accepted Milestone 34 Design；補強Pencil extraction到Flutter mapping之間的asset／vector／typography representation classification與provenance gate；Implementation仍須等待Plan完成雙層治理與書面核准。
-- [`specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md`](specs/2026-08-04-adr-028-repository-local-pencil-to-flutter-design-implementation-workflow-draft.md)：superseded ADR-028 stable decision draft history；current stable authority已移交canonical ADR-028。
-- [`specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md`](specs/2026-08-04-milestone-33-repository-local-pencil-to-flutter-workflow-foundation-design.md)：accepted Milestone 33 Design；建立repository-local `.pen` authority、third-party Skill provenance／integrity、Pencil MCP orchestration、Flutter architecture mapping與單頁visual acceptance proof。
-- [`specs/2026-08-01-r4-test-inventory-external-output-bugfix-design.md`](specs/2026-08-01-r4-test-inventory-external-output-bugfix-design.md)：accepted R4 Design；以pure output display helper修正repository外absolute output false failure，只處理`F-A6-01`。
-- [`specs/2026-08-01-r3-api-client-transport-neutral-error-boundary-design.md`](specs/2026-08-01-r3-api-client-transport-neutral-error-boundary-design.md)：accepted R3 Design；以Auth endpoint interface、api_client-owned Dio adapter與neutral exception envelope修復`F-A2-01`，不改OTP business ownership或Profile／Catalog scope。
-- [`specs/2026-08-01-r2-project-context-current-only-rationalization-design.md`](specs/2026-08-01-r2-project-context-current-only-rationalization-design.md)：accepted R2 Design；以preservation matrix把Project Context中的current facts歸位並移除Milestone chronology，只處理`F-A7-02`，不包含R3～R5、integration或release。
-- [`specs/2026-08-01-r1-current-authority-contradiction-closure-design.md`](specs/2026-08-01-r1-current-authority-contradiction-closure-design.md)：Template 1.14 holistic Audit核准後的R1有界current authority矛盾修復Design；只處理五個accepted findings，排除R2～R5、release、merge與push，Plan核准前不得修改current authority。
-- [`specs/2026-07-31-template-baseline-1.14-project-holistic-audit-design.md`](specs/2026-07-31-template-baseline-1.14-project-holistic-audit-design.md)：Template Baseline 1.14.0 repository-wide整體總審查、能力分級、finding contract與A1～A9 evidence Tasks的accepted Design；Final Review已核准B＋D disposition，不建立新Milestone。
-- [`specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md`](specs/2026-07-30-milestone-32-ci-artifact-local-storage-cutover-design.md)：Milestone 32本機artifact ownership、retention、capacity、GitHub transport、cleanup與runtime acceptance的accepted Design；1.14.0 release與post-release closure均已完成。
-- [`specs/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery-design.md`](specs/2026-07-30-repository-local-skills-traditional-chinese-governance-recovery-design.md)：修復原Level 1分類不足，定義逐Skill semantic review、TDD language enforcement與holistic closure的Level 3治理設計。
-- [`specs/2026-07-29-adopting-template-product-identity-skill-design.md`](specs/2026-07-29-adopting-template-product-identity-skill-design.md)：已核准的薄型模板產品識別Skill設計，保留中央治理、manifest／Guide authority與安全邊界；其Pilot upgrade conditions已由後續fresh behavioral evidence closure滿足。
-- [`specs/2026-07-25-karpathy-guidelines-adoption-design.md`](specs/2026-07-25-karpathy-guidelines-adoption-design.md)：已核准的Pilot採用設計；執行期間因RED無confirmed gap而未啟用，最終Disposition見對應final review。
-- [`specs/2026-07-24-milestone-31-template-development-workflow-governance-design.md`](specs/2026-07-24-milestone-31-template-development-workflow-governance-design.md)：accepted historical Design；Milestone 31已完成recovery governance、local final review與post-release validation，current workflow authority由repository-local Skill與治理文件擁有。
-- [`specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md`](specs/2026-07-24-milestone-30-test-suite-audit-rationalization-governance-design.md)：測試ownership、historical boundary、disposition evidence與execution tiers。
-- [`specs/2026-07-24-milestone-29-drift-persistence-migration-design.md`](specs/2026-07-24-milestone-29-drift-persistence-migration-design.md)：Drift single-owner persistence、migration、opener與platform boundary。
-- [`specs/2026-07-23-production-observability-foundation-design.md`](specs/2026-07-23-production-observability-foundation-design.md)：Production Observability Foundation scope、provider策略、platform／CI boundary與Task拆分。
-- [`specs/2026-07-24-self-hosted-ci-execution-mode-design.md`](specs/2026-07-24-self-hosted-ci-execution-mode-design.md)：Task 27-7三種CI execution mode、trusted self-hosted runner與本機回退設計。
+- Ordinary task 不讀歷史 Spec / Plan。
+- Active Milestone execution 只讀 current accepted Spec + Plan + current gate。
+- Historical investigation 先走 `docs/milestones/README.md`，再按需開對應 artifact。
 
 ## Lifecycle
 
 ```txt
-Draft / Proposed spec
-→ Review and approval
-→ Implementation plan
-→ Phase implementation and review
-→ Final review
-→ Historical artifact
+Design proposed → review / user approval → accepted
+Plan proposed → review / user approval → accepted
+accepted Plan → implementation
+completed artifact → historical evidence；不再改寫成 current state
 ```
-
-工作完成後，Spec 與 Plan 保留作為歷史與可追溯性證據，但 current state 必須回寫至其唯一 authority，而不是持續更新舊 Plan。

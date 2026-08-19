@@ -83,8 +83,6 @@ repository_identity.json
 repository_infrastructure.json
 VERSION
 README.md
-docs/project_context.md
-docs/roadmap.md
 docs/roadmap/active.md
 CHANGELOG.md
 ```

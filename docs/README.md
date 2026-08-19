@@ -3,7 +3,7 @@ document_type: documentation-hub
 status: active
 authoritative_for:
   - documentation-taxonomy-and-reading-routing
-last_reviewed_baseline: 1.24.0
+last_reviewed_baseline: 1.25.0
 ---
 
 # Documentation Hub
@@ -37,18 +37,15 @@ last_reviewed_baseline: 1.24.0
 
 完整文件治理規則與 minimal metadata contract 見 `docs/governance/documentation_policy.md`。
 
-## 每次進入 repository 的最小讀取集
+## Fresh admission 與任務式讀取
 
 ```txt
 AGENTS.md
 repository_identity.json
 VERSION
-docs/README.md
-docs/project_context.md
-docs/roadmap.md
 ```
 
-這是固定最小集合，不代表所有任務都只能讀這些文件。完成最小讀取後，再依任務類型按需載入局部文件。
+這三個檔案是唯一固定 fresh admission 集合。`docs/README.md` 本身是 documentation taxonomy / routing hub，只有需要文件導航時才讀；`docs/project_context.md` 與 `docs/roadmap.md` 只有 project-wide capability、active initiative 或 roadmap disposition in scope 時才讀。
 
 `docs/project_context.md` 已於 22-3 收斂為 current-only snapshot；`docs/roadmap.md` 已於 22-4 分離為 index、active 與 candidates。歷史 milestone 細節應改由 Milestone、Audit、Plan、Archive 與 Git history 路由，不再從 current 文件讀取。
 
@@ -57,7 +54,7 @@ docs/roadmap.md
 ### Architecture task
 
 ```txt
-最小讀取集
+fresh admission
 → docs/adr/README.md 的相關 ADR
 → 受影響 App／Feature／Package README
 → 相關 source 與 tests
@@ -68,7 +65,7 @@ docs/roadmap.md
 ### Feature task
 
 ```txt
-最小讀取集
+fresh admission
 → apps/flutter_architecture/lib/features/<feature>/README.md
 → 相關 Decision
 → 該 Feature source 與 tests
@@ -77,7 +74,7 @@ docs/roadmap.md
 ### Package task
 
 ```txt
-最小讀取集
+fresh admission
 → packages/<package>/README.md
 → 相關 Decision
 → package public API、source 與 tests
@@ -92,7 +89,7 @@ docs/roadmap.md
 ### Active Milestone execution
 
 ```txt
-最小讀取集
+fresh admission
 → active roadmap entry
 → Milestone design spec
 → implementation plan

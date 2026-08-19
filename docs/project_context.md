@@ -3,7 +3,7 @@ document_type: current-snapshot
 status: active
 authoritative_for:
   - current-project-context
-last_reviewed_baseline: 1.24.0
+last_reviewed_baseline: 1.25.0
 ---
 
 # Project Context
@@ -27,11 +27,10 @@ last_reviewed_baseline: 1.24.0
 ## Current Baseline
 
 ```txt
-Template Baseline: 1.24.0
+Template Baseline: 1.25.0 release candidate
 Phase 1 / MVP: Completed
-Current active milestone: none
-Current phase: Milestone 45 closed / maintenance-ready
-Latest completed initiative: Milestone 45 Test-by-Exception Portfolio Reset & Development Governance Simplification
+Current active milestone: 46
+Current phase: Milestone 46 release preflight PASS；publication candidate validation
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -364,66 +363,38 @@ Current iOS deployment baseline為15.0。
 - Secure credential storage 是 credential-at-rest hardening，不防 rooted device、runtime memory extraction 或 server compromise。
 - OTP flow 不宣稱防止 SIM-swap、phishing 或保證 SMS provider delivery。
 - Biometric unlock 不保存 biometric data，不實作 cryptographic Device Binding。
-- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.24.0。
+- Device Binding 與 Passkey 不屬於目前 Template Baseline 1.25.0 release candidate。
 - Repository Android production APK 使用debug verification signing，iOS production `.app`為unsigned verification build；兩者都不可直接作為Store artifact。
 - Default base identifier `com.example.flutterarchitecture`、display name與example API domain仍是template placeholder。Adopter必須依`docs/guides/native_environment_adoption.md`從manifest開始同步替換Android、iOS與verification projection。
 
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: none
-Current phase: Milestone 45 closed / maintenance-ready
-Latest completed initiative: Milestone 45 Test-by-Exception Portfolio Reset & Development Governance Simplification；Template Baseline 1.24.0
+Current active milestone: 46 — Documentation & Skill Governance Complexity Audit / Simplification
+Current phase: release preflight PASS；publication candidate validation
 Maintenance mode: normal development from `dev`; `main` publication-only
-Open Milestone 39 review findings: P0=0 / undisposed P1=0; milestone closed
 ```
 
-Milestone 44本體已完成component-local fixed-canvas laundering corrective並以Template Baseline `1.23.0`發布；relationship-layout、legal spatial overlay與PTF-47～58 evidence維持有效。Post-closure C1的same-semantic color production-adoption corrective已由Template Baseline `1.23.1`承接；C1 authority見`docs/audits/milestone_44/44-c1_5_holistic_corrective_review.md`。
-
-Milestone 41 constraint/relationship layout corrective與Milestone 42 presentation/UI design ownership corrective已合併發布為Template Baseline 1.21.0並closed。Milestone 43再建立ADR-032 generic Presentation responsibility/state/cohesion authority，完成Pencil normal-library decomposition、Catalog/OTP/Shell adoption／positive proofs、consumer governance與machine contracts。Template Baseline 1.22.0已發布；Task 43-8在exact published SHA完成Windows release/full regression、canonical generated verification、GitHub-hosted Android Development/Production、GitHub-hosted iOS Simulator/Production與PTF-35～46 fresh acceptance，Milestone 43正式closed。Closure evidence見`docs/audits/milestone_43/43-8_post_release_validation.md`。
-
-Milestone 40已完成root README product landing restructure、兩張正式架構圖inline preview、documentation ownership、Template → Product compatibility、docs checker validation與40-7T title artwork corrective；40-9 post-closure corrective再完成root README一般閱讀文字的繁體中文一致性，以及accepted Milestone 40 Design／Plan status同步。Publication前40-7／40-7R architecture-Hero方向均已rejected並保留historical evidence；沒有current README authority。40-7T C01已取得使用者visual acceptance並promotion為current README title artwork；current future generation authority使用fresh discovered `chatgpt-web-generation`。Milestone 40本身未升版，其成果已由後續baseline承接。
-
-Milestone 41 + 42 final closure evidence由`docs/audits/milestone_42/42-10_post_release_validation.md`擁有；Open P0=0、Open P1 without disposition=0。
-
-Milestone 37已完成GitHub Template Repository → Product Repository bootstrap governance、machine-readable repository identity、fresh Agent routing、native identity delegation、published Template Baseline 1.18.0與Task 37-9 post-release closure。Source template仍維持`repository_kind=template`與GitHub Template Repository設定；published isolated product acceptance證明新產品可保留`template_origin=MagicalWater/flutter_architecture@1.18.0`並以自己的`VERSION=0.1.0`開始。Formal closure evidence見`docs/audits/milestone_37/37-9_post_release_validation.md`。
-
-Milestone 45已完成Test-by-Exception Portfolio Reset、Development Governance Simplification、corrective routing review、focused retention collapse與publication closure：permanent test預設不存在，temporary test在GREEN後必須做Retention Decision，low-value coverage可用`replacement = NONE`退休，Foundation無density exemption。Current portfolio由179 files／30,749 LOC／1,127 static cases縮至18 files／4,469 LOC／139 cases；canonical logical full Flutter只執行真正有permanent tests的`flutter_architecture`／`auth`／`api_client`。Classification採lowest sufficient level；0-test feature/package不退化成full suite，release runner支援nested Python owners與Windows tool shims；candidate在進`main`前以explicit release完成logical／Android／iOS evidence，`main` push不再重跑相同CI。Template Baseline `1.24.0`已發布；formal closure evidence見`docs/audits/milestone_45/45-2_post_release_validation.md`。
-
-Milestone 36是historical authoring governance baseline；其「existing portfolio不刪除」與Foundation density保留傾向已由Milestone 45 current authority取代。Formal historical closure evidence仍見`docs/audits/milestone_36/36-9_post_release_validation.md`。
-
-Milestone 34已在既有Pencil-to-Flutter route加入representation classification／asset-font provenance gate，Template Baseline 1.15.2 publication與post-release validation均PASS並正式封存。Current `.pen` authority仍位於`docs/design_sources/pencil-compatibility-write-precheck/source.pen`並由manifest鎖定；current human workflow入口為`docs/guides/pencil_to_flutter_workflow.md`，Skill behavioral validation入口為`docs/guides/skill_behavioral_validation.md`。Final closure evidence由`docs/audits/milestone_34/34-6_post_release_validation.md`路由。
-
-Milestone 35已把test execution over-validation修正為canonical change classifier + deterministic Minimum Sufficient Validation planner + plan-driven CI/local execution，並保留unknown／invalid／release的full fail-safe。Template Baseline 1.16.0 publication、Windows published-main fresh full regression與macOS/iOS production verification build均PASS；formal closure evidence見`docs/audits/milestone_35/35-9_post_release_validation.md`。
-
-Latest completed initiative的Design、Plan、final review與post-release evidence由`docs/milestones/README.md`路由。
-
-Milestone 38已完成Template → Product首次採用的repository infrastructure／CI governance corrective：新增`repository_infrastructure.json` desired/disposition authority、三種CI profile選擇、GitHub live read-back／受控mutation、product artifact identity、private-repository capability disposition與fresh no-handoff acceptance。`manual-local`與`github-hosted`具有accepted runtime evidence；`self-hosted` contract與template runner read-back已驗證，但product-scoped Mac runner runtime因外部Mac connector不可用保留明確external blocker disposition。Formal closure見`docs/audits/milestone_38/38-11_holistic_final_review.md`。
-
-Milestone 39已完成Pencil-to-Flutter critical mapping machine contract、runtime geometry／critical local fidelity gate、wrong-representation recovery與fresh behavioral pressure acceptance，並把repository-governed Pencil runtime authority完全收斂為`pencil-session-mcp` isolated session。Template Baseline 1.20.0已發布；final published-main Android repeated-run verification、macOS/iOS Development／Production verification與fresh ChatGPT behavioral acceptance皆PASS，Open P0=0、undisposed P1=0，Milestone已正式封存。Closure evidence見`docs/audits/milestone_39/39-8_post_release_validation.md`。
-
-新的feature、bug、security／platform變化、產品採用需求或maintenance hardening都必須先進入Requirement Decision，再依Level 0～5分類執行。Audit與remediation進度由`docs/audits/README.md`與對應review擁有，不追加Task、commit、測試數或runtime evidence journal至本文件。
+Active Milestone 的 scope、gate 與 accepted artifacts 由 `docs/roadmap/active.md` 路由。Completed Milestone 的 Design、Plan、review、runtime/release evidence 只由 `docs/milestones/README.md`、`docs/audits/README.md`、`CHANGELOG.md` 與 Git history 按需追溯；本 snapshot 不保存 closure chronology。
 
 ## Documentation Routing
 
-每次進入 repository 的最小讀取集：
+Fresh admission 只固定讀：
 
 ```txt
 AGENTS.md
 repository_identity.json
 VERSION
-docs/README.md
-docs/project_context.md
-docs/roadmap.md
 ```
 
-其餘依任務讀取：
+本文件本身只有在需要 project-wide current capability / support boundary / active-work context 時才讀。其他依任務按需：
 
+- Documentation taxonomy：`docs/README.md`。
 - Architecture：`docs/adr/README.md` 與相關 canonical ADR。
 - Feature：對應 Feature README、Decision、source 與 tests。
 - Package：對應 Package README、Decision、public API、source 與 tests。
-- Milestone：Spec、Plan、Planning Review 與目前 Phase Review。
-- Review／Runtime Evidence：`docs/audits/` 對應文件。
+- Active Milestone：`docs/roadmap/active.md` + accepted Spec/Plan。
+- Review／Runtime Evidence：只有 review/history task 才讀 `docs/audits/` 對應文件。
 - Release：`VERSION`、`CHANGELOG.md`、final review 與 Root README landing summary consistency。
 - History：`docs/milestones/README.md`、`docs/archive/`、Audits、Plans 與 Git history。
 
@@ -432,26 +403,7 @@ docs/roadmap.md
 - `docs/README.md`
 - `docs/governance/documentation_policy.md`
 
-## Standard Verification Commands
-
-在 workspace root：
-
-```bash
-dart pub get
-dart run melos run build_runner
-dart run melos run docs_check
-dart run melos run analyze
-dart run melos exec --scope=flutter_architecture --scope=auth --scope=api_client -- flutter test
-```
-
-App bundle verification：
-
-```bash
-cd apps/flutter_architecture
-flutter build bundle
-```
-
-涉及 Android release capability、Native configuration 或 runtime claim 時，還需要對應 release artifact、manifest 與 runtime smoke evidence；不能只用 `flutter build bundle` 取代。
+Validation scope 不由本 snapshot 固定列 command matrix；current machine selection 由 `tools/ci/validation_planner.py` 擁有，operator procedure 依需要讀 `docs/guides/ci_cd_operations.md`。
 
 ## Update Rule
 
@@ -464,6 +416,5 @@ flutter build bundle
 - Current capability 或 security claim boundary。
 - Active milestone。
 - Documentation routing。
-- Standard verification contract。
 
 不得把逐Task progress、commit hash、歷史測試數、release chronology、runtime evidence counts或完成Milestone的詳細journal追加回本文件。

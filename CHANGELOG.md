@@ -20,6 +20,27 @@
 
 ---
 
+## [1.25.0] - 2026-08-19
+
+### Changed
+
+- 完成 Milestone 46 Documentation & Skill Governance Complexity Audit / Simplification：fresh Agent fixed admission 從 6 個 repository files 收斂為 `AGENTS.md`、`repository_identity.json`、`VERSION` 三個 machine/current entry authorities；`docs/project_context.md`、`docs/roadmap.md` 與歷史 artifacts 改為 task-triggered 按需讀取。
+- `governing-template-development` 收斂為 routing-first thin Skill；classification、artifact approval、task review、test authoring、Skill adoption 與 pressure references 依實際 scope 才載入，不再讓 ordinary task 固定讀完整 governance handbook。
+- `docs/project_context.md` 恢復 current-only，移除 closed Milestone chronology；`docs/roadmap/active.md` 只保存 current milestone gate；Milestone 歷史 routing 統一由 `docs/milestones/README.md` 擁有，Audits / Superpowers index 不再平行維護歷史清單。
+- Human quick-start、development workflow 與 feature/adoption guides 移除重複 classification / testing / release / architecture policy，回到入口、procedure 與 authority link；刪除沒有 unique current authority 的 orphan `docs/conversation_rules.md`。
+
+### Validation
+
+- Fresh Level 0／1／2／repository-governance routing pressure 全部 PASS；fixed admission = 3 files，central governance Skill = 53 lines，project context closed Milestone chronology = 0。
+- `validation_planner.py` 對完整 candidate changed range 判定 `docs_content + governance` / focused；local implementation validation 的 `tools/docs` 6/6 tests、docs checker與`git diff --check`均 PASS，未因 Level 4 名稱執行無關 Flutter full regression。
+
+### Governance
+
+- Design、Implementation Plan 與 Plan holistic review均完成並取得使用者核准；implementation holistic final review PASS，Open P0 = 0，Open P1 without disposition = 0。
+- Release preflight確認本次改變 template consumer / fresh Agent 的 repository-wide development governance contract，採 Template Baseline `1.25.0` MINOR release；publication 前仍依 explicit release mode 完成 candidate SHA release evidence。
+
+---
+
 ## [1.24.0] - 2026-08-19
 
 ### Changed

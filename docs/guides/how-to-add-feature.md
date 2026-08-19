@@ -18,25 +18,25 @@ last_reviewed_baseline: 1.15.2
 
 ## Pre-reading Route
 
-開始前先閱讀固定最小文件集：
+Fresh admission 只固定讀：
 
 ```txt
 AGENTS.md
+repository_identity.json
 VERSION
-docs/README.md
-docs/project_context.md
-docs/roadmap.md
 ```
 
-接著依 Feature 需要讀取：
+接著只依 Feature 實際需要讀取：
 
 ```txt
-docs/adr/README.md 的相關 ADR
 apps/flutter_architecture/README.md
 相近 Feature README
 受影響 Package README
+docs/adr/README.md 的相關 ADR（只有對應 boundary in scope）
 相關 source 與 tests
 ```
+
+`docs/project_context.md`、`docs/roadmap.md`、歷史 Milestone evidence 不屬於新增普通 Feature 的固定前置讀取；只有 project-wide capability 或 roadmap disposition 真正在 scope 時才載入。
 
 可優先參考：
 

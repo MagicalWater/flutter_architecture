@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.24.0
+last_reviewed_baseline: 1.25.0
 ---
 
 # Milestone Routing
@@ -31,11 +31,18 @@ Milestone routing 只回答：
 ## Current routing
 
 ```txt
-Active Milestone: none
-Template Baseline: 1.24.0
+Active Milestone: 46
+Template Baseline: 1.25.0 release candidate
 ```
 
-Milestone 45 Test-by-Exception Portfolio Reset & Development Governance Simplification已發布為Template Baseline `1.24.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
+Milestone 46 Documentation & Skill Governance Complexity Audit / Simplification 已完成 Requirement Decision、accepted Design、accepted Implementation Plan 與 Plan holistic review；current state以`docs/roadmap/active.md`為準。
+
+### Milestone 46 active routing
+
+- State：local implementation / holistic review / release preflight PASS；Template Baseline `1.25.0` release candidate。
+
+- Design：`docs/superpowers/specs/2026-08-19-milestone-46-documentation-skill-governance-simplification-design.md`
+- Implementation Plan：`docs/superpowers/plans/2026-08-19-milestone-46-documentation-skill-governance-simplification.md`
 
 ### Milestone 45 closed routing
 

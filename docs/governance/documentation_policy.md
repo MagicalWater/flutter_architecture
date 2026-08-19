@@ -225,7 +225,7 @@ Current 與 index 文件禁止追加逐 Task journal、測試數成長紀錄、c
 
 ## 10. AI Reading Rule
 
-固定最小讀取集與任務式路由由 `AGENTS.md` 與 `docs/README.md` 擁有。本政策只定義文件治理，不再複製完整 reading route。
+固定 fresh admission 由 `AGENTS.md` 擁有；`docs/README.md` 只擁有 documentation taxonomy 與按需文件路由。本政策只定義文件治理，不再複製完整 reading route。
 
 ## 11. Migration Safety
 

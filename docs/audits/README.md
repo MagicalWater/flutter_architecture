@@ -3,362 +3,44 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.24.0
+last_reviewed_baseline: 1.25.0
 ---
 
 # Audits and Review Evidence
 
-`docs/audits/` 保存規劃審查、implementation review、final review、findings 與 runtime evidence。
+`docs/audits/` 保存 planning review、implementation / holistic review、runtime evidence、findings 與 post-release evidence。
 
 ## Authority
 
-Audit 是「當時審查了什麼、發現什麼、用什麼證據得到結論」的 authoritative artifact。
+Audit 只擁有「當時觀察到什麼、如何處置、哪些 evidence 通過」。它不擁有 current architecture、roadmap、release identity 或 workflow policy。
 
-Audit 不是下列資訊的 authority：
+Current facts 分別由 current snapshot、canonical ADR、roadmap、machine manifest、source/runtime、`VERSION` / `CHANGELOG.md` 擁有。
 
-- Current project state。
-- Architecture contract。
-- Active roadmap priority。
-- Release version。
+## Historical routing
 
-上述資訊分別由 `docs/project_context.md`、Architecture Decision、`docs/roadmap.md`、`VERSION` 與 `CHANGELOG.md` 擁有。
-
-## 文件類型
+本 index 不再平行維護逐 Milestone evidence 清單。Milestone-level history 統一由：
 
 ```txt
-Planning Review
-  設計與 implementation 前的 scope、risk、finding 與 disposition
-
-Phase Review
-  某一實作階段完成後的 source、test 與 contract review
-
-Runtime Evidence
-  Build artifact、manifest、database、emulator 或 device 的可重現觀察
-
-Final / Holistic Review
-  整個 Milestone 的跨階段完成判定
+docs/milestones/README.md
 ```
+
+路由到對應 audit / Design / Plan / release evidence。
+
+若已知 Milestone，可直接進：
+
+```txt
+docs/audits/milestone_<N>/
+```
+
+Standalone audit / corrective evidence 保留原檔名，可由 repository search 或其 owning Design / Plan / ADR link 進入。
 
 ## Reading rule
 
-開始 review 前先讀 current contract 與相關 Decision，再讀 plan 與 phase evidence。不得只依 audit 中的歷史 current-tense 敘述判斷目前狀態。
+- Ordinary development admission 不讀 audits。
+- Review task 只讀與 current change / finding 直接相關的 evidence。
+- Historical investigation 先從 milestone router 定位，不掃描全部 audits。
+- Historical finding 不得覆蓋後來的 current authority。
 
-## Evidence routes
+## Growth rule
 
-### Milestone 45 — Test-by-Exception Portfolio Reset & Development Governance Simplification
-
-- [`milestone_45/45-r_requirement_decision.md`](milestone_45/45-r_requirement_decision.md)：repository-wide test portfolio／governance reset Requirement Decision。
-- [`milestone_45/45-0_combined_planning_review.md`](milestone_45/45-0_combined_planning_review.md)：Design／Plan combined planning review與user approval evidence。
-- [`milestone_45/45-1_holistic_final_review.md`](milestone_45/45-1_holistic_final_review.md)：portfolio reduction、governance reset、planner／runner corrective與holistic final review。
-- [`milestone_45/45-2_post_release_validation.md`](milestone_45/45-2_post_release_validation.md)：Template Baseline 1.24.0 exact-SHA logical／Android／iOS publication evidence與formal closure。
-
-### Milestone 44 — Pencil Component Constraint Semantics Corrective
-
-- [`milestone_44/44-r_requirement_decision.md`](milestone_44/44-r_requirement_decision.md)：bounded-component fixed-canvas laundering corrective的Level 4 Requirement Decision。
-- [`milestone_44/44-0_design_spec_review.md`](milestone_44/44-0_design_spec_review.md)：Revised Design focused review、fresh re-review與user approval gate evidence。
-- [`milestone_44/44-p_implementation_plan_review.md`](milestone_44/44-p_implementation_plan_review.md)：direct RED→stable authority→relationship layout corrective→legal overlay→behavioral pressure→release/post-release的Plan review。
-- [`milestone_44/44-6_holistic_final_review.md`](milestone_44/44-6_holistic_final_review.md)：Milestone 44 whole-architecture review、full regression ceiling與1.23.0 release decision。
-- [`milestone_44/44-7_post_release_validation.md`](milestone_44/44-7_post_release_validation.md)：exact published-main Windows／canonical generated／Android／iOS、PTF-47～58 fresh acceptance與Milestone 44 formal closure。
-- [`milestone_44/44-c1_color_ownership_adoption_requirement_decision.md`](milestone_44/44-c1_color_ownership_adoption_requirement_decision.md)：M44 post-closure same-semantic color production-adoption omission的Level 3 corrective Requirement Decision。
-- [`milestone_44/44-c1_1_palette_bypass_red_review.md`](milestone_44/44-c1_1_palette_bypass_red_review.md) 至 [`milestone_44/44-c1_4_visual_affected_regression_review.md`](milestone_44/44-c1_4_visual_affected_regression_review.md)：direct palette-bypass RED、shared palette adoption、machine GREEN與canonical/runtime affected validation evidence。
-- [`milestone_44/44-c1_5_holistic_corrective_review.md`](milestone_44/44-c1_5_holistic_corrective_review.md)：C1 whole-corrective review與Template Baseline 1.23.1 PATCH release decision。
-
-### Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
-
-- [`milestone_43/43-r_requirement_decision.md`](milestone_43/43-r_requirement_decision.md)：repository-wide Presentation responsibility/state/cohesion的Level 4 Requirement Decision。
-- [`milestone_43/43-0_design_spec_review.md`](milestone_43/43-0_design_spec_review.md)：Design focused review、fresh re-review、whole-Design traceability與user approval gate evidence。
-- [`milestone_43/43-p_implementation_plan_review.md`](milestone_43/43-p_implementation_plan_review.md)：RED→stable authority→machine GREEN→representative adoption→behavioral pressure→holistic/post-release的Plan review。
-- [`milestone_43/43-7_holistic_final_review.md`](milestone_43/43-7_holistic_final_review.md)：Milestone 43 whole-architecture review與1.22.0 release decision。
-- [`milestone_43/43-8_post_release_validation.md`](milestone_43/43-8_post_release_validation.md)：exact published-main Windows／Android／iOS、PTF-35～46 fresh acceptance與Milestone 43 formal closure。
-
-### Milestone 40 — GitHub Repository Landing Page & Documentation Authority Restructure
-
-- [`milestone_40/40-r_requirement_decision.md`](milestone_40/40-r_requirement_decision.md)：root README product landing、inline architecture visual、documentation authority與bootstrap compatibility的Level 4 Requirement Decision。
-- [`milestone_40/40-0_design_spec_review.md`](milestone_40/40-0_design_spec_review.md)：Design focused findings、fix、fresh re-review與whole-Design holistic review；2026-08-17使用者已核准。
-- [`milestone_40/40-p_implementation_plan_review.md`](milestone_40/40-p_implementation_plan_review.md)：preservation-first ordering、README landing implementation、authority alignment、bootstrap compatibility、checker safety與holistic closure的Plan review。
-- [`milestone_40/40-7_repository_hero_visual_review.md`](milestone_40/40-7_repository_hero_visual_review.md)：rejected Hero attempt；保存錯誤Level 2 shortcut、generic dark-tech candidate與false visual acceptance evidence，不再代表current acceptance。
-- [`milestone_40/40-7r_hero_visual_requirement_decision.md`](milestone_40/40-7r_hero_visual_requirement_decision.md)：重新依central governance建立的Level 2 Hero corrective Requirement Decision，明確要求Behavioral Requirements、Design、Plan與standard Task governance。
-- [`milestone_40/40-7d_hero_visual_design_review.md`](milestone_40/40-7d_hero_visual_design_review.md)：repository-specific product identity、accepted architecture source family、actual inline preview與wrong-candidate discard contract的accepted Design review。
-- [`milestone_40/40-7p_hero_visual_plan_review.md`](milestone_40/40-7p_hero_visual_plan_review.md)：visual-family extraction、single-candidate generation、native-image identity、deterministic preview、user visual gate與regeneration budget的accepted Plan review。
-- [`milestone_40/40-7r_1_visual_family_extraction.md`](milestone_40/40-7r_1_visual_family_extraction.md)：accepted architecture visuals的geometry／module／hierarchy／connector／accent／density extraction與C01 generation brief。
-- [`milestone_40/40-7r_1_visual_family_review.md`](milestone_40/40-7r_1_visual_family_review.md)：Task 40-7R-1 focused／fresh／whole-Task review；鎖定source-family與anti-generic generation boundary。
-- [`milestone_40/40-7t_title_artwork_requirement_decision.md`](milestone_40/40-7t_title_artwork_requirement_decision.md)：把失敗的architecture-Hero方向正式收斂為Level 1 `Flutter Enterprise Architecture Template` typographic title artwork corrective。
-- [`milestone_40/40-7t_governance_integrity_review.md`](milestone_40/40-7t_governance_integrity_review.md)：確認40-7錯誤集中在Hero presentation支線，未發現repository-wide lifecycle／architecture／documentation authority corruption；並記錄current routing與generation tool corrective。
-- [`milestone_40/40-7t_title_artwork_review.md`](milestone_40/40-7t_title_artwork_review.md)：`Flutter Enterprise Architecture Template` title artwork 的actual inline preview、360／700 downscale、light／dark framing與使用者visual acceptance；C01已promotion為current README title artwork。
-- [`milestone_40/40-7t_readme_consumer_review.md`](milestone_40/40-7t_readme_consumer_review.md)：accepted title artwork promotion、root README consumer與focused／fresh／whole-Task review。
-- [`milestone_40/40-8_holistic_final_review.md`](milestone_40/40-8_holistic_final_review.md)：把40-7T納入Milestone 40 current closure的holistic final review addendum；40-7／40-7R保留為rejected historical evidence。
-- [`milestone_40/40-9_readme_language_and_authority_sync_review.md`](milestone_40/40-9_readme_language_and_authority_sync_review.md)：post-closure Level 1 corrective；完整檢查root README繁體中文一致性、accepted artifact status drift、focused／fresh／whole-README review與documentation authority同步。
-- [`milestone_40/40-10_final_comprehensive_review.md`](milestone_40/40-10_final_comprehensive_review.md)：Milestone 40最後完整本地審查；重新檢查README、visual authority、current documentation routing、CHANGELOG、branch-wide diff與planner-selected validation，並明確區分local PASS與尚未執行的remote publication。
-- [`milestone_40/40-7r_2_candidate_generation_review.md`](milestone_40/40-7r_2_candidate_generation_review.md)：fresh Executor／Image MCP admission、C01／C02 native image generation、SHA-256 byte identity與regeneration-budget evidence。
-- [`milestone_40/40-7r_3_hero_candidate_review.md`](milestone_40/40-7r_3_hero_candidate_review.md)：C01／C02 actual inline preview、13-gate focused review與whole-candidate rejection；C02觸發Design-return stop condition，禁止C03與README promotion。
-- [`milestone_40/40-1_readme_preservation_matrix.md`](milestone_40/40-1_readme_preservation_matrix.md)：root README逐section disposition、canonical owner、bootstrap/checker sensitivity與semantic preservation manifest。
-- [`milestone_40/40-1_readme_preservation_review.md`](milestone_40/40-1_readme_preservation_review.md)：Task 40-1 focused／fresh／whole-Task review；P0=0、undisposed P1=0。
-- [`milestone_40/40-2_root_readme_review.md`](milestone_40/40-2_root_readme_review.md)：GitHub product landing、inline architecture visuals、preservation matrix與baseline machine contract的Task 40-2 review。
-- [`milestone_40/40-3_documentation_authority_review.md`](milestone_40/40-3_documentation_authority_review.md)：Human landing與AI/current-contract owner分離、conversation Rule 5收斂及Single Authority review。
-- [`milestone_40/40-4_template_product_readme_compatibility_review.md`](milestone_40/40-4_template_product_readme_compatibility_review.md)：Template/Product version marker、bootstrap README transition與prospective product docs的compatibility review；Skill/Guide無需修改。
-- [`milestone_40/40-5_documentation_validation_review.md`](milestone_40/40-5_documentation_validation_review.md)：既有docs checker對template/product landing version marker持續有效，判定checker無需修改。
-- [`milestone_40/40-6_holistic_final_review.md`](milestone_40/40-6_holistic_final_review.md)：cross-Task authority、landing semantics、bootstrap/checker compatibility與no-release disposition的Milestone 40 formal closure。
-
-### Milestone 39 — Pencil-to-Flutter Fidelity Enforcement & Recovery Governance Corrective
-
-- [`milestone_39/39-r_requirement_decision.md`](milestone_39/39-r_requirement_decision.md)：critical mapping completeness、runtime geometry、local fidelity與wrong-representation recovery的Level 4 Requirement Decision。
-- [`milestone_39/39-0_design_spec_review.md`](milestone_39/39-0_design_spec_review.md)：single Skill／initiative-local mapping／risk-based geometry與recovery Design review。
-- [`milestone_39/39-p_implementation_plan_review.md`](milestone_39/39-p_implementation_plan_review.md)：RED→validator→local fidelity→recovery→fresh behavioral→authority sync的accepted Plan review。
-- [`milestone_39/39-1_mapping_contract_red.md`](milestone_39/39-1_mapping_contract_red.md)：critical mapping validator missing-contract RED與post-commit command recovery evidence。
-- [`milestone_39/39-2_mapping_validator_review.md`](milestone_39/39-2_mapping_validator_review.md)：four-state mapping disposition與fail-closed validator GREEN。
-- [`milestone_39/39-3_geometry_local_fidelity_review.md`](milestone_39/39-3_geometry_local_fidelity_review.md)：runtime RenderBox geometry與critical local fidelity AND semantics review。
-- [`milestone_39/39-4_recovery_skill_review.md`](milestone_39/39-4_recovery_skill_review.md)：wrong-representation invalidation與stop-pixel-tuning Skill contract review。
-- [`milestone_39/39-5_fidelity_pressure_evidence.md`](milestone_39/39-5_fidelity_pressure_evidence.md)：fresh ChatGPT RED／DISCOVERY／EXPLICIT GREEN behavioral evidence，PTF-19～PTF-25無P0／undisposed P1。
-- [`milestone_39/39-6_authority_sync_review.md`](milestone_39/39-6_authority_sync_review.md)：ADR-028／Guide／existing proof mapping authority synchronization review。
-- [`milestone_39/39-7_holistic_final_review.md`](milestone_39/39-7_holistic_final_review.md)：cross-Task release/full matrix、Pencil session唯一route corrective、Android／iOS exact-candidate platform gates與1.20.0 release-candidate acceptance。
-- [`milestone_39/39-8_post_release_validation.md`](milestone_39/39-8_post_release_validation.md)：1.20.0 published-main Android rerun-idempotency corrective、final Android／iOS exact-main verification、fresh ChatGPT behavioral acceptance與formal closure。
-
-### Milestone 38 — Template-to-Product Repository Infrastructure & CI Adoption Governance Corrective
-
-- [`milestone_38/38-r_requirement_decision.md`](milestone_38/38-r_requirement_decision.md)：repository infrastructure／CI adoption缺口的Level 5 Requirement Decision。
-- [`milestone_38/38-0_design_spec_review.md`](milestone_38/38-0_design_spec_review.md)：Design ownership、security boundary與atomic completion review。
-- [`milestone_38/38-p_implementation_plan_review.md`](milestone_38/38-p_implementation_plan_review.md)：Implementation Plan與三profile acceptance ordering review。
-- [`milestone_38/38-7_manual_local_acceptance.md`](milestone_38/38-7_manual_local_acceptance.md)：manual-local product、managed artifact identity與atomic lifecycle acceptance。
-- [`milestone_38/38-8_self_hosted_acceptance.md`](milestone_38/38-8_self_hosted_acceptance.md)：self-hosted contract與source runner live read-back；product-scoped Mac runtime保留external blocker disposition。
-- [`milestone_38/38-9_github_hosted_acceptance.md`](milestone_38/38-9_github_hosted_acceptance.md)：private disposable product的GitHub-hosted PR/main live acceptance與fresh remote clone。
-- [`milestone_38/38-10_fresh_agent_acceptance.md`](milestone_38/38-10_fresh_agent_acceptance.md)：三profile no-handoff admission與negative corpus acceptance。
-- [`milestone_38/38-11_holistic_final_review.md`](milestone_38/38-11_holistic_final_review.md)：ADR consistency、security／rollback、full validation、release與post-release closure。
-
-### Milestone 37 — Template-to-Product Repository Bootstrap & Adoption Governance
-
-- [`milestone_37/37-r_requirement_decision.md`](milestone_37/37-r_requirement_decision.md)：GitHub Template Repository → Product Repository birth、fresh admission、repository identity／native identity boundary的Level 4 Requirement Decision。
-- [`milestone_37/37-0_design_spec_review.md`](milestone_37/37-0_design_spec_review.md)：Design focused／whole-Task review與atomic completion P1修正；使用者已核准。
-- [`milestone_37/37-p_implementation_plan_review.md`](milestone_37/37-p_implementation_plan_review.md)：Implementation Plan ordering、prospective product validation、fresh-agent acceptance與release/post-release gates review；使用者已核准。
-- [`milestone_37/37-1_repository_identity_contract_red.md`](milestone_37/37-1_repository_identity_contract_red.md)：repository lifecycle／provenance verifier RED owner。
-- [`milestone_37/37-2_repository_identity_green_review.md`](milestone_37/37-2_repository_identity_green_review.md)：canonical manifest、verifier、docs checker integration與validation planner classification GREEN。
-- [`milestone_37/37-3_bootstrap_routing_skill_review.md`](milestone_37/37-3_bootstrap_routing_skill_review.md)：fresh admission、`adopting-template-repository`、central route與machine Skill discovery review。
-- [`milestone_37/37-4_adr_guide_review.md`](milestone_37/37-4_adr_guide_review.md)：ADR-030與Template Repository Adoption Guide ownership review。
-- [`milestone_37/37-5_current_authority_integration_review.md`](milestone_37/37-5_current_authority_integration_review.md)：template current authority與newcomer routing同步review。
-- [`milestone_37/37-6_isolated_bootstrap_acceptance.md`](milestone_37/37-6_isolated_bootstrap_acceptance.md)：isolated Template → Product atomic transition、prospective docs／identity與product portability acceptance。
-- [`milestone_37/37-7_fresh_agent_behavioral_acceptance.md`](milestone_37/37-7_fresh_agent_behavioral_acceptance.md)：三個無handoff fresh ChatGPT contexts的template／product／invalid lifecycle behavioral acceptance。
-- [`milestone_37/37-8_holistic_final_review.md`](milestone_37/37-8_holistic_final_review.md)：Tasks 37-1～37-7 cross-Task authority review、full matrix validation與Template Baseline 1.18.0 local release disposition。
-- [`milestone_37/37-9_post_release_validation.md`](milestone_37/37-9_post_release_validation.md)：Template Baseline 1.18.0 published-main fresh identity/docs/full regression、generated、Android、macOS/iOS、GitHub Template Repository external setting、published Template → Product isolated acceptance與formal closure。
-
-### Milestone 36 — Test Authoring Cost & Risk-Based Testing Governance Corrective
-
-- [`milestone_36/36-r_requirement_decision.md`](milestone_36/36-r_requirement_decision.md)：Test Authoring／Maintenance Hell read-only admission後的Level 4 Requirement Decision；確認缺口在authoring threshold，而非重做Milestone 35 execution planner。
-- [`milestone_36/36-0_design_spec_review.md`](milestone_36/36-0_design_spec_review.md)：Risk-Based Test Authoring Design的focused review、whole-Design review與使用者approval evidence。
-- [`milestone_36/36-p_implementation_plan_review.md`](milestone_36/36-p_implementation_plan_review.md)：Implementation Plan ordering、RED→GREEN、behavioral/reference/holistic gates與使用者approval evidence。
-- [`milestone_36/36-5_tdd_two_layer_governance_review.md`](milestone_36/36-5_tdd_two_layer_governance_review.md)：provider-neutral fresh ChatGPT behavioral evidence；五個implementation Tasks不會機械產生五組tests，`no-new-test justified`仍需validation。
-- [`milestone_36/36-6_reference_feature_test_density_review.md`](milestone_36/36-6_reference_feature_test_density_review.md)：Auth／Catalog／Profile test-density audit；既有高密度coverage保留為risk/owner evidence，不作Product Feature quota。
-- [`milestone_36/36-7_risk_based_authoring_acceptance_corpus.md`](milestone_36/36-7_risk_based_authoring_acceptance_corpus.md)：Risk-Based Authoring固定scenario corpus與expected disposition／primary owner contracts。
-- [`milestone_36/36-8_holistic_final_review.md`](milestone_36/36-8_holistic_final_review.md)：Tasks 36-1～36-7 cross-Task holistic review、fresh full regression與Template Baseline 1.17.0 local release disposition。
-- [`milestone_36/36-9_post_release_validation.md`](milestone_36/36-9_post_release_validation.md)：Template Baseline 1.17.0 published-main release routing、fresh authoring contracts、Windows full regression、macOS/iOS development+production verification與formal closure。
-
-### Validation Planner — Skill Governance Path Classification Corrective
-
-- [`validation_planner_skill_governance_classification_requirement_decision.md`](validation_planner_skill_governance_classification_requirement_decision.md)：fresh path probes確認repository-authored Skills被降為普通`docs_content`、Skill lock／vendored provenance被升為`unknown`的雙向classification gap；接受為Level 4 standalone governance corrective，不另建Milestone。
-- [`validation_planner_skill_governance_classification_design_review.md`](validation_planner_skill_governance_classification_design_review.md)：accepted Corrective Design的known-root boundary、Skill lock authority、machine／behavioral responsibility split、unknown negative control與whole-Design review；2026-08-10已取得使用者核准。
-- [`validation_planner_skill_governance_classification_plan_review.md`](validation_planner_skill_governance_classification_plan_review.md)：accepted Implementation Plan review；SG-1 RED→SG-2 minimal classifier GREEN→SG-3 lock／consumer verification→SG-4 holistic closure完整覆蓋accepted Design；2026-08-10已取得使用者核准。
-- [`validation_planner_skill_governance_classification/execution_admission.md`](validation_planner_skill_governance_classification/execution_admission.md)：accepted Design／Plan後的managed worktree、branch、planning base與implementation scope准入。
-- [`validation_planner_skill_governance_classification/sg-1_contract_red_review.md`](validation_planner_skill_governance_classification/sg-1_contract_red_review.md)：repository-authored Skill、reference、locked Skill、lock、vendored provenance、mixed union與unknown negative control的7-failure expected RED。
-- [`validation_planner_skill_governance_classification/sg-2_classifier_green_review.md`](validation_planner_skill_governance_classification/sg-2_classifier_green_review.md)：最小`governance` path predicate GREEN、56-test regression與focused/no-platform direct probes。
-- [`validation_planner_skill_governance_classification/sg-3_integrity_consumer_review.md`](validation_planner_skill_governance_classification/sg-3_integrity_consumer_review.md)：existing Skill lock fail-closed、36-test docs contracts、13-case verbose lock evidence與runner consumer proof。
-- [`validation_planner_skill_governance_classification/sg-4_holistic_final_review.md`](validation_planner_skill_governance_classification/sg-4_holistic_final_review.md)：cross-Task final review、246 CI contracts、52 docs contracts、full Flutter regression、generated consistency、Android managed build與build-input-equivalent macOS/iOS gate；release disposition維持1.16.0。
-
-### Milestone 34 — Pencil Asset / Vector / Typography Mapping & Provenance
-
-- [`milestone_34/34-0_asset_typography_mapping_design_review.md`](milestone_34/34-0_asset_typography_mapping_design_review.md)：accepted Level 3 Design的classification、scope、authority、over-design guards、focused findings disposition與使用者書面核准closure。
-- [`milestone_34/34-p_implementation_plan_review.md`](milestone_34/34-p_implementation_plan_review.md)：accepted Implementation Plan的Design coverage、RED→GREEN ordering、behavioral runtime blocker、affected regression與whole-Plan review；2026-08-09已取得使用者書面核准。
-- [`milestone_34/34-1_representation_contract_red.md`](milestone_34/34-1_representation_contract_red.md)：Task 34-1 mechanical RED；七個representation／provenance缺口已可重現，既有single-renderer contract保持GREEN。
-- [`milestone_34/34-2_asset_typography_mapping_review.md`](milestone_34/34-2_asset_typography_mapping_review.md)：Task 34-2 mapping GREEN；六類representation、font／icon fail-closed、derived provenance與anti-overbuild contract review。
-- [`milestone_34/34-3_asset_typography_pressure_evidence.md`](milestone_34/34-3_asset_typography_pressure_evidence.md)：Task 34-3 behavioral validation已完成；external RED六題皆為already-safe baseline，DISCOVERY與EXPLICIT GREEN均6/6 PASS，無P0/P1 loophole；Guide baseline metadata P2轉交34-4。
-- [`milestone_34/34-4_workflow_documentation_review.md`](milestone_34/34-4_workflow_documentation_review.md)：Task 34-4 human workflow／Skill registry同步、Guide baseline metadata closure與authority duplication review。
-- [`milestone_34/34-5_holistic_final_review.md`](milestone_34/34-5_holistic_final_review.md)：Tasks 34-1～34-4 cross-Task final review、Design acceptance coverage、fresh behavioral evidence、affected regression與1.15.2 release disposition；正式release仍待使用者授權。
-- [`milestone_34/34-6_post_release_validation.md`](milestone_34/34-6_post_release_validation.md)：Template Baseline 1.15.2 published-main focused regression、main/origin identity reconciliation與Milestone 34 formal closure。
-
-### Milestone 35 — Test Execution Cost & Change-Aware Validation Governance Corrective
-
-- [`milestone_35/35-0_test_execution_cost_admission_audit.md`](milestone_35/35-0_test_execution_cost_admission_audit.md)：Template Baseline 1.15.2 read-only test-cost admission；量測current inventory/runtime，確認change-classifier粒度、testing-tier machine model、Guide wording與雙層Task validation amplification問題；Design／Plan尚未開始。
-- [`milestone_35/35-r_requirement_decision.md`](milestone_35/35-r_requirement_decision.md)：fresh baseline reconciliation後的formal Requirement Decision；分類為Level 4 repository-wide governance corrective，Design／Plan／ADR／managed implementation worktree／release／post-release均required，且明確禁止把Level 4誤解為每個中間Task無條件full regression。
-- [`milestone_35/35-d_corrective_design_review.md`](milestone_35/35-d_corrective_design_review.md)：accepted Corrective Design的focused findings、fresh re-review、whole-Design coverage、authority check與使用者Design approval closure evidence。
-- [`milestone_35/35-p_implementation_plan_review.md`](milestone_35/35-p_implementation_plan_review.md)：accepted Implementation Plan的Task ordering、RED／GREEN boundary、inventory history preservation、evidence reuse anti-overdesign、release/post-release separation與whole-Plan review。
-- [`milestone_35/35-execution-admission.md`](milestone_35/35-execution-admission.md)：accepted Design／Plan之後的managed worktree、branch、base SHA與implementation boundary admission；通過後才允許Task 35-1開始。
-- [`milestone_35/35-1_validation_planner_contract_red.md`](milestone_35/35-1_validation_planner_contract_red.md)：Task 35-1 deterministic planner missing-contract RED、current feature／package over-escalation evidence、existing classifier fail-safe GREEN與focused／whole-Task review。
-- [`milestone_35/35-2_validation_planner_review.md`](milestone_35/35-2_validation_planner_review.md)：Task 35-2 canonical change classes、pure Minimum Sufficient Validation planner、workspace reverse dependency propagation、mixed-path P1修正與fresh 40-test GREEN review。
-- [`milestone_35/35-3_testing_inventory_tier_review.md`](milestone_35/35-3_testing_inventory_tier_review.md)：Task 35-3 execution tier realignment；current inventory為Tier 1=22、Tier 2=124、Tier 3=11、Tier 4=7、Unclassified=0，且Milestone 30 historical inventory未改寫。
-- [`milestone_35/35-4_ci_validation_plan_cutover_review.md`](milestone_35/35-4_ci_validation_plan_cutover_review.md)：Task 35-4 single planner CI/local consumer cutover、direct-script runtime P1修正、Windows Git Bash plan-range parity與fresh 227-test CI contract review。
-- [`milestone_35/35-5_validation_governance_authority_review.md`](milestone_35/35-5_validation_governance_authority_review.md)：Task 35-5 ADR-023 stable amendment、Testing Governance 1.15.2 alignment、AGENTS／Feature Guide over-validation wording closure與52-test docs policy review。
-- [`milestone_35/35-6_validation_evidence_reuse_review.md`](milestone_35/35-6_validation_evidence_reuse_review.md)：Task 35-6 phase-specific evidence identity、dependency-metadata invalidation、review-only audit reuse與holistic／release fresh guard review。
-- [`milestone_35/35-7_execution_cost_acceptance.md`](milestone_35/35-7_execution_cost_acceptance.md)：Task 35-7 fixed scenario routing matrix與fresh wall-clock acceptance；small feature／single-test實際降本，package route保留真實reverse-dependent coverage與高風險fail-safe。
-- [`milestone_35/35-8_holistic_final_review.md`](milestone_35/35-8_holistic_final_review.md)：Tasks 35-1～35-7 cross-Task consistency、fresh full regression、generated／database／Android evidence與Template Baseline 1.16.0 MINOR local release disposition；正式closure仍待publication與35-9。
-- [`milestone_35/35-9_post_release_validation.md`](milestone_35/35-9_post_release_validation.md)：Template Baseline 1.16.0 published-main identity reconciliation、fresh release routing、Windows full regression、macOS/iOS production verification build與Milestone 35 formal closure。
-- [`../guides/skill_behavioral_validation.md`](../guides/skill_behavioral_validation.md)：provider-neutral isolated-agent behavioral validation操作入口；Codex CLI只作optional automated harness，manual ChatGPT fresh-chat route可提供actual external evidence。
-
-### Milestone 33 — Repository-local Pencil-to-Flutter Workflow Foundation
-
-- [`milestone_33/33-0_design_spec_review.md`](milestone_33/33-0_design_spec_review.md)：accepted Design與ADR-028的Level 4分類、第三方Skill語言／integrity治理、visual authority、Pencil MCP、Flutter mapping、visual acceptance及使用者核准closure；Implementation尚未開始。
-- [`milestone_33/33-p_implementation_plan_review.md`](milestone_33/33-p_implementation_plan_review.md)：accepted Plan的Design coverage、Tasks 33-1至33-13、TDD interfaces、visual threshold、release separation與使用者Plan approval closure review。
-- [`milestone_33/33-execution-admission.md`](milestone_33/33-execution-admission.md)：managed worktree、branch、Plan／Design ancestry與execution boundary admission evidence。
-- [`milestone_33/33-1_adr_028_canonicalization_review.md`](milestone_33/33-1_adr_028_canonicalization_review.md)：ADR coverage TDD、canonical ADR-028、draft authority cutover與Task review。
-- [`milestone_33/33-2_skill_lock_governance_review.md`](milestone_33/33-2_skill_lock_governance_review.md)：ownership-aware third-party Skill lock、raw hash／license／path fail-closed與語言豁免review。
-- [`milestone_33/33-3_taste_skill_source_admission.md`](milestone_33/33-3_taste_skill_source_admission.md)：Taste Skill immutable commit、Git blob／Windows EOL disposition、lock、license與restricted adoption review。
-- [`milestone_33/33-3_taste_skill_discovery_pressure_evidence.md`](milestone_33/33-3_taste_skill_discovery_pressure_evidence.md)：same-name collision RED、temporary fixture cleanup與managed-worktree local discovery GREEN evidence。
-- [`milestone_33/33-4_visual_authority_review.md`](milestone_33/33-4_visual_authority_review.md)：visual manifest TDD、repository-local `.pen`／references admission、source ranking、canonical viewport與Task 33-6 preview export gate review。
-- [`milestone_33/33-5_orchestration_pressure_evidence.md`](milestone_33/33-5_orchestration_pressure_evidence.md)：Pencil-to-Flutter RED／DISCOVERY／EXPLICIT／REFACTOR behavioral pressure evidence。
-- [`milestone_33/33-5_orchestration_skill_review.md`](milestone_33/33-5_orchestration_skill_review.md)：thin orchestration Skill、中央route、Taste boundary、permissions、rollback與whole-Task review。
-- [`milestone_33/33-6_pencil_admission_and_extraction.md`](milestone_33/33-6_pencil_admission_and_extraction.md)：Executor／Pencil admission、accepted document identity、structure inventory與canonical Pencil export evidence。
-- [`milestone_33/33-6_flutter_mapping_matrix.md`](milestone_33/33-6_flutter_mapping_matrix.md)：Pencil extracted items到Design System／feature-local visual spec／localization／icons／widgets的single-owner mapping。
-- [`milestone_33/33-6_pencil_extraction_review.md`](milestone_33/33-6_pencil_extraction_review.md)：Pencil boundary、canonical export與mapping whole-Task review。
-- [`milestone_33/33-6r_design_source_index_transition_review.md`](milestone_33/33-6r_design_source_index_transition_review.md)：Task 33-12發現的design-source index stale transition recovery；只修current preview row，不修改任何visual bytes／manifest／threshold。
-- [`milestone_33/33-7_flutter_proof_foundation_review.md`](milestone_33/33-7_flutter_proof_foundation_review.md)：presentation-only feature、router／localization／visual spec foundation與TDD review。
-- [`milestone_33/33-8_write_precheck_ui_review.md`](milestone_33/33-8_write_precheck_ui_review.md)：Write Pre-check responsive widget implementation與visual hierarchy review。
-- [`milestone_33/33-9_flutter_validation_review.md`](milestone_33/33-9_flutter_validation_review.md)：architecture／semantics／localization／responsive與Windows canonical golden validation review。
-- [`milestone_33/33-10_visual_acceptance_review.md`](milestone_33/33-10_visual_acceptance_review.md)：固定8% deterministic diff、historical relative gate、Android runtime screenshot與semantic visual acceptance review。
-- [`milestone_33/33-10r_fontweight_api_compatibility_review.md`](milestone_33/33-10r_fontweight_api_compatibility_review.md)：Task 33-11 full analyze發現的`FontWeight.index`deprecation corrective recovery；visual gate不變且workspace analyze恢復GREEN。
-- [`milestone_33/visual_validation/review.md`](milestone_33/visual_validation/review.md)：Task 33-10 canonical／Android runtime semantic visual review與evidence hashes。
-- [`milestone_33/33-11_workflow_documentation_review.md`](milestone_33/33-11_workflow_documentation_review.md)：Reusable Guide、narrow routing、Skill registry／language ownership、current sync與Guide pressure disposition review。
-- [`milestone_33/33-12_holistic_final_review.md`](milestone_33/33-12_holistic_final_review.md)：Tasks 33-1至33-11 cross-Task consistency、fresh full local regression、visual acceptance與disposition A release authorization boundary的Holistic Final Review。
-- [`milestone_33/33-13_post_release_validation.md`](milestone_33/33-13_post_release_validation.md)：Template Baseline 1.15.0 release SHA的main publication、fresh clean-checkout full regression、Skill path／collision、Android artifact與fresh canonical visual acceptance closure evidence。
-- [`milestone_33/33-c0_single_renderer_corrective_design_review.md`](milestone_33/33-c0_single_renderer_corrective_design_review.md)：使用者runtime P1後的single-renderer Corrective Design／ADR amendment與原visual closure supersession review。
-- [`milestone_33/33-cp_corrective_implementation_plan_review.md`](milestone_33/33-cp_corrective_implementation_plan_review.md)：Corrective C1～C5雙層Task plan、runtime/user hard gate與release boundary review。
-- [`milestone_33/33-c1_governance_contract_review.md`](milestone_33/33-c1_governance_contract_review.md)：single whole-screen tree、design-space與runtime fidelity治理契約review。
-- [`milestone_33/33-c2_runtime_visual_contract_review.md`](milestone_33/33-c2_runtime_visual_contract_review.md)：360×640 reference、1.15.0 intentional RED reproduction與C3前locked contract review。
-- [`milestone_33/33-cp2_runtime_renderer_calibration_amendment_review.md`](milestone_33/33-cp2_runtime_renderer_calibration_amendment_review.md)：修正direct Pencil runtime hard gate的cross-renderer calibration P1，建立Gate A/B/C/D current acceptance model。
-- [`milestone_33/33-c3_cross_conversation_checkpoint.md`](milestone_33/33-c3_cross_conversation_checkpoint.md)：C3跨對話implementation checkpoint；只作歷史承接證據。
-- [`milestone_33/33-c3_single_renderer_implementation_review.md`](milestone_33/33-c3_single_renderer_implementation_review.md)：C3 single production renderer focused／whole-Task review與fresh Gate A/B/C驗證。
-- [`milestone_33/33-c4_android_runtime_acceptance.md`](milestone_33/33-c4_android_runtime_acceptance.md)：fresh Android runtime evidence與使用者人工visual acceptance。
-- [`milestone_33/33-c5_corrective_holistic_final_review.md`](milestone_33/33-c5_corrective_holistic_final_review.md)：Corrective responsibility boundary、Clean Architecture、code/test architecture、anti-cheat與documentation reconciliation Holistic Final Review。
-- [`milestone_33/33-c6_post_release_validation.md`](milestone_33/33-c6_post_release_validation.md)：Template Baseline 1.15.1 main publication、fresh full regression、Gate B continuity與Corrective final closure evidence。
-
-### Template Baseline 1.14.0 project holistic audit
-
-- [`template_baseline_1_14_project_holistic_audit/a13_remote_main_publication_closure.md`](template_baseline_1_14_project_holistic_audit/a13_remote_main_publication_closure.md)：使用者核准的`main`一般push、remote equality與最終publication closure；總審查及R1～R5已完整發布，沒有mandatory next milestone。
-- [`template_baseline_1_14_project_holistic_audit/a12_local_main_integration_closure.md`](template_baseline_1_14_project_holistic_audit/a12_local_main_integration_closure.md)：使用者核准的local fast-forward integration、合併後generated／Python／docs／五package analyze／725項Flutter tests、App bundle與Audit worktree／local branch cleanup evidence；push與release均未執行。
-- [`template_baseline_1_14_project_holistic_audit/a11_local_branch_completion_verification.md`](template_baseline_1_14_project_holistic_audit/a11_local_branch_completion_verification.md)：R1～R5與A10提交後的branch completion evidence；其integration decision前狀態已由A12接續。
-- [`template_baseline_1_14_project_holistic_audit/a10_remediation_holistic_closure.md`](template_baseline_1_14_project_holistic_audit/a10_remediation_holistic_closure.md)：accepted R1～R5 finding closure、cross-remediation consistency、maintenance-mode decision與integration boundary；9個Audit findings已全部關閉。
-- [`r5_milestone_32_local_worktree_branch_cleanup_review.md`](r5_milestone_32_local_worktree_branch_cleanup_review.md)：R5 fresh clean／ancestry proof、Windows long-path recovery與local worktree／branch cleanup review；remote branch明確保留。
-- [`r4_test_inventory_external_output_bugfix/`](r4_test_inventory_external_output_bugfix/)：R4 TDD review與accepted holistic final review；external absolute output已支援，tracked M30 inventory baseline未變，`F-A6-01`已關閉。
-- [`r4_test_inventory_external_output_bugfix_plan_review.md`](r4_test_inventory_external_output_bugfix_plan_review.md)：R4 accepted Plan的pure helper、subprocess RED、tracked baseline protection與single-finding closure review。
-- [`r4_test_inventory_external_output_bugfix_design_review.md`](r4_test_inventory_external_output_bugfix_design_review.md)：R4 external output failure reproduction、pure path display helper、TDD與tracked baseline preservation Design review。
-- [`r3_api_client_transport_neutral_error_boundary/`](r3_api_client_transport_neutral_error_boundary/)：R3 endpoint boundary、Auth migration、App composition與accepted holistic final review；`F-A2-01`已關閉，Auth不再依賴Dio。
-- [`r3_api_client_transport_neutral_error_boundary_plan_review.md`](r3_api_client_transport_neutral_error_boundary_plan_review.md)：R3 accepted TDD Plan的endpoint-first sequencing、Mock parity、Auth coverage、generated DI與full workspace regression review。
-- [`r3_api_client_transport_neutral_error_boundary_design_review.md`](r3_api_client_transport_neutral_error_boundary_design_review.md)：R3 endpoint interface、Dio adapter、neutral envelope、Auth ownership、public API cleanup與ADR-013 implementation recovery Design review。
-- [`r2_project_context_current_only_rationalization/`](r2_project_context_current_only_rationalization/)：R2 preservation matrix、current-only rewrite review與accepted holistic final review；`F-A7-02`已關閉，Project Context不再保存Milestone chronology。
-- [`r2_project_context_current_only_rationalization_plan_review.md`](r2_project_context_current_only_rationalization_plan_review.md)：R2 accepted Plan的matrix-before-rewrite、chronology／claim assertions、single-finding closure guard與standing authorization邊界review。
-- [`r2_project_context_current_only_rationalization_design_review.md`](r2_project_context_current_only_rationalization_design_review.md)：R2 Project Context current-only rationalization的Level 3分類、preservation matrix、current fact re-home、chronology removal與standing authorization邊界review。
-- [`r1_current_authority_contradiction_closure/`](r1_current_authority_contradiction_closure/)：R1-1～R1-3 focused／whole-Task review，以及使用者已核准的R1-4 cross-document holistic final review；五個allowlisted current authority findings均已關閉。
-- [`r1_current_authority_contradiction_closure_plan_review.md`](r1_current_authority_contradiction_closure_plan_review.md)：R1 accepted Implementation Plan的Design coverage、R1-P／R1-1～R1-4 sequencing、semantic assertions、finding allowlist／denylist、commit boundaries與Plan approval closure；R1 Final Review user gate已完成。
-- [`r1_current_authority_contradiction_closure_design_review.md`](r1_current_authority_contradiction_closure_design_review.md)：Audit核准後R1 current authority矛盾修復Design的Level 3分類、五Finding allowlist、scope／non-goals、雙層Task與使用者核准closure。
-- [`template_baseline_1_14_project_holistic_audit_design_review.md`](template_baseline_1_14_project_holistic_audit_design_review.md)：Template Baseline 1.14.0 repository-wide整體總審查Design的Level 4分類、A0～A9 Task boundaries、Plan acceptance hard gate、focused finding修正與使用者核准證據。
-- [`template_baseline_1_14_project_holistic_audit_plan_review.md`](template_baseline_1_14_project_holistic_audit_plan_review.md)：對應accepted Execution Plan的spec coverage、exact file／command、temporary evidence、commit boundaries與A1前使用者核准closure。
-- [`template_baseline_1_14_project_holistic_audit/`](template_baseline_1_14_project_holistic_audit/)：A1～A9 repository baseline、architecture、capability、runtime、security／platform、testing／CI、documentation、future direction與holistic disposition evidence；`findings.md`為本Audit finding正文唯一owner。
-- [`template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md`](template_baseline_1_14_project_holistic_audit/a9_holistic_final_review.md)：A1～A8 cross-Task consistency、9個frozen findings、fresh full regression與使用者已核准的B＋D最終方向；R1 remediation依獨立Requirement Decision執行，merge與push仍未進行。
-
-### Persistence feasibility
-
-- [`drift_adoption_feasibility_audit.md`](drift_adoption_feasibility_audit.md)：Template Baseline 1.10.0 的 SQLite capability inventory、sqflite／Drift repository-specific比較、migration go／no-go與重新評估條件。
-
-### Recent platform and delivery milestones
-
-- [`milestone_24/`](milestone_24/)：Repository CI/CD Foundation 的 planning、phase reviews、final review 與 post-release remote validation。
-- [`milestone_25/`](milestone_25/)：iOS Platform Support Foundation 的 planning、native／runtime／security reviews、final review 與 remote validation。
-- [`milestone_26/`](milestone_26/)：Native Flavor & Product Identity Foundation 的 planning、environment／platform／CI reviews、final review 與 post-release remote validation。
-- [`milestone_27/`](milestone_27/)：Production Observability Foundation 的planning artifacts review、後續phase reviews、native／CI evidence與final review routing。
-- [`milestone_27/27-0_planning_review.md`](milestone_27/27-0_planning_review.md)：Production Observability Foundation 的scope、ADR、provider策略與activation gate。
-- [`milestone_27/27-1_release_identity_contract_review.md`](milestone_27/27-1_release_identity_contract_review.md)：Release identity、collection policy與provider-neutral lifecycle contract review。
-- [`milestone_27/27-4_android_native_symbol_pipeline_review.md`](milestone_27/27-4_android_native_symbol_pipeline_review.md)：Android Firebase config、Gradle plugin、R8 mapping與Flutter symbols pipeline review。
-- [`milestone_27/27-5_ios_native_dsym_pipeline_review.md`](milestone_27/27-5_ios_native_dsym_pipeline_review.md)：iOS Firebase config、Crashlytics build phase、iOS 15 baseline與dSYM pipeline review。
-- [`milestone_27/27-6_ci_secrets_remote_acceptance_review.md`](milestone_27/27-6_ci_secrets_remote_acceptance_review.md)：CI secret boundary、兩平台symbol upload、Firebase Console ingestion與symbolication closure。
-- [`milestone_27/27-7_self_hosted_ci_design_review.md`](milestone_27/27-7_self_hosted_ci_design_review.md)：三種CI execution mode、trusted self-hosted runner boundary與Task 27-7 design gate。
-- [`milestone_27/27-7_self_hosted_ci_plan_review.md`](milestone_27/27-7_self_hosted_ci_plan_review.md)：Task 27-7 implementation順序、TDD、runtime acceptance與逐Task closure gate。
-- [`milestone_27/27-7_self_hosted_ci_runtime_evidence.md`](milestone_27/27-7_self_hosted_ci_runtime_evidence.md)：Mac runner註冊、manual／main routing、PR denial與offline queue證據。
-- [`milestone_27/27-7_self_hosted_ci_implementation_review.md`](milestone_27/27-7_self_hosted_ci_implementation_review.md)：Task 27-7各小Task findings與holistic closure。
-- [`milestone_27/27-7_cross_task_final_revalidation.md`](milestone_27/27-7_cross_task_final_revalidation.md)：Task 27-6完成後的runner、secret、routing與authority跨Task重驗。
-- [`milestone_27/27-8_final_review.md`](milestone_27/27-8_final_review.md)：Milestone 27整體holistic review、release decision與final claim boundary。
-- [`milestone_27/27-9_post_release_remote_validation.md`](milestone_27/27-9_post_release_remote_validation.md)：Template Baseline 1.9.0 release-SHA self-hosted CI、Android與iOS完整驗證。
-- [`milestone_27/27-7_task_1_activation_adr_review.md`](milestone_27/27-7_task_1_activation_adr_review.md)：Task 27-7 activation、ADR authority與current roadmap同步review。
-- [`milestone_27/27-3_firebase_crashlytics_reference_adapter_review.md`](milestone_27/27-3_firebase_crashlytics_reference_adapter_review.md)：Firebase Core／Crashlytics App-owned reference adapter、collection policy與failure isolation review。
-- [`milestone_27/27-2_reporting_routing_hardening_review.md`](milestone_27/27-2_reporting_routing_hardening_review.md)：Severity routing、closed metadata、recursive guard、degraded rate limiting與typed breadcrumb review。
-
-### Change-aware CI initiative
-
-- [`milestone_32/32-0_design_spec_review.md`](milestone_32/32-0_design_spec_review.md)：Milestone 32 promotion、Design focused findings、fixes、fresh re-review、whole-Design與使用者核准closure。
-- [`milestone_32/32-1_implementation_plan_review.md`](milestone_32/32-1_implementation_plan_review.md)：Milestone 32 Implementation Plan的Task順序、TDD interfaces、runtime acceptance、cleanup雙重approval與release closure review。
-- [`milestone_32/32-5_local_ci_integration_review.md`](milestone_32/32-5_local_ci_integration_review.md)：Manual-local managed job、跨平台artifact output、Windows portability與clean quality acceptance review。
-- [`milestone_32/32-6_workflow_transport_review.md`](milestone_32/32-6_workflow_transport_review.md)：Workflow local-first transport matrix、self-hosted managed aggregation、bounded GitHub exception與summary evidence review。
-- [`milestone_32/32-7_observability_failure_evidence_review.md`](milestone_32/32-7_observability_failure_evidence_review.md)：Controlled-event opt-in、Observability local-only raw evidence、secret leakage scanner與bounded failure evidence review。
-- [`milestone_32/32-8_runtime_acceptance.md`](milestone_32/32-8_runtime_acceptance.md)：Operator guide、Windows shell LF portability、Task 8 static regression、managed quality evidence與Task 9 runtime acceptance入口；Task 8已完成。
-- [`milestone_32/32-9_runtime_acceptance_review.md`](milestone_32/32-9_runtime_acceptance_review.md)：Task 9 Windows／Mac manual-local、controlled failure、Observability secret-safe、self-hosted offline／success、bounded iOS evidence與GitHub no-growth完整runtime acceptance。
-- [`milestone_32/32-9_github_cleanup_manifest_review.md`](milestone_32/32-9_github_cleanup_manifest_review.md)：Task 10 fresh GitHub inventory、exact-ID deletion manifest、integrity／review／approval／drift gates與不可逆cleanup前停止點。
-- [`milestone_32/32-10_github_cleanup_execution.md`](milestone_32/32-10_github_cleanup_execution.md)：Task 11 drift fail-closed歷史、final exact-ID execution、113個objects刪除、逐ID不存在與GitHub storage歸零證據。
-- [`milestone_32/32-11_final_review.md`](milestone_32/32-11_final_review.md)：跨Tasks 1～11的artifact ownership、schema、secret、multi-job、retention、rollback、不可逆cleanup與1.14.0 release holistic review。
-- [`milestone_32/32-12_post_release_validation.md`](milestone_32/32-12_post_release_validation.md)：1.14.0 release SHA的self-hosted CI／Android／iOS、Observability skipped、storage no-growth、clean-checkout與formal closure evidence。
-- [`milestone_32/32-2_artifact_contract_review.md`](milestone_32/32-2_artifact_contract_review.md)：Tasks 1–2 durable authority、root／manifest contract、TDD findings與portability review。
-- [`milestone_32/32-3_artifact_store_review.md`](milestone_32/32-3_artifact_store_review.md)：Task 3 job lock、staging、atomic publish、checksums與multi-job aggregation review。
-- [`milestone_32/32-4_retention_cleanup_review.md`](milestone_32/32-4_retention_cleanup_review.md)：Task 4 retention、capacity、bounded pins、cleanup manifest、trash／restore／purge與concurrency review。
-- [`ci_artifact_storage_cutover_candidate_handoff.md`](ci_artifact_storage_cutover_candidate_handoff.md)：Proposed Milestone 32的quota盤點、候選scope、Design待決事項、禁止提前cleanup邊界與跨對話handoff。
-- [`change_aware_ci_spec_review.md`](change_aware_ci_spec_review.md)：Design spec scope 與 acceptance review。
-- [`change_aware_ci_plan_review.md`](change_aware_ci_plan_review.md)：Implementation plan review。
-- [`change_aware_ci_implementation_review.md`](change_aware_ci_implementation_review.md)：Whole implementation review routing。
-- [`change_aware_ci_remote_validation.md`](change_aware_ci_remote_validation.md)：GitHub-hosted documentation-only 與 full-matrix evidence。
-- [`change_aware_ci_holistic_final_review.md`](change_aware_ci_holistic_final_review.md)：Initiative holistic final disposition。
-- `change_aware_ci_task_*_review.md`：各 implementation Task 的 focused review evidence。
-
-### Documentation usability audit and hardening
-
-- [`documentation_usability_coverage_audit.md`](documentation_usability_coverage_audit.md)：文件可用性與覆蓋的正式整體 audit。
-- [`documentation_usability_coverage_audit_review.md`](documentation_usability_coverage_audit_review.md)：Audit evidence、severity 與 scope 的 formal review。
-- [`documentation_usability_hardening_design_review.md`](documentation_usability_hardening_design_review.md)：小型 hardening design review。
-- [`documentation_usability_hardening_plan_review.md`](documentation_usability_hardening_plan_review.md)：Implementation plan review。
-- [`documentation_usability_hardening_task_1_review.md`](documentation_usability_hardening_task_1_review.md)：Feature Guide responsibility review。
-- [`documentation_usability_hardening_task_2_review.md`](documentation_usability_hardening_task_2_review.md)：App database 與 integration routes review。
-- [`documentation_usability_hardening_task_3_review.md`](documentation_usability_hardening_task_3_review.md)：API endpoint 與 external client route review。
-- [`documentation_usability_hardening_task_4_review.md`](documentation_usability_hardening_task_4_review.md)：本 Audit navigation Task review。
-- [`documentation_usability_hardening_task_5_review.md`](documentation_usability_hardening_task_5_review.md)：Roadmap candidate 與 Backlog disposition review。
-- [`documentation_usability_hardening_final_review.md`](documentation_usability_hardening_final_review.md)：Documentation Usability Hardening holistic final disposition。
-
-### Production observability planning
-
-- [`production_observability_capability_audit.md`](production_observability_capability_audit.md)：Baseline 1.8.0 observability能力、缺口、provider策略與Milestone promotion依據。
-- [`production_observability_design_review.md`](production_observability_design_review.md)：Architecture design formal review、findings、fix verification與Open P0／P1 closure。
-
-### Earlier milestone groups
-
-- [`milestone_23/`](milestone_23/)：ADR Extraction Planning Review、batch／cutover evidence與 final review。
-- [`milestone_22_planning_review.md`](milestone_22_planning_review.md)：Documentation Governance Planning Review。
-- [`milestone_22/`](milestone_22/)：Milestone 22 各階段 documentation governance review evidence。
-- [`milestone_18/`](milestone_18/)：Template Baseline holistic audit phases。
-- [`milestone_19/`](milestone_19/)：Secure credential storage phase reviews。
-- [`milestone_20/`](milestone_20/)：OTP Step-Up Authentication phase reviews。
-- [`milestone_21/`](milestone_21/)：Biometric-gated Local Session Unlock phase reviews。
-
-### Milestone 31 workflow follow-ups
-
-- [`milestone_31/31-followup-karpathy-guidelines-source-review.md`](milestone_31/31-followup-karpathy-guidelines-source-review.md)：固定上游commit、來源hash與授權觀察。
-- [`milestone_31/31-followup-karpathy-guidelines-red-validation.md`](milestone_31/31-followup-karpathy-guidelines-red-validation.md)：五個fresh RED controls與「無confirmed gap」拒絕證據。
-- [`milestone_31/31-followup-karpathy-guidelines-final-review.md`](milestone_31/31-followup-karpathy-guidelines-final-review.md)：已superseded的Codex＋Ponytail環境Rejected歷史結論。
-- [`milestone_31/31-followup-karpathy-primary-workflow-recovery-review.md`](milestone_31/31-followup-karpathy-primary-workflow-recovery-review.md)：ChatGPT＋bridge-mac主要工作流runtime mismatch finding與recovery authority。
-- [`milestone_31/31-followup-karpathy-guidelines-pressure-validation.md`](milestone_31/31-followup-karpathy-guidelines-pressure-validation.md)：primary runtime Skill discovery、authority、trigger與non-trigger驗證。
-- [`milestone_31/31-followup-karpathy-primary-workflow-final-review.md`](milestone_31/31-followup-karpathy-primary-workflow-final-review.md)：取代舊Rejected結論的restricted Pilot holistic disposition。
-
-### Repository-local Skill adoption reviews
-
-- [`agent_assisted_development_quick_start_review.md`](agent_assisted_development_quick_start_review.md)：AI Agent日常Quick Start Guide的場景覆蓋、Skill routing、authority boundary與remote closure review。
-- [`repository_local_skills_traditional_chinese_review.md`](repository_local_skills_traditional_chinese_review.md)：commit `c8a77a5`當時的Level 1歷史審查；其classification與closure authority已被後續Level 3 recovery supersede。
-- [`repository_local_skills_zh_tw_design_review.md`](repository_local_skills_zh_tw_design_review.md)：繁體中文化Level 3 governance recovery Design Task review。
-- [`repository_local_skills_zh_tw_plan_review.md`](repository_local_skills_zh_tw_plan_review.md)：六Task review execution Plan的完整Task review。
-- [`repository_local_skills_zh_tw_task_1_central_governance_review.md`](repository_local_skills_zh_tw_task_1_central_governance_review.md)：中央治理Skill與五份references的semantic equivalence、classification與gate review。
-- [`repository_local_skills_zh_tw_task_2_product_identity_review.md`](repository_local_skills_zh_tw_task_2_product_identity_review.md)：產品識別Skill trigger、安全、pressure status與authority review。
-- [`repository_local_skills_zh_tw_task_3_starting_feature_review.md`](repository_local_skills_zh_tw_task_3_starting_feature_review.md)：Starting Feature Work短入口、中央委派與pressure controls review。
-- [`repository_local_skills_zh_tw_task_4_karpathy_review.md`](repository_local_skills_zh_tw_task_4_karpathy_review.md)：Karpathy source pin、subordinate routing與restricted boundary review。
-- [`repository_local_skills_zh_tw_task_5_language_governance_review.md`](repository_local_skills_zh_tw_task_5_language_governance_review.md)：語言policy、歷史supersession與`agent-skill-language` RED／GREEN evidence。
-- [`repository_local_skills_zh_tw_holistic_final_review.md`](repository_local_skills_zh_tw_holistic_final_review.md)：Tasks 1～5完成後，對全部中文化變更與recovery修正的holistic final review及remote closure authority。
-- [`adopting_template_product_identity_design_review.md`](adopting_template_product_identity_design_review.md)：`adopting-template-product-identity`薄型Skill Design的Level 3 Full Task review、P1修正、authority check與user approval gate。
-- [`adopting_template_product_identity_plan_review.md`](adopting_template_product_identity_plan_review.md)：對應Implementation Plan的六Task拆分、RED／GREEN、registry contract、authority與clean-checkout完整Plan Task review。
-- [`adopting_template_product_identity_main_integration_holistic_review.md`](adopting_template_product_identity_main_integration_holistic_review.md)：合併後`main`的完整文件／Skill authority審查、Windows portability修正、full regression與remote push gate。
-- [`adopting_template_product_identity_behavioral_pressure_evidence.md`](adopting_template_product_identity_behavioral_pressure_evidence.md)：三個fresh isolated對話的provenance、prompt、behavioral結果與Pilot upgrade criteria matrix。
-- [`adopting_template_product_identity_approval_closure_review.md`](adopting_template_product_identity_approval_closure_review.md)：解除restricted Pilot、更新current registry為`Approved`的bounded evidence closure review。
-- [`adopting_template_product_identity_task_1_red_discovery_review.md`](adopting_template_product_identity_task_1_red_discovery_review.md)：候選Skill不存在時的machine discovery RED與behavioral runtime限制。
-- [`adopting_template_product_identity_task_2_skill_core_review.md`](adopting_template_product_identity_task_2_skill_core_review.md)：薄型Skill核心、trigger、input與authority boundary review。
-- [`adopting_template_product_identity_task_3_pressure_validation.md`](adopting_template_product_identity_task_3_pressure_validation.md)：R1–R10 pressure protocol、machine discovery GREEN與restricted evidence disposition。
-- [`adopting_template_product_identity_task_4_routing_registry_review.md`](adopting_template_product_identity_task_4_routing_registry_review.md)：中央narrow routing、entry-point matrix與Skill registry review。
-- [`adopting_template_product_identity_task_5_guide_authority_review.md`](adopting_template_product_identity_task_5_guide_authority_review.md)：Guide入口、authority matrix、environment contract與Windows test portability review。
-- [`adopting_template_product_identity_final_review.md`](adopting_template_product_identity_final_review.md)：跨Task consistency、clean-checkout discovery與`Pilot accepted with restrictions`最終結論。
-
-其他位於 `docs/audits/` root 的 planning、runtime 或 holistic review 仍保留原 stable path。Index 只負責 routing，不複製 findings、test counts、commit hashes或 final gate內容。
+M45 後不為每個 implementation subtask 機械建立 audit file。只有 material finding、formal critical boundary、runtime evidence 或 Milestone holistic / post-release closure 真正需要 durable evidence 時才建立。

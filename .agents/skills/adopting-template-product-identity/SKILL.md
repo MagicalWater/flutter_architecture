@@ -44,9 +44,7 @@ Repository policy、已核准的 Design／Plan／ADR、目前 source、tests 與
 中央分類完成後，讀取下列文件的 current version：
 
 ```txt
-AGENTS.md
 VERSION
-docs/project_context.md
 docs/adr/adr-014-app-configuration-environment-entrypoints.md
 docs/adr/adr-025-native-environment-mapping-product-identity-contract.md
 docs/guides/native_environment_adoption.md
@@ -56,6 +54,8 @@ tools/ci/verify_environment_contract.py
 tools/ci/test_environment_contract.py
 相關 build scripts 與 tests
 ```
+
+`AGENTS.md`、`repository_identity.json` 已由 fresh admission 處理；`docs/project_context.md` 不再是此 domain 的固定必讀，只有需要 project-wide current capability 時才按需讀。
 
 此 Skill 只保存閱讀路由，不複製 mapping values、platform procedures 或 exact verification commands。
 

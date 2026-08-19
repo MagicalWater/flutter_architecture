@@ -46,19 +46,16 @@ Missing、malformed 或 unknown repository identity 必須 fail closed，不得�
 中央分類完成後至少讀取：
 
 ```txt
-AGENTS.md
 repository_identity.json
 repository_infrastructure.json
 VERSION
-docs/project_context.md
-docs/roadmap.md
 docs/guides/template_repository_adoption.md（存在後）
 tools/docs/verify_repository_identity.py
 tools/docs/verify_repository_infrastructure.py
 .agents/skills/adopting-template-product-identity/SKILL.md（native identity in scope 時）
 ```
 
-Human Guide 尚未建立時，不得自行發明平行 procedure；依 accepted Milestone Design／Plan 執行。
+`AGENTS.md` 已由 fresh admission 載入，不在 domain Skill 重複要求。`docs/project_context.md`／`docs/roadmap.md` 只有本次 bootstrap 確實需要 project-wide capability 或 roadmap disposition 時才按需讀。Human Guide 尚未建立時，不得自行發明平行 procedure；依 accepted Milestone Design／Plan 執行。
 
 ## Atomic completion boundary
 

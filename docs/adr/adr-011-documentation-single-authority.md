@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-011-documentation-single-authority
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.25.0
 id: ADR-011
 title: Documentation as Single Authority
 supersedes:
@@ -46,7 +46,7 @@ Accepted；原始固定檔案清單與 aggregate-only 更新流程已由 Milesto
 
 Milestone 22 沒有取代「文件優於聊天記憶」的核心決策，而是取代原始 ADR 中過時的固定關鍵檔案清單，以及「一律先修改 aggregate architecture file」的單一路由。
 
-目前 authoritative routing 由 `docs/README.md`、`docs/governance/documentation_policy.md` 與各 managed index 決定。
+目前 fresh admission hard policy 由 `AGENTS.md` 擁有；documentation taxonomy / task-based document routing 由 `docs/README.md`、`docs/governance/documentation_policy.md` 與各 managed index 擁有。
 
 ## Related Decisions
 
@@ -60,4 +60,4 @@ Milestone 22 沒有取代「文件優於聊天記憶」的核心決策，而是�
 
 ## Last Reviewed Baseline
 
-1.5.1。
+1.25.0。

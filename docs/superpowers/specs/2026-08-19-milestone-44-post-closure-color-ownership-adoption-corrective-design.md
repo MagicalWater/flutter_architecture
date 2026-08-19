@@ -1,6 +1,6 @@
 ---
 document_type: design-spec
-status: proposed
+status: accepted
 authoritative_for:
   - milestone-44-post-closure-color-ownership-adoption-corrective-design
 last_reviewed_baseline: 1.23.0
@@ -10,7 +10,7 @@ last_reviewed_baseline: 1.23.0
 
 ## Status
 
-**Proposed — awaiting user approval.**
+**Accepted — 2026-08-19 使用者明確核准。**
 
 Requirement authority：`docs/audits/milestone_44/44-c1_color_ownership_adoption_requirement_decision.md`。
 
@@ -161,5 +161,5 @@ Final exact validation由`tools/ci/validation_planner.py`對implementation range
 
 ## Approval gate
 
-本Design在完成focused review、fresh re-review與whole-Design review後仍需使用者明確核准；核准前不得建立Implementation Plan或修改production source。
+本Design已完成focused review、fresh re-review與whole-Design review，並於2026-08-19取得使用者明確核准。Implementation Plan現在允許建立；Plan完成雙層Task治理並取得使用者明確核准前，仍不得修改production source。
 

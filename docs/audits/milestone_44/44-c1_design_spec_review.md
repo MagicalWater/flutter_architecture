@@ -75,13 +75,13 @@ Whole-Design review：**PASS**。
 
 ## Approval state
 
-Design technical review已PASS，但依Level 3 full governance仍需使用者明確核准。
+Design technical review已PASS，並於2026-08-19取得使用者明確核准。
 
 ```txt
-Design status: proposed
+Design status: accepted
 Technical review: PASS
-User approval: pending
-Implementation Plan: forbidden until approval
+User approval: approved 2026-08-19
+Implementation Plan: allowed to create
 Production modification: forbidden until accepted Plan
 ```
 

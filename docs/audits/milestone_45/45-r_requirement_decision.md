@@ -43,4 +43,3 @@ last_reviewed_baseline: 1.23.1
 8. Same SHA不重複holistic／release／post-release full source regression。
 9. GitHub CI execution量與workflow duplication明顯下降。
 10. Governance artifacts、per-Task formal review與evidence overhead下降，而critical security／migration／concurrency／destructive／platform protection仍有清楚owner。
-

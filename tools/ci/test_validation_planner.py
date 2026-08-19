@@ -30,13 +30,42 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         self.assertFalse(plan.ios_build)
         self.assertFalse(plan.full_regression)
 
+    def test_feature_without_permanent_owner_does_not_fall_back_to_app_suite(self) -> None:
+        plan = plan_validation(
+            ["apps/flutter_architecture/lib/features/profile/presentation/profile_view.dart"]
+        )
+
+        self.assertEqual(plan.validation_level, "affected")
+        self.assertEqual(plan.flutter_test_scopes, ())
+        self.assertEqual(plan.analyze_scopes, ("apps/flutter_architecture",))
+
     def test_package_change_uses_affected_scope_without_platform_builds(self) -> None:
         plan = plan_validation(["packages/auth/lib/src/auth_repository.dart"])
 
         self.assertEqual(plan.validation_level, "affected")
+        self.assertEqual(plan.flutter_test_scopes, ("packages/auth/test",))
         self.assertFalse(plan.android_build)
         self.assertFalse(plan.ios_build)
         self.assertFalse(plan.full_regression)
+
+    def test_zero_test_package_is_not_sent_to_flutter_test(self) -> None:
+        plan = plan_validation(["packages/design_system/lib/src/tokens.dart"])
+
+        self.assertNotIn("packages/design_system/test", plan.flutter_test_scopes)
+        self.assertEqual(plan.flutter_test_scopes, ())
+        self.assertIn("apps/flutter_architecture", plan.analyze_scopes)
+
+    def test_platform_build_scripts_select_real_platform_evidence(self) -> None:
+        android = plan_validation(["tools/ci/build_android_production.sh"])
+        ios = plan_validation(["tools/ci/build_ios_production.sh"])
+        shared = plan_validation(["tools/ci/verify_environment_contract.py"])
+
+        self.assertTrue(android.android_build)
+        self.assertFalse(android.ios_build)
+        self.assertFalse(ios.android_build)
+        self.assertTrue(ios.ios_build)
+        self.assertTrue(shared.android_build)
+        self.assertTrue(shared.ios_build)
 
     def test_database_change_keeps_generated_validation_without_platform_builds(self) -> None:
         plan = plan_validation(

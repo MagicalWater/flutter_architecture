@@ -19,8 +19,8 @@ Open P0 = 0。Open P1 without disposition = 0。
 | Metric | Before | After | Reduction |
 |---|---:|---:|---:|
 | Test files | 179 | 20 | 88.8% |
-| Test LOC | 30,749 | 5,873 | 80.9% |
-| Static cases | 1,127 | 186 | 83.5% |
+| Test LOC | 30,749 | 5,902 | 80.8% |
+| Static cases | 1,127 | 189 | 83.2% |
 | Test + non-test tools + workflows unique LOC | ~43,718 | 18,168 | ~58.4% |
 
 Minimum success criterion（files與LOC均>=80% reduction）已通過。90% LOC stretch沒有以刪除真正critical security／migration／concurrency protection硬湊數字；後續若剩餘owner的maintenance value下降，仍可依test-by-exception直接再退休，不存在最低保留數量。
@@ -88,19 +88,23 @@ Current governance已完成以下反轉：
 - `dart run melos run docs_check`：PASS。
 - `git diff --check`：PASS。
 - `dart run melos run analyze`：5 packages PASS，0 issues。
-- `python -m unittest discover -s tools/ci -p test_*.py`：52 PASS。
+- `python -m unittest discover -s tools/ci -p test_*.py`：55 PASS。
 - `python -m unittest discover -s tools/docs -p test_*.py`：13 PASS。
 - `dart run melos exec --scope=flutter_architecture --scope=auth --scope=api_client -- flutter test`：PASS。
 - New logical full Flutter wall-clock：9.37s；read-only admission baseline約53.38s，約82% reduction。
-- `python tools/testing/inventory.py`：`files=20 loc=5873 cases=186 output=none`；default不再覆寫historical CSV。
+- `python tools/testing/inventory.py --output NUL`：`files=20 loc=5902 cases=189`；default不再覆寫historical CSV。
 
 ## Findings disposition
 
 - Old planner tests因仍要求`VERSION=release`、ordinary source=platform matrix、post-release always fresh而RED：**intentional stale governance contract**；舊matrix已退休，改由11個critical planner semantics tests保護新contract。
 - Full Flutter最初對`core`／`design_system` 0-test packages執行而失敗：**execution plumbing stale after portfolio reset**；runner與canonical commands已改為只執行permanent-test packages，fresh rerun PASS。
 - Observability／iOS workflow曾引用已退休test modules：**stale CI consumer**；已改為explicit acceptance／retained secret-leakage guard與real build evidence。
+- Fresh post-commit review發現affected planner仍會把0-test Feature映射到不存在的`test/features/<feature>`；Flutter會退化為執行整個App suite，而0-test package會被Melos直接執行失敗：**P1 corrective**。Planner現已只輸出實際存在`*_test.dart`的scope；Profile change為0 Flutter tests + App analyze，Design System package不再送入0-test package runner。
+- Fresh post-commit review發現Android／iOS build scripts與shared environment verifier被降成普通`tooling`，刪除舊workflow contract tests後缺少primary platform evidence routing：**P1 corrective**。`build_android_*`／`build_ios_*`現分別直接選Android／iOS build，`verify_environment_contract.py`選兩平台。
+- Fresh post-commit review發現package reverse-dependency routing仍把所有dependent package test roots視為affected owners，導致Design System等0-test package change仍掃整個App critical suite：**P2 efficiency corrective**。Current route只對changed package本身選permanent tests；reverse dependents只做analyze。真正cross-package critical failure必須有明確owner，不再用dependency graph泛化成regression sweep。
+- Platform build雖已由planner降頻，但iOS Simulator no-op job與Android Summary仍會在未選platform時佔runner：**P2 CI execution corrective**。Current workflow只在`ios_build`／`android_build`實際選中或classifier failure需要summary時建立對應job，不再為維持舊workflow形狀啟動no-op runner。
+- Initial completion commit含4個EOF whitespace errors，因此先前`git diff --check PASS`聲明不成立：**review evidence mismatch corrective**。Corrective完成後重新以base→HEAD執行`git diff --check`作fresh gate。
 
 ## Release disposition
 
 Local implementation與holistic verification已完成。這是template governance／CI behavior的重大變更，適合作為下一個minor template baseline候選；publication／merge到`main`不在本local review自動執行，避免在未完成branch integration decision前觸發production CI。
-

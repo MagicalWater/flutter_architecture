@@ -111,4 +111,3 @@ Validation：
 2. 必須改變production behavior才能完成test removal；
 3. Design／Plan核心策略被P0/P1 finding推翻；
 4. Design或Plan的正式approval gate。
-

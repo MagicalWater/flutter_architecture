@@ -102,14 +102,20 @@ def _is_dependency_path(path: str) -> bool:
 def _classify_path(path: str) -> str | None:
     if path == "VERSION":
         return "release_metadata"
+    if path.startswith("apps/flutter_architecture/android/") or path.startswith(
+        "tools/ci/build_android_"
+    ):
+        return "android_native"
+    if path.startswith("apps/flutter_architecture/ios/") or path.startswith(
+        "tools/ci/build_ios_"
+    ):
+        return "ios_native"
+    if path == "tools/ci/verify_environment_contract.py":
+        return "platform_shared"
     if _is_classifier_path(path) or path == "tools/ci/validation_planner.py" or path == "tools/ci/test_validation_planner.py":
         return "validation_engine"
     if _is_governance_path(path):
         return "governance"
-    if _is_android_path(path) and path.startswith("apps/flutter_architecture/android/"):
-        return "android_native"
-    if _is_ios_path(path) and path.startswith("apps/flutter_architecture/ios/"):
-        return "ios_native"
     if _is_database_critical_path(path):
         return "database"
     if _is_dependency_path(path):
@@ -145,6 +151,7 @@ _CHANGE_CLASS_ORDER = (
     "database",
     "android_native",
     "ios_native",
+    "platform_shared",
     "dependency",
     "validation_engine",
     "release_metadata",

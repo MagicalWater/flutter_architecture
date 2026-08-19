@@ -81,8 +81,10 @@ jobs:
   simulator-build:
     name: Simulator Build
     needs: classify-changes
-    if: ${{ needs.classify-changes.result == 'success' }}
-    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || (needs.classify-changes.outputs.ios_build == 'true' && 'macos-15' || 'ubuntu-24.04') }}
+    if: >-
+      needs.classify-changes.result == 'success' &&
+      needs.classify-changes.outputs.ios_build == 'true'
+    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'macos-15' }}
     steps:
       - name: Checkout repository
         if: needs.classify-changes.outputs.ios_build == 'true'

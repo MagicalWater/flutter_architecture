@@ -262,7 +262,8 @@ jobs:
     needs: [classify-changes, android-development-debug-apk, android-release-apk]
     if: >-
       always() &&
-      needs.classify-changes.result != 'skipped'
+      needs.classify-changes.result != 'skipped' &&
+      (needs.classify-changes.result != 'success' || needs.classify-changes.outputs.android_build == 'true')
     runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     env:
       CLASSIFY_RESULT: ${{ needs.classify-changes.result }}

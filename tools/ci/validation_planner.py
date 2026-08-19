@@ -164,6 +164,18 @@ def _test_scope_for_changed_test(path: str) -> str | None:
     return None
 
 
+def _flutter_scope_has_tests(repository: Path | str, scope: str) -> bool:
+    if scope == ".":
+        return True
+    root = Path(repository).resolve()
+    target = root / PurePosixPath(scope.replace("\\", "/"))
+    if target.is_file():
+        return target.name.endswith("_test.dart")
+    if not target.is_dir():
+        return False
+    return any(target.rglob("*_test.dart"))
+
+
 def _max_level(current: str, candidate: str) -> str:
     return candidate if _LEVEL_RANK[candidate] > _LEVEL_RANK[current] else current
 
@@ -247,8 +259,11 @@ def plan_validation(
                 for package_name in package_names:
                     affected = reverse_dependency_closure(package_name, repository=repository)
                     for package in affected:
-                        flutter_scopes.append(f"{package.path}/test")
                         analyze_scopes.append(package.path)
+                    changed_package = next(
+                        package for package in affected if package.name == package_name
+                    )
+                    flutter_scopes.append(f"{changed_package.path}/test")
             except (OSError, ValueError):
                 return ValidationPlan(
                     classes,
@@ -280,6 +295,10 @@ def plan_validation(
             android_build = True
         elif change_class == "ios_native":
             level = _max_level(level, "workspace")
+            ios_build = True
+        elif change_class == "platform_shared":
+            level = _max_level(level, "workspace")
+            android_build = True
             ios_build = True
         elif change_class in {"dependency", "validation_engine"}:
             level = _max_level(level, "full")
@@ -324,10 +343,16 @@ def plan_validation(
     elif manual:
         reasons.append("manual focused request")
 
+    flutter_scopes = [
+        scope
+        for scope in _ordered_unique(flutter_scopes)
+        if _flutter_scope_has_tests(repository, scope)
+    ]
+
     return ValidationPlan(
         classes,
         level,
-        _ordered_unique(flutter_scopes),
+        tuple(flutter_scopes),
         _ordered_unique(python_scopes),
         _ordered_unique(analyze_scopes),
         docs_check,

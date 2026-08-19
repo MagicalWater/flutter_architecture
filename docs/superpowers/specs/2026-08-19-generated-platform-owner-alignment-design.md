@@ -29,6 +29,7 @@ Level 5 — release/platform validation contract。Scope bounded，不建立新M
 - Planner決定需要哪些evidence；orchestrator依plan組合CI／Android／iOS families。
 - Platform workflow不需要知道其他workflow是否同步執行，也不得靠跨workflow偵測決定是否跳過generated。
 - Standalone「完整platform validation」若需要generated evidence，應由上層orchestrator組合`CI + platform`，不把generated塞回platform workflow。
+- 核心CI／Android／iOS workflow trigger統一為explicit `workflow_dispatch` only；Pull Request與branch push不再自動啟動核心validation。
 
 ### Compatibility / rollback
 
@@ -42,3 +43,4 @@ Level 5 — release/platform validation contract。Scope bounded，不建立新M
 - 不共享不同GitHub runner的`.dart_tool`／Pods／build cache。
 - 不修改build-kind selection。
 - 不新增新的classifier或generic orchestration framework。
+- 不修改獨立`observability-acceptance.yml`的PR-safe contract。

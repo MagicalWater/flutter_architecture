@@ -230,8 +230,12 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
                     source,
                 )
 
+        ci = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         android = (root / ".github/workflows/android.yml").read_text(encoding="utf-8")
         ios = (root / ".github/workflows/ios.yml").read_text(encoding="utf-8")
+        for workflow in (ci, android, ios):
+            self.assertIn("workflow_dispatch:", workflow)
+            self.assertNotIn("pull_request:\n", workflow)
         self.assertIn("inputs.validation_mode || 'focused'", android)
         self.assertIn("inputs.validation_mode || 'focused'", ios)
         self.assertIn("android_development_build: ${{ steps.classify.outputs.android_development_build }}", android)

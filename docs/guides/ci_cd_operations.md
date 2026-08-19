@@ -335,7 +335,6 @@ Self-hosted runner離線時：
 
 Events：
 
-- Pull Request 到 `main`。
 - `workflow_dispatch`。
 
 `main`是publication branch。正式publication前必須在candidate SHA以explicit `release` mode完成fresh planner-selected evidence；release dispatch以明確`release_base`＋exact candidate SHA規劃changed range，不再把release intent無條件翻成logical full／generated／Android／iOS。只有changed risk要求的平台才建立primary evidence；同一SHA push到`main`後只做published identity／workflow observation，不再自動建立第二輪相同CI。
@@ -390,7 +389,7 @@ iOS / Production Release Build
 | explicit `android`／`ios` | focused | 指定平台 | 指定平台 | manual platform intent |
 | explicit `release` | 依candidate changed range | 依risk＋build-kind | 依risk＋build-kind | publication前fresh planner-selected release gate；需`release_base` |
 
-`CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`是穩定required-check候選。Documentation-only時它們會成功完成no-op，而不是整個job skipped。Android兩個build jobs目前不是PR required checks，因此可在`android_build=false`時skipped；`Android / Summary`會驗證skip或build結果是否符合classifier決策。
+核心CI／Android／iOS workflow全部是explicit dispatch-only，不再因Pull Request自動建立run。Documentation-only、focused、platform與release evidence均由planner／orchestrator依intent建立；Android／iOS Summary仍驗證skip或build結果是否符合classifier決策。
 
 ### Android Verification Artifact
 
@@ -417,30 +416,9 @@ Android Production build不再先執行`verify_generated.sh`。Tracked generated
 
 ## Recommended Branch Protection
 
-Milestone 24 只文件化以下建議；repository administrator 必須在 GitHub settings 中人工確認與套用。
+`main`仍可要求Pull Request、approval、conversation resolution並阻擋force push／branch deletion；但核心CI／Android／iOS已是dispatch-only，**不得**把會要求每個PR自動出現的核心workflow checks設成無條件required checks，否則PR會永久等待不存在的run。
 
-建議 `main`：
-
-- Require a pull request before merging。
-- Require approvals，數量依團隊規模決定。
-- Require conversation resolution before merging。
-- Require status checks to pass before merging。
-- Require branches to be up to date before merging，若團隊接受額外等待成本。
-- Block force pushes。
-- Block branch deletion。
-
-Required status checks使用穩定名稱：
-
-```txt
-CI / Quality
-CI / Generated Consistency
-CI / Tests
-iOS / Simulator Build
-```
-
-第一版不建議把 `Android / Release APK` 設為 Pull Request required check，因為它只在manual dispatch執行。`iOS / Simulator Build`會在Pull Request建立run；Milestone 25 remote validation已證明GitHub-hosted macOS job可成功執行，可依repository治理決定是否加入required checks。
-
-啟用 Merge Queue 前，必須先讓`ci.yml`與`ios.yml`支援`merge_group` event，確認所有已設定的required checks在merge queue context會建立run，再修改Branch Protection。
+若團隊需要merge前machine evidence，先由repository-owned planner／orchestrator對candidate明確建立validation runs，再依實際GitHub Branch Protection能力決定是否把這種explicit evidence納入merge policy。不得為了required-check形狀重新恢復每次PR自動跑完整CI或平台build。
 
 ## Rerun Policy
 
@@ -452,7 +430,7 @@ iOS / Simulator Build
 
 ### Manual verification
 
-四份workflow都支援`workflow_dispatch`。Manual run可選`repository-default`、`manual-local`、`self-hosted`或`github-hosted`；只重驗當下選定ref，不取代Pull Request required checks，也不改變歷史commit結果。
+四份workflow都支援`workflow_dispatch`。Manual run可選`repository-default`、`manual-local`、`self-hosted`或`github-hosted`；核心CI／Android／iOS只重驗當下選定ref，不存在PR auto-run可被取代，也不改變歷史commit結果。
 
 ## Observability Acceptance
 
@@ -609,10 +587,10 @@ Production iOS verification使用`Release-production`、generic `iphoneos` SDK�
 
 若classification job本身失敗、輸出缺失或changed range無效：
 
-1. Workflow必須輸出`full_ci=true`、`android_build=true`、`ios_build=true`。
-2. 不得因classifier defect讓required checks或平台build被錯誤略過。
-3. 修正classifier後需重新執行完整矩陣。
-4. 緊急情況可使用`workflow_dispatch`取得完整驗證，或revert change-aware wiring恢復每次push全量執行。
+1. 一般classifier／planner ambiguity至少fail-safe到logical full；不得因分類失敗而略過source validation。
+2. 只有explicit release的candidate range也無法判定時，才fail-safe到generated＋Android＋iOS完整platform evidence。
+3. 若canonical classifier仍能可靠判定platform impact，planner execution failure只升級logical validation並保留可判定的平台影響，不自行燒雙平台。
+4. 修正classifier／planner後重新執行該intent需要的fresh evidence；不得以恢復每次PR或push全量執行作為常態fallback。
 
 處理順序：
 

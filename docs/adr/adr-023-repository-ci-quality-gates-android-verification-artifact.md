@@ -28,7 +28,7 @@ Accepted。
 
 ## Context
 
-Repository已具備workspace commands、documentation checker、全量tests、tracked generated source與Android supported runner，但這些品質契約仍依賴人工執行。若沒有repository-level automated gates，Pull Request與main commit無法持續證明文件、架構、generated source、tests與Android artifact維持一致。
+Repository已具備workspace commands、documentation checker、tests、tracked generated source與platform runner，但品質契約若只靠人工挑選命令，容易產生漏驗、重驗與昂貴平台驗證失控。Current direction因此採repository-owned planner＋explicit orchestration，由machine authority決定candidate需要哪些evidence，而不是把每個Pull Request或branch push直接綁定完整CI矩陣。
 
 CI本身也會引入runner drift、floating Action、secret exposure、cache dependency與production artifact誤解，因此需要durable boundary，而不是只新增一份workflow YAML。
 
@@ -62,7 +62,7 @@ Artifact retention必須同時受到age、per-class count、global capacity與mi
 
 既有GitHub Actions artifacts與caches只有在replacement local runtime evidence成立後，才能依exact GitHub object IDs產生deletion manifest。GitHub deletion屬不可逆操作，必須完成focused review、whole-cleanup review並再次取得使用者明確核准；Milestone或Implementation Plan核准本身不構成delete approval。
 
-在`github-hosted`模式下，Pull Request到`main`與explicit `workflow_dispatch`先建立穩定、可審查的change classification。`main`是publication branch；publication必須先在candidate SHA完成explicit release validation，因此push到`main`本身不再自動重跑CI／Android／iOS。Repository-owned classifier／planner依changed paths輸出最低充分validation與platform flags；unknown path、無效Git range與planner execution failure fail-safe到**logical full**，但不因ambiguity自動啟動Android＋iOS昂貴platform builds。
+核心CI／Android／iOS validation workflow一律由explicit `workflow_dispatch`建立，不因Pull Request或branch push自動執行。`main`是publication branch；publication必須先在candidate SHA完成explicit release validation，因此push到`main`本身不再自動重跑CI／Android／iOS。Repository-owned classifier／planner依changed paths輸出最低充分validation與platform flags；unknown path、無效Git range與planner execution failure fail-safe到**logical full**，但不因ambiguity自動啟動Android＋iOS昂貴platform builds。
 
 `tools/ci/change_classifier.py`只擁有canonical change-class classification；`tools/ci/validation_planner.py`是validation selection唯一machine authority。Current contract以focused／affected-critical／explicit-full／release為主，輸出exact Flutter／Python／analyze scopes、generated、aggregate platform flags與platform build-kind flags。Android build-kind包含development／production，iOS build-kind包含simulator／production；aggregate flag只供相容與summary，不得再作為variant job的唯一啟動條件。Workflow YAML、local shell與Agent prompt不得建立平行path-selection engine。
 
@@ -76,9 +76,9 @@ Unknown path、dependency graph parse failure或一般classification ambiguity f
 
 Exact candidate release validation應採fan-out：planner先產生唯一plan，selected CI／Android／iOS independent families立即派送，再共同等待結果；不得人工等前一family結束後才啟動下一family。Repository-owned `tools/ci/run_release_validation.py`可負責dispatch、run-id收集、exact-SHA／conclusion驗證與結果彙整，但不得分類changed paths、修改release identity、merge、push `main`或publication。
 
-在`self-hosted`模式下，execution jobs由explicit `workflow_dispatch`建立；Pull Request checks可以顯示為skipped，但`skipped`不得被解讀為已完成驗證。`main` publication push不建立第二輪execution jobs。Branch Protection required checks必須依實際mode治理，不得要求一個在該mode永久不執行的job成功。
+在`self-hosted`模式下，execution jobs由explicit `workflow_dispatch`建立；核心CI／Android／iOS不建立Pull Request checks。`main` publication push不建立第二輪execution jobs。Branch Protection不得把這三條dispatch-only workflow設成每個PR都必須自動出現的required checks；若需要merge前證據，應由明確的validation orchestration先建立對應run。
 
-在`github-hosted`模式下，required checks依current branch-protection profile保持可預期，但不要求每個change都實際執行所有昂貴gate。Documentation-only可在stable job內no-op。`VERSION`只是release identity metadata，不再自動觸發full CI或Android／iOS build；`workflow_dispatch`依explicit validation mode決定focused／full／platform／release。
+在`github-hosted`模式下，核心CI／Android／iOS仍只接受explicit `workflow_dispatch`，不因PR或push隱式消耗GitHub-hosted runner。`VERSION`只是release identity metadata，不再自動觸發full CI或Android／iOS build；`workflow_dispatch`依explicit validation mode決定focused／full／platform／release。
 
 需要iOS驗證時才使用GitHub-hosted `macos-15`執行Development Debug Simulator clean build；ordinary source／documentation change不得只為維持check歷史形狀而啟動macOS runner。Production另使用`tools/ci/build_ios_production.sh`建立generic-device unsigned Release verification。兩者都不使用Apple Team、certificate、provisioning profile或signing secret。
 
@@ -100,9 +100,9 @@ Production signing、Store publishing、GitHub Release、environment promotion�
 
 - Merge contract由人工checklist提升為repository-enforced checks。
 - Toolchain與dependency graph變更必須透過reviewable repository change發生。
-- Generated source omission會在PR被阻擋。
-- 只有change classification要求Android驗證時，main commit才建立可追溯的Android verification APK；documentation-only不建立平台artifact。
-- Pull Request與main commit可由獨立`iOS / Simulator Build`check阻擋不可建置的iOS native state，且不需要repository signing secrets。
+- Generated source omission由explicit planner-selected validation阻擋，不依賴PR自動run。
+- 只有change classification與explicit validation intent要求Android驗證時，才建立可追溯的Android verification APK；documentation-only不建立平台artifact。
+- iOS Simulator／Production evidence由explicit validation intent建立，且不需要repository signing secrets。
 - Documentation-only不執行analyze、generated consistency、全部Flutter tests或Android／iOS代表build，避免evidence-only commit形成無限驗證循環。
 - CI workflow與pinned Actions需要後續maintenance；Dependabot不因本Decision自動加入。
 - Self-hosted runner不消耗GitHub-hosted execution minutes，但會引入本機可用性、持久workspace、cache與secret清理責任。

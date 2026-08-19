@@ -15,6 +15,8 @@ last_reviewed_baseline: 1.25.2
 ## Review scope
 
 - `.github/workflows/android.yml`
+- `.github/workflows/ci.yml`
+- `.github/workflows/ios.yml`
 - `tools/ci/test_validation_planner.py`
 - ADR-023
 - `docs/guides/ci_cd_operations.md`
@@ -40,7 +42,11 @@ PASS。Planner仍是selection machine authority，release orchestrator仍負責f
 
 ### R5 — Test Retention Decision
 
-Retain。只在既有critical owner加入一個negative contract assertion：Android workflow不得再次內嵌`tools/ci/verify_generated.sh`。它保護stable ownership boundary，沒有新增test file或path-permutation portfolio。
+Retain。只在既有critical owner保留小型negative contract assertions：Android workflow不得再次內嵌`tools/ci/verify_generated.sh`；核心CI／Android／iOS workflow不得恢復`pull_request` auto-trigger。它們保護stable ownership boundary，沒有新增test file或path-permutation portfolio。
+
+### R6 — Core trigger alignment
+
+PASS。`ci.yml`與`ios.yml`移除`pull_request -> main`，與`android.yml`一致由explicit `workflow_dispatch`建立核心validation run；branch push同樣不自動啟動。`observability-acceptance.yml`不在本scope，維持既有獨立PR-safe contract。
 
 ## Local evidence
 

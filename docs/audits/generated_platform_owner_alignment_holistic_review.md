@@ -56,6 +56,8 @@ PASS。`ci.yml`與`ios.yml`移除`pull_request -> main`，與`android.yml`一致
 - `dart run melos run analyze`：5 packages PASS。
 - retained Flutter suites（`flutter_architecture`／`auth`／`api_client`）：PASS。
 - clean checkpoint `c4772810e657a1171c85b22851092d2a837c4e48` 執行`tools/ci/verify_generated.sh`：PASS，wall-clock約165秒；沒有generated content drift。
+- trigger-alignment checkpoint `0cdb362a253b5f6bcedebb8bc5fbda082917ef40` 重新驗證：52/52 CI tools、6/6 docs owners、5-package analyze、retained Flutter suites全部PASS；Git Bash執行Generated Consistency亦PASS，warm-cache wall-clock約57秒且沒有content drift。
+- `ci.yml`／`android.yml`／`ios.yml` contract test確認三份核心workflow皆含`workflow_dispatch`且不含`pull_request` trigger；YAML parse PASS。
 - `python tools/docs/check_docs.py`：PASS。
 - CI / Android / iOS workflow YAML parse：PASS。
 - `git diff --check`：PASS。

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from unittest import mock
 
 from tools.ci.validation_runner import _execution_command, commands_for_phase
 from tools.ci.validation_planner import (
+    apply_release_freshness,
     can_reuse_validation_evidence,
     plan_payload,
     plan_validation,
@@ -114,24 +116,96 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         self.assertFalse(ios.android_build)
         self.assertTrue(ios.ios_build)
 
-    def test_manual_release_requests_full_platform_matrix(self) -> None:
-        plan = plan_validation([], manual=True, manual_mode="release")
+    def test_release_freshness_preserves_changed_risk_scope(self) -> None:
+        cases = (
+            (["docs/README.md"], False, False, False, False),
+            (["AGENTS.md"], False, False, False, False),
+            (
+                ["apps/flutter_architecture/lib/app/database/app_database.dart"],
+                False,
+                True,
+                False,
+                False,
+            ),
+            (["apps/flutter_architecture/android/app/build.gradle.kts"], False, False, True, False),
+            (["apps/flutter_architecture/ios/Runner/Info.plist"], False, False, False, True),
+        )
+
+        for paths, full, generated, android, ios in cases:
+            with self.subTest(paths=paths):
+                plan = apply_release_freshness(plan_validation(paths), paths)
+                self.assertEqual(plan.validation_level, "release")
+                self.assertTrue(plan.release_full)
+                self.assertEqual(plan.full_regression, full)
+                self.assertEqual(plan.generated_check, generated)
+                self.assertEqual(plan.android_build, android)
+                self.assertEqual(plan.ios_build, ios)
+
+    def test_release_root_dependency_and_planner_change_require_both_platforms(self) -> None:
+        for paths in (["pubspec.lock"], ["tools/ci/validation_planner.py"]):
+            with self.subTest(paths=paths):
+                plan = apply_release_freshness(plan_validation(paths), paths)
+                self.assertTrue(plan.full_regression)
+                self.assertTrue(plan.generated_check)
+                self.assertTrue(plan.android_build)
+                self.assertTrue(plan.ios_build)
+
+    def test_release_platform_workflow_change_selects_only_affected_platform(self) -> None:
+        android = apply_release_freshness(
+            plan_validation([".github/workflows/android.yml"]),
+            [".github/workflows/android.yml"],
+        )
+        ios = apply_release_freshness(
+            plan_validation([".github/workflows/ios.yml"]),
+            [".github/workflows/ios.yml"],
+        )
+        ci = apply_release_freshness(
+            plan_validation([".github/workflows/ci.yml"]),
+            [".github/workflows/ci.yml"],
+        )
+
+        self.assertTrue(android.android_build)
+        self.assertFalse(android.ios_build)
+        self.assertFalse(ios.android_build)
+        self.assertTrue(ios.ios_build)
+        self.assertFalse(ci.android_build)
+        self.assertFalse(ci.ios_build)
+
+    def test_release_invalid_range_fails_safe_to_full_generated_both_platforms(self) -> None:
+        plan = apply_release_freshness(
+            plan_validation([], invalid_range=True),
+            (),
+            invalid_range=True,
+        )
 
         self.assertEqual(plan.validation_level, "release")
         self.assertTrue(plan.full_regression)
-        self.assertTrue(plan.release_full)
+        self.assertTrue(plan.generated_check)
         self.assertTrue(plan.android_build)
         self.assertTrue(plan.ios_build)
+        self.assertTrue(plan.fail_safe)
 
-    def test_release_tools_scope_runs_actual_permanent_python_owners(self) -> None:
-        plan = plan_payload(plan_validation([], manual=True, manual_mode="release"))
+    def test_release_workflows_use_explicit_base_and_classifier_fallback(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        for relative in (
+            ".github/workflows/ci.yml",
+            ".github/workflows/android.yml",
+            ".github/workflows/ios.yml",
+        ):
+            with self.subTest(workflow=relative):
+                source = (root / relative).read_text(encoding="utf-8")
+                self.assertIn("release_base:", source)
+                self.assertIn("inputs.validation_mode == 'release' && inputs.release_base", source)
+                self.assertIn("tools/ci/change_classifier.py", source)
+                self.assertIn(
+                    "logical full fallback with classifier platform impact",
+                    source,
+                )
 
-        commands = commands_for_phase(plan, "quality")
-        rendered = [" ".join(command) for _, command in commands]
-
-        self.assertTrue(any("-s tools/ci" in command for command in rendered))
-        self.assertTrue(any("-s tools/docs" in command for command in rendered))
-        self.assertFalse(any("-s tools -p test_*.py" in command for command in rendered))
+        android = (root / ".github/workflows/android.yml").read_text(encoding="utf-8")
+        ios = (root / ".github/workflows/ios.yml").read_text(encoding="utf-8")
+        self.assertIn("inputs.validation_mode || 'focused'", android)
+        self.assertIn("inputs.validation_mode || 'focused'", ios)
 
     @mock.patch("tools.ci.validation_runner.shutil.which")
     def test_windows_batch_shim_is_executed_through_cmd(self, which: mock.Mock) -> None:

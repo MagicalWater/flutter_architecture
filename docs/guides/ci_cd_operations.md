@@ -338,7 +338,7 @@ Events：
 - Pull Request 到 `main`。
 - `workflow_dispatch`。
 
-`main`是publication branch。正式publication前必須在candidate SHA以explicit `release` mode完成fresh logical full與必要Android／iOS primary evidence；同一SHA push到`main`後只做published identity／workflow observation，不再自動建立第二輪相同CI。
+`main`是publication branch。正式publication前必須在candidate SHA以explicit `release` mode完成fresh planner-selected evidence；release dispatch以明確`release_base`＋exact candidate SHA規劃changed range，不再把release intent無條件翻成logical full／generated／Android／iOS。只有changed risk要求的平台才建立primary evidence；同一SHA push到`main`後只做published identity／workflow observation，不再自動建立第二輪相同CI。
 
 Stable checks：
 
@@ -375,7 +375,7 @@ iOS / Production Release Build
 | `VERSION` | focused metadata | 否 | 否 | 不再隱式等於release |
 | explicit `full` | logical full | 否 | 否 | 不含platform |
 | explicit `android`／`ios` | focused | 指定平台 | 指定平台 | manual platform intent |
-| explicit `release` | logical full | 是 | 是 | publication前唯一完整release gate |
+| explicit `release` | 依candidate changed range | 依risk | 依risk | publication前fresh planner-selected release gate；需`release_base` |
 
 `CI / Generated Consistency`、`CI / Tests`與`iOS / Simulator Build`是穩定required-check候選。Documentation-only時它們會成功完成no-op，而不是整個job skipped。Android兩個build jobs目前不是PR required checks，因此可在`android_build=false`時skipped；`Android / Summary`會驗證skip或build結果是否符合classifier決策。
 

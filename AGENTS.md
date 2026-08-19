@@ -66,7 +66,7 @@ Validation selection 的 machine authority：
 python3 tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
 ```
 
-Agent 不得自行因「保守」升級成 full regression。Full 只在 planner / explicit release intent / genuine high-risk boundary 要求時執行。
+Agent 不得自行因「保守」升級成 full regression。Full 只在 planner-selected changed risk或genuine high-risk boundary要求時執行；explicit release只要求selected evidence fresh，不自行擴張validation scope。
 
 ## Domain routes
 

@@ -314,6 +314,7 @@ def _write_output(path: Path, classification: Classification) -> None:
         "android_build": classification.android_build,
         "ios_build": classification.ios_build,
         "release_full": classification.release_full,
+        "fail_safe": classification.fail_safe,
     }
     lines = [f"{key}={str(value).lower()}" for key, value in values.items()]
     lines.append(f"reason={classification.reason.replace(chr(10), ' ')}")
@@ -333,7 +334,13 @@ def main() -> int:
     parser.add_argument("--repository", default=Path("."), type=Path)
     args = parser.parse_args()
 
-    if args.event == "workflow_dispatch":
+    if args.event == "workflow_dispatch" and args.base and args.head:
+        classification = classify_range(
+            args.base,
+            args.head,
+            repository=args.repository,
+        )
+    elif args.event == "workflow_dispatch":
         classification = classify_paths([], manual=True)
     else:
         classification = classify_range(

@@ -66,11 +66,11 @@ Artifact retention必須同時受到age、per-class count、global capacity與mi
 
 `tools/ci/change_classifier.py`只擁有canonical change-class classification；`tools/ci/validation_planner.py`是validation selection唯一machine authority。Current contract以focused／affected-critical／explicit-full／release為主，輸出exact Flutter／Python／analyze scopes、generated與platform flags。Workflow YAML、local shell與Agent prompt不得建立平行path-selection engine。
 
-Package affected scope由tracked workspace dependency graph推導reverse dependents。Ordinary App feature／leaf package／database source change不自動要求Android＋iOS build；只有Android native、iOS native、explicit manual platform intent或explicit release才建立對應platform verification。
+Package affected scope由tracked workspace dependency graph推導reverse dependents。Ordinary App feature／leaf package／database source change不自動要求Android＋iOS build；只有Android native、iOS native、explicit manual platform intent，或release candidate changed risk實際命中對應platform boundary時，才建立platform verification。
 
-Unknown path、invalid／missing Git range、dependency graph parse failure、planner／classifier exception或plan schema無法安全解析時，fail-safe到logical full source validation。Platform builds仍須explicit native／platform／release intent。Milestone holistic本身不要求full；`workflow_dispatch`預設focused，只有explicit `full`／`android`／`ios`／`release` mode才升級。
+Unknown path、dependency graph parse failure或一般classification ambiguity fail-safe到logical full source validation，但不因ambiguity自動啟動雙平台。Explicit release若missing／invalid candidate range，因changed platform impact完全不可判定，才fail-safe到logical full＋generated＋Android＋iOS。Planner process failure先由canonical classifier保存可判定的platform impact；classifier／range也不可用時才雙平台fail-safe。Milestone holistic本身不要求full；`workflow_dispatch`預設focused，explicit `full`／`android`／`ios`只升級指定validation intent，`release`則要求fresh planner-selected candidate evidence。
 
-同一exact SHA、validation plan identity與selected inputs相同時，GREEN evidence可以跨holistic與post-release reuse。Selected source／test／dependency mutation、failure後fix或validation engine變更會使reuse失效；explicit release candidate仍要求一次fresh logical full。Publish同一SHA後只驗published SHA／artifact／workflow identity，不重跑相同source suite。
+同一exact SHA、validation plan identity與selected inputs相同時，GREEN evidence可以跨holistic與post-release reuse。Selected source／test／dependency mutation、failure後fix或validation engine變更會使reuse失效；explicit release candidate仍要求一次fresh planner-selected evidence，但freshness不得把scope無條件擴張成logical full或雙平台。Publish同一SHA後只驗published SHA／artifact／workflow identity，不重跑相同source suite。
 
 在`self-hosted`模式下，execution jobs由explicit `workflow_dispatch`建立；Pull Request checks可以顯示為skipped，但`skipped`不得被解讀為已完成驗證。`main` publication push不建立第二輪execution jobs。Branch Protection required checks必須依實際mode治理，不得要求一個在該mode永久不執行的job成功。
 

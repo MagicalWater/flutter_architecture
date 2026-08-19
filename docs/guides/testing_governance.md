@@ -142,8 +142,8 @@ focused
 
 - Focused：direct changed owner與必要critical tests。
 - Affected-critical：跨boundary change只擴到受影響critical owners，不因Feature存在就掃完整suite。
-- Explicit-full：explicit release candidate、major dependency／validation-engine、自身fail-safe或真正高風險cross-cutting才使用。
-- Release：同一candidate SHA只做一次fresh logical full與required platform verification；publish後驗SHA／artifact identity，不再重跑相同source suite。
+- Explicit-full：major dependency／validation-engine、自身fail-safe或真正高風險cross-cutting才使用；release intent本身不再自動等於full。
+- Release：同一candidate SHA只做一次fresh planner-selected evidence；scope仍依candidate changed risk決定。Publish後驗SHA／artifact identity，不再重跑相同source suite。
 
 同一exact SHA與selected inputs未變時應reuse既有GREEN evidence。Phase名稱改變、publish同SHA或post-release本身不構成fresh source regression理由。
 

@@ -6,6 +6,16 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      validation_mode:
+        description: iOS validation intent for this manual run
+        required: true
+        default: ios
+        type: choice
+        options: [ios, release]
+      release_base:
+        description: Exact publication base SHA used only by release validation
+        required: false
+        type: string
       execution_mode:
         description: CI execution mode for this run
         required: true
@@ -56,9 +66,9 @@ jobs:
         id: classify
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.validation_mode == 'release' && inputs.release_base || github.event.pull_request.base.sha || github.event.before || '' }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          VALIDATION_MODE: ${{ github.event_name == 'workflow_dispatch' && 'ios' || 'focused' }}
+          VALIDATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.validation_mode || 'focused' }}
         shell: bash
         run: |
           if ! python3 tools/ci/validation_planner.py \
@@ -67,12 +77,32 @@ jobs:
             --base "$BASE_SHA" \
             --head "$HEAD_SHA" \
             --output "$GITHUB_OUTPUT"; then
+            fallback_output="$(mktemp)"
+            fallback_android=false
+            fallback_ios=false
+            fallback_fail_safe=true
+            if python3 tools/ci/change_classifier.py \
+              --event "$EVENT_NAME" \
+              --base "$BASE_SHA" \
+              --head "$HEAD_SHA" \
+              --output "$fallback_output"; then
+              fallback_android="$(grep '^android_build=' "$fallback_output" | cut -d= -f2)"
+              fallback_ios="$(grep '^ios_build=' "$fallback_output" | cut -d= -f2)"
+              fallback_fail_safe="$(grep '^fail_safe=' "$fallback_output" | cut -d= -f2)"
+              if [ "$fallback_fail_safe" = "true" ]; then
+                fallback_android=true
+                fallback_ios=true
+              fi
+            else
+              fallback_android=true
+              fallback_ios=true
+            fi
             echo "requires_flutter=true" >> "$GITHUB_OUTPUT"
             echo "full_ci=true" >> "$GITHUB_OUTPUT"
-            echo "android_build=true" >> "$GITHUB_OUTPUT"
-            echo "ios_build=true" >> "$GITHUB_OUTPUT"
-            echo "release_full=false" >> "$GITHUB_OUTPUT"
-            echo "reason=validation planner execution failure; fail-safe full matrix" >> "$GITHUB_OUTPUT"
+            echo "android_build=$fallback_android" >> "$GITHUB_OUTPUT"
+            echo "ios_build=$fallback_ios" >> "$GITHUB_OUTPUT"
+            echo "release_full=$([ "$VALIDATION_MODE" = "release" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+            echo "reason=validation planner execution failure; logical full fallback with classifier platform impact" >> "$GITHUB_OUTPUT"
           fi
 
   simulator-build:

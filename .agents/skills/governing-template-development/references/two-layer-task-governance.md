@@ -56,7 +56,7 @@ holistic review
 → cross-Task consistency
 → architecture 與 authority review
 → runtime／remote evidence
-→ explicit release candidate時才fresh full logical regression
+→ explicit release candidate時fresh執行planner-selected release evidence
 → findings 與 fixes
 → holistic re-review
 → VERSION／CHANGELOG／roadmap／current authority sync

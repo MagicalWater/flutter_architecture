@@ -6,7 +6,7 @@ import hashlib
 import json
 import subprocess
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path, PurePosixPath
 from typing import Iterable, Sequence
 
@@ -50,6 +50,25 @@ _LEVEL_RANK = {
     "workspace": 2,
     "full": 3,
     "release": 4,
+}
+
+_ROOT_CROSS_PLATFORM_RELEASE_PATHS = {
+    "pubspec.yaml",
+    "pubspec.lock",
+    "melos.yaml",
+    ".github/versions.env",
+}
+
+_PLANNER_SELECTION_PATHS = {
+    "tools/ci/change_classifier.py",
+    "tools/ci/validation_planner.py",
+    "tools/ci/test_validation_planner.py",
+}
+
+_KNOWN_VALIDATION_WORKFLOWS = {
+    ".github/workflows/ci.yml",
+    ".github/workflows/android.yml",
+    ".github/workflows/ios.yml",
 }
 
 
@@ -322,17 +341,20 @@ def plan_validation(
             full_regression = True
             release_full = True
 
-    if manual and manual_mode in {"full", "release"}:
-        level = "release" if manual_mode == "release" else "full"
+    if manual and manual_mode == "release":
+        return apply_release_freshness(
+            plan_validation([], repository=repository, invalid_range=True),
+            (),
+            invalid_range=True,
+        )
+    if manual and manual_mode == "full":
+        level = "full"
         flutter_scopes[:] = ["."]
         python_scopes[:] = ["tools"]
         analyze_scopes[:] = ["."]
         docs_check = True
         generated_check = True
-        android_build = manual_mode == "release"
-        ios_build = manual_mode == "release"
         full_regression = True
-        release_full = manual_mode == "release"
         reasons.append(f"manual {manual_mode} request")
     elif manual and manual_mode == "android":
         android_build = True
@@ -363,6 +385,74 @@ def plan_validation(
         release_full,
         ", ".join(reasons) or classification.reason,
         False,
+    )
+
+
+def apply_release_freshness(
+    plan: ValidationPlan,
+    paths: Sequence[str],
+    *,
+    invalid_range: bool = False,
+) -> ValidationPlan:
+    normalized = tuple(
+        dict.fromkeys(
+            str(PurePosixPath(path.replace("\\", "/"))).removeprefix("./")
+            for path in paths
+            if path.strip()
+        )
+    )
+
+    full_regression = plan.full_regression
+    generated_check = plan.generated_check
+    android_build = plan.android_build
+    ios_build = plan.ios_build
+    fail_safe = plan.fail_safe
+
+    if invalid_range:
+        full_regression = True
+        generated_check = True
+        android_build = True
+        ios_build = True
+        fail_safe = True
+    elif any(path in _ROOT_CROSS_PLATFORM_RELEASE_PATHS for path in normalized):
+        full_regression = True
+        generated_check = True
+        android_build = True
+        ios_build = True
+    elif any(path in _PLANNER_SELECTION_PATHS for path in normalized):
+        full_regression = True
+        generated_check = True
+        android_build = True
+        ios_build = True
+    else:
+        if ".github/workflows/android.yml" in normalized:
+            android_build = True
+        if ".github/workflows/ios.yml" in normalized:
+            ios_build = True
+        if any(
+            path.startswith(".github/workflows/")
+            and path not in _KNOWN_VALIDATION_WORKFLOWS
+            for path in normalized
+        ):
+            android_build = True
+            ios_build = True
+
+    reason = plan.reason
+    if reason:
+        reason = f"{reason}, release candidate freshness"
+    else:
+        reason = "release candidate freshness"
+
+    return replace(
+        plan,
+        validation_level="release",
+        generated_check=generated_check,
+        android_build=android_build,
+        ios_build=ios_build,
+        full_regression=full_regression,
+        release_full=True,
+        reason=reason,
+        fail_safe=fail_safe,
     )
 
 
@@ -515,6 +605,39 @@ def plan_range(
     return plan_validation(completed.stdout.splitlines(), repository=repository)
 
 
+def plan_release_range(
+    base: str,
+    head: str,
+    *,
+    repository: Path | str = ".",
+) -> ValidationPlan:
+    if not base or not head or set(base) == {"0"}:
+        return apply_release_freshness(
+            plan_validation([], repository=repository, invalid_range=True),
+            (),
+            invalid_range=True,
+        )
+    try:
+        completed = subprocess.run(
+            ["git", "diff", "--name-only", base, head],
+            cwd=repository,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return apply_release_freshness(
+            plan_validation([], repository=repository, invalid_range=True),
+            (),
+            invalid_range=True,
+        )
+    paths = completed.stdout.splitlines()
+    return apply_release_freshness(
+        plan_validation(paths, repository=repository),
+        paths,
+    )
+
+
 def _write_output(path: Path, plan: ValidationPlan) -> None:
     payload = plan_payload(plan)
     requires_flutter = bool(
@@ -565,7 +688,13 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    if args.event == "workflow_dispatch":
+    if args.event == "workflow_dispatch" and args.mode == "release":
+        plan = plan_release_range(
+            args.base,
+            args.head,
+            repository=args.repository,
+        )
+    elif args.event == "workflow_dispatch":
         plan = plan_validation(
             [], repository=args.repository, manual=True, manual_mode=args.mode
         )

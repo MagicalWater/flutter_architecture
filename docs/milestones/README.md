@@ -3,7 +3,7 @@ document_type: milestone-index
 status: active
 authoritative_for:
   - milestone-artifact-routing
-last_reviewed_baseline: 1.23.0
+last_reviewed_baseline: 1.23.1
 ---
 
 # Milestone Routing
@@ -32,10 +32,12 @@ Milestone routing 只回答：
 
 ```txt
 Active Milestone: none
-Template Baseline: 1.23.0
+Template Baseline: 1.23.1
 ```
 
 Milestone 44 Pencil Component Constraint Semantics Corrective已發布為Template Baseline `1.23.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
+
+Milestone 44 post-closure C1 Color Ownership Adoption Corrective已完成local holistic review並接受Template Baseline `1.23.1` PATCH candidate；C1-6 publication / post-release validation active。此corrective不重新開啟M44 relationship-layout主責。
 
 ### Milestone 44 closed routing
 
@@ -47,6 +49,10 @@ Milestone 44 Pencil Component Constraint Semantics Corrective已發布為Templat
 - Holistic Final Review：Accepted / PASS — `docs/audits/milestone_44/44-6_holistic_final_review.md`
 - Post-release Validation：Completed / PASS — `docs/audits/milestone_44/44-7_post_release_validation.md`
 - Release：Template Baseline `1.23.0`；exact published-main Windows／Android／iOS與PTF-47～58 fresh acceptance PASS；Milestone 44 formal closure。
+- Post-closure C1 Requirement：Accepted / Level 3 — `docs/audits/milestone_44/44-c1_color_ownership_adoption_requirement_decision.md`
+- Post-closure C1 Design／Plan：Accepted — `docs/superpowers/specs/2026-08-19-milestone-44-post-closure-color-ownership-adoption-corrective-design.md` / `docs/superpowers/plans/2026-08-19-milestone-44-post-closure-color-ownership-adoption-corrective.md`
+- Post-closure C1 Holistic Review：Accepted / PASS — `docs/audits/milestone_44/44-c1_5_holistic_corrective_review.md`
+- Post-closure C1 Release：Template Baseline `1.23.1` PATCH candidate；publication / published-main validation pending C1-6。
 
 Milestone 43 Flutter Presentation Component Architecture & UI Responsibility Governance已發布為Template Baseline `1.22.0`並完成post-release closure；current state以`docs/roadmap/active.md`為準。
 

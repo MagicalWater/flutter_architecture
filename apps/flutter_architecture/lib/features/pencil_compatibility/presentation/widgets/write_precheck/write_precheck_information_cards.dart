@@ -34,10 +34,10 @@ class WritePrecheckSummaryCard extends StatelessWidget {
               label: copy.summaryRows[index].label,
               value: copy.summaryRows[index].value,
               iconColor: index == 3
-                  ? const Color(0xFFF5B941)
+                  ? WritePrecheckPalette.goldAccent
                   : WritePrecheckPalette.muted,
               valueColor: index == 3
-                  ? const Color(0xFFF5B941)
+                  ? WritePrecheckPalette.goldAccent
                   : WritePrecheckPalette.text,
               labelSize: 19,
               valueSize: 18,
@@ -73,10 +73,10 @@ class WritePrecheckResultsCard extends StatelessWidget {
           label: copy.resultRows[index].label,
           value: copy.resultRows[index].value,
           iconColor: index == 4
-              ? const Color(0xFFF5B941)
+              ? WritePrecheckPalette.goldAccent
               : WritePrecheckPalette.muted,
           valueColor: index == 4
-              ? const Color(0xFFF5B941)
+              ? WritePrecheckPalette.goldAccent
               : WritePrecheckPalette.text,
           labelSize: 17,
           valueSize: 17,
@@ -100,7 +100,7 @@ class WritePrecheckResultsCard extends StatelessWidget {
                 const ProjectedIcon(
                   PhosphorIcons.infoLight,
                   size: 20,
-                  color: Color(0xFF3DAEFF),
+                  color: WritePrecheckPalette.blueAccent,
                 ),
                 SizedBox(width: projectedPx(context, 10)),
                 Expanded(
@@ -249,7 +249,7 @@ class _InfoCardFrame extends StatelessWidget {
                                 child: ProjectedIcon(
                                   titleIcon,
                                   size: 28,
-                                  color: const Color(0xFF3DAEFF),
+                                  color: WritePrecheckPalette.blueAccent,
                                 ),
                               ),
                               const SizedBox(width: 10),

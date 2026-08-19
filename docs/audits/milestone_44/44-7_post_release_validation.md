@@ -9,6 +9,8 @@ last_reviewed_baseline: 1.23.0
 
 # Milestone 44 — Task 44-7 Publication / Post-release Validation
 
+> **2026-08-19 post-closure corrective note:** `1.23.0` publication identity與本文記錄的Windows／Android／iOS／behavioral evidence仍有效；後續C1 audit發現M44 same-semantic color stable contract沒有完整落到Write Precheck production consumers。此bounded omission由`44-c1_5_holistic_corrective_review.md`處理；M44 relationship-layout主責不因此重新開啟。
+
 ## Publication identity
 
 Milestone 44 release branch已合併並push至`main`。Fresh fetch後published identity為：

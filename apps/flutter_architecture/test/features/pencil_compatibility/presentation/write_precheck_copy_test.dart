@@ -57,6 +57,10 @@ void main() {
       expect(WritePrecheckPalette.text, const Color(0xFFEAF2F8));
       expect(WritePrecheckPalette.muted, const Color(0xFFB8C4CF));
       expect(WritePrecheckPalette.dim, const Color(0xFF7F94A7));
+      expect(WritePrecheckPalette.goldAccent, const Color(0xFFF5B941));
+      expect(WritePrecheckPalette.blueAccent, const Color(0xFF3DAEFF));
+      expect(WritePrecheckPalette.cyanAccent, const Color(0xFF74D8FF));
+      expect(WritePrecheckPalette.subtleOutline, const Color(0xFF244056));
       expect(WritePrecheckTypography.fontFamily, 'Noto Sans TC');
       expect(WritePrecheckTypography.fontFamilyFallback, const <String>[
         'Microsoft JhengHei',

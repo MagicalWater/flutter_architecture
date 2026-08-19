@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.23.0
+last_reviewed_baseline: 1.23.1
 ---
 
 # Audits and Review Evidence
@@ -52,6 +52,9 @@ Final / Holistic Review
 - [`milestone_44/44-p_implementation_plan_review.md`](milestone_44/44-p_implementation_plan_review.md)：direct RED→stable authority→relationship layout corrective→legal overlay→behavioral pressure→release/post-release的Plan review。
 - [`milestone_44/44-6_holistic_final_review.md`](milestone_44/44-6_holistic_final_review.md)：Milestone 44 whole-architecture review、full regression ceiling與1.23.0 release decision。
 - [`milestone_44/44-7_post_release_validation.md`](milestone_44/44-7_post_release_validation.md)：exact published-main Windows／canonical generated／Android／iOS、PTF-47～58 fresh acceptance與Milestone 44 formal closure。
+- [`milestone_44/44-c1_color_ownership_adoption_requirement_decision.md`](milestone_44/44-c1_color_ownership_adoption_requirement_decision.md)：M44 post-closure same-semantic color production-adoption omission的Level 3 corrective Requirement Decision。
+- [`milestone_44/44-c1_1_palette_bypass_red_review.md`](milestone_44/44-c1_1_palette_bypass_red_review.md) 至 [`milestone_44/44-c1_4_visual_affected_regression_review.md`](milestone_44/44-c1_4_visual_affected_regression_review.md)：direct palette-bypass RED、shared palette adoption、machine GREEN與canonical/runtime affected validation evidence。
+- [`milestone_44/44-c1_5_holistic_corrective_review.md`](milestone_44/44-c1_5_holistic_corrective_review.md)：C1 whole-corrective review與Template Baseline 1.23.1 PATCH release decision。
 
 ### Milestone 43 — Flutter Presentation Component Architecture & UI Responsibility Governance
 

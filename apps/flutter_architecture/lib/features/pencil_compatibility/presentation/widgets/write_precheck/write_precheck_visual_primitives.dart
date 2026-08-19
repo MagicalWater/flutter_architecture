@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/layout/write_precheck_projection.dart';
+import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_palette.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class WritePrecheckBackground extends StatelessWidget {
@@ -96,7 +97,7 @@ class WritePrecheckShieldAuthority extends StatelessWidget {
         child: ProjectedIcon(
           PhosphorIcons.shieldCheck,
           size: 86,
-          color: Color(0xFF74D8FF),
+          color: WritePrecheckPalette.cyanAccent,
         ),
       ),
     ],

@@ -73,7 +73,7 @@ class WritePrecheckGuidanceSection extends StatelessWidget {
                                       child: ProjectedIcon(
                                         PhosphorIcons.lightbulbLight,
                                         size: 27,
-                                        color: Color(0xFFF5B941),
+                                        color: WritePrecheckPalette.goldAccent,
                                       ),
                                     ),
                                     const SizedBox(width: 11),
@@ -139,7 +139,7 @@ class WritePrecheckGuidanceSection extends StatelessWidget {
                                                 const ProjectedIcon(
                                                   PhosphorIcons.warningLight,
                                                   size: 18,
-                                                  color: Color(0xFFF5B941),
+                                                  color: WritePrecheckPalette.goldAccent,
                                                 ),
                                                 SizedBox(
                                                   width: projectedPx(
@@ -162,9 +162,7 @@ class WritePrecheckGuidanceSection extends StatelessWidget {
                                                         weight: FontWeight.w500,
                                                         letterSpacing: 0.15,
                                                         rasterWeight: 330,
-                                                        color: const Color(
-                                                          0xFFF5B941,
-                                                        ),
+                                                        color: WritePrecheckPalette.goldAccent,
                                                       ),
                                                     ),
                                                   ),
@@ -204,7 +202,7 @@ class WritePrecheckGuidanceSection extends StatelessWidget {
           child: ProjectedIcon(
             PhosphorIcons.checkCircle,
             size: 20,
-            color: Color(0xFFF5B941),
+            color: WritePrecheckPalette.goldAccent,
           ),
         ),
         const SizedBox(width: 11),

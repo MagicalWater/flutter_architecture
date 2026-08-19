@@ -20,6 +20,27 @@
 
 ---
 
+## [1.25.1] - 2026-08-19
+
+### Fixed
+
+- 修正 explicit `release` mode 無條件覆蓋 change-aware validation 的治理缺口；release 現在以 `release_base + exact candidate SHA` 建立 changed-risk plan，再對 planner-selected evidence套用 fresh publication gate，不再因 `release` 字樣自動執行 logical full、generated consistency 與 Android／iOS 雙平台矩陣。
+- `validation_planner.py` 保持唯一 validation selection machine authority；docs／governance／release metadata release可維持 focused，database/generated保留 generated evidence，Android／iOS native只選對應平台，root dependency與 planner/classifier 這類跨平台 selection boundary才升級雙平台。
+- 三份 CI workflow 新增一致的 `release_base` input；planner execution failure會先委派 canonical classifier判定platform impact，只有range/classifier也無法安全判定時才fail-safe到雙平台，YAML不再維護第二套昂貴release matrix。
+
+### Validation
+
+- Planner critical owner Retention後18/18 PASS；CI critical owners 51/51 PASS；docs critical owners 6/6 PASS；5-package Flutter analyze、retained Flutter suites、generated consistency、docs checker、YAML parse與`git diff --check`均PASS。
+- 修正後planner對本 corrective changed range判定 `docs_content + governance + validation_engine`，因此本次release candidate仍要求 logical full + generated + Android + iOS；此平台成本來自實際 validation-engine / cross-platform workflow mutation，而不是 release intent 本身。
+- Windows Android Development Debug與Production Release primary builds均PASS；exact candidate iOS primary evidence保留給正式release candidate gate。
+
+### Governance
+
+- Requirement Decision、accepted Design、accepted Implementation Plan、雙層Design/Plan review、implementation holistic review與Test Retention Decision均完成；Open P0 = 0，Open P1 without disposition = 0。
+- 本 corrective採 PATCH baseline `1.25.1`；正式publication前只對exact candidate執行一次修正後planner-selected fresh release evidence，publication後same SHA只做identity／workflow／artifact read-back，不重跑相同source regression。
+
+---
+
 ## [1.25.0] - 2026-08-19
 
 ### Changed

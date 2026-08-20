@@ -65,7 +65,7 @@ App 是 Composition Root；可重用 package 透過 constructor injection 表達
 | 網路 | Dio / Retrofit、Authorization header、refresh token rotation、concurrent 401 single-flight、safe replay |
 | 持久化 | FlutterSecureStorage、SharedPreferences、Drift / SQLite、Web dependency-ready Wasm path |
 | 認證 | Session restore、secure credential storage、OTP step-up、Android biometric-gated local unlock |
-| Design System | Reusable theme package、Light / Dark / System、semantic colors、`flutter_screenutil` design-space scaling、responsive / large-text coverage |
+| Design System | Multi-theme Design System、Theme Identity × System / Light / Dark Mode、semantic tokens、theme-aware assets、`flutter_screenutil` design-space scaling、responsive / large-text coverage |
 | Localization | English + Traditional Chinese (`zh_TW`)、runtime locale switching、persisted preference |
 | Connectivity / Offline | Connectivity state、offline-aware flow、Catalog cache / stale-while-revalidate reference |
 | Observability | Production observability foundation 與 provider boundary |
@@ -139,7 +139,7 @@ root/
 │  ├─ api_client/             # transport / network boundary
 │  ├─ auth/                   # reusable auth / session / token behavior
 │  └─ design_system/          # reusable visual foundation
-├─ docs/                      # current authority / ADR / Guides / plans / reviews
+├─ docs/                      # current authority / ADR / Guides / active artifacts / retained evidence
 ├─ repository_identity.json
 ├─ repository_infrastructure.json
 ├─ VERSION
@@ -181,8 +181,8 @@ root/
 - [Architecture Decisions](docs/adr/README.md) — 穩定架構 authority
 - [Roadmap](docs/roadmap.md) — active / candidate / closed 路由
 - [Milestone 路由](docs/milestones/README.md) — Milestone artifact 索引
-- [審查與驗收證據](docs/audits/README.md) — review / runtime evidence
-- [Design Specs 與 Plans](docs/superpowers/README.md) — 已核准 Design / execution artifacts
+- [審查與驗收證據](docs/audits/README.md) — 僅保留具獨立長期價值的 review / runtime evidence
+- [Design / Plan 工作入口](docs/superpowers/README.md) — 需要 formal Design / Plan 時使用；completed artifacts 不要求永久保留
 - [AI 輔助開發快速開始](docs/guides/agent_assisted_development_quick_start.md) — 常見開發情境與 Agent 入口
 - [CI/CD 操作指南](docs/guides/ci_cd_operations.md) — CI、artifact、failure / rollback operations
 - [CHANGELOG](CHANGELOG.md) — 已發布版本紀錄

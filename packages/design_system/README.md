@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - design-system-package-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.26.1
 ---
 
 # Design System Package
@@ -33,15 +33,34 @@ Pencil/source-driven UI values進入本package前必須先做semantic／promotio
 
 ## Design-space Measurement
 
-Design System 的 shared design-derived measurements 由 `flutter_screenutil` 解析 runtime scale。Promotion 到 shared token 只改變 semantic ownership，不會把原本的設計稿 measurement 固定成 runtime logical constant。
+Design System 的 shared design-derived measurements 由 `flutter_screenutil` 解析 runtime scale。Promotion 到 shared token 只改變 semantic ownership，不會把原本的設計稿 measurement 固定成 runtime logical constant。本節是 repository 對 `.w` / `.h` / `.r` / `.sp` 的 current usage contract；其他文件只保留架構原則或引用，不另外複製一套判斷規則。
 
-目前 shared measurement contract：
+### ScreenUtil 使用規則
+
+先判斷 measurement 的縮放語意，不依 Dart property 名稱決定：
+
+```txt
+只沿水平設計軸縮放             → .w
+只沿垂直設計軸縮放             → .h
+需要維持比例 / uniform geometry → .r
+已解析的 Design System token    → 不再 scaling
+Typography                     → 不預設 .sp
+```
+
+典型例子：
+
+- 水平 inset、明確只跟設計稿寬度軸相關的距離可用 `.w`。
+- 垂直 offset、明確只跟設計稿高度軸相關的距離可用 `.h`。
+- square、circle、icon、radius、需要維持外型比例的 width / height 組合使用 `.r`。例如設計稿 `10 × 10` 不應寫成 `10.w × 10.h`，而應使用 `10.r × 10.r`。
+- Padding、margin、gap、offset、x/y、`left/top/right/bottom`、`Positioned` coordinate 都不因 property 名稱而固定使用某個 scaler；仍依該 measurement 本身是 horizontal、vertical 或 uniform 判斷。
+- 不得為了方便把所有尺寸一律改成 `.r`；單軸 measurement 應保留其 axis semantics。
+
+### Shared token contract
 
 - `DsSpace`、`DsRadius`、`DsIconSize` 使用 uniform `.r` scaling，也就是 `min(widthScale, heightScale)`。
 - Consumer 直接使用 `DsSpace.md` 等 public token；token 已完成 scaling，不得再套 `.r/.w/.h`。
-- 尚未 promotion 的 feature/component exact measurement 可直接使用 `.w/.h/.r`，由 measurement 的 axis / uniform semantics 決定。
-- Padding、gap、radius、size、offset、x/y、`Positioned` coordinate 都可承載 scaled design measurement；layout correctness 由 relationship / spatial ownership 判斷，不以 widget 或 property 名稱禁止。
-- Typography 本階段不把 `.sp` 當 repository default；system `TextScaler` 必須保持有效。
+- 尚未 promotion 的 feature/component exact measurement 依上面的 ScreenUtil 使用規則選擇 `.w/.h/.r`。
+- Typography 不把 `.sp` 當 repository default；system `TextScaler` 與 accessibility contract 必須保持有效。
 
 Product-specific `designSize` 由 App Composition Root 擁有，Design System 不保存產品 baseline。
 

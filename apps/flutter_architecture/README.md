@@ -114,10 +114,7 @@ FlutterGen output是generated source，不得手改。
 
 App Composition Root 透過 `ScreenUtilInit` 擁有 product-specific design baseline；current template placeholder 位於 `lib/app/ui/app_ui_design.dart`，採用 template 成為產品時應依主要 UI 設計來源替換。
 
-- Shared design-derived measurements 由 `design_system` public tokens 提供，token 本身已完成 runtime scaling。
-- Feature/component 尚未 promotion 的 exact measurement 可直接使用 `flutter_screenutil` 的 `.w/.h/.r`。
-- Scaling 只負責 design-space → runtime measurement conversion；`Row`／`Column`／`Stack`／`Positioned` 等 layout primitive 依實際 flow / spatial semantics 選擇。
-- 不把 `.sp` 當 typography default，也不關閉 system `TextScaler`。
+`.w/.h/.r/.sp` 的 repository-wide 使用規則只由 `packages/design_system/README.md` 的 **Design-space Measurement / ScreenUtil 使用規則**維護；App README 不複製第二份操作規則。Scaling 只負責 design-space → runtime measurement conversion，layout primitive 仍依實際 flow / spatial semantics 選擇。
 
 ## Database Schema and Migration Route
 

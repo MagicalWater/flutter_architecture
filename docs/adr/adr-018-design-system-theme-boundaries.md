@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-018-design-system-theme-boundaries
-last_reviewed_baseline: 1.25.2
+last_reviewed_baseline: 1.26.1
 id: ADR-018
 title: Design System and Theme Boundaries
 supersedes:
@@ -83,10 +83,10 @@ Shared design-derived measurement 被 promotion 到 Design System 後，仍保�
 
 - App Composition Root 擁有 product-specific design baseline 與 `ScreenUtilInit` lifecycle。
 - `packages/design_system` 可以依賴 shared sizing engine，解析 spacing、inset、radius、icon size、component geometry 等 shared design-derived tokens。
-- Current `DsSpace`、`DsRadius`、`DsIconSize` 使用 uniform `.r = min(widthScale, heightScale)` semantics；caller 直接消費 resolved token，不得再次 scaling。
-- Single-consumer exact measurement 留在 smallest correct presentation owner，可依 measurement semantics 使用 `.w/.h/.r`。
-- Scaling legality 不依 property 名稱決定；padding、offset、x/y、`left/top/right/bottom` 等都可以是 design-space measurement。Layout architecture 另依 relationship / spatial ownership 判斷。
-- Typography 不因 geometry scaling 自動採 `.sp`；system `TextScaler` 與 accessibility contract 必須保持有效。
+- Current `DsSpace`、`DsRadius`、`DsIconSize` 使用 uniform scaling；caller 直接消費 resolved token，不得再次 scaling。
+- Single-consumer exact measurement 留在 smallest correct presentation owner；`.w/.h/.r/.sp` 的具體選擇由 `packages/design_system/README.md` 的 current ScreenUtil usage contract 統一定義，不在 ADR 重複維護操作表。
+- Scaling legality 不依 property 名稱決定；layout architecture 另依 relationship / spatial ownership 判斷。
+- Typography 必須保留 system `TextScaler` 與 accessibility contract。
 
 ### Feature boundary
 
@@ -191,4 +191,4 @@ Design System與 feature integration不得禁止 system text scaling，不以固
 
 ## Last Reviewed Baseline
 
-1.25.2；Design-space scaling integration補入shared design-derived measurement runtime scaling、App-owned baseline與property-neutral scaling contract；Milestone 42補入repository-wide UI Design Ownership Architecture、Design System promotion/non-promotion與anti-catch-all contract；Milestone 44再補same-semantic raw color的representation-noise／semantic-role／contextual-variant／component-decoration裁決順序；Asset Runtime Integration補入FlutterGen generated access、theme-aware selection與ownership/provenance axis分離。
+1.26.1；ScreenUtil操作規則集中由Design System package current contract擁有，ADR只保留design-space scaling、ownership與accessibility原則；既有UI Design Ownership、color裁決與Asset Runtime Integration contract不變。

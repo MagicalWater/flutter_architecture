@@ -89,6 +89,8 @@ Bootstrap 只負責「產品 repository 如何出生」，不替產品決定 MVP
 
 ## 快速開始
 
+Android Studio / IntelliJ 已內建 `Development`、`Staging`、`Production` 三組 shared Flutter Run Configuration；開啟 repository root 後可直接從 Run Configuration 下拉選單選擇環境，不需要手動設定 flavor 或 Dart entrypoint。
+
 在 repository root：
 
 ```bash

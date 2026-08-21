@@ -10,46 +10,32 @@ Android：支援 · iOS：支援 · Web / Windows / macOS / Linux：依賴就緒
 
 ---
 
-## 架構總覽
-
-這張圖先從產品化角度呈現 App Composition Root、Features、可重用 packages、platform adapters、external systems 與治理路由：
-
-![Flutter Enterprise Architecture Template productized topology](docs/assets/architecture/productized-topology.png)
-
-圖是目前架構的視覺摘要；完整現況以 [專案現況](docs/project_context.md)、正式 ADR 與 production source 為準。
-
-## 依賴契約
-
-更細的 component ownership 與依賴契約：
-
-![Flutter Enterprise Architecture Template C4 dependency contract](docs/assets/architecture/c4-dependency-contract.png)
-
-核心依賴方向維持：
-
-```txt
-Presentation
-  ↓
-Domain
-  ↓
-Data
-  ↓
-Infrastructure / External Systems
-```
-
-App 是 Composition Root；可重用 package 透過 constructor injection 表達依賴，不把 App-level DI lifecycle 反向帶進 package。
-
----
-
 ## 為什麼選擇這個模板
 
 這個 repository 的目標不是把所有 Flutter 專案都做成同一種樣子，而是先把最容易在中大型專案失控的邊界固定下來：
 
 - **清楚的 ownership**：App、Feature、Domain、Data、Infrastructure 與 reusable package 有明確責任。
-- **可演進的依賴方向**：Presentation → Domain → Data → Infrastructure，不用靠跨 Feature Bloc 或全域 service 解決耦合。
+- **可演進的依賴方向**：Presentation → Domain → Data → Infrastructure，避免用跨 Feature Bloc 或全域 service 解決耦合。
 - **產品化而不是 Demo 化**：環境、身份、Auth、Storage、Localization、Design System、CI、Observability 等都有正式邊界。
+- **可重用但不過度抽象**：只有具穩定 contract 與跨 Feature 重用價值的能力才提升到 `packages/`。
 - **模板採用流程完整**：從 GitHub Template Repository 建立產品 repo 後，可保留 provenance 並轉成產品自己的 version / identity / infrastructure authority。
-- **文件是專案的一部分**：Architecture Decision、current snapshot、Guide、Roadmap、Review evidence 各自有唯一 owner，避免資訊只存在聊天紀錄。
-- **驗證成本受治理**：日常變更依 change-aware validation planner 決定 minimum sufficient validation，不把 full workspace test 當每次修改的固定成本。
+- **長期維護成本可控**：架構決策、文件與驗證流程都有明確入口，不要求每個小改動都跑完整 repository regression。
+
+---
+
+## 架構總覽
+
+模板採 **Feature First + Clean Architecture**。Feature First 負責依產品功能聚合程式碼；當 Feature 存在實際業務與資料行為時，再依 Clean Architecture 維持 Presentation、Domain、Data 與外部實作邊界。App 是唯一 Composition Root，統一組裝 DI、routing、environment、platform adapters 與 application lifecycle。
+
+![Flutter Enterprise Architecture Template overall architecture](docs/assets/architecture/overall-architecture-map.png)
+
+Feature First 決定程式碼如何依產品功能聚合，Clean Architecture 決定真實業務行為需要哪些責任與邊界；Domain 擁有穩定 contract，Data 提供實作，只有具跨 Feature 重用價值的能力才提升到 `packages/`。更完整的 ownership、runtime boundaries 與平台責任以 [專案現況](docs/project_context.md) 與正式 ADR 為準。
+
+### 視覺系統
+
+內建可重用 Design System、多 Theme Identity、System / Light / Dark Mode、語意化 styling、theme-aware assets 與 responsive design-space scaling。App 負責 runtime theme composition，Feature 只消費穩定的視覺 contract，不把單一畫面的精確樣式重新做成另一套 Design System。
+
+![Flutter Enterprise Architecture Template Visual System architecture map](docs/assets/architecture/visual-system-architecture-map.png)
 
 ---
 
@@ -65,11 +51,11 @@ App 是 Composition Root；可重用 package 透過 constructor injection 表達
 | 網路 | Dio / Retrofit、Authorization header、refresh token rotation、concurrent 401 single-flight、safe replay |
 | 持久化 | FlutterSecureStorage、SharedPreferences、Drift / SQLite、Web dependency-ready Wasm path |
 | 認證 | Session restore、secure credential storage、OTP step-up、Android biometric-gated local unlock |
-| Design System | Multi-theme Design System、Theme Identity × System / Light / Dark Mode、semantic tokens、theme-aware assets、`flutter_screenutil` design-space scaling、responsive / large-text coverage |
+| 視覺 / Design System | Multi-theme Visual System、reusable Design System、Theme Identity × System / Light / Dark Mode、semantic styling、theme-aware representation selection、`flutter_screenutil` design-space scaling、responsive / large-text coverage |
 | Localization | English + Traditional Chinese (`zh_TW`)、runtime locale switching、persisted preference |
 | Connectivity / Offline | Connectivity state、offline-aware flow、Catalog cache / stale-while-revalidate reference |
 | Observability | Production observability foundation 與 provider boundary |
-| CI / Governance | change-aware validation、risk-based test authoring、self-hosted / GitHub-hosted / manual-local profiles |
+| Delivery / Validation | change-aware validation、risk-based test authoring、self-hosted / GitHub-hosted / manual-local profiles |
 | 設計實作 | Repository-local Pencil → Flutter workflow、representation / provenance / fidelity gates |
 
 完整能力與限制請讀 [專案現況](docs/project_context.md)；穩定決策請從 [ADR 索引](docs/adr/README.md) 進入。
@@ -118,13 +104,7 @@ cd apps/flutter_architecture
 flutter build bundle
 ```
 
-日常 change validation 不固定要求 full workspace test。請先依 repository change-aware planner 取得 minimum sufficient validation：
-
-```bash
-python tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
-```
-
-再執行 planner 選出的 focused / affected / workspace / platform validation。完整 testing policy 見 [Testing Governance](docs/guides/testing_governance.md)。
+日常修改不固定要求 full workspace regression；驗證範圍會依實際變更與風險收斂。完整 testing policy 與 operator flow 見 [Testing Governance](docs/guides/testing_governance.md) 與 [CI/CD 操作指南](docs/guides/ci_cd_operations.md)。
 
 ---
 
@@ -173,21 +153,17 @@ root/
 
 ## 文件導覽
 
-文件系統正式入口：**[docs/README.md](docs/README.md)**。
+Root README 只保留產品與採用入口；完整文件系統請從 **[docs/README.md](docs/README.md)** 進入。
 
-常用路由：
+常用入口：
 
-- [專案現況](docs/project_context.md) — 目前專案快照
-- [Architecture Decisions](docs/adr/README.md) — 穩定架構 authority
-- [Roadmap](docs/roadmap.md) — active / candidate / closed 路由
-- [Milestone 路由](docs/milestones/README.md) — Milestone artifact 索引
-- [審查與驗收證據](docs/audits/README.md) — 僅保留具獨立長期價值的 review / runtime evidence
-- [Design / Plan 工作入口](docs/superpowers/README.md) — 需要 formal Design / Plan 時使用；completed artifacts 不要求永久保留
-- [AI 輔助開發快速開始](docs/guides/agent_assisted_development_quick_start.md) — 常見開發情境與 Agent 入口
-- [CI/CD 操作指南](docs/guides/ci_cd_operations.md) — CI、artifact、failure / rollback operations
-- [CHANGELOG](CHANGELOG.md) — 已發布版本紀錄
+- [專案現況](docs/project_context.md) — current capability、平台與限制快照
+- [Architecture Decisions](docs/adr/README.md) — 穩定架構決策與依賴規則
+- [Template Repository 採用指南](docs/guides/template_repository_adoption.md) — 從 Template 建立產品 repository
+- [Design System Package](packages/design_system/README.md) — 視覺基礎、Theme 與 reusable UI contract
+- [Reference App](apps/flutter_architecture/README.md) — Composition Root 與產品整合入口
 
-AI / coding agent 的強制工作規則由 [AGENTS.md](AGENTS.md) 擁有；root README 不複製 mandatory reading contract 或完整治理流程。
+版本歷史見 [CHANGELOG](CHANGELOG.md)；AI / coding agent 的強制工作規則由 [AGENTS.md](AGENTS.md) 擁有。
 
 ---
 
@@ -202,4 +178,4 @@ AI / coding agent 的強制工作規則由 [AGENTS.md](AGENTS.md) 擁有；root 
 - 自動替新產品決定 Feature、MVP、UI/UX 或產品 roadmap 的生成器。
 - 要求每個小修改都執行 full repository regression 的流程模板。
 
-它提供的是一個已具備清楚 boundary、產品化採用流程、current documentation authority 與可驗證治理機制的 Flutter 起點；實際產品仍應依自己的 Requirement Decision 演進。
+它提供的是一個已具備清楚 boundary、產品化採用流程、current documentation authority 與可驗證開發機制的 Flutter 起點；實際產品仍應依自己的需求、風險與產品邊界持續演進。

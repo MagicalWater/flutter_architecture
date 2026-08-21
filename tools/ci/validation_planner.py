@@ -363,6 +363,8 @@ def plan_validation(
         reasons.append(change_class)
         if change_class == "docs_content":
             docs_check = True
+        elif change_class == "ide_config":
+            pass
         elif change_class == "governance":
             docs_check = True
             python_scopes.append("tools/docs")

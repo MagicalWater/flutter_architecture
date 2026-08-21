@@ -114,6 +114,20 @@ class ValidationPlannerCriticalContractTest(unittest.TestCase):
         self.assertFalse(plan.android_build)
         self.assertFalse(plan.ios_build)
 
+    def test_shared_jetbrains_run_config_is_focused_without_flutter_or_platform_validation(self) -> None:
+        plan = plan_validation([".run/Development.run.xml"])
+
+        self.assertEqual(plan.change_classes, ("ide_config",))
+        self.assertEqual(plan.validation_level, "focused")
+        self.assertFalse(plan.fail_safe)
+        self.assertFalse(plan.full_regression)
+        self.assertFalse(plan.docs_check)
+        self.assertEqual(plan.flutter_test_scopes, ())
+        self.assertEqual(plan.python_test_scopes, ())
+        self.assertEqual(plan.analyze_scopes, ())
+        self.assertFalse(plan.android_build)
+        self.assertFalse(plan.ios_build)
+
     def test_manual_focused_is_not_implicit_release(self) -> None:
         plan = plan_validation([], manual=True, manual_mode="focused")
 

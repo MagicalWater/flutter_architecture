@@ -59,6 +59,10 @@ def _is_docs_path(path: str) -> bool:
     )
 
 
+def _is_ide_config_path(path: str) -> bool:
+    return path.startswith(".run/") and path.endswith(".run.xml")
+
+
 def _is_governance_path(path: str) -> bool:
     return (
         path == "AGENTS.md"
@@ -114,6 +118,8 @@ def _classify_path(path: str) -> str | None:
         return "platform_shared"
     if _is_classifier_path(path) or path == "tools/ci/validation_planner.py" or path == "tools/ci/test_validation_planner.py":
         return "validation_engine"
+    if _is_ide_config_path(path):
+        return "ide_config"
     if _is_governance_path(path):
         return "governance"
     if _is_database_critical_path(path):
@@ -141,6 +147,7 @@ def _classify_path(path: str) -> str | None:
 
 _CHANGE_CLASS_ORDER = (
     "docs_content",
+    "ide_config",
     "governance",
     "tooling",
     "test_only",

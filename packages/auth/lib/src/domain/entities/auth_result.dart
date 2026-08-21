@@ -37,5 +37,5 @@ final class AuthLoginOtpChallenge extends AuthLoginResult {
   final OtpChallenge challenge;
 }
 
-/// Compatibility name for the authenticated payload used before Milestone 20.
+/// Compatibility name for the legacy authenticated payload contract.
 typedef AuthResult = AuthAuthenticatedResult;

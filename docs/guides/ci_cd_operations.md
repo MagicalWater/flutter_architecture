@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - repository-ci-cd-operations
-last_reviewed_baseline: 1.18.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # CI/CD Operations Guide
@@ -449,9 +449,7 @@ Android Production build不再先執行`verify_generated.sh`。Tracked generated
 
 `.github/workflows/observability-acceptance.yml`提供獨立的Crashlytics acceptance route。
 
-`github-hosted`模式下Pull Request可執行`PR-safe Contract`；`self-hosted`與`manual-local`模式下PR整份workflow為skipped，未信任程式碼不會進入Mac runner。
-
-Observability symbols與受控事件不接受main push。只有manual dispatch選擇`self-hosted`或`github-hosted`，並明確設定`remote_acceptance=true`時才可使用GitHub Environment：
+Observability workflow目前同樣只接受manual `workflow_dispatch`。一般contract verification不讀取provider secrets；symbols與受控事件只有manual dispatch選擇`self-hosted`或`github-hosted`，並明確設定`remote_acceptance=true`時才可使用GitHub Environment。PR與main push都不觸發此workflow：
 
 ```txt
 staging-observability

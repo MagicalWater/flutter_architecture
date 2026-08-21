@@ -46,7 +46,7 @@ github-hosted
 
 Manual dispatch可以使用`repository-default`作為sentinel，表示沿用repository variable的execution mode。`repository-default`不是第四種execution mode，不得保存為current mode。
 
-Self-hosted runner使用`water`帳號下的獨立runner workspace與完整專用labels。Pull Request、fork Pull Request、Dependabot Pull Request與未合併branch不得進入此runner。Unknown、空白或legacy mode必須fail closed，不得猜測執行端，也不得自動fallback到GitHub-hosted runner產生非預期費用。
+Self-hosted runner使用repository-scoped的獨立runner workspace與完整專用labels。Pull Request、fork Pull Request、Dependabot Pull Request與未合併branch不得進入此runner。Unknown、空白或legacy mode必須fail closed，不得猜測執行端，也不得自動fallback到GitHub-hosted runner產生非預期費用。
 
 三種execution mode必須共用repository-owned scripts作為build、test與symbol handling實作來源。Workflow只負責event policy、runner routing、secret materialization與artifact transport，不得維護平行build contract。
 

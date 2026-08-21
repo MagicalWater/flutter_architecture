@@ -4,7 +4,7 @@ import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// 讀取與清理 Milestone 19 前的 SharedPreferences credential keys。
+/// 讀取與清理舊版SharedPreferences credential keys。
 final class SharedPreferencesAuthLegacyCredentialStore
     implements AuthLegacyCredentialStore {
   const SharedPreferencesAuthLegacyCredentialStore(this._preferences);

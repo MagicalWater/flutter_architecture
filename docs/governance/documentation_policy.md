@@ -64,7 +64,7 @@ migration-manifest
 
 ## 3. Minimal Metadata
 
-Milestone 22 之後新增或正式採納的 managed document，使用 YAML front matter：
+新增或正式採納的 managed document，使用 YAML front matter：
 
 ```yaml
 ---
@@ -184,7 +184,7 @@ Archive trigger 不代表 mandatory permanent retention。Intermediate Design re
 
 ## 7. Legacy Adoption Rule
 
-現有文件不要求在 Milestone 22-2 一次補齊 metadata。
+既有 historical／legacy 文件不要求為了格式一致性一次性補齊 metadata。
 
 Legacy 文件只有在下列情況才正式採納新 metadata：
 

@@ -3,7 +3,7 @@ document_type: guide
 status: accepted
 authoritative_for:
   - repository-testing-governance
-last_reviewed_baseline: 1.16.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Testing Governance
@@ -31,7 +31,7 @@ changed behavior / risk / failure mode
 → 若新增test，先作temporary evidence並選最接近failure source的primary owner
 → implementation GREEN
 → retention disposition
-→ 再由Milestone 35 validation planner決定執行哪些validation
+→ 再由repository validation planner決定執行哪些validation
 ```
 
 ### Required

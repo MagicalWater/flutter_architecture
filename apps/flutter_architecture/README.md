@@ -3,7 +3,7 @@ document_type: app-readme
 status: accepted
 authoritative_for:
   - flutter-architecture-app-local-contract
-last_reviewed_baseline: 1.10.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Flutter Architecture App
@@ -140,7 +140,7 @@ lib/app/database/schema/app_database.drift
   ↓
 更新受影響 LocalDataSource 或 App-owned store
   ↓
-新增 fresh-create、upgrade與persistence regression tests
+確認critical migration／persistence risk已有direct regression owner；必要時才新增test
   ↓
 更新受影響 Feature README並執行 focused verification
 ```
@@ -170,7 +170,7 @@ Localization resources and feature-local failure mapping
   ↓
 App-owned persistence or plugin adapter
   ↓
-App / Feature regression tests
+依changed risk確認既有validation owner；必要時才新增temporary／permanent test
   ↓
 build_runner when generated source is affected
   ↓
@@ -183,14 +183,14 @@ repository validation
 - Guard：`lib/app/router/auth_guard.dart`。
 - Authentication destination transition：`lib/app/navigation/auth_navigation_coordinator.dart`。
 - Generated route：`lib/app/router/app_router.gr.dart`，不得手動修改。
-- Regression tests：`test/app/router/`、`test/app/navigation/`與受影響 Feature page tests。
+- Existing validation owners（若changed risk需要）：`test/app/router/`、`test/app/navigation/`與受影響 Feature presentation tests。
 
 ### Dependency Injection
 
 - External object、plugin、Database、Dio與interface binding：`lib/app/di/register_module.dart`。
 - App-owned module與generated composition：`lib/app/di/`。
 - Environment-specific API selection：`lib/app/di/api_implementation_selector.dart`。
-- Regression tests：`test/app/di/`。
+- Existing validation owner（若changed risk需要）：`test/app/di/`。
 
 Reusable package 使用 constructor injection 表達依賴，不在 package 內加入 GetIt／Injectable ownership。
 
@@ -199,7 +199,7 @@ Reusable package 使用 constructor injection 表達依賴，不在 package 內�
 - ARB resources：`lib/l10n/`。
 - Locale bootstrap、preference與controller：`lib/app/localization/`。
 - Feature user-facing Failure mapping：對應 Feature `presentation/*_localization.dart`。
-- Regression tests：`test/app/localization/`與受影響 Feature presentation tests。
+- Existing validation owners（若changed risk需要）：`test/app/localization/`與受影響 Feature presentation tests。
 
 修改 ARB、Auto Route、Injectable、Freezed、JSON serialization 或 Retrofit declaration後，執行：
 
@@ -215,16 +215,13 @@ App-owned implementation放在受影響 Feature data layer或`lib/app/` integrat
 
 ### Focused validation
 
-依修改內容至少執行相關 App／Feature tests，並在repository root執行：
+Test Authoring、Retention與Validation Execution分開決定。普通App／Feature修改不因存在對應test folder就固定跑完整suite；先由repository planner選出minimum sufficient validation：
 
 ```bash
-dart run melos run docs_check
-dart run melos run build_runner
-dart run melos run analyze
-dart run melos exec -- flutter test
+python tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
 ```
 
-只有文件變更且未影響generated source或runtime contract時，可以依change-aware CI contract省略不相關的重量驗證；實作變更仍須依受影響scope執行focused tests與代表build。
+依planner輸出的exact scope執行必要docs、analyze、critical tests、generated或platform evidence。只有修改AutoRoute／Injectable／Freezed／JSON／Retrofit等generated declaration時才需要build runner；只有changed risk命中native／platform boundary時才需要代表build。完整Test Authoring／Retention policy見[Testing Governance](../../docs/guides/testing_governance.md)。
 
 ## Feature Entry Points
 
@@ -234,16 +231,16 @@ dart run melos exec -- flutter test
 - `lib/features/protected/README.md`
 - `lib/features/shell/README.md`
 
-## Verification Commands
+## Common Verification Commands
 
-在 repository root：
+首次checkout或generated declaration變更時常用：
 
 ```bash
 dart pub get
 dart run melos run build_runner
-dart run melos run analyze
-dart run melos exec -- flutter test
 ```
+
+日常change validation不要機械執行全workspace commands；以planner-selected scope為準。
 
 App build：
 

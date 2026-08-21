@@ -1,6 +1,6 @@
 # Pencil Compatibility
 
-此feature是Milestone 33的presentation-only Pencil-to-Flutter compatibility proof。
+此feature是presentation-only Pencil-to-Flutter compatibility proof。
 
 ## Authority
 

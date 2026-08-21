@@ -840,7 +840,7 @@ def main() -> int:
     parser.add_argument(
         "--event",
         required=True,
-        choices=("push", "pull_request", "workflow_dispatch"),
+        choices=("push", "workflow_dispatch"),
     )
     parser.add_argument("--base", default="")
     parser.add_argument("--head", default="")

@@ -38,12 +38,10 @@ jobs:
     name: Classify Changes
     if: >-
       ${{
-        (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
-        (github.event_name == 'workflow_dispatch' &&
-         ((inputs.execution_mode == 'repository-default' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
-          contains(fromJSON('["self-hosted","github-hosted"]'), inputs.execution_mode)))
+        (inputs.execution_mode == 'repository-default' && contains(fromJSON('["self-hosted","github-hosted"]'), vars.CI_EXECUTION_MODE)) ||
+        contains(fromJSON('["self-hosted","github-hosted"]'), inputs.execution_mode)
       }}
-    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
+    runs-on: ${{ (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     outputs:
       docs_only: ${{ steps.classify.outputs.docs_only }}
       full_ci: ${{ steps.classify.outputs.full_ci }}
@@ -63,10 +61,10 @@ jobs:
       - name: Classify repository changes
         id: classify
         env:
-          EVENT_NAME: ${{ github.event_name }}
-          BASE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.validation_mode == 'release' && inputs.release_base || github.event.before || '' }}
+          EVENT_NAME: workflow_dispatch
+          BASE_SHA: ${{ inputs.validation_mode == 'release' && inputs.release_base || '' }}
           HEAD_SHA: ${{ github.sha }}
-          VALIDATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.validation_mode || 'focused' }}
+          VALIDATION_MODE: ${{ inputs.validation_mode }}
         run: |
           if ! python3 tools/ci/validation_planner.py \
             --event "$EVENT_NAME" \
@@ -110,7 +108,7 @@ jobs:
     if: >-
       needs.classify-changes.result == 'success' &&
       needs.classify-changes.outputs.android_development_build == 'true'
-    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
+    runs-on: ${{ (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -162,7 +160,6 @@ jobs:
 
       - name: Preflight Android development full artifact
         if: >-
-          github.event_name == 'workflow_dispatch' &&
           runner.environment == 'github-hosted' &&
           inputs.artifact_transport == 'full'
         run: >-
@@ -172,14 +169,12 @@ jobs:
 
       - name: GitHub storage warning for full Android development artifact
         if: >-
-          github.event_name == 'workflow_dispatch' &&
           runner.environment == 'github-hosted' &&
           inputs.artifact_transport == 'full'
         run: echo "GitHub storage warning - full transport is retained for one day."
 
       - name: Upload Android development verification artifact
         if: >-
-          github.event_name == 'workflow_dispatch' &&
           runner.environment == 'github-hosted' &&
           inputs.artifact_transport == 'full'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -196,7 +191,7 @@ jobs:
     if: >-
       needs.classify-changes.result == 'success' &&
       needs.classify-changes.outputs.android_production_build == 'true'
-    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
+    runs-on: ${{ (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -256,7 +251,6 @@ jobs:
 
       - name: Preflight Android production full artifact
         if: >-
-          github.event_name == 'workflow_dispatch' &&
           runner.environment == 'github-hosted' &&
           inputs.artifact_transport == 'full'
         run: >-
@@ -266,14 +260,12 @@ jobs:
 
       - name: GitHub storage warning for full Android production artifact
         if: >-
-          github.event_name == 'workflow_dispatch' &&
           runner.environment == 'github-hosted' &&
           inputs.artifact_transport == 'full'
         run: echo "GitHub storage warning - full transport is retained for one day."
 
       - name: Upload Android verification artifact
         if: >-
-          github.event_name == 'workflow_dispatch' &&
           runner.environment == 'github-hosted' &&
           inputs.artifact_transport == 'full'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -291,7 +283,7 @@ jobs:
       always() &&
       needs.classify-changes.result != 'skipped' &&
       (needs.classify-changes.result != 'success' || needs.classify-changes.outputs.android_build == 'true')
-    runs-on: ${{ ((github.event_name == 'push' && vars.CI_EXECUTION_MODE == 'self-hosted') || (github.event_name == 'workflow_dispatch' && (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')))) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
+    runs-on: ${{ (inputs.execution_mode == 'self-hosted' || (inputs.execution_mode == 'repository-default' && vars.CI_EXECUTION_MODE == 'self-hosted')) && fromJSON('["self-hosted","macOS","ARM64","flutter-architecture","trusted-main"]') || 'ubuntu-24.04' }}
     env:
       CLASSIFY_RESULT: ${{ needs.classify-changes.result }}
       ANDROID_BUILD: ${{ needs.classify-changes.outputs.android_build }}

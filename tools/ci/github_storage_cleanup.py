@@ -439,8 +439,8 @@ def classify_inventory(
                 ref=artifact.ref,
                 classification="legacy-github-artifact",
                 reason=(
-                    "Task 9 verified the managed local replacement route and "
-                    "GitHub storage no-growth"
+                    "Managed local evidence is the current replacement route and "
+                    "GitHub storage is governed as no-growth"
                 ),
                 replacement_evidence_route=route,
             )
@@ -459,7 +459,7 @@ def classify_inventory(
                 classification="legacy-github-cache",
                 reason=(
                     "Current workflow contracts do not use actions/cache and "
-                    "Task 9 confirmed no new GitHub cache objects"
+                    "GitHub cache storage is governed as no-growth"
                 ),
                 replacement_evidence_route=route,
             )

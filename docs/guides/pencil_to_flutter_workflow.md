@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - pencil-to-flutter-human-workflow-guide
-last_reviewed_baseline: 1.21.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Repository-local Pencil-to-Flutter Workflow Guide
@@ -339,26 +339,22 @@ Pixel threshold通過也不能覆蓋semantic P1。人工review至少檢查hierar
 
 使用者或reviewer若對實際supported runtime提出semantic P1，對應runtime PASS立即撤銷並回implementation修正；canonical pixel PASS不能作為例外。
 
-## Double-layer Task review
+## Task review and validation
 
-本流程仍服從中央雙層Task治理：
+本流程服從中央 governance level，不另建立一套 Pencil-specific review chain：
 
 ```txt
-Task implementation／evidence
-→ focused review
-→ finding修正
-→ fresh focused re-review
-→ Task whole review
-→ Task commit
-→ 下一Task
-
-全部Tasks完成
-→ cross-Task holistic final review
-→ fresh full regression
-→ release／merge／push authorization gate（依分類）
+implementation／visual evidence
+→ relevant focused checks during work
+→ routed final／holistic review（依 Level）
+→ documentation authority check
+→ planner-selected minimum sufficient validation
+→ commit／release／merge gate（依分類）
 ```
 
-一般implementation failure、stale doc或test failure直接修正並fresh re-review；只有scope／architecture決策、external manual dependency、accepted Design／Plan被P0／P1推翻，或正式release gate才需要停下來等使用者。
+Level 0～1不得因Pencil工作本身升級成formal multi-review；Level 2使用一次final review；Level 3才做whole-scope holistic review。只有真正Level 4～5的architecture／security／platform／release-critical scope才要求formal evidence。不得把「全部畫面完成」或「視覺工作」本身當成fresh full regression理由。
+
+一般implementation failure、stale doc或test failure直接修正並重跑受影響gate；只有scope／architecture決策、external manual dependency、accepted Design／Plan被P0／P1推翻，或正式release gate才需要停下來等使用者。
 
 ## Failure, rollback and stop conditions
 
@@ -392,7 +388,7 @@ Rollback以Task commit／accepted source與manifest為單位；不要用external
 
 `.pen`只能透過Pencil MCP讀取／操作，不得使用native parser、PNG／OCR fallback或external path作implementation authority。
 
-請依雙層Task治理持續執行，直到需要真正的使用者決策、external manual action或正式release／merge授權才停止。
+請依中央governance level與planner-selected validation持續執行，直到需要真正的使用者決策、external manual action或正式release／merge授權才停止。
 ```
 
 若工作尚未完成Requirement／Design／Plan，不要宣稱「已接受`.pen`」；改用一般feature／governance入口先完成分類與核准。

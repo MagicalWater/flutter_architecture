@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - template-repository-product-adoption-procedure
-last_reviewed_baseline: 1.18.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Template Repository Adoption Guide
@@ -23,6 +23,8 @@ Stable lifecycle decision 由 [ADR-030](../adr/adr-030-template-to-product-repos
 正常產品起點使用 template 的 default branch 即可；不要以 Fork 作為一般產品 birth path，也不要把新產品 repository 當成需要長期 merge template `main` 的 fork。
 
 建立完成後 clone **新的產品 repository** 到本機。Bootstrap mutation 必須在新 repository 內執行，不得回頭把產品資料寫進 `flutter_architecture` template 本體。
+
+Android Studio／IntelliJ開啟repository root時會讀取tracked `.run/` shared Flutter configurations，預設提供Development／Staging／Production三個入口；這只省略IDE手動設定，不取代native flavor／scheme、Dart entrypoint或bootstrap後的product identity validation。
 
 ## 2. 第一次 Agent prompt 最少需要提供什麼
 
@@ -148,24 +150,24 @@ Secret value永遠不屬於bootstrap copy範圍：
 
 ### `self-hosted`
 
-選擇條件：可信任main/manual工作要由repository-scoped Mac runner執行，而且團隊願意維護runner lifecycle。
+選擇條件：explicit manual validation要由repository-scoped Mac runner執行，而且團隊願意維護runner lifecycle。
 
 完成前至少確認：
 
 - live `CI_EXECUTION_MODE = self-hosted`；
 - repository-scoped runner存在、online且labels符合current workflow contract；
 - `CI_ARTIFACT_ROOT`是checkout外安全absolute path；
-- untrusted/public PR不能派送到trusted self-hosted runner；
+- workflow維持manual dispatch-only，未信任PR不會建立trusted self-hosted execution job；
 - runner offline時應queued/blocked，不允許隱式fallback `github-hosted`。
 
 ### `github-hosted`
 
-選擇條件：希望PR/main verification使用GitHub提供的runner並接受對應Actions quota/cost。
+選擇條件：希望explicit manual validation使用GitHub提供的runner並接受對應Actions quota/cost。
 
 完成前至少確認：
 
 - live `CI_EXECUTION_MODE = github-hosted`；
-- representative PR/main workflow fresh evidence會建立預期GitHub-hosted jobs；
+- representative explicit `workflow_dispatch` fresh evidence會建立預期GitHub-hosted jobs；
 - default token permissions維持current read-only安全contract；
 - artifact transport預設仍是`none`；
 - verification不需要production signing secret即可完成。

@@ -160,7 +160,7 @@ def measure_wall_clock(repository: Path | str = ".") -> list[dict[str, object]]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Measure Milestone 35 validation routing")
+    parser = argparse.ArgumentParser(description="Measure repository validation routing")
     parser.add_argument("--repository", type=Path, default=Path("."))
     parser.add_argument("--output", type=Path)
     parser.add_argument("--wall-clock-output", type=Path)

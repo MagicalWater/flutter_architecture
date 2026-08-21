@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - api-client-package-local-contract
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # API Client Package
@@ -198,9 +198,9 @@ DI authority：
 - [ADR-012 — Reusable Package DI Boundary](../../docs/adr/adr-012-reusable-package-di-boundary.md)
 - [Flutter Architecture App README](../../apps/flutter_architecture/README.md)
 
-### 8. Add focused tests and regenerate
+### 8. Select validation and regenerate when needed
 
-依變更至少檢查：
+Transport／refresh／replay／sensitive-output等critical failure若被改變，先確認是否已有direct regression owner；只有既有owner不足時才新增temporary或permanent test。可能的existing owners包含：
 
 ```txt
 packages/api_client/test/
@@ -210,16 +210,13 @@ serialization and sensitive-output regression
 interceptor / replay behavior（若受影響）
 ```
 
-在 repository root 執行：
+先由repository planner選minimum sufficient validation：
 
 ```bash
-dart run melos run build_runner
-dart run melos run docs_check
-dart run melos run analyze
-dart run melos exec -- flutter test
+python tools/ci/validation_planner.py --event push --base <base-sha> --head <head-sha> --stdout-json
 ```
 
-若 App runtime input、assets、configuration、plugin 或 native build contract 受到影響，再依 [CI/CD Operations Guide](../../docs/guides/ci_cd_operations.md) 執行相應 Android／iOS representative build；不要把 documentation-only no-op 語意套用到 source change。
+只有Retrofit／serialization等generated declaration受影響時才執行build runner。若App runtime input、assets、configuration、plugin或native build contract受到影響，再依planner與[CI/CD Operations Guide](../../docs/guides/ci_cd_operations.md)執行相應Android／iOS representative build。
 
 ## Adding an External Client
 

@@ -15,8 +15,8 @@ part 'catalog_state.dart';
 
 /// Catalog 搜尋與分頁流程的狀態管理。
 ///
-/// Milestone 13-4 先處理 initial search、debounce、query switching 與 stale
-/// response guard；Refresh 與 Append workflow 於 Milestone 13-5 補上。
+/// 負責initial search、debounce、query switching、stale response guard、Refresh、
+/// Append與reconnect後的資料重新驗證流程。
 class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   CatalogBloc(
     this._searchCatalogUseCase, {

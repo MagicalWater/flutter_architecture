@@ -80,6 +80,7 @@ root/
 `apps/flutter_architecture` 是目前唯一 executable Flutter App，負責：
 
 - Bootstrap 與 Dart environment entrypoints。
+- Tracked JetBrains `.run/` shared Flutter launch configurations，提供development／staging／production IDE入口；environment authority仍由native flavor／scheme與Dart entrypoint擁有。
 - App configuration。
 - Router、Route Guard 與 authentication navigation orchestration。
 - Dependency Injection composition。

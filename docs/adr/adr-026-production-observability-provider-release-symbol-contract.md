@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-026-production-observability-provider-release-symbol-contract
-last_reviewed_baseline: 1.8.0
+last_reviewed_baseline: 1.26.1
 id: ADR-026
 title: Production Observability Provider Release and Symbol Contract
 supersedes:
@@ -141,7 +141,7 @@ Flutter mobile process沒有可靠通用shutdown保證，因此不宣稱所有�
 - Degraded事件依source＋operation做process-local burst limiting。
 - 不以error message、payload或stack string作rate key。
 - 第一版只允許typed system breadcrumbs；不得提供Feature任意文字breadcrumb API。
-- Connectivity breadcrumbs等候未來Connectivity and Offline State Foundation提供typed authority後再接入。
+- Connectivity and Offline State Foundation已提供typed authority；目前尚未把connectivity state接成observability breadcrumb。若未來接入，必須沿用typed allowlist與privacy boundary，不得直接上報provider/raw network detail。
 
 ### Android and iOS release integration
 
@@ -162,8 +162,8 @@ iOS：
 ### CI and secrets
 
 - Provider credential不得提交repository。
-- Fork Pull Request不得取得secret；可安全skip remote upload，但build與static contract validation仍須完成。
-- Main push或manual workflow可在secret存在時執行remote event與symbol acceptance。
+- Pull Request與main push不觸發Observability Acceptance workflow；provider secrets只存在明確啟用remote acceptance的manual dispatch boundary。
+- Remote event與symbol acceptance只透過明確的manual `workflow_dispatch`執行；需選擇可執行的CI profile並明確啟用remote acceptance。Main push與PR不觸發此能力。
 - Provider outage不得讓一般quality與unit test失敗。
 - Remote upload未執行時必須明確標示not executed，不得偽裝verified。
 
@@ -210,4 +210,4 @@ Observability與Analytics維持獨立：
 
 ## Last Reviewed Baseline
 
-1.8.0。
+1.26.1。

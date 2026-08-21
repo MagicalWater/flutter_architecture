@@ -4,10 +4,8 @@ import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// 以 SharedPreferences 保存目前權威 credential 的暫時 adapter。
-///
-/// Milestone 19-1 只搬移 plugin ownership，不改變 production authority；
-/// Milestone 19-2 會以 Secure Storage adapter 取代此 binding。
+/// Legacy／regression compatibility用的SharedPreferences credential adapter。
+/// Production credential authority是FlutterSecureStorage，不由此class承擔。
 final class SharedPreferencesAuthCredentialStore
     implements AuthCredentialStore {
   const SharedPreferencesAuthCredentialStore(this._preferences);

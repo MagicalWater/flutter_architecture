@@ -12,7 +12,7 @@ enum CatalogCacheOperation {
 /// Catalog Cache degraded operation 的安全診斷摘要。
 ///
 /// 不保存 query、cursor、item、SQL 或 raw row；只保留 operation 與低敏感度
-/// identity shape，供 Milestone 17-6 的 non-fatal reporting adapter 使用。
+/// identity shape，供non-fatal reporting boundary使用。
 class CatalogCacheFailureDetails {
   const CatalogCacheFailureDetails({
     required this.operation,

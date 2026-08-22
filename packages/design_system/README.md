@@ -60,7 +60,11 @@ Typography                     → 不預設 .sp
 - `DsSpace`、`DsRadius`、`DsIconSize` 使用 uniform `.r` scaling，也就是 `min(widthScale, heightScale)`。
 - Consumer 直接使用 `DsSpace.md` 等 public token；token 已完成 scaling，不得再套 `.r/.w/.h`。
 - 尚未 promotion 的 feature/component exact measurement 依上面的 ScreenUtil 使用規則選擇 `.w/.h/.r`。
+- Feature/component exact measurement 若只有單一 consumer、沒有 shared semantic identity、沒有 coordinated-change requirement，也沒有獨立 reusable geometry contract，預設直接寫在 smallest correct component source；不要為了「看不到 literal」而另外建立 feature-side `*Sizes`、`*Metrics`、`*Tokens` getter。
+- Local named measurement owner只在確實存在共同 identity 或 invariant 時成立，例如同一 bounded geometry 的多個尺寸必須協同變更，或多個 bounded consumers 真正共享同一 local contract。名稱本身不會把一次性 literal 變成較好的 abstraction。
 - Typography 不把 `.sp` 當 repository default；system `TextScaler` 與 accessibility contract 必須保持有效。
+
+換句話說：`no magic code != zero inline literals`，而 `smallest correct owner != mandatory token class`。真正應避免的是沒有 ownership rationale 的重複／漂移數值、已存在 Design System owner 卻重新 hard-code、或需要協同變更卻散落多處；不是禁止 `SizedBox(height: 7.r)` 這類單一 bounded relationship 在其唯一 owner 中存在。
 
 Product-specific `designSize` 由 App Composition Root 擁有，Design System 不保存產品 baseline。
 

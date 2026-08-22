@@ -40,9 +40,12 @@ Representation／provenance也不代表UI design ownership已完成。Asset iden
 
 - 普通card、divider、button surface、solid fill、radius與可正常表達的shadow使用真Flutter primitive。
 - 複雜固定紋理、插畫、品牌裝飾若只能靠大量gradient／shadow／magic path近似，優先保留verified raster／vector authority。
+- Existing／accepted asset provenance只證明source identity與可追溯性，不自動決定production representation class：`asset provenance != production representation classification`。即使已有exact PNG／historical export，仍必須先判斷該region本質上是code-owned UI structure還是固定visual asset。
 - 不得因為「native code比較高級」重畫固定美術。
 - 不得使用**raster-everything shortcut**把text、button或普通interactive surface整片轉成圖片來追求pixel diff。
 - Full-screen raster仍受single-renderer與visual-validation禁止事項約束。
+
+Composite raster若同時包含Text、button surface、card、section header、label/value、divider、多個可獨立互動／變動的子區域，或runtime state/value內容，預設只能作visual reference／comparison evidence，不得直接成為Flutter production body。除非其中真正固定decorative artwork已被重新切回child-level representation並有resolved provenance，production implementation應回到真Flutter structure。
 
 ## Vector vs Raster
 

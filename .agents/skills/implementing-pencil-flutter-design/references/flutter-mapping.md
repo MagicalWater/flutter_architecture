@@ -31,6 +31,8 @@ single-screen exact geometry / decorative value
 
 沒有第二consumer evidence，不得把單畫面數值提升為global Design System token。
 
+`smallest correct component owner`預設可以是component implementation source本身，不要求再建立named token／metrics class。Single-use measurement／Color／decoration若沒有shared semantic、第二consumer、coordinated-change invariant或可獨立reuse的local contract，直接留在唯一consumer即可。不得把「避免magic code」機械化成「所有literal都必須抽getter」；把一個大型`VisualTokens`拆成多個只含one-consumer值的小class，仍然可能是feature-side miniature Design System。
+
 同樣禁止另一個方向：不得建立`FeatureVisualSpec`、`FeatureVisualTokens`、`FeatureUiSpec`、`StyleConfig`或等價class，把colors、dimensions、typography、asset paths、gradients與geometry集中成feature內第二套Design System。Feature-local owner只能是窄責任例外，例如accepted proof中多個bounded components真正共享的local palette或typography。
 
 `implementation_mapping.json`的risk-selected `ui_design_ownerships`必須resolved；Design System owner需指向public API，`intentional-local`需local-scope reason，asset-reference只引用existing provenance evidence。Missing／unresolved ownership是production hard stop。

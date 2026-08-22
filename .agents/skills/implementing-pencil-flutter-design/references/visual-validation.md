@@ -5,6 +5,7 @@
 ```txt
 widget／route／localization RED
 → minimal Flutter GREEN
+→ representation／ownership pre-acceptance review
 → canonical golden
 → deterministic pixel diff
 → supported runtime screenshot
@@ -14,6 +15,8 @@ widget／route／localization RED
 ```
 
 Golden generation不等於visual approval。
+
+進入candidate visual acceptance前，先重新確認production tree沒有把code-owned UI flatten成composite raster，也沒有用大量one-consumer feature token／metrics owner取代最小component ownership。這個pre-acceptance review是mapping gate的fresh enforcement，不以historical mapping PASS、existing asset或畫面「看起來像」取代。
 
 Canonical與supported runtime必須render同一個production whole-screen visual tree。若canonical與runtime由breakpoint選擇不同root renderer，即使兩邊各自GREEN，也屬architecture／visual acceptance failure。
 
@@ -97,6 +100,7 @@ Bounded local `Stack`／`Positioned`與scaled coordinates可以保留，只要�
 拒絕：
 
 - Full-screen screenshot embedding。
+- Composite raster直接承載Text、button/card surface、section body、sample state/value或多個應獨立互動／變動的code-owned UI children。
 - Top-level fixed-canvas `FittedBox`／`Transform.scale`。
 - Parallel whole-screen visual renderer或whole-screen breakpoint escape hatch。
 - Single-renderer whole-screen canonical-coordinate reconstruction。

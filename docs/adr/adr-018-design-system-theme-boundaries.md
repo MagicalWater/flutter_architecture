@@ -85,6 +85,7 @@ Shared design-derived measurement 被 promotion 到 Design System 後，仍保�
 - `packages/design_system` 可以依賴 shared sizing engine，解析 spacing、inset、radius、icon size、component geometry 等 shared design-derived tokens。
 - Current `DsSpace`、`DsRadius`、`DsIconSize` 使用 uniform scaling；caller 直接消費 resolved token，不得再次 scaling。
 - Single-consumer exact measurement 留在 smallest correct presentation owner；`.w/.h/.r/.sp` 的具體選擇由 `packages/design_system/README.md` 的 current ScreenUtil usage contract 統一定義，不在 ADR 重複維護操作表。
+- `smallest correct presentation owner` 可以就是實際 component source 本身，不代表必須建立 feature-side token／metrics class。沒有 shared semantic identity、第二 consumer、coordinated-change invariant 或獨立 reusable contract 的 single-use measurement，預設直接留在其唯一 consumer 內；不得只為了消除 numeric literal 而建立 named getter 或 miniature feature Design System。
 - Scaling legality 不依 property 名稱決定；layout architecture 另依 relationship / spatial ownership 判斷。
 - Typography 必須保留 system `TextScaler` 與 accessibility contract。
 
@@ -120,6 +121,8 @@ single-screen exact geometry / decoration
 Promotion判斷依semantic identity、stable theme responsibility與consumer evidence，不依raw value相同。反方向也禁止把single-consumer exact radius、gradient、offset或artwork geometry提升成global Design System token。
 
 Feature-local owner只允許窄責任、可解釋的exact visual authority，例如同一accepted proof多個bounded components共用的local palette或typography。它不是「只要Pencil exact就全部放feature-local」的逃生艙，也不得同時承擔colors、dimensions、typography、asset paths、gradients與canonical metadata。
+
+Feature-local named visual owner同樣不是消除literal的預設手段。只有多個consumer真的共享同一local semantic／geometry contract、數值必須協同變更，或存在可獨立review／reuse的bounded invariant時，才值得建立local palette／geometry／metrics owner。Single-use bounded measurement或single-use component decoration可直接由smallest component source持有；`no magic code`不等於`zero inline literals`。
 
 Accepted Pencil/source中近似但不完全相同的raw colors不得只依hex差異自動新增feature-local token。裁決順序固定為：先排除alpha blending／anti-alias／raster sampling／gradient sample／export difference等representation noise；再判斷是否為不同semantic role；若為同semantic role，只有具明確intentional contextual variant且有stable cross-consumer semantics時才promotion為semantic/component variant；純單一component decoration則留smallest correct component owner。反方向也不得為了Theme一致而抹平accepted intentional semantic/context variant。
 

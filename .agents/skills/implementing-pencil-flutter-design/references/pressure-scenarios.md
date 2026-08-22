@@ -53,6 +53,8 @@
 | PTF-56 | 兩個raw color很接近，但分別是informational border與disabled ornament且change reason獨立 | PASS；near-identical literal不證明同semantic，應保留不同semantic owners |
 | PTF-57 | 單一component有intentional exact decorative color，沒有shared semantic或第二consumer | PASS；保留smallest correct component-local owner，不必升Design System |
 | PTF-58 | 只因same-semantic color edge case，Agent要求重構整個Theme/Design System production source，卻沒有production misuse evidence | FAIL；屬scope creep，先做bounded reconciliation／behavioral governance |
+| PTF-59 | Historical exact PNG同時包含button／text／card與sample runtime value；Agent以existing accepted asset為由直接作production body | FAIL；asset provenance不等於production representation authority，回child-level classification，code-owned UI維持真Flutter ownership |
+| PTF-60 | 單一consumer的`7.r`與單一decorative Color被抽進feature-side token／metrics class，只為做到「零literal」 | FAIL；`no magic code != zero inline literals`，smallest owner可直接是component source，沒有shared／coordinated contract就不建立named owner |
 
 ## Combined pressure prompts
 
@@ -520,6 +522,22 @@ PASS：不應。保留Hero/component-local smallest correct owner；intentional 
 
 PASS：不合理。先做bounded semantic reconciliation與governance/pressure hardening；沒有fresh production misuse evidence不得把edge case膨脹成Theme/Design System production refactor。
 
+### PTF-59 Existing composite raster authority shortcut
+
+```txt
+Historical accepted export已有一張PNG，裡面同時包含section title、button surface、card border、說明文字與sample value 2/5/3。Agent認為既然asset有source/hash且過去曾通過visual review，就直接把整張PNG當production body，再疊tap target即可。可以嗎？
+```
+
+PASS：不可。Asset provenance只證明source identity與可追溯性，不決定production representation class。Text、button/card surface、runtime value與可獨立互動／變動區域屬code-owned UI，必須回child-level representation classification；composite PNG最多保留為reference/comparison evidence。
+
+### PTF-60 Zero-literal token inflation
+
+```txt
+一個component只有一次使用的SizedBox height 7.r與一次使用的decorative Color。Agent為了符合「禁止magic code」，建立FeatureMetrics.titleGap與FeaturePalette.localAccent，兩個getter都只有唯一consumer。這是否比直接inline更符合治理？
+```
+
+PASS：不是。`no magic code != zero inline literals`；smallest correct owner可以就是component source。沒有shared semantic、第二consumer、coordinated-change invariant或可獨立reuse的local contract時，直接保留single-use value，不建立feature-side miniature Design System。
+
 ## Rationalization controls
 
 | Rationalization | Required counter |
@@ -557,6 +575,8 @@ PASS：不合理。先做bounded semantic reconciliation與governance/pressure h
 | 「每個Presentation feature都應該有flows/」 | Flow/Coordinator只在真實workflow responsibility存在時建立 |
 | 「RGB不同就一定是不同semantic token」 | 先判representation noise與semantic identity；same-semantic小漂移不得製造多owner |
 | 「顏色很接近就一定共用token」 | Raw literal similarity不證明semantic identity或change coupling |
+| 「既然PNG有accepted source/hash，就直接當production UI最忠實」 | Provenance不等於representation authority；先判斷region本質是否為code-owned UI structure |
+| 「禁止magic code，所以production widget裡不該看到任何literal」 | Single-use bounded literal可由component source直接擁有；只有shared／coordinated contract才需要named owner |
 
 ## Red flags
 
@@ -591,5 +611,7 @@ PASS：不合理。先做bounded semantic reconciliation與governance/pressure h
 - 「Pencil RGB有一點不同，就各feature一個color。」
 - 「兩個hex很接近就升成同一Design System token。」
 - 「順便把整個Theme重構掉比較乾淨。」
+- 「這張PNG以前通過，而且有hash，所以整段直接用圖片最準。」
+- 「我要把所有7.r、5.h與Color都抽getter，這樣才沒有magic code。」
 
 以上都表示gate尚未通過或正在合理化scope drift。

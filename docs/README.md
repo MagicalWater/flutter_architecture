@@ -3,7 +3,7 @@ document_type: documentation-hub
 status: active
 authoritative_for:
   - documentation-taxonomy-and-reading-routing
-last_reviewed_baseline: 1.25.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Documentation Hub
@@ -159,14 +159,12 @@ Historical 文件可以解釋「當時為什麼這樣做」，但不得直接覆
 - `docs/visual_authority/README.md`：Visual manifest contract、source ranking、hash與canonical viewport routing。
 - `docs/guides/`：可重複使用的操作指南；GitHub Template Repository首次產品採用請讀`docs/guides/template_repository_adoption.md`，AI Agent日常入口與可複製Prompt請讀`docs/guides/agent_assisted_development_quick_start.md`，accepted `.pen`到Flutter請讀`docs/guides/pencil_to_flutter_workflow.md`，fresh isolated-agent Skill behavioral validation請讀`docs/guides/skill_behavioral_validation.md`，CI／Branch Protection操作請讀`docs/guides/ci_cd_operations.md`，測試owner、historical boundary與cleanup規則請讀`docs/guides/testing_governance.md`，native environment與產品識別採用請讀`docs/guides/native_environment_adoption.md`。
 - `docs/mistakes/`：已知反模式與錯誤案例。
-- `docs/evolution/`：架構演進知識入口。
 
 ## Legacy 路徑
 
-- `docs/architecture/` 是第一階段 historical／partially superseded guidance。
 - 舊aggregate decision與已標記legacy的相容路徑只供歷史追溯；current Architecture Decision authority仍由`docs/adr/README.md`與canonical ADR records擁有。
 
-Historical／legacy文件保留路徑與必要warning，避免歷史遺失與連結立即失效；它們不得覆蓋canonical ADR records或其他current authority。
+仍被保留的 historical／legacy compatibility 路徑只提供必要 routing；已被 canonical ADR、current snapshot、guide 或 source 完整吸收且沒有 stable-path 相容需求的舊指南與過程 artifact 由 Git history 追溯，不在 repository 永久保留。
 
 ## 摘要規則
 

@@ -51,7 +51,6 @@ docs/guides/native_environment_adoption.md
 apps/flutter_architecture/config/environments.json
 Android 與 iOS 目前的 projections
 tools/ci/verify_environment_contract.py
-tools/ci/test_environment_contract.py
 相關 build scripts 與 tests
 ```
 

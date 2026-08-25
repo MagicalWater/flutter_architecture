@@ -156,7 +156,6 @@ Catalog是 public read model，因此 Logout不清除 Catalog Cache。未來 aut
 ## Related Evidence
 
 - [Catalog Feature README](../../apps/flutter_architecture/lib/features/catalog/README.md)
-- [Milestone 14 archive](../archive/milestone_14_offline_cache.md)
 - [App README](../../apps/flutter_architecture/README.md)
 
 ## Last Reviewed Baseline

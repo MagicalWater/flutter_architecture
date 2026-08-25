@@ -258,7 +258,6 @@ dart run melos run docs_check
 
 ```txt
 tools/docs/check_docs.py
-tools/docs/test_check_docs.py
 ```
 
 目前 checker 僅使用 Python standard library，檢查：
@@ -272,7 +271,7 @@ tools/docs/test_check_docs.py
 
 Checker 是 governance safety net，不取代 semantic review。它不得推斷 prose 是否正確，也不得因歷史 artifact 沒有採用 managed metadata 就直接失敗。
 
-新增 checker rule 必須先建立 fixture test，確認 RED，再加入最小 implementation 並確認 repository current state 可通過。
+新增 checker rule 時依風險建立最低充分驗證；需要 fixture 驗證時可使用 temporary test 確認 RED / GREEN，完成後依 test retention governance 決定是否保留，不要求為每條規則永久新增測試檔。
 
 ## 13. Repository Skill Ownership and Language
 

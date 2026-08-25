@@ -56,7 +56,7 @@ Task 1 implementation review：通過。
 
 ## Task 3 — Android smoke orchestration與artifact gate
 
-新增`tools/milestone_19_5/android_smoke.ps1`，以Windows PowerShell 5.1可執行語法提供AVD／root檢查、artifact metadata、install／clear／launch／force-stop、UI evidence、root-only只讀sandbox查核、temporary CA lifecycle、`adb reverse`與logcat gate。
+當時新增`tools/milestone_19_5/android_smoke.ps1`，以Windows PowerShell 5.1可執行語法提供AVD／root檢查、artifact metadata、install／clear／launch／force-stop、UI evidence、root-only只讀sandbox查核、temporary CA lifecycle、`adb reverse`與logcat gate。該 milestone-specific tooling 已於後續 retention cleanup 移除，現由 Git history 追溯。
 
 所有會修改host或device的操作都經`SupportsShouldProcess`／`ShouldProcess`。工具沒有credential、SharedPreferences value、SQLite User或Session寫入helper，也不修改App manifest、network security config或Dio trust policy。
 
@@ -81,12 +81,9 @@ Task 3 implementation review：通過。
 
 ### Scope
 
-新增repo-owned host tooling，只用來提供Android release runtime的deterministic Login／401／Refresh／Replay契約，不進App dependency graph，也不修改Mock API或production Auth code。
+當時新增repo-owned host tooling，只用來提供Android release runtime的deterministic Login／401／Refresh／Replay契約，不進App dependency graph，也不修改Mock API或production Auth code；該 milestone-specific tooling 已於後續 retention cleanup 移除，現由 Git history 追溯。
 
-檔案：
-
-- `tools/milestone_19_5/auth_fixture_server.py`
-- `tools/milestone_19_5/test_auth_fixture_server.py`
+歷史檔案包含 `tools/milestone_19_5/auth_fixture_server.py`；validation 時亦曾使用 temporary fixture-server test。兩者均不再永久保留，現況以本 evidence 與 Git history 為準。
 
 ### State machine
 

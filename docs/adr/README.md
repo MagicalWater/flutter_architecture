@@ -3,7 +3,7 @@ document_type: architecture-decision-index
 status: active
 authoritative_for:
   - architecture-decision-routing
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.26.1
 ---
 
 # Architecture Decision Records
@@ -68,8 +68,4 @@ docs/adr/adr-NNN-stable-kebab-title.md
 本目錄既有 `000-*` 至 `005-*` 文件已轉為 `legacy` compatibility routes，不是 canonical Decision records，也不會建立 ADR-000。
 
 舊 aggregate路徑 `../architecture_decisions.md`維持 stable compatibility stub，不再承載 Decision正文。
-
-逐 Decision disposition與批次策略：
-
-- `../migrations/m23_adr_extraction_manifest.md`
 

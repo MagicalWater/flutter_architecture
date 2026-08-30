@@ -131,7 +131,7 @@ python tools/docs/project_native_identity.py com.yourcompany.yourproduct \
 
 ### 2. 更新 environment manifest
 
-Projector會先修改唯一machine authority：
+Projector會先確認必要Android／iOS projection都存在且結構可處理；所有preflight通過後，才更新唯一machine authority並同步native projections，避免留下manifest-only半套狀態：
 
 ```txt
 apps/flutter_architecture/config/environments.json

@@ -29,11 +29,48 @@ def project_native_identity(
 ) -> None:
     if not IDENTIFIER_RE.fullmatch(base_identifier):
         raise RuntimeError("base identifier must be a Kotlin-compatible reverse-domain identifier")
+    for label, value in (
+        ("development name", development_name),
+        ("staging name", staging_name),
+        ("production name", production_name),
+    ):
+        if not value.strip():
+            raise RuntimeError(f"{label} must be non-empty")
+
     app_root = discover_app_root(root)
     manifest_path = app_root / "config/environments.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("schemaVersion") != 2:
         raise RuntimeError("native projection requires environment manifest schemaVersion 2")
+
+    environments = manifest.get("environments")
+    if not isinstance(environments, list):
+        raise RuntimeError("environment manifest must contain an environments list")
+    environment_names = [item.get("name") for item in environments if isinstance(item, dict)]
+    if sorted(environment_names) != ["development", "production", "staging"]:
+        raise RuntimeError("native projection requires exactly development, staging, and production")
+
+    kotlin_root = app_root / "android/app/src/main/kotlin"
+    activities = list(kotlin_root.rglob("MainActivity.kt"))
+    if len(activities) != 1:
+        raise RuntimeError(f"expected exactly one MainActivity.kt; found {len(activities)}")
+
+    ios_flutter = app_root / "ios/Flutter"
+    required_configs = [
+        ios_flutter / f"{mode}-{environment}.xcconfig"
+        for environment in ("development", "staging", "production")
+        for mode in ("Debug", "Profile", "Release")
+    ]
+    missing_configs = [str(path.relative_to(root)) for path in required_configs if not path.is_file()]
+    if missing_configs:
+        raise RuntimeError(f"missing required iOS xcconfig files: {', '.join(missing_configs)}")
+
+    project = app_root / "ios/Runner.xcodeproj/project.pbxproj"
+    if not project.is_file():
+        raise RuntimeError(f"missing iOS project file: {project.relative_to(root)}")
+
+    # All required native projections are validated before the first mutation so
+    # a malformed checkout fails closed without leaving a manifest-only update.
 
     display_names = {
         "development": development_name,
@@ -41,7 +78,7 @@ def project_native_identity(
         "production": production_name,
     }
     manifest["baseIdentifier"] = base_identifier
-    for environment in manifest["environments"]:
+    for environment in environments:
         name = environment["name"]
         identifier = base_identifier if name == "production" else f"{base_identifier}.{name}"
         environment["displayName"] = display_names[name]
@@ -49,10 +86,6 @@ def project_native_identity(
         environment["iosBundleIdentifier"] = identifier
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    kotlin_root = app_root / "android/app/src/main/kotlin"
-    activities = list(kotlin_root.rglob("MainActivity.kt"))
-    if len(activities) != 1:
-        raise RuntimeError(f"expected exactly one MainActivity.kt; found {len(activities)}")
     old_activity = activities[0]
     activity_text = old_activity.read_text(encoding="utf-8")
     activity_text = re.sub(r"^package\s+\S+", f"package {base_identifier}", activity_text, count=1, flags=re.MULTILINE)
@@ -66,8 +99,7 @@ def project_native_identity(
             parent.rmdir()
             parent = parent.parent
 
-    ios_flutter = app_root / "ios/Flutter"
-    environment_map = {item["name"]: item for item in manifest["environments"]}
+    environment_map = {item["name"]: item for item in environments}
     for environment, item in environment_map.items():
         for mode in ("Debug", "Profile", "Release"):
             config = ios_flutter / f"{mode}-{environment}.xcconfig"
@@ -81,7 +113,6 @@ def project_native_identity(
                 text = re.sub(rf"^{key}\s*=.*$", f"{key} = {value}", text, flags=re.MULTILINE)
             config.write_text(text, encoding="utf-8", newline="")
 
-    project = app_root / "ios/Runner.xcodeproj/project.pbxproj"
     project_text = project.read_text(encoding="utf-8")
     project_text = re.sub(
         r"PRODUCT_BUNDLE_IDENTIFIER\s*=\s*[^;]+\.RunnerTests;",

@@ -38,6 +38,7 @@ class RepositoryIdentityIssue:
 def check_repository_identity(
     root: Path,
     manifest_path: Path | None = None,
+    version_override: str | None = None,
 ) -> list[RepositoryIdentityIssue]:
     root = root.resolve()
     manifest = (manifest_path or root / "repository_identity.json").resolve()
@@ -115,7 +116,15 @@ def check_repository_identity(
     origin_repository = origin.get("repository")
     origin_baseline = origin.get("baseline")
     product_name = payload.get("product_name")
-    version = _read_version(version_path, issues)
+    version = version_override if version_override is not None else _read_version(version_path, issues)
+    if version_override is not None and not _SEMVER_RE.fullmatch(version_override):
+        issues.append(
+            RepositoryIdentityIssue(
+                "invalid-repository-version",
+                version_path,
+                "prospective VERSION must use semantic version format",
+            )
+        )
 
     if repository_kind == "template":
         if product_name is not None:
@@ -238,9 +247,15 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="validate a prospective identity manifest without replacing the canonical file",
     )
+    parser.add_argument(
+        "--version",
+        help="validate a prospective VERSION together with --manifest without replacing canonical VERSION",
+    )
     arguments = parser.parse_args(argv)
     root = Path(arguments.root).resolve()
-    issues = check_repository_identity(root, arguments.manifest)
+    if arguments.version is not None and arguments.manifest is None:
+        parser.error("--version requires --manifest")
+    issues = check_repository_identity(root, arguments.manifest, arguments.version)
     for issue in issues:
         print(issue.format(root), file=sys.stderr)
     if issues:

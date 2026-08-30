@@ -3,7 +3,7 @@
 set -euo pipefail
 environment="$1"; scheme="$2"; configuration="$3"; sdk="$4"; entrypoint="$5"; api_mode="$6"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-app_dir="$repo_root/apps/flutter_architecture"; ios_dir="$app_dir/ios"
+source "$repo_root/tools/ci/python_runtime.sh"
 [[ -n "${ARTIFACT_DIR:-}" ]] || { echo "ARTIFACT_DIR is required for iOS verification." >&2; exit 64; }
 artifact_dir="$ARTIFACT_DIR"; api_base_url="${API_BASE_URL:-}"
 build_workspace="$artifact_dir/.build"
@@ -11,7 +11,8 @@ derived_data_dir="$build_workspace/DerivedData"
 commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
 run_key="${CI_RUN_KEY:-unmanaged}"
 job_key="${CI_JOB_KEY:-unmanaged-ios-$environment}"
-python_bin="${PYTHON_BIN:-python3}"
+python_bin="$(resolve_repository_python)" || exit 69
+app_dir="$("$python_bin" -c 'from pathlib import Path; import sys; root=Path(sys.argv[1]); c=[p.parent.parent for p in (root/"apps").glob("*/config/environments.json") if p.is_file()]; len(c)==1 or sys.exit("expected exactly one app environment manifest"); print(c[0])' "$repo_root")"; ios_dir="$app_dir/ios"
 if [[ "$api_mode" == "real" && -z "$api_base_url" ]]; then echo "API_BASE_URL is required for $environment iOS verification." >&2; exit 1; fi
 observability_remote_collection="${OBSERVABILITY_REMOTE_COLLECTION_ENABLED:-false}"
 observability_acceptance_event="${OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED:-false}"
@@ -95,7 +96,7 @@ if [[ "$require_complete_dsym_set" == "true" ]]; then
     done < <(xcrun dwarfdump --uuid "$binary" | awk '{print $2}' | sort -u)
   done
 fi
-expected_id="com.example.flutterarchitecture"; [[ "$environment" == "production" ]] || expected_id+=".$environment"
+expected_id="$("$python_bin" -c 'import json,sys; p=json.load(open(sys.argv[1], encoding="utf-8")); print(next(e["iosBundleIdentifier"] for e in p["environments"] if e["name"] == sys.argv[2]))' "$app_dir/config/environments.json" "$environment")"
 [[ "$bundle_id" == "$expected_id" ]] || { echo "Unexpected bundle id: $bundle_id" >&2; exit 1; }
 cat > "$artifact_dir/artifact-metadata.txt" <<EOF
 commit_sha=$commit_sha

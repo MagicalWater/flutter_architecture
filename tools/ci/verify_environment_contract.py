@@ -11,14 +11,10 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MANIFEST = (
-    ROOT / "apps" / "flutter_architecture" / "config" / "environments.json"
-)
-
 EXPECTED_ENVIRONMENTS = ("development", "staging", "production")
 REQUIRED_ROOT_FIELDS = (
     "schemaVersion",
-    "templateBaseIdentifier",
+    "baseIdentifier",
     "androidFlavorDimension",
     "environments",
 )
@@ -50,7 +46,22 @@ class ContractError:
         return f"{self.path}: {self.message}"
 
 
-def load_manifest(path: Path = DEFAULT_MANIFEST) -> dict[str, Any]:
+def discover_app_root(repository_root: Path = ROOT) -> Path:
+    candidates = sorted(
+        path.parent.parent
+        for path in (repository_root / "apps").glob("*/config/environments.json")
+        if path.is_file()
+    )
+    if len(candidates) != 1:
+        raise RuntimeError(
+            "Environment contract requires exactly one app-owned config/environments.json; "
+            f"found {len(candidates)}"
+        )
+    return candidates[0]
+
+
+def load_manifest(path: Path | None = None) -> dict[str, Any]:
+    path = path or discover_app_root() / "config" / "environments.json"
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError as error:
@@ -71,18 +82,18 @@ def validate_contract(contract: dict[str, Any]) -> list[ContractError]:
 
     _require_exact_fields(contract, REQUIRED_ROOT_FIELDS, "$", errors)
 
-    if contract.get("schemaVersion") != 1:
-        errors.append(ContractError("$.schemaVersion", "must equal 1"))
+    if contract.get("schemaVersion") != 2:
+        errors.append(ContractError("$.schemaVersion", "must equal 2"))
 
-    base_identifier = contract.get("templateBaseIdentifier")
+    base_identifier = contract.get("baseIdentifier")
     if not _is_non_empty_string(base_identifier):
         errors.append(
-            ContractError("$.templateBaseIdentifier", "must be a non-empty string")
+            ContractError("$.baseIdentifier", "must be a non-empty string")
         )
     elif not IDENTIFIER_PATTERN.fullmatch(base_identifier):
         errors.append(
             ContractError(
-                "$.templateBaseIdentifier",
+                "$.baseIdentifier",
                 "must be a reverse-domain identifier",
             )
         )
@@ -169,7 +180,7 @@ def validate_contract(contract: dict[str, Any]) -> list[ContractError]:
                 errors.append(
                     ContractError(
                         f"$.environments[2].{field}",
-                        "production must use templateBaseIdentifier without a suffix",
+                        "production must use baseIdentifier without a suffix",
                     )
                 )
 
@@ -196,7 +207,7 @@ def validate_dart_projection(
     contract: dict[str, Any],
 ) -> list[ContractError]:
     errors: list[ContractError] = []
-    app_root = repository_root / "apps" / "flutter_architecture"
+    app_root = discover_app_root(repository_root)
     environments = contract.get("environments")
     if not isinstance(environments, list):
         return [ContractError("$.environments", "must be an array")]
@@ -317,7 +328,7 @@ def validate_android_projection(
     contract: dict[str, Any],
 ) -> list[ContractError]:
     errors: list[ContractError] = []
-    app_root = repository_root / "apps" / "flutter_architecture"
+    app_root = discover_app_root(repository_root)
     gradle_path = app_root / "android" / "app" / "build.gradle.kts"
     manifest_path = app_root / "android" / "app" / "src" / "main" / "AndroidManifest.xml"
 
@@ -328,8 +339,47 @@ def validate_android_projection(
 
     gradle_text = gradle_path.read_text(encoding="utf-8")
     manifest_text = manifest_path.read_text(encoding="utf-8")
+    base_identifier = contract.get("baseIdentifier")
+    if _is_non_empty_string(base_identifier):
+        namespace_fragment = "namespace = baseIdentifier"
+        if namespace_fragment not in gradle_text:
+            errors.append(
+                ContractError("$.android.namespace", f'must contain "{namespace_fragment}"')
+            )
+        main_activity = (
+            app_root
+            / "android"
+            / "app"
+            / "src"
+            / "main"
+            / "kotlin"
+            / Path(*base_identifier.split("."))
+            / "MainActivity.kt"
+        )
+        if not main_activity.is_file():
+            errors.append(
+                ContractError(
+                    "$.android.mainActivity",
+                    f"must exist at package-derived path: {main_activity.relative_to(app_root)}",
+                )
+            )
+        else:
+            activity_text = main_activity.read_text(encoding="utf-8")
+            if f"package {base_identifier}" not in activity_text:
+                errors.append(
+                    ContractError(
+                        "$.android.mainActivity",
+                        f"must declare package {base_identifier}",
+                    )
+                )
 
     required_gradle_fragments = (
+        'JsonSlurper().parse(file("../../config/environments.json"))',
+        'environmentManifest["baseIdentifier"] as String',
+        'environment["androidApplicationId"] as String',
+        'environment["displayName"] as String',
+        'environment["dartEntrypoint"] as String',
+        "applicationId = baseIdentifier",
         'flavorDimensions += "environment"',
         'manifestPlaceholders["appDisplayName"]',
         'manifestPlaceholders["nativeEnvironment"]',
@@ -367,24 +417,6 @@ def validate_android_projection(
     if not isinstance(environments, list):
         return errors
 
-    for index, environment in enumerate(environments):
-        if not isinstance(environment, dict):
-            continue
-        expected_fragments = (
-            f'name = "{environment.get("androidFlavor")}"',
-            f'applicationId = "{environment.get("androidApplicationId")}"',
-            f'displayName = "{environment.get("displayName")}"',
-            f'dartEntrypoint = "{environment.get("dartEntrypoint")}"',
-        )
-        for fragment in expected_fragments:
-            if fragment not in gradle_text:
-                errors.append(
-                    ContractError(
-                        f"$.environments[{index}].androidProjection",
-                        f"Gradle projection missing: {fragment}",
-                    )
-                )
-
     return errors
 
 
@@ -393,7 +425,7 @@ def validate_ios_projection(
     contract: dict[str, Any],
 ) -> list[ContractError]:
     errors: list[ContractError] = []
-    ios_root = repository_root / "apps" / "flutter_architecture" / "ios"
+    ios_root = discover_app_root(repository_root) / "ios"
     project_path = ios_root / "Runner.xcodeproj" / "project.pbxproj"
     scheme_root = ios_root / "Runner.xcodeproj" / "xcshareddata" / "xcschemes"
     info_path = ios_root / "Runner" / "Info.plist"
@@ -445,6 +477,7 @@ def validate_ios_projection(
             expected_values = (
                 f"PRODUCT_BUNDLE_IDENTIFIER = {bundle_identifier}",
                 f"APP_DISPLAY_NAME = {display_name}",
+                f"PRODUCT_NAME = {display_name}",
                 f"FLUTTER_TARGET = {entrypoint}",
                 f"NATIVE_ENVIRONMENT = {name}",
                 "DART_DEFINES = $(inherited),",
@@ -522,6 +555,17 @@ def validate_ios_projection(
                 "template project must not contain a personal DEVELOPMENT_TEAM",
             )
         )
+
+    base_identifier = contract.get("baseIdentifier")
+    if _is_non_empty_string(base_identifier):
+        runner_tests_identifier = f"PRODUCT_BUNDLE_IDENTIFIER = {base_identifier}.RunnerTests;"
+        if project_text.count(runner_tests_identifier) < len(expected_configurations):
+            errors.append(
+                ContractError(
+                    "$.iosRunnerTestsBundleIdentifier",
+                    f"RunnerTests configurations must use {base_identifier}.RunnerTests",
+                )
+            )
 
     return errors
 

@@ -1,23 +1,29 @@
 #!/usr/bin/env python3
+import json
 import plistlib
 import sys
 from pathlib import Path
 
 
-BUNDLE_IDS = {
-    "development": "com.example.flutterarchitecture.development",
-    "staging": "com.example.flutterarchitecture.staging",
-    "production": "com.example.flutterarchitecture",
-}
-
-
 def main() -> int:
     environment = sys.argv[1]
-    expected_bundle = BUNDLE_IDS[environment]
     root = Path(__file__).resolve().parents[2]
+    candidates = sorted(
+        path.parent.parent
+        for path in (root / "apps").glob("*/config/environments.json")
+        if path.is_file()
+    )
+    if len(candidates) != 1:
+        raise SystemExit(f"Expected exactly one app environment manifest; found {len(candidates)}")
+    app_root = candidates[0]
+    manifest = json.loads(
+        (app_root / "config/environments.json").read_text(encoding="utf-8")
+    )
+    environment_map = {item["name"]: item for item in manifest["environments"]}
+    expected_bundle = environment_map[environment]["iosBundleIdentifier"]
     config = (
-        root
-        / "apps/flutter_architecture/ios/Firebase"
+        app_root
+        / "ios/Firebase"
         / environment
         / "GoogleService-Info.plist"
     )

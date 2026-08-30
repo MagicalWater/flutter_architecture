@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -106,11 +107,11 @@ def _is_dependency_path(path: str) -> bool:
 def _classify_path(path: str) -> str | None:
     if path == "VERSION":
         return "release_metadata"
-    if path.startswith("apps/flutter_architecture/android/") or path.startswith(
+    if re.match(r"^apps/[^/]+/android/", path) or path.startswith(
         "tools/ci/build_android_"
     ):
         return "android_native"
-    if path.startswith("apps/flutter_architecture/ios/") or path.startswith(
+    if re.match(r"^apps/[^/]+/ios/", path) or path.startswith(
         "tools/ci/build_ios_"
     ):
         return "ios_native"
@@ -130,9 +131,9 @@ def _classify_path(path: str) -> str | None:
         return "generated"
     if _is_test_path(path):
         return "test_only"
-    if path.startswith("apps/flutter_architecture/lib/features/"):
+    if re.match(r"^apps/[^/]+/lib/features/", path):
         return "app_feature"
-    if path.startswith("apps/flutter_architecture/lib/"):
+    if re.match(r"^apps/[^/]+/lib/", path):
         return "app_shared"
     if path.startswith("packages/"):
         return "package"
@@ -140,7 +141,7 @@ def _classify_path(path: str) -> str | None:
         return "tooling"
     if _is_docs_path(path):
         return "docs_content"
-    if path.startswith("apps/flutter_architecture/assets/") or path == "apps/flutter_architecture/l10n.yaml":
+    if re.match(r"^apps/[^/]+/assets/", path) or re.match(r"^apps/[^/]+/l10n\.yaml$", path):
         return "app_shared"
     return None
 
@@ -192,30 +193,23 @@ def _is_classifier_path(path: str) -> bool:
 
 def _is_shared_app_build_path(path: str) -> bool:
     return (
-        path.startswith("apps/flutter_architecture/lib/")
-        or path.startswith("apps/flutter_architecture/config/")
-        or path.startswith("apps/flutter_architecture/assets/")
-        or path == "apps/flutter_architecture/pubspec.yaml"
-        or path == "apps/flutter_architecture/l10n.yaml"
+        re.match(r"^apps/[^/]+/(lib|config|assets)/", path) is not None
+        or re.match(r"^apps/[^/]+/(pubspec\.yaml|l10n\.yaml)$", path) is not None
     )
 
 
 def _is_database_critical_path(path: str) -> bool:
     return (
-        path.startswith("apps/flutter_architecture/lib/app/database/")
-        or path.startswith("apps/flutter_architecture/test/drift_schemas/")
-        or path in {
-            "apps/flutter_architecture/web/sqlite3.wasm",
-            "apps/flutter_architecture/web/drift_worker.dart",
-            "apps/flutter_architecture/web/drift_worker.js",
-        }
+        re.match(r"^apps/[^/]+/lib/app/database/", path) is not None
+        or re.match(r"^apps/[^/]+/test/drift_schemas/", path) is not None
+        or re.match(r"^apps/[^/]+/web/(sqlite3\.wasm|drift_worker\.dart|drift_worker\.js)$", path) is not None
         or path.startswith("tools/database/")
     )
 
 
 def _is_android_path(path: str) -> bool:
     return (
-        path.startswith("apps/flutter_architecture/android/")
+        re.match(r"^apps/[^/]+/android/", path) is not None
         or path.startswith("tools/ci/build_android_")
         or path == "tools/ci/verify_environment_contract.py"
         or path == ".github/workflows/android.yml"
@@ -225,7 +219,7 @@ def _is_android_path(path: str) -> bool:
 
 def _is_ios_path(path: str) -> bool:
     return (
-        path.startswith("apps/flutter_architecture/ios/")
+        re.match(r"^apps/[^/]+/ios/", path) is not None
         or path.startswith("tools/ci/build_ios_")
         or path == "tools/ci/verify_environment_contract.py"
         or path == ".github/workflows/ios.yml"

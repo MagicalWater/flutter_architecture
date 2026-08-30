@@ -30,8 +30,10 @@ Missing、malformed 或 unknown repository identity 必須 fail closed，不得�
 - 讀取 `repository_identity.json` 與 root `VERSION`；
 - 讀取並驗證 `repository_infrastructure.json`，收集／確認產品CI profile與non-secret infrastructure disposition；
 - 收集／確認產品名稱與 repository bootstrap 所需最小 identity input；
+- 在任何rename前分類product-facing、technical/operational、native-placeholder、compatibility-preserved、template-provenance與historical/fixture identity；
+- 使用repository-owned technical identity migration helper處理executable app path、Dart package與workspace name，禁止全文字replace；
 - 保存 template origin repository 與 template baseline；
-- 將產品 current `VERSION` 與 template provenance 分離；
+- 將產品 current `VERSION` 與 template provenance 分離；prospective validation使用 candidate product VERSION，不先覆寫 canonical template VERSION；
 - 將 README／project context／roadmap／CHANGELOG 等 current authority 從模板本體投影為產品 repository；
 - 需要 Android／iOS product identity 時，委派既有 `adopting-template-product-identity`；
 - selected CI profile required acceptance完成前不得宣稱live infrastructure configured或finalize product；
@@ -64,12 +66,12 @@ tools/docs/verify_repository_infrastructure.py
 ```txt
 read template identity + VERSION
 → collect and confirm product inputs
-→ repository docs/version/native mutations while canonical kind stays template
+→ repository docs/native mutations + candidate product VERSION while canonical kind/version stay template
 → infrastructure manifest + CI profile selection
 → required docs/native/infrastructure contract validation
 → live infrastructure disposition / selected profile acceptance
-→ prospective candidate-product identity validation
-→ final canonical repository_identity transition to product
+→ prospective candidate-product identity + VERSION validation
+→ final canonical VERSION + repository_identity transition to product
 → canonical identity/docs re-validation
 → fresh no-handoff admission acceptance
 ```

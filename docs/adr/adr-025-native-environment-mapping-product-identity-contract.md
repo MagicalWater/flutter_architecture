@@ -30,9 +30,9 @@ ADR-014已將Dart entrypoint定義為`AppEnvironment`唯一來源；ADR-023與AD
 
 ## Decision
 
-Repository使用一份App-owned environment mapping manifest保存三個environment的native projection。Manifest不是generic framework，也不取代Dart entrypoint semantics。
+Repository使用一份App-owned environment mapping manifest保存三個environment的native projection。Manifest中的`baseIdentifier`與各environment identifier/display name是concrete native identity唯一machine owner；Manifest不是generic framework，也不取代Dart entrypoint semantics。
 
-正式mapping：
+Template default mapping（產品採用後不再是該product repository的current concrete authority；current values一律讀manifest）：
 
 | Environment | Android flavor | iOS scheme | Entrypoint | Display name | Identifier |
 |---|---|---|---|---|---|
@@ -49,6 +49,8 @@ Android variant與iOS configuration必須固定正確Dart target及`NATIVE_ENVIR
 Production維持ADR-014的real API、HTTPS與blocked host限制，並新增template placeholder host拒絕。Staging只允許real API且預設HTTPS。Development可使用mock或real API。
 
 Template repository擁有example base identity、suffix convention、display name、mapping與verification；採用模板的產品必須替換base identity、display name、API endpoint與production signing／Store資料。
+
+Repository lifecycle與Native Product Identity分離。Product repository可以在正式native base identifier尚未確認時保留template placeholder並將Native Product Identity標記為`Pending`；只有manifest-first projection與必要驗證完成後才能標記`Adopted`。此disposition不是新的repository lifecycle state。
 
 Repository CI以static verifier覆蓋三個environment，只建立development與production的Android／iOS代表build。Production代表artifact仍是verification-only，不代表signed、archive或Store distribution。
 

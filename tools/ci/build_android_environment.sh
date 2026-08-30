@@ -3,7 +3,7 @@
 set -euo pipefail
 environment="$1"; build_mode="$2"; entrypoint="$3"; api_mode="$4"
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-app_dir="$repo_root/apps/flutter_architecture"
+source "$repo_root/tools/ci/python_runtime.sh"
 [[ -n "${ARTIFACT_DIR:-}" ]] || { echo "ARTIFACT_DIR is required for Android verification." >&2; exit 64; }
 artifact_dir="$ARTIFACT_DIR"
 flutter_symbols_dir="$artifact_dir/flutter-symbols"
@@ -12,7 +12,8 @@ api_base_url="${API_BASE_URL:-}"
 commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
 run_key="${CI_RUN_KEY:-unmanaged}"
 job_key="${CI_JOB_KEY:-unmanaged-android-$environment}"
-python_bin="${PYTHON_BIN:-python3}"
+python_bin="$(resolve_repository_python)" || exit 69
+app_dir="$("$python_bin" -c 'from pathlib import Path; import sys; root=Path(sys.argv[1]); c=[p.parent.parent for p in (root/"apps").glob("*/config/environments.json") if p.is_file()]; len(c)==1 or sys.exit("expected exactly one app environment manifest"); print(c[0])' "$repo_root")"
 
 cleanup_android_symbol_staging() {
   if [[ "$flutter_symbols_staging_dir" == "$artifact_dir"/.flutter-symbols-build-* ]]; then
@@ -104,7 +105,7 @@ if ! java -version >/dev/null 2>&1 && [[ -d "/Applications/Android Studio.app/Co
   export PATH="$JAVA_HOME/bin:$PATH"
 fi
 package_id="$($apkanalyzer manifest application-id "$target_apk")"
-expected_id="com.example.flutterarchitecture"; [[ "$environment" == "production" ]] || expected_id+=".$environment"
+expected_id="$("$python_bin" -c 'import json,sys; p=json.load(open(sys.argv[1], encoding="utf-8")); print(next(e["androidApplicationId"] for e in p["environments"] if e["name"] == sys.argv[2]))' "$app_dir/config/environments.json" "$environment")"
 [[ "$package_id" == "$expected_id" ]] || { echo "Unexpected package id: $package_id" >&2; exit 1; }
 cat > "$artifact_dir/artifact-metadata.txt" <<EOF
 commit_sha=$commit_sha

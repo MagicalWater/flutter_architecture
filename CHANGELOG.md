@@ -18,6 +18,21 @@
 
 ## [Unreleased]
 
+### Changed
+
+- 依真實 Template → Product 採用 evidence 回補 repository bootstrap：prospective product identity 與 Product Repository Version 可在 canonical template lifecycle/version 不變時共同驗證，避免 atomic bootstrap verifier 衝突。
+- 新增受控 technical identity migration 與 native identity projector；App/workspace technical naming、Android namespace/Kotlin package、iOS product/bundle projection與 RunnerTests identity 不再依賴全文字替換。
+- Native environment manifest 升級為 schema v2，使用 lifecycle-neutral `baseIdentifier`；Android Gradle、Firebase verifier、native artifact verifier與 observability artifact lookup 改由 manifest／runtime projection取得 expected identity。
+- Repository productization 與 Native Product Identity lifecycle 明確分離；`repository_kind = product` 且正式 native identity 仍為 `Pending` 是合法、可驗證的 adoption state。
+- Android／iOS native build entrypoints與 local CI 共用 repository-owned Python interpreter resolution，避免 Windows Git Bash 對 `python3` shim 的脆弱假設。
+
+### Validation
+
+- Disposable product adoption Scenario A：technical productization、candidate product `VERSION=0.1.0` prospective identity/docs gate、final product identity/infrastructure/docs gate全部 PASS；Native Product Identity 保持 Pending。
+- Disposable native rehearsal Scenario B：`com.template.backportrehearsal` manifest/native projection verifier PASS，Windows Git Bash development APK artifact實際 package id為 `com.template.backportrehearsal.development`。
+- Exact-content clean validation copy：managed local quality suite完整 PASS（docs、56項Python tests、workspace analyze、generated consistency、現有Flutter tests）；Android development Debug與production Release verification artifacts均 PASS。
+- Windows host不宣稱Xcode build；iOS以manifest-driven static projection verifier覆蓋本次changed risk。
+
 ---
 
 ## [1.26.1] - 2026-08-19

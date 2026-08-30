@@ -89,13 +89,14 @@ class CheckIssue:
 def check_repository(
     root: Path,
     identity_manifest_path: Path | None = None,
+    version_override: str | None = None,
 ) -> list[CheckIssue]:
     root = root.resolve()
     markdown_files = sorted(_iter_markdown_files(root))
     issues: list[CheckIssue] = []
     issues.extend(
         CheckIssue(issue.code, issue.path, issue.message)
-        for issue in check_repository_identity(root, identity_manifest_path)
+        for issue in check_repository_identity(root, identity_manifest_path, version_override)
     )
     issues.extend(
         CheckIssue(issue.code, issue.path, issue.message)
@@ -115,7 +116,7 @@ def check_repository(
         )
     )
     issues.extend(_check_visual_authority_manifests(root))
-    issues.extend(_check_baseline(root))
+    issues.extend(_check_baseline(root, version_override))
     metadata_by_path, metadata_issues = _check_metadata(root, markdown_files)
     issues.extend(metadata_issues)
     issues.extend(_check_duplicate_ids(root, metadata_by_path))
@@ -272,14 +273,14 @@ def _without_front_matter(text: str) -> str:
     return "\n".join(lines[end + 1 :])
 
 
-def _check_baseline(root: Path) -> list[CheckIssue]:
+def _check_baseline(root: Path, version_override: str | None = None) -> list[CheckIssue]:
     version_path = root / "VERSION"
     readme_path = root / "README.md"
     changelog_path = root / "CHANGELOG.md"
     if not all(path.exists() for path in (version_path, readme_path, changelog_path)):
         return []
 
-    version = version_path.read_text(encoding="utf-8").strip()
+    version = version_override or version_path.read_text(encoding="utf-8").strip()
     readme_match = _README_VERSION_RE.search(readme_path.read_text(encoding="utf-8"))
     changelog_version = next(
         (
@@ -585,9 +586,15 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="validate docs against a prospective repository identity manifest",
     )
+    parser.add_argument(
+        "--version",
+        help="validate docs against a prospective repository VERSION together with --manifest",
+    )
     args = parser.parse_args(argv)
+    if args.version is not None and args.manifest is None:
+        parser.error("--version requires --manifest")
     root = Path(args.root).resolve()
-    issues = check_repository(root, args.manifest)
+    issues = check_repository(root, args.manifest, args.version)
     if issues:
         for issue in issues:
             print(issue.format(root))

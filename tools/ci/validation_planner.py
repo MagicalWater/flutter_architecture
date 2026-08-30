@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import base64
 import hashlib
 import json
@@ -129,7 +130,7 @@ def _platform_build_kinds(
         android_paths = tuple(
             path
             for path in normalized
-            if path.startswith("apps/flutter_architecture/android/")
+            if re.match(r"^apps/[^/]+/android/", path)
             or path.startswith("tools/ci/build_android_")
             or path == ".github/workflows/android.yml"
             or path in _ROOT_CROSS_PLATFORM_RELEASE_PATHS
@@ -153,7 +154,7 @@ def _platform_build_kinds(
         ios_paths = tuple(
             path
             for path in normalized
-            if path.startswith("apps/flutter_architecture/ios/")
+            if re.match(r"^apps/[^/]+/ios/", path)
             or path.startswith("tools/ci/build_ios_")
             or path == ".github/workflows/ios.yml"
             or path in _ROOT_CROSS_PLATFORM_RELEASE_PATHS
@@ -274,10 +275,20 @@ def _package_from_path(path: str) -> str | None:
 
 def _feature_from_path(path: str) -> str | None:
     parts = PurePosixPath(path.replace("\\", "/")).parts
-    prefix = ("apps", "flutter_architecture", "lib", "features")
-    if len(parts) > len(prefix) and parts[: len(prefix)] == prefix:
-        return parts[len(prefix)]
+    if len(parts) > 4 and parts[0] == "apps" and parts[2:4] == ("lib", "features"):
+        return parts[4]
     return None
+
+
+def _app_path_from_changed_paths(paths: Sequence[str], repository: Path | str) -> str:
+    for path in paths:
+        parts = PurePosixPath(path.replace("\\", "/")).parts
+        if len(parts) >= 2 and parts[0] == "apps":
+            return f"apps/{parts[1]}"
+    app_packages = [package for package in load_workspace_packages(repository) if package.path.startswith("apps/")]
+    if len(app_packages) != 1:
+        raise ValueError("repository must expose exactly one executable app workspace for app-scoped validation")
+    return app_packages[0].path
 
 
 def _test_scope_for_changed_test(path: str) -> str | None:
@@ -358,6 +369,10 @@ def plan_validation(
     reasons: list[str] = []
 
     normalized_paths = tuple(path.replace("\\", "/") for path in paths if path.strip())
+    try:
+        app_path = _app_path_from_changed_paths(normalized_paths, repository)
+    except (OSError, ValueError):
+        app_path = "apps/flutter_architecture"
 
     for change_class in classes:
         reasons.append(change_class)
@@ -381,12 +396,12 @@ def plan_validation(
         elif change_class == "app_feature":
             level = _max_level(level, "affected")
             for feature in filter(None, (_feature_from_path(path) for path in normalized_paths)):
-                flutter_scopes.append(f"apps/flutter_architecture/test/features/{feature}")
-            analyze_scopes.append("apps/flutter_architecture")
+                flutter_scopes.append(f"{app_path}/test/features/{feature}")
+            analyze_scopes.append(app_path)
         elif change_class == "app_shared":
             level = _max_level(level, "workspace")
-            flutter_scopes.append("apps/flutter_architecture/test")
-            analyze_scopes.append("apps/flutter_architecture")
+            flutter_scopes.append(f"{app_path}/test")
+            analyze_scopes.append(app_path)
         elif change_class == "package":
             level = _max_level(level, "affected")
             try:
@@ -435,13 +450,13 @@ def plan_validation(
         elif change_class == "generated":
             level = _max_level(level, "workspace")
             generated_check = True
-            flutter_scopes.append("apps/flutter_architecture/test")
-            analyze_scopes.append("apps/flutter_architecture")
+            flutter_scopes.append(f"{app_path}/test")
+            analyze_scopes.append(app_path)
         elif change_class == "database":
             level = _max_level(level, "workspace")
             generated_check = True
-            flutter_scopes.append("apps/flutter_architecture/test")
-            analyze_scopes.append("apps/flutter_architecture")
+            flutter_scopes.append(f"{app_path}/test")
+            analyze_scopes.append(app_path)
         elif change_class == "android_native":
             level = _max_level(level, "workspace")
             android_build = True

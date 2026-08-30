@@ -46,7 +46,7 @@ Minimum iOS deployment target固定為13.0，並同時由Podfile與Xcode project
 
 ### Template identity and signing
 
-Template identity固定為：
+Template repository default identity為下列verification placeholder；產品repository採用後，current native identity只由App-owned environment manifest擁有，本Decision不保存product concrete mapping：
 
 ```txt
 Bundle Identifier: com.example.flutterarchitecture
@@ -54,7 +54,7 @@ Product Name: Flutter Architecture
 Development Team: unset
 ```
 
-RunnerTests使用相同identifier prefix。Repository不得保存個人Apple account、Development Team、certificate、provisioning profile或正式產品identifier。Production signing、distribution與Store workflow由未來獨立Decision治理。
+Template baseline的RunnerTests使用相同identifier prefix；產品採用後由native identity projection同步切換。Repository不得保存個人Apple account、Development Team、certificate、provisioning profile。Production signing、distribution與Store workflow由未來獨立Decision治理。
 
 ### Native dependency manager
 

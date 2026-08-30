@@ -270,7 +270,7 @@ jobs:
         if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         run: >-
           bash tools/ci/upload_ios_dsyms.sh production
-          "$RUNNER_TEMP/ios-production-artifact/Flutter Architecture.app.dSYM"
+          "$(find "$RUNNER_TEMP/ios-production-artifact" -maxdepth 2 -type d -name '*.app.dSYM' -print -quit)"
       - name: Build controlled iOS staging acceptance app
         if: env.REMOTE_ACCEPTANCE_READY == 'true' && runner.environment == 'github-hosted'
         env:

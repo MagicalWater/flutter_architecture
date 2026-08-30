@@ -466,7 +466,7 @@ FIREBASE_IOS_PRODUCTION_CONFIG_B64
 FIREBASE_IOS_STAGING_CONFIG_B64
 ```
 
-`*_CONFIG_B64`是原始provider config的base64內容。Android production／staging config分別對應`com.example.flutterarchitecture`與`com.example.flutterarchitecture.staging`；iOS亦須對應相同bundle identity。不得把原始JSON／plist提交到Git。
+`*_CONFIG_B64`是原始provider config的base64內容。Provider config必須對應App-owned `config/environments.json`中該environment的Android application ID／iOS bundle identifier；`com.example.flutterarchitecture*`只是在template baseline中的placeholder example。不得把原始JSON／plist提交到Git。
 
 Secret-ready run會：
 

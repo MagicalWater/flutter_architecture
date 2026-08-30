@@ -28,6 +28,8 @@ Android Gradle、iOS scheme／configuration、Dart entrypoint 與 verification t
 
 ## Repository Default Mapping
 
+下表只是template default/example。產品採用後，current concrete identifier與display name唯一以App-owned`environments.json`為準；本Guide不成為第二份product mapping authority。
+
 | Environment | Android flavor | iOS scheme | Entrypoint | Display name | Identifier |
 |---|---|---|---|---|---|
 | development | `development` | `Development` | `lib/main_development.dart` | `Flutter Architecture Dev` | `com.example.flutterarchitecture.development` |
@@ -118,15 +120,24 @@ production  → <base>
 
 這能讓三個環境共存安裝，也維持 production 無 suffix 的產品 identity。
 
+確認base identifier與三個display name後，使用repository-owned projector一次同步manifest與native projections：
+
+```bash
+python tools/docs/project_native_identity.py com.yourcompany.yourproduct \
+  --development-name "Your Product Dev" \
+  --staging-name "Your Product Staging" \
+  --production-name "Your Product"
+```
+
 ### 2. 更新 environment manifest
 
-先修改：
+Projector會先修改唯一machine authority：
 
 ```txt
 apps/flutter_architecture/config/environments.json
 ```
 
-替換三個 environment 的 identifier 與 display name。Environment 名稱、flavor、scheme 與 entrypoint 若無正式 architecture decision，不應任意改名。
+將schema v2的`baseIdentifier`與三個 environment 的 identifier / display name替換為產品值。Environment 名稱、flavor、scheme與entrypoint若無正式architecture decision，不應任意改名。
 
 ### 3. 更新 Android projection
 
@@ -164,7 +175,7 @@ apps/flutter_architecture/ios/Runner.xcodeproj/project.pbxproj
 
 ### 5. 更新 repository verification expectations
 
-目前 verifier 與 artifact inspection scripts 會阻止 native projection 漂移。替換 identity 後同步更新／檢查：
+目前 verifier 與 artifact inspection scripts會從manifest解析expected identity並阻止native projection漂移。替換identity後不應再手改tooling中的duplicate identifier table；只需執行／檢查：
 
 ```txt
 tools/ci/verify_environment_contract.py

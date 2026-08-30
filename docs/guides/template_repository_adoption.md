@@ -89,6 +89,15 @@ docs/roadmap/active.md
 CHANGELOG.md
 ```
 
+在rename前先做identity ownership分類。Executable app directory、Dart package與root workspace name是product technical identity；使用：
+
+```bash
+python tools/docs/productize_technical_identity.py <product_lower_snake_case_name> --dry-run
+python tools/docs/productize_technical_identity.py <product_lower_snake_case_name>
+```
+
+工具只遷移exact technical locators（app path、`package:<old>/` imports、workspace/package scope與workspace name），不改database filename、platform channel、Web storage、template provenance或historical/fixture identity。Migration後generated files依既有codegen流程重建；禁止用全repository裸字串replace代替此分類。
+
 完成後：
 
 - `repository_kind = product`；
@@ -210,18 +219,29 @@ Bootstrap 完成順序固定為：
 ```txt
 read template repository identity + VERSION
 → collect / confirm product inputs
-→ repository docs/version/native mutations
-   （canonical repository_kind仍是template）
+→ repository docs/native mutations + candidate product VERSION
+   （canonical repository_kind與template VERSION仍不變）
 → infrastructure manifest + CI profile selection
 → required native/docs/component/tracked infrastructure validation
 → live infrastructure disposition / selected profile acceptance
-→ prospective candidate-product identity validation
-→ final repository_identity transition to product
+→ prospective candidate-product identity + VERSION validation
+→ final VERSION + repository_identity transition to product
 → canonical identity/docs validation
 → fresh no-handoff Agent acceptance
 ```
 
 如果任何 blocking validation 失敗，canonical lifecycle 不得先切成 `product`。沒有持久的 `bootstrapping` 第三狀態。
+
+Prospective identity/docs gate使用同一組candidate VERSION，例如：
+
+```bash
+python tools/docs/verify_repository_identity.py . --manifest <candidate-identity.json> --version 0.1.0
+python tools/docs/check_docs.py . --manifest <candidate-identity.json> --version 0.1.0
+```
+
+這兩個gate都不得要求先覆寫canonical template `VERSION`。
+
+正式 Bundle ID 尚未確認不阻塞 repository productization。Repository可以合法完成為 `product`，同時保持 Native Product Identity `Pending`；此時 template native placeholder只是明確的 non-production pending projection，不代表 Store／Firebase readiness。Native identity mutation仍必須在base identifier明確後才執行。
 
 ## 10. Completion 如何判定
 

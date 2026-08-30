@@ -66,9 +66,10 @@ tools/ci/verify_environment_contract.py
 4. mutation 前先盤點 `environments.json`、Dart entrypoints、Android projection、iOS projection 與 verifier expectations。
 5. 套用新 identity 前，先處置任何 pre-existing drift。
 6. 採用 manifest-first 順序：先更新已接受的 manifest authority，再同步各平台 projections。
-7. 以 `docs/guides/native_environment_adoption.md` 作為完整 procedure 與 current exact-command authority。
-8. Evidence 只能標記為 `Verified`、`Statically verified`、`Pending`、`Blocked` 或 `Not in scope`。
-9. 不得把 iOS static projection check 描述成 Xcode build。
+7. Native identity disposition只使用`Pending`或`Adopted`描述procedure evidence；不得把它提升成新的repository lifecycle state。Repository已product化但Native identity仍`Pending`是合法狀態。
+8. 以 `docs/guides/native_environment_adoption.md` 作為完整 procedure 與 current exact-command authority。
+9. Evidence 只能標記為 `Verified`、`Statically verified`、`Pending`、`Blocked` 或 `Not in scope`。
+10. 不得把 iOS static projection check 描述成 Xcode build。
 
 ## 強制停止與升級條件
 

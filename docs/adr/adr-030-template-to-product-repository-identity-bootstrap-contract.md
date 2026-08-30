@@ -46,19 +46,25 @@ Fresh Agent admission 必須先讀 `repository_identity.json`。Missing、malfor
 
 首次 bootstrap 的 repository orchestration 使用薄型 `adopting-template-repository` Skill；中央 `governing-template-development` 仍擁有 Requirement Decision、Level、Design／Plan與Task governance。需要 Android／iOS product identity 時，bootstrap Skill 必須委派既有 `adopting-template-product-identity`，不得建立第二份 native mapping authority。
 
-Bootstrap 使用 atomic completion boundary：
+Repository productization必須在mutation前先分類殘留identity ownership：`product-facing`、`technical/operational`、`native-placeholder`、`compatibility-preserved`、`template-provenance`、`historical/fixture`。Executable app directory、Dart package name與workspace name屬於product technical identity；database filename、platform channel、Web storage等既有persistence/compatibility identity不得因branding cleanup自動改名；template provenance與historical/fixture references亦不得被全文字替換。
+
+Technical identity migration只允許受控exact locator replacement。Repository提供`tools/docs/productize_technical_identity.py`處理app path、Dart package import/scope與workspace name；generated files不由工具手改，後續依既有codegen authority重建。不得以裸字串全repository replace取代ownership classification。
+
+Bootstrap 使用 atomic completion boundary。Prospective product 驗證必須同時驗證 candidate identity manifest 與 candidate product VERSION；不得為了 prospective 驗證先覆寫 canonical template `VERSION`：
 
 ```txt
 template state
 → confirm product inputs
-→ repository docs/version/native projections
+→ repository docs/native projections + candidate product VERSION
 → blocking validations
-→ prospective candidate-product identity validation
-→ final canonical repository_identity transition
+→ prospective candidate-product identity + VERSION validation
+→ final canonical VERSION + repository_identity transition
 → canonical fresh verification
 ```
 
 在 final transition 前，canonical `repository_kind` 必須保持 `template`。不新增持久的 `bootstrapping` 第三狀態。任何 blocking validation 失敗時，Task保持 open／blocked，不能讓 fresh Agent 把半完成 repository 視為已採用 product。
+
+Repository lifecycle 與 Native Product Identity 是分離 authority。`repository_kind = product` 可以在正式 native base identifier 尚未確認時合法成立；此時 native mapping仍保留明確 template placeholder並標記 Native Product Identity `Pending`。Repository identity verifier不得從 native identifier推斷 product lifecycle或production readiness。
 
 ## Consequences
 

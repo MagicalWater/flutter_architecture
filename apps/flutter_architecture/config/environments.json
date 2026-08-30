@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "templateBaseIdentifier": "com.example.flutterarchitecture",
+  "schemaVersion": 2,
+  "baseIdentifier": "com.example.flutterarchitecture",
   "androidFlavorDimension": "environment",
   "environments": [
     {

@@ -1,4 +1,5 @@
 import com.flutter.gradle.tasks.FlutterTask
+import groovy.json.JsonSlurper
 import java.util.Base64
 
 plugins {
@@ -14,26 +15,17 @@ data class AndroidEnvironment(
     val dartEntrypoint: String,
 )
 
-val androidEnvironments = listOf(
+val environmentManifest = JsonSlurper().parse(file("../../config/environments.json")) as Map<*, *>
+val baseIdentifier = environmentManifest["baseIdentifier"] as String
+val androidEnvironments = (environmentManifest["environments"] as List<*>).map { raw ->
+    val environment = raw as Map<*, *>
     AndroidEnvironment(
-        name = "development",
-        applicationId = "com.example.flutterarchitecture.development",
-        displayName = "Flutter Architecture Dev",
-        dartEntrypoint = "lib/main_development.dart",
-    ),
-    AndroidEnvironment(
-        name = "staging",
-        applicationId = "com.example.flutterarchitecture.staging",
-        displayName = "Flutter Architecture Staging",
-        dartEntrypoint = "lib/main_staging.dart",
-    ),
-    AndroidEnvironment(
-        name = "production",
-        applicationId = "com.example.flutterarchitecture",
-        displayName = "Flutter Architecture",
-        dartEntrypoint = "lib/main_production.dart",
-    ),
-)
+        name = environment["name"] as String,
+        applicationId = environment["androidApplicationId"] as String,
+        displayName = environment["displayName"] as String,
+        dartEntrypoint = environment["dartEntrypoint"] as String,
+    )
+}
 
 val firebaseConfigCandidates = androidEnvironments.map { environment ->
     file("src/${environment.name}/google-services.json")
@@ -96,7 +88,7 @@ fun appendDartDefine(current: String?, value: String): String {
 }
 
 android {
-    namespace = "com.example.flutterarchitecture"
+    namespace = baseIdentifier
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -110,7 +102,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.flutterarchitecture"
+        applicationId = baseIdentifier
         minSdk = maxOf(flutter.minSdkVersion, 23)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

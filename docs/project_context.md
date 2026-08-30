@@ -362,8 +362,8 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: Template → Product Adoption Backport
-Current phase: Local implementation + holistic review complete / 1.27.0 release closure pending
+Current active milestone: none
+Current phase: Template Baseline 1.27.0 published / formal closure complete
 Maintenance mode: normal development from `dev`; `main` publication-only
 ```
 

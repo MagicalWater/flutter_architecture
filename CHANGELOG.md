@@ -35,7 +35,8 @@
 - Disposable product adoption Scenario A：technical productization、candidate product `VERSION=0.1.0` prospective identity/docs gate、final product identity/infrastructure/docs gate全部 PASS；Native Product Identity 保持 Pending。
 - Disposable native rehearsal Scenario B：`com.template.backportrehearsal` manifest/native projection verifier PASS，Windows Git Bash development APK artifact實際 package id為 `com.template.backportrehearsal.development`。
 - Exact-content clean validation copy：managed local quality suite完整 PASS（docs、56項Python tests、workspace analyze、generated consistency、現有Flutter tests）；Android development Debug與production Release verification artifacts均 PASS。
-- Windows host不宣稱Xcode build；iOS以manifest-driven static projection verifier覆蓋本次changed risk。
+- Exact release candidate `8fd420b90bebb83c3e394c2f2e7ba66d7d32de78` 已完成 GitHub-hosted release validation：CI run `33301290129`、Android run `33301291335`、iOS run `33301292479` 全部 PASS，之後以同一 exact SHA fast-forward publication 至 `main`。
+- Release publication完成後依 documentation retention policy移除本次過程性Design／Plan；stable rules已由ADR、Guide、Skill、machine tooling與Git history承接，不建立永久平行authority。
 
 ## [1.26.1] - 2026-08-19
 

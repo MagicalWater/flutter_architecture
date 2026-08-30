@@ -9,24 +9,20 @@ last_reviewed_baseline: 1.27.0
 # Active Milestone
 
 ```txt
-Active Milestone: Template → Product Adoption Backport
-State: Local implementation + holistic review complete / release decision pending
+Active Milestone: none
+State: Template Baseline 1.27.0 published / formal closure complete
 Template Baseline: 1.27.0
 ```
 
 ## Current Gate
 
-- Active Milestone：**Template → Product Adoption Backport**。
-- Open P0=0 / Open P1 without disposition=0。
-- Current gate：**EXACT RELEASE CANDIDATE VALIDATION**。Design / Plan、Stage 1～5 implementation、whole-scope holistic review與required local/runtime evidence均已完成；Template Baseline candidate為`1.27.0`，通過exact candidate release validation後才可publication。
+- Active Milestone：**none**。
+- Template → Product Adoption Backport 已完成 implementation、fresh adoption acceptance、holistic review、1.27.0 exact candidate release validation、publication 與 retention cleanup。
+- Current gate：**none / normal development**。
 
 ## Current Authority
 
 - Stable Design System / theme boundary：`docs/adr/adr-018-design-system-theme-boundaries.md`
-- Accepted adoption backport Design：`docs/roadmap/template_product_adoption_backport_design.md`
-- Accepted adoption backport Plan：`docs/roadmap/template_product_adoption_backport_plan.md`
 - Current project snapshot：`docs/project_context.md`
 - Release identity：`VERSION` / `CHANGELOG.md`
 - Historical closure：`docs/milestones/README.md` / `docs/audits/README.md` / Git history
-
-本 Design 只在此工作 active 期間列入 routing；closure 後依 documentation retention policy 決定 archive 或 delete，不轉成永久平行 authority。

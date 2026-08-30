@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.26.1
 ```txt
 Template Baseline: 1.26.1
 Phase 1 / MVP: Completed
-Current active milestone: none
-Current phase: Asset Runtime & Theme-aware Visual Integration published / formal closure complete；maintenance-ready
+Current active milestone: Template → Product Adoption Backport
+Current phase: Local implementation + holistic review complete / 1.27.0 release closure pending
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -362,8 +362,8 @@ Current iOS deployment baseline為15.0。
 ## Current Work and Maintenance State
 
 ```txt
-Current active milestone: none
-Current phase: Asset Runtime & Theme-aware Visual Integration published / formal closure complete
+Current active milestone: Template → Product Adoption Backport
+Current phase: Local implementation + holistic review complete / 1.27.0 release closure pending
 Maintenance mode: normal development from `dev`; `main` publication-only
 ```
 

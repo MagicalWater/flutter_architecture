@@ -18,6 +18,10 @@
 
 ## [Unreleased]
 
+---
+
+## [1.27.0] - 2026-08-30
+
 ### Changed
 
 - 依真實 Template → Product 採用 evidence 回補 repository bootstrap：prospective product identity 與 Product Repository Version 可在 canonical template lifecycle/version 不變時共同驗證，避免 atomic bootstrap verifier 衝突。
@@ -32,8 +36,6 @@
 - Disposable native rehearsal Scenario B：`com.template.backportrehearsal` manifest/native projection verifier PASS，Windows Git Bash development APK artifact實際 package id為 `com.template.backportrehearsal.development`。
 - Exact-content clean validation copy：managed local quality suite完整 PASS（docs、56項Python tests、workspace analyze、generated consistency、現有Flutter tests）；Android development Debug與production Release verification artifacts均 PASS。
 - Windows host不宣稱Xcode build；iOS以manifest-driven static projection verifier覆蓋本次changed risk。
-
----
 
 ## [1.26.1] - 2026-08-19
 

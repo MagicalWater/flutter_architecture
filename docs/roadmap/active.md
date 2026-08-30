@@ -3,7 +3,7 @@ document_type: active-milestone
 status: active
 authoritative_for:
   - current-active-milestone
-last_reviewed_baseline: 1.26.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Active Milestone
@@ -11,14 +11,14 @@ last_reviewed_baseline: 1.26.1
 ```txt
 Active Milestone: Template → Product Adoption Backport
 State: Local implementation + holistic review complete / release decision pending
-Template Baseline: 1.26.1
+Template Baseline: 1.27.0
 ```
 
 ## Current Gate
 
 - Active Milestone：**Template → Product Adoption Backport**。
 - Open P0=0 / Open P1 without disposition=0。
-- Current gate：**RELEASE DECISION**。Design / Plan、Stage 1～5 implementation、whole-scope holistic review與required local/runtime evidence均已完成；Template Baseline仍為`1.26.1`，不得在未取得使用者明確核准前更新VERSION或push。
+- Current gate：**EXACT RELEASE CANDIDATE VALIDATION**。Design / Plan、Stage 1～5 implementation、whole-scope holistic review與required local/runtime evidence均已完成；Template Baseline candidate為`1.27.0`，通過exact candidate release validation後才可publication。
 
 ## Current Authority
 

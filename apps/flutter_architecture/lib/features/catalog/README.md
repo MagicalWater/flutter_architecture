@@ -3,7 +3,7 @@ document_type: feature-readme
 status: accepted
 authoritative_for:
   - catalog-feature-local-contract
-last_reviewed_baseline: 1.10.0
+last_reviewed_baseline: 1.27.0
 ---
 
 # Catalog Feature
@@ -63,7 +63,7 @@ Composition 由 App 完成；feature 不使用 DI annotation。
 
 ## Tests
 
-測試位於 `test/features/catalog/`，應覆蓋 query debounce、cursor pagination、SWR、reconnect ordering、revision CAS、cycle guard、logout persistence與localized presentation。
+目前沒有 feature-local retained test folder。Catalog persistence／migration 的長期 regression owner 位於 `test/app/database/`；query、pagination、SWR、reconnect、revision CAS、cycle guard 與 presentation case 只有在 changed risk 需要且既有 owner 不足時才新增。
 
 Catalog現有test density主要來自pagination、cache、revision CAS、cycle、reconnect與concurrency failure modes；它是architecture／behavior reference，**不是一般Product Feature的test-density quota**。新Feature只為自身新增的risk／invariant／failure mode建立最小充分owner。
 

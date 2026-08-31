@@ -214,7 +214,6 @@ Feature 或 reusable package 使用 constructor injection 表達依賴；App 決
 
 ```txt
 apps/flutter_architecture/lib/app/di/register_module.dart
-apps/flutter_architecture/lib/app/di/app_module.dart
 apps/flutter_architecture/lib/app/di/api_implementation_selector.dart
 ```
 

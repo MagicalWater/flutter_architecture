@@ -3,7 +3,7 @@ document_type: feature-readme
 status: accepted
 authoritative_for:
   - profile-feature-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Profile Feature
@@ -46,7 +46,7 @@ ProfilePage
 
 ## Tests
 
-測試位於 `test/features/profile/`，應涵蓋 success、expected／unexpected failure、Session expiration、localized UI與 route composition regression。
+目前沒有 Profile feature-local retained test folder。Success／Failure／Session expiration／localized UI／route composition case 只有在 changed risk 需要且既有 owner 不足時才新增。
 
 Profile雖然是較小的read Feature，現有tests仍包含session expiration、stale async/account switch、error mapping與presentation contracts；這些case是其實際failure owners，**不是要求所有簡單read Feature複製相同test數量或layer分布**。
 

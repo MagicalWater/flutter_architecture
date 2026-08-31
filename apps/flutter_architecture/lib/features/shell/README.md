@@ -3,7 +3,7 @@ document_type: feature-readme
 status: accepted
 authoritative_for:
   - shell-feature-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Shell Feature
@@ -48,7 +48,7 @@ Shell 只開啟 App-owned dialogs。Theme／Locale controller、preference persi
 
 ## Tests
 
-測試應涵蓋 tab selection、actions、localized labels、theme／locale dialog composition與 Protected route action。
+目前沒有 Shell feature-local retained test folder。Tab selection、actions、localized labels、theme／locale dialog composition與 Protected route action 只有在 changed risk 需要且既有 owner 不足時才新增。
 
 ## Related Decisions
 

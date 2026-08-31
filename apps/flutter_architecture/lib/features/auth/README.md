@@ -3,7 +3,7 @@ document_type: feature-readme
 status: accepted
 authoritative_for:
   - auth-feature-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Auth Feature
@@ -77,7 +77,7 @@ Legacy SharedPreferences credential
 → migration / cleanup only
 ```
 
-`SharedPreferencesAuthCredentialStore`只保留於 legacy／regression test與歷史相容情境，不是 production credential authority。
+Legacy SharedPreferences credential 只由 `SharedPreferencesAuthLegacyCredentialStore` 負責 migration／cleanup；production credential authority 維持 Flutter Secure Storage。
 
 ## Refresh and Session Expiration
 
@@ -96,13 +96,12 @@ Legacy SharedPreferences credential
 
 ## Tests
 
-主要測試位於：
+目前 retained tests 位於：
 
 - `test/features/auth/`
-- `test/app/auth/`
-- `test/app/navigation/`
+- `test/app/router/auth_guard_test.dart`
 
-應涵蓋 Login、OTP、Restore、Logout、Session expiration、navigation、local unlock lifecycle與 sensitive output。
+現有 retained owners 聚焦 OTP Bloc、local unlock lifecycle、secure credential storage 與 AuthGuard。其他 Login／Restore／Logout／navigation／presentation case 只有在 changed risk 需要且既有 owner 不足時才新增。
 
 Auth包含credential、session、refresh、OTP、security與lifecycle等高風險foundation contracts，因此現有test density反映這些failure owners；它是architecture／behavior reference，**不是一般Product Feature的test-density quota**。新增Feature不得因模仿Auth檔案數或layer分布而機械新增tests。
 

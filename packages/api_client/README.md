@@ -188,7 +188,7 @@ Feature DataSource 負責呼叫 API abstraction 與轉換 wire DTO；Repository 
 ```txt
 apps/flutter_architecture/lib/app/di/api_implementation_selector.dart
 apps/flutter_architecture/lib/app/di/register_module.dart
-apps/flutter_architecture/lib/app/di/app_module.dart
+apps/flutter_architecture/lib/app/di/injection.dart
 ```
 
 `api_client` package 本身不加入 GetIt／Injectable annotation，也不依賴 App configuration。

@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.dart';
-import 'package:flutter_architecture/app/di/injection.dart';
+import 'package:flutter_architecture/app/auth/startup_local_unlock_scope.dart';
 import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 
 @RoutePage()
@@ -11,13 +11,11 @@ class LocalUnlockPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: getIt<StartupLocalUnlockCoordinator>(),
-      builder: (context, _) => LocalUnlockView(
-        state: getIt<StartupLocalUnlockCoordinator>().state,
-        onRetry: getIt<StartupLocalUnlockCoordinator>().retry,
-        onUseLogin: getIt<StartupLocalUnlockCoordinator>().useServerLogin,
-      ),
+    final coordinator = StartupLocalUnlockCoordinatorScope.of(context);
+    return LocalUnlockView(
+      state: coordinator.state,
+      onRetry: coordinator.retry,
+      onUseLogin: coordinator.useServerLogin,
     );
   }
 }

@@ -2,13 +2,13 @@
 document_type: guide
 status: active
 authoritative_for:
-  - milestone-29-historical-database-fixtures
-last_reviewed_baseline: 1.10.0
+  - historical-database-fixtures
+last_reviewed_baseline: 1.27.0
 ---
 
 # Historical SQLite Fixtures
 
-此目錄保存由Milestone 29 Task 29-1建立的v1～v6 SQLite資料庫。Fixtures由既有sqflite historical contract生成，不能由Drift current schema反向產生。
+此目錄保存 v1～v6 historical SQLite資料庫。Fixtures由既有sqflite historical contract生成，不能由Drift current schema反向產生。
 
 ## Fixture matrix
 

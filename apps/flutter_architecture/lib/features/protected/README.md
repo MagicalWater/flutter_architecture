@@ -3,7 +3,7 @@ document_type: feature-readme
 status: accepted
 authoritative_for:
   - protected-feature-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Protected Feature
@@ -37,7 +37,7 @@ AuthGuard 只依賴 `SessionManager`／Auth session abstraction；Protected feat
 
 ## Tests
 
-測試應涵蓋 ProtectedPage widget surface、AuthGuard navigation與 Session change regression。
+目前 retained owner 是 `test/app/router/auth_guard_test.dart`；ProtectedPage widget surface 或其他 Session/navigation regression 只有在 changed risk 需要且既有 owner 不足時才新增。
 
 ## Related Decisions
 

@@ -1,3 +1,11 @@
+---
+document_type: feature-readme
+status: accepted
+authoritative_for:
+  - pencil-compatibility-feature-local-contract
+last_reviewed_baseline: 1.27.0
+---
+
 # Pencil Compatibility
 
 此feature是presentation-only Pencil-to-Flutter compatibility proof。

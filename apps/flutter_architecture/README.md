@@ -3,7 +3,7 @@ document_type: app-readme
 status: accepted
 authoritative_for:
   - flutter-architecture-app-local-contract
-last_reviewed_baseline: 1.26.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Flutter Architecture App
@@ -183,14 +183,14 @@ repository validation
 - Guard：`lib/app/router/auth_guard.dart`。
 - Authentication destination transition：`lib/app/navigation/auth_navigation_coordinator.dart`。
 - Generated route：`lib/app/router/app_router.gr.dart`，不得手動修改。
-- Existing validation owners（若changed risk需要）：`test/app/router/`、`test/app/navigation/`與受影響 Feature presentation tests。
+- Current retained route owner：`test/app/router/auth_guard_test.dart`。其他 navigation／presentation regression 只在 changed risk 需要且既有 owner 不足時新增。
 
 ### Dependency Injection
 
 - External object、plugin、Database、Dio與interface binding：`lib/app/di/register_module.dart`。
-- App-owned module與generated composition：`lib/app/di/`。
+- App-owned module：`lib/app/di/register_module.dart`；generated composition：`lib/app/di/injection.config.dart`。
 - Environment-specific API selection：`lib/app/di/api_implementation_selector.dart`。
-- Existing validation owner（若changed risk需要）：`test/app/di/`。
+- 目前沒有獨立 retained DI test folder；以 generated DI、analyze 與受影響 runtime contract owner 為主，只有 critical wiring risk 缺少直接 owner 時才新增 test。
 
 Reusable package 使用 constructor injection 表達依賴，不在 package 內加入 GetIt／Injectable ownership。
 
@@ -199,7 +199,7 @@ Reusable package 使用 constructor injection 表達依賴，不在 package 內�
 - ARB resources：`lib/l10n/`。
 - Locale bootstrap、preference與controller：`lib/app/localization/`。
 - Feature user-facing Failure mapping：對應 Feature `presentation/*_localization.dart`。
-- Existing validation owners（若changed risk需要）：`test/app/localization/`與受影響 Feature presentation tests。
+- 目前沒有獨立 retained localization test folder；以 generated localization、analyze 與受影響 presentation owner 為主，只有 critical mapping risk 缺少直接 owner 時才新增 test。
 
 修改 ARB、Auto Route、Injectable、Freezed、JSON serialization 或 Retrofit declaration後，執行：
 
@@ -227,6 +227,7 @@ python tools/ci/validation_planner.py --event push --base <base-sha> --head <hea
 
 - `lib/features/auth/README.md`
 - `lib/features/catalog/README.md`
+- `lib/features/pencil_compatibility/README.md`
 - `lib/features/profile/README.md`
 - `lib/features/protected/README.md`
 - `lib/features/shell/README.md`

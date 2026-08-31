@@ -4,6 +4,7 @@ import 'package:auth/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_architecture/app/auth/local_unlock_lifecycle_coordinator.dart';
 import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.dart';
+import 'package:flutter_architecture/app/auth/startup_local_unlock_scope.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_controller.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_scope.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_status_banner.dart';
@@ -71,11 +72,6 @@ class _ArchitectureAppState extends State<ArchitectureApp>
       mutationCoordinator: getIt<AuthStateMutationCoordinator>(),
       restoreSession: () => authBloc.add(const AuthEvent.started()),
     );
-    if (!getIt.isRegistered<StartupLocalUnlockCoordinator>()) {
-      getIt.registerSingleton<StartupLocalUnlockCoordinator>(
-        _startupLocalUnlockCoordinator,
-      );
-    }
     _startupLocalUnlockCoordinator.addListener(_onLocalUnlockStateChanged);
     _localUnlockLifecycleCoordinator = LocalUnlockLifecycleCoordinator(
       unlockCoordinator: _startupLocalUnlockCoordinator,
@@ -131,13 +127,6 @@ class _ArchitectureAppState extends State<ArchitectureApp>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _startupLocalUnlockCoordinator.removeListener(_onLocalUnlockStateChanged);
-    if (getIt.isRegistered<StartupLocalUnlockCoordinator>() &&
-        identical(
-          getIt<StartupLocalUnlockCoordinator>(),
-          _startupLocalUnlockCoordinator,
-        )) {
-      getIt.unregister<StartupLocalUnlockCoordinator>();
-    }
     _startupLocalUnlockCoordinator.dispose();
     _authNavigationCoordinator.dispose();
     unawaited(_connectivityController.dispose());
@@ -146,41 +135,44 @@ class _ArchitectureAppState extends State<ArchitectureApp>
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: AppUiDesign.designSize,
-      splitScreenMode: false,
-      child: LocaleControllerScope(
-        controller: widget.localeController,
-        child: ThemeControllerScope(
-          controller: widget.themeController,
-          child: ArchitectureThemeBuilder(
+    return StartupLocalUnlockCoordinatorScope(
+      coordinator: _startupLocalUnlockCoordinator,
+      child: ScreenUtilInit(
+        designSize: AppUiDesign.designSize,
+        splitScreenMode: false,
+        child: LocaleControllerScope(
+          controller: widget.localeController,
+          child: ThemeControllerScope(
             controller: widget.themeController,
-            builder: (context, lightTheme, darkTheme, themeMode) {
-              return ListenableBuilder(
-                listenable: widget.localeController,
-                builder: (context, _) {
-                  return MaterialApp.router(
-                    locale: widget.localeController.locale,
-                    onGenerateTitle: (context) =>
-                        AppLocalizations.of(context).appTitle,
-                    localizationsDelegates:
-                        AppLocalizations.localizationsDelegates,
-                    supportedLocales: appSupportedLocales,
-                    localeListResolutionCallback: resolveAppLocale,
-                    theme: lightTheme,
-                    darkTheme: darkTheme,
-                    themeMode: themeMode,
-                    builder: (context, child) => ConnectivityScope(
-                      controller: _connectivityController,
-                      child: ConnectivityStatusBanner(
-                        child: child ?? const SizedBox.shrink(),
+            child: ArchitectureThemeBuilder(
+              controller: widget.themeController,
+              builder: (context, lightTheme, darkTheme, themeMode) {
+                return ListenableBuilder(
+                  listenable: widget.localeController,
+                  builder: (context, _) {
+                    return MaterialApp.router(
+                      locale: widget.localeController.locale,
+                      onGenerateTitle: (context) =>
+                          AppLocalizations.of(context).appTitle,
+                      localizationsDelegates:
+                          AppLocalizations.localizationsDelegates,
+                      supportedLocales: appSupportedLocales,
+                      localeListResolutionCallback: resolveAppLocale,
+                      theme: lightTheme,
+                      darkTheme: darkTheme,
+                      themeMode: themeMode,
+                      builder: (context, child) => ConnectivityScope(
+                        controller: _connectivityController,
+                        child: ConnectivityStatusBanner(
+                          child: child ?? const SizedBox.shrink(),
+                        ),
                       ),
-                    ),
-                    routerConfig: _router.config(),
-                  );
-                },
-              );
-            },
+                      routerConfig: _router.config(),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
       ),

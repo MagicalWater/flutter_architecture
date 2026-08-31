@@ -184,6 +184,8 @@ class AuthRepositoryImpl implements AuthRepository {
   ) async {
     final user = result.user;
     try {
+      // Authenticated commit 採 persistence-first，且每個 await 後都重新確認
+      // lifecycle lease，避免較舊 login / OTP completion 覆蓋較新的使用者意圖。
       await _credentialStore.writeCredential(
         StoredAuthTokens(
           accessToken: result.accessToken,
@@ -199,6 +201,8 @@ class AuthRepositoryImpl implements AuthRepository {
         userId: user.id,
       );
     } catch (error, stackTrace) {
+      // 複合 commit 任一步失敗都要清除已寫入的 partial auth state；cleanup
+      // 本身的 unexpected failure 不可被原始 local-storage error 吞掉。
       final cleanup = await AuthLifecycleCleanupPolicy(
         secureCredentialStore: _credentialStore,
         legacyCredentialStore: _legacyCredentialStore,
@@ -289,6 +293,8 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await _mutationCoordinator.runExclusive(() async {
         operation.throwIfSuperseded();
+        // Logout cleanup 先嘗試移除所有 durable auth state，再由仍持有最新
+        // lifecycle lease 的 operation clear runtime Session。
         final cleanup = await AuthLifecycleCleanupPolicy(
           secureCredentialStore: _credentialStore,
           legacyCredentialStore: _legacyCredentialStore,

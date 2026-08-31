@@ -21,6 +21,8 @@ class AuthRefreshInterceptor extends Interceptor {
     ErrorInterceptorHandler handler,
   ) async {
     final request = err.requestOptions;
+    // 這不是單純抽 Bearer token；null 代表 request 不符合 refresh / replay
+    // admission contract。回傳值則是實際造成這次 401 的 failed access token。
     final failedToken = _eligibleFailedToken(err);
     if (failedToken == null) {
       handler.next(err);
@@ -35,11 +37,15 @@ class AuthRefreshInterceptor extends Interceptor {
     if (current == null ||
         requestGeneration != current.generation ||
         requestUserId != current.userId) {
+      // 舊 request 不得跨 logout / relogin / account replacement boundary
+      // 借用目前 Session 的 token refresh 或 replay。
       handler.next(err);
       return;
     }
 
     if (current.accessToken != failedToken) {
+      // generation / user 相同但 token 已不同，通常代表另一個並發 401 已先
+      // 完成 refresh；refresh requirement 已被滿足，直接用 current token replay。
       await _replayWithCurrentSession(request, current, handler, err);
       return;
     }
@@ -71,6 +77,8 @@ class AuthRefreshInterceptor extends Interceptor {
         refreshed.generation != requestGeneration ||
         refreshed.userId != requestUserId ||
         refreshed.accessToken == failedToken) {
+      // Refresh await 期間 Session 可能已被取代。只有原 lifecycle identity 仍
+      // 擁有結果且 token 確實 rotation 後，才允許 replay。
       handler.next(err);
       return;
     }
@@ -80,6 +88,8 @@ class AuthRefreshInterceptor extends Interceptor {
 
   String? _eligibleFailedToken(DioException error) {
     final request = error.requestOptions;
+    // Replay safety 是 refresh admission 的一部分；即使是合法 authenticated
+    // 401，也不能自動重送已消耗 body、stream 或 progress-sensitive request。
     if (!_isReplaySafe(request)) {
       return null;
     }
@@ -122,6 +132,8 @@ class AuthRefreshInterceptor extends Interceptor {
     DioException originalError,
   ) async {
     final current = _tokenProvider.getCurrentSession();
+    // Replay 真正送出前再次驗 ownership，封住 refresh decision 與 fetch 之間
+    // 的 Session replacement race。
     if (current == null ||
         current.generation != session.generation ||
         current.userId != session.userId ||

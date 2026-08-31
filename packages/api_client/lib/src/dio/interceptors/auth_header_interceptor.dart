@@ -39,6 +39,8 @@ class AuthHeaderInterceptor extends Interceptor {
     }
 
     if (options.extra[RequestExtras.preserveAuthSnapshot] == true) {
+      // Replay 已由 refresh flow 綁定到特定 Session snapshot。這裡 fail closed
+      // 驗證 ownership，避免 AuthHeaderInterceptor 把舊 request 改掛到新 Session。
       final replayGeneration =
           options.extra[RequestExtras.authSessionGeneration];
       final replayUserId = options.extra[RequestExtras.authSessionUserId];
@@ -66,6 +68,8 @@ class AuthHeaderInterceptor extends Interceptor {
 
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
+      // 401 回來時除了 failed token，還必須知道 request 原本屬於哪一次
+      // Session lifecycle，才能拒絕跨 generation / user 的 stale replay。
       options.extra[RequestExtras.authSessionGeneration] = session!.generation;
       options.extra[RequestExtras.authSessionUserId] = session.userId;
     }

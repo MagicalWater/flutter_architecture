@@ -26,6 +26,8 @@ final class AuthLifecycleCleanupPolicy {
   Future<AuthLifecycleCleanupResult> clearAllUnlocked() async {
     final diagnostics = <AuthLifecycleDiagnostic>[];
 
+    // Cleanup 採 best-effort fan-out：單一 store 失敗不能阻止其他 credential /
+    // user state 被移除。所有 attempt 結束後再由 result 決定 failure priority。
     Future<void> attempt(
       AuthLifecycleDiagnosticOperation operation,
       Future<void> Function() action,
@@ -95,6 +97,8 @@ final class AuthLifecycleCleanupResult {
   }
 
   AuthLifecycleDiagnostic? _primary({bool unexpectedOnly = false}) {
+    // Unknown / unexpected failure 優先於已知 local-storage failure，避免 cleanup
+    // 把真正的 programming / platform defect 降級成可預期 operational error。
     for (final diagnostic in diagnostics) {
       if (!_isExpected(diagnostic.error)) return diagnostic;
     }

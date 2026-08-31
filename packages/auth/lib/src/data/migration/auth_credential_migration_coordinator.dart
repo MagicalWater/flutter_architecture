@@ -146,6 +146,8 @@ final class AuthCredentialMigrationCoordinator {
     Object originalError,
     StackTrace originalStackTrace,
   ) async {
+    // Secure write / read-back 尚未驗證前不能成為 credential authority；任何
+    // migration failure 都先移除可能的 partial secure state，再拋回原始錯誤。
     try {
       await _secureCredentialStore.clearCredential();
     } catch (rollbackError, rollbackStackTrace) {
@@ -179,6 +181,8 @@ final class AuthCredentialMigrationCoordinator {
     required bool clearLegacy,
     required bool clearUser,
   }) async {
+    // Destructive recovery 必須盡量清除所有被指定的 state，而不是第一個
+    // expected local-storage failure 就中止，否則可能留下彼此矛盾的 authority。
     Object? firstExpectedError;
     StackTrace? firstExpectedStackTrace;
     Object? firstUnknownError;

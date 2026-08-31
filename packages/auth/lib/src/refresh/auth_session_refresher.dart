@@ -41,9 +41,13 @@ class AuthSessionRefresher implements AuthRefresher {
   Future<AuthRefreshResult> refresh({required String failedAccessToken}) async {
     final session = _sessionManager.currentSession;
     if (session == null) {
+      // 呼叫方原本要 refresh 的 Session 已不存在；這是 ownership 已改變的
+      // race-resolution result，不限定於「切換帳號」。
       return const AuthRefreshSessionChanged();
     }
     if (session.accessToken != failedAccessToken) {
+      // 同一 Session 已持有不同 token，代表 refresh requirement 已被其他
+      // operation 滿足；Success 不保證本次 invocation 自己打過 refresh API。
       return const AuthRefreshSuccess();
     }
 
@@ -54,8 +58,11 @@ class AuthSessionRefresher implements AuthRefresher {
         userId: session.userId,
         failedAccessToken: failedAccessToken,
       )) {
+        // 只有完全相同的 lifecycle identity + failed token 才可共享 single-flight。
         return existing.future;
       }
+      // 不同 identity 不可併入既有 refresh；先等目前 operation 收斂，再以
+      // 最新 Session 狀態重新 admission，避免 refresh storm 與跨 Session 共用。
       await existing.future;
       return refresh(failedAccessToken: failedAccessToken);
     }
@@ -82,6 +89,7 @@ class AuthSessionRefresher implements AuthRefresher {
     } catch (error, stackTrace) {
       completer.completeError(error, stackTrace);
     } finally {
+      // 舊 operation completion 不得清掉後來建立的新 in-flight owner。
       if (identical(_inFlight, inFlight)) {
         _inFlight = null;
       }
@@ -99,6 +107,8 @@ class AuthSessionRefresher implements AuthRefresher {
     late final StoredAuthTokens tokens;
     try {
       final stored = await _mutationCoordinator.runExclusive(() async {
+        // Credential snapshot 與 runtime Session 必須在同一 mutation serialization
+        // boundary 內確認；失去 lifecycle ownership 就停止讀取 refresh credential。
         if (!_isSameSession(inFlight.generation, inFlight.userId)) return null;
         final credential = await _credentialStore.readCredential();
         if (credential is! AuthCredentialReadPresent) return null;
@@ -133,6 +143,8 @@ class AuthSessionRefresher implements AuthRefresher {
     }
 
     try {
+      // HTTP refresh 本身刻意不持有 mutation lock；否則慢網路會阻塞 login / logout。
+      // Response 回來後再取得 exclusive ownership 並重新驗證 Session identity。
       final response = await _remoteDataSource.refresh(tokens.refreshToken);
       final outcome = await _mutationCoordinator.runExclusive(() async {
         if (!_isSameSession(inFlight.generation, inFlight.userId)) {
@@ -141,6 +153,8 @@ class AuthSessionRefresher implements AuthRefresher {
           );
         }
         try {
+          // Persistence-first：只有完整 credential snapshot 寫入成功後才更新
+          // runtime token，避免 memory state 與 durable authority 分裂。
           await _credentialStore.writeCredential(
             StoredAuthTokens(
               accessToken: response.accessToken,
@@ -154,6 +168,8 @@ class AuthSessionRefresher implements AuthRefresher {
           if (error.kind != AppExceptionKind.localStorage) {
             Error.throwWithStackTrace(error, stackTrace);
           }
+          // Credential commit 已失敗時執行補償式 cleanup，並清除 runtime Session；
+          // 不允許保留一個無法由 durable state 恢復的 authenticated Session。
           final cleanup = await _clearSecureAuthStateUnlocked();
           _sessionManager.clear();
           return _SecureRefreshOutcome(

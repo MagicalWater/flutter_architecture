@@ -19,6 +19,9 @@ class SessionManager {
 
   AuthSession? get currentSession => _sessionSubject.valueOrNull;
 
+  // generation 是 Session lifecycle identity，不是 access-token revision。
+  // Login / restore / clear 會跨 lifecycle boundary；同一 Session 內的 token
+  // rotation 必須保留 generation，讓並發 401 能辨識「同一登入生命週期」。
   int _generation = 0;
 
   int get generation => _generation;

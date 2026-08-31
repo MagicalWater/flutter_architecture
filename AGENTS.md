@@ -85,6 +85,14 @@ Domain Skill 不得重新擁有 Requirement Decision、Level、approval、releas
 - 新增或改變 stable architecture rule 時更新 canonical ADR；小型 bounded change 不為形式新增 ADR。
 - 文件、README、註解與 commit message 預設使用繁體中文；技術識別保留英文。
 
+## Source comment policy
+
+- 顯而易見、可直接由型別／命名／控制流程理解的程式碼不強制註解；禁止逐行把程式碼翻譯成自然語言。
+- Security、credential、lifecycle、concurrency、ownership、fail-closed、rollback／compensation、race protection、stale-response／generation protection、retry／replay，以及其他 non-obvious control flow，若局部 source 不容易看出其必要性，必須留下足以維護 invariant 的 Why comment。
+- 其他 non-obvious 區塊使用短註解即可；不要為了形式替 getter、mapping、obvious guard 或清楚命名的 code 補 comment。
+- Source comment 只解釋局部 responsibility、ordering、ownership 或 invariant，不得複製完整 ADR／README contract 形成第二套 authority；stable architecture rule 仍由 canonical ADR／local README 擁有。
+- 維護性註解預設使用繁體中文；technical identifier、API 名稱與必要 protocol term 保留英文。
+
 ## Commit / completion
 
 Commit 前確認 planner-selected validation 已通過、必要 generated/build gate 已完成、文件與實作 authority 一致。使用 Conventional Commits，描述使用繁體中文。

@@ -21,6 +21,8 @@ class AuthStateMutationCoordinator {
   bool _isCurrent(int generation) => generation == _lifecycleGeneration;
 
   Future<T> runExclusive<T>(Future<T> Function() action) {
+    // 這裡只序列化 state mutation；network request 不應持有此 queue，避免慢 I/O
+    // 阻塞較新的 login / logout intent。
     final completer = Completer<T>();
     _tail = _tail.then((_) async {
       try {

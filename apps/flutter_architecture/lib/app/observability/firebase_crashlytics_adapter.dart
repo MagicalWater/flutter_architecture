@@ -8,6 +8,7 @@ import 'package:flutter_architecture/app/error_reporting/error_reporting_router.
 import 'package:flutter_architecture/app/observability/observability_collection_policy.dart';
 import 'package:flutter_architecture/app/observability/observability_provider_lifecycle.dart';
 
+/// App-owned Crashlytics boundary，避免 observability policy 直接依賴 Firebase SDK type。
 abstract interface class FirebaseCrashlyticsGateway {
   Future<void> initializeFirebase();
   Future<void> setCollectionEnabled(bool enabled);
@@ -20,6 +21,7 @@ abstract interface class FirebaseCrashlyticsGateway {
   Future<void> setUserIdentifier(String identifier);
 }
 
+/// Firebase SDK 的 production gateway implementation。
 final class FirebaseSdkCrashlyticsGateway
     implements FirebaseCrashlyticsGateway {
   const FirebaseSdkCrashlyticsGateway();
@@ -60,6 +62,7 @@ final class FirebaseSdkCrashlyticsGateway
   }
 }
 
+/// 將 Firebase / Crashlytics 初始化收斂到受 collection policy 控制的單一入口。
 final class FirebaseObservabilityInitializer
     implements ObservabilityProviderInitializer {
   const FirebaseObservabilityInitializer({
@@ -85,6 +88,7 @@ final class FirebaseObservabilityInitializer
   }
 }
 
+/// Best-effort Crashlytics reporter；provider failure 不得反向改變 App control flow。
 final class FirebaseCrashlyticsErrorReporter implements ErrorReporter {
   const FirebaseCrashlyticsErrorReporter(this._gateway);
 
@@ -121,6 +125,7 @@ final class FirebaseObservabilityCompositionResult {
   final ObservabilityProviderInitializationResult initialization;
 }
 
+/// 組合 remote observability provider，初始化失敗時退回 local reporter。
 final class FirebaseObservabilityComposition {
   const FirebaseObservabilityComposition({
     required this.gateway,

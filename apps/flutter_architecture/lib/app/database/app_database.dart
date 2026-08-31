@@ -4,6 +4,7 @@ part 'app_database.g.dart';
 
 typedef MigrationFailureInjector = void Function(int completedVersion);
 
+/// App 的 durable database authority，並擁有 historical schema upgrade ordering。
 @DriftDatabase(include: <String>{'schema/app_database.drift'})
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor, {this.migrationFailureInjector});

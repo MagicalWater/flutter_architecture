@@ -57,6 +57,7 @@ final class LocalUnlockPreferenceReadCorrupted
   const LocalUnlockPreferenceReadCorrupted();
 }
 
+/// Local unlock preference 的 durable boundary；讀取時保留 absent / corrupted distinction。
 abstract interface class LocalUnlockPreferenceStore {
   Future<LocalUnlockPreferenceReadResult> read();
   Future<void> write(LocalUnlockPreference preference);

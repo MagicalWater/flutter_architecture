@@ -88,6 +88,7 @@ Domain Skill 不得重新擁有 Requirement Decision、Level、approval、releas
 ## Source comment policy
 
 - 顯而易見、可直接由型別／命名／控制流程理解的程式碼不強制註解；禁止逐行把程式碼翻譯成自然語言。
+- Type-level comment 依 responsibility 而非 type 數量治理：承擔 non-obvious responsibility、ownership、boundary 或 invariant 的 type 必須說明其存在理由與責任；純 data carrier 或名稱已完整表意的簡單 type 不強制註解。
 - Security、credential、lifecycle、concurrency、ownership、fail-closed、rollback／compensation、race protection、stale-response／generation protection、retry／replay，以及其他 non-obvious control flow，若局部 source 不容易看出其必要性，必須留下足以維護 invariant 的 Why comment。
 - 其他 non-obvious 區塊使用短註解即可；不要為了形式替 getter、mapping、obvious guard 或清楚命名的 code 補 comment。
 - Source comment 只解釋局部 responsibility、ordering、ownership 或 invariant，不得複製完整 ADR／README contract 形成第二套 authority；stable architecture rule 仍由 canonical ADR／local README 擁有。

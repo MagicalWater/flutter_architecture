@@ -8,6 +8,7 @@ import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
 import 'package:flutter_architecture/app/theme/theme_preference_store.dart';
 
+/// 擁有 runtime theme preference，並序列化 durable writes 避免快速切換造成 stale write。
 final class ThemeController extends ChangeNotifier {
   ThemeController({
     required this.registry,

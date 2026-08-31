@@ -22,6 +22,7 @@ final class AuthRefreshLocalStateFailure extends AuthRefreshResult {
   const AuthRefreshLocalStateFailure();
 }
 
+/// 以 request 當下失效的 access token 作 refresh admission，避免跨 Session 誤重送。
 abstract interface class AuthRefresher {
   Future<AuthRefreshResult> refresh({required String failedAccessToken});
 }

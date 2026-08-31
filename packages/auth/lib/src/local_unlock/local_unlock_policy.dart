@@ -14,6 +14,7 @@ enum LocalUnlockPolicyResult {
   superseded,
 }
 
+/// 管理 local unlock 能力變更，並確保設定只提交到仍有效的 Auth lifecycle。
 final class LocalUnlockPolicy {
   const LocalUnlockPolicy(
     this._sessionManager,

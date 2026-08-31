@@ -1,5 +1,6 @@
 import 'package:flutter_architecture/app/config/app_environment.dart';
 
+/// 決定目前 environment 是否允許 remote observability collection。
 final class ObservabilityCollectionPolicy {
   const ObservabilityCollectionPolicy._({
     required this.environment,

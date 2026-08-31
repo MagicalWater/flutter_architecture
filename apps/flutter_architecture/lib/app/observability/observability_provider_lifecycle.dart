@@ -1,3 +1,4 @@
+/// Remote observability provider 的初始化 boundary。
 abstract interface class ObservabilityProviderInitializer {
   Future<void> initialize();
 }
@@ -30,6 +31,7 @@ final class ObservabilityProviderInitializationResult {
   }
 }
 
+/// 將 provider initialization failure 收斂成 availability result，避免啟動流程直接崩潰。
 final class ObservabilityProviderLifecycle {
   const ObservabilityProviderLifecycle(this._initializer);
 

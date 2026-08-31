@@ -16,6 +16,10 @@ import 'package:auth/src/session/session_manager.dart';
 import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
 import 'package:core/core.dart';
 
+/// 協調目前 authenticated Session 的 refresh，並隔離不同 lifecycle identity。
+///
+/// 同一 Session + failed token 只共享一個 in-flight refresh；任何 refresh 結果
+/// 在寫回 credential / runtime Session 前都必須重新確認仍屬於原本 lifecycle。
 class AuthSessionRefresher implements AuthRefresher {
   AuthSessionRefresher(
     this._remoteDataSource,

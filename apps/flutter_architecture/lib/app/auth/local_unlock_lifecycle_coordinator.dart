@@ -3,6 +3,7 @@ import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.d
 
 typedef MonotonicNow = Duration Function();
 
+/// 協調 App lifecycle 與 local unlock gate，決定回前景時是否撤銷舊 Session authority。
 final class LocalUnlockLifecycleCoordinator {
   LocalUnlockLifecycleCoordinator({
     required StartupLocalUnlockCoordinator unlockCoordinator,

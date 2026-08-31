@@ -1,10 +1,4 @@
-/// 給 Dio interceptor 使用的 token provider。
-///
-/// ## 為什麼不讓 interceptor 直接依賴 SharedPreferences？
-///
-/// Interceptor 只需要知道「目前 token 是什麼」。
-///
-/// token 從哪裡來，應該交給外部實作決定。
+/// Interceptor request admission 所需的 immutable Session identity snapshot。
 class AuthSessionSnapshot {
   const AuthSessionSnapshot({
     required this.accessToken,
@@ -17,6 +11,7 @@ class AuthSessionSnapshot {
   final int generation;
 }
 
+/// 提供目前 Auth Session snapshot，隔離 interceptor 與 credential persistence 實作。
 abstract interface class AuthTokenProvider {
   AuthSessionSnapshot? getCurrentSession();
 }

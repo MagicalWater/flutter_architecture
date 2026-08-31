@@ -149,6 +149,7 @@ final class ThemePreferenceRestoreResult {
   final PreferenceDiagnostic? diagnostic;
 }
 
+/// 擁有 theme preference 的 durable restore/save policy，並只對可恢復讀取失敗降級。
 final class ThemePreferenceStore {
   const ThemePreferenceStore(this._storage, this._codec);
 

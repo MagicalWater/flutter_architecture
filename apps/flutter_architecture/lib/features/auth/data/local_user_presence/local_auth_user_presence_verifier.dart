@@ -16,6 +16,7 @@ abstract interface class LocalAuthGateway {
   });
 }
 
+/// `local_auth` plugin 的 App-owned adapter boundary。
 final class PluginLocalAuthGateway implements LocalAuthGateway {
   PluginLocalAuthGateway(this._authentication);
 
@@ -47,6 +48,7 @@ final class PluginLocalAuthGateway implements LocalAuthGateway {
   }
 }
 
+/// 將 platform biometric capability / verification 結果映射成 Auth package 的穩定契約。
 final class LocalAuthUserPresenceVerifier implements LocalUserPresenceVerifier {
   const LocalAuthUserPresenceVerifier(this._gateway);
 

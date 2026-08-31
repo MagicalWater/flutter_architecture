@@ -7,6 +7,7 @@ import 'package:flutter_architecture/app/localization/locale_preference.dart';
 import 'package:flutter_architecture/app/localization/locale_preference_store.dart';
 import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 
+/// 擁有 runtime locale preference，並序列化 durable writes 避免舊操作覆蓋新狀態。
 final class LocaleController extends ChangeNotifier {
   LocaleController({
     required LocalePreferenceStore store,

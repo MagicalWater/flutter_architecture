@@ -22,6 +22,7 @@ final class ErrorReportMetadata {
   String toString() => 'ErrorReportMetadata(keys: ${values.keys.join(',')})';
 }
 
+/// 封裝 App error-reporting policy，負責 degraded rate limit 與 reporter failure isolation。
 final class ErrorReportingRouter implements ErrorReporter {
   ErrorReportingRouter({
     required ErrorReporter delegate,

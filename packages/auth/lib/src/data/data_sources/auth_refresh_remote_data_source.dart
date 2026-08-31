@@ -3,6 +3,7 @@ import 'package:auth/src/data/exceptions/invalid_refresh_credential_exception.da
 import 'package:auth/src/data/exceptions/temporary_refresh_exception.dart';
 import 'package:core/core.dart';
 
+/// 將 refresh endpoint 的 transport/protocol failure 收斂成 Auth domain 可判斷的失敗類型。
 class AuthRefreshRemoteDataSource {
   const AuthRefreshRemoteDataSource(this._endpoint);
 

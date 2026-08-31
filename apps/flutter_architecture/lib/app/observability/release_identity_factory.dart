@@ -30,6 +30,7 @@ final class PackageInfoReleaseMetadataReader implements ReleaseMetadataReader {
   }
 }
 
+/// 組合 package metadata、native configuration 與 build metadata 成 canonical release identity。
 final class ReleaseIdentityFactory {
   const ReleaseIdentityFactory(this._metadataReader);
 

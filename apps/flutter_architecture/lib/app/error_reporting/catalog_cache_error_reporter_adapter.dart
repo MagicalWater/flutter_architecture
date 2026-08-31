@@ -4,6 +4,7 @@ import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart';
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_failure_details.dart';
 
+/// 將 Catalog cache diagnostics 映射到 App error reporting，且不得干擾 cache fallback。
 final class CatalogCacheErrorReporterAdapter
     implements CatalogCacheDiagnosticSink {
   const CatalogCacheErrorReporterAdapter(this._reporter);

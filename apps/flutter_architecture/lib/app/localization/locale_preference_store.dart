@@ -134,6 +134,7 @@ final class LocalePreferenceRestoreResult {
   final PreferenceDiagnostic? diagnostic;
 }
 
+/// 擁有 locale preference 的 durable restore/save policy，並只對可恢復讀取失敗降級。
 final class LocalePreferenceStore {
   const LocalePreferenceStore(this._storage, this._codec);
 

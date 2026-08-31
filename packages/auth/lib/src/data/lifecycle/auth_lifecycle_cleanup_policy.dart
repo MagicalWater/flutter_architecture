@@ -7,6 +7,7 @@ import 'package:auth/src/data/stores/auth_user_store.dart';
 import 'package:auth/src/local_unlock/local_unlock_preference.dart';
 import 'package:core/core.dart';
 
+/// 統一執行 Auth lifecycle 的 destructive cleanup，避免單一 store 失敗中斷其餘清理。
 final class AuthLifecycleCleanupPolicy {
   const AuthLifecycleCleanupPolicy({
     required AuthCredentialStore secureCredentialStore,
@@ -69,6 +70,7 @@ final class AuthLifecycleCleanupPolicy {
   }
 }
 
+/// 保存 cleanup 的完整診斷，並集中決定 expected / unexpected failure priority。
 final class AuthLifecycleCleanupResult {
   AuthLifecycleCleanupResult(Iterable<AuthLifecycleDiagnostic> diagnostics)
     : diagnostics = UnmodifiableListView<AuthLifecycleDiagnostic>(

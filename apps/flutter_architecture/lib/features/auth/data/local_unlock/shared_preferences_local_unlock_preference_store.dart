@@ -5,6 +5,7 @@ import 'package:core/core.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// SharedPreferences adapter，序列化 local unlock writes 以維持呼叫順序。
 final class SharedPreferencesLocalUnlockPreferenceStore
     implements LocalUnlockPreferenceStore {
   SharedPreferencesLocalUnlockPreferenceStore(

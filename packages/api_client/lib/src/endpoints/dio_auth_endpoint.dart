@@ -21,18 +21,31 @@ class DioAuthEndpoint implements AuthEndpoint {
 
   @override
   Future<AuthenticatedResponseDto> verifyOtp(VerifyOtpRequestDto request) =>
-      _execute(() => _api.verifyOtp(request));
+      _execute(
+        () => _api.verifyOtp(request),
+        safeMetadataKeys: const <String>{'attemptsRemaining'},
+      );
 
   @override
   Future<OtpChallengeDto> resendOtp(ResendOtpRequestDto request) =>
-      _execute(() => _api.resendOtp(request));
+      _execute(
+        () => _api.resendOtp(request),
+        safeMetadataKeys: const <String>{'retryAt'},
+      );
 
-  Future<T> _execute<T>(Future<T> Function() operation) async {
+  Future<T> _execute<T>(
+    Future<T> Function() operation, {
+    Set<String> safeMetadataKeys = const <String>{},
+  }) async {
     try {
       return await operation();
     } on DioException catch (error, stackTrace) {
       Error.throwWithStackTrace(
-        mapDioEndpointException(error, stackTrace),
+        mapDioEndpointException(
+          error,
+          stackTrace,
+          safeMetadataKeys: safeMetadataKeys,
+        ),
         stackTrace,
       );
     } catch (error, stackTrace) {

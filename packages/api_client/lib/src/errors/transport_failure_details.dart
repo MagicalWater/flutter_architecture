@@ -7,7 +7,6 @@ import 'package:core/core.dart';
 class TransportFailureDetails {
   const TransportFailureDetails({
     required this.method,
-    required this.path,
     required this.type,
     this.statusCode,
   });
@@ -15,21 +14,19 @@ class TransportFailureDetails {
   factory TransportFailureDetails.fromDioException(DioException error) {
     return TransportFailureDetails(
       method: error.requestOptions.method,
-      path: error.requestOptions.uri.path,
       type: mapDioExceptionType(error.type),
       statusCode: error.response?.statusCode,
     );
   }
 
   final String method;
-  final String path;
   final TransportExceptionKind type;
   final int? statusCode;
 
   @override
   String toString() {
     return 'TransportFailureDetails('
-        'method: $method, path: $path, type: $type, statusCode: $statusCode)';
+        'method: $method, type: $type, statusCode: $statusCode)';
   }
 }
 

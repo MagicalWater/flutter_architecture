@@ -22,11 +22,16 @@ AppException mapDioException(
 
 ApiEndpointException mapDioEndpointException(
   DioException error,
-  StackTrace stackTrace,
-) {
+  StackTrace stackTrace, {
+  Set<String> safeMetadataKeys = const <String>{},
+}) {
   final payload = _stringKeyedMap(error.response?.data);
   final rawBackendCode = payload.remove('code');
   final backendCode = rawBackendCode is String ? rawBackendCode : null;
+  final backendMetadata = <String, Object?>{
+    for (final key in safeMetadataKeys)
+      if (payload.containsKey(key)) key: payload[key],
+  };
 
   return ApiEndpointException(
     transportException: mapDioException(
@@ -35,7 +40,7 @@ ApiEndpointException mapDioEndpointException(
       backendCode: backendCode,
     ),
     backendCode: backendCode,
-    backendMetadata: payload,
+    backendMetadata: backendMetadata,
   );
 }
 

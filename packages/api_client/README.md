@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - api-client-package-local-contract
-last_reviewed_baseline: 1.26.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # API Client Package
@@ -62,7 +62,7 @@ OTP code、password、Authorization 與 token 不得出現在 diagnostic `toStri
 
 ## Error Contract
 
-Transport failures在package內轉為typed `AppException`。Auth／Refresh consumer透過`ApiEndpointException`取得safe backend code與immutable metadata；Dio `Response`、`RequestOptions`、headers與raw payload不得穿出package boundary，也不得進diagnostic message。
+Transport failures在package內轉為typed `AppException`。Auth／Refresh consumer透過`ApiEndpointException`取得safe backend code與endpoint顯式allowlist的immutable metadata；Dio `Response`、`RequestOptions`、headers、raw payload與未經審核的runtime path不得穿出package boundary，也不得進diagnostic message。
 
 ## Public API
 
@@ -237,7 +237,7 @@ reuse boundary
 
 ## Tests
 
-測試位於 `packages/api_client/test/`，重點包括 interceptors、safe replay、concurrent 401、DTO serialization、transport mapping、OTP sensitive output 與 Mock／Real contract。
+測試位於 `packages/api_client/test/`，遵守 test-by-exception，只保留 high-risk contract regression。目前 retained owners包含 Auth refresh／safe replay，以及 transport diagnostic／backend metadata sensitive-boundary protection。
 
 ## Related Decisions
 

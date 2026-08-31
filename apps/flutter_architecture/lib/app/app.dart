@@ -23,7 +23,7 @@ import 'package:flutter_architecture/l10n/generated/app_localizations.dart';
 ///
 /// ## 所屬 Layer
 ///
-/// App composition layer。
+/// App composition layer 的根 Widget。
 ///
 /// 它負責把 Router、Theme、全域設定組合起來。
 class ArchitectureApp extends StatefulWidget {

@@ -161,6 +161,8 @@ final class ThemePreferenceStore {
         preference: _codec.decode(await _storage.read()),
       );
     } on PreferenceException catch (error, stackTrace) {
+      // Theme restore 只對「讀取失敗 / payload corruption」降級到 defaults；write
+      // failure 或其他 typed identity 不得在 bootstrap 階段被誤吞成可恢復狀態。
       if (!_isExpectedThemeRestoreFailure(error)) {
         Error.throwWithStackTrace(error, stackTrace);
       }

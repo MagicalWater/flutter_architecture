@@ -203,6 +203,9 @@ def validate_artifact_root(
     runner_temp: Optional[Path] = None,
     home: Optional[Path] = None,
 ) -> Path:
+    # Artifact store 之後會執行 cleanup / purge，因此 root 必須先被限制在
+    # repository、runner work/temp 與 filesystem/home root 之外，避免路徑誤判
+    # 把 destructive cleanup 擴張到 source checkout 或系統目錄。
     candidate = Path(root)
     if ".." in candidate.parts:
         raise ValueError("artifact root contains path traversal")

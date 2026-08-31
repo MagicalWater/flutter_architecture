@@ -32,6 +32,8 @@ final class LocalUnlockPolicy {
       return LocalUnlockPolicyResult.notAuthenticated;
     }
     final operation = _mutationCoordinator.beginLifecycleOperation();
+    // 啟用 local unlock 是對目前 authenticated Session 的能力變更。Biometric
+    // prompt 期間 Session 可能被 logout / replace，因此 commit 前必須重驗 lease。
     final capability = await _verifier.checkCapability();
     if (capability is! LocalUserPresenceAvailable) {
       return LocalUnlockPolicyResult.unavailable;
@@ -45,6 +47,8 @@ final class LocalUnlockPolicy {
     }
     try {
       await _mutationCoordinator.runExclusive(() async {
+        // Preference 只能在仍擁有同一 Auth lifecycle intent 時寫入；否則可能把
+        // 已登出的帳號重新留下「下次啟動需 local unlock」的 stale policy。
         operation.throwIfSuperseded();
         if (!_sessionManager.isAuthenticated) {
           throw const AuthLifecycleOperationSuperseded();

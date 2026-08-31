@@ -89,6 +89,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     await _cancelFirstPageSearch();
     await _cancelTransientOperations();
     _consumedAppendCursors.clear();
+    // searchGeneration 是 query/search lifecycle identity；所有 async completion
+    // 都只能 commit 到建立它的 generation，避免舊搜尋污染新 query state。
     final generation = ++_searchGeneration;
 
     emit(
@@ -279,6 +281,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     if (generation != _searchGeneration ||
         query != state.query ||
         requestedCursor != state.nextCursor) {
+      // Append completion 還必須擁有同一 cursor slot；同 generation 內 refresh
+      // 也可能已換掉 nextCursor，因此不能只檢查 query/generation。
       return;
     }
 

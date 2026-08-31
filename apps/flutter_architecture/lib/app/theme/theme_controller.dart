@@ -56,6 +56,8 @@ final class ThemeController extends ChangeNotifier {
     final revision = ++_revision;
     notifyListeners();
 
+    // UI 先採 optimistic state；durable write 依序執行，避免快速切換時讓較舊
+    // save 完成順序覆蓋較新的 preference。revision 只決定誰能回寫 diagnostic。
     final snapshot = next;
     _writeTail = _writeTail.then((_) async {
       try {

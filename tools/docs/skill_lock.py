@@ -171,6 +171,8 @@ def inspect_skill_lock(root: Path) -> SkillLockInspection:
     sorted_issues = tuple(
         sorted(issues, key=lambda issue: (issue.code, str(issue.path), issue.message))
     )
+    # third-party-unmodified 的語言豁免是整份 lock 的信任結果；任一 skill/file
+    # integrity issue 都必須撤銷所有 exemption，不能只保留「看似沒壞」的項目。
     return SkillLockInspection(
         frozenset() if sorted_issues else frozenset(exemptions),
         sorted_issues,

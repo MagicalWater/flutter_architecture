@@ -23,6 +23,8 @@ final class LocalUnlockLifecycleCoordinator {
   Duration? _backgroundedAt;
 
   void onBackgrounded() {
+    // Native biometric prompt 可能伴隨 lifecycle bounce；prompting 期間不重新
+    // 起算背景時間，避免同一次驗證回前景後立即觸發第二次 unlock。
     if (_unlockCoordinator.state == StartupLocalUnlockState.prompting) return;
     _backgroundedAt = _now();
   }
@@ -39,6 +41,8 @@ final class LocalUnlockLifecycleCoordinator {
     if (preference case LocalUnlockPreferenceReadPresent(
       preference: LocalUnlockPreference.enabled,
     )) {
+      // Grace period 已過且 local unlock 仍啟用時先撤銷 runtime Session authority，
+      // 再重新走完整 unlock gate；不能讓舊 Session 在驗證期間繼續可用。
       _sessionManager.clear();
       await _unlockCoordinator.retry();
       return true;

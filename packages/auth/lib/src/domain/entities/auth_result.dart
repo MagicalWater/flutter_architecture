@@ -1,7 +1,7 @@
 import 'package:auth/src/domain/entities/auth_authenticated_result.dart';
 import 'package:auth/src/domain/entities/otp_challenge.dart';
 
-/// Password login can either authenticate immediately or require OTP.
+/// Password login 可能直接完成 authentication，也可能要求 OTP challenge。
 sealed class AuthLoginResult {
   const AuthLoginResult();
 
@@ -37,5 +37,5 @@ final class AuthLoginOtpChallenge extends AuthLoginResult {
   final OtpChallenge challenge;
 }
 
-/// Compatibility name for the legacy authenticated payload contract.
+/// 舊版 authenticated payload contract 的 compatibility 名稱。
 typedef AuthResult = AuthAuthenticatedResult;

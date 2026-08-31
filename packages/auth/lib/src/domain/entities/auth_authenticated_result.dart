@@ -1,6 +1,6 @@
 import 'package:auth/src/domain/entities/auth_user.dart';
 
-/// Credential-bearing authentication success.
+/// 帶有 credential 的 authentication success payload。
 final class AuthAuthenticatedResult {
   const AuthAuthenticatedResult({
     required this.accessToken,

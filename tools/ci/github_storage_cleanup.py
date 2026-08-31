@@ -812,6 +812,8 @@ def delete_from_manifest(
     if _require_repository(api_client.repository) != payload["repository"]:
         raise GitHubStorageCleanupError("manifest repository does not match API client")
 
+    # Review + approval token 只授權當時精確 inventory。真正 delete 前重新抓取
+    # GitHub state 並比對 hash/totals/exact IDs；任何 drift 都要求重建與重審 manifest。
     fresh_inventory = collect_inventory(api_client)
     fresh_plan = classify_inventory(
         fresh_inventory,
@@ -832,6 +834,8 @@ def delete_from_manifest(
     deleted_artifact_ids: List[int] = []
     deleted_cache_ids: List[int] = []
     attempts: List[DeletionAttempt] = []
+    # Remote delete 不具本地 transaction rollback 能力，因此遇到第一個 exact-ID
+    # API failure 立即停止並保留已完成 attempts，禁止繼續擴大 partial deletion。
     for item in payload["candidates"]:
         if item["object_type"] != "artifact":
             continue

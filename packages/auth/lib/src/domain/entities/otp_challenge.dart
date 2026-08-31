@@ -1,4 +1,4 @@
-/// Server-issued OTP challenge metadata.
+/// Server-issued OTP challenge metadata。
 final class OtpChallenge {
   OtpChallenge({
     required String challengeId,

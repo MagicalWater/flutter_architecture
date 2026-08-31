@@ -17,7 +17,7 @@ enum StartupLocalUnlockState {
   serverLoginRequested,
 }
 
-/// App-owned cold-start local unlock gate.
+/// App-owned cold-start local unlock gate，負責本機解鎖啟動閘門。
 ///
 /// 此 coordinator 是 startup restore 的唯一入口。當 preference enabled 時，
 /// 必須先完成 local user-presence verification，才允許 dispatch repository restore。
@@ -63,6 +63,8 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
   Future<void> retry() => _run();
 
   Future<void> useServerLogin() async {
+    // 使用者改選 server login 是新的 lifecycle intent；先使任何仍在進行的
+    // unlock / restore operation supersede，再清除 runtime authenticated authority。
     _mutationCoordinator.beginLifecycleOperation();
     _sessionManager.clear();
     try {
@@ -78,6 +80,8 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
     final existing = _inFlight;
     if (existing != null) return existing;
 
+    // Cold-start / retry 只允許一條 unlock pipeline，避免重複 biometric prompt
+    // 或兩個 restore flow 競爭同一 Session lifecycle。
     final future = _runInternal();
     _inFlight = future;
     return future.whenComplete(() {
@@ -113,6 +117,8 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
       case LocalUnlockPreferenceReadPresent(
         preference: LocalUnlockPreference.enabled,
       ):
+        // Enabled preference 採 fail closed：user-presence 尚未通過前，
+        // SessionManager 必須維持 unauthenticated，不能先 restore 再補驗證。
         _sessionManager.clear();
         await _verifyThenRestore(operation);
       case LocalUnlockPreferenceReadCorrupted():

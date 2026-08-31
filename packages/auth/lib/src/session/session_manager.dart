@@ -8,8 +8,6 @@ import 'package:rxdart/rxdart.dart';
 /// Session 是一個跨畫面的狀態，很多地方可能會想知道目前是否已登入。
 ///
 /// [BehaviorSubject] 可以保存最後一次狀態，新的訂閱者一訂閱就能拿到目前 session。
-///
-/// 第一階段不做複雜 stream 範例，只用這裡展示 RxDart 的實務用途。
 class SessionManager {
   SessionManager();
 

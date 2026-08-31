@@ -12,12 +12,13 @@ import 'package:auth/src/session/session_manager.dart';
 ///   ↓
 /// AuthTokenProvider
 ///   ↓
-/// AuthTokenProviderImpl  ← 目前所在位置
+/// AuthTokenProviderImpl
 ///   ↓
-/// AuthCredentialStore
-///   ↓
-/// SharedPreferences
+/// SessionManager runtime snapshot
 /// ```
+///
+/// 此 adapter 不讀取 durable credential；request token authority 只來自目前
+/// runtime Session，避免 transport layer 繞過 Auth lifecycle 直接碰 persistence。
 class AuthTokenProviderImpl implements AuthTokenProvider {
   const AuthTokenProviderImpl(this._sessionManager);
 

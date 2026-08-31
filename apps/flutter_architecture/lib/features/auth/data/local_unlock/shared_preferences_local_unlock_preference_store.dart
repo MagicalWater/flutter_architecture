@@ -16,6 +16,8 @@ final class SharedPreferencesLocalUnlockPreferenceStore
 
   final SharedPreferences _preferences;
   final LocalUnlockPreferenceCodec _codec;
+  // SharedPreferences write / clear 必須保持呼叫順序；否則快速 enable→disable
+  // 可能因 platform Future 完成順序不同而讓舊值最後落盤。
   Future<void> _tail = Future<void>.value();
 
   @override

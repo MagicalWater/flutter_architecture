@@ -115,6 +115,8 @@ class CatalogLocalDataSource {
         return _database.transaction((transaction) async {
           var chainRevision = page.chainRevision;
           if (resetFollowingPages) {
+            // 第一頁 replacement 建立新的 cursor-chain generation。舊 append 即使
+            // 稍後完成，也會因 revision/linkage 不符而失去 cache commit ownership。
             final currentRows = await transaction.query(
               _pageTable,
               columns: const <String>['chain_revision'],
@@ -361,6 +363,8 @@ class CatalogLocalDataSource {
             }
             return true;
           } on _CorruptedCatalogCacheException {
+            // Chain metadata 已無法可信解析時採 fail closed：刪除整條 chain，
+            // 不嘗試保留局部 page，避免後續 append 在矛盾 authority 上繼續延伸。
             await _deleteChainInTransaction(
               transaction,
               query: normalizedQuery,

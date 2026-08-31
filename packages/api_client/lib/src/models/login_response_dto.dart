@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'login_response_dto.freezed.dart';
 part 'login_response_dto.g.dart';
 
-/// Typed password-login response.
+/// Password login 的 typed response。
 @Freezed(toStringOverride: false, unionKey: 'resultType')
 sealed class LoginResponseDto with _$LoginResponseDto {
   @FreezedUnionValue('authenticated')

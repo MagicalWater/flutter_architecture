@@ -48,6 +48,8 @@ final class SharedPreferencesAuthLegacyCredentialStore
 
   @override
   Future<void> clearLegacyCredential() async {
+    // Legacy credential 可能同時存在多個歷史 key；cleanup 採 best effort，
+    // 不能因第一個 remove 失敗就留下另一個仍可被誤認為 credential 的 key。
     Object? expectedError;
     StackTrace? expectedStackTrace;
     Object? unexpectedError;
@@ -82,6 +84,8 @@ final class SharedPreferencesAuthLegacyCredentialStore
     await remove(_singleAccessTokenKey);
 
     final capturedUnexpectedError = unexpectedError;
+    // Unknown failure 優先於已分類 local-storage failure，避免 migration cleanup
+    // 把 programming / platform defect 降級成一般 storage unavailable。
     if (capturedUnexpectedError != null) {
       Error.throwWithStackTrace(capturedUnexpectedError, unexpectedStackTrace!);
     }

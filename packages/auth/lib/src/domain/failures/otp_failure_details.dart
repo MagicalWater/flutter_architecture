@@ -7,7 +7,7 @@ enum OtpFailureKind {
   protocolViolation,
 }
 
-/// Safe typed transition metadata for OTP failures.
+/// OTP failure 的安全 typed transition metadata。
 final class OtpFailureDetails {
   const OtpFailureDetails({
     required this.kind,

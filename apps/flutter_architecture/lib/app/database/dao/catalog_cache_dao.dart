@@ -29,7 +29,7 @@ abstract interface class CatalogCacheDao {
   Future<T> transaction<T>(Future<T> Function(CatalogCacheDao dao) action);
 }
 
-/// App-owned Drift implementation of the Catalog cache SQL boundary.
+/// App-owned Drift 實作，承擔 Catalog cache 的 SQL boundary。
 final class DriftCatalogCacheDao implements CatalogCacheDao {
   const DriftCatalogCacheDao(this._database);
 

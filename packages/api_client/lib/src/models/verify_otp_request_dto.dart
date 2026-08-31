@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'verify_otp_request_dto.freezed.dart';
 part 'verify_otp_request_dto.g.dart';
 
-/// OTP verification request. Its string representation must never expose code.
+/// OTP verification request；任何 string representation 都不得暴露驗證 code。
 @Freezed(toStringOverride: false)
 abstract class VerifyOtpRequestDto with _$VerifyOtpRequestDto {
   const factory VerifyOtpRequestDto({

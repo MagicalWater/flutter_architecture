@@ -8,7 +8,8 @@ import 'package:auth/src/domain/repositories/auth_repository.dart';
 ///
 /// App 啟動時，AuthBloc 會呼叫這個 UseCase。
 ///
-/// 如果本地已有 token 與 profile，就可以自動登入。
+/// Repository 會依 current credential / user authority 決定是否能建立 runtime Session；
+/// UseCase 本身不解讀 storage provider 或 migration 細節。
 class RestoreSessionUseCase {
   const RestoreSessionUseCase(this._repository);
 

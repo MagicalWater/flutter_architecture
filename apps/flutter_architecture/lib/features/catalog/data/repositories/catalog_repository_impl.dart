@@ -71,6 +71,9 @@ class CatalogRepositoryImpl implements CatalogRepository {
           )
         : null;
 
+    // Append 在發出 remote request 前捕捉目前 cursor-chain revision；response
+    // 回來後 local data source 會用它拒絕已被第一頁 refresh 取代的 stale append。
+
     yield await _loadRemote(
       query: normalizedQuery,
       cursor: cursor,

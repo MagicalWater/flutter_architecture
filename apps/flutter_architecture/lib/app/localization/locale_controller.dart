@@ -37,6 +37,8 @@ final class LocaleController extends ChangeNotifier {
     final revision = ++_revision;
     notifyListeners();
 
+    // Locale 與 Theme 採相同 serialized-write invariant：UI 可立即切換，但
+    // persistence 依序寫入；舊 revision 不得覆蓋較新操作的 diagnostic state。
     final snapshot = preference;
     _writeTail = _writeTail.then((_) async {
       try {

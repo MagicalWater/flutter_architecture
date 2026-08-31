@@ -201,6 +201,8 @@ def apply_cleanup(root: Path, manifest_id: str) -> Path:
     with _cleanup_operation(store_root):
         _assert_no_active_jobs(store_root)
         sources = _preflight_cleanup_paths(store_root, payload)
+        # Manifest 是針對特定 store snapshot 核准；cleanup lock 取得後仍要重驗
+        # generation，避免 plan 產生後新增/變更 artifact 卻照舊刪除。
         if payload["store_generation"] != _compute_store_generation(store_root):
             raise ValueError("store generation drift detected")
 
@@ -212,6 +214,8 @@ def apply_cleanup(root: Path, manifest_id: str) -> Path:
 
         moved: List[Tuple[Path, Path]] = []
         try:
+            # Apply 只搬到可恢復 trash，不直接永久刪除。任何中途失敗都逆序搬回，
+            # 保持 cleanup 對 job store 的 all-or-nothing observable semantics。
             for relative_path, source in sources:
                 destination = trash_dir / PurePosixPath(relative_path)
                 _ensure_directory(destination.parent)
@@ -256,6 +260,8 @@ def restore_cleanup(root: Path, cleanup_id: str) -> None:
 
         restored: List[Tuple[Path, Path]] = []
         try:
+            # Restore 同樣採補償式 move；遇到 destination drift 時撤回本次已還原
+            # 的項目，避免同一 cleanup 被恢復成半套狀態。
             for relative_path in reversed(moved_paths):
                 _validate_relative_path(relative_path)
                 source = _resolve_safe_existing_path(trash_dir, relative_path)
@@ -290,6 +296,7 @@ def purge_trash(root: Path, cleanup_id: str, now: datetime) -> None:
         applied_at = _parse_time(_required_string(metadata, "applied_at"))
         if current_time < applied_at + timedelta(hours=TRASH_RETENTION_HOURS):
             raise ValueError("trash cannot be purged before 24 hours")
+        # 只有 retention window 結束後才不可逆刪除；apply/restore 階段都保持可回復。
         shutil.rmtree(trash_dir)
 
 

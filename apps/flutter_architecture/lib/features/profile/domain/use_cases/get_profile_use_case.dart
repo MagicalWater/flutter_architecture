@@ -12,7 +12,7 @@ import 'package:injectable/injectable.dart';
 ///   ↓
 /// ProfileBloc
 ///   ↓
-/// GetProfileUseCase  ← 目前所在位置
+/// GetProfileUseCase
 ///   ↓
 /// ProfileRepository
 /// ```

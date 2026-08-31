@@ -146,6 +146,8 @@ final class LocalePreferenceStore {
         preference: _codec.decode(await _storage.read()),
       );
     } on PreferenceException catch (error, stackTrace) {
+      // Locale restore 只對「讀取失敗 / payload corruption」降級到 defaults；write
+      // failure 或其他 typed identity 仍視為 unexpected，避免錯誤分類被靜默掩蓋。
       if (!_isExpectedLocaleRestoreFailure(error)) {
         Error.throwWithStackTrace(error, stackTrace);
       }

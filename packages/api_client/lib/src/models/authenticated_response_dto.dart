@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'authenticated_response_dto.freezed.dart';
 part 'authenticated_response_dto.g.dart';
 
-/// Credential-bearing authenticated response payload.
+/// 帶有 credential 的 authenticated response payload。
 @Freezed(toStringOverride: false)
 abstract class AuthenticatedResponseDto with _$AuthenticatedResponseDto {
   const factory AuthenticatedResponseDto({

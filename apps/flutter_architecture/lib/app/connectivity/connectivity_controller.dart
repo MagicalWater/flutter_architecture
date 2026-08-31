@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_state.dart';
 
-/// App-owned connectivity state authority。
+/// App-owned connectivity state authority，作為 App 內連線狀態的唯一 runtime authority。
 ///
 /// 它只協調本機介面訊號、lifecycle recheck與真正的offline→online transition；
 /// 不執行backend probe，也不自動重送任何request。
@@ -48,6 +48,8 @@ final class ConnectivityController {
     final existing = _recheckFuture;
     if (existing != null) return existing;
 
+    // 同一時間只允許一個 snapshot recheck；stream event 仍可先更新 authority。
+    // revision 會讓較晚完成的舊 snapshot 失效，避免反向覆蓋較新的 observation。
     final revisionAtStart = _observationRevision;
     final future = _runRecheck(revisionAtStart);
     _recheckFuture = future;
@@ -71,6 +73,8 @@ final class ConnectivityController {
 
   void _onAdapterState(ConnectivityState next) {
     if (_disposed) return;
+    // 每個 live observation 都會推進 revision，使尚未完成的 readCurrentState
+    // snapshot 失去 commit ownership。
     _observationRevision++;
     _applyState(next);
   }
@@ -103,8 +107,8 @@ final class ConnectivityController {
     _disposed = true;
     await _subscription?.cancel();
     await _adapter.dispose();
-    // Outward-facing broadcast streams may still have presentation listeners
-    // during widget teardown. Their close futures must not block App dispose.
+    // Widget teardown 期間 outward-facing broadcast stream 可能仍有 presentation
+    // listener；close Future 不應反向阻塞 App dispose。
     unawaited(_stateController.close());
     unawaited(_reconnectController.close());
   }

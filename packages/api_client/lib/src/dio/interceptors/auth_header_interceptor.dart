@@ -15,7 +15,7 @@ import 'package:dio/dio.dart';
 ///   ↓
 /// Dio request
 ///   ↓
-/// AuthHeaderInterceptor  ← 目前所在位置
+/// AuthHeaderInterceptor
 ///   ↓
 /// Authorization: Bearer token
 /// ```

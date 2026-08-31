@@ -213,6 +213,8 @@ def begin_job(
 
     _ensure_directory(context.root)
     _ensure_directory(context.lock_path.parent)
+    # Job lock 先取得 ownership，再檢查 cleanup lock。若 cleanup 在兩者之間
+    # 開始，begin_job 必須 rollback 自己的 lock，而不是與 destructive cleanup 並行。
     _create_lock(context.lock_path, context)
     try:
         cleanup_lock = context.root / "locks" / "cleanup-operation.lock"
@@ -287,6 +289,8 @@ def finalize_job(
             max_total_bytes=MAX_DIAGNOSTIC_BYTES,
         )
     except ValueError:
+        # Evidence 一旦命中 secret gate 就不能發布 partial artifact；先銷毀 staging。
+        # 若銷毀失敗則保留 active lock，讓後續流程 fail closed 而不是假裝已收斂。
         try:
             shutil.rmtree(context.staging_dir)
             context.lock_path.unlink(missing_ok=True)
@@ -302,6 +306,8 @@ def finalize_job(
     _write_checksums(context.staging_dir)
 
     _ensure_directory(context.published_dir.parent)
+    # staging 完整驗證、寫入 manifest/checksum 後才以單次 rename 發布；consumer
+    # 不應觀察到半完成的 finalized job。
     os.replace(context.staging_dir, context.published_dir)
     context.lock_path.unlink(missing_ok=True)
     return context.published_dir

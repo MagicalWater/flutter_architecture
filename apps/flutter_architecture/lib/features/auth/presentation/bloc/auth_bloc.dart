@@ -16,7 +16,7 @@ part 'auth_state.dart';
 /// ```txt
 /// LoginPage
 ///   ↓ add(AuthLoginRequested)
-/// AuthBloc  ← 目前所在位置
+/// AuthBloc
 ///   ↓
 /// LoginUseCase
 ///   ↓
@@ -62,6 +62,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
   late final StreamSubscription<AuthSession?> _sessionSubscription;
+  // Presentation generation 只管理 Bloc async completion ownership，與
+  // SessionManager lifecycle generation 是不同 authority，兩者不可互換。
   int _presentationGeneration = 0;
 
   int _beginPresentationOperation() => ++_presentationGeneration;
@@ -315,6 +317,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onSessionCleared(AuthSessionCleared event, Emitter<AuthState> emit) {
+    // Authoritative Session clear 必須同時讓 presentation completion 與仍在執行的
+    // repository lifecycle operation 失效，避免舊 login / OTP 結果復活 UI state。
     _presentationGeneration += 1;
     _mutationCoordinator.invalidateLifecycleOperations();
     emit(AuthState.initial());

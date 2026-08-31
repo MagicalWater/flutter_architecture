@@ -10,7 +10,7 @@ import 'package:core/core.dart';
 
 typedef MockAuthClock = DateTime Function();
 
-/// Auth-specific deterministic Mock with an in-memory OTP challenge registry.
+/// Auth 專用 deterministic Mock，使用 in-memory OTP challenge registry。
 class MockAuthApi implements AuthEndpoint {
   MockAuthApi({
     MockAuthClock? clock,

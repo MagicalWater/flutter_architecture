@@ -30,7 +30,7 @@ import 'package:core/core.dart';
 ///   ↓
 /// AuthRepository
 ///   ↓
-/// AuthRepositoryImpl  ← 目前所在位置
+/// AuthRepositoryImpl
 ///   ↓
 /// RemoteDataSource / LocalDataSource
 /// ```

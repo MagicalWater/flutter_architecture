@@ -241,6 +241,8 @@ def classify_paths(
         )
 
     if invalid_range or not normalized:
+        # 無法可信取得 changed paths 時必須 fail closed。空集合不能解讀成
+        # 「沒有風險」，否則 git range / caller defect 會靜默跳過必要 validation。
         return _FULL_MATRIX
 
     if "VERSION" in normalized:

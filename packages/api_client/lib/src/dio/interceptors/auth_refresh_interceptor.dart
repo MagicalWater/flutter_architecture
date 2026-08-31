@@ -115,9 +115,8 @@ class AuthRefreshInterceptor extends Interceptor {
     if (request.extra[RequestExtras.allowAuthReplay] != true) {
       return false;
     }
-    // Multipart / request stream bodies may already be consumed by the first
-    // send. Streaming responses usually belong to download/progress flows that
-    // must define their own retry strategy.
+    // Multipart / request stream body 可能已被第一次送出消耗；streaming response
+    // 通常屬於 download / progress flow，必須由該 transport flow 自行定義 retry。
     return request.data is! FormData &&
         request.data is! Stream &&
         request.responseType != ResponseType.stream &&

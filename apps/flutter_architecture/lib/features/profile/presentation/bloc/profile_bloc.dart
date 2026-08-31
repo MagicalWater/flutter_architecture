@@ -19,7 +19,7 @@ part 'profile_state.dart';
 /// ```txt
 /// ProfilePage
 ///   ↓ add(ProfileRequested / ProfileLogoutRequested)
-/// ProfileBloc  ← 目前所在位置
+/// ProfileBloc
 ///   ↓
 /// GetProfileUseCase / LogoutUseCase
 ///   ↓
@@ -90,6 +90,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
 
     final currentSession = _sessionManager.currentSession;
+    // Profile response 只屬於 request 發出時的 Session lifecycle；logout / relogin
+    // 後即使 userId 相同也不能讓舊 response commit 到新的 presentation state。
     if (currentSession == null ||
         currentSession.generation != requestSession.generation ||
         currentSession.userId != requestSession.userId) {

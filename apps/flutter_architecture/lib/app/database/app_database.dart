@@ -18,6 +18,8 @@ class AppDatabase extends _$AppDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (migrator, from, to) async {
+      // 整段 historical upgrade 必須在單一 transaction 內完成；任何 intermediate
+      // version 失敗都 rollback，不能留下 partial schema 或提前推進 user_version。
       await transaction(() async {
         for (var target = from + 1; target <= to; target++) {
           await _migrateTo(target);
@@ -117,6 +119,8 @@ class AppDatabase extends _$AppDatabase {
     }
 
     final rows = await customSelect('SELECT id, name FROM auth_user').get();
+    // Legacy table 只有「恰好一筆」可被安全判定為 single active user；0 或多筆
+    // 一律不猜 authority，建立新 schema 後保持 unauthenticated。
     await customStatement('ALTER TABLE auth_user RENAME TO auth_user_legacy');
     await _createCurrentAuthUserTable();
     if (rows.length == 1) {

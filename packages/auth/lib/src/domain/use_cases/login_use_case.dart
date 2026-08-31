@@ -11,7 +11,7 @@ import 'package:auth/src/domain/repositories/auth_repository.dart';
 ///   ↓
 /// AuthBloc
 ///   ↓
-/// LoginUseCase  ← 目前所在位置
+/// LoginUseCase
 ///   ↓
 /// AuthRepository
 /// ```

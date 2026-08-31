@@ -81,7 +81,8 @@ class _fixture:
 def _write(root: Path, relative_path: str, content: str) -> None:
     path = root / relative_path
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8", newline="")
+    with path.open("w", encoding="utf-8", newline="") as stream:
+        stream.write(content)
 
 
 def _sha256(path: Path) -> str:

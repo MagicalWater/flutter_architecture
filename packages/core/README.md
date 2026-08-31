@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - core-package-local-contract
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Core Package
@@ -16,7 +16,6 @@ last_reviewed_baseline: 1.5.1
 - `Failure` typed application failure。
 - `AppException` infrastructure／application exception contract。
 - `AppExceptionMapper` boundary mapping helper。
-- `KeyValueStorage` 最小 storage abstraction。
 
 ## Non-responsibilities
 
@@ -57,7 +56,6 @@ import 'package:core/core.dart';
 - `AppExceptionMapper`
 - `Failure`
 - `Result`
-- `KeyValueStorage`
 
 Consumer 不應 deep import `lib/src/`。
 
@@ -65,9 +63,11 @@ Consumer 不應 deep import `lib/src/`。
 
 此 package 使用 constructor injection 與純 Dart contracts，不依賴 GetIt／Injectable，也不提供 App lifecycle registration。
 
+`AppException → Failure` mapping 不接受 transport cancellation；cancellation 是 control flow，必須保留原始 exception identity 與 stack，交由擁有 operation 語意的 boundary 處理。
+
 ## Tests
 
-測試位於 `packages/core/test/`，應覆蓋 Result、Failure、Exception mapping、identity／stack preservation 與 sensitive diagnostic contract。
+只保留高風險 contract test；目前固定 cancellation 不得被 generic mapper 降級成普通 `Failure`。
 
 ## Related Decisions
 

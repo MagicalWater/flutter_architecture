@@ -10,6 +10,16 @@ Failure mapAppExceptionToFailure(
   AppException exception, {
   required String fallbackMessage,
 }) {
+  if (exception.kind == AppExceptionKind.transport &&
+      exception.transportKind == TransportExceptionKind.cancelled) {
+    // Cancellation 是 control flow，不得被 generic mapper 降級成普通 Failure；
+    // 保留原始 exception identity 與 stack，交回擁有 operation 語意的 boundary。
+    Error.throwWithStackTrace(
+      exception,
+      exception.stackTrace ?? StackTrace.current,
+    );
+  }
+
   return Failure(
     kind: _mapFailureKind(exception),
     message: fallbackMessage,

@@ -83,7 +83,7 @@ final class DsBlockingErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = message == null ? 'Error. $title' : 'Error. $title. $message';
+    final label = message == null ? title : '$title. $message';
     return _DsPageStateLayout(
       leading:
           icon ??

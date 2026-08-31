@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - design-system-package-local-contract
-last_reviewed_baseline: 1.26.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Design System Package

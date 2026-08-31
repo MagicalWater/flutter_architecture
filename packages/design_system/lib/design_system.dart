@@ -13,5 +13,4 @@ export 'src/tokens/ds_elevation.dart';
 export 'src/tokens/ds_component_size.dart';
 export 'src/tokens/ds_icon_size.dart';
 export 'src/tokens/ds_radius.dart';
-export 'src/tokens/ds_semantic_color_role.dart';
 export 'src/tokens/ds_space.dart';

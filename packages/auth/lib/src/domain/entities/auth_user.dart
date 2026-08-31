@@ -9,7 +9,7 @@ part 'auth_user.freezed.dart';
 /// Entity 是 App 業務真正需要的資料。
 ///
 /// API Response 可能有很多後端欄位，但 UI / UseCase 不一定需要。
-@freezed
+@Freezed(toStringOverride: false)
 abstract class AuthUser with _$AuthUser {
   const factory AuthUser({
     required String id,

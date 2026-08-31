@@ -36,6 +36,3 @@ final class AuthLoginOtpChallenge extends AuthLoginResult {
 
   final OtpChallenge challenge;
 }
-
-/// 舊版 authenticated payload contract 的 compatibility 名稱。
-typedef AuthResult = AuthAuthenticatedResult;

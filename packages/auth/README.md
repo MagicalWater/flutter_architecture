@@ -3,7 +3,7 @@ document_type: package-readme
 status: accepted
 authoritative_for:
   - auth-package-local-contract
-last_reviewed_baseline: 1.14.0
+last_reviewed_baseline: 1.27.0
 ---
 
 # Auth Package
@@ -109,7 +109,7 @@ Public barrel export Domain、Repository、UseCase、Session、Refresh、Store�
 
 ## Tests
 
-測試位於 `packages/auth/test/`，應覆蓋 login／restore／logout、OTP、migration、refresh races、generation cleanup、expected／unknown error semantics 與 sensitive output。
+測試位於 `packages/auth/test/`，遵守 test-by-exception，只保留 high-risk contract regression。目前 retained owners包含 credential migration、refresh race／generation cleanup，以及 sensitive-output protection。
 
 ## Related Decisions
 

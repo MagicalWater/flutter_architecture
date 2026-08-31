@@ -1,7 +1,6 @@
 export 'src/data/data_sources/auth_refresh_remote_data_source.dart';
 export 'src/data/data_sources/auth_remote_data_source.dart';
 export 'src/data/data_sources/auth_token_provider_impl.dart';
-export 'src/data/exceptions/corrupted_auth_tokens_exception.dart';
 export 'src/data/mappers/login_response_dto_mapper.dart';
 export 'src/data/mappers/otp_challenge_dto_mapper.dart';
 export 'src/data/lifecycle/auth_lifecycle_cleanup_policy.dart';

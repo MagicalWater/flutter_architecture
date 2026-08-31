@@ -11,7 +11,7 @@ part 'auth_user_model.g.dart';
 /// Model 對應外部資料格式，例如 API JSON 或 SQLite row。
 ///
 /// Entity 則是 Domain Layer 真正需要的資料。
-@freezed
+@Freezed(toStringOverride: false)
 abstract class AuthUserModel with _$AuthUserModel {
   const factory AuthUserModel({
     required String id,

@@ -33,10 +33,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => Object.hash(runtimeType,id,name);
 
-@override
-String toString() {
-  return 'AuthUser(id: $id, name: $name)';
-}
 
 
 }
@@ -231,10 +227,6 @@ bool operator ==(Object other) {
 @override
 int get hashCode => Object.hash(runtimeType,id,name);
 
-@override
-String toString() {
-  return 'AuthUser(id: $id, name: $name)';
-}
 
 
 }

@@ -11,7 +11,6 @@ enum StartupLocalUnlockState {
   restoring,
   rejected,
   unavailable,
-  preferenceCorrupted,
   operationalFailure,
   superseded,
   serverLoginRequested,
@@ -51,7 +50,6 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
     StartupLocalUnlockState.prompting ||
     StartupLocalUnlockState.rejected ||
     StartupLocalUnlockState.unavailable ||
-    StartupLocalUnlockState.preferenceCorrupted ||
     StartupLocalUnlockState.operationalFailure => true,
     _ => false,
   };
@@ -68,7 +66,7 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
     _mutationCoordinator.beginLifecycleOperation();
     _sessionManager.clear();
     try {
-      await _preferenceStore.write(LocalUnlockPreference.disabled);
+      await _preferenceStore.writeEnabled(false);
     } catch (error, stackTrace) {
       _recordFailure(error, stackTrace);
       return;
@@ -95,9 +93,9 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
     _failureStackTrace = null;
     _setState(StartupLocalUnlockState.checkingPreference);
 
-    late final LocalUnlockPreferenceReadResult preferenceResult;
+    late final bool enabled;
     try {
-      preferenceResult = await _preferenceStore.read();
+      enabled = await _preferenceStore.readEnabled();
     } catch (error, stackTrace) {
       _recordFailure(error, stackTrace);
       return;
@@ -107,23 +105,15 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
       return;
     }
 
-    switch (preferenceResult) {
-      case LocalUnlockPreferenceReadAbsent():
-        await _restore(operation);
-      case LocalUnlockPreferenceReadPresent(
-        preference: LocalUnlockPreference.disabled,
-      ):
-        await _restore(operation);
-      case LocalUnlockPreferenceReadPresent(
-        preference: LocalUnlockPreference.enabled,
-      ):
-        // Enabled preference 採 fail closed：user-presence 尚未通過前，
-        // SessionManager 必須維持 unauthenticated，不能先 restore 再補驗證。
-        _sessionManager.clear();
-        await _verifyThenRestore(operation);
-      case LocalUnlockPreferenceReadCorrupted():
-        _setState(StartupLocalUnlockState.preferenceCorrupted);
+    if (!enabled) {
+      await _restore(operation);
+      return;
     }
+
+    // Enabled preference 採 fail closed：user-presence 尚未通過前，
+    // SessionManager 必須維持 unauthenticated，不能先 restore 再補驗證。
+    _sessionManager.clear();
+    await _verifyThenRestore(operation);
   }
 
   Future<void> _verifyThenRestore(AuthLifecycleOperation operation) async {

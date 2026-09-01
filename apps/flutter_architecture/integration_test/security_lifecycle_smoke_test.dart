@@ -58,7 +58,7 @@ void main() {
     await _configureDependencies();
 
     final preferenceStore = getIt<LocalUnlockPreferenceStore>();
-    await preferenceStore.write(LocalUnlockPreference.enabled);
+    await preferenceStore.writeEnabled(true);
     final sessionManager = getIt<SessionManager>()
       ..setAuthenticated(accessToken: 'runtime-token', userId: 'm25-user');
     final verification = Completer<LocalUserPresenceVerification>();
@@ -95,7 +95,7 @@ void main() {
     await _configureDependencies();
 
     final preferenceStore = getIt<LocalUnlockPreferenceStore>();
-    await preferenceStore.write(LocalUnlockPreference.enabled);
+    await preferenceStore.writeEnabled(true);
     final verifier = _CountingVerifier();
     final sessionManager = getIt<SessionManager>()
       ..setAuthenticated(accessToken: 'runtime-token', userId: 'm25-user');

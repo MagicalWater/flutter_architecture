@@ -94,7 +94,7 @@ Migration 採 write secure authority first、read-back／validation、再 best-e
 
 ## Local Unlock Boundary
 
-- `LocalUnlockPreference` 與 `LocalUnlockPolicy` 是純 Dart contract。
+- `LocalUnlockPreferenceStore` 與 `LocalUnlockPolicy` 是純 Dart contract；preference 對外只表達 enabled / disabled，未知 durable state 以 failure fail closed。
 - `LocalUserPresenceVerifier` 只表達本機 user-presence verification。
 - App 擁有 `local_auth` adapter、startup coordinator、lifecycle coordination、settings UI 與 navigation。
 - Local unlock 不解密或另存 biometric data，也不等於 cryptographic Device Binding。

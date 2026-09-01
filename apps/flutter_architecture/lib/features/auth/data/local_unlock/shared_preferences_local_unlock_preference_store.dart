@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:auth/auth.dart';
 import 'package:core/core.dart';
@@ -8,32 +9,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// SharedPreferences adapter，序列化 local unlock writes 以維持呼叫順序。
 final class SharedPreferencesLocalUnlockPreferenceStore
     implements LocalUnlockPreferenceStore {
-  SharedPreferencesLocalUnlockPreferenceStore(
-    this._preferences, {
-    LocalUnlockPreferenceCodec codec = const LocalUnlockPreferenceCodec(),
-  }) : _codec = codec;
+  SharedPreferencesLocalUnlockPreferenceStore(this._preferences);
 
   static const key = 'auth.localUnlock.preference';
 
   final SharedPreferences _preferences;
-  final LocalUnlockPreferenceCodec _codec;
   // SharedPreferences write / clear 必須保持呼叫順序；否則快速 enable→disable
   // 可能因 platform Future 完成順序不同而讓舊值最後落盤。
   Future<void> _tail = Future<void>.value();
 
   @override
-  Future<LocalUnlockPreferenceReadResult> read() async {
+  Future<bool> readEnabled() async {
     try {
       final raw = _preferences.get(key);
-      if (raw == null) return const LocalUnlockPreferenceReadResult.absent();
-      if (raw is! String) {
-        return const LocalUnlockPreferenceReadResult.corrupted();
-      }
-      try {
-        return LocalUnlockPreferenceReadResult.present(_codec.decode(raw));
-      } on FormatException {
-        return const LocalUnlockPreferenceReadResult.corrupted();
-      }
+      if (raw == null) return false;
+      if (raw is bool) return raw;
+      if (raw is String) return _readLegacyV1(raw);
+      throw const AppException(
+        kind: AppExceptionKind.dataCorruption,
+        message: 'Invalid local unlock preference value.',
+        diagnosticCode: 'local_unlock_preference_corrupted',
+      );
+    } on AppException {
+      rethrow;
     } on PlatformException catch (error, stackTrace) {
       Error.throwWithStackTrace(
         AppException(
@@ -49,13 +47,10 @@ final class SharedPreferencesLocalUnlockPreferenceStore
   }
 
   @override
-  Future<void> write(LocalUnlockPreference preference) {
+  Future<void> writeEnabled(bool enabled) {
     return _enqueue(() async {
       try {
-        final saved = await _preferences.setString(
-          key,
-          _codec.encode(preference),
-        );
+        final saved = await _preferences.setBool(key, enabled);
         if (!saved) {
           throw const AppException(
             kind: AppExceptionKind.localStorage,
@@ -78,6 +73,24 @@ final class SharedPreferencesLocalUnlockPreferenceStore
         );
       }
     });
+  }
+
+  bool _readLegacyV1(String raw) {
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map<String, dynamic> || decoded['version'] != 1) {
+        throw const FormatException();
+      }
+      final enabled = decoded['enabled'];
+      if (enabled is! bool) throw const FormatException();
+      return enabled;
+    } on FormatException {
+      throw const AppException(
+        kind: AppExceptionKind.dataCorruption,
+        message: 'Invalid local unlock preference value.',
+        diagnosticCode: 'local_unlock_preference_corrupted',
+      );
+    }
   }
 
   @override

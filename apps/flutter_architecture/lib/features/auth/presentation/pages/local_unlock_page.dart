@@ -40,7 +40,6 @@ final class LocalUnlockView extends StatelessWidget {
         state == StartupLocalUnlockState.checkingPreference;
     final message = switch (state) {
       StartupLocalUnlockState.unavailable => l10n.localUnlockUnavailableMessage,
-      StartupLocalUnlockState.preferenceCorrupted ||
       StartupLocalUnlockState.operationalFailure =>
         l10n.localUnlockFailureMessage,
       _ => l10n.localUnlockRequiredMessage,

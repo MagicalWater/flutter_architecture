@@ -38,16 +38,21 @@ final class LocalUnlockLifecycleCoordinator {
         _now() - backgroundedAt <= gracePeriod) {
       return false;
     }
-    final preference = await _preferenceStore.read();
-    if (preference case LocalUnlockPreferenceReadPresent(
-      preference: LocalUnlockPreference.enabled,
-    )) {
+    try {
+      final enabled = await _preferenceStore.readEnabled();
+      if (!enabled) return false;
+
       // Grace period 已過且 local unlock 仍啟用時先撤銷 runtime Session authority，
       // 再重新走完整 unlock gate；不能讓舊 Session 在驗證期間繼續可用。
       _sessionManager.clear();
       await _unlockCoordinator.retry();
       return true;
+    } catch (_) {
+      // Preference 無法可靠判讀時不能保留既有 authenticated authority；交由
+      // startup coordinator 進入同一 fail-closed failure / retry surface。
+      _sessionManager.clear();
+      await _unlockCoordinator.retry();
+      return true;
     }
-    return false;
   }
 }

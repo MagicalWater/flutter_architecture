@@ -54,7 +54,7 @@ final class LocalUnlockPolicy {
         if (!_sessionManager.isAuthenticated) {
           throw const AuthLifecycleOperationSuperseded();
         }
-        await _store.write(LocalUnlockPreference.enabled);
+        await _store.writeEnabled(true);
       });
     } on AuthLifecycleOperationSuperseded {
       return LocalUnlockPolicyResult.superseded;
@@ -68,7 +68,7 @@ final class LocalUnlockPolicy {
   }
 
   Future<LocalUnlockPolicyResult> disable() async {
-    await _store.write(LocalUnlockPreference.disabled);
+    await _store.writeEnabled(false);
     return LocalUnlockPolicyResult.disabled;
   }
 }

@@ -31,16 +31,10 @@ final class _LocalUnlockSettingsDialogState
 
   Future<void> _load() async {
     try {
-      final result = await widget.preferenceStore.read();
+      final enabled = await widget.preferenceStore.readEnabled();
       if (!mounted) return;
       setState(() {
-        _enabled = switch (result) {
-          LocalUnlockPreferenceReadPresent(
-            preference: LocalUnlockPreference.enabled,
-          ) =>
-            true,
-          _ => false,
-        };
+        _enabled = enabled;
       });
     } catch (_) {
       if (!mounted) return;

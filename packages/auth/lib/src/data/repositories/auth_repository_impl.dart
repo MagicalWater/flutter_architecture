@@ -176,6 +176,8 @@ class AuthRepositoryImpl implements AuthRepository {
         stackTrace: stackTrace,
       );
 
+  /// 將 authenticated result 以 persistence-first 方式提交到 credential、user 與
+  /// runtime Session；任何 partial write / supersede 都必須先補償清理再退出。
   Future<void> _commitAuthenticatedUnlocked(
     AuthMutationLease operation,
     AuthAuthenticatedResult result,
@@ -275,6 +277,8 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  /// 將 cleanup diagnostics 交給 App reporter；reporting failure 不得改變已解析的
+  /// restore 結果。
   void _reportDiagnosticsBestEffort(
     Iterable<AuthCleanupDiagnostic> diagnostics,
   ) {
@@ -285,6 +289,8 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  /// 交由 migration coordinator 解析 durable credential / user authority；
+  /// 呼叫端仍負責持有 mutation serialization 與 lease ownership。
   Future<AuthCredentialMigrationResult> _resolveRestoreUnlocked() {
     return _migrationCoordinator.resolveUnlocked();
   }
@@ -324,6 +330,8 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  /// Restore 判定為未登入時，盡力移除可能殘留的 local unlock preference。
+  /// 預期的 local-storage failure 不阻斷 restore，其他異常仍往上拋。
   Future<void> _clearStaleLocalUnlockPreferenceBestEffort() async {
     final store = _localUnlockPreferenceStore;
     if (store == null) return;

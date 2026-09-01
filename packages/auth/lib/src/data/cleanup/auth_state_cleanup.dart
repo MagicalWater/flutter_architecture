@@ -95,9 +95,9 @@ final class AuthStateCleanupResult {
     }
   }
 
+  /// 從完整 cleanup diagnostics 選出要拋出的 primary failure；unknown failure
+  /// 優先於預期 local-storage failure，避免掩蓋真正 defect。
   AuthCleanupDiagnostic? _primary({bool unexpectedOnly = false}) {
-    // Unknown / unexpected failure 優先於已知 local-storage failure，避免 cleanup
-    // 把真正的 programming / platform defect 降級成可預期 operational error。
     for (final diagnostic in diagnostics) {
       if (!_isExpected(diagnostic.error)) return diagnostic;
     }

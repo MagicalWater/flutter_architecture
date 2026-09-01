@@ -84,6 +84,8 @@ class AuthSessionRefresher implements AuthRefresher {
     return operation;
   }
 
+  /// 將單次 refresh operation 的結果回填給所有等待者，並只在自己仍是 owner 時
+  /// 清除 in-flight slot，避免舊 completion 蓋掉新的 refresh。
   Future<void> _completeRefresh({
     required _InFlightRefresh inFlight,
     required Completer<AuthRefreshResult> completer,
@@ -107,6 +109,8 @@ class AuthSessionRefresher implements AuthRefresher {
         current.userId == userId;
   }
 
+  /// 執行完整 refresh flow：先驗證 durable/runtime identity，再離鎖呼叫 remote，
+  /// 最後重新取得 mutation ownership 後 persistence-first commit rotated tokens。
   Future<AuthRefreshResult> _performRefresh(_InFlightRefresh inFlight) async {
     late final StoredAuthTokens tokens;
     try {
@@ -196,6 +200,8 @@ class AuthSessionRefresher implements AuthRefresher {
     }
   }
 
+  /// 只有原 Session identity 仍有效時才清除 auth state；若 Session 已切換，
+  /// 直接回報 changed，避免舊 refresh invalidation 清掉新登入狀態。
   Future<AuthRefreshResult> _invalidateSecureSession({
     required int generation,
     required String userId,
@@ -212,6 +218,8 @@ class AuthSessionRefresher implements AuthRefresher {
     return _completeOutcome(outcome);
   }
 
+  /// 在外層已持有 mutation serialization 時執行 auth durable-state cleanup。
+  /// 此 helper 不自行加鎖，避免同一 coordinator 上形成巢狀等待。
   Future<AuthStateCleanupResult> _clearSecureAuthStateUnlocked() {
     return AuthStateCleanup(
       secureCredentialStore: _credentialStore,
@@ -220,6 +228,8 @@ class AuthSessionRefresher implements AuthRefresher {
     ).clearAllUnlocked();
   }
 
+  /// 完成 cleanup-aware refresh 結果：預期 storage diagnostics 只做 best-effort
+  /// reporting；unexpected cleanup failure 仍必須中斷正常 refresh result。
   AuthRefreshResult _completeOutcome(_SecureRefreshOutcome outcome) {
     final cleanup = outcome.cleanup;
     if (cleanup == null) return outcome.result;
@@ -228,6 +238,8 @@ class AuthSessionRefresher implements AuthRefresher {
     return outcome.result;
   }
 
+  /// 只上報可預期的 local-storage cleanup failure；reporter 自身失敗不得改變
+  /// session expiration / refresh outcome。
   void _reportExpectedBestEffort(Iterable<AuthCleanupDiagnostic> diagnostics) {
     final expected = diagnostics.where((diagnostic) {
       final error = diagnostic.error;

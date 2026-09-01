@@ -154,6 +154,8 @@ final class AuthCredentialMigrationCoordinator {
         left.refreshTokenExpiresAt == right.refreshTokenExpiresAt;
   }
 
+  /// Secure migration 尚未通過 read-back 驗證時，先移除可能的 partial authority。
+  /// Rollback 自身失敗優先拋出；否則保留並重拋原始 migration error。
   Future<Never> _rollbackUnverifiedSecure(
     Object originalError,
     StackTrace originalStackTrace,
@@ -168,6 +170,8 @@ final class AuthCredentialMigrationCoordinator {
     Error.throwWithStackTrace(originalError, originalStackTrace);
   }
 
+  /// Secure credential 已成為 authority 後清理 legacy credential。
+  /// 預期 storage failure 轉成可上報 diagnostic，未知異常仍直接拋出。
   Future<List<AuthCleanupDiagnostic>> _clearLegacyAfterSecureAuthority() async {
     try {
       await _legacyCredentialStore.clearLegacyCredential();
@@ -187,6 +191,8 @@ final class AuthCredentialMigrationCoordinator {
     }
   }
 
+  /// 對不一致 / 損壞 auth state 執行 best-effort destructive cleanup。
+  /// 所有指定 store 都會嘗試清理，最後以 unknown failure 優先於預期 storage failure。
   Future<void> _clearDestructive({
     required bool clearSecure,
     required bool clearLegacy,

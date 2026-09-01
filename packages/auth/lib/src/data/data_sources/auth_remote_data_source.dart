@@ -55,6 +55,8 @@ class AuthRemoteDataSource {
     }
   }
 
+  /// 將 transport endpoint failure 轉成 Auth 認得的 OTP session/protocol failure。
+  /// 未 allowlist 的 backend error 保留原 transport identity，不自行猜測語意。
   Never _rethrowAuthEndpointFailure(
     Object error,
     StackTrace stackTrace, {
@@ -99,6 +101,8 @@ class AuthRemoteDataSource {
     Error.throwWithStackTrace(error, stackTrace);
   }
 
+  /// 只解析 Auth 明確認識的 OTP backend code；未知 code 回傳 null，交由上層保留
+  /// transport failure，而不是錯誤升格成 domain failure。
   OtpFailureDetails? _otpFailureDetails(
     String backendCode,
     Map<String, Object?> data,

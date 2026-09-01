@@ -82,7 +82,7 @@ class AuthRepositoryImpl implements AuthRepository {
         operation.throwIfSuperseded();
       }
 
-      return Success(result);
+      return SuccessResult(result);
     } on AppException catch (error) {
       return FailureResult(
         mapAppExceptionToFailure(
@@ -109,7 +109,7 @@ class AuthRepositoryImpl implements AuthRepository {
         operation.throwIfSuperseded();
         await _commitAuthenticatedUnlocked(operation, result);
       });
-      return Success(result);
+      return SuccessResult(result);
     } on AppException catch (error) {
       return FailureResult(
         mapAppExceptionToFailure(
@@ -129,7 +129,7 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       final challenge = _mapOtpChallenge(response);
       operation.throwIfSuperseded();
-      return Success(challenge);
+      return SuccessResult(challenge);
     } on AppException catch (error) {
       return FailureResult(
         mapAppExceptionToFailure(error, fallbackMessage: 'OTP resend failed.'),
@@ -262,7 +262,7 @@ class AuthRepositoryImpl implements AuthRepository {
         );
       });
       _reportDiagnosticsBestEffort(outcome.diagnostics);
-      return Success(outcome.user);
+      return SuccessResult(outcome.user);
     } on AppException catch (error, stackTrace) {
       if (error.kind != AppExceptionKind.localStorage &&
           error.kind != AppExceptionKind.dataCorruption) {
@@ -312,7 +312,7 @@ class AuthRepositoryImpl implements AuthRepository {
         operation.throwIfSuperseded();
         cleanup.throwIfFailed();
       });
-      return const Success(null);
+      return const SuccessResult(null);
     } on AppException catch (error, stackTrace) {
       if (error.kind != AppExceptionKind.localStorage) {
         Error.throwWithStackTrace(error, stackTrace);

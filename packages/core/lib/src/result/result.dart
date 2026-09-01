@@ -18,15 +18,15 @@ sealed class Result<T> {
   }) {
     final onFailure = failure;
     return switch (this) {
-      Success<T>(:final data) => success(data),
+      SuccessResult<T>(:final data) => success(data),
       FailureResult<T>(:final failure) => onFailure(failure),
     };
   }
 }
 
 /// 成功結果。
-final class Success<T> extends Result<T> {
-  const Success(this.data);
+final class SuccessResult<T> extends Result<T> {
+  const SuccessResult(this.data);
 
   final T data;
 }

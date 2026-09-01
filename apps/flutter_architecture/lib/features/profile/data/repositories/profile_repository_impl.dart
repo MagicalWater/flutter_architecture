@@ -18,7 +18,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Result<Profile>> getProfile() async {
     try {
       final response = await _remoteDataSource.getProfile();
-      return Success(response.toDomain());
+      return SuccessResult(response.toDomain());
     } on AppException catch (error) {
       return FailureResult(
         mapAppExceptionToFailure(

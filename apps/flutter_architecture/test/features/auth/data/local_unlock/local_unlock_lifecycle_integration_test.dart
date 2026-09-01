@@ -29,7 +29,7 @@ void main() {
 
     final result = await getIt<AuthRepository>().restoreSession();
 
-    expect(result, isA<Success<AuthUser?>>());
+    expect(result, isA<SuccessResult<AuthUser?>>());
     expect(await store.read(), isA<LocalUnlockPreferenceReadAbsent>());
     expect(getIt<SessionManager>().currentSession, isNull);
   });
@@ -39,12 +39,12 @@ void main() {
     final repository = getIt<AuthRepository>();
     final store = getIt<LocalUnlockPreferenceStore>();
     final login = await repository.login(account: 'demo', password: 'password');
-    expect(login, isA<Success<AuthLoginResult>>());
+    expect(login, isA<SuccessResult<AuthLoginResult>>());
     await store.write(LocalUnlockPreference.enabled);
 
     final result = await repository.logout();
 
-    expect(result, isA<Success<void>>());
+    expect(result, isA<SuccessResult<void>>());
     expect(await store.read(), isA<LocalUnlockPreferenceReadAbsent>());
     expect(getIt<SessionManager>().currentSession, isNull);
   });

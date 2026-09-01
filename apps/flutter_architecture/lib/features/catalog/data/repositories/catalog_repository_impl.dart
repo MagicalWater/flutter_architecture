@@ -47,7 +47,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       );
       if (cached != null) {
         final freshness = _freshness(cached.updatedAt);
-        yield Success(
+        yield SuccessResult(
           CatalogPageSnapshot(
             page: cached.toDomain(),
             source: CatalogDataSource.cache,
@@ -146,7 +146,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
       // Remote success。其他 typed identity 不得被降級。
     }
 
-    return Success(
+    return SuccessResult(
       CatalogPageSnapshot(
         page: page,
         source: CatalogDataSource.remote,

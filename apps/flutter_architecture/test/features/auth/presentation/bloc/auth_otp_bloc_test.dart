@@ -180,7 +180,7 @@ final class _OtpRepository implements AuthRepository {
   Future<Result<AuthLoginResult>> login({
     required String account,
     required String password,
-  }) async => Success(
+  }) async => SuccessResult(
     AuthLoginResult.otpChallenge(
       account == 'other' ? _otherChallenge : _challenge1,
     ),
@@ -206,7 +206,7 @@ final class _OtpRepository implements AuthRepository {
       refreshToken: 'refresh',
       user: AuthUser(id: 'user-$call', name: 'User'),
     );
-    return Success(result);
+    return SuccessResult(result);
   }
 
   @override
@@ -217,15 +217,15 @@ final class _OtpRepository implements AuthRepository {
       if (!firstResendStarted.isCompleted) firstResendStarted.complete();
       await _firstResendGate.future;
     }
-    return Success(call == 1 ? _challenge2 : _challenge3);
+    return SuccessResult(call == 1 ? _challenge2 : _challenge3);
   }
 
   @override
   Future<Result<void>> logout() async {
     _sessionManager.clear();
-    return const Success(null);
+    return const SuccessResult(null);
   }
 
   @override
-  Future<Result<AuthUser?>> restoreSession() async => const Success(null);
+  Future<Result<AuthUser?>> restoreSession() async => const SuccessResult(null);
 }

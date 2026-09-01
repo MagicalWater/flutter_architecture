@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-005-auth-package-boundary
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 id: ADR-005
 title: Auth Package Boundary
 supersedes:
@@ -49,7 +49,7 @@ apps/flutter_architecture/lib/features/auth
   presentation
 ```
 
-`packages/auth` 擁有 Auth domain model、Repository contract／implementation、UseCase、Session abstraction 與純 Dart application coordination。Auth Bloc、Page、Router mapping、plugin adapter 與 App Composition Root wiring 留在 App。
+`packages/auth` 擁有 Auth domain model、Repository contract／implementation、Session abstraction 與真正具行為所有權的純 Dart application coordination。Auth Bloc、Page、Router mapping、plugin adapter 與 App Composition Root wiring 留在 App。純 forwarding UseCase 不屬於 package contract；若 Presentation 只需要單一 Repository behavior，可直接依賴 Repository interface。
 
 ## Consequences
 
@@ -68,7 +68,7 @@ Aggregate 內的「長期應調整」與「後續移動」是已完成遷移前�
 - ADR-001：跨 feature 共用能力可提升至 package。
 - ADR-006：AuthGuard 依賴 Session authority，不依賴 AuthBloc。
 - ADR-007：跨 feature 不直接依賴對方 Bloc。
-- ADR-008：Auth UseCase 依業務行為拆分。
+- ADR-008：UseCase 只在擁有實際 business behavior 時成立，不建立 forwarding layer。
 - ADR-012：Package 不自行綁定 DI framework。
 - ADR-013：Auth remote boundary 透過 API abstraction 與 data layer mapping。
 
@@ -80,4 +80,4 @@ Aggregate 內的「長期應調整」與「後續移動」是已完成遷移前�
 
 ## Last Reviewed Baseline
 
-1.5.1。
+1.27.0。

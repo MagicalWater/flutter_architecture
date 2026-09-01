@@ -3,7 +3,7 @@ document_type: audit-index
 status: active
 authoritative_for:
   - audit-and-review-evidence-routing
-last_reviewed_baseline: 1.26.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Audits and Review Evidence

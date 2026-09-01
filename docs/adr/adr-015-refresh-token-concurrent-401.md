@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-015-refresh-token-concurrent-401
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 id: ADR-015
 title: Refresh Token and Concurrent 401 Handling
 supersedes:
@@ -136,7 +136,7 @@ localStateFailure
 - `sessionChanged` 是 race-resolution result，不是 Failure。
 - `localStateFailure` 只來自已分類的 local operational failure；unknown error不得被降級為此結果。
 
-被動 Session invalidation不等同使用者主動 Logout，也不經由 `LogoutUseCase`。Interceptor不得操作 Router或 Bloc；上層透過 Session authority transition反映未登入狀態。
+被動 Session invalidation不等同使用者主動 Logout，也不應偽裝成 Repository 的主動 logout behavior。Interceptor不得操作 Router或 Bloc；上層透過 Session authority transition反映未登入狀態。
 
 ### Replay policy
 
@@ -188,4 +188,4 @@ Refresh concurrency、Session identity、safe replay、failure classification與
 
 ## Last Reviewed Baseline
 
-1.5.1。
+1.27.0。

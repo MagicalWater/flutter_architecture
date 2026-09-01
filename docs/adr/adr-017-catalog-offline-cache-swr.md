@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-017-catalog-offline-cache-swr
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 id: ADR-017
 title: Catalog Offline Cache and Stale-While-Revalidate
 supersedes:
@@ -101,7 +101,7 @@ Current implementation另使用持久化 chain revision與 compare-and-set保護
 
 ### Repository and stream contract
 
-Repository負責 Remote＋Local協調、freshness判定、cursor validation、cache write與 Failure mapping。Bloc、UseCase與 Page不直接依賴 SQLite、DTO、Dio或 LocalDataSource。
+Repository負責 Remote＋Local協調、freshness判定、cursor validation、cache write與 Failure mapping。Bloc與 Page不直接依賴 SQLite、DTO、Dio或 LocalDataSource；若未來新增真正具行為所有權的 UseCase，也同樣不得依賴這些 infrastructure detail。
 
 Initial SWR需要 feature-specific Stream支援多次結果；不得以 callback讓 Repository直接操作 Bloc。Expected AppException透過 typed Result表示；unknown programming error保留原始 stack trace並使用 Stream error channel。
 
@@ -121,7 +121,7 @@ User Refresh與 background revalidation使用不同 operation state。
 
 ### Persistence ownership and cleanup
 
-SQLite database lifecycle與 migration由 App database boundary擁有；App仍是唯一 Composition Root。Catalog LocalDataSource、CachePolicy、Clock、Repository、UseCase與 Bloc lifecycle由 App組裝。
+SQLite database lifecycle與 migration由 App database boundary擁有；App仍是唯一 Composition Root。Catalog LocalDataSource、CachePolicy、Clock、Repository與 Bloc lifecycle由 App組裝；只有未來出現實際 application behavior 時才額外組裝 UseCase。
 
 Expired page在讀取該 identity時 lazy cleanup，不在每次 read／write後全表掃描。LRU、quota與 background maintenance不屬於本 contract。
 
@@ -160,4 +160,4 @@ Catalog是 public read model，因此 Logout不清除 Catalog Cache。未來 aut
 
 ## Last Reviewed Baseline
 
-1.5.1。
+1.27.0。

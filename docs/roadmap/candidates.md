@@ -3,7 +3,7 @@ document_type: roadmap-candidates
 status: active
 authoritative_for:
   - concrete-roadmap-candidates
-last_reviewed_baseline: 1.26.1
+last_reviewed_baseline: 1.27.0
 ---
 
 # Roadmap Candidates

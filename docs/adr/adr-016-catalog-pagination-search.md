@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-016-catalog-pagination-search
-last_reviewed_baseline: 1.5.1
+last_reviewed_baseline: 1.27.0
 id: ADR-016
 title: Catalog Pagination and Search
 supersedes:
@@ -54,7 +54,7 @@ Cursor屬於產生它的 query、filter、sort與 search generation；任一搜�
 - API／RemoteDataSource負責 transport request與 typed exception boundary。
 - Mapper負責 DTO到 Domain page的純轉換與 cursor正規化。
 - Repository負責 cursor progression validation與 Failure mapping；不保存 UI state、不做 debounce、不合併既有 pages。
-- `SearchCatalogUseCase`代表單一搜尋業務行為；Initial、Refresh、Append是 Presentation workflow，不拆成三個 UseCase。
+- Bloc 直接依賴 `CatalogRepository`；Initial、Refresh、Append是 Presentation workflow。由於原 `SearchCatalogUseCase` 只轉發 `watchCatalog`，不擁有額外 business rule，因此不保留 forwarding UseCase。
 - Bloc負責 debounce、generation、operation state與 page merge。
 - Page只送出 UI intent，不直接操作 Timer、Repository或 Dio cancellation。
 
@@ -99,7 +99,7 @@ Initial、Refresh與Append的 loading／failure state必須分離，不以單一
 
 ### Logical cancellation
 
-本 contract保證舊 operation可以完成，但不得更新目前 UI state。Dio `CancelToken`不穿透 Bloc、UseCase或 Repository interface；若未來需要節省高成本 transport resource，必須另建 transport-neutral cancellation contract。
+本 contract保證舊 operation可以完成，但不得更新目前 UI state。Dio `CancelToken`不穿透 Bloc 或 Repository interface；若未來需要節省高成本 transport resource，必須另建 transport-neutral cancellation contract。
 
 ### No generic framework
 
@@ -119,7 +119,7 @@ Initial、Refresh與Append的 loading／failure state必須分離，不以單一
 ## Related Decisions
 
 - ADR-003：Bloc與 Hooks presentation responsibility。
-- ADR-008：單一搜尋業務行為的 UseCase粒度。
+- ADR-008：不為 Repository passthrough 建立 UseCase。
 - ADR-013：Retrofit／DTO／DataSource／Repository boundary。
 - ADR-017：Catalog Offline Cache與 SWR延伸本 pagination identity。
 - ADR-018：Catalog operation state的 presentation surface。
@@ -133,4 +133,4 @@ Initial、Refresh與Append的 loading／failure state必須分離，不以單一
 
 ## Last Reviewed Baseline
 
-1.5.1。
+1.27.0。

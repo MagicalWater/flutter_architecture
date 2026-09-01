@@ -29,8 +29,8 @@ last_reviewed_baseline: 1.27.0
 ```txt
 Template Baseline: 1.27.0
 Phase 1 / MVP: Completed
-Current active milestone: Template → Product Adoption Backport
-Current phase: Local implementation + holistic review complete / 1.27.0 release closure pending
+Current active milestone: none
+Current phase: Template Baseline 1.27.0 published / formal closure complete
 Architecture Decision authority: docs/adr/README.md
 ```
 
@@ -108,7 +108,7 @@ root/
 
 `packages/auth`：
 
-- Auth Domain、Data、UseCase、Repository 與 Session contract。
+- Auth Domain、Data、Repository、Session contract 與真正具行為所有權的 application coordination。
 - 只依賴transport-neutral Auth／Refresh endpoints，不依賴Dio／Retrofit。
 - Credential store abstractions、migration policy、refresh coordination。
 - OTP domain state machine。
@@ -150,9 +150,9 @@ App 是唯一 Composition Root：
 
 - Page 只依賴自身 presentation boundary。
 - 不跨 feature 直接讀取其他 feature 的 Bloc。
-- 跨 feature authority 透過 SessionManager、Repository Interface、UseCase 或 App coordinator 傳遞。
+- 跨 feature authority 透過 SessionManager、Repository Interface、真正具 business behavior 的 UseCase 或 App coordinator 傳遞。
 - Route Guard 不依賴 AuthBloc，只依賴穩定的 Session authority。
-- UseCase 以單一業務行為為粒度。
+- UseCase 不是 mandatory layer；只有擁有 policy／validation／orchestration 等實際 business behavior 才建立，純 Repository passthrough 直接移除。
 - ADR-032定義Presentation內部responsibility roles與state escalation：Page/View/Section/Component/Surface/Layout不是mandatory folder/class tree；handwritten source以coherent primary responsibility為界，local UI mechanics保留State/Hook/Controller，workflow transition才升Cubit/Bloc。
 - Modal UI區分invocation owner與surface implementation owner；custom RenderObject/projection有獨立layout responsibility時不得藏在Page/View orchestration owner。
 

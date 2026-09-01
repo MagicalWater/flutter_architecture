@@ -3,7 +3,7 @@ document_type: guide
 status: active
 authoritative_for:
   - feature-addition-operational-procedure
-last_reviewed_baseline: 1.15.2
+last_reviewed_baseline: 1.27.0
 ---
 
 # How to Add a Feature
@@ -93,7 +93,7 @@ presentation/
   Page、Widget、Bloc、presentation localization mapping
 
 domain/
-  Entity、Repository interface、UseCase、business policy
+  Entity、Repository interface、optional UseCase、business policy
 
 data/
   DTO mapping、DataSource、Repository implementation、local adapter coordination
@@ -142,10 +142,12 @@ Feature-local UI promotion到Design System仍依[ADR-018](../adr/adr-018-design-
 
 - Entity 或 value object。
 - Repository interface。
-- 每個業務行為一個 UseCase。
+- 只有真正需要獨立 application/domain behavior owner 時才建立 UseCase。
 - 預期失敗的 typed contract。
 
 UseCase 粒度由 [ADR-008 — Use Case Granularity](../adr/adr-008-use-case-granularity.md) 擁有。
+
+若一個 UseCase 只把同一組參數原樣交給單一 Repository method，且不包含 policy、validation、mapping、ordering、compensation 或 orchestration，預設不要建立；Presentation 可直接依賴 Repository interface。
 
 不要讓 Domain import：
 

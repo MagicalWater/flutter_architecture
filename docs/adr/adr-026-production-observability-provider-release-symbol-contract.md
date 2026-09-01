@@ -3,7 +3,7 @@ document_type: architecture-decision
 status: accepted
 authoritative_for:
   - adr-026-production-observability-provider-release-symbol-contract
-last_reviewed_baseline: 1.26.1
+last_reviewed_baseline: 1.27.0
 id: ADR-026
 title: Production Observability Provider Release and Symbol Contract
 supersedes:
@@ -106,7 +106,7 @@ commitSha?
 - Email、phone、name、address、raw user/account/device identifier。
 - Search query、cursor值、free-form Bloc state、event或任意Map context。
 
-允許的context必須是封閉typed allowlist，例如source、operation、environment、release identity、HTTP method、sanitized path template、status、backend code、`hasSession`與不可反推出帳號的session generation。
+允許的context必須是封閉typed allowlist，例如source、operation、environment、release identity、HTTP method、sanitized path template、status、backend code、`hasSession`與不可反推出帳號的session generation。App error-reporting contract 以 operation 作為 caller authority；source 由 operation 推導後再輸出為 metadata，不允許 caller 同時指定兩者形成矛盾組合。
 
 User correlation若未來確有產品需求，必須另行privacy review與ADR adjustment。
 
@@ -210,4 +210,4 @@ Observability與Analytics維持獨立：
 
 ## Last Reviewed Baseline
 
-1.26.1。
+1.27.0。

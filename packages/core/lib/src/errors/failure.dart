@@ -20,11 +20,10 @@ class Failure {
     required this.message,
     this.httpStatus,
     this.backendCode,
-    String? diagnosticCode,
-    String? code,
+    this.diagnosticCode,
     this.cause,
     this.stackTrace,
-  }) : diagnosticCode = diagnosticCode ?? code;
+  });
 
   final FailureKind kind;
 
@@ -38,10 +37,6 @@ class Failure {
   /// 原始錯誤，通常只用於除錯。
   final Object? cause;
   final StackTrace? stackTrace;
-
-  /// 舊程式的相容讀取入口；新程式應使用明確 typed 欄位。
-  String? get code =>
-      backendCode ?? httpStatus?.toString() ?? diagnosticCode;
 
   @override
   String toString() {

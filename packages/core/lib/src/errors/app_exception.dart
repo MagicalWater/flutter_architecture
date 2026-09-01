@@ -30,11 +30,10 @@ class AppException implements Exception {
     this.transportKind,
     this.httpStatus,
     this.backendCode,
-    String? diagnosticCode,
-    String? code,
+    this.diagnosticCode,
     this.cause,
     this.stackTrace,
-  }) : diagnosticCode = diagnosticCode ?? code;
+  });
 
   final AppExceptionKind kind;
   final String message;
@@ -44,10 +43,6 @@ class AppException implements Exception {
   final String? diagnosticCode;
   final Object? cause;
   final StackTrace? stackTrace;
-
-  /// 舊程式的相容讀取入口；新程式應使用明確 typed 欄位。
-  String? get code =>
-      backendCode ?? httpStatus?.toString() ?? diagnosticCode;
 
   @override
   String toString() {

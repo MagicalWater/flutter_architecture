@@ -42,6 +42,8 @@ Expected error 轉為 typed failure；unknown error 必須保留 caught error id
 
 `Failure.message` 是 diagnostic context，不是直接顯示給使用者的 localization authority。
 
+Error code 使用明確欄位表達來源語意：backend code、HTTP status 與 diagnostic code 不合併成單一 generic `code`。
+
 ## Public API
 
 唯一 public barrel：

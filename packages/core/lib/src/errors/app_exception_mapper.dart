@@ -31,6 +31,7 @@ Failure mapAppExceptionToFailure(
   );
 }
 
+/// 將 infrastructure exception taxonomy 收斂成 Domain 可穩定依賴的 FailureKind。
 FailureKind _mapFailureKind(AppException exception) {
   return switch (exception.kind) {
     AppExceptionKind.transport => switch (exception.transportKind) {

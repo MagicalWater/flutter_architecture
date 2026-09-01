@@ -90,7 +90,7 @@ Future<void> bootstrap(
       final oceanTheme = OceanThemeDefinition();
       final registry = DsThemeRegistry(
         definitions: <DsThemeDefinition>[defaultTheme, oceanTheme],
-        defaultThemeId: defaultTheme.id,
+        defaultThemeId: defaultTheme.metadata.id,
       );
       final preferences = getIt<SharedPreferences>();
       final compositionRootReporter = getIt<ErrorReporter>();

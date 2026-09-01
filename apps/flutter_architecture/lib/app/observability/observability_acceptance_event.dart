@@ -17,7 +17,6 @@ final class ObservabilityAcceptanceEvent {
         stackTrace: StackTrace.current,
         severity: ErrorSeverity.unexpected,
         context: const ErrorReportContext(
-          source: ErrorReportSource.bootstrap,
           operation: ErrorReportOperation.observabilityAcceptance,
         ),
       ),

@@ -13,7 +13,7 @@ import 'package:hooked_bloc/hooked_bloc.dart';
 /// ## 頁面行為
 ///
 /// - 未登入：顯示尚未登入。
-/// - 已登入：呼叫 GetProfileUseCase，顯示目前用戶名稱。
+/// - 已登入：透過 ProfileRepository 取得資料，顯示目前用戶名稱。
 ///
 /// ProfilePage 不直接讀 AuthBloc。
 /// 跨 feature 的登入狀態由 ProfileBloc 透過 SessionManager 判斷。

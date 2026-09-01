@@ -1,50 +1,52 @@
-enum PreferenceOperation { read, write, decode }
+enum PreferenceStorageOperation { read, write }
 
 enum PreferenceKind { theme, locale }
 
 sealed class PreferenceException implements Exception {
   const PreferenceException({
-    required this.operation,
     required this.preference,
     this.cause,
     this.stackTrace,
   });
-
-  final PreferenceOperation operation;
   final PreferenceKind preference;
   final Object? cause;
   final StackTrace? stackTrace;
 
   @override
   String toString() {
-    return '$runtimeType('
-        'operation: $operation, '
-        'preference: $preference)';
+    return '$runtimeType(preference: $preference)';
   }
 }
 
-/// 已保存的preference payload無法依目前contract還原。
+/// 已保存的 preference payload 無法依目前 contract 還原。
 final class PreferenceCorruptionException extends PreferenceException {
   const PreferenceCorruptionException({
     required super.preference,
     super.cause,
     super.stackTrace,
-  }) : super(operation: PreferenceOperation.decode);
+  });
 }
 
-/// Preference storage的預期operational failure。
+/// Preference storage 的 read / write operational failure。
 final class PreferenceStorageException extends PreferenceException {
   const PreferenceStorageException.read({
     required super.preference,
     super.cause,
     super.stackTrace,
-  }) : super(operation: PreferenceOperation.read);
+  }) : operation = PreferenceStorageOperation.read;
 
   const PreferenceStorageException.write({
     required super.preference,
     super.cause,
     super.stackTrace,
-  }) : super(operation: PreferenceOperation.write);
+  }) : operation = PreferenceStorageOperation.write;
+
+  final PreferenceStorageOperation operation;
+
+  @override
+  String toString() {
+    return '$runtimeType(operation: $operation, preference: $preference)';
+  }
 }
 
 final class PreferenceDiagnostic {

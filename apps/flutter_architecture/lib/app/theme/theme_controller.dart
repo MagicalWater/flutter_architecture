@@ -71,7 +71,8 @@ final class ThemeController extends ChangeNotifier {
       } on PreferenceException catch (error, stackTrace) {
         final expected =
             error.preference == PreferenceKind.theme &&
-            error.operation == PreferenceOperation.write;
+            error is PreferenceStorageException &&
+            error.operation == PreferenceStorageOperation.write;
         _reportWriteFailure(error, stackTrace, expected: expected);
         if (!expected || revision != _revision) return;
         _diagnostic = PreferenceDiagnostic(
@@ -99,7 +100,6 @@ final class ThemeController extends ChangeNotifier {
               ? ErrorSeverity.degraded
               : ErrorSeverity.unexpected,
           context: const ErrorReportContext(
-            source: ErrorReportSource.preference,
             operation: ErrorReportOperation.preferenceWrite,
           ),
         ),

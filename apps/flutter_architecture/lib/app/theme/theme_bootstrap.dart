@@ -20,7 +20,6 @@ Future<ThemeController> restoreThemeController({
           stackTrace: diagnostic.stackTrace,
           severity: ErrorSeverity.degraded,
           context: const ErrorReportContext(
-            source: ErrorReportSource.preference,
             operation: ErrorReportOperation.preferenceRestore,
           ),
         ),

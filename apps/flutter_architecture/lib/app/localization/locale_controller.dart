@@ -50,7 +50,8 @@ final class LocaleController extends ChangeNotifier {
       } on PreferenceException catch (error, stackTrace) {
         final expected =
             error.preference == PreferenceKind.locale &&
-            error.operation == PreferenceOperation.write;
+            error is PreferenceStorageException &&
+            error.operation == PreferenceStorageOperation.write;
         _reportWriteFailure(error, stackTrace, expected: expected);
         if (!expected || revision != _revision) return;
         _diagnostic = PreferenceDiagnostic(
@@ -78,7 +79,6 @@ final class LocaleController extends ChangeNotifier {
               ? ErrorSeverity.degraded
               : ErrorSeverity.unexpected,
           context: const ErrorReportContext(
-            source: ErrorReportSource.preference,
             operation: ErrorReportOperation.preferenceWrite,
           ),
         ),

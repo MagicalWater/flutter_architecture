@@ -7,7 +7,6 @@ enum ErrorReportSource {
   bloc,
   preference,
   catalogCache,
-  authMigration,
   authLifecycle,
 }
 
@@ -34,10 +33,31 @@ enum ErrorReportOperation {
 /// 不接受任意 Map 或 String operation，避免 request body、token、query、state、
 /// event 或其他敏感內容被無意加入。
 final class ErrorReportContext {
-  const ErrorReportContext({required this.source, required this.operation});
+  const ErrorReportContext({required this.operation});
 
-  final ErrorReportSource source;
   final ErrorReportOperation operation;
+
+  /// Operation 是 reporting context 的唯一 authority；source 由 operation 推導，
+  /// 避免 caller 手動傳入互相矛盾的 source / operation 組合。
+  ErrorReportSource get source => switch (operation) {
+    ErrorReportOperation.bootstrapInitialize ||
+    ErrorReportOperation.observabilityAcceptance => ErrorReportSource.bootstrap,
+    ErrorReportOperation.flutterFrameworkError =>
+      ErrorReportSource.flutterFramework,
+    ErrorReportOperation.platformUncaughtAsync => ErrorReportSource.platform,
+    ErrorReportOperation.blocUnhandledError => ErrorReportSource.bloc,
+    ErrorReportOperation.preferenceRestore ||
+    ErrorReportOperation.preferenceWrite => ErrorReportSource.preference,
+    ErrorReportOperation.catalogCacheRead ||
+    ErrorReportOperation.catalogCacheWrite ||
+    ErrorReportOperation.catalogCacheCleanup => ErrorReportSource.catalogCache,
+    ErrorReportOperation.authMigrationLegacyCleanup ||
+    ErrorReportOperation.authSecureCleanup ||
+    ErrorReportOperation.authLegacyCleanup ||
+    ErrorReportOperation.authUserCleanup ||
+    ErrorReportOperation.authLocalUnlockPreferenceCleanup =>
+      ErrorReportSource.authLifecycle,
+  };
 
   @override
   String toString() {

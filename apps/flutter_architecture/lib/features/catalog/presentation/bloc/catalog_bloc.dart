@@ -4,7 +4,7 @@ import 'package:core/core.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_item.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_load_policy.dart';
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page_snapshot.dart';
-import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
+import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rxdart/rxdart.dart';
@@ -19,7 +19,7 @@ part 'catalog_state.dart';
 /// Append與reconnect後的資料重新驗證流程。
 class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   CatalogBloc(
-    this._searchCatalogUseCase, {
+    this._repository, {
     this.debounceDuration = const Duration(milliseconds: 300),
     this.pageSize = 20,
   }) : super(CatalogState.initial()) {
@@ -46,7 +46,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     );
   }
 
-  final SearchCatalogUseCase _searchCatalogUseCase;
+  final CatalogRepository _repository;
 
   /// 預設 300ms，可於測試注入較短 duration。
   final Duration debounceDuration;
@@ -120,8 +120,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     final completer = Completer<void>();
     _firstPageCompleter = completer;
 
-    final subscription = _searchCatalogUseCase
-        .watch(
+    final subscription = _repository
+        .watchCatalog(
           query: query,
           cursor: null,
           limit: pageSize,
@@ -252,7 +252,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
     late final Result<CatalogPageSnapshot> result;
     final request = _SingleSnapshotRequest(
-      _searchCatalogUseCase.watch(
+      _repository.watchCatalog(
         query: query,
         cursor: requestedCursor,
         limit: pageSize,
@@ -352,7 +352,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
     late final Result<CatalogPageSnapshot> result;
     final request = _SingleSnapshotRequest(
-      _searchCatalogUseCase.watch(
+      _repository.watchCatalog(
         query: query,
         cursor: null,
         limit: pageSize,
@@ -429,7 +429,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
     late final Result<CatalogPageSnapshot> result;
     final request = _SingleSnapshotRequest(
-      _searchCatalogUseCase.watch(
+      _repository.watchCatalog(
         query: query,
         cursor: null,
         limit: pageSize,

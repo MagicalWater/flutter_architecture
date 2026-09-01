@@ -17,7 +17,6 @@ Future<T> runBootstrapGuarded<T>(
           stackTrace: stackTrace,
           severity: ErrorSeverity.fatal,
           context: const ErrorReportContext(
-            source: ErrorReportSource.bootstrap,
             operation: ErrorReportOperation.bootstrapInitialize,
           ),
         ),

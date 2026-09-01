@@ -21,7 +21,6 @@ final class AppBlocObserver extends BlocObserver {
           stackTrace: stackTrace,
           severity: ErrorSeverity.unexpected,
           context: const ErrorReportContext(
-            source: ErrorReportSource.bloc,
             operation: ErrorReportOperation.blocUnhandledError,
           ),
         ),

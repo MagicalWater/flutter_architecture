@@ -23,10 +23,7 @@ final class CatalogCacheErrorReporterAdapter
           error: error,
           stackTrace: stackTrace,
           severity: ErrorSeverity.degraded,
-          context: ErrorReportContext(
-            source: ErrorReportSource.catalogCache,
-            operation: _operationFor(operation),
-          ),
+          context: ErrorReportContext(operation: _operationFor(operation)),
         ),
       );
     } on Object {

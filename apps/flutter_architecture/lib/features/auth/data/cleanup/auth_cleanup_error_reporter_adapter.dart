@@ -19,7 +19,6 @@ final class AuthCleanupErrorReporterAdapter
             stackTrace: diagnostic.stackTrace,
             severity: ErrorSeverity.degraded,
             context: ErrorReportContext(
-              source: ErrorReportSource.authLifecycle,
               operation: _mapOperation(diagnostic.operation),
             ),
           ),

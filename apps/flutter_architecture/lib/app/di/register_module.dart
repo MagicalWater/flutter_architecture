@@ -26,7 +26,6 @@ import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_
 import 'package:flutter_architecture/features/catalog/data/repositories/catalog_repository_impl.dart';
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:flutter_architecture/features/profile/data/data_sources/profile_remote_data_source.dart';
-import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart';
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -300,8 +299,8 @@ abstract class RegisterModule {
   }
 
   @injectable
-  CatalogBloc catalogBloc(SearchCatalogUseCase searchCatalogUseCase) {
-    return CatalogBloc(searchCatalogUseCase);
+  CatalogBloc catalogBloc(CatalogRepository repository) {
+    return CatalogBloc(repository);
   }
 
   @lazySingleton

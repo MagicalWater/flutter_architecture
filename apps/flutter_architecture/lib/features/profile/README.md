@@ -13,7 +13,7 @@ Profile feature 負責取得並顯示目前 authenticated user 的 remote profil
 ## Responsibilities
 
 - `ProfilePage` 與 `ProfileBloc` presentation。
-- 呼叫 `GetProfileUseCase`。
+- 透過 `ProfileRepository` 取得 profile。
 - 顯示 loading、content、unauthenticated 與 failure state。
 - 在 Session expiration 後與 current Auth state 同步。
 
@@ -29,7 +29,6 @@ Profile feature 負責取得並顯示目前 authenticated user 的 remote profil
 ```txt
 ProfilePage
 → ProfileBloc
-→ GetProfileUseCase
 → ProfileRepository
 → ProfileRemoteDataSource
 → ProfileApi (Mock | Retrofit)

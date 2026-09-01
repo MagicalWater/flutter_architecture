@@ -183,7 +183,9 @@ bool _isExpectedThemeRestoreFailure(PreferenceException error) {
   return error.preference == PreferenceKind.theme &&
       switch (error) {
         PreferenceCorruptionException() => true,
-        PreferenceStorageException(operation: PreferenceOperation.read) => true,
+        PreferenceStorageException(
+          operation: PreferenceStorageOperation.read,
+        ) => true,
         PreferenceStorageException() => false,
       };
 }

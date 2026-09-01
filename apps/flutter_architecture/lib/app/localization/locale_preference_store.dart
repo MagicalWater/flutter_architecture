@@ -168,7 +168,9 @@ bool _isExpectedLocaleRestoreFailure(PreferenceException error) {
   return error.preference == PreferenceKind.locale &&
       switch (error) {
         PreferenceCorruptionException() => true,
-        PreferenceStorageException(operation: PreferenceOperation.read) => true,
+        PreferenceStorageException(
+          operation: PreferenceStorageOperation.read,
+        ) => true,
         PreferenceStorageException() => false,
       };
 }

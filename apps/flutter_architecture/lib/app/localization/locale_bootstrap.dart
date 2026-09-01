@@ -18,7 +18,6 @@ Future<LocaleController> restoreLocaleController({
           stackTrace: diagnostic.stackTrace,
           severity: ErrorSeverity.degraded,
           context: const ErrorReportContext(
-            source: ErrorReportSource.preference,
             operation: ErrorReportOperation.preferenceRestore,
           ),
         ),

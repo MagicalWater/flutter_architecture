@@ -4,7 +4,7 @@ import 'package:auth/auth.dart';
 import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_architecture/features/profile/domain/entities/profile.dart';
-import 'package:flutter_architecture/features/profile/domain/use_cases/get_profile_use_case.dart';
+import 'package:flutter_architecture/features/profile/domain/repositories/profile_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
@@ -21,7 +21,7 @@ part 'profile_state.dart';
 ///   ↓ add(ProfileRequested / ProfileLogoutRequested)
 /// ProfileBloc
 ///   ↓
-/// GetProfileUseCase / AuthRepository
+/// ProfileRepository / AuthRepository
 ///   ↓
 /// Repository / SessionManager
 /// ```
@@ -32,7 +32,7 @@ part 'profile_state.dart';
 @injectable
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc(
-    this._getProfileUseCase,
+    this._profileRepository,
     this._authRepository,
     this._sessionManager,
   ) : super(ProfileState.initial()) {
@@ -47,7 +47,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     });
   }
 
-  final GetProfileUseCase _getProfileUseCase;
+  final ProfileRepository _profileRepository;
   final AuthRepository _authRepository;
   final SessionManager _sessionManager;
   late final StreamSubscription<AuthSession?> _sessionSubscription;
@@ -83,7 +83,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     late final Result<Profile> result;
     try {
-      result = await _getProfileUseCase.execute();
+      result = await _profileRepository.getProfile();
     } catch (error, stackTrace) {
       emit(state.copyWith(isLoading: false));
       Error.throwWithStackTrace(error, stackTrace);

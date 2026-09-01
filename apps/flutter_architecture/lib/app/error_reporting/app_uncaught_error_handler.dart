@@ -21,7 +21,6 @@ final class AppUncaughtErrorHandler {
         stackTrace: details.stack ?? StackTrace.empty,
         severity: ErrorSeverity.unexpected,
         context: const ErrorReportContext(
-          source: ErrorReportSource.flutterFramework,
           operation: ErrorReportOperation.flutterFrameworkError,
         ),
       ),
@@ -36,7 +35,6 @@ final class AppUncaughtErrorHandler {
         stackTrace: stackTrace,
         severity: ErrorSeverity.fatal,
         context: const ErrorReportContext(
-          source: ErrorReportSource.platform,
           operation: ErrorReportOperation.platformUncaughtAsync,
         ),
       ),

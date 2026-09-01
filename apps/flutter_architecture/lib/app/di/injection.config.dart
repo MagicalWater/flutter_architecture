@@ -43,8 +43,6 @@ import 'package:flutter_architecture/features/catalog/data/data_sources/catalog_
     as _i98;
 import 'package:flutter_architecture/features/catalog/domain/repositories/catalog_repository.dart'
     as _i1035;
-import 'package:flutter_architecture/features/catalog/domain/use_cases/search_catalog_use_case.dart'
-    as _i877;
 import 'package:flutter_architecture/features/catalog/presentation/bloc/catalog_bloc.dart'
     as _i771;
 import 'package:flutter_architecture/features/profile/data/data_sources/profile_remote_data_source.dart'
@@ -53,8 +51,6 @@ import 'package:flutter_architecture/features/profile/data/repositories/profile_
     as _i407;
 import 'package:flutter_architecture/features/profile/domain/repositories/profile_repository.dart'
     as _i511;
-import 'package:flutter_architecture/features/profile/domain/use_cases/get_profile_use_case.dart'
-    as _i474;
 import 'package:flutter_architecture/features/profile/presentation/bloc/profile_bloc.dart'
     as _i173;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
@@ -249,12 +245,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i207.AuthStateMutationCoordinator>(),
       ),
     );
-    gh.factory<_i474.GetProfileUseCase>(
-      () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()),
-    );
     gh.factory<_i173.ProfileBloc>(
       () => _i173.ProfileBloc(
-        gh<_i474.GetProfileUseCase>(),
+        gh<_i511.ProfileRepository>(),
         gh<_i662.AuthRepository>(),
         gh<_i662.SessionManager>(),
       ),
@@ -268,11 +261,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i461.CatalogCacheDiagnosticSink>(),
       ),
     );
-    gh.factory<_i877.SearchCatalogUseCase>(
-      () => _i877.SearchCatalogUseCase(gh<_i1035.CatalogRepository>()),
-    );
     gh.factory<_i771.CatalogBloc>(
-      () => registerModule.catalogBloc(gh<_i877.SearchCatalogUseCase>()),
+      () => registerModule.catalogBloc(gh<_i1035.CatalogRepository>()),
     );
     return this;
   }

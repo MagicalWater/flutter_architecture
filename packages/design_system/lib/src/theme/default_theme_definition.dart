@@ -10,14 +10,10 @@ import 'package:flutter/material.dart';
 /// Design System 的 production Default Theme。
 final class DefaultThemeDefinition implements DsThemeDefinition {
   DefaultThemeDefinition()
-    : id = DsThemeId('default'),
-      metadata = DsThemeMetadata(
+    : metadata = DsThemeMetadata(
         id: DsThemeId('default'),
         displayName: 'Default',
       );
-
-  @override
-  final DsThemeId id;
 
   @override
   final DsThemeMetadata metadata;

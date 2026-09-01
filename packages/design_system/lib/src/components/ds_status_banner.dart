@@ -117,6 +117,8 @@ final class _BannerColors {
   final Color container;
   final Color foreground;
 
+  /// 優先使用 Design System semantic colors；ThemeExtension 未提供時退回
+  /// Material ColorScheme，讓 status banner 在不完整 theme 下仍可安全呈現。
   static _BannerColors resolve(ThemeData theme, DsStatusTone tone) {
     final scheme = theme.colorScheme;
     final semantic = theme.extension<DsSemanticColors>();

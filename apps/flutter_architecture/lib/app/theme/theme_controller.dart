@@ -35,7 +35,9 @@ final class ThemeController extends ChangeNotifier {
   DsThemeDefinition get definition => registry.resolve(_preference.themeId);
 
   void selectTheme(DsThemeId themeId) {
-    _setPreference(_preference.copyWith(themeId: registry.resolve(themeId).id));
+    _setPreference(
+      _preference.copyWith(themeId: registry.resolve(themeId).metadata.id),
+    );
   }
 
   void selectMode(AppThemeMode mode) {
@@ -131,5 +133,6 @@ final class ThemeControllerScope extends InheritedNotifier<ThemeController> {
   ///
   /// Theme-aware visual selection 應依賴這個 stable identity，而不是讀取
   /// preference persistence 或用 raw color 反推目前 Theme。
-  static DsThemeId themeIdOf(BuildContext context) => of(context).definition.id;
+  static DsThemeId themeIdOf(BuildContext context) =>
+      of(context).definition.metadata.id;
 }

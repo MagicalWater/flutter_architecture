@@ -121,7 +121,7 @@ final class ThemePreferenceCodec {
         : null;
 
     return ThemePreference(
-      themeId: definition.id,
+      themeId: definition.metadata.id,
       mode: mode ?? AppThemeMode.system,
     );
   }

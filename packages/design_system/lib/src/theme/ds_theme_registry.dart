@@ -17,21 +17,11 @@ final class DsThemeRegistry {
 
     final byId = <DsThemeId, DsThemeDefinition>{};
     for (final definition in definitionList) {
-      if (definition.id != definition.metadata.id) {
-        throw ArgumentError.value(
-          definition,
-          'definitions',
-          'Theme definition ID 必須與 metadata ID 一致',
-        );
+      final id = definition.metadata.id;
+      if (byId.containsKey(id)) {
+        throw ArgumentError.value(id, 'definitions', 'Theme ID 不可重複');
       }
-      if (byId.containsKey(definition.id)) {
-        throw ArgumentError.value(
-          definition.id,
-          'definitions',
-          'Theme ID 不可重複',
-        );
-      }
-      byId[definition.id] = definition;
+      byId[id] = definition;
     }
 
     final defaultDefinition = byId[defaultThemeId];

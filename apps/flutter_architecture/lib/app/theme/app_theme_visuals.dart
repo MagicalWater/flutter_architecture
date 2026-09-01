@@ -16,7 +16,7 @@ AppThemeVisuals resolveAppThemeVisuals({
   required DsThemeId themeId,
   required Brightness brightness,
 }) {
-  final resolvedThemeId = registry.resolve(themeId).id.value;
+  final resolvedThemeId = registry.resolve(themeId).metadata.id.value;
 
   return switch ((resolvedThemeId, brightness)) {
     ('default', Brightness.light) => AppThemeVisuals(

@@ -10,11 +10,7 @@ import 'package:flutter/material.dart';
 /// 用來驗證多 Theme Identity contract 的 production Ocean Theme。
 final class OceanThemeDefinition implements DsThemeDefinition {
   OceanThemeDefinition()
-    : id = DsThemeId('ocean'),
-      metadata = DsThemeMetadata(id: DsThemeId('ocean'), displayName: 'Ocean');
-
-  @override
-  final DsThemeId id;
+    : metadata = DsThemeMetadata(id: DsThemeId('ocean'), displayName: 'Ocean');
 
   @override
   final DsThemeMetadata metadata;

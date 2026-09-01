@@ -102,6 +102,7 @@ class MockCatalogApi implements CatalogApi {
     return CatalogPageResponseDto(items: pageItems, nextCursor: nextCursor);
   }
 
+  /// 解析 mock cursor，並驗證它仍屬於目前 query；跨 query 沿用 cursor 視為無效。
   static int _decodeCursor(String? cursor, {required String expectedQuery}) {
     if (cursor == null) {
       return 0;
@@ -134,6 +135,7 @@ class MockCatalogApi implements CatalogApi {
     return offset;
   }
 
+  /// 建立 mock 私有的 opaque cursor；格式只供 deterministic fixture 使用。
   static String _encodeCursor({
     required int offset,
     required String normalizedQuery,

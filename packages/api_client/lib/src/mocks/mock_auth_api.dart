@@ -61,10 +61,7 @@ class MockAuthApi implements AuthEndpoint {
 
     if (!now.isBefore(challenge.expiresAt)) {
       challenge.isActive = false;
-      throw _backendFailure(
-        statusCode: 410,
-        code: 'otp_challenge_expired',
-      );
+      throw _backendFailure(statusCode: 410, code: 'otp_challenge_expired');
     }
 
     if (request.code != demoOtpCode) {
@@ -98,10 +95,7 @@ class MockAuthApi implements AuthEndpoint {
 
     if (!now.isBefore(challenge.expiresAt)) {
       challenge.isActive = false;
-      throw _backendFailure(
-        statusCode: 410,
-        code: 'otp_challenge_expired',
-      );
+      throw _backendFailure(statusCode: 410, code: 'otp_challenge_expired');
     }
     if (now.isBefore(challenge.resendAvailableAt)) {
       throw _backendFailure(
@@ -117,6 +111,7 @@ class MockAuthApi implements AuthEndpoint {
     return _issueChallenge(account: challenge.account).toDto();
   }
 
+  /// 建立新的 mock OTP challenge，集中套用 TTL、resend cooldown 與初始嘗試次數。
   _MockOtpChallenge _issueChallenge({required String account}) {
     final now = _clock().toUtc();
     final challenge = _MockOtpChallenge(
@@ -130,13 +125,11 @@ class MockAuthApi implements AuthEndpoint {
     return challenge;
   }
 
+  /// 只回傳仍有效的 challenge；不存在或已失效都模擬 backend invalidated failure。
   _MockOtpChallenge _activeChallenge(String id) {
     final challenge = _challenges[id];
     if (challenge == null || !challenge.isActive) {
-      throw _backendFailure(
-        statusCode: 409,
-        code: 'otp_challenge_invalidated',
-      );
+      throw _backendFailure(statusCode: 409, code: 'otp_challenge_invalidated');
     }
     return challenge;
   }
@@ -153,6 +146,7 @@ class MockAuthApi implements AuthEndpoint {
         userName: account == otpAccount ? 'OTP User' : 'Water Magical',
       );
 
+  /// 建立符合 Auth endpoint contract 的 mock backend failure，避免 mock 走另一套錯誤模型。
   ApiEndpointException _backendFailure({
     required int statusCode,
     required String code,

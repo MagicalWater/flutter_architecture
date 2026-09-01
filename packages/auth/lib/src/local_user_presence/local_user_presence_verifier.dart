@@ -36,38 +36,24 @@ final class LocalUserPresenceOperationalException implements Exception {
 /// 描述在真正發出驗證前，裝置目前是否具備可用的 local user-presence 能力。
 ///
 /// 這個結果只回答「現在能不能驗」，不代表某一次驗證是否成功。
-sealed class LocalUserPresenceCapability {
-  const LocalUserPresenceCapability();
+final class LocalUserPresenceCapability {
+  const LocalUserPresenceCapability.available() : unavailableReason = null;
 
-  const factory LocalUserPresenceCapability.available() =
-      LocalUserPresenceAvailable;
-
-  const factory LocalUserPresenceCapability.unavailable(
+  const LocalUserPresenceCapability.unavailable(
     LocalUserPresenceUnavailableReason reason,
-  ) = LocalUserPresenceUnavailable;
-}
+  ) : unavailableReason = reason;
 
-final class LocalUserPresenceAvailable extends LocalUserPresenceCapability {
-  const LocalUserPresenceAvailable();
+  final LocalUserPresenceUnavailableReason? unavailableReason;
 
-  @override
-  bool operator ==(Object other) => other is LocalUserPresenceAvailable;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-}
-
-final class LocalUserPresenceUnavailable extends LocalUserPresenceCapability {
-  const LocalUserPresenceUnavailable(this.reason);
-
-  final LocalUserPresenceUnavailableReason reason;
+  bool get isAvailable => unavailableReason == null;
 
   @override
   bool operator ==(Object other) =>
-      other is LocalUserPresenceUnavailable && other.reason == reason;
+      other is LocalUserPresenceCapability &&
+      other.unavailableReason == unavailableReason;
 
   @override
-  int get hashCode => Object.hash(LocalUserPresenceUnavailable, reason);
+  int get hashCode => unavailableReason.hashCode;
 }
 
 /// 描述 capability check 階段無法進行 local user-presence verification 的原因。
@@ -81,38 +67,24 @@ enum LocalUserPresenceUnavailableReason {
 ///
 /// `verified` 才代表這一次成功取得 user-presence authority；`rejected` 則表示
 /// 驗證有被執行但沒有取得該 authority，與 operational exception 是不同類型失敗。
-sealed class LocalUserPresenceVerification {
-  const LocalUserPresenceVerification();
+final class LocalUserPresenceVerification {
+  const LocalUserPresenceVerification.verified() : rejectionReason = null;
 
-  const factory LocalUserPresenceVerification.verified() =
-      LocalUserPresenceVerified;
-
-  const factory LocalUserPresenceVerification.rejected(
+  const LocalUserPresenceVerification.rejected(
     LocalUserPresenceRejectionReason reason,
-  ) = LocalUserPresenceRejected;
-}
+  ) : rejectionReason = reason;
 
-final class LocalUserPresenceVerified extends LocalUserPresenceVerification {
-  const LocalUserPresenceVerified();
+  final LocalUserPresenceRejectionReason? rejectionReason;
 
-  @override
-  bool operator ==(Object other) => other is LocalUserPresenceVerified;
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-}
-
-final class LocalUserPresenceRejected extends LocalUserPresenceVerification {
-  const LocalUserPresenceRejected(this.reason);
-
-  final LocalUserPresenceRejectionReason reason;
+  bool get isVerified => rejectionReason == null;
 
   @override
   bool operator ==(Object other) =>
-      other is LocalUserPresenceRejected && other.reason == reason;
+      other is LocalUserPresenceVerification &&
+      other.rejectionReason == rejectionReason;
 
   @override
-  int get hashCode => Object.hash(LocalUserPresenceRejected, reason);
+  int get hashCode => rejectionReason.hashCode;
 }
 
 /// 描述某次 verification 沒有取得 verified authority 的原因。

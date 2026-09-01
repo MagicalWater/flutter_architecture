@@ -125,7 +125,7 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
         _setState(StartupLocalUnlockState.superseded);
         return;
       }
-      if (capability is LocalUserPresenceUnavailable) {
+      if (!capability.isAvailable) {
         _setState(StartupLocalUnlockState.unavailable);
         return;
       }
@@ -138,7 +138,7 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
         _setState(StartupLocalUnlockState.superseded);
         return;
       }
-      if (verification is LocalUserPresenceRejected) {
+      if (!verification.isVerified) {
         _setState(StartupLocalUnlockState.rejected);
         return;
       }

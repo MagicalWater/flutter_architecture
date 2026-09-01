@@ -20,9 +20,7 @@ void main() {
     await getIt.reset();
   });
 
-  testWidgets('iOS Keychain可跨composition restart讀取並由Logout刪除', (
-    _,
-  ) async {
+  testWidgets('iOS Keychain可跨composition restart讀取並由Logout刪除', (_) async {
     await _configureDependencies();
 
     final store = getIt<AuthCredentialStore>();
@@ -52,9 +50,7 @@ void main() {
     );
   });
 
-  testWidgets('enabled cold start在user presence成功前不讀取credential', (
-    _,
-  ) async {
+  testWidgets('enabled cold start在user presence成功前不讀取credential', (_) async {
     await _configureDependencies();
 
     final preferenceStore = getIt<LocalUnlockPreferenceStore>();
@@ -81,9 +77,7 @@ void main() {
     expect(sessionManager.currentSession, isNull);
     expect(credentialReads, 0);
 
-    verification.complete(
-      const LocalUserPresenceVerification.verified(),
-    );
+    verification.complete(const LocalUserPresenceVerification.verified());
     await start;
     expect(credentialReads, 1);
     expect(coordinator.state, StartupLocalUnlockState.restoring);
@@ -136,13 +130,7 @@ void main() {
 
     final capability = await getIt<LocalUserPresenceVerifier>()
         .checkCapability();
-    expect(
-      capability,
-      anyOf(
-        isA<LocalUserPresenceAvailable>(),
-        isA<LocalUserPresenceUnavailable>(),
-      ),
-    );
+    expect(capability, isA<LocalUserPresenceCapability>());
   });
 }
 

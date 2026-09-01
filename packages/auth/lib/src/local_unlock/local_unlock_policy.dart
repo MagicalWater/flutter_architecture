@@ -36,11 +36,11 @@ final class LocalUnlockPolicy {
     // 啟用 local unlock 是對目前 authenticated Session 的能力變更。Biometric
     // prompt 期間 Session 可能被 logout / replace，因此 commit 前必須重驗 lease。
     final capability = await _verifier.checkCapability();
-    if (capability is! LocalUserPresenceAvailable) {
+    if (!capability.isAvailable) {
       return LocalUnlockPolicyResult.unavailable;
     }
     final verification = await _verifier.verify(reason: reason);
-    if (verification is! LocalUserPresenceVerified) {
+    if (!verification.isVerified) {
       return LocalUnlockPolicyResult.rejected;
     }
     if (!operation.isCurrent || !_sessionManager.isAuthenticated) {

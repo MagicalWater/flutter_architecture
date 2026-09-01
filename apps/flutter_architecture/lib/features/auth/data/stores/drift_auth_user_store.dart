@@ -1,4 +1,4 @@
-import 'package:auth/auth.dart' as auth;
+import 'package:auth/auth_infrastructure.dart' as auth;
 import 'package:core/core.dart';
 import 'package:flutter_architecture/app/database/dao/auth_user_dao.dart';
 import 'package:sqlite3/sqlite3.dart';

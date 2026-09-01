@@ -54,13 +54,10 @@ final class _LocalUnlockSettingsDialogState
 
     final l10n = AppLocalizations.of(context);
     try {
-      final result = enabled
+      final succeeded = enabled
           ? await widget.policy.enable(reason: l10n.localUnlockEnableReason)
           : await widget.policy.disable();
       if (!mounted) return;
-      final succeeded = enabled
-          ? result == LocalUnlockPolicyResult.enabled
-          : result == LocalUnlockPolicyResult.disabled;
       setState(() {
         if (succeeded) _enabled = enabled;
         _error = succeeded ? null : l10n.localUnlockSettingsFailureMessage;

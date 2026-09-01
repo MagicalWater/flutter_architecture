@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:api_client/api_client.dart' as _i633;
 import 'package:auth/auth.dart' as _i662;
+import 'package:auth/auth_infrastructure.dart' as _i207;
 import 'package:connectivity_plus/connectivity_plus.dart' as _i895;
 import 'package:dio/dio.dart' as _i361;
 import 'package:flutter_architecture/app/config/api_config.dart' as _i46;
@@ -24,10 +25,10 @@ import 'package:flutter_architecture/app/error_reporting/error_reporter.dart'
     as _i1041;
 import 'package:flutter_architecture/app/router/app_router.dart' as _i787;
 import 'package:flutter_architecture/app/router/auth_guard.dart' as _i997;
+import 'package:flutter_architecture/features/auth/data/cleanup/auth_cleanup_error_reporter_adapter.dart'
+    as _i634;
 import 'package:flutter_architecture/features/auth/data/local_user_presence/local_auth_user_presence_verifier.dart'
     as _i287;
-import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart'
-    as _i112;
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart'
     as _i1024;
 import 'package:flutter_architecture/features/catalog/data/cache/catalog_cache_diagnostic_sink.dart'
@@ -82,22 +83,19 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i152.LocalAuthentication>(
       () => registerModule.localAuthentication,
     );
-    gh.lazySingleton<_i662.SessionManager>(() => registerModule.sessionManager);
-    gh.lazySingleton<_i662.AuthStateMutationCoordinator>(
+    gh.lazySingleton<_i207.SessionManager>(() => registerModule.sessionManager);
+    gh.lazySingleton<_i207.AuthStateMutationCoordinator>(
       () => registerModule.authStateMutationCoordinator,
     );
     gh.lazySingleton<_i923.CatalogCachePolicy>(
       () => registerModule.catalogCachePolicy,
     );
     gh.lazySingleton<_i401.CatalogClock>(() => registerModule.catalogClock);
-    gh.lazySingleton<_i662.AuthCredentialStore>(
+    gh.lazySingleton<_i207.AuthCredentialStore>(
       () =>
           registerModule.authCredentialStore(gh<_i558.FlutterSecureStorage>()),
     );
-    gh.lazySingleton<_i633.AuthTokenProvider>(
-      () => registerModule.authTokenProvider(gh<_i662.SessionManager>()),
-    );
-    gh.lazySingleton<_i662.AuthUserStore>(
+    gh.lazySingleton<_i207.AuthUserStore>(
       () => registerModule.authUserStore(gh<_i1048.AppDatabase>()),
     );
     gh.lazySingleton<_i538.CatalogLocalDataSource>(
@@ -106,12 +104,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1037.ConnectivityAdapter>(
       () => registerModule.connectivityAdapter(gh<_i895.Connectivity>()),
     );
-    gh.lazySingleton<_i662.AuthLegacyCredentialStore>(
+    gh.lazySingleton<_i207.AuthLegacyCredentialStore>(
       () => registerModule.authLegacyCredentialStore(
         gh<_i460.SharedPreferences>(),
       ),
     );
-    gh.lazySingleton<_i662.LocalUnlockPreferenceStore>(
+    gh.lazySingleton<_i207.LocalUnlockPreferenceStore>(
       () => registerModule.localUnlockPreferenceStore(
         gh<_i460.SharedPreferences>(),
       ),
@@ -129,8 +127,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i287.LocalAuthGateway>(
       () => registerModule.localAuthGateway(gh<_i152.LocalAuthentication>()),
     );
-    gh.lazySingleton<_i112.AuthMigrationErrorReporterAdapter>(
-      () => registerModule.authMigrationErrorReporterAdapter(
+    gh.lazySingleton<_i633.AuthTokenProvider>(
+      () => registerModule.authTokenProvider(gh<_i207.SessionManager>()),
+    );
+    gh.lazySingleton<_i634.AuthCleanupErrorReporterAdapter>(
+      () => registerModule.authCleanupErrorReporterAdapter(
         gh<_i1041.ErrorReporter>(),
       ),
     );
@@ -143,6 +144,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1037.ConnectivityAdapter>(),
       ),
     );
+    gh.lazySingleton<_i207.AuthCredentialMigrationCoordinator>(
+      () => registerModule.authCredentialMigrationCoordinator(
+        gh<_i207.AuthCredentialStore>(),
+        gh<_i207.AuthLegacyCredentialStore>(),
+        gh<_i207.AuthUserStore>(),
+      ),
+    );
     gh.lazySingleton<_i633.AuthRefreshEndpoint>(
       () => registerModule.authRefreshEndpoint(
         gh<_i46.ApiConfig>(),
@@ -152,33 +160,34 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i787.AppRouter>(
       () => _i787.AppRouter(gh<_i997.AuthGuard>()),
     );
-    gh.lazySingleton<_i662.LocalUserPresenceVerifier>(
+    gh.lazySingleton<_i207.LocalUserPresenceVerifier>(
       () => registerModule.localUserPresenceVerifier(
         gh<_i287.LocalAuthGateway>(),
       ),
     );
-    gh.lazySingleton<_i662.AuthCredentialMigrationCoordinator>(
-      () => registerModule.authCredentialMigrationCoordinator(
-        gh<_i662.AuthCredentialStore>(),
-        gh<_i662.AuthLegacyCredentialStore>(),
-        gh<_i662.AuthUserStore>(),
+    gh.lazySingleton<_i207.LocalUnlockPolicy>(
+      () => registerModule.localUnlockPolicy(
+        gh<_i207.SessionManager>(),
+        gh<_i207.AuthStateMutationCoordinator>(),
+        gh<_i207.LocalUserPresenceVerifier>(),
+        gh<_i207.LocalUnlockPreferenceStore>(),
       ),
     );
-    gh.lazySingleton<_i662.AuthRefreshRemoteDataSource>(
+    gh.lazySingleton<_i207.AuthRefreshRemoteDataSource>(
       () => registerModule.authRefreshRemoteDataSource(
         gh<_i633.AuthRefreshEndpoint>(),
       ),
     );
     gh.lazySingleton<_i633.AuthRefresher>(
       () => registerModule.authRefresher(
-        gh<_i662.AuthRefreshRemoteDataSource>(),
-        gh<_i662.AuthCredentialStore>(),
-        gh<_i662.AuthLegacyCredentialStore>(),
-        gh<_i662.AuthUserStore>(),
-        gh<_i662.SessionManager>(),
-        gh<_i662.AuthStateMutationCoordinator>(),
-        gh<_i112.AuthMigrationErrorReporterAdapter>(),
-        gh<_i662.LocalUnlockPreferenceStore>(),
+        gh<_i207.AuthRefreshRemoteDataSource>(),
+        gh<_i207.AuthCredentialStore>(),
+        gh<_i207.AuthLegacyCredentialStore>(),
+        gh<_i207.AuthUserStore>(),
+        gh<_i207.SessionManager>(),
+        gh<_i207.AuthStateMutationCoordinator>(),
+        gh<_i634.AuthCleanupErrorReporterAdapter>(),
+        gh<_i207.LocalUnlockPreferenceStore>(),
       ),
     );
     gh.lazySingleton<_i361.Dio>(
@@ -189,14 +198,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i46.ApiConfig>(),
       ),
       instanceName: 'mainDio',
-    );
-    gh.lazySingleton<_i662.LocalUnlockPolicy>(
-      () => registerModule.localUnlockPolicy(
-        gh<_i662.SessionManager>(),
-        gh<_i662.AuthStateMutationCoordinator>(),
-        gh<_i662.LocalUserPresenceVerifier>(),
-        gh<_i662.LocalUnlockPreferenceStore>(),
-      ),
     );
     gh.lazySingleton<_i633.AuthEndpoint>(
       () => registerModule.authEndpoint(
@@ -222,21 +223,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i725.ProfileRemoteDataSource>(
       () => registerModule.profileRemoteDataSource(gh<_i633.ProfileApi>()),
     );
-    gh.lazySingleton<_i662.AuthRemoteDataSource>(
+    gh.lazySingleton<_i207.AuthRemoteDataSource>(
       () => registerModule.authRemoteDataSource(gh<_i633.AuthEndpoint>()),
-    );
-    gh.lazySingleton<_i662.AuthRepository>(
-      () => registerModule.authRepository(
-        gh<_i662.AuthRemoteDataSource>(),
-        gh<_i662.AuthCredentialStore>(),
-        gh<_i662.AuthLegacyCredentialStore>(),
-        gh<_i662.AuthUserStore>(),
-        gh<_i662.SessionManager>(),
-        gh<_i662.AuthStateMutationCoordinator>(),
-        gh<_i662.AuthCredentialMigrationCoordinator>(),
-        gh<_i112.AuthMigrationErrorReporterAdapter>(),
-        gh<_i662.LocalUnlockPreferenceStore>(),
-      ),
     );
     gh.lazySingleton<_i1035.CatalogRepository>(
       () => registerModule.catalogRepository(
@@ -247,11 +235,31 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i461.CatalogCacheDiagnosticSink>(),
       ),
     );
+    gh.lazySingleton<_i207.AuthRepository>(
+      () => registerModule.authRepository(
+        gh<_i207.AuthRemoteDataSource>(),
+        gh<_i207.AuthCredentialStore>(),
+        gh<_i207.AuthLegacyCredentialStore>(),
+        gh<_i207.AuthUserStore>(),
+        gh<_i207.SessionManager>(),
+        gh<_i207.AuthStateMutationCoordinator>(),
+        gh<_i207.AuthCredentialMigrationCoordinator>(),
+        gh<_i634.AuthCleanupErrorReporterAdapter>(),
+        gh<_i207.LocalUnlockPreferenceStore>(),
+      ),
+    );
     gh.lazySingleton<_i511.ProfileRepository>(
       () => _i407.ProfileRepositoryImpl(gh<_i725.ProfileRemoteDataSource>()),
     );
     gh.factory<_i877.SearchCatalogUseCase>(
       () => _i877.SearchCatalogUseCase(gh<_i1035.CatalogRepository>()),
+    );
+    gh.lazySingleton<_i1024.AuthBloc>(
+      () => registerModule.authBloc(
+        gh<_i207.AuthRepository>(),
+        gh<_i207.SessionManager>(),
+        gh<_i207.AuthStateMutationCoordinator>(),
+      ),
     );
     gh.factory<_i474.GetProfileUseCase>(
       () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()),
@@ -265,13 +273,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i771.CatalogBloc>(
       () => registerModule.catalogBloc(gh<_i877.SearchCatalogUseCase>()),
-    );
-    gh.lazySingleton<_i1024.AuthBloc>(
-      () => registerModule.authBloc(
-        gh<_i662.AuthRepository>(),
-        gh<_i662.SessionManager>(),
-        gh<_i662.AuthStateMutationCoordinator>(),
-      ),
     );
     return this;
   }

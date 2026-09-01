@@ -1,4 +1,4 @@
-import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
+import 'package:auth/src/data/cleanup/auth_cleanup_diagnostic.dart';
 import 'package:auth/src/data/migration/auth_credential_migration_result.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/data/stores/auth_credential_read_result.dart';
@@ -168,17 +168,16 @@ final class AuthCredentialMigrationCoordinator {
     Error.throwWithStackTrace(originalError, originalStackTrace);
   }
 
-  Future<List<AuthLifecycleDiagnostic>>
-  _clearLegacyAfterSecureAuthority() async {
+  Future<List<AuthCleanupDiagnostic>> _clearLegacyAfterSecureAuthority() async {
     try {
       await _legacyCredentialStore.clearLegacyCredential();
-      return const <AuthLifecycleDiagnostic>[];
+      return const <AuthCleanupDiagnostic>[];
     } catch (error, stackTrace) {
       if (error is AppException &&
           error.kind == AppExceptionKind.localStorage) {
-        return <AuthLifecycleDiagnostic>[
-          AuthLifecycleDiagnostic(
-            operation: AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
+        return <AuthCleanupDiagnostic>[
+          AuthCleanupDiagnostic(
+            operation: AuthCleanupOperation.migrationLegacyCleanup,
             error: error,
             stackTrace: stackTrace,
           ),

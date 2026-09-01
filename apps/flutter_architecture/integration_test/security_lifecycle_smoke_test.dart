@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:auth/auth.dart';
+import 'package:auth/auth_infrastructure.dart';
 import 'package:flutter_architecture/app/auth/local_unlock_lifecycle_coordinator.dart';
 import 'package:flutter_architecture/app/auth/startup_local_unlock_coordinator.dart';
 import 'package:flutter_architecture/app/config/app_config.dart';

@@ -1,15 +1,15 @@
 import 'dart:collection';
 
-import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
+import 'package:auth/src/data/cleanup/auth_cleanup_diagnostic.dart';
 import 'package:auth/src/data/stores/auth_credential_store.dart';
 import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
 import 'package:auth/src/data/stores/auth_user_store.dart';
 import 'package:auth/src/local_unlock/local_unlock_preference.dart';
 import 'package:core/core.dart';
 
-/// 統一執行 Auth lifecycle 的 destructive cleanup，避免單一 store 失敗中斷其餘清理。
-final class AuthLifecycleCleanupPolicy {
-  const AuthLifecycleCleanupPolicy({
+/// 統一執行 Auth state 的 destructive cleanup，避免單一 store 失敗中斷其餘清理。
+final class AuthStateCleanup {
+  const AuthStateCleanup({
     required AuthCredentialStore secureCredentialStore,
     required AuthLegacyCredentialStore legacyCredentialStore,
     required AuthUserStore userStore,
@@ -24,20 +24,20 @@ final class AuthLifecycleCleanupPolicy {
   final AuthUserStore _userStore;
   final LocalUnlockPreferenceStore? _localUnlockPreferenceStore;
 
-  Future<AuthLifecycleCleanupResult> clearAllUnlocked() async {
-    final diagnostics = <AuthLifecycleDiagnostic>[];
+  Future<AuthStateCleanupResult> clearAllUnlocked() async {
+    final diagnostics = <AuthCleanupDiagnostic>[];
 
     // Cleanup 採 best-effort fan-out：單一 store 失敗不能阻止其他 credential /
     // user state 被移除。所有 attempt 結束後再由 result 決定 failure priority。
     Future<void> attempt(
-      AuthLifecycleDiagnosticOperation operation,
+      AuthCleanupOperation operation,
       Future<void> Function() action,
     ) async {
       try {
         await action();
       } catch (error, stackTrace) {
         diagnostics.add(
-          AuthLifecycleDiagnostic(
+          AuthCleanupDiagnostic(
             operation: operation,
             error: error,
             stackTrace: stackTrace,
@@ -47,37 +47,34 @@ final class AuthLifecycleCleanupPolicy {
     }
 
     await attempt(
-      AuthLifecycleDiagnosticOperation.secureCleanup,
+      AuthCleanupOperation.secureCleanup,
       _secureCredentialStore.clearCredential,
     );
     await attempt(
-      AuthLifecycleDiagnosticOperation.legacyCleanup,
+      AuthCleanupOperation.legacyCleanup,
       _legacyCredentialStore.clearLegacyCredential,
     );
-    await attempt(
-      AuthLifecycleDiagnosticOperation.userCleanup,
-      _userStore.clearUser,
-    );
+    await attempt(AuthCleanupOperation.userCleanup, _userStore.clearUser);
     final localUnlockPreferenceStore = _localUnlockPreferenceStore;
     if (localUnlockPreferenceStore != null) {
       await attempt(
-        AuthLifecycleDiagnosticOperation.localUnlockPreferenceCleanup,
+        AuthCleanupOperation.localUnlockPreferenceCleanup,
         localUnlockPreferenceStore.clear,
       );
     }
 
-    return AuthLifecycleCleanupResult(diagnostics);
+    return AuthStateCleanupResult(diagnostics);
   }
 }
 
 /// 保存 cleanup 的完整診斷，並集中決定 expected / unexpected failure priority。
-final class AuthLifecycleCleanupResult {
-  AuthLifecycleCleanupResult(Iterable<AuthLifecycleDiagnostic> diagnostics)
-    : diagnostics = UnmodifiableListView<AuthLifecycleDiagnostic>(
-        List<AuthLifecycleDiagnostic>.of(diagnostics),
+final class AuthStateCleanupResult {
+  AuthStateCleanupResult(Iterable<AuthCleanupDiagnostic> diagnostics)
+    : diagnostics = UnmodifiableListView<AuthCleanupDiagnostic>(
+        List<AuthCleanupDiagnostic>.of(diagnostics),
       );
 
-  final List<AuthLifecycleDiagnostic> diagnostics;
+  final List<AuthCleanupDiagnostic> diagnostics;
 
   bool get isSuccess => diagnostics.isEmpty;
 
@@ -98,7 +95,7 @@ final class AuthLifecycleCleanupResult {
     }
   }
 
-  AuthLifecycleDiagnostic? _primary({bool unexpectedOnly = false}) {
+  AuthCleanupDiagnostic? _primary({bool unexpectedOnly = false}) {
     // Unknown / unexpected failure 優先於已知 local-storage failure，避免 cleanup
     // 把真正的 programming / platform defect 降級成可預期 operational error。
     for (final diagnostic in diagnostics) {

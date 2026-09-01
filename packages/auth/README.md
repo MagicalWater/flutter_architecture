@@ -89,7 +89,7 @@ Migration 採 write secure authority first、read-back／validation、再 best-e
 - `SessionManager` 擁有 runtime session stream、generation 與 user identity。
 - Refresh 使用 identity-aware single-flight。
 - Rotated token pair 必須 persistence-first，再更新 runtime access token。
-- Logout／relogin／account switch 後，舊 request 或舊 refresh response 不得覆蓋新 Session。
+- Logout／relogin／account switch 後，舊 request 或舊 refresh response 不得覆蓋新 Session；此 ownership 由 `AuthMutationLease` 保護。
 - Invalid refresh credential 觸發 Auth lifecycle destructive cleanup；temporary／unknown failures保留原 Session semantics。
 
 ## Local Unlock Boundary
@@ -105,7 +105,15 @@ Migration 採 write secure authority first、read-back／validation、再 best-e
 import 'package:auth/auth.dart';
 ```
 
-Public barrel export Domain、Repository、Session、Refresh、Store、Migration、Lifecycle 與 local unlock contracts。Consumer 不應 deep import `lib/src/`。
+`auth.dart` 只提供日常 consumer contract：Domain、Repository、Session、local user-presence 與 local unlock。
+
+Composition root、App-owned data adapter 或 migration / refresh infrastructure 才使用：
+
+```dart
+import 'package:auth/auth_infrastructure.dart';
+```
+
+Infrastructure barrel 會包含 default consumer API，加上 Store、Migration、Refresh、DataSource、Repository implementation 與 cleanup diagnostics。Consumer 不應 deep import `lib/src/`。
 
 ## Tests
 

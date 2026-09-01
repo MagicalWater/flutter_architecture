@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:auth/auth.dart';
+import 'package:auth/auth_infrastructure.dart';
 import 'package:core/core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

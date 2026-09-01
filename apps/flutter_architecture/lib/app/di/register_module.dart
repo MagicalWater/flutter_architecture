@@ -1,5 +1,5 @@
 import 'package:api_client/api_client.dart' as api_client;
-import 'package:auth/auth.dart' as auth;
+import 'package:auth/auth_infrastructure.dart' as auth;
 import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_architecture/app/database/dao/catalog_cache_dao.dart';
 import 'package:flutter_architecture/app/di/api_implementation_selector.dart';
 import 'package:flutter_architecture/app/error_reporting/catalog_cache_error_reporter_adapter.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
-import 'package:flutter_architecture/features/auth/data/migration/auth_migration_error_reporter_adapter.dart';
+import 'package:flutter_architecture/features/auth/data/cleanup/auth_cleanup_error_reporter_adapter.dart';
 import 'package:flutter_architecture/features/auth/data/local_user_presence/local_auth_user_presence_verifier.dart';
 import 'package:flutter_architecture/features/auth/data/local_unlock/shared_preferences_local_unlock_preference_store.dart';
 import 'package:flutter_architecture/features/auth/data/stores/flutter_secure_auth_credential_store.dart';
@@ -56,9 +56,9 @@ abstract class RegisterModule {
       ConnectivityController(adapter);
 
   @lazySingleton
-  AuthMigrationErrorReporterAdapter authMigrationErrorReporterAdapter(
+  AuthCleanupErrorReporterAdapter authCleanupErrorReporterAdapter(
     ErrorReporter errorReporter,
-  ) => AuthMigrationErrorReporterAdapter(errorReporter);
+  ) => AuthCleanupErrorReporterAdapter(errorReporter);
 
   @lazySingleton
   CatalogCacheDiagnosticSink catalogCacheDiagnosticSink(
@@ -172,7 +172,7 @@ abstract class RegisterModule {
     auth.AuthUserStore userStore,
     auth.SessionManager sessionManager,
     auth.AuthStateMutationCoordinator mutationCoordinator,
-    AuthMigrationErrorReporterAdapter diagnosticSink,
+    AuthCleanupErrorReporterAdapter diagnosticSink,
     auth.LocalUnlockPreferenceStore localUnlockPreferenceStore,
   ) {
     return auth.AuthSessionRefresher(
@@ -209,7 +209,7 @@ abstract class RegisterModule {
     auth.SessionManager sessionManager,
     auth.AuthStateMutationCoordinator mutationCoordinator,
     auth.AuthCredentialMigrationCoordinator migrationCoordinator,
-    AuthMigrationErrorReporterAdapter diagnosticSink,
+    AuthCleanupErrorReporterAdapter diagnosticSink,
     auth.LocalUnlockPreferenceStore localUnlockPreferenceStore,
   ) {
     return auth.AuthRepositoryImpl(

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:api_client/api_client.dart';
-import 'package:auth/auth.dart';
+import 'package:auth/auth_infrastructure.dart';
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -282,9 +282,7 @@ void main() {
       refreshToken: 'account-b-refresh-token',
       userId: 'user-002',
     );
-    responseCompleter.completeError(
-      _endpointFailure(statusCode: 401),
-    );
+    responseCompleter.completeError(_endpointFailure(statusCode: 401));
 
     final result = await operation;
 
@@ -319,20 +317,15 @@ AuthSessionRefresher _createRefresher(
   );
 }
 
-final class _NoopLifecycleDiagnosticSink
-    implements AuthLifecycleDiagnosticSink {
+final class _NoopLifecycleDiagnosticSink implements AuthCleanupDiagnosticSink {
   const _NoopLifecycleDiagnosticSink();
 
   @override
-  void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {}
+  void reportAll(Iterable<AuthCleanupDiagnostic> diagnostics) {}
 }
 
 class _FakeAuthRefreshApi implements AuthRefreshEndpoint {
-  _FakeAuthRefreshApi({
-    this.statusCode,
-    this.completer,
-    this.response,
-  });
+  _FakeAuthRefreshApi({this.statusCode, this.completer, this.response});
 
   static const successResponse = RefreshTokenResponseDto(
     accessToken: 'new-access-token',

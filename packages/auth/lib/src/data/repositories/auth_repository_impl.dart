@@ -2,9 +2,9 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/data_sources/auth_remote_data_source.dart';
 import 'package:auth/src/data/mappers/login_response_dto_mapper.dart';
 import 'package:auth/src/data/mappers/otp_challenge_dto_mapper.dart';
-import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
-import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic_sink.dart';
-import 'package:auth/src/data/lifecycle/auth_lifecycle_cleanup_policy.dart';
+import 'package:auth/src/data/cleanup/auth_cleanup_diagnostic.dart';
+import 'package:auth/src/data/cleanup/auth_cleanup_diagnostic_sink.dart';
+import 'package:auth/src/data/cleanup/auth_state_cleanup.dart';
 import 'package:auth/src/data/migration/auth_credential_migration_coordinator.dart';
 import 'package:auth/src/data/migration/auth_credential_migration_result.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
@@ -54,7 +54,7 @@ class AuthRepositoryImpl implements AuthRepository {
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
   final AuthCredentialMigrationCoordinator _migrationCoordinator;
-  final AuthLifecycleDiagnosticSink _diagnosticSink;
+  final AuthCleanupDiagnosticSink _diagnosticSink;
   final LocalUnlockPreferenceStore? _localUnlockPreferenceStore;
 
   @override
@@ -62,7 +62,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String account,
     required String password,
   }) async {
-    final operation = _mutationCoordinator.beginLifecycleOperation();
+    final operation = _mutationCoordinator.beginMutationLease();
     try {
       final response = await _remoteDataSource.login(
         account: account,
@@ -96,7 +96,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String challengeId,
     required String code,
   }) async {
-    final operation = _mutationCoordinator.beginLifecycleOperation();
+    final operation = _mutationCoordinator.beginMutationLease();
     try {
       final response = await _remoteDataSource.verifyOtp(
         challengeId: challengeId,
@@ -120,7 +120,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<OtpChallenge>> resendOtp({required String challengeId}) async {
-    final operation = _mutationCoordinator.beginLifecycleOperation();
+    final operation = _mutationCoordinator.beginMutationLease();
     try {
       final response = await _remoteDataSource.resendOtp(
         challengeId: challengeId,
@@ -177,7 +177,7 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
   Future<void> _commitAuthenticatedUnlocked(
-    AuthLifecycleOperation operation,
+    AuthMutationLease operation,
     AuthAuthenticatedResult result,
   ) async {
     final user = result.user;
@@ -201,14 +201,14 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (error, stackTrace) {
       // 複合 commit 任一步失敗都要清除已寫入的 partial auth state；cleanup
       // 本身的 unexpected failure 不可被原始 local-storage error 吞掉。
-      final cleanup = await AuthLifecycleCleanupPolicy(
+      final cleanup = await AuthStateCleanup(
         secureCredentialStore: _credentialStore,
         legacyCredentialStore: _legacyCredentialStore,
         userStore: _userStore,
         localUnlockPreferenceStore: _localUnlockPreferenceStore,
       ).clearAllUnlocked();
       cleanup.throwIfUnexpected();
-      if (error is AuthLifecycleOperationSuperseded) {
+      if (error is AuthMutationSuperseded) {
         Error.throwWithStackTrace(error, stackTrace);
       }
       _sessionManager.clear();
@@ -226,7 +226,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<AuthUser?>> restoreSession() async {
-    final operation = _mutationCoordinator.beginLifecycleOperation();
+    final operation = _mutationCoordinator.beginMutationLease();
     try {
       // Restore 的 durable authority resolution 與 runtime Session commit 必須位於同一
       // exclusive mutation window；否則 login/logout 可插入兩者之間造成跨 lifecycle commit。
@@ -276,7 +276,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   void _reportDiagnosticsBestEffort(
-    Iterable<AuthLifecycleDiagnostic> diagnostics,
+    Iterable<AuthCleanupDiagnostic> diagnostics,
   ) {
     try {
       _diagnosticSink.reportAll(diagnostics);
@@ -291,13 +291,13 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<void>> logout() async {
-    final operation = _mutationCoordinator.beginLifecycleOperation();
+    final operation = _mutationCoordinator.beginMutationLease();
     try {
       await _mutationCoordinator.runExclusive(() async {
         operation.throwIfSuperseded();
         // Logout cleanup 先嘗試移除所有 durable auth state，再由仍持有最新
         // lifecycle lease 的 operation clear runtime Session。
-        final cleanup = await AuthLifecycleCleanupPolicy(
+        final cleanup = await AuthStateCleanup(
           secureCredentialStore: _credentialStore,
           legacyCredentialStore: _legacyCredentialStore,
           userStore: _userStore,
@@ -339,5 +339,5 @@ final class _AuthRestoreOutcome {
   const _AuthRestoreOutcome({required this.user, required this.diagnostics});
 
   final AuthUser? user;
-  final List<AuthLifecycleDiagnostic> diagnostics;
+  final List<AuthCleanupDiagnostic> diagnostics;
 }

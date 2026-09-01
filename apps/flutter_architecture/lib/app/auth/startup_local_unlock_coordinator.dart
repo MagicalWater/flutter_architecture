@@ -63,7 +63,7 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
   Future<void> useServerLogin() async {
     // 使用者改選 server login 是新的 lifecycle intent；先使任何仍在進行的
     // unlock / restore operation supersede，再清除 runtime authenticated authority。
-    _mutationCoordinator.beginLifecycleOperation();
+    _mutationCoordinator.beginMutationLease();
     _sessionManager.clear();
     try {
       await _preferenceStore.writeEnabled(false);
@@ -88,7 +88,7 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
   }
 
   Future<void> _runInternal() async {
-    final operation = _mutationCoordinator.beginLifecycleOperation();
+    final operation = _mutationCoordinator.beginMutationLease();
     _failure = null;
     _failureStackTrace = null;
     _setState(StartupLocalUnlockState.checkingPreference);
@@ -116,7 +116,7 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
     await _verifyThenRestore(operation);
   }
 
-  Future<void> _verifyThenRestore(AuthLifecycleOperation operation) async {
+  Future<void> _verifyThenRestore(AuthMutationLease operation) async {
     _setState(StartupLocalUnlockState.locked);
 
     try {
@@ -149,7 +149,7 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
     }
   }
 
-  Future<void> _restore(AuthLifecycleOperation operation) async {
+  Future<void> _restore(AuthMutationLease operation) async {
     if (!operation.isCurrent) {
       _setState(StartupLocalUnlockState.superseded);
       return;

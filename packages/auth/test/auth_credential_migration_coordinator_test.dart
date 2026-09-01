@@ -1,4 +1,4 @@
-import 'package:auth/auth.dart';
+import 'package:auth/auth_infrastructure.dart';
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -287,26 +287,29 @@ void main() {
       },
     );
 
-    test('secure remains authority and clears conflicting legacy credential', () async {
-      final stores = _MigrationStores(
-        secureResult: const AuthCredentialReadPresent(tokens),
-        legacyResult: const AuthCredentialReadPresent(
-          StoredAuthTokens(
-            accessToken: 'legacy-access',
-            refreshToken: 'legacy-refresh',
-            userId: 'user-1',
+    test(
+      'secure remains authority and clears conflicting legacy credential',
+      () async {
+        final stores = _MigrationStores(
+          secureResult: const AuthCredentialReadPresent(tokens),
+          legacyResult: const AuthCredentialReadPresent(
+            StoredAuthTokens(
+              accessToken: 'legacy-access',
+              refreshToken: 'legacy-refresh',
+              userId: 'user-1',
+            ),
           ),
-        ),
-        user: user,
-      );
+          user: user,
+        );
 
-      final result = await stores.coordinator.resolveUnlocked();
+        final result = await stores.coordinator.resolveUnlocked();
 
-      expect(result, isA<AuthCredentialMigrationResolved>());
-      expect(stores.legacy.clearCalls, 1);
-      expect(stores.secure.clearCalls, 0);
-      expect(stores.secure.writeCalls, 0);
-    });
+        expect(result, isA<AuthCredentialMigrationResolved>());
+        expect(stores.legacy.clearCalls, 1);
+        expect(stores.secure.clearCalls, 0);
+        expect(stores.secure.writeCalls, 0);
+      },
+    );
 
     test('legacy read failure prevents resolved authority', () async {
       final failure = AppException(
@@ -361,7 +364,7 @@ void main() {
         final diagnostic = resolved.diagnostics.single;
         expect(
           diagnostic.operation,
-          AuthLifecycleDiagnosticOperation.migrationLegacyCleanup,
+          AuthCleanupOperation.migrationLegacyCleanup,
         );
         expect(diagnostic.error, same(failure));
         expect(diagnostic.stackTrace, same(failureStack));

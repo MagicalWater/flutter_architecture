@@ -1,15 +1,15 @@
-import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
+import 'package:auth/src/data/cleanup/auth_cleanup_diagnostic.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 
 /// Credential migration resolution。
 sealed class AuthCredentialMigrationResult {
   AuthCredentialMigrationResult({
-    List<AuthLifecycleDiagnostic> diagnostics = const [],
-  }) : diagnostics = List<AuthLifecycleDiagnostic>.unmodifiable(diagnostics);
+    List<AuthCleanupDiagnostic> diagnostics = const [],
+  }) : diagnostics = List<AuthCleanupDiagnostic>.unmodifiable(diagnostics);
 
   /// 可安全交給App reporting adapter處理的immutable diagnostics。
-  final List<AuthLifecycleDiagnostic> diagnostics;
+  final List<AuthCleanupDiagnostic> diagnostics;
 }
 
 /// Migration resolution後沒有可建立Session的credential。

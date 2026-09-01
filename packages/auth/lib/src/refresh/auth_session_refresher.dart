@@ -4,9 +4,9 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/src/data/data_sources/auth_refresh_remote_data_source.dart';
 import 'package:auth/src/data/exceptions/invalid_refresh_credential_exception.dart';
 import 'package:auth/src/data/exceptions/temporary_refresh_exception.dart';
-import 'package:auth/src/data/lifecycle/auth_lifecycle_cleanup_policy.dart';
-import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic.dart';
-import 'package:auth/src/data/lifecycle/auth_lifecycle_diagnostic_sink.dart';
+import 'package:auth/src/data/cleanup/auth_cleanup_diagnostic.dart';
+import 'package:auth/src/data/cleanup/auth_cleanup_diagnostic_sink.dart';
+import 'package:auth/src/data/cleanup/auth_state_cleanup.dart';
 import 'package:auth/src/data/models/stored_auth_tokens.dart';
 import 'package:auth/src/data/stores/auth_credential_read_result.dart';
 import 'package:auth/src/data/stores/auth_credential_store.dart';
@@ -37,7 +37,7 @@ class AuthSessionRefresher implements AuthRefresher {
   final AuthUserStore _userStore;
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
-  final AuthLifecycleDiagnosticSink _diagnosticSink;
+  final AuthCleanupDiagnosticSink _diagnosticSink;
 
   _InFlightRefresh? _inFlight;
 
@@ -212,8 +212,8 @@ class AuthSessionRefresher implements AuthRefresher {
     return _completeOutcome(outcome);
   }
 
-  Future<AuthLifecycleCleanupResult> _clearSecureAuthStateUnlocked() {
-    return AuthLifecycleCleanupPolicy(
+  Future<AuthStateCleanupResult> _clearSecureAuthStateUnlocked() {
+    return AuthStateCleanup(
       secureCredentialStore: _credentialStore,
       legacyCredentialStore: _legacyCredentialStore,
       userStore: _userStore,
@@ -228,9 +228,7 @@ class AuthSessionRefresher implements AuthRefresher {
     return outcome.result;
   }
 
-  void _reportExpectedBestEffort(
-    Iterable<AuthLifecycleDiagnostic> diagnostics,
-  ) {
+  void _reportExpectedBestEffort(Iterable<AuthCleanupDiagnostic> diagnostics) {
     final expected = diagnostics.where((diagnostic) {
       final error = diagnostic.error;
       return error is AppException &&
@@ -248,7 +246,7 @@ final class _SecureRefreshOutcome {
   const _SecureRefreshOutcome({required this.result, this.cleanup});
 
   final AuthRefreshResult result;
-  final AuthLifecycleCleanupResult? cleanup;
+  final AuthStateCleanupResult? cleanup;
 }
 
 final class _InFlightRefresh {

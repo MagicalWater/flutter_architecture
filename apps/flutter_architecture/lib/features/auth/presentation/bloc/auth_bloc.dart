@@ -71,7 +71,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     late final Result<AuthUser?> result;
     try {
       result = await _authRepository.restoreSession();
-    } on AuthLifecycleOperationSuperseded {
+    } on AuthMutationSuperseded {
       return;
     } catch (error, stackTrace) {
       emit(
@@ -130,7 +130,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         account: event.account,
         password: event.password,
       );
-    } on AuthLifecycleOperationSuperseded {
+    } on AuthMutationSuperseded {
       return;
     } catch (error, stackTrace) {
       if (_isCurrentPresentationOperation(presentationGeneration)) {
@@ -205,7 +205,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         challengeId: challenge.challengeId,
         code: event.code,
       );
-    } on AuthLifecycleOperationSuperseded {
+    } on AuthMutationSuperseded {
       return;
     } catch (error, stackTrace) {
       if (_isCurrentPresentationOperation(generation) &&
@@ -263,7 +263,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       result = await _authRepository.resendOtp(
         challengeId: challenge.challengeId,
       );
-    } on AuthLifecycleOperationSuperseded {
+    } on AuthMutationSuperseded {
       return;
     } catch (error, stackTrace) {
       if (_isCurrentPresentationOperation(generation) &&
@@ -302,9 +302,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onSessionCleared(AuthSessionCleared event, Emitter<AuthState> emit) {
     // Authoritative Session clear 必須同時讓 presentation completion 與仍在執行的
-    // repository lifecycle operation 失效，避免舊 login / OTP 結果復活 UI state。
+    // repository mutation lease 失效，避免舊 login / OTP 結果復活 UI state。
     _presentationGeneration += 1;
-    _mutationCoordinator.invalidateLifecycleOperations();
+    _mutationCoordinator.invalidateMutationLeases();
     emit(AuthState.initial());
   }
 
@@ -324,7 +324,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     late final Result<void> result;
     try {
       result = await _authRepository.logout();
-    } on AuthLifecycleOperationSuperseded {
+    } on AuthMutationSuperseded {
       return;
     } catch (error, stackTrace) {
       emit(

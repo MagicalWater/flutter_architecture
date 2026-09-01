@@ -4,16 +4,6 @@ import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
 import 'package:auth/src/session/session_manager.dart';
 import 'package:core/core.dart';
 
-enum LocalUnlockPolicyResult {
-  enabled,
-  disabled,
-  notAuthenticated,
-  unavailable,
-  rejected,
-  storageFailure,
-  superseded,
-}
-
 /// 管理 local unlock 能力變更，並確保設定只提交到仍有效的 Auth lifecycle。
 final class LocalUnlockPolicy {
   const LocalUnlockPolicy(
@@ -28,23 +18,23 @@ final class LocalUnlockPolicy {
   final LocalUserPresenceVerifier _verifier;
   final LocalUnlockPreferenceStore _store;
 
-  Future<LocalUnlockPolicyResult> enable({required String reason}) async {
+  Future<bool> enable({required String reason}) async {
     if (!_sessionManager.isAuthenticated) {
-      return LocalUnlockPolicyResult.notAuthenticated;
+      return false;
     }
-    final operation = _mutationCoordinator.beginLifecycleOperation();
+    final operation = _mutationCoordinator.beginMutationLease();
     // 啟用 local unlock 是對目前 authenticated Session 的能力變更。Biometric
     // prompt 期間 Session 可能被 logout / replace，因此 commit 前必須重驗 lease。
     final capability = await _verifier.checkCapability();
     if (!capability.isAvailable) {
-      return LocalUnlockPolicyResult.unavailable;
+      return false;
     }
     final verification = await _verifier.verify(reason: reason);
     if (!verification.isVerified) {
-      return LocalUnlockPolicyResult.rejected;
+      return false;
     }
     if (!operation.isCurrent || !_sessionManager.isAuthenticated) {
-      return LocalUnlockPolicyResult.superseded;
+      return false;
     }
     try {
       await _mutationCoordinator.runExclusive(() async {
@@ -52,23 +42,30 @@ final class LocalUnlockPolicy {
         // 已登出的帳號重新留下「下次啟動需 local unlock」的 stale policy。
         operation.throwIfSuperseded();
         if (!_sessionManager.isAuthenticated) {
-          throw const AuthLifecycleOperationSuperseded();
+          throw const AuthMutationSuperseded();
         }
         await _store.writeEnabled(true);
       });
-    } on AuthLifecycleOperationSuperseded {
-      return LocalUnlockPolicyResult.superseded;
+    } on AuthMutationSuperseded {
+      return false;
     } on AppException catch (error, stackTrace) {
       if (error.kind != AppExceptionKind.localStorage) {
         Error.throwWithStackTrace(error, stackTrace);
       }
-      return LocalUnlockPolicyResult.storageFailure;
+      return false;
     }
-    return LocalUnlockPolicyResult.enabled;
+    return true;
   }
 
-  Future<LocalUnlockPolicyResult> disable() async {
-    await _store.writeEnabled(false);
-    return LocalUnlockPolicyResult.disabled;
+  Future<bool> disable() async {
+    try {
+      await _store.writeEnabled(false);
+      return true;
+    } on AppException catch (error, stackTrace) {
+      if (error.kind != AppExceptionKind.localStorage) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+      return false;
+    }
   }
 }

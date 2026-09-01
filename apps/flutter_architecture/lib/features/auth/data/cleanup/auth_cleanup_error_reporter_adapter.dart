@@ -1,16 +1,16 @@
-import 'package:auth/auth.dart';
+import 'package:auth/auth_infrastructure.dart';
 import 'package:flutter_architecture/app/error_reporting/error_report.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 
-/// 將Auth migration diagnostics轉成App-owned safe reports。
-final class AuthMigrationErrorReporterAdapter
-    implements AuthLifecycleDiagnosticSink {
-  const AuthMigrationErrorReporterAdapter(this._reporter);
+/// 將 Auth cleanup diagnostics 轉成 App-owned safe reports。
+final class AuthCleanupErrorReporterAdapter
+    implements AuthCleanupDiagnosticSink {
+  const AuthCleanupErrorReporterAdapter(this._reporter);
 
   final ErrorReporter _reporter;
 
   @override
-  void reportAll(Iterable<AuthLifecycleDiagnostic> diagnostics) {
+  void reportAll(Iterable<AuthCleanupDiagnostic> diagnostics) {
     for (final diagnostic in diagnostics) {
       try {
         _reporter.report(
@@ -30,19 +30,16 @@ final class AuthMigrationErrorReporterAdapter
     }
   }
 
-  ErrorReportOperation _mapOperation(
-    AuthLifecycleDiagnosticOperation operation,
-  ) {
+  ErrorReportOperation _mapOperation(AuthCleanupOperation operation) {
     return switch (operation) {
-      AuthLifecycleDiagnosticOperation.migrationLegacyCleanup =>
+      AuthCleanupOperation.migrationLegacyCleanup =>
         ErrorReportOperation.authMigrationLegacyCleanup,
-      AuthLifecycleDiagnosticOperation.secureCleanup =>
+      AuthCleanupOperation.secureCleanup =>
         ErrorReportOperation.authSecureCleanup,
-      AuthLifecycleDiagnosticOperation.legacyCleanup =>
+      AuthCleanupOperation.legacyCleanup =>
         ErrorReportOperation.authLegacyCleanup,
-      AuthLifecycleDiagnosticOperation.userCleanup =>
-        ErrorReportOperation.authUserCleanup,
-      AuthLifecycleDiagnosticOperation.localUnlockPreferenceCleanup =>
+      AuthCleanupOperation.userCleanup => ErrorReportOperation.authUserCleanup,
+      AuthCleanupOperation.localUnlockPreferenceCleanup =>
         ErrorReportOperation.authLocalUnlockPreferenceCleanup,
     };
   }

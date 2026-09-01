@@ -1,4 +1,5 @@
-enum AuthLifecycleDiagnosticOperation {
+/// Identifies which durable auth state cleanup step failed.
+enum AuthCleanupOperation {
   migrationLegacyCleanup,
   secureCleanup,
   legacyCleanup,
@@ -6,20 +7,20 @@ enum AuthLifecycleDiagnosticOperation {
   localUnlockPreferenceCleanup,
 }
 
-final class AuthLifecycleDiagnostic {
-  const AuthLifecycleDiagnostic({
+final class AuthCleanupDiagnostic {
+  const AuthCleanupDiagnostic({
     required this.operation,
     required this.error,
     required this.stackTrace,
   });
 
-  final AuthLifecycleDiagnosticOperation operation;
+  final AuthCleanupOperation operation;
   final Object error;
   final StackTrace stackTrace;
 
   @override
   String toString() {
-    return 'AuthLifecycleDiagnostic('
+    return 'AuthCleanupDiagnostic('
         'operation: $operation, '
         'errorType: ${error.runtimeType})';
   }

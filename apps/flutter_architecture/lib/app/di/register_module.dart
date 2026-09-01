@@ -225,52 +225,13 @@ abstract class RegisterModule {
     );
   }
 
-  @injectable
-  auth.LoginUseCase loginUseCase(auth.AuthRepository repository) {
-    return auth.LoginUseCase(repository);
-  }
-
-  @injectable
-  auth.VerifyOtpUseCase verifyOtpUseCase(auth.AuthRepository repository) {
-    return auth.VerifyOtpUseCase(repository);
-  }
-
-  @injectable
-  auth.ResendOtpUseCase resendOtpUseCase(auth.AuthRepository repository) {
-    return auth.ResendOtpUseCase(repository);
-  }
-
   @lazySingleton
   AuthBloc authBloc(
-    auth.LoginUseCase loginUseCase,
-    auth.RestoreSessionUseCase restoreSessionUseCase,
-    auth.LogoutUseCase logoutUseCase,
+    auth.AuthRepository repository,
     auth.SessionManager sessionManager,
     auth.AuthStateMutationCoordinator mutationCoordinator,
-    auth.VerifyOtpUseCase verifyOtpUseCase,
-    auth.ResendOtpUseCase resendOtpUseCase,
   ) {
-    return AuthBloc(
-      loginUseCase,
-      restoreSessionUseCase,
-      logoutUseCase,
-      sessionManager,
-      mutationCoordinator,
-      verifyOtpUseCase: verifyOtpUseCase,
-      resendOtpUseCase: resendOtpUseCase,
-    );
-  }
-
-  @injectable
-  auth.LogoutUseCase logoutUseCase(auth.AuthRepository repository) {
-    return auth.LogoutUseCase(repository);
-  }
-
-  @injectable
-  auth.RestoreSessionUseCase restoreSessionUseCase(
-    auth.AuthRepository repository,
-  ) {
-    return auth.RestoreSessionUseCase(repository);
+    return AuthBloc(repository, sessionManager, mutationCoordinator);
   }
 
   @Named('mainDio')

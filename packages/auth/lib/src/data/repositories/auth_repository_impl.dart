@@ -26,8 +26,6 @@ import 'package:core/core.dart';
 /// ## Runtime Flow
 ///
 /// ```txt
-/// LoginUseCase
-///   ↓
 /// AuthRepository
 ///   ↓
 /// AuthRepositoryImpl
@@ -45,9 +43,9 @@ class AuthRepositoryImpl implements AuthRepository {
     this._sessionManager,
     this._mutationCoordinator,
     this._migrationCoordinator,
-    this._diagnosticSink,
-    [this._localUnlockPreferenceStore]
-  );
+    this._diagnosticSink, [
+    this._localUnlockPreferenceStore,
+  ]);
 
   final AuthRemoteDataSource _remoteDataSource;
   final AuthCredentialStore _credentialStore;

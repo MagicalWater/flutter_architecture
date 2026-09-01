@@ -15,15 +15,7 @@ void main() {
     sessionManager = SessionManager();
     coordinator = AuthStateMutationCoordinator();
     repository = _OtpRepository(sessionManager);
-    bloc = AuthBloc(
-      LoginUseCase(repository),
-      RestoreSessionUseCase(repository),
-      LogoutUseCase(repository),
-      sessionManager,
-      coordinator,
-      verifyOtpUseCase: VerifyOtpUseCase(repository),
-      resendOtpUseCase: ResendOtpUseCase(repository),
-    );
+    bloc = AuthBloc(repository, sessionManager, coordinator);
   });
 
   tearDown(() async {

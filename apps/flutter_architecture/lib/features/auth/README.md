@@ -15,7 +15,7 @@ App 內的 Auth feature 擁有 Login、OTP 與 Session state 的 presentation。
 - Login、OTP Verify／Resend、Logout UI 與 Bloc。
 - Restore／Session expiration 的 presentation synchronization。
 - 顯示 expected authentication failure 的 localized UI。
-- 將 user intent 轉交單一 UseCase。
+- 將 user intent 轉交 `AuthRepository` domain contract。
 
 ## Non-responsibilities
 
@@ -40,13 +40,12 @@ Feature 不 deep import package `lib/src/`，也不跨 feature 讀取 Bloc。
 ```txt
 LoginPage
 → AuthBloc
-→ LoginUseCase
 → AuthRepository
 → Authenticated | OtpChallenge | Failure
 
 OtpPage
 → AuthOtpBloc
-→ VerifyOtpUseCase / ResendOtpUseCase
+→ AuthRepository
 → Authenticated | Updated Challenge | Failure
 ```
 

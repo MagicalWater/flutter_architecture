@@ -256,40 +256,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i474.GetProfileUseCase>(
       () => _i474.GetProfileUseCase(gh<_i511.ProfileRepository>()),
     );
-    gh.factory<_i771.CatalogBloc>(
-      () => registerModule.catalogBloc(gh<_i877.SearchCatalogUseCase>()),
-    );
-    gh.factory<_i662.LoginUseCase>(
-      () => registerModule.loginUseCase(gh<_i662.AuthRepository>()),
-    );
-    gh.factory<_i662.VerifyOtpUseCase>(
-      () => registerModule.verifyOtpUseCase(gh<_i662.AuthRepository>()),
-    );
-    gh.factory<_i662.ResendOtpUseCase>(
-      () => registerModule.resendOtpUseCase(gh<_i662.AuthRepository>()),
-    );
-    gh.factory<_i662.LogoutUseCase>(
-      () => registerModule.logoutUseCase(gh<_i662.AuthRepository>()),
-    );
-    gh.factory<_i662.RestoreSessionUseCase>(
-      () => registerModule.restoreSessionUseCase(gh<_i662.AuthRepository>()),
-    );
     gh.factory<_i173.ProfileBloc>(
       () => _i173.ProfileBloc(
         gh<_i474.GetProfileUseCase>(),
-        gh<_i662.LogoutUseCase>(),
+        gh<_i662.AuthRepository>(),
         gh<_i662.SessionManager>(),
       ),
     );
+    gh.factory<_i771.CatalogBloc>(
+      () => registerModule.catalogBloc(gh<_i877.SearchCatalogUseCase>()),
+    );
     gh.lazySingleton<_i1024.AuthBloc>(
       () => registerModule.authBloc(
-        gh<_i662.LoginUseCase>(),
-        gh<_i662.RestoreSessionUseCase>(),
-        gh<_i662.LogoutUseCase>(),
+        gh<_i662.AuthRepository>(),
         gh<_i662.SessionManager>(),
         gh<_i662.AuthStateMutationCoordinator>(),
-        gh<_i662.VerifyOtpUseCase>(),
-        gh<_i662.ResendOtpUseCase>(),
       ),
     );
     return this;

@@ -33,7 +33,7 @@ last_reviewed_baseline: 1.27.0
 
 ```txt
 domain/
-  Entity + Repository Interface + UseCase + Failure details
+  Entity + Repository Interface + Failure details
 
 data/
   RepositoryImpl + DataSource + Store contract + Migration + Lifecycle
@@ -105,7 +105,7 @@ Migration 採 write secure authority first、read-back／validation、再 best-e
 import 'package:auth/auth.dart';
 ```
 
-Public barrel export Domain、Repository、UseCase、Session、Refresh、Store、Migration、Lifecycle 與 local unlock contracts。Consumer 不應 deep import `lib/src/`。
+Public barrel export Domain、Repository、Session、Refresh、Store、Migration、Lifecycle 與 local unlock contracts。Consumer 不應 deep import `lib/src/`。
 
 ## Tests
 

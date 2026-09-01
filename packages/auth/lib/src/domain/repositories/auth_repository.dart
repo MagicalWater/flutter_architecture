@@ -12,7 +12,8 @@ import 'package:auth/src/domain/entities/auth_user.dart';
 ///
 /// ## 為什麼放在 Domain？
 ///
-/// UseCase 需要依賴「登入能力」，但不應該依賴 Dio、SQLite、SharedPreferences。
+/// Presentation / application layer 需要依賴「登入能力」，但不應該依賴
+/// Dio、SQLite、SharedPreferences。
 ///
 /// 所以這裡只定義業務需要的方法，實作放在 Data Layer。
 abstract interface class AuthRepository {

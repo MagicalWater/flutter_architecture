@@ -18,25 +18,17 @@ part 'auth_state.dart';
 ///   ↓ add(AuthLoginRequested)
 /// AuthBloc
 ///   ↓
-/// LoginUseCase
-///   ↓
 /// Repository
 /// ```
 ///
-/// Bloc 不直接呼叫 Dio，也不直接讀寫 SQLite。
-/// 它只負責把 UI event 轉換成 UseCase 呼叫，再把結果轉成 UI state。
+/// Bloc 不直接呼叫 Dio，也不直接讀寫 SQLite；它只依賴 Domain Layer 的
+/// `AuthRepository` contract，再把結果轉成 UI state。
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(
-    this._loginUseCase,
-    this._restoreSessionUseCase,
-    this._logoutUseCase,
+    this._authRepository,
     this._sessionManager,
-    this._mutationCoordinator, {
-    VerifyOtpUseCase? verifyOtpUseCase,
-    ResendOtpUseCase? resendOtpUseCase,
-  }) : _verifyOtpUseCase = verifyOtpUseCase,
-       _resendOtpUseCase = resendOtpUseCase,
-       super(AuthState.initial()) {
+    this._mutationCoordinator,
+  ) : super(AuthState.initial()) {
     on<AuthStarted>(_onStarted);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthOtpVerifyRequested>(_onOtpVerifyRequested);
@@ -54,11 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  final LoginUseCase _loginUseCase;
-  final VerifyOtpUseCase? _verifyOtpUseCase;
-  final ResendOtpUseCase? _resendOtpUseCase;
-  final RestoreSessionUseCase _restoreSessionUseCase;
-  final LogoutUseCase _logoutUseCase;
+  final AuthRepository _authRepository;
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
   late final StreamSubscription<AuthSession?> _sessionSubscription;
@@ -82,7 +70,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     late final Result<AuthUser?> result;
     try {
-      result = await _restoreSessionUseCase.execute();
+      result = await _authRepository.restoreSession();
     } on AuthLifecycleOperationSuperseded {
       return;
     } catch (error, stackTrace) {
@@ -138,7 +126,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     late final Result<AuthLoginResult> result;
     try {
-      result = await _loginUseCase.execute(
+      result = await _authRepository.login(
         account: event.account,
         password: event.password,
       );
@@ -202,8 +190,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     final challenge = state.otpChallenge;
     if (challenge == null) return;
-    final verifyOtpUseCase = _verifyOtpUseCase;
-    if (verifyOtpUseCase == null) return;
     final generation = _beginPresentationOperation();
     emit(
       state.copyWith(
@@ -215,7 +201,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     late final Result<AuthAuthenticatedResult> result;
     try {
-      result = await verifyOtpUseCase.execute(
+      result = await _authRepository.verifyOtp(
         challengeId: challenge.challengeId,
         code: event.code,
       );
@@ -263,8 +249,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     final challenge = state.otpChallenge;
     if (challenge == null) return;
-    final resendOtpUseCase = _resendOtpUseCase;
-    if (resendOtpUseCase == null) return;
     final generation = _beginPresentationOperation();
     emit(
       state.copyWith(
@@ -276,7 +260,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     late final Result<OtpChallenge> result;
     try {
-      result = await resendOtpUseCase.execute(
+      result = await _authRepository.resendOtp(
         challengeId: challenge.challengeId,
       );
     } on AuthLifecycleOperationSuperseded {
@@ -339,7 +323,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     late final Result<void> result;
     try {
-      result = await _logoutUseCase.execute();
+      result = await _authRepository.logout();
     } on AuthLifecycleOperationSuperseded {
       return;
     } catch (error, stackTrace) {

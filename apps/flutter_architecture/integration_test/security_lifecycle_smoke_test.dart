@@ -43,7 +43,7 @@ void main() {
     expect(restoredTokens.refreshToken, tokens.refreshToken);
     expect(restoredTokens.userId, tokens.userId);
 
-    await getIt<LogoutUseCase>().execute();
+    await getIt<AuthRepository>().logout();
     expect(
       await getIt<AuthCredentialStore>().readCredential(),
       isA<AuthCredentialReadAbsent>(),

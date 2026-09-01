@@ -21,19 +21,19 @@ part 'profile_state.dart';
 ///   ↓ add(ProfileRequested / ProfileLogoutRequested)
 /// ProfileBloc
 ///   ↓
-/// GetProfileUseCase / LogoutUseCase
+/// GetProfileUseCase / AuthRepository
 ///   ↓
 /// Repository / SessionManager
 /// ```
 ///
 /// ProfileBloc 不直接呼叫 ProfileApi，也不直接依賴 AuthBloc。
 ///
-/// 是否已登入由 SessionManager 判斷，登出則透過 LogoutUseCase 執行。
+/// 是否已登入由 SessionManager 判斷，登出則透過 AuthRepository 執行。
 @injectable
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc(
     this._getProfileUseCase,
-    this._logoutUseCase,
+    this._authRepository,
     this._sessionManager,
   ) : super(ProfileState.initial()) {
     on<ProfileRequested>(_onRequested);
@@ -48,7 +48,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   final GetProfileUseCase _getProfileUseCase;
-  final LogoutUseCase _logoutUseCase;
+  final AuthRepository _authRepository;
   final SessionManager _sessionManager;
   late final StreamSubscription<AuthSession?> _sessionSubscription;
 
@@ -134,7 +134,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     late final Result<void> result;
     try {
-      result = await _logoutUseCase.execute();
+      result = await _authRepository.logout();
     } catch (error, stackTrace) {
       emit(state.copyWith(isLoading: false));
       Error.throwWithStackTrace(error, stackTrace);

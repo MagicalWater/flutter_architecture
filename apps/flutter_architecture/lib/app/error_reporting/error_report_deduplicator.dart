@@ -14,6 +14,8 @@ final class ErrorReportDeduplicator {
   final List<_ReportedErrorEntry> _reportedErrors = <_ReportedErrorEntry>[];
 
   void markReported(Object error, StackTrace stackTrace) {
+    // 每次 mark 都建立新的 generation token。舊排程 cleanup 即使稍後執行，也只能
+    // 刪除自己建立的 entry，不能誤刪同一 error/stack 已被重新 mark 的新事件。
     final generation = Object();
     _reportedErrors.removeWhere(
       (entry) =>

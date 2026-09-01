@@ -61,6 +61,8 @@ class AuthRemoteDataSource {
     required String operation,
   }) {
     if (error is ApiEndpointException) {
+      // 只有 Auth 明確認識且 metadata contract 已驗證的 OTP backend code，才升格
+      // 成 Auth-owned session failure；未知 backend failure 保留 transport identity。
       final data = error.backendMetadata;
       final backendCode = error.backendCode;
       if (backendCode != null) {
@@ -68,6 +70,8 @@ class AuthRemoteDataSource {
         try {
           details = _otpFailureDetails(backendCode, data);
         } on FormatException catch (metadataError, metadataStackTrace) {
+          // 已 allowlist 的 metadata 若型別/格式仍不符合 Auth contract，代表 server
+          // protocol 已破壞，不能退化成一般 OTP 錯誤讓 UI 繼續操作。
           final exception = AppException(
             kind: AppExceptionKind.protocol,
             message: 'Invalid OTP failure metadata',

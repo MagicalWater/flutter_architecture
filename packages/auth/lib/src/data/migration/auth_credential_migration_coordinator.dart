@@ -26,6 +26,8 @@ final class AuthCredentialMigrationCoordinator {
   Future<AuthCredentialMigrationResult> resolveUnlocked() async {
     final secure = await _secureCredentialStore.readCredential();
 
+    // Secure store 是現行 credential authority。只要 secure state 已存在，就不得
+    // 再讓 Legacy 覆蓋它；若 secure 本身損壞，則所有相依 Auth state 都失去可信度。
     if (secure is AuthCredentialReadCorrupted) {
       await _clearDestructive(
         clearSecure: true,
@@ -36,6 +38,8 @@ final class AuthCredentialMigrationCoordinator {
     }
 
     if (secure is AuthCredentialReadPresent) {
+      // Credential 與 persisted user 必須共同構成同一個 identity authority；
+      // 任一缺失或 userId 不一致，都不能恢復成 authenticated state。
       final user = await _userStore.readUser();
       if (user == null) {
         await _clearDestructive(
@@ -60,6 +64,8 @@ final class AuthCredentialMigrationCoordinator {
           user: user,
         );
       }
+      // Secure 已經通過 identity 驗證後，Legacy 只剩待清理殘留；cleanup failure
+      // 可診斷但不能讓舊 credential 重新取得 authority。
       final diagnostics = await _clearLegacyAfterSecureAuthority();
       return AuthCredentialMigrationResolved(
         tokens: secure.tokens,
@@ -68,6 +74,8 @@ final class AuthCredentialMigrationCoordinator {
       );
     }
 
+    // 只有 Secure 完全 absent 時，Legacy 才有資格成為 migration source；這個
+    // precedence 防止舊 storage 覆寫已建立的新 credential authority。
     final legacy = await _legacyCredentialStore.readLegacyCredential();
     final user = await _userStore.readUser();
 
@@ -91,6 +99,8 @@ final class AuthCredentialMigrationCoordinator {
       return AuthCredentialMigrationUnauthenticated();
     }
 
+    // Legacy credential 只有在能與 persisted user 建立同一 identity 時才能搬遷；
+    // 否則舊資料視為不可安全採用的殘留 state。
     final legacyTokens = (legacy as AuthCredentialReadPresent).tokens;
     if (user == null ||
         legacyTokens.userId == null ||
@@ -103,6 +113,8 @@ final class AuthCredentialMigrationCoordinator {
       return AuthCredentialMigrationUnauthenticated();
     }
 
+    // Migration write 尚不能立即升格成新 authority。必須 read-back 驗證完整 token
+    // identity 後才可刪除 Legacy；驗證前的 Secure 只視為可能的 partial state。
     try {
       await _secureCredentialStore.writeCredential(legacyTokens);
     } catch (error, stackTrace) {

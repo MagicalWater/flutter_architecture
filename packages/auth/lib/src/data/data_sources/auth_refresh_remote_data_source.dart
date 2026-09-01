@@ -32,6 +32,8 @@ class AuthRefreshRemoteDataSource {
       return response;
     } on ApiEndpointException catch (error, stackTrace) {
       final transport = error.transportException;
+      // 只有 401 / 403 能證明 refresh credential 已不可再使用；timeout、429、5xx
+      // 等 transport/backend failure 都必須保留 Session，交由 temporary path 處理。
       if (transport.httpStatus == 401 || transport.httpStatus == 403) {
         Error.throwWithStackTrace(
           InvalidRefreshCredentialException(

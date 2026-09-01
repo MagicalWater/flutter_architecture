@@ -230,6 +230,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<AuthUser?>> restoreSession() async {
     final operation = _mutationCoordinator.beginLifecycleOperation();
     try {
+      // Restore 的 durable authority resolution 與 runtime Session commit 必須位於同一
+      // exclusive mutation window；否則 login/logout 可插入兩者之間造成跨 lifecycle commit。
       final outcome = await _mutationCoordinator.runExclusive(() async {
         operation.throwIfSuperseded();
         final resolution = await _resolveRestoreUnlocked();
@@ -247,6 +249,8 @@ class AuthRepositoryImpl implements AuthRepository {
         final resolved = resolution as AuthCredentialMigrationResolved;
         operation.throwIfSuperseded();
 
+        // 只有 migration coordinator 已解析出一致的 credential + user authority，
+        // 且 lease 仍為 current，才允許建立 runtime authenticated Session。
         _sessionManager.setAuthenticated(
           accessToken: resolved.tokens.accessToken,
           userId: resolved.user.id,

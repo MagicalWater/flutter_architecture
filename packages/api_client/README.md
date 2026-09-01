@@ -70,7 +70,15 @@ Transport failures在package內轉為typed `AppException`。Auth／Refresh consu
 import 'package:api_client/api_client.dart';
 ```
 
-Public barrel exportconsumer endpoint interfaces、DTOs、Dio adapters、factory、interceptors、request extras、mock APIs與neutral exception contracts。Dio-specific mapper與safe transport details是internal implementation，不是consumer API。Consumer不應deep import `lib/src/`。
+`api_client.dart` 只提供日常 consumer contract：consumer-facing endpoint、wire DTO、refresh contract 與 neutral endpoint exception。
+
+Composition Root、Dio／Retrofit wiring、interceptor、mock implementation 或 transport infrastructure 才使用：
+
+```dart
+import 'package:api_client/api_client_infrastructure.dart';
+```
+
+Infrastructure barrel 會包含 default consumer API，加上 Dio factory、Auth interceptor contract、Retrofit declarations、Dio endpoint adapters、request extras、mock implementations，以及目前 App-owned transport DataSource 仍需要的 transport mapper。Safe transport detail types仍維持package internal implementation。Consumer不應deep import `lib/src/`。
 
 ## Dependency and Composition
 
@@ -144,13 +152,13 @@ apps/flutter_architecture/lib/app/di/register_module.dart
 
 ### 4. Export only supported public contracts
 
-Consumer 只應透過：
+一般 Feature consumer 只應透過：
 
 ```dart
 import 'package:api_client/api_client.dart';
 ```
 
-使用 package public API。新增可供 App／Feature 使用的 abstraction、DTO 或 helper 時，檢查 `lib/api_client.dart` 是否需要 export；不要要求 consumer deep import `lib/src/`。
+使用 package public API。只有 Composition Root／transport infrastructure 才使用 `api_client_infrastructure.dart`。新增 abstraction、DTO 或 helper 時，先判斷它屬於 everyday consumer contract 還是 infrastructure wiring，再決定 export surface；不要因方便而把 package inventory 全部塞回 default barrel，也不要要求 consumer deep import `lib/src/`。
 
 ### 5. Apply authentication and replay policy
 

@@ -1,25 +1,10 @@
-sealed class AuthRefreshResult {
-  const AuthRefreshResult();
-}
-
-final class AuthRefreshSuccess extends AuthRefreshResult {
-  const AuthRefreshSuccess();
-}
-
-final class AuthRefreshSessionExpired extends AuthRefreshResult {
-  const AuthRefreshSessionExpired();
-}
-
-final class AuthRefreshTemporarilyUnavailable extends AuthRefreshResult {
-  const AuthRefreshTemporarilyUnavailable();
-}
-
-final class AuthRefreshSessionChanged extends AuthRefreshResult {
-  const AuthRefreshSessionChanged();
-}
-
-final class AuthRefreshLocalStateFailure extends AuthRefreshResult {
-  const AuthRefreshLocalStateFailure();
+/// Refresh flow 的有限結果集合；各狀態沒有額外 payload，不需要 sealed hierarchy。
+enum AuthRefreshResult {
+  success,
+  sessionExpired,
+  temporarilyUnavailable,
+  sessionChanged,
+  localStateFailure,
 }
 
 /// 以 request 當下失效的 access token 作 refresh admission，避免跨 Session 誤重送。

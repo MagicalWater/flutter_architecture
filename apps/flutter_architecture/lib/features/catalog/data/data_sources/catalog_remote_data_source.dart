@@ -1,4 +1,4 @@
-import 'package:api_client/api_client.dart';
+import 'package:api_client/api_client_infrastructure.dart';
 import 'package:injectable/injectable.dart';
 
 /// Catalog 遠端資料來源。

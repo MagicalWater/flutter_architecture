@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:api_client/api_client.dart';
+import 'package:api_client/api_client_infrastructure.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,7 +12,7 @@ void main() {
     final refresher = _FakeRefresher(() async {
       await refreshGate.future;
       provider.current = _session('new-token');
-      return const AuthRefreshSuccess();
+      return AuthRefreshResult.success;
     });
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
@@ -53,7 +53,7 @@ void main() {
     final refresher = _FakeRefresher(() async {
       refreshStarted.complete();
       await refreshGate.future;
-      return const AuthRefreshSessionChanged();
+      return AuthRefreshResult.sessionChanged;
     });
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
@@ -90,9 +90,7 @@ void main() {
 
   test('failed token 已過期時直接以 current token replay，不再次 refresh', () async {
     final provider = _MutableTokenProvider(_session('old-token'));
-    final refresher = _FakeRefresher(
-      () async => const AuthRefreshSuccess(),
-    );
+    final refresher = _FakeRefresher(() async => AuthRefreshResult.success);
     late final _AuthAdapter adapter;
     adapter = _AuthAdapter(
       onOldToken: () => provider.current = _session('new-token'),
@@ -120,9 +118,7 @@ void main() {
 
   test('request Session identity 已改變時不 refresh、不 replay', () async {
     final provider = _MutableTokenProvider(_session('old-token'));
-    final refresher = _FakeRefresher(
-      () async => const AuthRefreshSuccess(),
-    );
+    final refresher = _FakeRefresher(() async => AuthRefreshResult.success);
     final adapter = _AuthAdapter(
       onOldToken: () {
         provider.current = const AuthSessionSnapshot(
@@ -159,7 +155,7 @@ void main() {
     final provider = _MutableTokenProvider(_session('old-token'));
     final refresher = _FakeRefresher(() async {
       provider.current = _session('new-token');
-      return const AuthRefreshSuccess();
+      return AuthRefreshResult.success;
     });
     final adapter = _AuthAdapter(alwaysUnauthorized: true);
     final dio = AppDioFactory().createMain(
@@ -189,7 +185,7 @@ void main() {
     final provider = _MutableTokenProvider(_session('old-token'));
     final refresher = _FakeRefresher(() async {
       provider.current = _session('new-token');
-      return const AuthRefreshSuccess();
+      return AuthRefreshResult.success;
     });
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
@@ -270,9 +266,7 @@ void main() {
   ]) {
     test('${testCase.name} 时不 refresh、不 replay', () async {
       final provider = _MutableTokenProvider(_session('old-token'));
-      final refresher = _FakeRefresher(
-        () async => const AuthRefreshSuccess(),
-      );
+      final refresher = _FakeRefresher(() async => AuthRefreshResult.success);
       final adapter = _AuthAdapter();
       final dio = AppDioFactory().createMain(
         baseUrl: 'https://example.test',
@@ -281,10 +275,7 @@ void main() {
       )..httpClientAdapter = adapter;
 
       await expectLater(
-        dio.get<dynamic>(
-          '/profile',
-          options: Options(extra: testCase.extra),
-        ),
+        dio.get<dynamic>('/profile', options: Options(extra: testCase.extra)),
         throwsA(isA<DioException>()),
       );
 
@@ -294,12 +285,12 @@ void main() {
   }
 
   for (final result in <AuthRefreshResult>[
-    const AuthRefreshSessionExpired(),
-    const AuthRefreshTemporarilyUnavailable(),
-    const AuthRefreshSessionChanged(),
-    const AuthRefreshLocalStateFailure(),
+    AuthRefreshResult.sessionExpired,
+    AuthRefreshResult.temporarilyUnavailable,
+    AuthRefreshResult.sessionChanged,
+    AuthRefreshResult.localStateFailure,
   ]) {
-    test('${result.runtimeType} 时保留原始 401，不 replay', () async {
+    test('${result.name} 时保留原始 401，不 replay', () async {
       final provider = _MutableTokenProvider(_session('old-token'));
       final refresher = _FakeRefresher(() async => result);
       final adapter = _AuthAdapter();
@@ -365,7 +356,7 @@ void main() {
     final replayError = StateError('replay interceptor failed');
     final refresher = _FakeRefresher(() async {
       provider.current = _session('new-token');
-      return const AuthRefreshSuccess();
+      return AuthRefreshResult.success;
     });
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
@@ -397,11 +388,7 @@ void main() {
       throwsA(
         isA<DioException>()
             .having((value) => value.type, 'type', DioExceptionType.unknown)
-            .having(
-              (value) => value.error,
-              'original error',
-              same(replayError),
-            )
+            .having((value) => value.error, 'original error', same(replayError))
             .having((value) => value.stackTrace, 'stack trace', isNotNull),
       ),
     );
@@ -412,9 +399,7 @@ void main() {
 
   test('authenticated request 未實際帶 token 時不 refresh、不 replay', () async {
     final provider = _MutableTokenProvider(null);
-    final refresher = _FakeRefresher(
-      () async => const AuthRefreshSuccess(),
-    );
+    final refresher = _FakeRefresher(() async => AuthRefreshResult.success);
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
       baseUrl: 'https://example.test',
@@ -436,9 +421,7 @@ void main() {
 
   test('authenticated request 的非 401 錯誤不 refresh、不 replay', () async {
     final provider = _MutableTokenProvider(_session('old-token'));
-    final refresher = _FakeRefresher(
-      () async => const AuthRefreshSuccess(),
-    );
+    final refresher = _FakeRefresher(() async => AuthRefreshResult.success);
     final adapter = _AuthAdapter(oldTokenStatusCode: 500);
     final dio = AppDioFactory().createMain(
       baseUrl: 'https://example.test',
@@ -460,9 +443,7 @@ void main() {
 
   test('未明確允許 auth replay 時不 refresh、不 replay', () async {
     final provider = _MutableTokenProvider(_session('old-token'));
-    final refresher = _FakeRefresher(
-      () async => const AuthRefreshSuccess(),
-    );
+    final refresher = _FakeRefresher(() async => AuthRefreshResult.success);
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
       baseUrl: 'https://example.test',
@@ -484,9 +465,7 @@ void main() {
 
   test('FormData request 即使明確允許 replay 也不會自動重送', () async {
     final provider = _MutableTokenProvider(_session('old-token'));
-    final refresher = _FakeRefresher(
-      () async => const AuthRefreshSuccess(),
-    );
+    final refresher = _FakeRefresher(() async => AuthRefreshResult.success);
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
       baseUrl: 'https://example.test',
@@ -516,7 +495,7 @@ void main() {
     final provider = _MutableTokenProvider(_session('old-token'));
     final refresher = _FakeRefresher(() async {
       provider.current = _session('new-token');
-      return const AuthRefreshSuccess();
+      return AuthRefreshResult.success;
     });
     final adapter = _AuthAdapter();
     final dio = AppDioFactory().createMain(
@@ -554,14 +533,10 @@ void main() {
     expect(replay.extra[RequestExtras.authRetryCount], 1);
     expect(replay.headers['Authorization'], 'Bearer new-token');
   });
-
 }
 
-AuthSessionSnapshot _session(String token) => AuthSessionSnapshot(
-      accessToken: token,
-      userId: 'user-001',
-      generation: 1,
-    );
+AuthSessionSnapshot _session(String token) =>
+    AuthSessionSnapshot(accessToken: token, userId: 'user-001', generation: 1);
 
 class _MutableTokenProvider implements AuthTokenProvider {
   _MutableTokenProvider(this.current);

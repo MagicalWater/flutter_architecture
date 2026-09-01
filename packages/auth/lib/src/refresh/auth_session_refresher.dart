@@ -47,12 +47,12 @@ class AuthSessionRefresher implements AuthRefresher {
     if (session == null) {
       // 呼叫方原本要 refresh 的 Session 已不存在；這是 ownership 已改變的
       // race-resolution result，不限定於「切換帳號」。
-      return const AuthRefreshSessionChanged();
+      return AuthRefreshResult.sessionChanged;
     }
     if (session.accessToken != failedAccessToken) {
       // 同一 Session 已持有不同 token，代表 refresh requirement 已被其他
       // operation 滿足；Success 不保證本次 invocation 自己打過 refresh API。
-      return const AuthRefreshSuccess();
+      return AuthRefreshResult.success;
     }
 
     final existing = _inFlight;
@@ -131,13 +131,13 @@ class AuthSessionRefresher implements AuthRefresher {
         return resolved;
       });
       if (!_isSameSession(inFlight.generation, inFlight.userId)) {
-        return const AuthRefreshSessionChanged();
+        return AuthRefreshResult.sessionChanged;
       }
       if (stored == null) {
         return _invalidateSecureSession(
           generation: inFlight.generation,
           userId: inFlight.userId,
-          expiredResult: const AuthRefreshSessionExpired(),
+          expiredResult: AuthRefreshResult.sessionExpired,
         );
       }
       tokens = stored;
@@ -146,8 +146,8 @@ class AuthSessionRefresher implements AuthRefresher {
         Error.throwWithStackTrace(error, stackTrace);
       }
       return _isSameSession(inFlight.generation, inFlight.userId)
-          ? const AuthRefreshLocalStateFailure()
-          : const AuthRefreshSessionChanged();
+          ? AuthRefreshResult.localStateFailure
+          : AuthRefreshResult.sessionChanged;
     }
 
     try {
@@ -157,7 +157,7 @@ class AuthSessionRefresher implements AuthRefresher {
       final outcome = await _mutationCoordinator.runExclusive(() async {
         if (!_isSameSession(inFlight.generation, inFlight.userId)) {
           return const _SecureRefreshOutcome(
-            result: AuthRefreshSessionChanged(),
+            result: AuthRefreshResult.sessionChanged,
           );
         }
         try {
@@ -181,22 +181,22 @@ class AuthSessionRefresher implements AuthRefresher {
           final cleanup = await _clearSecureAuthStateUnlocked();
           _sessionManager.clear();
           return _SecureRefreshOutcome(
-            result: const AuthRefreshLocalStateFailure(),
+            result: AuthRefreshResult.localStateFailure,
             cleanup: cleanup,
           );
         }
         _sessionManager.updateAccessToken(response.accessToken);
-        return const _SecureRefreshOutcome(result: AuthRefreshSuccess());
+        return const _SecureRefreshOutcome(result: AuthRefreshResult.success);
       });
       return _completeOutcome(outcome);
     } on InvalidRefreshCredentialException {
       return _invalidateSecureSession(
         generation: inFlight.generation,
         userId: inFlight.userId,
-        expiredResult: const AuthRefreshSessionExpired(),
+        expiredResult: AuthRefreshResult.sessionExpired,
       );
     } on TemporaryRefreshException {
-      return const AuthRefreshTemporarilyUnavailable();
+      return AuthRefreshResult.temporarilyUnavailable;
     }
   }
 
@@ -209,7 +209,9 @@ class AuthSessionRefresher implements AuthRefresher {
   }) async {
     final outcome = await _mutationCoordinator.runExclusive(() async {
       if (!_isSameSession(generation, userId)) {
-        return const _SecureRefreshOutcome(result: AuthRefreshSessionChanged());
+        return const _SecureRefreshOutcome(
+          result: AuthRefreshResult.sessionChanged,
+        );
       }
       final cleanup = await _clearSecureAuthStateUnlocked();
       _sessionManager.clear();

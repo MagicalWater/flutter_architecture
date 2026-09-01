@@ -1,4 +1,4 @@
-import 'package:api_client/api_client.dart' as api_client;
+import 'package:api_client/api_client_infrastructure.dart' as api_client;
 import 'package:auth/auth_infrastructure.dart' as auth;
 import 'package:dio/dio.dart';
 import 'package:flutter_architecture/app/config/api_config.dart';

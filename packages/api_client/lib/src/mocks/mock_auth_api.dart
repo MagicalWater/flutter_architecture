@@ -179,6 +179,7 @@ class MockAuthApi implements AuthEndpoint {
   static DateTime _utcNow() => DateTime.now().toUtc();
 }
 
+/// Mock 內部 OTP challenge state；只支援 deterministic fixture lifecycle，不是產品 domain model。
 class _MockOtpChallenge {
   _MockOtpChallenge({
     required this.id,

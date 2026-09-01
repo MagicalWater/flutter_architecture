@@ -33,6 +33,8 @@ class DioAuthEndpoint implements AuthEndpoint {
         safeMetadataKeys: const <String>{'retryAt'},
       );
 
+  /// 統一將 Dio transport failure 映射為 endpoint-neutral exception，並只允許
+  /// caller 明確列出的 backend metadata 穿出 transport boundary。
   Future<T> _execute<T>(
     Future<T> Function() operation, {
     Set<String> safeMetadataKeys = const <String>{},

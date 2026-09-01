@@ -67,7 +67,7 @@ class AuthRefreshInterceptor extends Interceptor {
       return;
     }
 
-    if (refreshResult is! AuthRefreshSuccess) {
+    if (refreshResult != AuthRefreshResult.success) {
       handler.next(err);
       return;
     }
@@ -86,6 +86,8 @@ class AuthRefreshInterceptor extends Interceptor {
     await _replayWithCurrentSession(request, refreshed, handler, err);
   }
 
+  /// 判斷這次 401 是否同時符合 refresh admission 與 replay safety contract；
+  /// 不符合時回傳 null，避免把一般 401 或不可重送 request 誤送進 refresh flow。
   String? _eligibleFailedToken(DioException error) {
     final request = error.requestOptions;
     // Replay safety 是 refresh admission 的一部分；即使是合法 authenticated
@@ -111,6 +113,7 @@ class AuthRefreshInterceptor extends Interceptor {
     return token.isEmpty ? null : token;
   }
 
+  /// 僅允許明確 opt-in 且 body / progress callback 可安全重送的 request 自動 replay。
   bool _isReplaySafe(RequestOptions request) {
     if (request.extra[RequestExtras.allowAuthReplay] != true) {
       return false;
@@ -124,6 +127,8 @@ class AuthRefreshInterceptor extends Interceptor {
         request.onReceiveProgress == null;
   }
 
+  /// Replay 送出前再次驗證 Session ownership，避免 refresh decision 後發生的
+  /// logout / relogin 將舊 request 掛到新的 Session。
   Future<void> _replayWithCurrentSession(
     RequestOptions request,
     AuthSessionSnapshot session,

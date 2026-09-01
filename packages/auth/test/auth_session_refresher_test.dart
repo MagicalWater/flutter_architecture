@@ -15,7 +15,7 @@ void main() {
 
     final result = await refresher.refresh(failedAccessToken: 'access-token');
 
-    expect(result, isA<AuthRefreshSuccess>());
+    expect(result, AuthRefreshResult.success);
     expect(api.callCount, 1);
     expect(localStore.tokens?.accessToken, 'new-access-token');
     expect(localStore.tokens?.refreshToken, 'new-refresh-token');
@@ -40,7 +40,7 @@ void main() {
     responseCompleter.complete(_FakeAuthRefreshApi.successResponse);
     final results = await Future.wait(operations);
 
-    expect(results, everyElement(isA<AuthRefreshSuccess>()));
+    expect(results, everyElement(AuthRefreshResult.success));
     expect(api.callCount, 1);
   });
 
@@ -54,7 +54,7 @@ void main() {
 
       final result = await refresher.refresh(failedAccessToken: 'access-token');
 
-      expect(result, isA<AuthRefreshSessionExpired>());
+      expect(result, AuthRefreshResult.sessionExpired);
       expect(localStore.clearTokensCalls, 1);
       expect(localStore.clearUserCalls, 1);
       expect(sessionManager.currentSession, isNull);
@@ -69,7 +69,7 @@ void main() {
 
     final result = await refresher.refresh(failedAccessToken: 'access-token');
 
-    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(result, AuthRefreshResult.sessionExpired);
     expect(api.callCount, 0);
     expect(localStore.clearTokensCalls, 1);
     expect(localStore.clearUserCalls, 1);
@@ -84,7 +84,7 @@ void main() {
 
     final result = await refresher.refresh(failedAccessToken: 'access-token');
 
-    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(result, AuthRefreshResult.sessionExpired);
     expect(api.callCount, 0);
     expect(localStore.clearTokensCalls, 1);
     expect(localStore.clearLegacyCredentialCalls, 1);
@@ -105,7 +105,7 @@ void main() {
 
     final result = await refresher.refresh(failedAccessToken: 'access-token');
 
-    expect(result, isA<AuthRefreshSessionExpired>());
+    expect(result, AuthRefreshResult.sessionExpired);
     expect(api.callCount, 0);
     expect(localStore.clearTokensCalls, 1);
     expect(localStore.clearUserCalls, 1);
@@ -120,7 +120,7 @@ void main() {
 
     final result = await refresher.refresh(failedAccessToken: 'access-token');
 
-    expect(result, isA<AuthRefreshTemporarilyUnavailable>());
+    expect(result, AuthRefreshResult.temporarilyUnavailable);
     expect(localStore.clearTokensCalls, 0);
     expect(localStore.clearUserCalls, 0);
     expect(sessionManager.currentSession?.accessToken, 'access-token');
@@ -144,7 +144,7 @@ void main() {
 
     final result = await operation;
 
-    expect(result, isA<AuthRefreshSessionChanged>());
+    expect(result, AuthRefreshResult.sessionChanged);
     expect(localStore.saveTokensCalls, 0);
     expect(sessionManager.currentSession?.accessToken, 'other-account-token');
     expect(sessionManager.currentSession?.userId, 'other-user');
@@ -158,7 +158,7 @@ void main() {
 
     final result = await refresher.refresh(failedAccessToken: 'access-token');
 
-    expect(result, isA<AuthRefreshLocalStateFailure>());
+    expect(result, AuthRefreshResult.localStateFailure);
     expect(localStore.clearTokensCalls, 1);
     expect(localStore.clearUserCalls, 1);
     expect(sessionManager.currentSession, isNull);
@@ -199,8 +199,8 @@ void main() {
       ),
     );
 
-    expect(await first, isA<AuthRefreshSessionChanged>());
-    expect(await second, isA<AuthRefreshSuccess>());
+    expect(await first, AuthRefreshResult.sessionChanged);
+    expect(await second, AuthRefreshResult.success);
     expect(sessionManager.currentSession?.accessToken, 'account-b-new-token');
   });
 
@@ -233,7 +233,7 @@ void main() {
     });
 
     localStore.allowSave.complete();
-    expect(await refresh, isA<AuthRefreshSuccess>());
+    expect(await refresh, AuthRefreshResult.success);
     await loginMutation;
 
     expect(localStore.tokens?.accessToken, 'account-b-token');
@@ -257,7 +257,7 @@ void main() {
 
     final result = await refresher.refresh(failedAccessToken: 'access-token');
 
-    expect(result, isA<AuthRefreshTemporarilyUnavailable>());
+    expect(result, AuthRefreshResult.temporarilyUnavailable);
     expect(localStore.clearTokensCalls, 0);
     expect(sessionManager.currentSession, isNotNull);
   });
@@ -286,7 +286,7 @@ void main() {
 
     final result = await operation;
 
-    expect(result, isA<AuthRefreshSessionChanged>());
+    expect(result, AuthRefreshResult.sessionChanged);
     expect(localStore.clearTokensCalls, 0);
     expect(localStore.clearUserCalls, 0);
     expect(localStore.tokens?.accessToken, 'account-b-token');

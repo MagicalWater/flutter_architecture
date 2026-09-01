@@ -1,4 +1,4 @@
-import 'package:api_client/api_client.dart';
+import 'package:api_client/api_client_infrastructure.dart';
 import 'package:auth/src/session/session_manager.dart';
 
 /// Dio interceptor 使用的 token provider 實作。

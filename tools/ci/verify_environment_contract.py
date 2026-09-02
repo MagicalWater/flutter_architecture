@@ -235,29 +235,16 @@ def validate_dart_projection(
                     f"must bootstrap AppEnvironment.{name}",
                 )
             )
-        if "allowMissingNativeEnvironment" in entrypoint_text:
-            errors.append(
-                ContractError(
-                    path,
-                    "explicit environment entrypoints must require native sentinel",
-                )
-            )
-
     compatibility_entrypoint = app_root / "lib" / "main.dart"
     if not compatibility_entrypoint.is_file():
         errors.append(ContractError("$.dartCompatibilityEntrypoint", "lib/main.dart missing"))
     else:
         compatibility_text = compatibility_entrypoint.read_text(encoding="utf-8")
-        if not re.search(
-            r"bootstrap\(\s*AppEnvironment\.development,\s*"
-            r"allowMissingNativeEnvironment:\s*true,?\s*\)",
-            compatibility_text,
-            re.DOTALL,
-        ):
+        if "bootstrap(AppEnvironment.development)" not in compatibility_text:
             errors.append(
                 ContractError(
                     "$.dartCompatibilityEntrypoint",
-                    "lib/main.dart must be the only development compatibility entrypoint",
+                    "lib/main.dart must bootstrap the development entrypoint authority",
                 )
             )
 
@@ -281,9 +268,6 @@ def validate_dart_projection(
     else:
         config_text = config_path.read_text(encoding="utf-8")
         for fragment in (
-            "String.fromEnvironment(\n      'NATIVE_ENVIRONMENT'",
-            "_validateNativeEnvironment(",
-            "allowMissingNativeEnvironment",
             "environment != AppEnvironment.development && uri.scheme != 'https'",
             "host.endsWith('.example.com')",
             "host.endsWith('.example.org')",
@@ -294,6 +278,18 @@ def validate_dart_projection(
                     ContractError(
                         "$.dartAppConfig",
                         f"required bootstrap guard fragment missing: {fragment}",
+                    )
+                )
+        for forbidden in (
+            "NATIVE_ENVIRONMENT",
+            "allowMissingNativeEnvironment",
+            "_validateNativeEnvironment",
+        ):
+            if forbidden in config_text:
+                errors.append(
+                    ContractError(
+                        "$.dartAppConfig",
+                        f"Dart runtime must not maintain native environment authority: {forbidden}",
                     )
                 )
 
@@ -316,7 +312,7 @@ def validate_dart_projection(
             errors.append(
                 ContractError(
                     "$.dartBootstrap",
-                    "native environment validation must run before DI and runApp",
+                    "typed configuration validation must run before DI and runApp",
                 )
             )
 
@@ -388,7 +384,10 @@ def validate_android_projection(
         "tasks.withType<FlutterTask>().configureEach",
         'project.findProperty("target")',
         'targetPath = environment.dartEntrypoint',
-        '"NATIVE_ENVIRONMENT=${environment.name}"',
+        'tasks.register("verifyFlutterTargetPathContract")',
+        'flutter_tools.',
+        'flutter_test_listener.',
+        'listener.dart',
     )
     for fragment in required_gradle_fragments:
         if fragment not in gradle_text:
@@ -396,6 +395,38 @@ def validate_android_projection(
                 ContractError(
                     "$.android.gradle",
                     f"required contract fragment missing: {fragment}",
+                )
+            )
+
+    if '"NATIVE_ENVIRONMENT=${environment.name}"' in gradle_text:
+        errors.append(
+            ContractError(
+                "$.android.gradle",
+                "Android native environment must not be injected as Dart runtime authority",
+            )
+        )
+
+    android_build_script = repository_root / "tools" / "ci" / "build_android_environment.sh"
+    if not android_build_script.is_file():
+        errors.append(ContractError("$.android.validation", "build_android_environment.sh missing"))
+    elif "--dart-define=NATIVE_ENVIRONMENT" in android_build_script.read_text(encoding="utf-8"):
+        errors.append(
+            ContractError(
+                "$.android.validation",
+                "Android validation must not inject NATIVE_ENVIRONMENT into Dart runtime",
+            )
+        )
+
+    development_build_script = repository_root / "tools" / "ci" / "build_android_development.sh"
+    if not development_build_script.is_file():
+        errors.append(ContractError("$.android.validation", "build_android_development.sh missing"))
+    else:
+        development_build_text = development_build_script.read_text(encoding="utf-8")
+        if ":app:verifyFlutterTargetPathContract" not in development_build_text:
+            errors.append(
+                ContractError(
+                    "$.android.validation",
+                    "canonical Android Development validation route must execute verifyFlutterTargetPathContract",
                 )
             )
 
@@ -480,11 +511,18 @@ def validate_ios_projection(
                 f"PRODUCT_NAME = {display_name}",
                 f"FLUTTER_TARGET = {entrypoint}",
                 f"NATIVE_ENVIRONMENT = {name}",
-                "DART_DEFINES = $(inherited),",
+                "DART_DEFINES = $(inherited)",
             )
             for expected in expected_values:
                 if expected not in config_text:
                     errors.append(ContractError(contract_path, f'must contain "{expected}"'))
+            if "DART_DEFINES = $(inherited)," in config_text:
+                errors.append(
+                    ContractError(
+                        contract_path,
+                        "native environment must not be encoded into committed Dart defines",
+                    )
+                )
 
         scheme_path = scheme_root / f"{scheme}.xcscheme"
         scheme_contract_path = f"$.environments[{index}].iosScheme"
@@ -564,6 +602,33 @@ def validate_ios_projection(
                 ContractError(
                     "$.iosRunnerTestsBundleIdentifier",
                     f"RunnerTests configurations must use {base_identifier}.RunnerTests",
+                )
+            )
+
+    ios_build_script = repository_root / "tools" / "ci" / "build_ios_environment.sh"
+    if not ios_build_script.is_file():
+        errors.append(ContractError("$.iosValidation", "build_ios_environment.sh missing"))
+    else:
+        ios_build_text = ios_build_script.read_text(encoding="utf-8")
+        required_validation_fragments = (
+            "flutter pub get --enforce-lockfile",
+            "pod install --deployment",
+            'dependency_lockfiles=("$repo_root/pubspec.lock" "$ios_dir/Podfile.lock")',
+            'cmp -s "$snapshot" "$lockfile"',
+        )
+        for fragment in required_validation_fragments:
+            if fragment not in ios_build_text:
+                errors.append(
+                    ContractError(
+                        "$.iosValidation",
+                        f"required fail-closed dependency validation fragment missing: {fragment}",
+                    )
+                )
+        if 'encode_define "NATIVE_ENVIRONMENT=' in ios_build_text:
+            errors.append(
+                ContractError(
+                    "$.iosValidation",
+                    "iOS validation must not inject NATIVE_ENVIRONMENT into Dart runtime",
                 )
             )
 

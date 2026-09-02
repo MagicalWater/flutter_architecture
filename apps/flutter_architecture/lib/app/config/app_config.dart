@@ -3,10 +3,7 @@ import 'package:flutter_architecture/app/config/app_environment.dart';
 
 /// App Composition Root 使用的 typed configuration。
 class AppConfig {
-  const AppConfig({
-    required this.environment,
-    required this.api,
-  });
+  const AppConfig({required this.environment, required this.api});
 
   final AppEnvironment environment;
   final ApiConfig api;
@@ -14,14 +11,7 @@ class AppConfig {
 
 /// 集中建立與驗證 AppConfig。
 abstract final class AppConfigFactory {
-  static AppConfig fromEnvironment({
-    required AppEnvironment environment,
-    bool allowMissingNativeEnvironment = false,
-  }) {
-    const nativeEnvironmentValue = String.fromEnvironment(
-      'NATIVE_ENVIRONMENT',
-      defaultValue: '',
-    );
+  static AppConfig fromEnvironment({required AppEnvironment environment}) {
     const apiModeValue = String.fromEnvironment(
       'API_MODE',
       defaultValue: 'mock',
@@ -33,8 +23,6 @@ abstract final class AppConfigFactory {
 
     return fromValues(
       environment: environment,
-      nativeEnvironmentValue: nativeEnvironmentValue,
-      allowMissingNativeEnvironment: allowMissingNativeEnvironment,
       apiModeValue: apiModeValue,
       apiBaseUrlValue: apiBaseUrlValue,
     );
@@ -42,17 +30,9 @@ abstract final class AppConfigFactory {
 
   static AppConfig fromValues({
     required AppEnvironment environment,
-    required String nativeEnvironmentValue,
-    bool allowMissingNativeEnvironment = false,
     required String apiModeValue,
     required String apiBaseUrlValue,
   }) {
-    _validateNativeEnvironment(
-      environment: environment,
-      nativeEnvironmentValue: nativeEnvironmentValue,
-      allowMissingNativeEnvironment: allowMissingNativeEnvironment,
-    );
-
     final mode = ApiMode.parse(apiModeValue);
 
     if (environment != AppEnvironment.development && mode == ApiMode.mock) {
@@ -82,10 +62,7 @@ abstract final class AppConfigFactory {
     );
   }
 
-  static Uri _parseRealBaseUri(
-    String value,
-    AppEnvironment environment,
-  ) {
+  static Uri _parseRealBaseUri(String value, AppEnvironment environment) {
     final uri = Uri.tryParse(value);
     if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
       throw ArgumentError.value(
@@ -142,32 +119,5 @@ abstract final class AppConfigFactory {
         host.endsWith('.example.net') ||
         isIpv4Loopback ||
         isIpv6Loopback;
-  }
-
-  static void _validateNativeEnvironment({
-    required AppEnvironment environment,
-    required String nativeEnvironmentValue,
-    required bool allowMissingNativeEnvironment,
-  }) {
-    final normalized = nativeEnvironmentValue.trim();
-    if (normalized.isEmpty) {
-      if (allowMissingNativeEnvironment &&
-          environment == AppEnvironment.development) {
-        return;
-      }
-      throw ArgumentError.value(
-        nativeEnvironmentValue,
-        'NATIVE_ENVIRONMENT',
-        '原生環境 sentinel 不可為空',
-      );
-    }
-
-    if (normalized != environment.name) {
-      throw ArgumentError.value(
-        nativeEnvironmentValue,
-        'NATIVE_ENVIRONMENT',
-        '原生環境 $normalized 與 Dart entrypoint ${environment.name} 不一致',
-      );
-    }
   }
 }

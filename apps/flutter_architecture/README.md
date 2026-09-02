@@ -42,7 +42,7 @@ AppConfig + DI + database + controllers
 App
 ```
 
-Environment 由 Dart entrypoint 與 `--dart-define` 組合決定；App 不在 runtime UI 中切換正式環境。
+Runtime environment 只由 Dart entrypoint 決定，`--dart-define` 只承載 API mode／endpoint 等非 environment configuration；Android flavor／iOS scheme 是否映射到正確 entrypoint 由 native build configuration 與 repository verifier 負責。App 不在 runtime UI 中切換正式環境。
 
 ## Routing and Startup
 

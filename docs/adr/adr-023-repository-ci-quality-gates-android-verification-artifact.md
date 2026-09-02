@@ -84,6 +84,8 @@ Exact candidate release validation只有一個repository-owned入口：`tools/ci
 
 CI使用固定runner OS major version、exact Flutter version與Java 17。Executable workspace追蹤root `pubspec.lock`，使乾淨runner驗證已知dependency graph。
 
+Platform validation不得在dependency resolution期間靜默改寫committed dependency authority。iOS verification在執行`flutter pub get`與`pod install`時必須使用lock-enforcing mode，並在resolution前後比較root `pubspec.lock`與App-owned `ios/Podfile.lock`內容；任一lockfile缺失或被改寫都必須fail closed，要求先透過正常dependency update／review／commit流程更新authority後再驗證。
+
 Generated source維持tracked。`CI / Generated Consistency`是repository-level generated source consistency的唯一workflow owner；CI重跑generator後必須檢查Git tree，任何changed、deleted或untracked generated file都使gate失敗，CI不得自動commit。Android／iOS platform verification workflow只消費同一exact SHA中的tracked generated source並負責各自platform build evidence，不得再內嵌第二份`verify_generated.sh`形成重複authority。若某個較高層validation intent需要「generated + platform」的self-contained evidence，必須由planner／orchestrator組合families，而不是把repository-level invariant藏進platform workflow。
 
 Android artifact使用default development／Mock entrypoint與repository既有verification signing。Artifact必須帶commit traceability與明確的非production classification。`flutter build bundle`不能替代Android APK artifact驗證。

@@ -138,7 +138,6 @@ Future<void> _configureDependencies() async {
   await configureDependencies(
     AppConfigFactory.fromValues(
       environment: AppEnvironment.development,
-      nativeEnvironmentValue: 'development',
       apiModeValue: 'mock',
       apiBaseUrlValue: '',
     ),

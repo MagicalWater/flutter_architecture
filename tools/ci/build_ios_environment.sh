@@ -8,6 +8,7 @@ source "$repo_root/tools/ci/python_runtime.sh"
 artifact_dir="$ARTIFACT_DIR"; api_base_url="${API_BASE_URL:-}"
 build_workspace="$artifact_dir/.build"
 derived_data_dir="$build_workspace/DerivedData"
+lock_snapshot_dir="$build_workspace/lockfiles"
 commit_sha="${GITHUB_SHA:-$(git -C "$repo_root" rev-parse HEAD)}"
 run_key="${CI_RUN_KEY:-unmanaged}"
 job_key="${CI_JOB_KEY:-unmanaged-ios-$environment}"
@@ -34,9 +35,29 @@ cleanup_ios_build_workspace
 rm -rf "$artifact_dir"/*.app "$artifact_dir/dSYMs"
 rm -f "$artifact_dir/artifact-metadata.txt"
 mkdir -p "$derived_data_dir"
-(cd "$app_dir" && flutter pub get); (cd "$ios_dir" && pod install)
+mkdir -p "$lock_snapshot_dir"
+dependency_lockfiles=("$repo_root/pubspec.lock" "$ios_dir/Podfile.lock")
+for lockfile in "${dependency_lockfiles[@]}"; do
+  [[ -f "$lockfile" ]] || {
+    echo "Committed dependency lockfile is missing: $lockfile" >&2
+    exit 1
+  }
+  cp "$lockfile" "$lock_snapshot_dir/$(basename "$lockfile")"
+done
+
+(cd "$app_dir" && flutter pub get --enforce-lockfile)
+(cd "$ios_dir" && pod install --deployment)
+
+for lockfile in "${dependency_lockfiles[@]}"; do
+  snapshot="$lock_snapshot_dir/$(basename "$lockfile")"
+  if ! cmp -s "$snapshot" "$lockfile"; then
+    echo "Dependency resolution modified committed authority: $lockfile" >&2
+    echo "Update, review, and commit the lockfile before running iOS verification." >&2
+    exit 1
+  fi
+done
 encode_define() { printf '%s' "$1" | base64 | tr -d '\n'; }
-dart_defines="$(encode_define "NATIVE_ENVIRONMENT=$environment"),$(encode_define "API_MODE=$api_mode"),$(encode_define "APP_COMMIT_SHA=$commit_sha")"
+dart_defines="$(encode_define "API_MODE=$api_mode"),$(encode_define "APP_COMMIT_SHA=$commit_sha")"
 [[ "$observability_remote_collection" == "true" ]] && dart_defines="$dart_defines,$(encode_define "OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")"
 [[ "$observability_acceptance_event" == "true" ]] && dart_defines="$dart_defines,$(encode_define "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")"
 [[ -z "$api_base_url" ]] || dart_defines="$dart_defines,$(encode_define "API_BASE_URL=$api_base_url")"

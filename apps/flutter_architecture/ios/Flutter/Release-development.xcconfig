@@ -5,5 +5,5 @@ APP_DISPLAY_NAME = Flutter Architecture Dev
 PRODUCT_NAME = Flutter Architecture Dev
 FLUTTER_TARGET = lib/main_development.dart
 NATIVE_ENVIRONMENT = development
-DART_DEFINES = $(inherited),TkFUSVZFX0VOVklST05NRU5UPWRldmVsb3BtZW50
+DART_DEFINES = $(inherited)
 DEBUG_INFORMATION_FORMAT = dwarf-with-dsym

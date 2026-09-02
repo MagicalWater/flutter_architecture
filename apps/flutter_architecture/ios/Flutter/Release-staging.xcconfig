@@ -5,5 +5,5 @@ APP_DISPLAY_NAME = Flutter Architecture Staging
 PRODUCT_NAME = Flutter Architecture Staging
 FLUTTER_TARGET = lib/main_staging.dart
 NATIVE_ENVIRONMENT = staging
-DART_DEFINES = $(inherited),TkFUSVZFX0VOVklST05NRU5UPXN0YWdpbmc=
+DART_DEFINES = $(inherited)
 DEBUG_INFORMATION_FORMAT = dwarf-with-dsym

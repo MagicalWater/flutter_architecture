@@ -5,4 +5,4 @@ APP_DISPLAY_NAME = Flutter Architecture
 PRODUCT_NAME = Flutter Architecture
 FLUTTER_TARGET = lib/main_production.dart
 NATIVE_ENVIRONMENT = production
-DART_DEFINES = $(inherited),TkFUSVZFX0VOVklST05NRU5UPXByb2R1Y3Rpb24=
+DART_DEFINES = $(inherited)

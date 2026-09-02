@@ -592,7 +592,7 @@ API_BASE_URL=https://api.your-domain.example bash tools/ci/build_ios_production.
 
 Production iOS verification使用`Release-production`、generic `iphoneos` SDK與`CODE_SIGNING_ALLOWED=NO`，不產生可上架IPA。不得改成Release Simulator；Flutter toolchain會以「release/profile builds are only supported for physical devices」拒絕該組合。
 
-需要iOS build時，此gate會重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`，不讀取Apple signing secrets，也不把`.app`當成distribution artifact。Manual-local／self-hosted失敗時，`toolchain.txt`與`build.log`等allowlisted diagnostics保存於managed local store的`verification-failure`job；人工`github-hosted`＋`failure-only`例外才保存7天GitHub diagnostics。Documentation-only時，`iOS / Simulator Build`改在Ubuntu執行同名no-op，Production job skipped，完全不啟動macOS runner或建立platform artifact。
+需要iOS build時，此gate會以lock-enforcing mode重新取得Pub與CocoaPods dependencies並建立unsigned Simulator `.app`。Verification不得靜默更新dependency authority：root `pubspec.lock`與App-owned `ios/Podfile.lock`在resolution前後都必須保持完全一致；任一lockfile缺失或內容漂移都直接fail closed，先走正常dependency update／review／commit流程後才能重跑驗證。此流程不讀取Apple signing secrets，也不把`.app`當成distribution artifact。Manual-local／self-hosted失敗時，`toolchain.txt`與`build.log`等allowlisted diagnostics保存於managed local store的`verification-failure`job；人工`github-hosted`＋`failure-only`例外才保存7天GitHub diagnostics。Documentation-only時，`iOS / Simulator Build`改在Ubuntu執行同名no-op，Production job skipped，完全不啟動macOS runner或建立platform artifact。
 
 ## Change Classification Failure
 
@@ -609,7 +609,7 @@ Production iOS verification使用`Release-production`、generic `iphoneos` SDK�
 2. 核對macOS、Xcode、Flutter與CocoaPods版本。
 3. 在macOS repository root重跑`bash tools/ci/build_ios_development.sh`；production failure則重跑`API_BASE_URL=https://api.your-domain.example bash tools/ci/build_ios_production.sh`。
 4. 若是runner或registry transient failure，只可在確認source contract無誤後rerun。
-5. 若是Pod resolution、native identity、plugin registration或Xcode build failure，建立focused fix並重新review。
+5. 若是lockfile drift，先以正常dependency update流程更新、review並commit authority；不得讓verification自行修正。若是其他Pod resolution、native identity、plugin registration或Xcode build failure，建立focused fix並重新review。
 
 此check通過不代表實體裝置、Face ID／Touch ID、signing、archive或App Store上架已驗證。
 

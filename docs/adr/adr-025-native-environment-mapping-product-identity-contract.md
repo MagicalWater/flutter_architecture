@@ -42,7 +42,11 @@ Template default mapping（產品採用後不再是該product repository的curre
 
 Android使用單一`environment`flavor dimension。iOS使用三個shared scheme與每個environment的Debug／Profile／Release build configuration。
 
-Android variant與iOS configuration必須固定正確Dart target及`NATIVE_ENVIRONMENT` sentinel。Dart bootstrap在DI graph與`runApp`前比較sentinel與entrypoint environment，不一致時fail fast。Sentinel只證明mapping一致性，不成為第二個environment authority。
+Android variant與iOS configuration必須固定正確Dart target。Dart runtime environment唯一由entrypoint決定；native environment值可以作為platform-only build metadata／provider wiring selector存在，但不得再以`NATIVE_ENVIRONMENT` dart-define注入Dart runtime形成第二份environment authority。Native flavor／scheme與entrypoint的一致性由Gradle／Xcode projection及repository static verifier負責fail fast。
+
+Android FlutterTask驗證一般target時，必須先以Flutter app root為基準canonicalize成app-relative path，再與manifest entrypoint比較。因此`lib/main_development.dart`與同一app內的absolute path語意相同，Windows／POSIX separator差異不得造成合法target被拒絕。`lib/main.dart` compatibility與app-owned `integration_test/`例外也必須在canonicalization後判定。
+
+App root外target預設fail closed。唯一例外是Flutter tool自行建立、位於system temp root下且精確符合`flutter_tools.<id>/flutter_test_listener.<id>/listener.dart` hierarchy的managed test listener；不得只靠basename或suffix放行，空白、parent traversal、額外層級、錯誤prefix或其他任意external `listener.dart`都必須拒絕。Canonical Android Development validation route必須執行此target-path regression contract，且static environment verifier必須監管這個route ownership，避免未來只保留Gradle task卻失去實際gate。
 
 `main.dart`只保留development compatibility用途；正式native build與CI不得用它代表production。
 

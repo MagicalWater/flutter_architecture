@@ -1,6 +1,7 @@
 import com.flutter.gradle.tasks.FlutterTask
 import groovy.json.JsonSlurper
-import java.util.Base64
+import java.io.File
+import java.nio.file.Path
 
 plugins {
     id("com.android.application")
@@ -81,10 +82,98 @@ fun requestedAndroidEnvironment(): AndroidEnvironment? {
     return matches.singleOrNull()
 }
 
-fun appendDartDefine(current: String?, value: String): String {
-    val encoded = Base64.getEncoder().encodeToString(value.toByteArray(Charsets.UTF_8))
-    val values = current.orEmpty().split(',').filter { it.isNotBlank() }
-    return (values + encoded).distinct().joinToString(",")
+val flutterAppRoot = file("../..").canonicalFile.toPath()
+val systemTempRoot = File(System.getProperty("java.io.tmpdir")).canonicalFile.toPath()
+
+fun normalizedPlatformTarget(rawTarget: String): File {
+    if (rawTarget.isBlank()) {
+        throw GradleException("Android Flutter target cannot be blank.")
+    }
+    val platformPath = rawTarget
+        .replace('\\', File.separatorChar)
+        .replace('/', File.separatorChar)
+    val rawSegments = platformPath.split(File.separatorChar)
+    if (rawSegments.any { it == ".." }) {
+        throw GradleException("Android Flutter target cannot contain parent traversal: $rawTarget")
+    }
+    return File(platformPath)
+}
+
+fun canonicalTargetPath(rawTarget: String): Path {
+    val targetFile = normalizedPlatformTarget(rawTarget)
+    return if (targetFile.isAbsolute) {
+        targetFile.canonicalFile.toPath()
+    } else {
+        flutterAppRoot.resolve(targetFile.path).toFile().canonicalFile.toPath()
+    }
+}
+
+fun isFlutterManagedTestListener(resolvedTarget: Path): Boolean {
+    if (!resolvedTarget.startsWith(systemTempRoot)) return false
+    val relative = systemTempRoot.relativize(resolvedTarget)
+    if (relative.nameCount != 3) return false
+
+    val toolsDirectory = relative.getName(0).toString()
+    val listenerDirectory = relative.getName(1).toString()
+    return toolsDirectory.startsWith("flutter_tools.") &&
+        toolsDirectory.length > "flutter_tools.".length &&
+        listenerDirectory.startsWith("flutter_test_listener.") &&
+        listenerDirectory.length > "flutter_test_listener.".length &&
+        relative.getName(2).toString() == "listener.dart"
+}
+
+fun canonicalAppRelativeTarget(resolvedTarget: Path, rawTarget: String): String {
+
+    if (!resolvedTarget.startsWith(flutterAppRoot)) {
+        throw GradleException(
+            "Android Flutter target must resolve inside app root $flutterAppRoot, " +
+                "but received $rawTarget",
+        )
+    }
+
+    return flutterAppRoot.relativize(resolvedTarget)
+        .toString()
+        .replace(File.separatorChar, '/')
+}
+
+data class AndroidFlutterTarget(
+    val canonicalPath: String?,
+    val isFlutterDefault: Boolean,
+    val isIntegrationTest: Boolean,
+    val isFlutterManagedTestListener: Boolean,
+) {
+    fun isAllowedFor(environment: AndroidEnvironment): Boolean =
+        isFlutterDefault || isIntegrationTest || isFlutterManagedTestListener ||
+            canonicalPath == environment.dartEntrypoint
+}
+
+fun resolveAndroidFlutterTarget(rawTarget: String?): AndroidFlutterTarget {
+    if (rawTarget == null) {
+        return AndroidFlutterTarget(
+            canonicalPath = null,
+            isFlutterDefault = true,
+            isIntegrationTest = false,
+            isFlutterManagedTestListener = false,
+        )
+    }
+
+    val resolvedTarget = canonicalTargetPath(rawTarget)
+    if (isFlutterManagedTestListener(resolvedTarget)) {
+        return AndroidFlutterTarget(
+            canonicalPath = null,
+            isFlutterDefault = false,
+            isIntegrationTest = false,
+            isFlutterManagedTestListener = true,
+        )
+    }
+
+    val canonicalTarget = canonicalAppRelativeTarget(resolvedTarget, rawTarget)
+    return AndroidFlutterTarget(
+        canonicalPath = canonicalTarget,
+        isFlutterDefault = canonicalTarget == "lib/main.dart",
+        isIntegrationTest = canonicalTarget.startsWith("integration_test/"),
+        isFlutterManagedTestListener = false,
+    )
 }
 
 android {
@@ -154,21 +243,81 @@ tasks.withType<FlutterTask>().configureEach {
     val requestedEnvironment = requestedAndroidEnvironment() ?: return@configureEach
     if (environment != requestedEnvironment) return@configureEach
     val explicitTarget = project.findProperty("target")?.toString()
-    val isFlutterDefaultTarget = explicitTarget == null || explicitTarget == "lib/main.dart"
-    val isIntegrationTestTarget = explicitTarget?.startsWith("integration_test/") == true
-    if (!isFlutterDefaultTarget && !isIntegrationTestTarget &&
-        explicitTarget != environment.dartEntrypoint) {
+    val resolvedTarget = resolveAndroidFlutterTarget(explicitTarget)
+    if (!resolvedTarget.isAllowedFor(environment)) {
         throw GradleException(
             "Android flavor ${environment.name} requires target " +
                 "${environment.dartEntrypoint}, but received $explicitTarget",
         )
     }
 
-    if (!isIntegrationTestTarget) {
+    if (!resolvedTarget.isIntegrationTest && !resolvedTarget.isFlutterManagedTestListener) {
         targetPath = environment.dartEntrypoint
     }
-    dartDefines = appendDartDefine(
-        dartDefines,
-        "NATIVE_ENVIRONMENT=${environment.name}",
-    )
+}
+
+tasks.register("verifyFlutterTargetPathContract") {
+    group = "verification"
+    description = "Verifies Android Flutter target canonicalization and environment fail-fast semantics."
+
+    doLast {
+        val development = androidEnvironments.single { it.name == "development" }
+        val staging = androidEnvironments.single { it.name == "staging" }
+        val developmentAbsolute = flutterAppRoot.resolve(development.dartEntrypoint).toString()
+        val windowsStyleRelative = development.dartEntrypoint.replace('/', '\\')
+        val managedListener = systemTempRoot
+            .resolve("flutter_tools.template")
+            .resolve("flutter_test_listener.template")
+            .resolve("listener.dart")
+            .toString()
+
+        check(resolveAndroidFlutterTarget(development.dartEntrypoint).isAllowedFor(development))
+        check(resolveAndroidFlutterTarget(developmentAbsolute).isAllowedFor(development))
+        check(resolveAndroidFlutterTarget(windowsStyleRelative).isAllowedFor(development))
+        check(resolveAndroidFlutterTarget("lib/main.dart").isAllowedFor(development))
+        check(
+            resolveAndroidFlutterTarget("integration_test/security_lifecycle_smoke_test.dart")
+                .isAllowedFor(development),
+        )
+        check(!resolveAndroidFlutterTarget(staging.dartEntrypoint).isAllowedFor(development))
+        check(resolveAndroidFlutterTarget(managedListener).isAllowedFor(development))
+
+        val externalTarget = File(
+            System.getProperty("java.io.tmpdir"),
+            "flutter_architecture_external/${development.dartEntrypoint}",
+        ).absolutePath
+        val externalRejected = runCatching {
+            resolveAndroidFlutterTarget(externalTarget)
+        }.exceptionOrNull() is GradleException
+        check(externalRejected) {
+            "External Android Flutter target with matching suffix must remain rejected."
+        }
+
+        val unrelatedListener = systemTempRoot.resolve("unrelated/listener.dart").toString()
+        check(runCatching { resolveAndroidFlutterTarget(unrelatedListener) }.isFailure)
+
+        val wrongListenerHierarchy = systemTempRoot
+            .resolve("flutter_tools.template")
+            .resolve("unrelated")
+            .resolve("listener.dart")
+            .toString()
+        check(runCatching { resolveAndroidFlutterTarget(wrongListenerHierarchy) }.isFailure)
+
+        val extraListenerHierarchy = systemTempRoot
+            .resolve("flutter_tools.template")
+            .resolve("flutter_test_listener.template")
+            .resolve("nested")
+            .resolve("listener.dart")
+            .toString()
+        check(runCatching { resolveAndroidFlutterTarget(extraListenerHierarchy) }.isFailure)
+
+        val traversalTarget = systemTempRoot
+            .resolve("flutter_tools.template")
+            .resolve("ignored")
+            .resolve("..")
+            .resolve("flutter_test_listener.template")
+            .resolve("listener.dart")
+            .toString()
+        check(runCatching { resolveAndroidFlutterTarget(traversalTarget) }.isFailure)
+    }
 }

@@ -27,10 +27,7 @@ import 'package:design_system/design_system.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 共用 App bootstrap。
-Future<void> bootstrap(
-  AppEnvironment environment, {
-  bool allowMissingNativeEnvironment = false,
-}) async {
+Future<void> bootstrap(AppEnvironment environment) async {
   ErrorReporter errorReporter = ErrorReportingRouter(
     delegate: DebugErrorReporter(),
   );
@@ -80,10 +77,7 @@ Future<void> bootstrap(
         config: observabilityConfig,
       );
 
-      final config = AppConfigFactory.fromEnvironment(
-        environment: environment,
-        allowMissingNativeEnvironment: allowMissingNativeEnvironment,
-      );
+      final config = AppConfigFactory.fromEnvironment(environment: environment);
       await configureDependencies(config, errorReporter);
 
       final defaultTheme = DefaultThemeDefinition();

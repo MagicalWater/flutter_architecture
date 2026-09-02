@@ -55,6 +55,8 @@ main_production.dart
 
 各 entrypoint 只指定 environment 並進入共用 bootstrap；不另外使用 `APP_ENV` dart-define。
 
+Native flavor／scheme負責選到正確Dart entrypoint，但不得再透過`NATIVE_ENVIRONMENT`或其他dart-define把同一environment注入Dart runtime形成第二份authority。Android／iOS可以保留native-only environment metadata供平台build projection或provider wiring使用；該值不得參與`AppConfig` runtime environment判定。
+
 `--dart-define` 只提供環境內可變設定，例如 `API_MODE` 與 `API_BASE_URL`。Parsing 與 validation 集中於 App bootstrap，建立 typed configuration 後明確傳入 Composition Root：
 
 ```txt
@@ -85,6 +87,7 @@ Native product flavor、bundle identity、signing、Firebase 與 CI/CD 是獨立
 ## Consequences
 
 - Environment 只有一個 Dart-level authority。
+- Native environment mapping由platform build configuration與repository verifier保證，不由Dart runtime sentinel重複驗證。
 - Configuration 在 runApp 與 DI graph 建立前完成 validation。
 - Reusable package 不讀取 `String.fromEnvironment`。
 - Mock／Real API 選擇由 App Composition Root 管理。

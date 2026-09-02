@@ -29,7 +29,7 @@ case "$observability_remote_collection" in true|false) ;; *) echo "OBSERVABILITY
 case "$observability_acceptance_event" in true|false) ;; *) echo "OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED must be true or false." >&2; exit 64 ;; esac
 "$python_bin" "$repo_root/tools/ci/verify_android_firebase_config.py" "$environment"
 mkdir -p "$artifact_dir"; rm -rf "$flutter_symbols_dir" "$flutter_symbols_staging_dir"; rm -f "$artifact_dir"/*.apk "$artifact_dir/artifact-metadata.txt" "$artifact_dir/mapping.txt"
-args=(apk "--$build_mode" --flavor "$environment" -t "$entrypoint" "--dart-define=NATIVE_ENVIRONMENT=$environment" "--dart-define=API_MODE=$api_mode")
+args=(apk "--$build_mode" --flavor "$environment" -t "$entrypoint" "--dart-define=API_MODE=$api_mode")
 args+=("--dart-define=APP_COMMIT_SHA=$commit_sha")
 [[ "$observability_remote_collection" == "true" ]] && args+=("--dart-define=OBSERVABILITY_REMOTE_COLLECTION_ENABLED=true")
 [[ "$observability_acceptance_event" == "true" ]] && args+=("--dart-define=OBSERVABILITY_ACCEPTANCE_EVENT_ENABLED=true")

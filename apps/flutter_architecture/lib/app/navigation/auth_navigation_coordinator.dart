@@ -4,9 +4,24 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_architecture/app/router/app_router.dart';
 import 'package:flutter_architecture/features/auth/presentation/bloc/auth_bloc.dart';
 
-enum AuthNavigationDestination { login, locked, otp, profile }
+/// Auth 狀態改變後，App 應該停在哪一個主要畫面。
+enum AuthNavigationDestination {
+  /// 尚未登入，回到登入頁。
+  login,
 
-/// App-owned Auth startup與navigation transition coordinator。
+  /// 啟動／回前景流程要求先完成本機解鎖，顯示鎖定頁。
+  locked,
+
+  /// 登入流程正在等待 OTP 驗證。
+  otp,
+
+  /// 已完成登入，進入登入後的主畫面。
+  profile,
+}
+
+/// 監聽 Auth state，只有在「目的頁真的改變」時才執行導航。
+///
+/// 這讓 Bloc 只負責狀態，不需要直接操作 Router，也避免同一個狀態重複觸發 replace。
 final class AuthNavigationCoordinator {
   AuthNavigationCoordinator({
     required AuthState initialState,

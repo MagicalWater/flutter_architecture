@@ -1,13 +1,10 @@
 import 'package:auth/src/session/auth_session.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// App Session 管理者。
+/// 保存 App 目前是否已登入，以及目前登入中的 access token。
 ///
-/// ## 為什麼這裡使用 RxDart？
-///
-/// Session 是一個跨畫面的狀態，很多地方可能會想知道目前是否已登入。
-///
-/// [BehaviorSubject] 可以保存最後一次狀態，新的訂閱者一訂閱就能拿到目前 session。
+/// Session 會被 router、Auth UI、API client 等多個地方同時讀取，因此用
+/// [BehaviorSubject] 保存最新值；新的訂閱者可以立即拿到目前 Session。
 class SessionManager {
   SessionManager();
 
@@ -17,9 +14,9 @@ class SessionManager {
 
   AuthSession? get currentSession => _sessionSubject.valueOrNull;
 
-  // generation 是 Session lifecycle identity，不是 access-token revision。
-  // Login / restore / clear 會跨 lifecycle boundary；同一 Session 內的 token
-  // rotation 必須保留 generation，讓並發 401 能辨識「同一登入生命週期」。
+  // generation 用來辨識「是不是同一次登入」，不是 token 版本號。
+  // Login／restore／clear 會建立新的 generation；同一次登入內只換 access token 時
+  // 必須保留 generation，讓多個 401 能知道自己仍屬於同一個 Session。
   int _generation = 0;
 
   int get generation => _generation;

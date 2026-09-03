@@ -54,7 +54,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   /// Initial search 每頁筆數；後續 Append 共用。
   final int pageSize;
 
-  int _searchGeneration = 0;
+  final OperationGeneration _searchOperations = OperationGeneration();
   StreamSubscription<Result<CatalogPageSnapshot>>? _firstPageSubscription;
   Completer<void>? _firstPageCompleter;
   _SingleSnapshotRequest? _refreshRequest;
@@ -91,7 +91,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     _consumedAppendCursors.clear();
     // searchGeneration 是 query/search lifecycle identity；所有 async completion
     // 都只能 commit 到建立它的 generation，避免舊搜尋污染新 query state。
-    final generation = ++_searchGeneration;
+    final generation = _searchOperations.begin();
 
     emit(
       state.copyWith(
@@ -129,7 +129,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         )
         .listen(
           (result) {
-            if (generation != _searchGeneration || query != state.query) {
+            if (!_searchOperations.isCurrent(generation) ||
+                query != state.query) {
               return;
             }
             result.when(
@@ -183,7 +184,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
             );
           },
           onError: (Object error, StackTrace stackTrace) {
-            if (generation == _searchGeneration && query == state.query) {
+            if (_searchOperations.isCurrent(generation) &&
+                query == state.query) {
               emit(
                 state.copyWith(
                   isInitialLoading: false,
@@ -198,7 +200,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
           },
           onDone: () {
             if (isAwaitingRevalidation) {
-              if (generation == _searchGeneration && query == state.query) {
+              if (_searchOperations.isCurrent(generation) &&
+                  query == state.query) {
                 emit(state.copyWith(isRevalidating: false));
               }
               if (!completer.isCompleted) {
@@ -245,7 +248,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       return;
     }
 
-    final generation = _searchGeneration;
+    final generation = _searchOperations.current;
     final query = state.query;
 
     emit(state.copyWith(isLoadingMore: true, appendFailure: null));
@@ -266,7 +269,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       if (request.isCancelled) {
         return;
       }
-      if (generation == _searchGeneration &&
+      if (_searchOperations.isCurrent(generation) &&
           query == state.query &&
           requestedCursor == state.nextCursor) {
         emit(state.copyWith(isLoadingMore: false));
@@ -278,7 +281,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       }
     }
 
-    if (generation != _searchGeneration ||
+    if (!_searchOperations.isCurrent(generation) ||
         query != state.query ||
         requestedCursor != state.nextCursor) {
       // Append completion 還必須擁有同一 cursor slot；同 generation 內 refresh
@@ -332,7 +335,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     await _cancelFirstPageSearch();
     await _cancelAppendRequest();
     await _cancelReconnectRequest();
-    final generation = ++_searchGeneration;
+    final generation = _searchOperations.begin();
     final query = state.query;
 
     emit(
@@ -366,7 +369,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       if (request.isCancelled) {
         return;
       }
-      if (generation == _searchGeneration && query == state.query) {
+      if (_searchOperations.isCurrent(generation) && query == state.query) {
         emit(state.copyWith(isRefreshing: false));
       }
       Error.throwWithStackTrace(error, stackTrace);
@@ -376,7 +379,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       }
     }
 
-    if (generation != _searchGeneration || query != state.query) {
+    if (!_searchOperations.isCurrent(generation) || query != state.query) {
       return;
     }
 
@@ -418,14 +421,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       return;
     }
 
-    final generation = _searchGeneration;
+    final generation = _searchOperations.current;
     final query = state.query;
-    emit(
-      state.copyWith(
-        isReconnectRevalidating: true,
-        reconnectFailure: null,
-      ),
-    );
+    emit(state.copyWith(isReconnectRevalidating: true, reconnectFailure: null));
 
     late final Result<CatalogPageSnapshot> result;
     final request = _SingleSnapshotRequest(
@@ -441,7 +439,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       result = await request.load(operation: 'reconnect');
     } catch (error, stackTrace) {
       if (request.isCancelled) return;
-      if (generation == _searchGeneration && query == state.query) {
+      if (_searchOperations.isCurrent(generation) && query == state.query) {
         emit(state.copyWith(isReconnectRevalidating: false));
       }
       Error.throwWithStackTrace(error, stackTrace);
@@ -451,7 +449,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       }
     }
 
-    if (generation != _searchGeneration || query != state.query) return;
+    if (!_searchOperations.isCurrent(generation) || query != state.query) {
+      return;
+    }
 
     result.when(
       success: (snapshot) {
@@ -461,8 +461,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
             items: snapshot.page.items,
             nextCursor: snapshot.page.nextCursor,
             isReconnectRevalidating: false,
-            isUsingCachedData:
-                snapshot.source == CatalogDataSource.cache,
+            isUsingCachedData: snapshot.source == CatalogDataSource.cache,
             isStale: snapshot.freshness == CatalogFreshness.stale,
             lastUpdatedAt: snapshot.lastUpdatedAt,
             reconnectFailure: null,

@@ -1,6 +1,9 @@
-/// API 執行模式。
+/// App 目前要連 Mock API 還是真實後端。
 enum ApiMode {
+  /// 使用 repository 內建的 Mock 實作，不發真實網路 request。
   mock,
+
+  /// 連到 [ApiConfig.baseUri] 指定的真實後端。
   real;
 
   static ApiMode parse(String value) {
@@ -16,7 +19,7 @@ enum ApiMode {
   }
 }
 
-/// 已完成驗證的 API 設定。
+/// Bootstrap 驗證完成後，交給 DI 使用的 API 設定。
 class ApiConfig {
   const ApiConfig({
     required this.mode,

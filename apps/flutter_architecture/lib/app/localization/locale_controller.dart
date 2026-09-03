@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_architecture/app/error_reporting/error_report.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
@@ -25,7 +26,7 @@ final class LocaleController extends ChangeNotifier {
   AppLocalePreference _preference;
   PreferenceDiagnostic? _diagnostic;
   Future<void> _writeTail = Future<void>.value();
-  int _revision = 0;
+  final OperationGeneration _writes = OperationGeneration();
 
   AppLocalePreference get preference => _preference;
   Locale? get locale => _preference.materialLocale;
@@ -35,7 +36,7 @@ final class LocaleController extends ChangeNotifier {
     if (preference == _preference) return;
     _preference = preference;
     _diagnostic = null;
-    final revision = ++_revision;
+    final revision = _writes.begin();
     notifyListeners();
 
     // Locale 與 Theme 採相同 serialized-write invariant：UI 可立即切換，但
@@ -44,7 +45,7 @@ final class LocaleController extends ChangeNotifier {
     _writeTail = _writeTail.then((_) async {
       try {
         await _store.save(snapshot);
-        if (revision != _revision || _diagnostic == null) return;
+        if (!_writes.isCurrent(revision) || _diagnostic == null) return;
         _diagnostic = null;
         notifyListeners();
       } on PreferenceException catch (error, stackTrace) {
@@ -53,7 +54,7 @@ final class LocaleController extends ChangeNotifier {
             error is PreferenceStorageException &&
             error.operation == PreferenceStorageOperation.write;
         _reportWriteFailure(error, stackTrace, expected: expected);
-        if (!expected || revision != _revision) return;
+        if (!expected || !_writes.isCurrent(revision)) return;
         _diagnostic = PreferenceDiagnostic(
           error: error,
           stackTrace: stackTrace,

@@ -1,7 +1,17 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 
-enum AppThemeMode { system, light, dark }
+/// 使用者希望 App 採用哪一種亮暗模式。
+enum AppThemeMode {
+  /// 跟隨作業系統亮暗模式。
+  system,
+
+  /// 永遠使用亮色模式。
+  light,
+
+  /// 永遠使用暗色模式。
+  dark,
+}
 
 extension AppThemeModeX on AppThemeMode {
   ThemeMode get materialMode => switch (this) {
@@ -13,6 +23,7 @@ extension AppThemeModeX on AppThemeMode {
   String get storageValue => name;
 }
 
+/// 使用者目前選擇的 Theme Identity 與亮暗模式。
 final class ThemePreference {
   const ThemePreference({required this.themeId, required this.mode});
 

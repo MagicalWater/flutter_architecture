@@ -37,6 +37,7 @@ final class SharedPreferencesLocalUnlockPreferenceStore
         AppException(
           kind: AppExceptionKind.localStorage,
           message: 'Unable to read local unlock preference.',
+          providerCode: error.code,
           diagnosticCode: 'local_unlock_preference_read_failed',
           cause: error,
           stackTrace: stackTrace,
@@ -65,6 +66,7 @@ final class SharedPreferencesLocalUnlockPreferenceStore
           AppException(
             kind: AppExceptionKind.localStorage,
             message: 'Unable to write local unlock preference.',
+            providerCode: error.code,
             diagnosticCode: 'local_unlock_preference_write_failed',
             cause: error,
             stackTrace: stackTrace,
@@ -112,6 +114,7 @@ final class SharedPreferencesLocalUnlockPreferenceStore
           AppException(
             kind: AppExceptionKind.localStorage,
             message: 'Unable to clear local unlock preference.',
+            providerCode: error.code,
             diagnosticCode: 'local_unlock_preference_clear_failed',
             cause: error,
             stackTrace: stackTrace,

@@ -25,6 +25,7 @@ Failure mapAppExceptionToFailure(
     message: fallbackMessage,
     httpStatus: exception.httpStatus,
     backendCode: exception.backendCode,
+    providerCode: exception.providerCode,
     diagnosticCode: exception.diagnosticCode,
     cause: exception.cause ?? exception,
     stackTrace: exception.stackTrace,

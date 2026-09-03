@@ -1,8 +1,11 @@
-/// Remote observability provider 的初始化 boundary。
+/// 啟動遠端 crash／error observability provider。
 abstract interface class ObservabilityProviderInitializer {
   Future<void> initialize();
 }
 
+/// Observability provider 初始化後的結果。
+///
+/// Provider 掛掉不應直接讓 App 無法啟動，因此失敗時把原始 error 保存起來交給上層處理。
 final class ObservabilityProviderInitializationResult {
   const ObservabilityProviderInitializationResult._({
     required this.available,
@@ -31,7 +34,7 @@ final class ObservabilityProviderInitializationResult {
   }
 }
 
-/// 將 provider initialization failure 收斂成 availability result，避免啟動流程直接崩潰。
+/// 執行 provider 初始化，但把初始化失敗轉成「目前不可用」而不是讓 App 直接崩潰。
 final class ObservabilityProviderLifecycle {
   const ObservabilityProviderLifecycle(this._initializer);
 

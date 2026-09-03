@@ -5,11 +5,15 @@ import 'package:flutter_architecture/app/localization/locale_preference.dart';
 import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 只負責從本機讀寫語系 preference 的原始字串。
+///
+/// JSON 格式解析與 fallback 規則不放在這裡，避免 storage adapter 同時承擔資料格式邏輯。
 abstract interface class LocalePreferenceStorage {
   Future<String?> read();
   Future<void> write(String value);
 }
 
+/// 使用 SharedPreferences 儲存語系 preference。
 final class SharedPreferencesLocalePreferenceStorage
     implements LocalePreferenceStorage {
   SharedPreferencesLocalePreferenceStorage(this._preferences);
@@ -36,6 +40,7 @@ final class SharedPreferencesLocalePreferenceStorage
       Error.throwWithStackTrace(
         PreferenceStorageException.read(
           preference: PreferenceKind.locale,
+          providerCode: error.code,
           cause: error,
           stackTrace: stackTrace,
         ),
@@ -64,6 +69,7 @@ final class SharedPreferencesLocalePreferenceStorage
       Error.throwWithStackTrace(
         PreferenceStorageException.write(
           preference: PreferenceKind.locale,
+          providerCode: error.code,
           cause: error,
           stackTrace: stackTrace,
         ),
@@ -73,6 +79,9 @@ final class SharedPreferencesLocalePreferenceStorage
   }
 }
 
+/// 負責把 [AppLocalePreference] 和可版本化的 JSON 字串互相轉換。
+///
+/// 格式錯誤或未知 version 會明確視為 [PreferenceCorruptionException]，不會偷偷猜值。
 final class LocalePreferenceCodec {
   const LocalePreferenceCodec();
 
@@ -124,6 +133,9 @@ final class LocalePreferenceCodec {
   }
 }
 
+/// App 啟動時還原語系設定的結果。
+///
+/// [diagnostic] 有值代表讀取失敗或資料損壞，因此這次暫時退回 system locale。
 final class LocalePreferenceRestoreResult {
   const LocalePreferenceRestoreResult({
     required this.preference,
@@ -134,7 +146,10 @@ final class LocalePreferenceRestoreResult {
   final PreferenceDiagnostic? diagnostic;
 }
 
-/// 擁有 locale preference 的 durable restore/save policy，並只對可恢復讀取失敗降級。
+/// 對外提供「還原／保存語系設定」的完整流程。
+///
+/// 啟動時如果只是讀不到或資料損壞，會退回 system locale 並保留 diagnostic；
+/// 寫入失敗等不該被忽略的錯誤仍會往上拋。
 final class LocalePreferenceStore {
   const LocalePreferenceStore(this._storage, this._codec);
 
@@ -147,8 +162,8 @@ final class LocalePreferenceStore {
         preference: _codec.decode(await _storage.read()),
       );
     } on PreferenceException catch (error, stackTrace) {
-      // Locale restore 只對「讀取失敗 / payload corruption」降級到 defaults；write
-      // failure 或其他 typed identity 仍視為 unexpected，避免錯誤分類被靜默掩蓋。
+      // 啟動還原只允許「讀不到」或「內容損壞」退回預設值；寫入失敗等其他錯誤
+      // 不能被當成可恢復狀況吞掉。
       if (!_isExpectedLocaleRestoreFailure(error)) {
         Error.throwWithStackTrace(error, stackTrace);
       }

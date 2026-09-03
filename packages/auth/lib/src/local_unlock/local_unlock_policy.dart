@@ -4,7 +4,10 @@ import 'package:auth/src/session/auth_state_mutation_coordinator.dart';
 import 'package:auth/src/session/session_manager.dart';
 import 'package:core/core.dart';
 
-/// 管理 local unlock 能力變更，並確保設定只提交到仍有效的 Auth lifecycle。
+/// 處理「開啟／關閉下次啟動時的 Face ID／指紋解鎖」。
+///
+/// 開啟前會先確認目前真的已登入、裝置可驗證、使用者也通過驗證；等待驗證期間如果
+/// Session 已被登出或替換，就不會把舊操作留下的設定寫進 storage。
 final class LocalUnlockPolicy {
   const LocalUnlockPolicy(
     this._sessionManager,

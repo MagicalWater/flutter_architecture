@@ -3,8 +3,25 @@ import 'package:design_system/src/tokens/ds_radius.dart';
 import 'package:design_system/src/tokens/ds_space.dart';
 import 'package:flutter/material.dart';
 
-enum DsStatusTone { neutral, info, success, warning, error }
+/// Status banner 要表達的語意強度；Design System 會依此選擇顏色與預設 icon。
+enum DsStatusTone {
+  /// 一般中性說明，不帶成功或警告語意。
+  neutral,
 
+  /// 提供資訊或操作提示。
+  info,
+
+  /// 操作完成或狀態正常。
+  success,
+
+  /// 需要注意，但目前仍可繼續操作。
+  warning,
+
+  /// 操作失敗或目前狀態有明確問題。
+  error,
+}
+
+/// Banner 右側可選的單一文字操作，例如「重試」。
 final class DsStatusBannerAction {
   const DsStatusBannerAction({required this.label, required this.onPressed});
 

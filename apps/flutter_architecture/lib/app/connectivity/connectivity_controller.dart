@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_adapter.dart';
 import 'package:flutter_architecture/app/connectivity/connectivity_state.dart';
 
@@ -19,7 +20,7 @@ final class ConnectivityController {
   ConnectivityState _state = ConnectivityState.unknown;
   StreamSubscription<ConnectivityState>? _subscription;
   Future<void>? _recheckFuture;
-  int _observationRevision = 0;
+  final OperationGeneration _observations = OperationGeneration();
   bool _started = false;
   bool _disposed = false;
 
@@ -48,9 +49,10 @@ final class ConnectivityController {
     final existing = _recheckFuture;
     if (existing != null) return existing;
 
-    // 同一時間只允許一個 snapshot recheck；stream event 仍可先更新 authority。
-    // revision 會讓較晚完成的舊 snapshot 失效，避免反向覆蓋較新的 observation。
-    final revisionAtStart = _observationRevision;
+    // 同一時間只允許一個 snapshot recheck；stream event 仍可先更新目前狀態。
+    // recheck 開始時捕捉目前 generation，之後若收到 live event 就會失效，避免舊 snapshot
+    // 較晚完成後反向覆蓋更新的 observation。
+    final revisionAtStart = _observations.current;
     final future = _runRecheck(revisionAtStart);
     _recheckFuture = future;
     return future.whenComplete(() {
@@ -63,31 +65,30 @@ final class ConnectivityController {
   Future<void> _runRecheck(int revisionAtStart) async {
     try {
       final snapshot = await _adapter.readCurrentState();
-      if (_disposed || revisionAtStart != _observationRevision) return;
+      if (_disposed || !_observations.isCurrent(revisionAtStart)) return;
       _applyState(snapshot);
     } on Object {
-      if (_disposed || revisionAtStart != _observationRevision) return;
+      if (_disposed || !_observations.isCurrent(revisionAtStart)) return;
       _applyState(ConnectivityState.unknown);
     }
   }
 
   void _onAdapterState(ConnectivityState next) {
     if (_disposed) return;
-    // 每個 live observation 都會推進 revision，使尚未完成的 readCurrentState
-    // snapshot 失去 commit ownership。
-    _observationRevision++;
+    // 每個 live observation 都讓尚未完成的 readCurrentState snapshot 失效。
+    _observations.invalidate();
     _applyState(next);
   }
 
   void _onAdapterError(Object error, StackTrace stackTrace) {
     if (_disposed) return;
-    _observationRevision++;
+    _observations.invalidate();
     _applyState(ConnectivityState.unknown);
   }
 
   void _onAdapterDone() {
     if (_disposed) return;
-    _observationRevision++;
+    _observations.invalidate();
     _applyState(ConnectivityState.unknown);
   }
 

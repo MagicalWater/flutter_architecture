@@ -4,7 +4,17 @@ import 'package:flutter_architecture/features/pencil_compatibility/presentation/
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_text_style.dart';
 import 'package:flutter_architecture/features/pencil_compatibility/presentation/widgets/write_precheck/write_precheck_visual_primitives.dart';
 
-enum WritePrecheckStepState { completed, active, pending }
+/// Write Precheck 流程節點目前的視覺狀態。
+enum WritePrecheckStepState {
+  /// 已完成的步驟。
+  completed,
+
+  /// 使用者目前所在的步驟。
+  active,
+
+  /// 尚未進行的後續步驟。
+  pending,
+}
 
 class WritePrecheckStep extends StatelessWidget {
   const WritePrecheckStep({

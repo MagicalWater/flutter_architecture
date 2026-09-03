@@ -6,11 +6,15 @@ import 'package:flutter_architecture/app/preferences/preference_exception.dart';
 import 'package:flutter_architecture/app/theme/theme_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 只負責從本機讀寫 Theme preference 的原始字串。
+///
+/// Theme ID、亮暗模式解析與 fallback 規則由上層 codec 處理。
 abstract interface class ThemePreferenceStorage {
   Future<String?> read();
   Future<void> write(String value);
 }
 
+/// 使用 SharedPreferences 儲存 Theme preference。
 final class SharedPreferencesThemePreferenceStorage
     implements ThemePreferenceStorage {
   SharedPreferencesThemePreferenceStorage(this._preferences);
@@ -37,6 +41,7 @@ final class SharedPreferencesThemePreferenceStorage
       Error.throwWithStackTrace(
         PreferenceStorageException.read(
           preference: PreferenceKind.theme,
+          providerCode: error.code,
           cause: error,
           stackTrace: stackTrace,
         ),
@@ -65,6 +70,7 @@ final class SharedPreferencesThemePreferenceStorage
       Error.throwWithStackTrace(
         PreferenceStorageException.write(
           preference: PreferenceKind.theme,
+          providerCode: error.code,
           cause: error,
           stackTrace: stackTrace,
         ),
@@ -74,6 +80,9 @@ final class SharedPreferencesThemePreferenceStorage
   }
 }
 
+/// 負責把 [ThemePreference] 和可版本化的 JSON 字串互相轉換。
+///
+/// 未知 Theme ID 會退回 registry default；JSON 格式或 version 損壞則視為 preference corruption。
 final class ThemePreferenceCodec {
   const ThemePreferenceCodec(this.registry);
 
@@ -139,6 +148,9 @@ final class ThemePreferenceCodec {
   }
 }
 
+/// App 啟動時還原 Theme 設定的結果。
+///
+/// [diagnostic] 有值代表這次因讀取失敗或資料損壞而退回預設 Theme。
 final class ThemePreferenceRestoreResult {
   const ThemePreferenceRestoreResult({
     required this.preference,
@@ -149,7 +161,9 @@ final class ThemePreferenceRestoreResult {
   final PreferenceDiagnostic? diagnostic;
 }
 
-/// 擁有 theme preference 的 durable restore/save policy，並只對可恢復讀取失敗降級。
+/// 對外提供「還原／保存 Theme 設定」的完整流程。
+///
+/// 啟動時只對讀取失敗或資料損壞退回預設 Theme；寫入失敗等其他錯誤仍直接回報。
 final class ThemePreferenceStore {
   const ThemePreferenceStore(this._storage, this._codec);
 
@@ -162,8 +176,8 @@ final class ThemePreferenceStore {
         preference: _codec.decode(await _storage.read()),
       );
     } on PreferenceException catch (error, stackTrace) {
-      // Theme restore 只對「讀取失敗 / payload corruption」降級到 defaults；write
-      // failure 或其他 typed identity 不得在 bootstrap 階段被誤吞成可恢復狀態。
+      // 啟動還原只允許「讀不到」或「內容損壞」退回預設值；寫入失敗等其他錯誤
+      // 不能在 bootstrap 時被誤當成可恢復狀況。
       if (!_isExpectedThemeRestoreFailure(error)) {
         Error.throwWithStackTrace(error, stackTrace);
       }

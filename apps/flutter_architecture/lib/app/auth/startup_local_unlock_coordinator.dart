@@ -3,23 +3,43 @@ import 'dart:async';
 import 'package:auth/auth.dart';
 import 'package:flutter/foundation.dart';
 
+/// App 冷啟動時，本機解鎖流程目前走到哪一步。
 enum StartupLocalUnlockState {
+  /// 尚未開始處理。
   idle,
+
+  /// 正在讀取「是否啟用本機解鎖」的設定。
   checkingPreference,
+
+  /// 已確認需要本機驗證，畫面應顯示鎖定狀態。
   locked,
+
+  /// 正在等待 Face ID／指紋驗證結果。
   prompting,
+
+  /// 本機驗證已通過，正在還原登入 Session。
   restoring,
+
+  /// 使用者取消或沒有通過本機驗證。
   rejected,
+
+  /// 裝置目前沒有可用的本機驗證能力。
   unavailable,
+
+  /// 驗證流程本身發生系統或 plugin 錯誤。
   operationalFailure,
+
+  /// 這次啟動流程已被較新的登入／登出操作取代，不應再套用結果。
   superseded,
+
+  /// 使用者放棄本機解鎖，改回 Server 登入流程。
   serverLoginRequested,
 }
 
-/// App-owned cold-start local unlock gate，負責本機解鎖啟動閘門。
+/// App 冷啟動時決定「先做本機解鎖，還是直接還原登入 Session」。
 ///
-/// 此 coordinator 是 startup restore 的唯一入口。當 preference enabled 時，
-/// 必須先完成 local user-presence verification，才允許 dispatch repository restore。
+/// 如果使用者開啟本機解鎖，必須先通過 Face ID／指紋，才會執行 Session restore；
+/// 不能先把 Session 還原成已登入，再補做生物辨識。
 final class StartupLocalUnlockCoordinator extends ChangeNotifier {
   StartupLocalUnlockCoordinator({
     required LocalUnlockPreferenceStore preferenceStore,
@@ -62,7 +82,8 @@ final class StartupLocalUnlockCoordinator extends ChangeNotifier {
 
   Future<void> useServerLogin() async {
     // 使用者改選 server login 是新的 lifecycle intent；先使任何仍在進行的
-    // unlock / restore operation supersede，再清除 runtime authenticated authority。
+    // 這代表使用者已改選新的登入流程；先讓仍在執行的 unlock／restore 過期，
+    // 再清掉目前 runtime Session，避免舊流程稍後又把登入狀態寫回來。
     _mutationCoordinator.beginMutationLease();
     _sessionManager.clear();
     try {

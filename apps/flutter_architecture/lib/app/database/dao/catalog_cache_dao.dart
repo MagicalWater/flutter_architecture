@@ -2,12 +2,17 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_architecture/app/database/app_database.dart';
 
+/// Catalog cache SQL 執行失敗時，保留原始 SQLite error 給上層分類。
 final class CatalogCacheDaoException implements Exception {
   const CatalogCacheDaoException(this.cause);
 
   final Object cause;
 }
 
+/// Catalog cache data source 需要的最小 SQL 操作集合。
+///
+/// 這層只做 query／insert／delete／transaction，不包含 cache freshness、page linkage
+/// 或 SWR 規則；那些由 Catalog data source 負責。
 abstract interface class CatalogCacheDao {
   Future<List<Map<String, Object?>>> query(
     String table, {
@@ -29,7 +34,7 @@ abstract interface class CatalogCacheDao {
   Future<T> transaction<T>(Future<T> Function(CatalogCacheDao dao) action);
 }
 
-/// App-owned Drift 實作，承擔 Catalog cache 的 SQL boundary。
+/// 用 Drift 執行 Catalog cache SQL，並把底層 SQLite 例外統一包成 [CatalogCacheDaoException]。
 final class DriftCatalogCacheDao implements CatalogCacheDao {
   const DriftCatalogCacheDao(this._database);
 

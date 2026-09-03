@@ -4,6 +4,7 @@ import 'package:auth/src/domain/entities/auth_authenticated_result.dart';
 import 'package:auth/src/domain/entities/auth_result.dart';
 import 'package:auth/src/domain/entities/auth_user.dart';
 
+/// 將 API client 的 authenticated response 轉成 Auth domain 登入結果。
 extension AuthenticatedResponseDtoMapper on AuthenticatedResponseDto {
   AuthAuthenticatedResult toDomain() {
     if (accessToken.trim().isEmpty ||
@@ -20,6 +21,7 @@ extension AuthenticatedResponseDtoMapper on AuthenticatedResponseDto {
   }
 }
 
+/// 將 password login response 轉成「已登入」或「需要 OTP」兩種 domain 結果。
 extension LoginResponseDtoMapper on LoginResponseDto {
   AuthLoginResult toDomain() => when(
     authenticated: (value) => AuthLoginResult.authenticated(value.toDomain()),

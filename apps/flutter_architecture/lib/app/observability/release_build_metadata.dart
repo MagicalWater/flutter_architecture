@@ -1,3 +1,6 @@
+/// Build 額外提供的 release metadata，目前只保存可選的 Git commit SHA。
+///
+/// 本機開發沒有 SHA 也可以正常執行；CI／release build 有提供時才帶進 observability。
 final class ReleaseBuildMetadata {
   const ReleaseBuildMetadata._(this.commitSha);
 

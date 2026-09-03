@@ -1,10 +1,24 @@
 import 'package:flutter_architecture/features/catalog/domain/entities/catalog_page.dart';
 
-enum CatalogDataSource { remote, cache }
+/// 這份 Catalog 資料實際來自哪裡。
+enum CatalogDataSource {
+  /// 剛從後端取得。
+  remote,
 
-enum CatalogFreshness { fresh, stale }
+  /// 從本機 cache 還原。
+  cache,
+}
 
-/// Catalog page 與資料來源 metadata。
+/// 這份資料是否仍在允許的有效時間內。
+enum CatalogFreshness {
+  /// 資料仍在有效期限內。
+  fresh,
+
+  /// 資料已過期，但在遠端更新完成前仍可暫時顯示。
+  stale,
+}
+
+/// 一頁 Catalog 資料，以及它是從哪裡來、目前是否過期。
 class CatalogPageSnapshot {
   const CatalogPageSnapshot({
     required this.page,

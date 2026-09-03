@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+/// 把 Write Precheck accepted design 的 941px 寬度換算成目前可用寬度。
+///
+/// 這是該 compatibility proof 的局部比例換算，不是整個 App 的通用 responsive system。
 final class WritePrecheckProjection {
   const WritePrecheckProjection({required this.availableWidth});
 
@@ -12,6 +15,9 @@ final class WritePrecheckProjection {
   double px(double designPixels) => designPixels * scale;
 }
 
+/// 在 projection 縮放時，同步縮放 Flutter 原本已套用的 text scale。
+///
+/// 這避免畫面幾何縮小後文字仍維持原尺寸，造成 proof layout 與 accepted design 對不上。
 final class ProjectionTextScaler extends TextScaler {
   const ProjectionTextScaler(this.base, this.projectionScale);
 
@@ -25,6 +31,7 @@ final class ProjectionTextScaler extends TextScaler {
   double get textScaleFactor => base.scale(1) * projectionScale;
 }
 
+/// 將目前 projection 比例往下提供給 Write Precheck 的局部 widgets。
 class ProjectionScope extends InheritedWidget {
   const ProjectionScope({
     required this.projection,
@@ -137,6 +144,9 @@ class ProjectedHairline extends StatelessWidget {
   }
 }
 
+/// 讓固定 design-size component 先用原始尺寸 layout，再整體依 projection 比例縮放。
+///
+/// 只用在這個 accepted visual proof；一般產品 UI 不應用它取代正常 responsive layout。
 class ProjectedComponent extends StatelessWidget {
   const ProjectedComponent({
     required this.designWidth,
@@ -207,6 +217,10 @@ class ProjectedTranslate extends StatelessWidget {
   );
 }
 
+/// Write Precheck 專用 Stack：layout 時才按 projection 比例縮放 Positioned 幾何值。
+///
+/// Flutter 原生 Stack 不會自動縮放 child 的 `left/top/right/...`；這個 wrapper 只為了
+/// 保留 accepted proof 中真正需要重疊的 spatial layout，不能拿來處理一般 content flow。
 class ProjectedStack extends StatelessWidget {
   const ProjectedStack({this.children = const <Widget>[], super.key});
 

@@ -2,7 +2,10 @@ import 'package:auth/auth_infrastructure.dart';
 import 'package:flutter_architecture/app/error_reporting/error_report.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 
-/// 將 Auth cleanup diagnostics 轉成 App-owned safe reports。
+/// 把 Auth package 的 cleanup 錯誤轉成 App [ErrorReporter] 看得懂的格式。
+///
+/// 這裡只做 operation 對應與 error reporting；即使 reporter 自己失敗，也不能改變
+/// Auth cleanup／migration 原本成功或失敗的判定。
 final class AuthCleanupErrorReporterAdapter
     implements AuthCleanupDiagnosticSink {
   const AuthCleanupErrorReporterAdapter(this._reporter);
@@ -24,7 +27,7 @@ final class AuthCleanupErrorReporterAdapter
           ),
         );
       } on Object {
-        // Reporting不得改變migration resolution或遺失後續diagnostics。
+        // 記錄失敗不能影響 cleanup 結果，也不能阻止後續 diagnostics 繼續回報。
       }
     }
   }

@@ -1,6 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_architecture/app/database/app_database.dart';
 
+/// 讀寫 Drift 中唯一一筆「目前登入使用者」資料。
+///
+/// 固定使用 slot 1，避免其他層自己決定 table key；上層只需要處理 read／replace／clear。
 final class AuthUserDao {
   const AuthUserDao(this._database);
 

@@ -5,10 +5,10 @@ import 'package:core/core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// 以 platform secure storage 保存完整Auth Token Pair的App-owned adapter。
+/// 用 `flutter_secure_storage` 保存目前正式使用的登入 Token Pair。
 ///
-/// 這是目前production credential storage authority；legacy SharedPreferences資料只由
-/// migration／compatibility boundary讀取與清理。
+/// 新的登入憑證都存這裡；舊版 SharedPreferences credential 只在 migration 時讀取，
+/// 不會再拿來當正式登入來源。
 final class FlutterSecureAuthCredentialStore implements AuthCredentialStore {
   const FlutterSecureAuthCredentialStore(this._storage);
 
@@ -68,6 +68,7 @@ Future<T> _runStorageOperation<T>({
       AppException(
         kind: AppExceptionKind.localStorage,
         message: message,
+        providerCode: error.code,
         cause: error,
         stackTrace: stackTrace,
       ),

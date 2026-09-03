@@ -1,7 +1,21 @@
 import 'package:flutter_architecture/app/config/app_environment.dart';
 
-enum ReleasePlatform { android, ios, other }
+/// 這筆 release／crash 診斷資料來自哪一類平台。
+enum ReleasePlatform {
+  /// Android App。
+  android,
 
+  /// iOS App。
+  ios,
+
+  /// 目前未列入正式 Android／iOS release contract 的其他平台。
+  other,
+}
+
+/// 一筆可送到 observability provider 的 App 版本識別資訊。
+///
+/// 用來把 crash／error 對應到 environment、版本、build number、原生 configuration
+/// 與 commit；不包含 token、使用者資料或其他 runtime state。
 final class ReleaseIdentity {
   ReleaseIdentity({
     required this.environment,

@@ -2,16 +2,9 @@ import 'package:api_client/api_client.dart';
 import 'package:auth/src/domain/failures/otp_failure_details.dart';
 import 'package:core/core.dart';
 
-/// Auth 遠端資料來源。
+/// 負責把登入／OTP request 送給 Auth API，並把後端錯誤整理成 Auth 能理解的結果。
 ///
-/// ## 所屬 Layer
-///
-/// Data Layer。
-///
-/// ## 責任
-///
-/// 負責建立 request DTO、呼叫transport-neutral AuthEndpoint，
-/// 並將endpoint failure映射為Auth-owned AppException。
+/// 這裡不直接依賴 Dio；上層只需要知道「登入成功、需要 OTP、或是哪一類 Auth failure」。
 class AuthRemoteDataSource {
   const AuthRemoteDataSource(this._authEndpoint);
 
@@ -55,16 +48,18 @@ class AuthRemoteDataSource {
     }
   }
 
-  /// 將 transport endpoint failure 轉成 Auth 認得的 OTP session/protocol failure。
-  /// 未 allowlist 的 backend error 保留原 transport identity，不自行猜測語意。
+  /// 把已知 OTP backend code 轉成明確的 Auth failure；不認識的 code 不猜語意。
+  ///
+  /// 未知 code 會保留在原本的 transport exception 裡往上拋，因此新增 backend code 時
+  /// 不會被靜默吃掉，只是不會在 Client 尚未理解前硬轉成錯誤的 OTP 狀態。
   Never _rethrowAuthEndpointFailure(
     Object error,
     StackTrace stackTrace, {
     required String operation,
   }) {
     if (error is ApiEndpointException) {
-      // 只有 Auth 明確認識且 metadata contract 已驗證的 OTP backend code，才升格
-      // 成 Auth-owned session failure；未知 backend failure 保留 transport identity。
+      // 只有 Client 已明確理解的 OTP code 才轉成 Auth failure。未知 code 不做猜測，
+      // 直接保留原本 backendCode 往上拋，避免把新後端狀態誤分類。
       final data = error.backendMetadata;
       final backendCode = error.backendCode;
       if (backendCode != null) {
@@ -72,8 +67,8 @@ class AuthRemoteDataSource {
         try {
           details = _otpFailureDetails(backendCode, data);
         } on FormatException catch (metadataError, metadataStackTrace) {
-          // 已 allowlist 的 metadata 若型別/格式仍不符合 Auth contract，代表 server
-          // protocol 已破壞，不能退化成一般 OTP 錯誤讓 UI 繼續操作。
+          // 已知 OTP code 的 metadata 如果連格式都不對，代表 Client 無法安全判斷
+          // 下一步；這時應視為 protocol error，而不是讓 UI 繼續照一般 OTP failure 操作。
           final exception = AppException(
             kind: AppExceptionKind.protocol,
             message: 'Invalid OTP failure metadata',
@@ -101,8 +96,10 @@ class AuthRemoteDataSource {
     Error.throwWithStackTrace(error, stackTrace);
   }
 
-  /// 只解析 Auth 明確認識的 OTP backend code；未知 code 回傳 null，交由上層保留
-  /// transport failure，而不是錯誤升格成 domain failure。
+  /// 只解析 Client 已明確定義語意的 OTP backend code。
+  ///
+  /// 未知 code 回傳 null，讓 caller 保留原始 backendCode；未來後端新增 code 時不會
+  /// 被錯誤映射成現有 [OtpFailureKind]。
   OtpFailureDetails? _otpFailureDetails(
     String backendCode,
     Map<String, Object?> data,

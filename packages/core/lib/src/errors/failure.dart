@@ -1,25 +1,32 @@
+/// Domain／Presentation 能理解的失敗大分類。
 enum FailureKind {
+  /// 網路目前不可用、連線失敗或傳輸逾時。
   network,
+
+  /// 後端服務失敗或一般非認證類服務錯誤。
   service,
+
+  /// 登入、Session 或權限狀態失效。
   authentication,
+
+  /// 本機資料讀寫、偏好或快取狀態有問題。
   localState,
+
+  /// Client 與 Server 的資料格式或協定不符合預期。
   protocol,
 }
 
-/// Domain 層可以理解的失敗型別。
+/// 已從底層 Exception 整理過、可以交給 Bloc／UI 判斷的失敗資訊。
 ///
-/// ## 為什麼不用 Exception？
-///
-/// Exception 通常代表外部實作錯誤，例如 Dio、SQLite、檔案系統。
-///
-/// Failure 則是整理後，準備交給 UseCase 與 Bloc 使用的失敗資訊。
-/// Presentation 應依穩定 code / kind 映射成目前 locale 的 UI 文案。
+/// Dio、SQLite 等 implementation error 不應直接跑到畫面；Data 層會把它們轉成
+/// [Failure]，Presentation 再依 [kind]／code 映射成目前語系的使用者文案。
 class Failure {
   const Failure({
     this.kind = FailureKind.service,
     required this.message,
     this.httpStatus,
     this.backendCode,
+    this.providerCode,
     this.diagnosticCode,
     this.cause,
     this.stackTrace,
@@ -32,6 +39,11 @@ class Failure {
 
   final int? httpStatus;
   final String? backendCode;
+
+  /// 從底層 SDK／plugin 保留下來的 machine-readable code；沒有 provider code 時為 null。
+  ///
+  /// 只供 diagnostics 使用；Presentation 不應依這個欄位決定文案或流程。
+  final String? providerCode;
   final String? diagnosticCode;
 
   /// 原始錯誤，通常只用於除錯。
@@ -44,6 +56,7 @@ class Failure {
         'kind: $kind, '
         'httpStatus: $httpStatus, '
         'backendCode: $backendCode, '
+        'providerCode: $providerCode, '
         'diagnosticCode: $diagnosticCode, '
         'message: $message)';
   }

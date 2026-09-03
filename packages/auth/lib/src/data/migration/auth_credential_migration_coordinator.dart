@@ -7,10 +7,11 @@ import 'package:auth/src/data/stores/auth_legacy_credential_store.dart';
 import 'package:auth/src/data/stores/auth_user_store.dart';
 import 'package:core/core.dart';
 
-/// Secure、Legacy與User store之間唯一的credential migration policy owner。
+/// App 啟動時檢查新舊 credential storage，決定能不能安全還原登入 Session。
 ///
-/// 呼叫方必須先取得Auth lifecycle的exclusive ownership；Coordinator本身只根據
-/// 三個Auth-specific stores的真實狀態進行resolution，不持有runtime Session狀態。
+/// 它會優先採用 secure storage；只有 secure storage 完全沒有資料時才考慮舊版
+/// SharedPreferences。Credential 與 persisted user 必須屬於同一個 userId，否則就清掉
+/// 不一致資料並回到未登入。這個類別只整理 storage，不直接修改 runtime Session。
 final class AuthCredentialMigrationCoordinator {
   const AuthCredentialMigrationCoordinator(
     this._secureCredentialStore,
@@ -22,12 +23,12 @@ final class AuthCredentialMigrationCoordinator {
   final AuthLegacyCredentialStore _legacyCredentialStore;
   final AuthUserStore _userStore;
 
-  /// 在呼叫方已持有exclusive ownership時解析credential authority。
+  /// 依目前三個 store 的實際內容，整理出「可還原登入」或「應視為未登入」。
   Future<AuthCredentialMigrationResult> resolveUnlocked() async {
     final secure = await _secureCredentialStore.readCredential();
 
-    // Secure store 是現行 credential authority。只要 secure state 已存在，就不得
-    // 再讓 Legacy 覆蓋它；若 secure 本身損壞，則所有相依 Auth state 都失去可信度。
+    // Secure storage 是目前正式來源。只要這裡已有資料，就不允許舊版 storage 覆蓋它；
+    // 如果 secure 內容已損壞，相關登入資料一起清掉，避免拿不一致狀態建立 Session。
     if (secure is AuthCredentialReadCorrupted) {
       await _clearDestructive(
         clearSecure: true,
@@ -38,8 +39,8 @@ final class AuthCredentialMigrationCoordinator {
     }
 
     if (secure is AuthCredentialReadPresent) {
-      // Credential 與 persisted user 必須共同構成同一個 identity authority；
-      // 任一缺失或 userId 不一致，都不能恢復成 authenticated state。
+      // Credential 與 persisted user 必須同時存在且 userId 一致；否則無法確認這兩份
+      // 資料是不是同一次登入留下的，不能直接還原成已登入。
       final user = await _userStore.readUser();
       if (user == null) {
         await _clearDestructive(
@@ -64,8 +65,8 @@ final class AuthCredentialMigrationCoordinator {
           user: user,
         );
       }
-      // Secure 已經通過 identity 驗證後，Legacy 只剩待清理殘留；cleanup failure
-      // 可診斷但不能讓舊 credential 重新取得 authority。
+      // Secure credential 已確認可用後，Legacy 只剩歷史殘留。即使清除 Legacy 失敗，
+      // 也不能再把舊 credential 拿回來當登入來源，只記錄診斷即可。
       final diagnostics = await _clearLegacyAfterSecureAuthority();
       return AuthCredentialMigrationResolved(
         tokens: secure.tokens,
@@ -74,8 +75,7 @@ final class AuthCredentialMigrationCoordinator {
       );
     }
 
-    // 只有 Secure 完全 absent 時，Legacy 才有資格成為 migration source；這個
-    // precedence 防止舊 storage 覆寫已建立的新 credential authority。
+    // 只有 Secure 完全沒有資料時才讀 Legacy，避免舊版本資料蓋過已經建立的新資料。
     final legacy = await _legacyCredentialStore.readLegacyCredential();
     final user = await _userStore.readUser();
 
@@ -99,8 +99,8 @@ final class AuthCredentialMigrationCoordinator {
       return AuthCredentialMigrationUnauthenticated();
     }
 
-    // Legacy credential 只有在能與 persisted user 建立同一 identity 時才能搬遷；
-    // 否則舊資料視為不可安全採用的殘留 state。
+    // Legacy credential 只有在 userId 能和 persisted user 對上時才可以搬遷；
+    // 對不上就無法確認資料歸屬，直接當成不可安全採用的歷史殘留。
     final legacyTokens = (legacy as AuthCredentialReadPresent).tokens;
     if (user == null ||
         legacyTokens.userId == null ||
@@ -113,8 +113,8 @@ final class AuthCredentialMigrationCoordinator {
       return AuthCredentialMigrationUnauthenticated();
     }
 
-    // Migration write 尚不能立即升格成新 authority。必須 read-back 驗證完整 token
-    // identity 後才可刪除 Legacy；驗證前的 Secure 只視為可能的 partial state。
+    // 寫入 Secure 後不能立刻刪 Legacy。先重新讀回並比對完整 token，確認真的寫成功，
+    // 才能移除舊資料；否則要回滾剛寫入的 Secure，避免只搬了一半。
     try {
       await _secureCredentialStore.writeCredential(legacyTokens);
     } catch (error, stackTrace) {
@@ -154,14 +154,14 @@ final class AuthCredentialMigrationCoordinator {
         left.refreshTokenExpiresAt == right.refreshTokenExpiresAt;
   }
 
-  /// Secure migration 尚未通過 read-back 驗證時，先移除可能的 partial authority。
-  /// Rollback 自身失敗優先拋出；否則保留並重拋原始 migration error。
+  /// Secure 寫入尚未通過 read-back 驗證時，先清掉可能只寫了一半的新資料。
+  /// 如果 rollback 自己也失敗，優先回報 rollback；否則重拋原本 migration error。
   Future<Never> _rollbackUnverifiedSecure(
     Object originalError,
     StackTrace originalStackTrace,
   ) async {
-    // Secure write / read-back 尚未驗證前不能成為 credential authority；任何
-    // migration failure 都先移除可能的 partial secure state，再拋回原始錯誤。
+    // Secure 尚未驗證成功前不能當正式 credential 使用；migration 中途失敗就先清掉
+    // 這份可能不完整的新資料，再把真正的錯誤拋回去。
     try {
       await _secureCredentialStore.clearCredential();
     } catch (rollbackError, rollbackStackTrace) {
@@ -170,7 +170,7 @@ final class AuthCredentialMigrationCoordinator {
     Error.throwWithStackTrace(originalError, originalStackTrace);
   }
 
-  /// Secure credential 已成為 authority 後清理 legacy credential。
+  /// Secure credential 已確認可用後，清掉舊版 credential。
   /// 預期 storage failure 轉成可上報 diagnostic，未知異常仍直接拋出。
   Future<List<AuthCleanupDiagnostic>> _clearLegacyAfterSecureAuthority() async {
     try {
@@ -198,8 +198,8 @@ final class AuthCredentialMigrationCoordinator {
     required bool clearLegacy,
     required bool clearUser,
   }) async {
-    // Destructive recovery 必須盡量清除所有被指定的 state，而不是第一個
-    // expected local-storage failure 就中止，否則可能留下彼此矛盾的 authority。
+    // 修復不一致資料時，每個指定 store 都要盡量清；不能第一個 local-storage error
+    // 就停下來，否則可能只清掉一半，下一次啟動還是會看到互相矛盾的資料。
     Object? firstExpectedError;
     StackTrace? firstExpectedStackTrace;
     Object? firstUnknownError;

@@ -3,6 +3,9 @@ import 'dart:collection';
 import 'package:flutter_architecture/app/error_reporting/error_report.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 
+/// 從 [ErrorReport] 取出可以安全送到 provider 的簡短文字欄位。
+///
+/// 不包含 error message、stack trace、request body 等可能含敏感資訊的內容。
 final class ErrorReportMetadata {
   ErrorReportMetadata._(Map<String, String> values)
     : values = UnmodifiableMapView<String, String>(values);

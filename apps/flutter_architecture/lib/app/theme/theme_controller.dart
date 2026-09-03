@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_architecture/app/error_reporting/error_report.dart';
@@ -28,7 +29,7 @@ final class ThemeController extends ChangeNotifier {
   ThemePreference _preference;
   PreferenceDiagnostic? _diagnostic;
   Future<void> _writeTail = Future<void>.value();
-  int _revision = 0;
+  final OperationGeneration _writes = OperationGeneration();
 
   ThemePreference get preference => _preference;
   PreferenceDiagnostic? get diagnostic => _diagnostic;
@@ -56,7 +57,7 @@ final class ThemeController extends ChangeNotifier {
     if (next == _preference) return;
     _preference = next;
     _diagnostic = null;
-    final revision = ++_revision;
+    final revision = _writes.begin();
     notifyListeners();
 
     // UI 先採 optimistic state；durable write 依序執行，避免快速切換時讓較舊
@@ -65,7 +66,7 @@ final class ThemeController extends ChangeNotifier {
     _writeTail = _writeTail.then((_) async {
       try {
         await _store.save(snapshot);
-        if (revision != _revision || _diagnostic == null) return;
+        if (!_writes.isCurrent(revision) || _diagnostic == null) return;
         _diagnostic = null;
         notifyListeners();
       } on PreferenceException catch (error, stackTrace) {
@@ -74,7 +75,7 @@ final class ThemeController extends ChangeNotifier {
             error is PreferenceStorageException &&
             error.operation == PreferenceStorageOperation.write;
         _reportWriteFailure(error, stackTrace, expected: expected);
-        if (!expected || revision != _revision) return;
+        if (!expected || !_writes.isCurrent(revision)) return;
         _diagnostic = PreferenceDiagnostic(
           error: error,
           stackTrace: stackTrace,

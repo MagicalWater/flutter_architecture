@@ -9,20 +9,10 @@ part 'auth_bloc.freezed.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
-/// Auth 的全域業務狀態管理。
+/// 接收登入、OTP、登出等畫面事件，並把 Auth Repository 的結果整理成 [AuthState]。
 ///
-/// ## Runtime Flow
-///
-/// ```txt
-/// LoginPage
-///   ↓ add(AuthLoginRequested)
-/// AuthBloc
-///   ↓
-/// Repository
-/// ```
-///
-/// Bloc 不直接呼叫 Dio，也不直接讀寫 SQLite；它只依賴 Domain Layer 的
-/// `AuthRepository` contract，再把結果轉成 UI state。
+/// Bloc 不直接呼叫 Dio 或 SQLite；它只決定「現在畫面該顯示哪個 Auth 階段」。
+/// Session 在其他流程被清除時，也會把仍顯示登入中／OTP 中的 UI 收回未登入狀態。
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(
     this._authRepository,
@@ -50,13 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SessionManager _sessionManager;
   final AuthStateMutationCoordinator _mutationCoordinator;
   late final StreamSubscription<AuthSession?> _sessionSubscription;
-  // Presentation generation 只管理 Bloc async completion ownership，與
-  // SessionManager lifecycle generation 是不同 authority，兩者不可互換。
-  int _presentationGeneration = 0;
-
-  int _beginPresentationOperation() => ++_presentationGeneration;
-  bool _isCurrentPresentationOperation(int generation) =>
-      generation == _presentationGeneration;
+  final OperationGeneration _presentationOperations = OperationGeneration();
 
   Future<void> _onStarted(AuthStarted event, Emitter<AuthState> emit) async {
     emit(
@@ -112,7 +96,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
-    final presentationGeneration = _beginPresentationOperation();
+    final presentationGeneration = _presentationOperations.begin();
     emit(
       state.copyWith(
         status: AuthPresentationStatus.submitting,
@@ -133,7 +117,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on AuthMutationSuperseded {
       return;
     } catch (error, stackTrace) {
-      if (_isCurrentPresentationOperation(presentationGeneration)) {
+      if (_presentationOperations.isCurrent(presentationGeneration)) {
         emit(
           state.copyWith(
             status: AuthPresentationStatus.unauthenticated,
@@ -144,7 +128,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       Error.throwWithStackTrace(error, stackTrace);
     }
 
-    if (!_isCurrentPresentationOperation(presentationGeneration)) return;
+    if (!_presentationOperations.isCurrent(presentationGeneration)) return;
 
     result.when(
       success: (authResult) {
@@ -190,7 +174,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     final challenge = state.otpChallenge;
     if (challenge == null) return;
-    final generation = _beginPresentationOperation();
+    final generation = _presentationOperations.begin();
     emit(
       state.copyWith(
         status: AuthPresentationStatus.verifying,
@@ -208,7 +192,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on AuthMutationSuperseded {
       return;
     } catch (error, stackTrace) {
-      if (_isCurrentPresentationOperation(generation) &&
+      if (_presentationOperations.isCurrent(generation) &&
           state.otpChallenge?.challengeId == challenge.challengeId) {
         emit(
           state.copyWith(
@@ -219,7 +203,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       Error.throwWithStackTrace(error, stackTrace);
     }
-    if (!_isCurrentPresentationOperation(generation) ||
+    if (!_presentationOperations.isCurrent(generation) ||
         state.otpChallenge?.challengeId != challenge.challengeId) {
       return;
     }
@@ -249,7 +233,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     final challenge = state.otpChallenge;
     if (challenge == null) return;
-    final generation = _beginPresentationOperation();
+    final generation = _presentationOperations.begin();
     emit(
       state.copyWith(
         status: AuthPresentationStatus.resending,
@@ -266,7 +250,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on AuthMutationSuperseded {
       return;
     } catch (error, stackTrace) {
-      if (_isCurrentPresentationOperation(generation) &&
+      if (_presentationOperations.isCurrent(generation) &&
           state.otpChallenge?.challengeId == challenge.challengeId) {
         emit(
           state.copyWith(
@@ -277,7 +261,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       Error.throwWithStackTrace(error, stackTrace);
     }
-    if (!_isCurrentPresentationOperation(generation) ||
+    if (!_presentationOperations.isCurrent(generation) ||
         state.otpChallenge?.challengeId != challenge.challengeId) {
       return;
     }
@@ -303,7 +287,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onSessionCleared(AuthSessionCleared event, Emitter<AuthState> emit) {
     // Authoritative Session clear 必須同時讓 presentation completion 與仍在執行的
     // repository mutation lease 失效，避免舊 login / OTP 結果復活 UI state。
-    _presentationGeneration += 1;
+    _presentationOperations.invalidate();
     _mutationCoordinator.invalidateMutationLeases();
     emit(AuthState.initial());
   }

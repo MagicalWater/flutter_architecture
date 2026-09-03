@@ -2,6 +2,10 @@ import 'package:flutter_architecture/app/error_reporting/error_report.dart';
 import 'package:flutter_architecture/app/error_reporting/error_reporter.dart';
 import 'package:flutter_architecture/app/observability/observability_runtime_config.dart';
 
+/// 只在明確開啟 acceptance mode 時，送出一筆受控的測試 error。
+///
+/// 用來驗證 staging 的 remote collection、release metadata 與 symbolication pipeline；
+/// 一般 App 執行不會觸發，production 也不允許開啟。
 final class ObservabilityAcceptanceEvent {
   const ObservabilityAcceptanceEvent._();
 

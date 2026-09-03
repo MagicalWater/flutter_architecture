@@ -1,6 +1,10 @@
 import 'package:flutter_architecture/app/config/app_environment.dart';
 import 'package:flutter_architecture/app/observability/observability_collection_policy.dart';
 
+/// 決定這次 App 執行是否真的把 crash／error 送到遠端，以及是否發 acceptance event。
+///
+/// Acceptance event 只允許 staging，且必須同時開啟 remote collection，避免在 production
+/// 或完全沒啟用 provider 的情況下誤送測試事件。
 final class ObservabilityRuntimeConfig {
   const ObservabilityRuntimeConfig._({
     required this.collectionPolicy,

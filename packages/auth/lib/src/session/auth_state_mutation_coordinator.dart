@@ -1,24 +1,28 @@
 import 'dart:async';
 
-/// 序列化 Auth persistence 與 runtime Session 的複合修改。
+import 'package:core/core.dart';
+
+/// 避免兩個登入／登出／還原流程同時改 Auth state，導致舊結果蓋掉新結果。
+///
+/// [runExclusive] 讓實際 persistence mutation 一次只執行一個；[beginMutationLease]
+/// 則用 generation 判斷某個較早開始的流程是否已經過期。
 class AuthStateMutationCoordinator {
   Future<void> _tail = Future<void>.value();
-  int _lifecycleGeneration = 0;
+  final OperationGeneration _lifecycleOperations = OperationGeneration();
 
   AuthMutationLease beginMutationLease() {
-    _lifecycleGeneration += 1;
-    return AuthMutationLease._(this, _lifecycleGeneration);
+    return AuthMutationLease._(this, _lifecycleOperations.begin());
   }
 
-  /// 使目前仍在執行的 restore / login / logout operation 失效。
+  /// 直接讓目前仍在執行的 restore／login／logout 流程失效。
   ///
-  /// 用於權威 Session clear 等不需要啟動新 Repository mutation，
-  /// 但必須阻止舊 lifecycle operation 重新 commit Session 的情境。
+  /// 例如 Session 被外部 clear 時，不需要再啟動新的 repository mutation，
+  /// 但一定要阻止舊流程稍後把已清掉的 Session 寫回來。
   void invalidateMutationLeases() {
-    _lifecycleGeneration += 1;
+    _lifecycleOperations.invalidate();
   }
 
-  bool _isCurrent(int generation) => generation == _lifecycleGeneration;
+  bool _isCurrent(int generation) => _lifecycleOperations.isCurrent(generation);
 
   Future<T> runExclusive<T>(Future<T> Function() action) {
     // 這裡只序列化 state mutation；network request 不應持有此 queue，避免慢 I/O
@@ -35,10 +39,10 @@ class AuthStateMutationCoordinator {
   }
 }
 
-/// Auth restore / login / logout 的 latest-intent lease。
+/// 某一次 Auth 操作的「有效票據」。
 ///
-/// 較新的 auth mutation intent 會使舊 lease 失效。失效 operation 必須停止
-/// persistence、runtime Session 與 UI commit，而不是把 cancellation 映射成 Failure。
+/// 只要之後又開始新的登入／登出／還原，舊票據就會失效；持有舊票據的流程必須停止
+/// 寫 storage、Session 或 UI，而不是把「被新操作取代」誤報成真正的錯誤。
 final class AuthMutationLease {
   const AuthMutationLease._(this._owner, this._generation);
 
@@ -54,9 +58,9 @@ final class AuthMutationLease {
   }
 }
 
-/// 較舊 Auth mutation 被較新使用者意圖取代。
+/// 表示這個 Auth 操作已被較新的操作取代，現在的結果不能再套用。
 ///
-/// 這是 control flow，不是 operational failure，也不應進入 Failure state。
+/// 這是正常的流程控制，不是系統故障，也不應顯示成使用者錯誤。
 final class AuthMutationSuperseded implements Exception {
   const AuthMutationSuperseded();
 }

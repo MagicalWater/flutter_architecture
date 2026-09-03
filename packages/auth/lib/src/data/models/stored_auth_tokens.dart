@@ -1,3 +1,7 @@
+/// 寫進 secure storage 的完整登入 Token Pair。
+///
+/// 這是 persistence 用資料，不會直接暴露給 UI；讀回時會驗證 access token／refresh token
+/// 必須存在，日期欄位也必須能正確解析。
 class StoredAuthTokens {
   const StoredAuthTokens({
     required this.accessToken,
